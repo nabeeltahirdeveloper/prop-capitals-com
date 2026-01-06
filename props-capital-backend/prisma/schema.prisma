@@ -1,0 +1,408 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                     String                  @id @default(cuid())
+  email                  String                  @unique
+  password               String
+  role                   UserRole                @default(TRADER)
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  notifications          Notification[]
+  notificationPreference NotificationPreference?
+  payments               Payment[]
+  payouts                Payout[]
+  supportTickets         SupportTicket[]
+  tradingAccounts        TradingAccount[]
+  profile                UserProfile?
+  verificationDocuments  VerificationDocument[]
+}
+
+model SignupOtp {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  otpHash           String
+  expiresAt         DateTime
+  attempts          Int      @default(0)
+  resendAvailableAt DateTime
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([email])
+}
+
+model UserProfile {
+  id        String  @id @default(cuid())
+  userId    String  @unique
+  firstName String?
+  lastName  String?
+  country   String?
+  timezone  String?
+  address   String?
+  city      String?
+  phone     String?
+  user      User    @relation(fields: [userId], references: [id])
+}
+
+model VerificationDocument {
+  id              String              @id @default(cuid())
+  userId          String
+  documentType    VerificationDocType
+  status          VerificationStatus  @default(PENDING)
+  fileUrl         String?
+  uploadedAt      DateTime            @default(now())
+  reviewedAt      DateTime?
+  reviewedBy      String?
+  rejectionReason String?
+  user            User                @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model NotificationPreference {
+  id                 String  @id @default(cuid())
+  userId             String  @unique
+  tradeNotifications Boolean @default(true)
+  accountAlerts      Boolean @default(true)
+  payoutUpdates      Boolean @default(true)
+  challengeUpdates   Boolean @default(true)
+  marketingEmails    Boolean @default(false)
+  emailNotifications Boolean @default(true)
+  user               User    @relation(fields: [userId], references: [id])
+}
+
+model Challenge {
+  id                     String            @id @default(cuid())
+  name                   String
+  description            String?
+  accountSize            Int
+  price                  Int
+  platform               ChallengePlatform
+  phase1TargetPercent    Float             @default(8.0)
+  phase2TargetPercent    Float             @default(5.0)
+  dailyDrawdownPercent   Float             @default(5.0)
+  overallDrawdownPercent Float             @default(10.0)
+  minTradingDays         Int               @default(5)
+  maxTradingDays         Int?
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+  challengeType          String            @default("two_phase")
+  eaAllowed              Boolean           @default(true)
+  isActive               Boolean           @default(true)
+  newsTradingAllowed     Boolean           @default(true)
+  profitSplit            Float             @default(80.0)
+  scalingEnabled         Boolean           @default(false)
+  weekendHoldingAllowed  Boolean           @default(true)
+  accounts               TradingAccount[]
+}
+
+model TradingAccount {
+  id                String               @id @default(cuid())
+  userId            String
+  challengeId       String
+  platform          ChallengePlatform?   // User's selected trading platform
+  phase             TradingPhase         @default(PHASE1)
+  status            TradingAccountStatus @default(ACTIVE)
+  balance           Float                @default(0)
+  equity            Float                @default(0)
+  brokerLogin       String?
+  brokerPassword    String?
+  brokerServerId    String?
+  initialBalance    Float                @default(0)
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  dailyLockedUntil  DateTime?
+  maxEquityToDate   Float?
+  todayStartEquity  Float?
+  dailyLossViolated Boolean              @default(false)
+  drawdownViolated  Boolean              @default(false)
+  equityShots       EquitySnapshot[]
+  payouts           Payout[]
+  pendingOrders     PendingOrder[]
+  phaseHistory      PhaseTransition[]
+  scalingRequests   ScalingRequest[]
+  trades            Trade[]
+  brokerServer      BrokerServer?        @relation("BrokerServerAccounts", fields: [brokerServerId], references: [id])
+  challenge         Challenge            @relation(fields: [challengeId], references: [id])
+  user              User                 @relation(fields: [userId], references: [id])
+  violations        Violation[]
+}
+
+model Trade {
+  id                           String         @id @default(cuid())
+  tradingAccountId             String
+  symbol                       String
+  type                         TradeType
+  volume                       Float
+  openPrice                    Float
+  closePrice                   Float?
+  profit                       Float          @default(0)
+  openedAt                     DateTime
+  closedAt                     DateTime?
+  stopLoss                     Float?
+  takeProfit                   Float?
+  breachAt                     DateTime?
+  breachDrawdownPercentDaily   Float?
+  breachDrawdownPercentOverall Float?
+  breachEquity                 Float?
+  breachPrice                  Float?
+  breachTriggered              Boolean        @default(false)
+  breachType                   String?
+  breachUnrealizedPnl          Float?
+  closeReason                  String?
+  tradingAccount               TradingAccount @relation(fields: [tradingAccountId], references: [id])
+}
+
+model PendingOrder {
+  id               String         @id @default(cuid())
+  tradingAccountId String
+  symbol           String
+  type             TradeType
+  orderType        OrderType
+  volume           Float
+  price            Float
+  stopLoss         Float?
+  takeProfit       Float?
+  status           OrderStatus    @default(PENDING)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  filledAt         DateTime?
+  cancelledAt      DateTime?
+  tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
+}
+
+model Violation {
+  id               String         @id @default(cuid())
+  tradingAccountId String
+  type             ViolationType
+  message          String
+  createdAt        DateTime       @default(now())
+  tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
+}
+
+model PhaseTransition {
+  id               String         @id @default(cuid())
+  tradingAccountId String
+  fromPhase        TradingPhase
+  toPhase          TradingPhase
+  timestamp        DateTime       @default(now())
+  tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
+}
+
+model EquitySnapshot {
+  id               String         @id @default(cuid())
+  tradingAccountId String
+  equity           Float
+  balance          Float
+  timestamp        DateTime       @default(now())
+  tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
+}
+
+model Payment {
+  id           String    @id @default(cuid())
+  userId       String
+  amount       Int
+  currency     String    @default("USD")
+  provider     String
+  status       String
+  reference    String?
+  createdAt    DateTime  @default(now())
+  refundReason String?
+  refundedAt   DateTime?
+  updatedAt    DateTime  @updatedAt
+  user         User      @relation(fields: [userId], references: [id])
+}
+
+model Payout {
+  id               String         @id @default(cuid())
+  userId           String
+  tradingAccountId String
+  amount           Int
+  currency         String         @default("USD")
+  status           PayoutStatus   @default(PENDING)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
+  user             User           @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id        String               @id @default(cuid())
+  userId    String
+  title     String
+  body      String
+  read      Boolean              @default(false)
+  createdAt DateTime             @default(now())
+  category  NotificationCategory @default(SYSTEM)
+  type      NotificationType     @default(INFO)
+  user      User                 @relation(fields: [userId], references: [id])
+}
+
+model SupportTicket {
+  id        String         @id @default(cuid())
+  userId    String
+  subject   String
+  message   String
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  category  TicketCategory @default(OTHER)
+  priority  TicketPriority @default(MEDIUM)
+  status    TicketStatus   @default(OPEN)
+  user      User           @relation(fields: [userId], references: [id])
+}
+
+model BrokerServer {
+  id          String            @id @default(cuid())
+  name        String
+  platform    ChallengePlatform
+  host        String
+  port        Int
+  description String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  accounts    TradingAccount[]  @relation("BrokerServerAccounts")
+}
+
+model PlatformSettings {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ScalingRequest {
+  id               String         @id @default(cuid())
+  tradingAccountId String
+  oldBalance       Float
+  newBalance       Float
+  status           String         @default("PENDING")
+  requestedAt      DateTime       @default(now())
+  approvedAt       DateTime?
+  tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
+}
+
+model Coupon {
+  id          String    @id @default(cuid())
+  code        String    @unique
+  discountPct Int
+  isActive    Boolean   @default(true)
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum UserRole {
+  TRADER
+  ADMIN
+}
+
+enum ChallengePlatform {
+  MT4
+  MT5
+  CTRADER
+  DXTRADE
+}
+
+enum TradingPhase {
+  PHASE1
+  PHASE2
+  FUNDED
+  FAILED
+}
+
+enum TradingAccountStatus {
+  ACTIVE
+  PAUSED
+  CLOSED
+  DAILY_LOCKED
+  DISQUALIFIED
+}
+
+enum TradeType {
+  BUY
+  SELL
+}
+
+enum ViolationType {
+  DAILY_DRAWDOWN
+  OVERALL_DRAWDOWN
+  NEWS
+  CONSISTENCY
+  RULE_BREAK
+}
+
+enum PayoutStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PAID
+}
+
+enum OrderType {
+  LIMIT
+  STOP
+  STOP_LIMIT
+}
+
+enum OrderStatus {
+  PENDING
+  FILLED
+  CANCELLED
+  REJECTED
+  PARTIALLY_FILLED
+}
+
+enum VerificationDocType {
+  GOVERNMENT_ID
+  PROOF_OF_ADDRESS
+}
+
+enum VerificationStatus {
+  NOT_UPLOADED
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+}
+
+enum NotificationCategory {
+  SYSTEM
+  CHALLENGE
+  PAYOUT
+  ACCOUNT
+}
+
+enum TicketCategory {
+  ACCOUNT
+  PAYMENT
+  PAYOUT
+  TECHNICAL
+  OTHER
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}

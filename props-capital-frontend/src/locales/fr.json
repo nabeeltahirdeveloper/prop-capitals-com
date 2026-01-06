@@ -1,0 +1,2836 @@
+{
+    "common": {
+      "loading": "Chargement...",
+      "url": "URL",
+      "dismiss": "Fermer",
+      "allPlatforms": "Toutes les plateformes"
+    },
+    "home": {
+    "hero": {
+      "badge": "Fait confiance par plus de 15 000 traders dans le monde entier",
+      "title": "Tradez",
+      "titleHighlight": "avec notre capital",
+      "subtitle": "Prouvez vos compétences et obtenez jusqu’à 200 000 $ de capital. Aucun risque sur vos fonds personnels et conservez jusqu’à 90 % des profits",
+      "cta": "Commencer le challenge",
+      "howItWorks": "Comment ça marche",
+      "verified": "Entreprise vérifiée",
+      "secure": "Paiements sécurisés",
+      "support": "Support 24h/24 et 7j/7",
+      "profitToday": "Profit du jour",
+      "winRate": "Taux de réussite"
+    },
+    "stats": {
+      "fundedCapital": "Capital financé",
+      "activeTraders": "Traders actifs",
+      "paidToTraders": "Montant versé aux traders",
+      "trustScore": "Score de confiance"
+    },
+    "features": {
+      "title": "Pourquoi nous choisir",
+      "subtitle": "Conçu pour les traders professionnels",
+      "description": "Nous avons construit la prop firm la plus favorable aux traders, avec des règles transparentes, des conditions avantageuses et un véritable support",
+      "clearObjectives": {
+        "title": "Objectifs de trading clairs",
+        "description": "Des objectifs simples et atteignables basés sur des règles transparentes. Aucun piège ni échec inattendu"
+      },
+      "generousDrawdown": {
+        "title": "Limites de drawdown généreuses",
+        "description": "5 % de perte quotidienne et jusqu’à 10 % au total. Tradez confortablement sans stress",
+        "drawdown": "Drawdown"
+      },
+      "profitSplit": {
+        "title": "Jusqu’à 90 % de partage des profits",
+        "description": "Conservez la majeure partie de vos gains. Paiements bihebdomadaires sans délais ni frais cachés"
+      },
+      "instantSetup": {
+        "title": "Configuration de compte instantanée",
+        "description": "Recevez vos identifiants de trading quelques minutes après l’achat et commencez immédiatement"
+      },
+      "tradeAnywhere": {
+        "title": "Tradez partout",
+        "description": "Compatible avec MT4, MT5, cTrader et DXTrade. Tradez depuis n’importe où et sur tous les appareils"
+      },
+      "noTimeLimits": {
+        "title": "Aucune limite de temps",
+        "description": "Atteignez vos objectifs à votre rythme. Pas de durée maximale ni de pression inutile"
+      }
+    },
+    "howItWorks": {
+      "label": "Comment commencer",
+      "title": "3 étapes pour obtenir un financement",
+      "step1": {
+        "title": "Choisissez un challenge",
+        "description": "Sélectionnez la taille de compte souhaitée et achetez en toute sécurité"
+      },
+      "step2": {
+        "title": "Réussissez l’évaluation",
+        "description": "Atteignez l’objectif de profit tout en respectant les règles de gestion du risque"
+      },
+      "step3": {
+        "title": "Obtenez un financement",
+        "description": "Tradez avec notre capital et conservez jusqu’à 90 % des profits"
+      },
+      "learnMore": "En savoir plus sur le processus"
+    },
+    "challenges": {
+      "label": "Tarifs",
+      "title": "Choisissez votre challenge",
+      "subtitle": "Sélectionnez la taille de compte adaptée à votre style de trading et à votre budget",
+      "accountSize": "Taille du compte",
+      "price": "Prix",
+      "profitTarget": "Objectif de profit",
+      "profitSplit": "Partage des profits",
+      "getStarted": "Commencer",
+      "viewAll": "Voir tous les challenges",
+      "popular": "Populaire"
+    },
+    "testimonials": {
+      "label": "Témoignages",
+      "title": "Apprécié par les traders",
+      "subtitle": "Rejoignez des milliers de traders à succès qui gagnent avec Props Capital",
+      "totalEarned": "Gains totaux"
+    },
+    "cta": {
+      "title": "Prêt à commencer ?",
+      "titleHighlight": "Votre carrière de trading",
+      "subtitle": "Rejoignez des milliers de traders financés et commencez à gagner dès aujourd’hui. Aucun risque sur vos fonds personnels",
+      "button": "Obtenir un financement maintenant",
+      "footer": "Démarrage à seulement 99 $ • Configuration instantanée • Support 24h/24 et 7j/7"
+    },
+    "footer": {
+      "description": "La société de prop trading la plus favorable aux traders. Tradez avec notre capital et obtenez un financement",
+      "propFirm": "Société de prop trading",
+      "verified": "Vérifié et fiable",
+      "company": "Entreprise",
+      "support": "Support",
+      "legal": "Informations légales",
+      "copyright": "© 2024 BLUEHAVEN MANAGEMENT LTD Tous droits réservés",
+      "secure": "Sécurisé et chiffré",
+      "howItWorks": "Comment ça marche",
+      "challenges": "Challenges",
+      "scalingPlan": "Plan de scaling",
+      "payouts": "Paiements",
+      "faq": "FAQ",
+      "contact": "Contact",
+      "terms": "Conditions d’utilisation",
+      "privacy": "Politique de confidentialité"
+    },
+    "partners": {
+      "title": "Approuvé par des traders utilisant les plateformes suivantes :"
+    }
+  },
+  "dashboard": {
+    "welcome": "Bon retour, {{name}}",
+    "overview": "Voici un aperçu de votre trading",
+    "newChallenge": "Nouveau challenge",
+    "stats": {
+      "totalChallenges": "Tous les challenges",
+      "activeChallenges": "Challenges en cours",
+      "fundedAccounts": "Comptes financés",
+      "totalPayouts": "Total des paiements"
+    },
+    "accounts": {
+      "title": "Comptes de trading actifs",
+      "viewAll": "Voir tout",
+      "profitProgress": "Progression des profits",
+      "target": "Objectif",
+      "dailyDD": "DD journalier",
+      "overallDD": "DD global",
+      "details": "Détails",
+      "trade": "Trader",
+      "violation": {
+        "dailyDrawdown": "Dépassement du DD journalier : {{actual}} % > {{threshold}} %",
+        "overallDrawdown": "Dépassement du DD global : {{actual}} % > {{threshold}} %",
+        "maximumDrawdown": "Dépassement du DD maximum : {{actual}} % > {{threshold}} %",
+        "maxTradingDays": "Nombre maximum de jours de trading dépassé",
+        "default": "{{message}}"
+      }
+    },
+    "metrics": {
+      "title": "Indicateurs rapides",
+      "currentBalance": "Solde actuel",
+      "profitThisCycle": "Profit de ce cycle",
+      "ddRemaining": "DD restant",
+      "tradingDays": "Jours de trading",
+      "nextPayoutDate": "Prochaine date de paiement",
+      "requestPayout": "Demander un paiement",
+      "account": "Compte",
+      "accounts": "Comptes"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "noNewNotifications": "Aucune nouvelle notification",
+      "markAsRead": "Marquer comme lu",
+      "notification": "Notification",
+      "notifications": "Notifications",
+      "noNotifications": "Aucune notification",
+      "seeMore": "Voir plus"
+    },
+    "rules": {
+      "title": "Respect des règles",
+      "selectAccount": "Sélectionner un compte",
+      "phase": "Phase",
+      "phase1": "Phase 1",
+      "phase2": "Phase 2",
+      "funded": "Financé",
+      "failed": "Échoué"
+    },
+    "quickActions": {
+      "tradingTerminal": "Terminal de trading",
+      "openTrading": "Commencer à trader",
+      "myAccounts": "Mes comptes",
+      "viewAllAccounts": "Voir tous les comptes",
+      "analytics": "Analytique",
+      "performanceStats": "Statistiques de performance",
+      "payouts": "Paiements",
+      "requestPayouts": "Demander des paiements",
+      "scalingPlan": "Plan de scaling",
+      "growthRoadmap": "Feuille de route de croissance"
+    },
+    "links": {
+      "challengeProgress": "Progression du challenge",
+      "trackJourney": "Suivre votre parcours vers le financement",
+      "tradeHistory": "Historique des trades",
+      "viewAllTrades": "Voir tous les trades"
+    },
+    "empty": {
+      "welcome": "Bienvenue, {{name}} !",
+      "description": "Commencez votre parcours de trader financé. Choisissez un challenge, prouvez vos compétences et tradez avec notre capital",
+      "startChallenge": "Commencer votre premier challenge"
+    },
+    "rulesPanel": {
+      "title": "Règles et conditions du challenge",
+      "profitTarget": "Objectif de profit",
+      "dailyLossLimit": "Limite de perte journalière",
+      "overallDrawdown": "Drawdown global",
+      "minTradingDays": "Jours minimum de trading",
+      "daysRemaining": "Jours restants",
+      "tradingStyleRules": "Règles de style de trading",
+      "newsTrading": "Trading sur les actualités",
+      "weekendHolding": "Maintien le week-end",
+      "expertAdvisors": "Conseillers experts",
+      "hedging": "Couverture",
+      "copyTrading": "Copy trading",
+      "leverage": "Effet de levier",
+      "maxLot": "{{max}} {{lot}}",
+      "lot": "Lot",
+      "max": "Maximum",
+      "profitSplit": "Partage des profits",
+      "target": "Objectif",
+      "limit": "Limite",
+      "status": {
+        "reached": "Atteint",
+        "loss": "Perte",
+        "violated": "Violation",
+        "danger": "Danger",
+        "warning": "Avertissement",
+        "safe": "Sécurisé"
+      }
+    }
+  },
+  "myAccounts": {
+    "title": "Mes comptes",
+    "subtitle": "Gérez tous vos challenges de trading et comptes financés",
+    "newChallenge": "Nouveau challenge",
+    "activeChallenges": "Challenges en cours",
+    "phase1": "Phase 1",
+    "phase2": "Phase 2",
+    "funded": "Financé",
+    "failed": "Échoué",
+    "all": "Tous",
+    "active": "Actif",
+    "noAccounts": "Aucun compte trouvé",
+    "noAccountsDesc": "Commencez un nouveau challenge pour débuter votre parcours de trading",
+    "startChallenge": "Commencer un challenge",
+    "balance": "Solde",
+    "profit": "Profit",
+    "days": "Jours",
+    "dailyDD": "Perte journalière",
+    "overallDD": "Perte globale",
+    "openDashboard": "Ouvrir le tableau de bord de trading",
+    "progress": "Progression",
+    "trades": "Trades",
+    "needChallenge": "Besoin d’un nouveau challenge ?",
+    "needChallengeDesc": "Redémarrez avec un nouveau challenge de trading et prouvez vos compétences",
+    "buyChallenge": "Acheter un challenge"
+  },
+  "analytics": {
+    "title": "Analytique",
+    "subtitle": "Analyse détaillée des performances et statistiques",
+    "selectAccount": "Sélectionner un compte",
+    "allAccounts": "Tous les comptes",
+    "totalTrades": "Nombre total de trades",
+    "winRate": "Taux de réussite",
+    "totalProfit": "Profit total",
+    "profitFactor": "Facteur de profit",
+    "winningTrades": "Trades gagnants",
+    "losingTrades": "Trades perdants",
+    "bestTrade": "Meilleur trade",
+    "worstTrade": "Pire trade",
+    "symbolDistribution": "Répartition des symboles",
+    "tradeHistory": "Historique des trades",
+    "noTrades": "Aucun trade trouvé",
+    "symbol": "Symbole",
+    "type": "Type",
+    "lotSize": "Taille du lot",
+    "open": "Ouverture",
+    "close": "Clôture",
+    "profit": "Profit",
+    "buy": "Achat",
+    "sell": "Vente",
+    "performanceMetrics": "Indicateurs de performance",
+    "wins": "Gains",
+    "losses": "Pertes",
+    "maxWinStreak": "Série maximale de gains",
+    "maxLossStreak": "Série maximale de pertes",
+    "avgWin": "Gain moyen",
+    "avgLoss": "Perte moyenne",
+    "avgRR": "Risque/rendement moyen",
+    "avgHolding": "Durée moyenne de détention",
+    "maxPosition": "Position maximale",
+    "avgPosition": "Position moyenne",
+    "sharpeRatio": "Ratio de Sharpe",
+    "lots": "Lots",
+    "equityCurve": "Courbe d’équité",
+    "accountPerformance": "Performance du compte par période",
+    "equity": "Équité",
+    "balance": "Solde",
+    "startingBalance": "Solde initial",
+    "dailyPL": "P/L journalier",
+    "winningDays": "Jours gagnants",
+    "losingDays": "Jours perdants",
+    "totalLoss": "Perte totale",
+    "netPL": "P/L net",
+    "pl": "P/L",
+    "bestDay": "Meilleur jour",
+    "worstDay": "Pire jour",
+    "noData": "Aucune donnée pour la répartition des symboles",
+    "loading": "Chargement..."
+  },
+  "payouts": {
+    "title": "Paiements",
+    "subtitle": "Demande et suivi des retraits de profits",
+    "requestPayout": "Demander un retrait",
+    "selectAccount": "Sélectionner un compte",
+    "allAccounts": "Tous les comptes",
+    "selectFundedAccount": "Sélectionner un compte financé",
+    "amount": "Montant (USD)",
+    "enterAmount": "Entrer le montant",
+    "minimum": "Minimum",
+    "paymentMethod": "Méthode de paiement",
+    "selectPaymentMethod": "Sélectionner une méthode de paiement",
+    "paymentDetails": "Détails du paiement",
+    "paymentDetailsPlaceholder": "Veuillez saisir les informations de paiement (adresse de portefeuille, coordonnées bancaires, etc.)",
+    "submitting": "Envoi en cours...",
+    "submitRequest": "Soumettre la demande",
+    "totalEarnings": "Gains totaux",
+    "pendingPayouts": "Paiements en attente",
+    "totalPayouts": "Total des paiements",
+    "nextPayout": "Prochain paiement",
+    "payoutSchedule": "Calendrier des paiements",
+    "payoutFrequency": "Fréquence des paiements",
+    "biWeekly": "Bihebdomadaire (14 jours)",
+    "biWeeklyValue": "Bihebdomadaire",
+    "processingTime": "Temps de traitement",
+    "processingTimeValue": "24 à 48 heures",
+    "businessDays": "2 à 5 jours ouvrables",
+    "businessDaysOnly": "Jours ouvrables uniquement",
+    "minimumAmount": "Montant minimum",
+    "payoutFee": "Frais de retrait",
+    "free": "0 $ (gratuit)",
+    "freeValue": "Gratuit",
+    "availablePaymentMethods": "Méthodes de paiement disponibles",
+    "bankTransfer": "Virement bancaire",
+    "bankTransferTime": "2 à 5 jours",
+    "cryptocurrency": "Cryptomonnaie",
+    "cryptoTime": "24 heures",
+    "paypal": "PayPal",
+    "paypalTime": "24 heures",
+    "wise": "Wise",
+    "wiseTime": "1 à 2 jours",
+    "yourProfitSplit": "Votre partage des profits",
+    "profitSplitDesc": "Conservez jusqu’à 90 % des profits grâce au scaling",
+    "currentSplit": "Part actuelle",
+    "withScaling": "Avec scaling",
+    "viewScalingPlan": "Voir le plan de scaling",
+    "payoutHistory": "Historique des paiements",
+    "noPayouts": "Aucun paiement pour le moment. Commencez à trader et gagnez des profits !",
+    "needHelp": "Besoin d’aide pour les paiements ?",
+    "needHelpDesc": "Pour toute question concernant les paiements, contactez notre équipe de support",
+    "contactSupport": "Contacter le support",
+    "date": "Date",
+    "method": "Méthode",
+    "status": "Statut",
+    "processed": "Traité"
+  },
+  "profile": {
+    "title": "Profil",
+    "subtitle": "Gérer les paramètres du compte et les préférences",
+    "loadError": "Échec du chargement du profil. Veuillez réessayer",
+    "user": "Utilisateur",
+    "admin": "Administrateur",
+    "trader": "Trader",
+    "personalInfo": "Informations personnelles",
+    "security": "Sécurité",
+    "verification": "Vérification d’identité",
+    "notifications": "Notifications",
+    "personalInformation": "Informations personnelles",
+    "firstName": "Prénom",
+    "firstNamePlaceholder": "John",
+    "lastName": "Nom",
+    "lastNamePlaceholder": "Doe",
+    "email": "Adresse e-mail",
+    "phoneNumber": "Numéro de téléphone",
+    "phonePlaceholder": "+66 123 456 789",
+    "country": "Pays",
+    "countryPlaceholder": "Thaïlande",
+    "city": "Ville",
+    "cityPlaceholder": "Bangkok",
+    "address": "Adresse",
+    "addressPlaceholder": "123 rue Principale",
+    "saving": "Enregistrement...",
+    "saveChanges": "Enregistrer les modifications",
+    "changesSaved": "Modifications enregistrées",
+    "securitySettings": "Paramètres de sécurité",
+    "password": "Mot de passe",
+    "lastChanged": "Dernière modification",
+    "never": "Jamais",
+    "changePassword": "Changer le mot de passe",
+    "twoFactorAuth": "Authentification à deux facteurs",
+    "twoFactorDesc": "Activer une couche de sécurité supplémentaire",
+    "enable2FA": "Activer la 2FA",
+    "emailNotifications": "Notifications par e-mail",
+    "emailNotificationsDesc": "Recevoir des notifications sur l’activité du compte",
+    "enabled": "Activé",
+    "identityVerification": "Vérification d’identité",
+    "verificationDesc": "Veuillez compléter la vérification d’identité pour débloquer toutes les fonctionnalités (y compris les paiements). Requis pour le premier retrait",
+    "governmentID": "Pièce d’identité",
+    "governmentIDDesc": "Passeport, permis de conduire ou carte d’identité",
+    "pending": "En attente",
+    "uploadDocument": "Téléverser un document",
+    "proofOfAddress": "Justificatif de domicile",
+    "proofOfAddressDesc": "Facture de services publics ou relevé bancaire (des 3 derniers mois)",
+    "changePasswordDesc": "Mettez à jour votre mot de passe pour sécuriser votre compte",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "passwordChanged": "Mot de passe modifié",
+    "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+    "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+    "changing": "Modification en cours...",
+    "uploading": "Téléversement en cours...",
+    "uploadGovernmentID": "Téléverser une pièce d’identité",
+    "uploadProofOfAddress": "Téléverser un justificatif de domicile",
+    "documentUploaded": "Document téléversé avec succès",
+    "approved": "Approuvé",
+    "rejected": "Rejeté",
+    "comingSoon": "Bientôt disponible",
+    "notUploaded": "Non téléversé",
+    "notificationPreferences": "Préférences de notification",
+    "tradeNotifications": "Notifications de trading",
+    "tradeNotificationsDesc": "Recevoir des notifications lors de l’ouverture et de la fermeture des trades",
+    "accountAlerts": "Alertes de compte",
+    "accountAlertsDesc": "Alertes de perte et mises à jour de l’état du compte",
+    "payoutUpdates": "Mises à jour des paiements",
+    "payoutUpdatesDesc": "Notifications concernant les demandes de retrait et leur traitement",
+    "challengeUpdates": "Mises à jour des challenges",
+    "challengeUpdatesDesc": "Mises à jour de la progression et des changements de phase",
+    "marketingEmails": "E-mails marketing",
+    "marketingEmailsDesc": "Actualités, promotions et offres spéciales"
+  },
+  "support": {
+    "title": "Support",
+    "subtitle": "Obtenir de l’aide pour votre compte et votre trading",
+    "newTicket": "Nouveau ticket",
+    "createTicket": "Créer un ticket de support",
+    "subject": "Sujet",
+    "subjectPlaceholder": "Brève description du problème",
+    "category": "Catégorie",
+    "select": "Sélectionner",
+    "account": "Compte",
+    "payment": "Paiement",
+    "payout": "Retrait",
+    "technical": "Technique",
+    "other": "Autre",
+    "priority": "Priorité",
+    "low": "Faible",
+    "medium": "Moyenne",
+    "high": "Élevée",
+    "message": "Message",
+    "messagePlaceholder": "Veuillez décrire le problème en détail...",
+    "submitting": "Envoi en cours...",
+    "submitTicket": "Envoyer le ticket",
+    "openTickets": "Tickets ouverts",
+    "inProgress": "En cours",
+    "resolved": "Résolu",
+    "avgResponse": "Temps de réponse moyen",
+    "totalTickets": "Nombre total de tickets",
+    "faq": "FAQ",
+    "searchFAQs": "Rechercher dans la FAQ...",
+    "viewAllFAQs": "Voir toutes les FAQ",
+    "yourTickets": "Vos tickets",
+    "noTickets": "Aucun ticket de support pour le moment. Créez-en un si nécessaire",
+    "needImmediateHelp": "Besoin d’aide immédiate ?",
+    "liveChatDesc": "Notre équipe de support est disponible 24h/24 et 7j/7 via le chat en direct",
+    "startLiveChat": "Démarrer le chat en direct",
+    "faq1Q": "Comment demander un retrait ?",
+    "faq1A": "Accédez à la section Paiements et cliquez sur « Demander un retrait ». Remplissez les informations requises et soumettez la demande",
+    "faq2Q": "Quelles sont les règles de trading ?",
+    "faq2A": "Nos règles standards incluent une perte journalière de 5 %, une perte globale de 10 % et un minimum de 4 jours de trading",
+    "faq3Q": "Combien de temps prennent les retraits ?",
+    "faq3A": "Les retraits sont traités sous 24 à 48 heures après approbation. Les virements bancaires peuvent prendre 2 à 5 jours ouvrables",
+    "faq4Q": "Puis-je trader pendant les annonces économiques ?",
+    "faq4A": "Oui. Le trading sur les actualités est autorisé pour tous les challenges, sans restriction sur les annonces à fort impact"
+  },
+  "tradeHistory": {
+    "title": "Historique des transactions",
+    "subtitle": "Toutes vos transactions",
+    "selectAccount": "Sélectionner un compte",
+    "allAccounts": "Tous les comptes",
+    "phase1": "Phase 1",
+    "phase2": "Phase 2",
+    "funded": "Financé",
+    "failed": "Échoué",
+    "export": "Exporter",
+    "totalTrades": "Nombre total de transactions",
+    "winRate": "Taux de réussite",
+    "totalProfit": "Profit total",
+    "avgWin": "Gain moyen",
+    "avgLoss": "Perte moyenne",
+    "searchPlaceholder": "Rechercher par symbole ou ticket...",
+    "all": "Tous",
+    "buy": "Acheter",
+    "sell": "Vendre",
+    "open": "Ouvert",
+    "closed": "Fermé",
+    "openPositions": "Positions ouvertes",
+    "active": "Actif",
+    "closedTrades": "Transactions clôturées",
+    "showing": "Affichage",
+    "trades": "transactions",
+    "noTradesFound": "Aucune transaction trouvée correspondant aux filtres",
+    "ticket": "Ticket",
+    "time": "Heure",
+    "symbol": "Symbole",
+    "type": "Type",
+    "lots": "Lots",
+    "openPrice": "Prix d'ouverture",
+    "closePrice": "Prix de clôture",
+    "priceChange": "Variation de prix",
+    "commSwap": "Commission / Swap",
+    "profit": "Profit",
+    "status": "Statut",
+    "noAccounts": "Aucun compte de trading",
+    "noAccountsDesc": "Vous devez d'abord créer un compte de trading pour voir l'historique"
+  },
+  "challengeProgress": {
+    "title": "Progression du challenge",
+    "subtitle": "Suivez votre parcours vers un compte financé",
+    "selectAccount": "Sélectionner un compte",
+    "viewTradingDashboard": "Voir le tableau de bord de trading",
+    "account": "Compte",
+    "profit": "Profit",
+    "tradingDays": "Jours de trading",
+    "dailyDDUsed": "DD journalier utilisé",
+    "yourJourney": "Votre parcours",
+    "purchase": "Achat",
+    "purchaseDesc": "L'achat du challenge est terminé",
+    "challenge": "Challenge",
+    "phase1": "Phase 1",
+    "phase2": "Phase 2",
+    "funded": "Financé",
+    "scaling": "Scaling",
+    "reachTarget": "Atteindre l'objectif de profit {{target}}",
+    "profitTarget": "Objectif de profit",
+    "minTradingDays": "Jours de trading minimum",
+    "maxDailyDD": "DD journalier max",
+    "maxOverallDD": "DD global max",
+    "fundedDesc": "Trader avec notre capital",
+    "profitSplit80": "Partage des profits 80 %",
+    "scalingDesc": "Croissance jusqu'à 2 000 000 $",
+    "profitSplit90": "Jusqu'à 90 % de partage des profits",
+    "currentPhaseRequirements": "Exigences de la phase actuelle",
+    "profitSplit": "Partage des profits",
+    "whenFunded": "Une fois financé",
+    "upTo90WithScaling": "Jusqu'à 90 % avec le scaling",
+    "payoutCycle": "Cycle de paiement",
+    "biWeeklyPayouts": "Paiements bimensuels",
+    "days": "jours",
+    "processedWithin24h": "Traité sous 24 heures",
+    "scaleTo": "Évoluer jusqu'à",
+    "maximumAccountSize": "Taille maximale du compte",
+    "scalingLevels": "10 niveaux de scaling",
+    "readyToStart": "Prêt à commencer le trading ?",
+    "readyToStartDesc": "Ouvrez la plateforme et atteignez vos objectifs de profit",
+    "viewTradingRules": "Voir les règles de trading",
+    "failed": "Échoué",
+    "noAccountsDesc": "Achetez un challenge pour commencer à suivre votre progression"
+  },
+  "phaseTimeline": {
+    "challengeJourney": "Parcours du challenge",
+    "trackProgress": "Suivez la progression de chaque phase",
+    "proceedToNextPhase": "Passer à la phase suivante",
+    "phase1": "Phase 1",
+    "phase2": "Phase 2",
+    "funded": "Financé",
+    "scaling": "Scaling",
+    "evaluation": "Évaluation",
+    "verification": "Vérification",
+    "liveAccount": "Compte réel",
+    "growth": "Croissance",
+    "profitTarget": "Objectif de profit {{target}}",
+    "minTradingDays": "Jours de trading minimum {{days}}",
+    "maxDailyDD": "DD journalier max {{dd}}",
+    "profitSplit80": "Partage des profits 80 %",
+    "biWeeklyPayouts": "Paiements bimensuels",
+    "scalingEligible": "Éligible au scaling",
+    "profitSplit90": "Jusqu'à 90 % de partage des profits",
+    "accountSizeIncrease": "Augmentation de la taille du compte",
+    "vipBenefits": "Avantages VIP",
+    "completed": "Terminé",
+    "active": "Actif",
+    "unlocked": "Déverrouillé",
+    "locked": "Verrouillé",
+    "phaseCompleted": "Phase terminée !",
+    "phaseCompletedDesc": "Félicitations ! Toutes les exigences sont remplies. Cliquez ci-dessus pour continuer"
+  },
+  "ruleCompliance": {
+    "title": "Conformité aux règles",
+    "subtitle": "Vérifiez les règles de trading et les exigences du challenge",
+    "selectAccount": "Sélectionner un compte",
+    "loading": "Chargement...",
+    "noAccounts": "Aucun compte de trading",
+    "noAccountsDesc": "Achetez un challenge pour consulter la conformité et les règles",
+    "purchaseChallenge": "Acheter un challenge",
+    "loadingCompliance": "Chargement de la conformité...",
+    "loadError": "Échec du chargement des détails du compte",
+    "goToMyAccounts": "Aller à mes comptes",
+    "allRulesCompliant": "Toutes les règles sont respectées",
+    "goodStanding": "Votre compte est conforme à toutes les règles du challenge",
+    "active": "Actif",
+    "phase1": "Phase 1",
+    "phase2": "Phase 2",
+    "funded": "Financé",
+    "failed": "Échoué",
+    "tradingStyleRules": "Règles de style de trading",
+    "newsTrading": "Trading sur les actualités",
+    "newsTradingDesc": "Le trading pendant les actualités à fort impact est autorisé",
+    "newsTradingDetails": "Vous pouvez trader pendant les annonces NFP, FOMC, etc.",
+    "weekendHolding": "Maintien le week-end",
+    "weekendHoldingDesc": "Les positions peuvent être conservées le week-end",
+    "weekendHoldingDetails": "Du vendredi à la clôture au lundi à l'ouverture sans pénalité",
+    "expertAdvisors": "Experts Advisors (EA)",
+    "expertAdvisorsDesc": "Le trading automatisé via EA est autorisé",
+    "expertAdvisorsDetails": "Les EA sont autorisés, mais les stratégies martingale et grid sont surveillées",
+    "hedging": "Couverture",
+    "hedgingDesc": "Les positions opposées sur le même instrument sont autorisées",
+    "hedgingDetails": "La couverture complète est autorisée sur tous les instruments",
+    "copyTrading": "Copy trading",
+    "copyTradingDesc": "La copie des transactions d'autres traders est interdite",
+    "copyTradingDetails": "Chaque trader doit exécuter sa propre stratégie",
+    "latencyArbitrage": "Arbitrage de latence",
+    "latencyArbitrageDesc": "Exploiter les retards de prix entre brokers est interdit",
+    "latencyArbitrageDetails": "Cela peut entraîner la désactivation du compte",
+    "complianceHistory": "Historique de conformité",
+    "last7Days": "7 derniers jours",
+    "dailyDrawdown": "Drawdown journalier",
+    "overallDrawdown": "Drawdown global",
+    "limit": "Limite",
+    "loadingHistory": "Chargement de l'historique...",
+    "noComplianceHistory": "Aucun historique de conformité",
+    "noComplianceHistoryDesc": "Commencez à trader pour voir l'historique ici",
+    "importantInformation": "Informations importantes",
+    "info1": "La perte journalière est calculée sur la base du solde de clôture du jour précédent",
+    "info2": "La perte globale est calculée sur la base du solde maximal du compte",
+    "info3": "Toute violation entraîne une disqualification immédiate",
+    "info4": "Les violations mineures sont surveillées mais ne provoquent pas une disqualification immédiate",
+    "info5": "Toutes les règles sont calculées en temps réel pendant les heures de marché"
+  },
+  "accountDetails": {
+    "title": "Détails du compte",
+    "subtitle": "Voir les informations détaillées du compte de trading",
+    "selectAccountDesc": "Sélectionnez un compte pour voir les détails",
+    "selectAccount": "Sélectionner un compte",
+    "loading": "Chargement des détails du compte...",
+    "noAccounts": "Aucun compte de trading",
+    "noAccountsDesc": "Achetez un challenge pour accéder aux détails et au tableau de bord",
+    "purchaseChallenge": "Acheter un challenge",
+    "account": "Compte",
+    "started": "Date de début",
+    "phase1": "Phase 1",
+    "phase2": "Phase 2",
+    "funded": "Financé",
+    "failed": "Échoué",
+    "phase1Completed": "Phase 1 terminée !",
+    "phase1CompletedDesc": "Félicitations ! Passez à la phase 2",
+    "proceedToPhase2": "Passer à la phase 2",
+    "accountSummary": "Résumé du compte",
+    "balance": "Solde",
+    "equity": "Équité",
+    "floatingPL": "P/L flottant",
+    "totalProfit": "Profit total",
+    "profitTarget": "Objectif de profit",
+    "dailyDrawdown": "Drawdown journalier",
+    "overallDrawdown": "Drawdown global",
+    "target": "Objectif",
+    "tradingDays": "Jours de trading",
+    "performanceStatistics": "Statistiques de performance",
+    "winRate": "Taux de réussite",
+    "avgRiskReward": "Risque/Rendement moyen",
+    "totalTrades": "Nombre total de transactions",
+    "profitFactor": "Facteur de profit",
+    "largestWin": "Gain maximal",
+    "largestLoss": "Perte maximale",
+    "avgLotSize": "Taille moyenne des lots",
+    "avgDuration": "Durée moyenne",
+    "tradeHistory": "Historique des transactions",
+    "noTradesFound": "Aucune transaction trouvée",
+    "refresh": "Actualiser",
+    "viewFullTradeHistory": "Voir tout l'historique",
+    "challengeProgress": "Progression du challenge",
+    "trackJourney": "Suivre le parcours",
+    "analytics": "Analyses",
+    "detailedStats": "Statistiques détaillées",
+    "tradingRules": "Règles de trading",
+    "viewAllRules": "Voir toutes les règles",
+    "time": "Heure",
+    "symbol": "Symbole",
+    "type": "Type",
+    "lots": "Lots",
+    "open": "Ouvert",
+    "close": "Fermé",
+    "pl": "P/L",
+    "status": "Statut",
+    "closed": "Fermé",
+    "buy": "Acheter",
+    "sell": "Vendre",
+    "minTradingDays": "Jours de trading minimum",
+    "days": "jours",
+    "newsTrading": "Trading sur les actualités",
+    "weekendHolding": "Maintien le week-end",
+    "compliant": "Conforme",
+    "allowed": "Autorisé",
+    "equityCurve": "Courbe d'équité",
+    "dailyPerformance": "Performance quotidienne",
+    "openPositions": {
+      "title": "Positions ouvertes",
+      "noPositions": "Aucune position ouverte",
+      "noPositionsDesc": "Les transactions en cours apparaîtront ici",
+      "lots": "Lots",
+      "stopLoss": "SL",
+      "takeProfit": "TP",
+      "pips": "pips"
+    },
+    "ruleCompliance": {
+      "title": "Conformité aux règles",
+      "violation": "Violation",
+      "violations": "Violations",
+      "warning": "Avertissement",
+      "warnings": "Avertissements",
+      "allClear": "Tout est conforme",
+      "profitTarget": "Objectif de profit",
+      "dailyDrawdown": "Drawdown journalier",
+      "overallDrawdown": "Drawdown global",
+      "minTradingDays": "Jours de trading minimum",
+      "newsTrading": "Trading sur les actualités",
+      "weekendHolding": "Maintien le week-end",
+      "expertAdvisors": "Experts Advisors",
+      "reachProfitTarget": "Atteignez l'objectif de profit pour réussir",
+      "maxDailyLoss": "Perte journalière maximale",
+      "maxTotalLoss": "Perte totale maximale",
+      "minRequiredDays": "Jours minimum requis",
+      "tradingDuringNews": "Trading pendant les actualités",
+      "holdingOverWeekend": "Maintien des positions le week-end",
+      "automatedTrading": "Trading automatisé autorisé",
+      "allowed": "Autorisé",
+      "notAllowed": "Non autorisé",
+      "limit": "Limite",
+      "violationDetected": "Violation détectée",
+      "violationMessage": "Votre compte a enfreint une ou plusieurs règles de trading. Veuillez vérifier votre activité"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Mises à jour de l’activité du compte",
+    "markAllAsRead": "Tout marquer comme lu",
+    "markAsRead": "Marquer comme lu",
+    "total": "Tout",
+    "unread": "Non lues",
+    "warnings": "Avertissements",
+    "violations": "Infractions",
+    "all": "Toutes",
+    "challenges": "Challenges",
+    "payouts": "Paiements",
+    "account": "Compte",
+    "noNotifications": "Aucune notification",
+    "noNewNotifications": "Aucune nouvelle notification",
+    "allCaughtUp": "Vous êtes à jour !",
+    "challenge": "Challenge",
+    "payout": "Retrait",
+    "system": "Système",
+    "notification": "Notification",
+    "notifications": "Notifications",
+    "titles": {
+      "drawdownWarning": "Avertissement de drawdown",
+      "payoutApproved": "Retrait approuvé",
+      "payoutRejected": "Retrait rejeté",
+      "payoutProcessed": "Retrait traité",
+      "phase1Completed": "Phase 1 validée !",
+      "phase2Completed": "Phase 2 validée !",
+      "accountViolation": "Infraction du compte",
+      "accountFailed": "Compte disqualifié",
+      "challengePurchased": "Challenge acheté",
+      "tradingDaysMilestone": "Jalon de jours de trading",
+      "newChallengeAvailable": "Nouveau challenge disponible",
+      "accountScalingApproved": "Augmentation du compte approuvée",
+      "accountScalingRejected": "Augmentation du compte rejetée",
+      "accountPaused": "Compte mis en pause",
+      "accountClosed": "Compte clôturé",
+      "accountResumed": "Compte réactivé"
+    },
+    "messages": {
+      "dailyDrawdownWarning": "Le drawdown journalier du compte #{{accountNumber}} a atteint {{dailyPercent}}%. La limite autorisée est de {{maxPercent}}%. Veuillez gérer votre risque.",
+      "overallDrawdownWarning": "Le drawdown global du compte #{{accountNumber}} a atteint {{overallPercent}}%. La limite autorisée est de {{maxPercent}}%. Veuillez gérer votre risque.",
+      "dailyDrawdownViolation": "Le drawdown journalier du compte #{{accountNumber}} a atteint {{dailyPercent}}%. La limite autorisée est de {{maxPercent}}%. Le trading sera verrouillé jusqu’à demain.",
+      "overallDrawdownViolation": "Le drawdown global du compte #{{accountNumber}} a atteint {{overallPercent}}%. La limite autorisée est de {{maxPercent}}%. Le challenge a été disqualifié.",
+      "payoutApproved": "Votre demande de retrait de ${{amount}} a été approuvée. Le virement sera effectué sous 24 à 48 heures.",
+      "payoutRejected": "Votre demande de retrait de ${{amount}} a été rejetée. Veuillez contacter le support pour plus de détails.",
+      "payoutProcessed": "Votre retrait de ${{amount}} a été traité et le virement a été effectué.",
+      "phase1Completed": "Félicitations ! Vous avez validé la phase 1 du challenge ${{accountSize}}. Continuons avec la phase 2.",
+      "phase2Completed": "Félicitations ! Vous avez validé la phase 2 du challenge ${{accountSize}}. Votre compte est désormais financé !",
+      "tradingDaysMilestoneMet": "Vous avez atteint {{tradingDays}} jours de trading sur le compte #{{accountNumber}}. Vous remplissez l’exigence minimale de jours de trading !",
+      "tradingDaysMilestone": "Vous avez atteint {{tradingDays}} jours de trading sur le compte #{{accountNumber}}. Excellent travail !",
+      "challengePurchased": "L’achat du challenge {{challengeName}} est terminé. Le compte de trading #{{accountNumber}} est disponible avec un solde initial de ${{startingBalance}}.",
+      "accountScalingApproved": "Votre demande d’augmentation pour le compte #{{accountNumber}} a été approuvée. Le solde est passé de ${{oldBalance}} à ${{newBalance}}.",
+      "accountScalingRejected": "Votre demande d’augmentation pour le compte #{{accountNumber}} a été rejetée. Veuillez contacter le support pour plus de détails.",
+      "newChallengeAvailable": "Découvrez le nouveau challenge {{challengeName}} ! Taille de compte {{accountSize}} sur {{platform}}. Commencez dès maintenant.",
+      "accountViolationGeneric": "Le compte #{{accountNumber}} a enfreint les règles de trading{{violationPercent}}",
+      "accountPaused": "Le compte de trading #{{accountNumber}} a été mis en pause. Le trading est temporairement suspendu.",
+      "accountClosed": "Le compte de trading #{{accountNumber}} a été clôturé.",
+      "accountResumed": "Le compte de trading #{{accountNumber}} a été réactivé. Le trading est maintenant actif."
+    }
+  },
+  "buyChallenge": {
+    "title": "Ajouter un nouveau challenge",
+    "subtitle": "Développez votre portefeuille de trading avec des challenges supplémentaires",
+    "purchaseSuccessful": "Achat réussi !",
+    "purchaseSuccessfulDesc": "Nous configurons votre compte challenge. Vous recevrez vos identifiants de connexion par e-mail sous 5 minutes.",
+    "orderSummary": "Récapitulatif de commande",
+    "challenge": "Challenge",
+    "platform": "Plateforme",
+    "amountPaid": "Montant payé",
+    "goToDashboard": "Aller au tableau de bord",
+    "chooseChallenge": "Choisir un challenge",
+    "selectPlatform": "Sélectionner une plateforme",
+    "payment": "Paiement",
+    "chooseYourChallenge": "Choisissez votre challenge",
+    "selectAccountSize": "Choisissez une taille de compte adaptée à votre style de trading",
+    "popular": "Populaire",
+    "accountSize": "Taille du compte",
+    "profitTarget": "Objectif de profit",
+    "drawdown": "Drawdown",
+    "profitSplit": "Partage des profits",
+    "continue": "Continuer",
+    "selectTradingPlatform": "Sélectionner la plateforme de trading",
+    "choosePlatform": "Choisissez la plateforme sur laquelle vous souhaitez trader",
+    "back": "Retour",
+    "completePurchase": "Finaliser l’achat",
+    "choosePaymentMethod": "Choisissez un mode de paiement pour finaliser le règlement",
+    "paymentMethod": "Mode de paiement",
+    "couponCode": "Code promo",
+    "enterCode": "Saisir le code",
+    "apply": "Appliquer",
+    "applied": "Appliqué",
+    "off": "OFF",
+    "couponApplied": "{{code}} appliqué - {{discount}}% de réduction !",
+    "subtotal": "Sous-total",
+    "discount": "Réduction",
+    "total": "Total",
+    "processing": "Traitement...",
+    "pay": "Payer",
+    "payAmount": "Payer ${{amount}}",
+    "secureEncryption": "Chiffrement SSL 256-bit sécurisé",
+    "platforms": {
+      "MT5": {
+        "name": "MetaTrader 5",
+        "desc": "Plateforme de trading populaire"
+      },
+      "MT4": {
+        "name": "MetaTrader 4",
+        "desc": "Plateforme de trading classique"
+      },
+      "cTrader": {
+        "name": "cTrader",
+        "desc": "Plateforme pour professionnels"
+      },
+      "DXTrade": {
+        "name": "DXTrade",
+        "desc": "Plateforme web"
+      }
+    },
+    "paymentMethods": {
+      "card": {
+        "name": "Carte de crédit/débit",
+        "desc": "Visa, Mastercard, Amex"
+      },
+      "crypto": {
+        "name": "Cryptomonnaie",
+        "desc": "BTC, ETH, USDT"
+      },
+      "paypal": {
+        "name": "PayPal",
+        "desc": "Payer avec PayPal"
+      }
+    }
+  },
+  "violationModal": {
+    "dailyLossTitle": "Limite de perte journalière atteinte",
+    "drawdownTitle": "Limite de perte maximale atteinte",
+    "description": "Votre compte a enfreint les règles du challenge",
+    "ruleLimit": "Limite de la règle",
+    "equityAtViolation": "Équité au moment de l’infraction",
+    "actionTaken": "Action effectuée",
+    "positionsClosed": "Toutes les positions ont été automatiquement clôturées",
+    "dailyLockedAction": "Le trading sera verrouillé jusqu’à demain",
+    "disqualifiedAction": "Le challenge a été disqualifié",
+    "understood": "Compris"
+  },
+  "violationAlert": {
+    "accountFailed": "Compte disqualifié",
+    "dailyDrawdownExceeded": "Limite de perte journalière dépassée",
+    "dailyDrawdownDescription": "La perte journalière a dépassé la limite autorisée de {{limit}}%",
+    "maximumDrawdownExceeded": "Limite de perte maximale dépassée",
+    "maximumDrawdownDescription": "La perte totale a dépassé la limite autorisée de {{limit}}%",
+    "maximumTradingDaysExceeded": "Nombre maximum de jours de trading dépassé",
+    "maximumTradingDaysDescription": "Vous avez dépassé le nombre maximum de jours de trading autorisés",
+    "valueAtViolation": "Valeur au moment de l’infraction",
+    "maximumAllowed": "Maximum autorisé",
+    "account": "Compte",
+    "finalBalance": "Solde final",
+    "tradingDays": "Jours de trading",
+    "days": "jours",
+    "startNewChallenge": "Démarrer un nouveau challenge",
+    "reviewTradingRules": "Revoir les règles de trading"
+  },
+  "terminal": {
+    "title": "Terminal de trading",
+    "selectAccount": "Sélectionner un compte",
+    "phase1": "Phase 1",
+    "phase2": "Phase 2",
+    "funded": "Financé",
+    "failed": "Échoué",
+    "phase1Badge": "Phase 1",
+    "phase2Badge": "Phase 2",
+    "fundedBadge": "Financé",
+    "failedBadge": "Échoué",
+    "connected": "Connecté",
+    "disconnected": "Déconnecté",
+    "tabs": {
+      "chart": "Graphique",
+      "trade": "Trader",
+      "watch": "Surveiller",
+      "watchlist": "Liste de surveillance",
+      "positions": "Positions",
+      "pending": "En attente",
+      "history": "Historique"
+    },
+    "tradeHistory": "Historique des transactions",
+    "modifyDialog": {
+      "title": "Modifier {{symbol}}",
+      "lotSize": "Taille du lot",
+      "enterTP": "Saisir le prix TP",
+      "enterSL": "Saisir le prix SL",
+      "saveChanges": "Enregistrer les modifications",
+      "saving": "Enregistrement..."
+    },
+    "noPendingOrders": "Aucun ordre en attente",
+    "cancel": "Annuler",
+    "noClosedTrades": "Aucune transaction clôturée pour le moment",
+    "lots": "Lots",
+    "lot": "Lot",
+    "drawdownWarning": {
+      "title": "Avertissement de perte",
+      "details": "Envisagez de réduire la taille des positions ou de clôturer certaines transactions pour protéger votre compte."
+    },
+    "violation": {
+      "title": "Challenge disqualifié",
+      "message": "La limite de perte maximale a été dépassée"
+    },
+    "accountFailed": {
+      "title": "Compte disqualifié - Trading désactivé",
+      "resetDemo": "Réinitialiser la démo",
+      "message": "Le compte a été disqualifié et le trading a été désactivé"
+    },
+    "tradeBlocked": "Le trading est bloqué",
+    "invalidTrade": "Ordre invalide",
+    "missingFields": "Informations de l’ordre manquantes",
+    "noAccount": "Aucun compte sélectionné",
+    "selectAccountTitle": "Sélectionner un compte",
+    "selectAccountMessage": "Sélectionnez un compte de trading dans la liste ci-dessus pour voir les détails",
+    "tradeExecuted": "Ordre exécuté",
+    "orderPlaced": "Ordre placé",
+    "orderCancelled": "Ordre annulé",
+    "tradeFailed": "Échec de l’ordre",
+    "saveError": "Impossible d’enregistrer l’ordre sur le serveur",
+    "positionClosed": "Position clôturée",
+    "stopLossHit": "Stop loss atteint",
+    "takeProfitHit": "Take profit atteint",
+    "closedAt": "Prix de clôture",
+    "closeFailed": "Échec de la clôture de la position",
+    "updateError": "Impossible de mettre à jour l’ordre sur le serveur",
+    "accountStatusBlocked": "Le trading n’est pas autorisé car le statut du compte est {{status}}",
+    "invalidLotSize": "Taille de lot invalide. Veuillez saisir un nombre positif",
+    "duplicateTrade": "Ordre en double",
+    "duplicateTradeMessage": "Un ordre similaire a été exécuté récemment. Veuillez patienter",
+    "accountNotFound": "Compte de trading introuvable",
+    "invalidTradeData": "Données de trading invalides. Veuillez vérifier vos saisies",
+    "tradeNotAllowed": "Le trading n’est pas autorisé sur ce compte",
+    "serverError": "Erreur serveur. Veuillez réessayer",
+    "networkOffline": "Pas de connexion Internet. Vérifiez votre réseau",
+    "networkError": "Erreur réseau. Vérifiez la connexion et réessayez",
+    "tradeNotFound": "Ordre introuvable. Il a peut-être été supprimé",
+    "invalidCloseData": "Données invalides pour clôturer l’ordre",
+    "tradeAlreadyClosed": "Cet ordre est déjà clôturé",
+    "tradeInProgress": "Traitement de l’ordre en cours. Veuillez patienter",
+    "dailyLossLimitReached": "Limite de perte journalière atteinte. Le trading sera verrouillé jusqu’à demain",
+    "dailyLocked": "Limite de perte journalière atteinte",
+    "dailyLockedMessage": "Le compte a été verrouillé jusqu’à demain car la limite de perte journalière a été dépassée",
+    "disqualified": "Disqualifié",
+    "disqualifiedMessage": "Le compte a été disqualifié car la limite de perte maximale a été dépassée",
+    "challengeDisqualified": "Le challenge est disqualifié. Vous ne pouvez plus trader",
+    "modificationFailed": "Échec de la modification",
+    "orderCancelledSuccess": "Annulation de l’ordre en attente réussie",
+    "orderFailed": "Échec de l’ordre",
+    "orderExecutionFailed": "Échec de l’exécution de l’ordre",
+    "cancelFailed": "Échec de l’annulation",
+    "pendingOrderDescription": "Ordre à cours limité placé : {{type}} {{symbol}}",
+    "tradingPanel": {
+      "newOrder": "Nouvel ordre",
+      "buyLong": "Acheter",
+      "sellShort": "Vendre",
+      "long": "Long",
+      "short": "Short",
+      "price": "Prix",
+      "market": "Marché",
+      "leaveEmpty": "Laissez vide pour un ordre au marché",
+      "amount": "Quantité",
+      "takeProfit": "Take profit",
+      "stopLoss": "Stop loss",
+      "lot": "lot",
+      "optional": "Optionnel",
+      "orderValue": "Valeur de l’ordre",
+      "margin": "Marge",
+      "leverage": "Levier",
+      "placeBuyOrder": "Placer un ordre d’achat",
+      "placeSellOrder": "Placer un ordre de vente",
+      "bid": "Bid",
+      "ask": "Ask",
+      "spread": "Spread",
+      "limit": "Limite"
+    },
+    "chart": {
+      "lastUpdate": "Dernière mise à jour",
+      "candles": "Bougies",
+      "tf": "TF",
+      "loadingData": "Chargement des données du graphique...",
+      "updating": "Mise à jour..."
+    },
+    "loadingAccounts": "Chargement des comptes...",
+    "watchlist": {
+      "live": "En direct",
+      "offline": "Hors ligne",
+      "search": "Rechercher...",
+      "all": "Tous",
+      "favorites": "★",
+      "forex": "Forex",
+      "crypto": "Crypto",
+      "symbol": "Symbole",
+      "bid": "Bid",
+      "ask": "Ask",
+      "chg": "Var%",
+      "updated": "Mis à jour",
+      "retry": "Réessayer"
+    },
+    "positions": {
+      "title": "Positions ouvertes",
+      "noPositions": "Aucune position ouverte",
+      "noPositionsDesc": "Elles apparaîtront ici lorsque vous commencerez à trader",
+      "modifySLTP": "Modifier SL/TP",
+      "closePosition": "Clôturer la position",
+      "entry": "Entrée",
+      "current": "Actuel",
+      "closeAt": "Prix de clôture",
+      "pips": "pips",
+      "buy": "Acheter",
+      "sell": "Vendre"
+    },
+    "history": {
+      "filterBySymbol": "Filtrer par symbole...",
+      "allTrades": "Toutes les transactions",
+      "profitOnly": "Profits uniquement",
+      "lossOnly": "Pertes uniquement",
+      "allTime": "Tout",
+      "today": "Aujourd’hui",
+      "thisWeek": "Cette semaine",
+      "thisMonth": "Ce mois-ci",
+      "totalPL": "P/L total",
+      "winRate": "Taux de réussite",
+      "wins": "Gagnées",
+      "losses": "Perdues",
+      "noTradesMatch": "Aucune transaction ne correspond aux critères",
+      "entry": "Entrée",
+      "exit": "Sortie",
+      "autoClosed": "Clôture automatique",
+      "breach": "Infraction",
+      "breachPnL": "PnL au moment de l’infraction (au plafond)"
+    },
+    "accountMetrics": {
+      "balance": "Solde",
+      "equity": "Équité",
+      "margin": "Marge",
+      "freeMargin": "Marge libre",
+      "marginLevel": "Niveau de marge",
+      "floatingPnL": "P/L flottant",
+      "profitPercent": "Profit %",
+      "dailyDrawdown": "Drawdown journalier",
+      "overallDrawdown": "Drawdown global",
+      "used": "Utilisé",
+      "free": "Libre",
+      "marginUsed": "Marge utilisée",
+      "tradingDays": "Jours de trading",
+      "phase": "Phase",
+      "loss": "Perte",
+      "challengeActive": "Challenge en cours",
+      "workingTowardsPhase1": "En cours vers la phase 1",
+      "workingTowardsPhase2": "En cours vers la phase 2",
+      "phase1Complete": "Phase 1 terminée",
+      "readyForPhase2": "Prêt pour la phase 2",
+      "fundedAccount": "Compte financé",
+      "challengeCompleted": "Félicitations ! Challenge terminé",
+      "phaseProgression": "Progression des phases",
+      "completePhase1": "Terminer la phase 1",
+      "completePhase2": "Terminer la phase 2",
+      "profit": "Profit",
+      "days": "jours",
+      "phase1": "Phase 1",
+      "phase2": "Phase 2",
+      "funded": "Financé",
+      "dailyLimitViolated": "Limite journalière violée (verrouillé)",
+      "challengeFailed": "Challenge disqualifié / échoué",
+      "accountLockedUntilTomorrow": "Le compte est verrouillé jusqu’à demain suite au dépassement de la limite de perte journalière",
+      "accountViolatedRules": "Le compte a enfreint les règles du challenge",
+      "daysRemaining_one": "Il reste {{count}} jour",
+      "daysRemaining_other": "Il reste {{count}} jours"
+    }
+  },
+  "nav": {
+    "home": "Accueil",
+    "challenges": "Challenges",
+    "howItWorks": "Comment ça marche",
+    "scaling": "Scaling",
+    "rules": "Règles",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "login": "Connexion",
+    "getStarted": "Commencer",
+    "dashboard": "Tableau de bord",
+    "tradingTerminal": "Terminal de trading",
+    "buyChallenge": "Acheter un challenge",
+    "myAccounts": "Mes comptes",
+    "accountDetails": "Détails du compte",
+    "challengeProgress": "Progression du challenge",
+    "ruleCompliance": "Conformité aux règles",
+    "tradeHistory": "Historique des transactions",
+    "analytics": "Analyses",
+    "payouts": "Paiements",
+    "notifications": "Notifications",
+    "profile": "Profil",
+    "support": "Support",
+    "overview": "Aperçu",
+    "users": "Utilisateurs",
+    "accounts": "Comptes",
+    "riskMonitor": "Surveillance des risques",
+    "brokerServers": "Serveurs broker",
+    "payments": "Paiements",
+    "violations": "Infractions",
+    "settings": "Paramètres",
+    "website": "Site web",
+    "logout": "Déconnexion",
+    "user": "Utilisateur",
+    "adminPanel": "Panneau d’administration"
+  },
+  "status": {
+    "active": "Actif",
+    "ACTIVE": "Actif",
+    "passed": "Réussi",
+    "failed": "Échoué",
+    "suspended": "Suspendu",
+    "funded": "Financé",
+    "pending": "En attente",
+    "approved": "Approuvé",
+    "rejected": "Rejeté",
+    "paid": "Payé",
+    "completed": "Terminé",
+    "refunded": "Remboursé",
+    "open": "Ouvert",
+    "in_progress": "En cours",
+    "inprogress": "En cours",
+    "resolved": "Résolu",
+    "closed": "Fermé",
+    "CLOSED": "Fermé",
+    "DAILY_LOCKED": "Verrouillé (journalier)",
+    "DISQUALIFIED": "Disqualifié",
+    "phase1": "Phase 1",
+    "phase2": "Phase 2",
+    "paused": "En pause",
+    "daily_locked": "Verrouillé (journalier)",
+    "dailylocked": "Verrouillé (journalier)",
+    "Dailylocked": "Verrouillé (journalier)",
+    "disqualified": "Disqualifié"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Tableau de bord administrateur",
+      "subtitle": "Aperçu des performances et de l’activité de la plateforme",
+      "stats": {
+        "totalTraders": "Nombre total de traders",
+        "activeChallenges": "Challenges en cours",
+        "revenue": "Revenus",
+        "payouts": "Paiements",
+        "fundedAccounts": "Comptes financés",
+        "violationsToday": "Infractions aujourd’hui",
+        "changeThisMonth": "Ce mois-ci +{{percent}}%"
+      },
+      "chart": {
+        "title": "Revenus et paiements (30 derniers jours)",
+        "revenue": "Revenus",
+        "payouts": "Paiements",
+        "tooltip": {
+          "date": "Date",
+          "revenue": "Revenus",
+          "payout": "Paiement"
+        }
+      },
+      "recentAccounts": {
+        "title": "Comptes récents"
+      },
+      "recentViolations": {
+        "title": "Infractions récentes"
+      },
+      "viewAll": "Voir tout",
+      "noDataFound": "Aucune donnée trouvée",
+      "table": {
+        "account": "Compte",
+        "platform": "Plateforme",
+        "phase": "Phase",
+        "status": "Statut",
+        "created": "Créé le",
+        "type": "Type",
+        "description": "Description",
+        "time": "Heure"
+      },
+      "quickActions": {
+        "manageUsers": "Gérer les utilisateurs",
+        "manageChallenges": "Gérer les challenges",
+        "reviewPayouts": "Vérifier les paiements",
+        "platformSettings": "Paramètres de la plateforme"
+      },
+      "violations": {
+        "daily_drawdown": {
+          "type": "Perte journalière",
+          "description": "La perte journalière a dépassé 5 %"
+        },
+        "overall_drawdown": {
+          "type": "Perte totale",
+          "description": "La perte totale a dépassé 10 %"
+        },
+        "max_trading_days": {
+          "type": "Jours de trading max",
+          "description": "La période de trading est terminée"
+        },
+        "unknown": {
+          "type": "Inconnu",
+          "description": "Infraction inconnue"
+        }
+      }
+    },
+    "users": {
+      "title": "Gestion des utilisateurs",
+      "subtitle": "Afficher et gérer tous les utilisateurs de la plateforme",
+      "stats": {
+        "totalUsers": "Nombre total d’utilisateurs",
+        "traders": "Traders",
+        "admins": "Administrateurs",
+        "newThisWeek": "Nouveaux cette semaine"
+      },
+      "searchPlaceholder": "Rechercher par nom ou e-mail...",
+      "filter": {
+        "role": "Rôle",
+        "allRoles": "Tous les rôles",
+        "traders": "Traders",
+        "admins": "Administrateurs"
+      },
+      "table": {
+        "user": "Utilisateur",
+        "role": "Rôle",
+        "joined": "Inscrit le",
+        "actions": "Actions"
+      },
+      "roles": {
+        "user": "Trader",
+        "admin": "Administrateur"
+      },
+      "actions": {
+        "viewDetails": "Voir les détails",
+        "sendEmail": "Envoyer un e-mail",
+        "makeAdmin": "Rendre administrateur",
+        "makeTrader": "Rendre trader"
+      },
+      "dialog": {
+        "title": "Détails de l’utilisateur",
+        "userId": "ID utilisateur",
+        "role": "Rôle",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "phone": "Téléphone",
+        "country": "Pays",
+        "joined": "Inscrit le",
+        "noDetails": "Impossible de charger les détails de l’utilisateur",
+        "error": "Une erreur est survenue lors du chargement des détails de l’utilisateur"
+      },
+      "emptyMessage": "Aucun utilisateur trouvé"
+    },
+    "accounts": {
+      "title": "Gestion des comptes",
+      "subtitle": "Afficher et gérer tous les comptes de trading",
+      "stats": {
+        "totalAccounts": "Nombre total de comptes",
+        "active": "En cours",
+        "passed": "Réussi",
+        "funded": "Financé",
+        "failed": "Échoué"
+      },
+      "searchPlaceholder": "Rechercher par numéro de compte ou e-mail...",
+      "filter": {
+        "status": "Statut",
+        "phase": "Phase",
+        "allStatus": "Tous les statuts",
+        "allPhases": "Toutes les phases",
+        "active": "En cours",
+        "passed": "Réussi",
+        "funded": "Financé",
+        "failed": "Échoué",
+        "suspended": "Suspendu",
+        "phase1": "Phase 1",
+        "phase2": "Phase 2"
+      },
+      "table": {
+        "account": "Compte",
+        "platform": "Plateforme",
+        "balance": "Solde",
+        "phase": "Phase",
+        "status": "Statut",
+        "created": "Créé le",
+        "actions": "Actions"
+      },
+      "actions": {
+        "viewDetails": "Voir les détails",
+        "forcePass": "Forcer la réussite",
+        "forceFail": "Forcer l’échec",
+        "resetAccount": "Réinitialiser le compte",
+        "moveToFunded": "Passer en financé"
+      },
+      "dialog": {
+        "title": "Détails du compte",
+        "accountId": "ID du compte",
+        "brokerLogin": "Identifiant broker",
+        "trader": "Trader",
+        "platform": "Plateforme",
+        "challenge": "Challenge",
+        "phase": "Phase",
+        "status": "Statut",
+        "created": "Créé le",
+        "initialBalance": "Solde initial",
+        "currentBalance": "Solde actuel",
+        "equity": "Équité",
+        "profit": "P/L",
+        "totalTrades": "Nombre total de transactions",
+        "violations": "Infractions",
+        "phaseTransitions": "Transitions de phase",
+        "recentViolations": "Infractions récentes",
+        "error": "Erreur de chargement des détails du compte",
+        "noDetails": "Aucun détail de compte disponible"
+      },
+      "emptyMessage": "Aucun compte trouvé"
+    },
+    "payouts": {
+      "title": "Gestion des paiements",
+      "subtitle": "Vérifier et traiter les demandes de retrait des traders",
+      "stats": {
+        "pending": "En attente",
+        "approved": "Approuvé",
+        "totalPaid": "Total payé",
+        "pendingRequests": "Demandes en attente"
+      },
+      "searchPlaceholder": "Rechercher par e-mail du trader...",
+      "filter": {
+        "status": "Statut",
+        "allStatus": "Tous les statuts",
+        "pending": "En attente",
+        "approved": "Approuvé",
+        "paid": "Payé",
+        "rejected": "Rejeté"
+      },
+      "table": {
+        "trader": "Trader",
+        "amount": "Montant",
+        "method": "Méthode",
+        "status": "Statut",
+        "requested": "Demandé le",
+        "actions": "Actions"
+      },
+      "actions": {
+        "markAsPaid": "Marquer comme payé",
+        "paid": "Payé",
+        "rejected": "Rejeté",
+        "rejecting": "Rejet en cours..."
+      },
+      "emptyMessage": "Aucune demande de retrait trouvée",
+      "dialog": {
+        "rejectTitle": "Rejeter une demande de retrait",
+        "rejectMessage": "Rejeter le retrait de {{amount}} pour {{trader}}",
+        "rejectReasonPlaceholder": "Raison du rejet...",
+        "cancel": "Annuler",
+        "rejectPayout": "Rejeter le retrait"
+      }
+    },
+    "payments": {
+      "title": "Gestion des paiements",
+      "subtitle": "Afficher et gérer tous les paiements de challenges",
+      "stats": {
+        "totalRevenue": "Revenus totaux",
+        "completed": "Terminé",
+        "pending": "En attente",
+        "refunded": "Remboursé",
+        "changeThisMonth": "Ce mois-ci +{{percent}}%"
+      },
+      "searchPlaceholder": "Rechercher par e-mail ou ID de transaction...",
+      "filter": {
+        "status": "Statut",
+        "allStatus": "Tous les statuts",
+        "completed": "Terminé",
+        "pending": "En attente",
+        "failed": "Échoué",
+        "refunded": "Remboursé"
+      },
+      "table": {
+        "trader": "Trader",
+        "amount": "Montant",
+        "method": "Méthode",
+        "transactionId": "ID de transaction",
+        "status": "Statut",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "methods": {
+        "stripe": "Carte de crédit/débit",
+        "internal": "Interne",
+        "unknown": "Inconnu"
+      },
+      "actions": {
+        "refund": "Rembourser",
+        "refunded": "Remboursé"
+      },
+      "emptyMessage": "Aucun paiement trouvé",
+      "refundTitle": "Remboursement",
+      "refundConfirm": "Rembourser ce paiement ?",
+      "refundReason": "Raison du remboursement (optionnel)",
+      "refundReasonPlaceholder": "Saisir la raison du remboursement...",
+      "cancel": "Annuler",
+      "confirmRefund": "Confirmer le remboursement",
+      "refunding": "Traitement..."
+    },
+    "violations": {
+      "title": "Infractions aux règles",
+      "subtitle": "Vérifier et suivre les infractions aux règles de trading",
+      "stats": {
+        "totalViolations": "Nombre total d’infractions",
+        "fatalViolations": "Infractions graves",
+        "warnings": "Avertissements",
+        "today": "Aujourd’hui"
+      },
+      "searchPlaceholder": "Rechercher par compte ou e-mail...",
+      "filter": {
+        "violationType": "Type d’infraction",
+        "allTypes": "Tous les types",
+        "dailyDrawdown": "Perte journalière",
+        "overallDrawdown": "Perte totale",
+        "maxTradingDays": "Jours de trading max",
+        "newsTrading": "Trading sur les actualités",
+        "weekendHolding": "Maintien le week-end",
+        "restrictedInstrument": "Instrument restreint",
+        "lotSize": "Taille de lot",
+        "eaDetected": "EA détecté",
+        "consistency": "Cohérence",
+        "ruleBreak": "Infraction aux règles"
+      },
+      "table": {
+        "account": "Compte",
+        "type": "Type",
+        "description": "Description",
+        "value": "Valeur",
+        "fatal": "Grave",
+        "time": "Heure"
+      },
+      "types": {
+        "dailyDrawdown": "Perte journalière",
+        "overallDrawdown": "Perte totale",
+        "maxTradingDays": "Jours de trading max",
+        "newsTrading": "Trading sur les actualités",
+        "weekendHolding": "Maintien le week-end",
+        "restrictedInstrument": "Instrument restreint",
+        "lotSize": "Taille de lot",
+        "eaDetected": "EA détecté"
+      },
+      "severity": {
+        "fatal": "Grave",
+        "warning": "Avertissement"
+      },
+      "descriptions": {
+        "daily_drawdown": "La perte journalière a dépassé {{threshold}}%",
+        "overall_drawdown": "La perte totale a dépassé {{threshold}}%",
+        "max_trading_days": "La période maximale de trading est terminée",
+        "news_trading": "Trading pendant une période d’actualités restreinte",
+        "weekend_holding": "Position maintenue pendant le week-end",
+        "restricted_instrument": "Trading sur un instrument restreint",
+        "lot_size": "La limite de taille de lot a été dépassée",
+        "ea_detected": "Expert Advisor détecté"
+      },
+      "emptyMessage": "Aucune infraction trouvée"
+    },
+    "coupons": {
+      "title": "Gestion des coupons",
+      "subtitle": "Créer et gérer des coupons de réduction",
+      "createCoupon": "Créer un coupon",
+      "editCoupon": "Modifier le coupon",
+      "createNewCoupon": "Créer un nouveau coupon",
+      "stats": {
+        "totalCoupons": "Nombre total de coupons",
+        "active": "Actif",
+        "totalUses": "Utilisations totales",
+        "expired": "Expiré"
+      },
+      "form": {
+        "couponCode": "Code promo",
+        "generate": "Générer",
+        "discountType": "Type de réduction",
+        "percentage": "Pourcentage",
+        "fixedAmount": "Montant fixe",
+        "discountValue": "Valeur de la réduction",
+        "maxUses": "Nombre d’utilisations max (optionnel)",
+        "validUntil": "Valable jusqu’au (optionnel)",
+        "active": "Actif",
+        "saving": "Enregistrement...",
+        "updateCoupon": "Mettre à jour le coupon",
+        "createCoupon": "Créer le coupon"
+      },
+      "table": {
+        "code": "Code",
+        "discount": "Réduction",
+        "usage": "Utilisation",
+        "validUntil": "Valable jusqu’au",
+        "status": "Statut",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Actif",
+        "inactive": "Inactif"
+      },
+      "noExpiry": "Sans expiration",
+      "emptyMessage": "Aucun coupon trouvé"
+    },
+    "support": {
+      "title": "Tickets de support",
+      "subtitle": "Gérer et répondre aux demandes de support",
+      "stats": {
+        "openTickets": "Tickets ouverts",
+        "inProgress": "En cours",
+        "resolved": "Résolus",
+        "today": "Aujourd’hui",
+        "avgResponse": "Temps de réponse moyen"
+      },
+      "searchPlaceholder": "Rechercher par e-mail ou sujet...",
+      "filter": {
+        "status": "Statut",
+        "allStatus": "Tous les statuts",
+        "open": "Ouvert",
+        "inProgress": "En cours",
+        "resolved": "Résolu",
+        "closed": "Fermé"
+      },
+      "table": {
+        "ticket": "Ticket",
+        "category": "Catégorie",
+        "priority": "Priorité",
+        "status": "Statut",
+        "created": "Créé le",
+        "actions": "Actions"
+      },
+      "priority": {
+        "low": "Faible",
+        "medium": "Moyenne",
+        "high": "Élevée"
+      },
+      "category": {
+        "technical": "Technique",
+        "payout": "Retrait",
+        "account": "Compte",
+        "payment": "Paiement",
+        "other": "Autre"
+      },
+      "actions": {
+        "take": "Prendre en charge",
+        "resolve": "Résoudre"
+      },
+      "dialog": {
+        "from": "De",
+        "writeResponse": "Écrivez votre réponse...",
+        "close": "Fermer",
+        "sending": "Envoi...",
+        "sendAndResolve": "Envoyer et résoudre"
+      },
+      "emptyMessage": "Aucun ticket trouvé",
+      "subjects": {
+        "unableToLoginMT5": "Impossible de se connecter à MT5",
+        "payoutRequestTakingTooLong": "La demande de retrait prend trop de temps",
+        "questionAboutScalingPlan": "Question sur le plan de scaling",
+        "refundRequest": "Demande de remboursement",
+        "challengeRulesClarification": "Clarification des règles du challenge"
+      }
+    },
+    "settings": {
+      "title": "Paramètres de la plateforme",
+      "subtitle": "Configurer les paramètres et les intégrations",
+      "saveChanges": "Enregistrer les modifications",
+      "settingsSaved": "Paramètres enregistrés",
+      "tabs": {
+        "general": "Général",
+        "branding": "Branding",
+        "payments": "Paiements",
+        "integrations": "Intégrations",
+        "email": "E-mail"
+      },
+      "general": {
+        "title": "Paramètres généraux",
+        "platformName": "Nom de la plateforme",
+        "supportEmail": "E-mail du support",
+        "maintenanceMode": "Mode maintenance",
+        "maintenanceModeDesc": "Désactiver temporairement l’accès à la plateforme"
+      },
+      "branding": {
+        "title": "Paramètres de marque",
+        "primaryColor": "Couleur principale",
+        "secondaryColor": "Couleur secondaire",
+        "logoUrl": "Logo {{url}}",
+        "logoUrlPlaceholder": "https://example.com/logo.png"
+      },
+      "payments": {
+        "title": "Paramètres de paiement",
+        "stripe": "Stripe",
+        "stripeDesc": "Accepter les paiements par carte bancaire",
+        "stripeApiKey": "Clé API Stripe",
+        "stripeApiKeyPlaceholder": "sk_live_...",
+        "paypal": "PayPal",
+        "paypalDesc": "Accepter les paiements via PayPal",
+        "cryptocurrency": "Cryptomonnaie",
+        "cryptocurrencyDesc": "Accepter les paiements en BTC, ETH, USDT"
+      },
+      "integrations": {
+        "title": "Intégrations des plateformes de trading",
+        "mt4": "MetaTrader 4",
+        "mt4Desc": "Plateforme de trading MT4 classique",
+        "mt5": "MetaTrader 5",
+        "mt5Desc": "Plateforme de trading MT5 avancée",
+        "ctrader": "cTrader",
+        "ctraderDesc": "Plateforme cTrader pour professionnels",
+        "dxtrade": "DXTrade",
+        "dxtradeDesc": "Plateforme de trading DXTrade",
+        "note": "Remarque : pour des raisons de sécurité, les clés API des plateformes de trading doivent être configurées séparément"
+      },
+      "email": {
+        "title": "Modèles d’e-mails",
+        "welcomeEmail": "E-mail de bienvenue",
+        "welcomeEmailDesc": "Envoyé lors de l’inscription d’un nouvel utilisateur",
+        "challengePurchase": "Achat de challenge",
+        "challengePurchaseDesc": "Envoyé lors de l’achat d’un challenge",
+        "accountCredentials": "Identifiants du compte",
+        "accountCredentialsDesc": "Envoyé avec les détails du compte de trading",
+        "phasePassed": "Phase validée",
+        "phasePassedDesc": "Envoyé lorsqu’un trader valide une phase",
+        "accountFailed": "Compte disqualifié",
+        "accountFailedDesc": "Envoyé lorsqu’un compte est disqualifié",
+        "payoutApproved": "Retrait approuvé",
+        "payoutApprovedDesc": "Envoyé lorsqu’un retrait est approuvé",
+        "editTemplate": "Modifier le modèle"
+      }
+    },
+    "riskMonitor": {
+      "title": "Surveillance des risques",
+      "subtitle": "Surveiller les risques des comptes en temps réel",
+      "refresh": "Actualiser",
+      "riskLevels": {
+        "critical": "Risque critique",
+        "high": "Risque élevé",
+        "medium": "Risque moyen",
+        "low": "Risque faible"
+      },
+      "riskBadges": {
+        "critical": "Critique",
+        "high": "Élevé",
+        "medium": "Moyen",
+        "low": "Faible"
+      },
+      "searchPlaceholder": "Rechercher par numéro de compte ou trader...",
+      "table": {
+        "account": "Compte",
+        "balance": "Solde",
+        "equity": "Équité",
+        "dailyDD": "DD journalier",
+        "maxDD": "DD max",
+        "riskLevel": "Niveau de risque",
+        "actions": "Actions"
+      },
+      "confirmations": {
+        "emergencyClose": "Clôturer toutes les positions de ce compte ?",
+        "lockAccount": "Verrouiller ce compte ?"
+      },
+      "recentViolations": {
+        "title": "Infractions récentes",
+        "noViolations": "Aucune infraction récente",
+        "account": "Compte"
+      }
+    },
+    "brokerServers": {
+      "title": "Serveurs broker",
+      "subtitle": "Gérer les connexions aux plateformes de trading",
+      "addServer": "Ajouter un serveur",
+      "adding": "Ajout...",
+      "dialog": {
+        "title": "Ajouter un serveur broker",
+        "serverName": "Nom du serveur",
+        "serverNamePlaceholder": "Ex : Props Capital MT5 Demo",
+        "platform": "Plateforme",
+        "serverAddress": "Adresse du serveur",
+        "serverAddressPlaceholder": "broker.server.com",
+        "port": "Port",
+        "managerLogin": "Identifiant manager",
+        "managerPassword": "Mot de passe manager",
+        "apiKey": "Clé API / Client ID",
+        "apiSecret": "Secret API",
+        "demoServer": "Serveur démo"
+      },
+      "platforms": {
+        "mt4": "MetaTrader 4",
+        "mt5": "MetaTrader 5",
+        "ctrader": "cTrader",
+        "dxtrade": "DXTrade"
+      },
+      "status": {
+        "connected": "Connecté",
+        "error": "Erreur",
+        "notConnected": "Non connecté"
+      },
+      "badges": {
+        "demo": "Démo"
+      },
+      "card": {
+        "platform": "Plateforme",
+        "timezone": "Fuseau horaire",
+        "lastSync": "Dernière synchronisation"
+      },
+      "actions": {
+        "test": "Tester"
+      },
+      "empty": {
+        "title": "Aucun serveur broker",
+        "description": "Ajoutez votre premier serveur broker pour commencer à créer des comptes de trading"
+      }
+    },
+    "scaling": {
+      "title": "Gestion du scaling",
+      "subtitle": "Vérifier et traiter les demandes d’augmentation de compte",
+      "summary": {
+        "pendingReview": "En attente d’examen",
+        "readyToProcess": "Prêt à traiter",
+        "completed": "Terminé"
+      },
+      "tabs": {
+        "pending": "En attente",
+        "approved": "Approuvé",
+        "completed": "Terminé",
+        "all": "Tous"
+      },
+      "table": {
+        "trader": "Trader",
+        "currentToNew": "Actuel → Nouveau",
+        "profitSplit": "Partage des profits",
+        "profitAchieved": "Profit atteint",
+        "payoutCycles": "Cycles de paiement",
+        "status": "Statut",
+        "actions": "Actions",
+        "level": "Niveau {{current}} → {{new}}"
+      },
+      "status": {
+        "pending": "En attente",
+        "approved": "Approuvé",
+        "completed": "Terminé",
+        "rejected": "Rejeté"
+      },
+      "actions": {
+        "approve": "Approuver",
+        "reject": "Rejeter",
+        "process": "Traiter",
+        "processing": "Traitement...",
+        "approving": "Approbation...",
+        "rejecting": "Rejet..."
+      },
+      "emptyMessage": "Aucune demande d’augmentation trouvée",
+      "dialog": {
+        "approveTitle": "Approuver la demande d’augmentation",
+        "rejectTitle": "Rejeter la demande d’augmentation",
+        "currentSize": "Taille actuelle",
+        "newSize": "Nouvelle taille",
+        "newProfitSplit": "Nouveau partage des profits",
+        "notes": "Notes (optionnel)",
+        "notesPlaceholder": "Ajouter des notes...",
+        "cancel": "Annuler"
+      }
+    },
+    "challenges": {
+      "title": "Gestion des challenges",
+      "subtitle": "Créer et gérer les challenges de trading",
+      "createChallenge": "Créer un challenge",
+      "editChallenge": "Modifier le challenge",
+      "createNewChallenge": "Créer un nouveau challenge",
+      "updateChallenge": "Mettre à jour le challenge",
+      "edit": "Modifier",
+      "saving": "Enregistrement...",
+      "inactive": "Inactif",
+      "types": {
+        "one_phase": "1 phase",
+        "two_phase": "2 phases",
+        "instant_funding": "Financement instantané"
+      },
+      "form": {
+        "challengeName": "Nom du challenge",
+        "challengeType": "Type de challenge",
+        "onePhase": "1 phase",
+        "twoPhase": "2 phases",
+        "instantFunding": "Financement instantané",
+        "platform": "Plateforme",
+        "accountSize": "Taille du compte ($)",
+        "price": "Prix ($)",
+        "phase1ProfitTarget": "Objectif de profit phase 1 (%)",
+        "phase2ProfitTarget": "Objectif de profit phase 2 (%)",
+        "dailyDrawdown": "Perte journalière (%)",
+        "overallDrawdown": "Perte totale (%)",
+        "profitSplit": "Partage des profits (%)",
+        "minTradingDays": "Jours de trading minimum",
+        "minTradingDaysHint": "Nombre minimal de jours que le trader doit trader",
+        "maxTradingDays": "Jours de trading maximum",
+        "maxTradingDaysHint": "Le challenge se termine après X jours (laisser vide pour illimité)",
+        "tradingRules": "Règles de trading",
+        "newsTradingAllowed": "Autoriser le trading sur les actualités",
+        "weekendHolding": "Maintien le week-end",
+        "ea": "EA",
+        "bots": "Bots",
+        "eaBotsAllowed": "Autoriser {{ea}}/{{bots}}",
+        "active": "Actif"
+      },
+      "card": {
+        "accountSize": "Taille du compte",
+        "price": "Prix",
+        "profitTarget": "Objectif de profit",
+        "drawdown": "Perte",
+        "profitSplit": "Partage des profits"
+      },
+      "deleteConfirmTitle": "Supprimer le challenge",
+      "deleteConfirmMessage": "Supprimer \"{{name}}\" ? Cette action est irréversible",
+      "deleteConfirmWarning": "Seuls les challenges inactifs peuvent être supprimés",
+      "cancel": "Annuler",
+      "confirmDelete": "Supprimer le challenge",
+      "deleting": "Suppression...",
+      "deleteSuccess": "Challenge supprimé",
+      "deleteSuccessDesc": "Le challenge a été supprimé avec succès",
+      "deleteErrorTitle": "Impossible de supprimer le challenge",
+      "deleteErrorMessage": "Ce challenge ne peut pas être supprimé",
+      "deleteErrorDesc": "Il est lié à des comptes de trading existants",
+      "understand": "Compris"
+    }
+  },
+  "signIn": {
+    "title": "Bon retour",
+    "subtitle": "Connectez-vous à votre compte de trading",
+    "email": "Adresse e-mail",
+    "emailPlaceholder": "Saisissez votre adresse e-mail",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Saisissez votre mot de passe",
+    "rememberMe": "Rester connecté",
+    "forgotPassword": "Mot de passe oublié ?",
+    "signInButton": "Se connecter",
+    "noAccount": "Vous n’avez pas de compte ?",
+    "createAccount": "Créer un compte",
+    "demoCredentials": "Ex : demo@the-bluehaven.com / demo1234",
+    "secureTrading": "Trading sécurisé",
+    "fundsProtected": "Fonds protégés",
+    "securityDescription": "Tradez en toute confiance. Notre plateforme utilise une sécurité de niveau bancaire pour protéger votre compte et vos données de trading.",
+    "errors": {
+      "invalidCredentials": "Adresse e-mail ou mot de passe incorrect"
+    }
+  },
+  "signUp": {
+    "title": "Créer un compte",
+    "subtitle": "Commencez votre parcours de trading dès aujourd’hui",
+    "otpTitle": "Vérifier l’adresse e-mail",
+    "otpSubtitle": "Saisissez le code à 6 chiffres que nous vous avons envoyé",
+    "firstName": "Prénom",
+    "firstNamePlaceholder": "Jean",
+    "lastName": "Nom",
+    "lastNamePlaceholder": "Dupont",
+    "email": "Adresse e-mail",
+    "emailPlaceholder": "Saisissez votre adresse e-mail",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Créer un mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "confirmPasswordPlaceholder": "Saisissez à nouveau votre mot de passe",
+    "createAccountButton": "Créer un compte",
+    "otpSentTo": "Code de vérification envoyé à :",
+    "otpLabel": "Code de vérification",
+    "verifyOtpButton": "Vérifier et créer le compte",
+    "resendCode": "Renvoyer le code",
+    "resendIn": "Renvoyer dans {{seconds}} s",
+    "changeEmail": "Changer d’adresse e-mail",
+    "hasAccount": "Vous avez déjà un compte ?",
+    "signIn": "Se connecter",
+    "joinTraders": "Rejoignez des milliers de traders",
+    "startJourney": "Commencez votre parcours vers un compte financé",
+    "description": "Créez un compte pour accéder à un compte de trading professionnel financé. Tradez avec confiance et développez vos profits.",
+    "errors": {
+      "passwordsNotMatch": "Les mots de passe ne correspondent pas",
+      "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
+      "registrationFailed": "Échec de l’inscription. Veuillez réessayer",
+      "registrationSuccess": "Inscription réussie ! Veuillez vous connecter"
+    }
+  },
+  "faq": {
+    "helpCenter": "Centre d’aide",
+    "title": "Questions fréquentes",
+    "subtitle": "Trouvez des réponses aux questions courantes sur les challenges et notre plateforme",
+    "searchPlaceholder": "Rechercher une réponse...",
+    "questions": "Questions",
+    "stillHaveQuestions": "Vous avez encore des questions ?",
+    "supportDescription": "Notre équipe support est disponible 24h/24 et 7j/7",
+    "contactSupport": "Contacter le support",
+    "categories": {
+      "gettingStarted": {
+        "title": "Bien démarrer",
+        "faqs": {
+          "whatIsPropsCapital": {
+            "q": "Qu’est-ce que Props Capital ?",
+            "a": "Props Capital est une société de prop trading qui fournit aux traders des comptes financés pour trader avec notre capital. Une fois l’évaluation réussie, vous pouvez recevoir jusqu’à 90 % des profits. Lorsque vous tradez sur un compte financé, votre propre capital n’est pas exposé au risque."
+          },
+          "howToStartChallenge": {
+            "q": "Comment démarrer un challenge ?",
+            "a": "Sur la page des challenges, choisissez la taille de compte et le type d’évaluation, effectuez le paiement et vous recevrez vos identifiants de trading en quelques minutes. Dès réception, vous pouvez commencer à trader immédiatement."
+          },
+          "tradingPlatforms": {
+            "q": "Quelles plateformes de trading sont prises en charge ?",
+            "a": "Nous prenons en charge MetaTrader 4 (MT4), MetaTrader 5 (MT5), cTrader et DXTrade. Vous pouvez choisir votre plateforme lors de la configuration du compte."
+          },
+          "credentialsTiming": {
+            "q": "Sous combien de temps vais-je recevoir mes identifiants ?",
+            "a": "Les identifiants de trading sont généralement envoyés dans les 5 minutes suivant la confirmation du paiement. Vous recevrez un e-mail contenant le serveur, le numéro de compte et le mot de passe."
+          }
+        }
+      },
+      "tradingRules": {
+        "title": "Règles de trading",
+        "faqs": {
+          "profitTarget": {
+            "q": "Quel est l’objectif de profit ?",
+            "a": "Pour l’évaluation en 2 phases : la phase 1 exige 8 % de profit et la phase 2 exige 5 %. Pour l’évaluation en 1 phase, l’objectif est de 10 %. Le financement instantané n’a pas d’objectif de profit d’évaluation."
+          },
+          "drawdownRules": {
+            "q": "Quelles sont les règles de drawdown (perte) ?",
+            "a": "Le drawdown journalier est limité à 5 % du solde de départ de la journée. Le drawdown global est limité à 10 % du solde maximum atteint (trailing). Ce sont les seules limites de perte à respecter."
+          },
+          "timeLimit": {
+            "q": "Y a-t-il une limite de temps pour réussir le challenge ?",
+            "a": "Non. Il n’y a pas de limite de temps maximale. Vous pouvez prendre autant de temps que nécessaire pour atteindre l’objectif de profit. Cependant, au moins 4 jours de trading sont requis pour valider chaque phase."
+          },
+          "newsTrading": {
+            "q": "Puis-je trader pendant les annonces importantes ?",
+            "a": "Oui. Le trading sur les actualités est autorisé sur tous les challenges. Vous pouvez trader lors d’annonces à fort impact sans restrictions ni pénalités."
+          },
+          "weekendHolding": {
+            "q": "Puis-je conserver des positions pendant le week-end ?",
+            "a": "Oui. Vous pouvez conserver des positions pendant le week-end. Il n’y a aucune restriction sur les positions overnight ou week-end, quel que soit le type de challenge."
+          },
+          "expertAdvisors": {
+            "q": "Les EA (robots) sont-ils autorisés ?",
+            "a": "Oui. Vous pouvez utiliser des EA et des systèmes de trading automatisés. Cependant, il est interdit d’exploiter des failles de plateforme ou de pratiquer des méthodes comme l’arbitrage de latence ou le tick scalping."
+          }
+        }
+      },
+      "violations": {
+        "title": "Infractions et disqualification",
+        "faqs": {
+          "whatHappensIfViolate": {
+            "q": "Que se passe-t-il si j’enfreins une règle ?",
+            "a": "Si vous enfreignez une règle stricte (limite de perte journalière ou globale), le compte est automatiquement désactivé. Vous recevrez un e-mail détaillant l’infraction, puis vous pourrez acheter une réinitialisation ou démarrer un nouveau challenge."
+          },
+          "freeRetry": {
+            "q": "Puis-je réessayer gratuitement ?",
+            "a": "Oui ! Si vous atteignez 8 % de profit sur le challenge avant d’être disqualifié, vous êtes éligible à une nouvelle tentative gratuite. Vous pouvez recommencer sans frais supplémentaires."
+          },
+          "resetAccount": {
+            "q": "Puis-je réinitialiser mon compte ?",
+            "a": "Oui. Si vous échouez au challenge, vous pouvez acheter une réinitialisation à tarif réduit. Vous recommencez avec la même taille de compte. Le prix dépend de la taille du compte."
+          },
+          "tradingDay": {
+            "q": "Qu’est-ce qui compte comme un jour de trading ?",
+            "a": "Un jour de trading est un jour où vous avez au moins une transaction ouverte pendant 2 minutes ou plus. Un minimum de 4 jours de trading est requis pour valider chaque phase."
+          }
+        }
+      },
+      "payouts": {
+        "title": "Retraits et profits",
+        "faqs": {
+          "profitSplit": {
+            "q": "Comment fonctionne le partage des profits ?",
+            "a": "Le partage des profits commence à 80 % pour les petits comptes et peut augmenter jusqu’à 90 % avec des comptes plus grands ou via le programme de scaling. En prouvant votre régularité, votre part peut augmenter."
+          },
+          "payoutFrequency": {
+            "q": "À quelle fréquence puis-je demander un retrait ?",
+            "a": "Les retraits sont traités toutes les deux semaines. Si vous êtes en profit, vous pouvez demander un retrait tous les 14 jours. Le premier retrait est disponible 14 jours après l’obtention du compte financé."
+          },
+          "paymentMethods": {
+            "q": "Quels sont les modes de retrait disponibles ?",
+            "a": "Nous prenons en charge le virement bancaire, les cryptomonnaies (BTC, ETH, USDT), PayPal et Wise. Toutes les méthodes de retrait sont sans frais."
+          },
+          "minimumPayout": {
+            "q": "Y a-t-il un montant minimum de retrait ?",
+            "a": "Le montant minimum de retrait est de 50 $. Il n’y a pas de plafond : vous pouvez retirer l’intégralité de vos profits si vous le souhaitez."
+          },
+          "payoutProcessing": {
+            "q": "Combien de temps prend le traitement d’un retrait ?",
+            "a": "Après approbation, les retraits sont généralement traités sous 24 à 48 heures ouvrées. Pour les virements bancaires, cela peut prendre 2 à 5 jours ouvrés supplémentaires selon les banques."
+          }
+        }
+      },
+      "scaling": {
+        "title": "Plan de scaling",
+        "faqs": {
+          "howScalingWorks": {
+            "q": "Comment fonctionne le plan de scaling ?",
+            "a": "Chaque fois que vous réalisez 10 % de profit sur votre compte financé et que vous terminez deux cycles de retrait, la taille du compte augmente de 25 %. Vous pouvez développer votre capital jusqu’à 2 000 000 $."
+          },
+          "profitSplitScaling": {
+            "q": "Que devient le partage des profits avec le scaling ?",
+            "a": "Le partage des profits augmente également avec le scaling. Il commence à 80 % et peut atteindre 90 % aux niveaux supérieurs. À chaque niveau, vous vous rapprochez du maximum."
+          },
+          "scalingConditions": {
+            "q": "Y a-t-il des conditions pour être éligible au scaling ?",
+            "a": "Pour être éligible, vous devez atteindre au moins 10 % de profit, compléter au moins deux cycles de retrait et maintenir une bonne gestion du risque pendant la période."
+          }
+        }
+      },
+      "account": {
+        "title": "Gestion du compte",
+        "faqs": {
+          "refund": {
+            "q": "Puis-je demander un remboursement ?",
+            "a": "Vous pouvez demander un remboursement dans les 14 jours suivant l’achat uniquement si vous n’avez effectué aucune opération. Une fois que vous commencez à trader, l’évaluation démarre et le remboursement n’est plus possible."
+          },
+          "multipleAccounts": {
+            "q": "Puis-je avoir plusieurs comptes ?",
+            "a": "Oui. Vous pouvez posséder plusieurs comptes challenge et/ou financés simultanément. Cependant, vous ne pouvez pas utiliser le copy trading pour reproduire la même stratégie entre différents comptes."
+          },
+          "weekendAccount": {
+            "q": "Que se passe-t-il avec mon compte pendant le week-end ?",
+            "a": "Votre compte reste actif le week-end. Vous pouvez conserver des positions et le calcul du drawdown continue normalement. Les marchés sont fermés, mais la surveillance du compte se poursuit."
+          },
+          "contactSupport": {
+            "q": "Comment contacter le support ?",
+            "a": "Vous pouvez nous contacter via le chat en direct 24/7, par e-mail à support@the-bluehaven.com ou via les tickets de support dans le tableau de bord."
+          }
+        }
+      }
+    }
+  },
+  "contact": {
+    "support24": "Support 24/7",
+    "title": "Contact",
+    "subtitle": "Vous avez des questions ? Nous sommes là pour vous aider. Contactez-nous et nous vous répondrons dès que possible.",
+    "contactMethods": {
+      "emailSupport": {
+        "title": "Support par e-mail",
+        "description": "Pour les questions générales et les demandes détaillées",
+        "contact": "support@the-bluehaven.com"
+      },
+      "liveChat": {
+        "title": "Chat en direct",
+        "description": "Obtenez une réponse rapide de notre équipe",
+        "contact": "Disponible 24/7"
+      },
+      "responseTime": {
+        "title": "Délai de réponse",
+        "description": "Délai moyen de réponse à toutes les demandes",
+        "contact": "Moins de 24 heures"
+      }
+    },
+    "contactInformation": "Informations de contact",
+    "email": "Adresse e-mail",
+    "address": "Adresse",
+    "website": "Site web",
+    "workingHours": "Horaires",
+    "followUs": "Suivez-nous",
+    "liveChatTitle": "Chat en direct",
+    "liveChatDescription": "Besoin d’aide immédiatement ? Le support par chat est disponible à tout moment.",
+    "startChat": "Démarrer le chat",
+    "sendMessage": "Envoyer un message",
+    "formDescription": "Remplissez le formulaire ci-dessous. Nous répondrons sous 24 heures.",
+    "fullName": "Nom complet",
+    "fullNamePlaceholder": "Jean Dupont",
+    "emailPlaceholder": "jean@example.com",
+    "category": "Catégorie",
+    "selectCategory": "Sélectionner une catégorie",
+    "categories": {
+      "general": "Demande générale",
+      "account": "Problème de compte",
+      "payment": "Paiement & facturation",
+      "payout": "Demande de retrait",
+      "technical": "Support technique",
+      "other": "Autre"
+    },
+    "subject": "Objet",
+    "subjectPlaceholder": "Comment pouvons-nous vous aider ?",
+    "message": "Message",
+    "messagePlaceholder": "Décrivez votre question ou votre problème...",
+    "sendMessageButton": "Envoyer",
+    "messageSent": "Envoyé !",
+    "thankYouMessage": "Merci de nous avoir contactés. Nous vous répondrons sous 24 heures.",
+    "sendAnotherMessage": "Envoyer un autre message"
+  },
+  "howItWorks": {
+    "journeyBadge": "Parcours vers le financement",
+    "title": "Comment ça marche",
+    "subtitle": "Obtenez un compte financé en 3 étapes simples et commencez à générer des revenus avec notre capital",
+    "step": "Étape",
+    "phases": {
+      "purchaseChallenge": {
+        "title": "Acheter un challenge",
+        "description": "Choisissez la taille de compte et le type d’évaluation, payez en toute sécurité et recevez instantanément vos identifiants de trading.",
+        "details": {
+          "selectAccountSize": "Choisissez une taille de compte de 10K$ à 200K$",
+          "chooseType": "Choisissez 1 phase / 2 phases / financement instantané",
+          "receiveCredentials": "Recevez vos identifiants en quelques minutes",
+          "startTrading": "Commencez à trader immédiatement"
+        }
+      },
+      "passEvaluation": {
+        "title": "Réussir l’évaluation",
+        "description": "Atteignez les objectifs de profit tout en respectant les règles de gestion du risque pour prouver vos compétences.",
+        "details": {
+          "reachProfitTarget": "Atteindre 8 % d’objectif de profit (phase 1)",
+          "maintainDailyDrawdown": "Respecter la limite de perte journalière de 5 %",
+          "maintainOverallDrawdown": "Respecter la limite de perte totale de 10 %",
+          "tradeMinimumDays": "Trader au minimum 4 jours"
+        }
+      },
+      "getFunded": {
+        "title": "Obtenir un compte financé",
+        "description": "Une fois réussi, recevez un compte financé avec du capital réel. Tradez avec confiance et retirez vos profits.",
+        "details": {
+          "tradeWithCapital": "Trader avec notre capital",
+          "keepProfits": "Conserver jusqu’à 90 % des profits",
+          "biWeeklyPayout": "Retraits toutes les deux semaines",
+          "scaleUp": "Scaler jusqu’à 2 000 000 $"
+        }
+      }
+    },
+    "rules": {
+      "badge": "Règles de trading",
+      "title": "Des règles claires à chaque phase",
+      "subtitle": "Des règles transparentes et cohérentes tout au long de l’évaluation",
+      "rule": "Règle",
+      "phase1": "Phase 1",
+      "phase2": "Phase 2",
+      "funded": "Après financement",
+      "profitTarget": {
+        "title": "Objectif de profit",
+        "description": "Le pourcentage de profit à atteindre",
+        "funded": "Aucun objectif"
+      },
+      "dailyDrawdown": {
+        "title": "Perte journalière",
+        "description": "Perte journalière maximale autorisée"
+      },
+      "overallDrawdown": {
+        "title": "Perte totale",
+        "description": "Perte maximale depuis le solde le plus élevé"
+      },
+      "minTradingDays": {
+        "title": "Jours de trading minimum",
+        "description": "Nombre minimum de jours requis",
+        "phase1": "4 jours",
+        "phase2": "4 jours",
+        "funded": "Aucun"
+      },
+      "timeLimit": {
+        "title": "Limite de temps",
+        "description": "Aucune limite de temps maximale",
+        "phase1": "Illimité",
+        "phase2": "Illimité",
+        "funded": "Illimité"
+      },
+      "profitSplit": {
+        "title": "Partage des profits",
+        "description": "Votre part des profits",
+        "funded": "Jusqu’à 90 %"
+      }
+    },
+    "allowedTrading": {
+      "badge": "Liberté de trading",
+      "title": "Ce qui est autorisé",
+      "subtitle": "Tradez à votre manière avec un minimum de restrictions",
+      "allTradingStyles": {
+        "title": "Tous les styles de trading",
+        "desc": "Scalping, day trading, swing"
+      },
+      "newsTrading": {
+        "title": "Trading sur les actualités",
+        "desc": "Trader pendant les annonces à fort impact"
+      },
+      "weekendHolding": {
+        "title": "Maintien le week-end",
+        "desc": "Conserver des positions sur le week-end"
+      },
+      "expertAdvisors": {
+        "title": "EA (robots)",
+        "desc": "Utiliser des systèmes de trading automatisés"
+      },
+      "allMajorPairs": {
+        "title": "Tous les principaux marchés",
+        "desc": "Forex, indices, matières premières, crypto"
+      },
+      "anyStrategy": {
+        "title": "Toute stratégie",
+        "desc": "Couverture, grid, etc."
+      },
+      "copyTrading": {
+        "title": "Copy trading",
+        "desc": "Copier depuis vos autres comptes"
+      },
+      "multipleAccounts": {
+        "title": "Comptes multiples",
+        "desc": "Gérer plusieurs challenges en parallèle"
+      }
+    },
+    "cta": {
+      "title": "Prêt à commencer ?",
+      "subtitle": "Rejoignez des milliers de traders financés et démarrez votre parcours dès aujourd’hui",
+      "viewChallenges": "Voir les challenges"
+    }
+  },
+  "challenges": {
+    "badge": "Choisissez votre voie vers le financement",
+    "title": "Choisir un challenge",
+    "subtitle": "Sélectionnez un type d’évaluation et une taille de compte pour démarrer votre parcours de trading financé",
+    "typeLabels": {
+      "onePhase": "1 phase",
+      "twoPhase": "2 phases",
+      "instant": "Instantané"
+    },
+    "types": {
+      "onePhase": {
+        "title": "Challenge 1 phase",
+        "description": "Une seule phase d’évaluation avec un objectif de profit de 10 %. Une voie plus rapide vers le financement."
+      },
+      "twoPhase": {
+        "title": "Challenge 2 phases",
+        "description": "Évaluation standard : phase 1 (8 %) puis phase 2 (5 %). Le choix le plus populaire."
+      },
+      "instantFunding": {
+        "title": "Financement instantané",
+        "description": "Sautez l’évaluation et commencez à trader avec du capital immédiatement."
+      }
+    },
+    "rules": {
+      "title": "Aperçu des règles du challenge",
+      "phase1Target": "Objectif phase 1",
+      "phase2Target": "Objectif phase 2",
+      "dailyDrawdown": "Perte journalière",
+      "maxDrawdown": "Perte maximale",
+      "minTradingDays": "Jours de trading minimum",
+      "timeLimit": "Limite de temps",
+      "fourDays": "4 jours",
+      "unlimited": "Illimité"
+    },
+    "card": {
+      "mostPopular": "Le plus populaire",
+      "accountSize": "Taille du compte",
+      "phase1": "Phase 1",
+      "phase2": "Phase 2",
+      "dailyDD": "Perte journalière",
+      "maxDD": "Perte maximale",
+      "profitSplit": "Partage des profits",
+      "getStarted": "Commencer"
+    },
+    "comparison": {
+      "title": "Comparer tous les challenges",
+      "accountSize": "Taille du compte",
+      "price": "Prix",
+      "phase1": "Phase 1",
+      "phase2": "Phase 2",
+      "dailyDD": "Perte journalière",
+      "maxDD": "Perte maximale",
+      "profitSplit": "Partage des profits",
+      "select": "Sélectionner"
+    },
+    "allChallengesInclude": {
+      "title": "Inclus dans tous les challenges",
+      "subtitle": "Chaque challenge inclut les fonctionnalités suivantes",
+      "features": {
+        "unlimitedTrading": "Période de trading illimitée",
+        "allMajorPairs": "Trader les principales paires FX, indices et matières premières",
+        "weekendHolding": "Maintien le week-end autorisé",
+        "newsTrading": "Trading pendant les annonces importantes",
+        "expertAdvisors": "EA (robots) autorisés",
+        "biWeeklyPayouts": "Retraits toutes les deux semaines",
+        "support24": "Support 24/7",
+        "analyticsDashboard": "Tableau de bord d’analyses en temps réel"
+      }
+    },
+    "whyChoose": {
+      "title": "Pourquoi Props Capital ?",
+      "subtitle": "Pourquoi les traders nous choisissent",
+      "transparentRules": {
+        "title": "Règles transparentes",
+        "desc": "Pas de conditions cachées ni de disqualification inattendue"
+      },
+      "fastPayouts": {
+        "title": "Retraits rapides",
+        "desc": "Recevez vos profits en 24 à 48 heures"
+      },
+      "scaleTo2M": {
+        "title": "Scaler jusqu’à 2M$",
+        "desc": "Faites grandir votre compte avec le plan de scaling"
+      },
+      "bestSupport": {
+        "title": "Meilleur support",
+        "desc": "Équipe dédiée disponible 24/7"
+      }
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "timeLimit": {
+        "q": "Combien de temps ai-je pour réussir le challenge ?",
+        "a": "Il n’y a pas de limite de temps. Vous pouvez trader librement jusqu’à atteindre l’objectif de profit, tout en respectant les règles de risque."
+      },
+      "newsTrading": {
+        "q": "Puis-je trader pendant les annonces importantes ?",
+        "a": "Oui. Le trading sur les actualités est entièrement autorisé sur tous les challenges. Aucune restriction."
+      },
+      "ifFail": {
+        "q": "Que se passe-t-il si j’échoue ?",
+        "a": "Vous pouvez acheter une réinitialisation à tarif réduit ou démarrer un nouveau challenge. Si vous atteignez 8 % de profit avant l’échec, nous proposons aussi une nouvelle tentative gratuite."
+      },
+      "payoutSpeed": {
+        "q": "À quelle vitesse sont les retraits ?",
+        "a": "Les retraits sont traités sous 24 à 48 heures après approbation et envoyés via la méthode choisie."
+      }
+    },
+    "compareTableTitle": "Comparer tous les challenges"
+  },
+  "scalingPlan": {
+    "badge": "Potentiel de croissance illimité",
+    "title": "Jusqu’à",
+    "subtitle": "Augmentez votre capital de trading selon vos performances continues. À chaque niveau, débloquez un compte plus grand et un partage des profits plus élevé.",
+    "startJourney": "Commencer maintenant",
+    "stats": {
+      "maxAccountSize": "Taille de compte maximale",
+      "maxProfitSplit": "Partage des profits maximal",
+      "scalingLevels": "Niveaux de scaling",
+      "growthPerLevel": "Croissance par niveau"
+    },
+    "benefits": {
+      "badge": "Avantages",
+      "title": "Pourquoi scaler avec nous",
+      "subtitle": "Notre programme de scaling récompense les traders réguliers avec des opportunités plus importantes.",
+      "accountGrowth": {
+        "title": "Taille du compte +25 %",
+        "desc": "La taille du compte augmente de 25 % à chaque niveau de scaling."
+      },
+      "profitSplit": {
+        "title": "Jusqu’à 90 % de partage des profits",
+        "desc": "Plus vous scalez, plus votre part des profits augmente."
+      },
+      "noFees": {
+        "title": "Aucun frais supplémentaire",
+        "desc": "Vous pouvez scaler votre compte sans coût additionnel."
+      },
+      "sameRules": {
+        "title": "Les mêmes règles de trading",
+        "desc": "Des règles cohérentes s’appliquent tout au long de votre parcours."
+      },
+      "scaleTo2M": {
+        "title": "Jusqu’à 2M$",
+        "desc": "Développez votre capital de trading jusqu’à 2 000 000 $."
+      },
+      "automaticUpgrades": {
+        "title": "Mises à niveau automatiques",
+        "desc": "Dès que vous remplissez les conditions, la mise à niveau est appliquée automatiquement."
+      }
+    },
+    "howToScale": {
+      "badge": "Processus",
+      "title": "Comment fonctionne le scaling",
+      "achieveProfit": {
+        "title": "Atteindre l’objectif de profit",
+        "description": "Réalisez au moins 10 % de profit sur votre compte financé."
+      },
+      "completePayouts": {
+        "title": "Compléter les cycles de retrait",
+        "description": "Complétez au moins 2 cycles de retrait."
+      },
+      "automaticUpgrade": {
+        "title": "Mise à niveau automatique",
+        "description": "Votre compte est automatiquement mis à niveau au niveau suivant."
+      }
+    },
+    "roadmap": {
+      "badge": "Feuille de route",
+      "title": "La route vers 2 000 000 $",
+      "subtitle": "Visualisez comment votre compte évolue à chaque niveau.",
+      "start": "Début",
+      "max": "Maximum",
+      "level": "Niveau",
+      "split": "Partage",
+      "ultimateGoal": "Objectif final",
+      "withProfitSplit": "Avec 90 % de partage des profits",
+      "startScalingNow": "Commencer le scaling maintenant"
+    },
+    "requirements": {
+      "badge": "Conditions",
+      "title": "Ce qu’il faut pour scaler",
+      "passEvaluation": "Réussir l’évaluation",
+      "profitAndPayouts": "10 % de profit + 2 retraits",
+      "profit10": {
+        "title": "10 % de profit",
+        "desc": "Atteignez 10 % de profit sur votre compte financé."
+      },
+      "payouts2": {
+        "title": "2 retraits",
+        "desc": "Complétez au moins 2 cycles de retrait."
+      },
+      "consistency": {
+        "title": "Régularité",
+        "desc": "Maintenez une activité de trading stable."
+      },
+      "noViolations": {
+        "title": "Aucune infraction",
+        "desc": "Aucune violation des règles pendant la période."
+      }
+    },
+    "ctaSection": {
+      "title": "Prêt à scaler ?",
+      "tradingCareer": "Passez votre carrière de trading au niveau supérieur.",
+      "subtitle": "Commencez avec n’importe quelle taille de compte et scalez jusqu’à 2 000 000 $ de capital de trading.",
+      "getStartedNow": "Commencer maintenant",
+      "footer": "Démarrez à partir de 99 $ • Scalez jusqu’à 2M$ • Jusqu’à 90 % de partage des profits"
+    }
+  },
+  "payoutsPage": {
+    "badge": "Retraits rapides et fiables",
+    "title": "Recevez ce que vous avez gagné",
+    "subtitle": "Retirez rapidement, sans tracas. Aucun frais caché, aucun délai, aucune complexité.",
+    "stats": {
+      "totalPaidOut": "Total versé",
+      "payoutsProcessed": "Retraits traités",
+      "avgProcessing": "Temps de traitement moyen",
+      "payoutFees": "Frais de retrait"
+    },
+    "profitSharing": {
+      "badge": "Partage des profits",
+      "title": "Recevez jusqu’à 90 % des profits",
+      "subtitle": "Un partage des profits compétitif qui récompense généreusement les traders performants.",
+      "accountSize": "Taille du compte",
+      "profitSplit": "Partage des profits",
+      "best": "Meilleur",
+      "tiers": {
+        "tier1": "10K$ - 25K$",
+        "tier2": "50K$",
+        "tier3": "100K$+",
+        "tier4": "Après scaling"
+      }
+    },
+    "withdrawalOptions": {
+      "badge": "Options de retrait",
+      "title": "Plusieurs méthodes de retrait",
+      "subtitle": "Choisissez la méthode de paiement qui vous convient le mieux.",
+      "processing": "Délai de traitement",
+      "fee": "Frais",
+      "minimum": "Minimum",
+      "methods": {
+        "bankWire": "Virement bancaire",
+        "cryptocurrency": "Cryptomonnaie",
+        "paypal": "PayPal",
+        "wiseTransfer": "Virement Wise",
+        "time": {
+          "businessDays": "2 à 5 jours ouvrés",
+          "hours24": "24 heures",
+          "businessDays12": "1 à 2 jours ouvrés"
+        }
+      }
+    },
+    "howItWorks": {
+      "title": "Comment fonctionne le retrait",
+      "requestPayout": {
+        "title": "Demander un retrait",
+        "desc": "Soumettez votre demande depuis le tableau de bord."
+      },
+      "verification": {
+        "title": "Vérification",
+        "desc": "Nous vérifions votre activité de trading et vos profits."
+      },
+      "processing": {
+        "title": "Traitement",
+        "desc": "Les retraits sont traités sous 24 à 48 heures."
+      },
+      "receiveFunds": {
+        "title": "Réception",
+        "desc": "Recevez vos fonds via la méthode choisie."
+      }
+    },
+    "recentPayouts": {
+      "badge": "Mises à jour en direct",
+      "title": "Retraits récents",
+      "subtitle": "De vrais retraits pour de vrais traders. Rejoignez une communauté de traders financés qui réussissent."
+    },
+    "payoutTerms": {
+      "title": "Conditions de retrait",
+      "biWeekly": "Calendrier de retrait bimensuel (tous les 14 jours)",
+      "minimumAmount": "Le retrait minimum est de 50 $",
+      "noMaximum": "Aucun plafond de retrait",
+      "noFees": "Aucun frais de retrait, quelle que soit la méthode",
+      "firstPayout": "Premier retrait disponible 14 jours après le financement",
+      "kycRequired": "Le KYC est requis pour le premier retrait",
+      "profitSplitRange": "Le partage des profits est de 80 % à 90 %",
+      "scaleUp": "Scalez pour augmenter votre part des profits"
+    },
+    "cta": {
+      "title": "Commencez à générer des revenus dès aujourd’hui",
+      "subtitle": "Rejoignez des milliers de traders financés qui gagnent déjà avec Props Capital.",
+      "getFundedNow": "Obtenir un compte financé maintenant"
+    }
+  },
+  "rules": {
+    "badge": "Transparent et équitable",
+    "title": "Règles de trading",
+    "subtitle": "Des règles claires et simples conçues pour la réussite. Aucune condition cachée ni disqualification inattendue.",
+    "mainRules": {
+      "profitTarget": {
+        "title": "Objectif de profit",
+        "description": "Le pourcentage de profit requis pour valider chaque phase",
+        "funded": "Aucun objectif"
+      },
+      "dailyDrawdown": {
+        "title": "Perte journalière",
+        "description": "La perte maximale autorisée en une journée de trading"
+      },
+      "maximumDrawdown": {
+        "title": "Perte maximale",
+        "description": "La perte cumulée maximale depuis le plus haut solde"
+      },
+      "minTradingDays": {
+        "title": "Jours de trading minimum",
+        "description": "Nombre minimum de jours où vous devez trader réellement",
+        "phase1": "4 jours",
+        "phase2": "4 jours",
+        "funded": "Aucun"
+      },
+      "maxTradingPeriod": {
+        "title": "Période de trading maximale",
+        "description": "Limite de temps pour réussir le challenge",
+        "phase1": "Illimité",
+        "phase2": "Illimité",
+        "funded": "Illimité"
+      },
+      "profitSplit": {
+        "title": "Partage des profits",
+        "description": "Votre part des profits sur le compte financé",
+        "funded": "Jusqu’à 90 %"
+      }
+    },
+    "drawdownExplanation": {
+      "title": "Comprendre le drawdown",
+      "subtitle": "La règle la plus importante",
+      "dailyDrawdown": {
+        "title": "Perte journalière (5 %)",
+        "description": "La perte maximale autorisée sur une journée. Elle est calculée sur le solde au début de la journée et est réinitialisée à minuit (heure serveur).",
+        "example": "Exemple :",
+        "exampleText": "Si votre solde est de 50 000 $, la limite de perte journalière est de 2 500 $."
+      },
+      "maximumDrawdown": {
+        "title": "Perte maximale (10 %)",
+        "description": "La perte maximale depuis le plus haut solde atteint. C’est une limite trailing qui suit le pic d’équité.",
+        "example": "Exemple :",
+        "exampleText": "Si votre solde maximum atteint est de 55 000 $, la ligne de perte maximale est à 49 500 $."
+      }
+    },
+    "allowedActions": {
+      "title": "Actions autorisées",
+      "subtitle": "Tradez librement selon votre style",
+      "allTradingStyles": {
+        "title": "Tous les styles de trading",
+        "desc": "Scalping, day trading, swing"
+      },
+      "newsTrading": {
+        "title": "Trading sur les actualités",
+        "desc": "Trader lors d’annonces à fort impact"
+      },
+      "weekendHolding": {
+        "title": "Maintien le week-end",
+        "desc": "Conserver des positions sur le week-end"
+      },
+      "expertAdvisors": {
+        "title": "EA (robots)",
+        "desc": "Utiliser des bots de trading automatisés"
+      },
+      "hedging": {
+        "title": "Couverture (hedging)",
+        "desc": "Détenir des positions opposées"
+      },
+      "allInstruments": {
+        "title": "Tous les instruments",
+        "desc": "Forex, indices, matières premières, crypto"
+      },
+      "anyLotSize": {
+        "title": "Toute taille de lot",
+        "desc": "Aucune limite min/max de lots"
+      },
+      "copyTrading": {
+        "title": "Copy trading",
+        "desc": "Copier depuis vos propres comptes"
+      }
+    },
+    "prohibitedActions": {
+      "title": "Actions interdites",
+      "subtitle": "Peut entraîner la désactivation du compte",
+      "latencyArbitrage": {
+        "title": "Arbitrage de latence",
+        "desc": "Trader en exploitant les retards de prix"
+      },
+      "tickScalping": {
+        "title": "Tick scalping",
+        "desc": "Scalping ultra-court de moins de 2 minutes"
+      },
+      "accountManagement": {
+        "title": "Gestion de compte par un tiers",
+        "desc": "Laisser un tiers trader sur votre compte"
+      },
+      "propFirmCopying": {
+        "title": "Copie depuis une autre prop firm",
+        "desc": "Copier des trades depuis des comptes d’autres prop firms"
+      },
+      "toxicFlowStrategies": {
+        "title": "Stratégies de flux toxique",
+        "desc": "Stratégies qui exploitent injustement un broker"
+      },
+      "highFrequencyTrading": {
+        "title": "Trading haute fréquence (HFT)",
+        "desc": "Systèmes HFT automatisés"
+      }
+    },
+    "scalingPlan": {
+      "title": "Plan de scaling",
+      "subtitle": "Faites grandir votre compte jusqu’à 2 000 000 $",
+      "accountSize": "Taille du compte",
+      "profitSplit": "Partage des profits",
+      "howItWorks": {
+        "title": "Comment fonctionne le scaling",
+        "description": "À chaque fois que vous atteignez 10 % de profit et complétez deux cycles de retrait, le compte est automatiquement scalé au niveau suivant. Le partage des profits augmente avec le scaling et peut atteindre 90 % au niveau le plus élevé."
+      },
+      "requirements": {
+        "passEvaluation": "Réussir l’évaluation",
+        "profitAndPayouts": "10 % de profit + 2 retraits"
+      }
+    },
+    "payoutPolicy": {
+      "title": "Politique de retrait",
+      "subtitle": "Retraits rapides et fiables",
+      "frequency": {
+        "label": "Fréquence des retraits",
+        "value": "Toutes les deux semaines (tous les 14 jours)"
+      },
+      "minimum": {
+        "label": "Retrait minimum",
+        "value": "50 $"
+      },
+      "maximum": {
+        "label": "Retrait maximum",
+        "value": "Illimité"
+      },
+      "processingTime": {
+        "label": "Délai de traitement",
+        "value": "24 à 48 heures"
+      },
+      "fee": {
+        "label": "Frais de retrait",
+        "value": "0 $ (gratuit)"
+      },
+      "firstPayout": {
+        "label": "Premier retrait",
+        "value": "14 jours après le début du trading sur le compte financé"
+      }
+    },
+    "cta": {
+      "title": "Prêt à commencer à trader ?",
+      "subtitle": "Une fois les règles comprises, choisissez un challenge et démarrez votre parcours vers le financement.",
+      "viewChallenges": "Voir les challenges"
+    },
+    "important": "Important",
+    "phase1": "Phase 1",
+    "phase2": "Phase 2",
+    "funded": "Financé"
+  },
+  "terms": {
+    "title": "Conditions d’utilisation",
+    "lastUpdated": "Dernière mise à jour : janvier 2024",
+    "acceptance": {
+      "title": "1. Acceptation des conditions",
+      "content": "En accédant aux services Props Capital et en les utilisant, vous acceptez d’être lié par les présentes Conditions d’utilisation. Si vous n’acceptez pas ces conditions, veuillez ne pas utiliser nos services."
+    },
+    "description": {
+      "title": "2. Description du service",
+      "content": "Props Capital propose un programme d’évaluation de trading propriétaire (« Challenges ») permettant aux traders de démontrer leurs compétences. La réussite d’un challenge peut donner accès à un compte de trading financé."
+    },
+    "eligibility": {
+      "title": "3. Éligibilité",
+      "content": "Vous devez avoir au moins 18 ans pour utiliser nos services. En utilisant Props Capital, vous déclarez avoir la capacité juridique de conclure le présent accord."
+    },
+    "accountRegistration": {
+      "title": "4. Inscription du compte",
+      "content": "Vous acceptez de fournir des informations exactes, à jour et complètes lors de l’inscription. Vous êtes responsable de la confidentialité de vos identifiants de compte."
+    },
+    "tradingRules": {
+      "title": "5. Règles de trading",
+      "content": "Tous les traders doivent respecter les règles de trading définies pour chaque type de challenge. Toute violation peut entraîner la désactivation du compte sans remboursement."
+    },
+    "prohibitedActivities": {
+      "title": "6. Activités interdites",
+      "items": [
+        "Exploiter des vulnérabilités ou des bugs de la plateforme",
+        "Faire gérer le compte par un tiers (non divulgué)",
+        "Arbitrage entre différents brokers",
+        "Copier des trades depuis des comptes d’autres prop firms",
+        "Toute forme de manipulation de marché"
+      ]
+    },
+    "refundPolicy": {
+      "title": "7. Politique de remboursement",
+      "content": "Les remboursements sont disponibles dans les 14 jours suivant l’achat uniquement si aucune activité de trading n’a eu lieu. Une fois le trading commencé, aucun remboursement n’est possible."
+    },
+    "payouts": {
+      "title": "8. Retraits",
+      "content": "Les traders financés peuvent retirer leurs profits toutes les deux semaines selon l’accord de partage des profits. Props Capital se réserve le droit de vérifier toute activité de trading avant de traiter un retrait."
+    },
+    "intellectualProperty": {
+      "title": "9. Propriété intellectuelle",
+      "content": "Tout le contenu, les marques et la propriété intellectuelle sur la plateforme Props Capital appartiennent à Props Capital et sont protégés par la loi applicable."
+    },
+    "limitationOfLiability": {
+      "title": "10. Limitation de responsabilité",
+      "content": "Props Capital n’est pas responsable des dommages indirects, accessoires ou consécutifs résultant de l’utilisation de nos services."
+    },
+    "modifications": {
+      "title": "11. Modifications",
+      "content": "Props Capital se réserve le droit de modifier ces conditions à tout moment. La poursuite de l’utilisation des services après modification signifie votre acceptation des conditions mises à jour."
+    },
+    "contact": {
+      "title": "12. Contact",
+      "content": "Pour toute question concernant ces conditions, contactez-nous à support@the-bluehaven.com."
+    }
+  },
+  "privacy": {
+    "title": "Politique de confidentialité",
+    "lastUpdated": "Dernière mise à jour : janvier 2024",
+    "informationWeCollect": {
+      "title": "1. Informations collectées",
+      "intro": "Nous collectons les informations que vous fournissez directement, notamment :",
+      "items": [
+        "Informations d’identification (nom, e-mail, téléphone)",
+        "Informations de paiement (traitées de manière sécurisée par des prestataires tiers)",
+        "Informations et activité du compte de trading",
+        "Historique des échanges avec l’équipe support",
+        "Documents KYC (pièce d’identité, justificatif de domicile)"
+      ]
+    },
+    "howWeUse": {
+      "title": "2. Utilisation des informations",
+      "items": [
+        "Fournir et maintenir le service",
+        "Traiter les transactions et envoyer les informations associées",
+        "Surveiller l’activité de trading et appliquer les règles",
+        "Envoyer des mises à jour et des communications promotionnelles",
+        "Détecter et prévenir la fraude"
+      ]
+    },
+    "dataSecurity": {
+      "title": "3. Sécurité des données",
+      "content": "Nous protégeons vos données personnelles avec des mesures standard de l’industrie, incluant le chiffrement, des serveurs sécurisés et des audits de sécurité réguliers."
+    },
+    "dataSharing": {
+      "title": "4. Partage des informations",
+      "intro": "Nous pouvons partager vos informations avec :",
+      "items": [
+        "Fournisseurs de plateformes de trading (MT4, MT5, cTrader, DXTrade)",
+        "Prestataires de paiement pour le traitement des transactions",
+        "Services de vérification KYC",
+        "Autorités légales lorsque requis par la loi"
+      ]
+    },
+    "yourRights": {
+      "title": "5. Vos droits",
+      "intro": "Vous disposez des droits suivants :",
+      "items": [
+        "Accéder à vos données personnelles",
+        "Demander la correction d’informations inexactes",
+        "Demander la suppression (selon les exigences légales)",
+        "Vous désinscrire des communications marketing",
+        "Demander la portabilité des données"
+      ]
+    },
+    "cookies": {
+      "title": "6. Cookies",
+      "content": "Nous utilisons des cookies et technologies similaires pour améliorer l’expérience, analyser l’usage et optimiser le contenu. Vous pouvez gérer les cookies via les paramètres de votre navigateur."
+    },
+    "dataRetention": {
+      "title": "7. Conservation des données",
+      "content": "Nous conservons les données personnelles tant que votre compte est actif ou aussi longtemps que nécessaire pour fournir le service. Certaines informations peuvent être conservées pour respecter la loi ou résoudre des litiges."
+    },
+    "internationalTransfers": {
+      "title": "8. Transferts internationaux",
+      "content": "Vos informations peuvent être transférées et traitées dans des pays autres que votre pays de résidence. Nous mettons en place des garanties appropriées."
+    },
+    "childrensPrivacy": {
+      "title": "9. Confidentialité des mineurs",
+      "content": "Nos services ne s’adressent pas aux personnes de moins de 18 ans. Nous ne collectons pas sciemment d’informations auprès de mineurs."
+    },
+    "contactUs": {
+      "title": "10. Nous contacter",
+      "content": "Pour toute question relative à la confidentialité, contactez-nous à support@the-bluehaven.com."
+    }
+  }
+  }

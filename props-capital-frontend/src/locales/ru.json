@@ -1,0 +1,2836 @@
+{
+    "common": {
+      "loading": "Загрузка...",
+      "url": "URL",
+      "dismiss": "Закрыть",
+      "allPlatforms": "Все платформы"
+    },
+    "home": {
+    "hero": {
+      "badge": "Нам доверяют более 15 000 трейдеров по всему миру",
+      "title": "Торгуйте",
+      "titleHighlight": "на наши средства",
+      "subtitle": "Докажите свои навыки и получите до $200 000 капитала. Без риска для собственных средств и с сохранением до 90% прибыли",
+      "cta": "Начать челлендж",
+      "howItWorks": "Как это работает",
+      "verified": "Проверенная компания",
+      "secure": "Безопасные платежи",
+      "support": "Поддержка 24/7",
+      "profitToday": "Прибыль сегодня",
+      "winRate": "Процент побед"
+    },
+    "stats": {
+      "fundedCapital": "Выделенный капитал",
+      "activeTraders": "Активные трейдеры",
+      "paidToTraders": "Выплачено трейдерам",
+      "trustScore": "Рейтинг доверия"
+    },
+    "features": {
+      "title": "Почему выбирают нас",
+      "subtitle": "Создано для профессиональных трейдеров",
+      "description": "Мы создали максимально дружественную к трейдерам проп-фирму с прозрачными правилами, выгодными условиями и реальной поддержкой",
+      "clearObjectives": {
+        "title": "Чёткие торговые цели",
+        "description": "Простые и достижимые цели с прозрачными правилами. Никаких скрытых условий или неожиданных отказов"
+      },
+      "generousDrawdown": {
+        "title": "Щедрые лимиты просадки",
+        "description": "5% дневной убыток и до 10% максимальной просадки. Торгуйте спокойно и без стресса",
+        "drawdown": "Просадка"
+      },
+      "profitSplit": {
+        "title": "До 90% распределения прибыли",
+        "description": "Сохраняйте большую часть прибыли. Выплаты раз в две недели без задержек и скрытых комиссий"
+      },
+      "instantSetup": {
+        "title": "Мгновенная настройка аккаунта",
+        "description": "Получите данные для входа в торговый аккаунт в течение нескольких минут после покупки и начните торговать сразу"
+      },
+      "tradeAnywhere": {
+        "title": "Торгуйте где угодно",
+        "description": "Поддержка MT4, MT5, cTrader и DXTrade. Торгуйте с любого устройства из любой точки мира"
+      },
+      "noTimeLimits": {
+        "title": "Без временных ограничений",
+        "description": "Двигайтесь в своём темпе до достижения цели. Никаких дедлайнов или давления"
+      }
+    },
+    "howItWorks": {
+      "label": "Как начать",
+      "title": "3 шага к получению капитала",
+      "step1": {
+        "title": "Выберите челлендж",
+        "description": "Выберите желаемый размер аккаунта и безопасно совершите покупку"
+      },
+      "step2": {
+        "title": "Пройдите оценку",
+        "description": "Достигните цели по прибыли, соблюдая правила риск-менеджмента"
+      },
+      "step3": {
+        "title": "Получите финансирование",
+        "description": "Торгуйте на наши средства и сохраняйте до 90% прибыли"
+      },
+      "learnMore": "Подробнее о процессе"
+    },
+    "challenges": {
+      "label": "Цены",
+      "title": "Выберите челлендж",
+      "subtitle": "Выберите размер аккаунта, подходящий вашему стилю торговли и бюджету",
+      "accountSize": "Размер аккаунта",
+      "price": "Цена",
+      "profitTarget": "Цель по прибыли",
+      "profitSplit": "Распределение прибыли",
+      "getStarted": "Начать",
+      "viewAll": "Посмотреть все челленджи",
+      "popular": "Популярно"
+    },
+    "testimonials": {
+      "label": "Отзывы",
+      "title": "Нас любят трейдеры",
+      "subtitle": "Присоединяйтесь к тысячам успешных трейдеров, зарабатывающих с Props Capital",
+      "totalEarned": "Всего заработано"
+    },
+    "cta": {
+      "title": "Готовы начать?",
+      "titleHighlight": "вашу трейдинговую карьеру",
+      "subtitle": "Присоединяйтесь к тысячам трейдеров с финансированием и начните зарабатывать уже сегодня. Без риска для собственных средств",
+      "button": "Получить финансирование сейчас",
+      "footer": "Старт всего от $99 • Мгновенная настройка аккаунта • Поддержка 24/7"
+    },
+    "footer": {
+      "description": "Самая дружественная к трейдерам проп-трейдинговая компания. Торгуйте на наши средства и получайте капитал",
+      "propFirm": "Проп-трейдинговая компания",
+      "verified": "Проверено и надёжно",
+      "company": "Компания",
+      "support": "Поддержка",
+      "legal": "Юридическая информация",
+      "copyright": "© 2024 BLUEHAVEN MANAGEMENT LTD Все права защищены",
+      "secure": "Безопасно и зашифровано",
+      "howItWorks": "Как это работает",
+      "challenges": "Челленджи",
+      "scalingPlan": "План масштабирования",
+      "payouts": "Выплаты",
+      "faq": "Часто задаваемые вопросы",
+      "contact": "Контакты",
+      "terms": "Условия использования",
+      "privacy": "Политика конфиденциальности"
+    },
+    "partners": {
+      "title": "Нам доверяют трейдеры, использующие следующие платформы:"
+    }
+  },
+  "dashboard": {
+    "welcome": "С возвращением, {{name}}",
+    "overview": "Вот обзор вашей торговли",
+    "newChallenge": "Новый челлендж",
+    "stats": {
+      "totalChallenges": "Все челленджи",
+      "activeChallenges": "Активные челленджи",
+      "fundedAccounts": "Финансируемые аккаунты",
+      "totalPayouts": "Общая сумма выплат"
+    },
+    "accounts": {
+      "title": "Активные торговые аккаунты",
+      "viewAll": "Показать все",
+      "profitProgress": "Прогресс прибыли",
+      "target": "Цель",
+      "dailyDD": "Дневной DD",
+      "overallDD": "Общий DD",
+      "details": "Детали",
+      "trade": "Торговать",
+      "violation": {
+        "dailyDrawdown": "Превышение дневной просадки: {{actual}}% > {{threshold}}%",
+        "overallDrawdown": "Превышение общей просадки: {{actual}}% > {{threshold}}%",
+        "maximumDrawdown": "Превышение максимальной просадки: {{actual}}% > {{threshold}}%",
+        "maxTradingDays": "Превышено максимальное количество торговых дней",
+        "default": "{{message}}"
+      }
+    },
+    "metrics": {
+      "title": "Быстрые показатели",
+      "currentBalance": "Текущий баланс",
+      "profitThisCycle": "Прибыль за текущий цикл",
+      "ddRemaining": "Оставшийся DD",
+      "tradingDays": "Торговые дни",
+      "nextPayoutDate": "Дата следующей выплаты",
+      "requestPayout": "Запросить выплату",
+      "account": "Аккаунт",
+      "accounts": "Аккаунты"
+    },
+    "notifications": {
+      "title": "Уведомления",
+      "noNewNotifications": "Новых уведомлений нет",
+      "markAsRead": "Отметить как прочитанное",
+      "notification": "Уведомление",
+      "notifications": "Уведомления",
+      "noNotifications": "Уведомлений нет",
+      "seeMore": "Показать больше"
+    },
+    "rules": {
+      "title": "Соблюдение правил",
+      "selectAccount": "Выберите аккаунт",
+      "phase": "Фаза",
+      "phase1": "Фаза 1",
+      "phase2": "Фаза 2",
+      "funded": "Профинансирован",
+      "failed": "Не пройден"
+    },
+    "quickActions": {
+      "tradingTerminal": "Торговый терминал",
+      "openTrading": "Начать торговлю",
+      "myAccounts": "Мои аккаунты",
+      "viewAllAccounts": "Посмотреть все аккаунты",
+      "analytics": "Аналитика",
+      "performanceStats": "Статистика производительности",
+      "payouts": "Выплаты",
+      "requestPayouts": "Запросить выплаты",
+      "scalingPlan": "План масштабирования",
+      "growthRoadmap": "Дорожная карта роста"
+    },
+    "links": {
+      "challengeProgress": "Прогресс челленджа",
+      "trackJourney": "Отслеживайте путь к финансированию",
+      "tradeHistory": "История сделок",
+      "viewAllTrades": "Посмотреть все сделки"
+    },
+    "empty": {
+      "welcome": "Добро пожаловать, {{name}}!",
+      "description": "Начните путь к статусу финансируемого трейдера. Выберите челлендж, докажите свои навыки и торгуйте на наши средства",
+      "startChallenge": "Начать первый челлендж"
+    },
+    "rulesPanel": {
+      "title": "Правила и условия челленджа",
+      "profitTarget": "Цель по прибыли",
+      "dailyLossLimit": "Дневной лимит убытков",
+      "overallDrawdown": "Общая просадка",
+      "minTradingDays": "Минимальное количество торговых дней",
+      "daysRemaining": "Оставшиеся дни",
+      "tradingStyleRules": "Правила торгового стиля",
+      "newsTrading": "Торговля на новостях",
+      "weekendHolding": "Удержание на выходных",
+      "expertAdvisors": "Экспертные советники",
+      "hedging": "Хеджирование",
+      "copyTrading": "Копи-трейдинг",
+      "leverage": "Кредитное плечо",
+      "maxLot": "{{max}} {{lot}}",
+      "lot": "Лот",
+      "max": "Макс.",
+      "profitSplit": "Распределение прибыли",
+      "target": "Цель",
+      "limit": "Лимит",
+      "status": {
+        "reached": "Достигнуто",
+        "loss": "Убыток",
+        "violated": "Нарушено",
+        "danger": "Опасно",
+        "warning": "Предупреждение",
+        "safe": "Безопасно"
+      }
+    }
+  },
+  "myAccounts": {
+    "title": "Мои аккаунты",
+    "subtitle": "Управляйте всеми торговыми челленджами и финансируемыми аккаунтами",
+    "newChallenge": "Новый челлендж",
+    "activeChallenges": "Активные челленджи",
+    "phase1": "Фаза 1",
+    "phase2": "Фаза 2",
+    "funded": "Профинансирован",
+    "failed": "Не пройден",
+    "all": "Все",
+    "active": "Активные",
+    "noAccounts": "Аккаунты не найдены",
+    "noAccountsDesc": "Начните новый челлендж и отправляйтесь в торговое путешествие",
+    "startChallenge": "Начать челлендж",
+    "balance": "Баланс",
+    "profit": "Прибыль",
+    "days": "Дни",
+    "dailyDD": "Дневной убыток",
+    "overallDD": "Общий убыток",
+    "openDashboard": "Открыть торговый дашборд",
+    "progress": "Прогресс",
+    "trades": "Сделки",
+    "needChallenge": "Нужен новый челлендж?",
+    "needChallengeDesc": "Начните заново с новым торговым челленджем и докажите свои навыки",
+    "buyChallenge": "Купить челлендж"
+  },
+  "analytics": {
+    "title": "Аналитика",
+    "subtitle": "Подробный анализ производительности и статистика",
+    "selectAccount": "Выберите аккаунт",
+    "allAccounts": "Все аккаунты",
+    "totalTrades": "Всего сделок",
+    "winRate": "Процент побед",
+    "totalProfit": "Общая прибыль",
+    "profitFactor": "Профит-фактор",
+    "winningTrades": "Выигрышные сделки",
+    "losingTrades": "Убыточные сделки",
+    "bestTrade": "Лучшая сделка",
+    "worstTrade": "Худшая сделка",
+    "symbolDistribution": "Распределение по символам",
+    "tradeHistory": "История сделок",
+    "noTrades": "Сделки не найдены",
+    "symbol": "Символ",
+    "type": "Тип",
+    "lotSize": "Размер лота",
+    "open": "Открытие",
+    "close": "Закрытие",
+    "profit": "Прибыль",
+    "buy": "Покупка",
+    "sell": "Продажа",
+    "performanceMetrics": "Показатели эффективности",
+    "wins": "Победы",
+    "losses": "Убытки",
+    "maxWinStreak": "Максимальная серия побед",
+    "maxLossStreak": "Максимальная серия поражений",
+    "avgWin": "Средний выигрыш",
+    "avgLoss": "Средний убыток",
+    "avgRR": "Среднее R:R",
+    "avgHolding": "Среднее время удержания",
+    "maxPosition": "Максимальная позиция",
+    "avgPosition": "Средняя позиция",
+    "sharpeRatio": "Коэффициент Шарпа",
+    "lots": "Лоты",
+    "equityCurve": "Кривая капитала",
+    "accountPerformance": "Показатели аккаунта по периодам",
+    "equity": "Капитал",
+    "balance": "Баланс",
+    "startingBalance": "Начальный баланс",
+    "dailyPL": "Дневной P/L",
+    "winningDays": "Прибыльные дни",
+    "losingDays": "Убыточные дни",
+    "totalLoss": "Общий убыток",
+    "netPL": "Чистый P/L",
+    "pl": "P/L",
+    "bestDay": "Лучший день",
+    "worstDay": "Худший день",
+    "noData": "Нет данных по распределению символов",
+    "loading": "Загрузка..."
+  },
+  "payouts": {
+    "title": "Выплаты",
+    "subtitle": "Запрос и отслеживание вывода прибыли",
+    "requestPayout": "Запросить выплату",
+    "selectAccount": "Выберите аккаунт",
+    "allAccounts": "Все аккаунты",
+    "selectFundedAccount": "Выберите финансируемый аккаунт",
+    "amount": "Сумма (USD)",
+    "enterAmount": "Введите сумму",
+    "minimum": "Минимум",
+    "paymentMethod": "Способ выплаты",
+    "selectPaymentMethod": "Выберите способ выплаты",
+    "paymentDetails": "Платёжные данные",
+    "paymentDetailsPlaceholder": "Введите платёжные данные (адрес кошелька, банковские реквизиты и т.д.)",
+    "submitting": "Отправка...",
+    "submitRequest": "Отправить запрос",
+    "totalEarnings": "Общий доход",
+    "pendingPayouts": "Ожидающие выплаты",
+    "totalPayouts": "Общая сумма выплат",
+    "nextPayout": "Следующая выплата",
+    "payoutSchedule": "График выплат",
+    "payoutFrequency": "Частота выплат",
+    "biWeekly": "Раз в две недели (14 дней)",
+    "biWeeklyValue": "Раз в две недели",
+    "processingTime": "Время обработки",
+    "processingTimeValue": "24–48 часов",
+    "businessDays": "2–5 рабочих дней",
+    "businessDaysOnly": "Только рабочие дни",
+    "minimumAmount": "Минимальная сумма",
+    "payoutFee": "Комиссия за вывод",
+    "free": "$0 (бесплатно)",
+    "freeValue": "Бесплатно",
+    "availablePaymentMethods": "Доступные способы выплаты",
+    "bankTransfer": "Банковский перевод",
+    "bankTransferTime": "2–5 дней",
+    "cryptocurrency": "Криптовалюта",
+    "cryptoTime": "24 часа",
+    "paypal": "PayPal",
+    "paypalTime": "24 часа",
+    "wise": "Wise",
+    "wiseTime": "1–2 дня",
+    "yourProfitSplit": "Ваше распределение прибыли",
+    "profitSplitDesc": "С масштабированием сохраняйте до 90% прибыли",
+    "currentSplit": "Текущая доля",
+    "withScaling": "После масштабирования",
+    "viewScalingPlan": "Посмотреть план масштабирования",
+    "payoutHistory": "История выплат",
+    "noPayouts": "Пока выплат нет. Начните торговать и зарабатывайте прибыль!",
+    "needHelp": "Нужна помощь с выплатами?",
+    "needHelpDesc": "По вопросам выплат обратитесь в нашу службу поддержки",
+    "contactSupport": "Связаться с поддержкой",
+    "date": "Дата",
+    "method": "Способ",
+    "status": "Статус",
+    "processed": "Обработано"
+  },
+  "profile": {
+    "title": "Профиль",
+    "subtitle": "Управление настройками аккаунта и параметрами",
+    "loadError": "Не удалось загрузить профиль. Пожалуйста, попробуйте снова",
+    "user": "Пользователь",
+    "admin": "Администратор",
+    "trader": "Трейдер",
+    "personalInfo": "Личная информация",
+    "security": "Безопасность",
+    "verification": "Верификация",
+    "notifications": "Уведомления",
+    "personalInformation": "Личная информация",
+    "firstName": "Имя",
+    "firstNamePlaceholder": "Джон",
+    "lastName": "Фамилия",
+    "lastNamePlaceholder": "Доу",
+    "email": "Email",
+    "phoneNumber": "Номер телефона",
+    "phonePlaceholder": "+66 123 456 789",
+    "country": "Страна",
+    "countryPlaceholder": "Таиланд",
+    "city": "Город",
+    "cityPlaceholder": "Бангкок",
+    "address": "Адрес",
+    "addressPlaceholder": "Главная улица 123",
+    "saving": "Сохранение...",
+    "saveChanges": "Сохранить изменения",
+    "changesSaved": "Изменения сохранены",
+    "securitySettings": "Настройки безопасности",
+    "password": "Пароль",
+    "lastChanged": "Последнее изменение",
+    "never": "Никогда",
+    "changePassword": "Изменить пароль",
+    "twoFactorAuth": "Двухфакторная аутентификация",
+    "twoFactorDesc": "Включите дополнительный уровень безопасности",
+    "enable2FA": "Включить 2FA",
+    "emailNotifications": "Email-уведомления",
+    "emailNotificationsDesc": "Получать уведомления о действиях в аккаунте",
+    "enabled": "Включено",
+    "identityVerification": "Подтверждение личности",
+    "verificationDesc": "Завершите подтверждение личности, чтобы разблокировать все функции (включая выплаты). Обязательно для первого вывода средств",
+    "governmentID": "Удостоверение личности",
+    "governmentIDDesc": "Паспорт, водительское удостоверение или ID-карта",
+    "pending": "На проверке",
+    "uploadDocument": "Загрузить документ",
+    "proofOfAddress": "Подтверждение адреса",
+    "proofOfAddressDesc": "Счёт за коммунальные услуги или банковская выписка (не старше 3 месяцев)",
+    "changePasswordDesc": "Обновите пароль для обеспечения безопасности аккаунта",
+    "currentPassword": "Текущий пароль",
+    "newPassword": "Новый пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "passwordChanged": "Пароль успешно изменён",
+    "passwordsDoNotMatch": "Пароли не совпадают",
+    "passwordTooShort": "Пароль должен содержать не менее 8 символов",
+    "changing": "Изменение...",
+    "uploading": "Загрузка...",
+    "uploadGovernmentID": "Загрузить удостоверение личности",
+    "uploadProofOfAddress": "Загрузить подтверждение адреса",
+    "documentUploaded": "Документ успешно загружен",
+    "approved": "Одобрено",
+    "rejected": "Отклонено",
+    "comingSoon": "Скоро",
+    "notUploaded": "Не загружено",
+    "notificationPreferences": "Настройки уведомлений",
+    "tradeNotifications": "Торговые уведомления",
+    "tradeNotificationsDesc": "Получать уведомления при открытии и закрытии сделок",
+    "accountAlerts": "Оповещения аккаунта",
+    "accountAlertsDesc": "Предупреждения об убытках и обновления статуса аккаунта",
+    "payoutUpdates": "Обновления выплат",
+    "payoutUpdatesDesc": "Уведомления о запросах на вывод и статусе обработки",
+    "challengeUpdates": "Обновления челленджа",
+    "challengeUpdatesDesc": "Обновления прогресса и изменений фаз",
+    "marketingEmails": "Маркетинговые письма",
+    "marketingEmailsDesc": "Новости, акции и специальные предложения"
+  },
+  "support": {
+    "title": "Поддержка",
+    "subtitle": "Получите помощь по аккаунту и торговле",
+    "newTicket": "Новый тикет",
+    "createTicket": "Создать тикет поддержки",
+    "subject": "Тема",
+    "subjectPlaceholder": "Краткое описание проблемы",
+    "category": "Категория",
+    "select": "Выбрать",
+    "account": "Аккаунт",
+    "payment": "Платёж",
+    "payout": "Вывод средств",
+    "technical": "Техническая",
+    "other": "Другое",
+    "priority": "Приоритет",
+    "low": "Низкий",
+    "medium": "Средний",
+    "high": "Высокий",
+    "message": "Сообщение",
+    "messagePlaceholder": "Опишите проблему подробнее...",
+    "submitting": "Отправка...",
+    "submitTicket": "Отправить тикет",
+    "openTickets": "Открытые тикеты",
+    "inProgress": "В процессе",
+    "resolved": "Решено",
+    "avgResponse": "Среднее время ответа",
+    "totalTickets": "Всего тикетов",
+    "faq": "Часто задаваемые вопросы",
+    "searchFAQs": "Поиск по FAQ...",
+    "viewAllFAQs": "Посмотреть все FAQ",
+    "yourTickets": "Ваши тикеты",
+    "noTickets": "У вас пока нет тикетов поддержки. При необходимости создайте новый тикет",
+    "needImmediateHelp": "Нужна срочная помощь?",
+    "liveChatDesc": "Наша служба поддержки доступна в живом чате 24/7",
+    "startLiveChat": "Начать живой чат",
+    "faq1Q": "Как подать заявку на вывод средств?",
+    "faq1A": "Перейдите в раздел выплат и нажмите «Запросить выплату». Заполните необходимые данные и отправьте запрос",
+    "faq2Q": "Какие торговые правила действуют?",
+    "faq2A": "Наши стандартные правила включают дневной убыток 5%, общий убыток 10% и минимум 4 торговых дня",
+    "faq3Q": "Сколько времени занимает вывод средств?",
+    "faq3A": "Вывод обрабатывается в течение 24–48 часов после одобрения. Банковские переводы могут занять 2–5 рабочих дней",
+    "faq4Q": "Можно ли торговать во время новостей?",
+    "faq4A": "Да. Торговля на новостях разрешена во всех челленджах без ограничений на высокоимпактные новости"
+  },
+  "tradeHistory": {
+    "title": "История сделок",
+    "subtitle": "Полная история ваших сделок",
+    "selectAccount": "Выберите аккаунт",
+    "allAccounts": "Все аккаунты",
+    "phase1": "Фаза 1",
+    "phase2": "Фаза 2",
+    "funded": "Профинансирован",
+    "failed": "Не пройден",
+    "export": "Экспорт",
+    "totalTrades": "Всего сделок",
+    "winRate": "Процент побед",
+    "totalProfit": "Общая прибыль",
+    "avgWin": "Средняя прибыль",
+    "avgLoss": "Средний убыток",
+    "searchPlaceholder": "Поиск по символу или тикету...",
+    "all": "Все",
+    "buy": "Покупка",
+    "sell": "Продажа",
+    "open": "Открытые",
+    "closed": "Закрытые",
+    "openPositions": "Открытые позиции",
+    "active": "Активные",
+    "closedTrades": "Закрытые сделки",
+    "showing": "Показано",
+    "trades": "сделок",
+    "noTradesFound": "Сделки, соответствующие фильтрам, не найдены",
+    "ticket": "Тикет",
+    "time": "Время",
+    "symbol": "Символ",
+    "type": "Тип",
+    "lots": "Лоты",
+    "openPrice": "Цена открытия",
+    "closePrice": "Цена закрытия",
+    "priceChange": "Изменение цены",
+    "commSwap": "Комиссия / своп",
+    "profit": "Прибыль",
+    "status": "Статус",
+    "noAccounts": "Торговые аккаунты отсутствуют",
+    "noAccountsDesc": "Чтобы просматривать историю сделок, необходимо сначала создать торговый аккаунт"
+  },
+  "challengeProgress": {
+    "title": "Прогресс челленджа",
+    "subtitle": "Отслеживайте путь к статусу финансируемого трейдера",
+    "selectAccount": "Выберите аккаунт",
+    "viewTradingDashboard": "Открыть торговый дашборд",
+    "account": "Аккаунт",
+    "profit": "Прибыль",
+    "tradingDays": "Торговые дни",
+    "dailyDDUsed": "Использованный дневной DD",
+    "yourJourney": "Ваш путь",
+    "purchase": "Покупка",
+    "purchaseDesc": "Покупка челленджа успешно завершена",
+    "challenge": "Челлендж",
+    "phase1": "Фаза 1",
+    "phase2": "Фаза 2",
+    "funded": "Профинансирован",
+    "scaling": "Масштабирование",
+    "reachTarget": "Достигните цели по прибыли {{target}}",
+    "profitTarget": "Цель по прибыли",
+    "minTradingDays": "Минимальное количество торговых дней",
+    "maxDailyDD": "Максимальный дневной DD",
+    "maxOverallDD": "Максимальный общий DD",
+    "fundedDesc": "Торговля на средства компании",
+    "profitSplit80": "Распределение прибыли 80%",
+    "scalingDesc": "Рост до $2,000,000",
+    "profitSplit90": "До 90% распределения прибыли",
+    "currentPhaseRequirements": "Требования текущей фазы",
+    "profitSplit": "Распределение прибыли",
+    "whenFunded": "После финансирования",
+    "upTo90WithScaling": "До 90% с масштабированием",
+    "payoutCycle": "Цикл выплат",
+    "biWeeklyPayouts": "Выплаты раз в две недели",
+    "days": "Дней",
+    "processedWithin24h": "Обрабатывается в течение 24 часов",
+    "scaleTo": "Масштабирование до",
+    "maximumAccountSize": "Максимальный размер аккаунта",
+    "scalingLevels": "10 уровней масштабирования",
+    "readyToStart": "Готовы начать торговлю?",
+    "readyToStartDesc": "Откройте торговую платформу и начните достигать цели по прибыли",
+    "viewTradingRules": "Посмотреть торговые правила",
+    "failed": "Не пройден",
+    "noAccountsDesc": "Приобретите челлендж, чтобы начать отслеживание прогресса"
+  },
+  "phaseTimeline": {
+    "challengeJourney": "Путь челленджа",
+    "trackProgress": "Отслеживание прогресса по фазам",
+    "proceedToNextPhase": "Перейти к следующей фазе",
+    "phase1": "Фаза 1",
+    "phase2": "Фаза 2",
+    "funded": "Профинансирован",
+    "scaling": "Масштабирование",
+    "evaluation": "Оценка",
+    "verification": "Проверка",
+    "liveAccount": "Реальный аккаунт",
+    "growth": "Рост",
+    "profitTarget": "Цель по прибыли {{target}}",
+    "minTradingDays": "Минимум {{days}} торговых дней",
+    "maxDailyDD": "Максимальный дневной DD {{dd}}",
+    "profitSplit80": "Распределение прибыли 80%",
+    "biWeeklyPayouts": "Выплаты раз в две недели",
+    "scalingEligible": "Доступно масштабирование",
+    "profitSplit90": "До 90% распределения прибыли",
+    "accountSizeIncrease": "Увеличение размера аккаунта",
+    "vipBenefits": "VIP-преимущества",
+    "completed": "Завершено",
+    "active": "Активно",
+    "unlocked": "Разблокировано",
+    "locked": "Заблокировано",
+    "phaseCompleted": "Фаза завершена!",
+    "phaseCompletedDesc": "Поздравляем! Все требования выполнены. Нажмите кнопку выше, чтобы продолжить"
+  },
+  "ruleCompliance": {
+    "title": "Соблюдение правил",
+    "subtitle": "Проверка торговых правил и требований челленджа",
+    "selectAccount": "Выберите аккаунт",
+    "loading": "Загрузка...",
+    "noAccounts": "Торговые аккаунты отсутствуют",
+    "noAccountsDesc": "Приобретите челлендж, чтобы проверить соблюдение правил и торговые условия",
+    "purchaseChallenge": "Купить челлендж",
+    "loadingCompliance": "Загрузка соблюдения правил...",
+    "loadError": "Не удалось загрузить данные аккаунта",
+    "goToMyAccounts": "Перейти в Мои аккаунты",
+    "allRulesCompliant": "Все правила соблюдены",
+    "goodStanding": "Ваш аккаунт находится в хорошем состоянии и соответствует всем правилам челленджа",
+    "active": "Активно",
+    "phase1": "Фаза 1",
+    "phase2": "Фаза 2",
+    "funded": "Профинансирован",
+    "failed": "Не пройден",
+    "tradingStyleRules": "Правила торгового стиля",
+    "newsTrading": "Торговля на новостях",
+    "newsTradingDesc": "Торговля во время новостей с высоким влиянием разрешена",
+    "newsTradingDetails": "Разрешена торговля во время новостей высокого влияния, таких как NFP, FOMC",
+    "weekendHolding": "Удержание позиций на выходных",
+    "weekendHoldingDesc": "Разрешено удерживать позиции на выходных",
+    "weekendHoldingDetails": "Можно удерживать позиции с закрытия в пятницу до открытия в понедельник без штрафов",
+    "expertAdvisors": "Экспертные советники (EA)",
+    "expertAdvisorsDesc": "Автоматическая торговля с помощью EA разрешена",
+    "expertAdvisorsDetails": "EA разрешены, однако стратегии мартингейла и сетки проверяются",
+    "hedging": "Хеджирование",
+    "hedgingDesc": "Разрешено открывать противоположные позиции по одному инструменту",
+    "hedgingDetails": "Полное хеджирование разрешено по всем инструментам",
+    "copyTrading": "Копи-трейдинг",
+    "copyTradingDesc": "Копирование сделок других трейдеров запрещено",
+    "copyTradingDetails": "Каждый трейдер должен торговать по собственной стратегии",
+    "latencyArbitrage": "Латентный арбитраж",
+    "latencyArbitrageDesc": "Использование задержек цен между брокерами запрещено",
+    "latencyArbitrageDetails": "Арбитраж на основе задержек цен может привести к аннулированию аккаунта",
+    "complianceHistory": "История соблюдения",
+    "last7Days": "Последние 7 дней",
+    "dailyDrawdown": "Дневная просадка",
+    "overallDrawdown": "Общая просадка",
+    "limit": "Лимит",
+    "loadingHistory": "Загрузка истории соблюдения...",
+    "noComplianceHistory": "История соблюдения отсутствует",
+    "noComplianceHistoryDesc": "После начала торговли здесь появится история соблюдения",
+    "importantInformation": "Важная информация",
+    "info1": "Дневной убыток рассчитывается на основе баланса закрытия предыдущего дня",
+    "info2": "Общий убыток рассчитывается на основе максимального баланса аккаунта (пика эквити)",
+    "info3": "Нарушение любого правила приводит к немедленной дисквалификации",
+    "info4": "Незначительные нарушения (предупреждения) отслеживаются, но не приводят к немедленной дисквалификации",
+    "info5": "Все расчёты правил выполняются в реальном времени в часы работы рынка"
+  },
+  "accountDetails": {
+    "title": "Детали аккаунта",
+    "subtitle": "Просмотр подробной информации о торговом аккаунте",
+    "selectAccountDesc": "Выберите аккаунт для просмотра деталей",
+    "selectAccount": "Выберите аккаунт",
+    "loading": "Загрузка данных аккаунта...",
+    "noAccounts": "Торговые аккаунты отсутствуют",
+    "noAccountsDesc": "Приобретите челлендж, чтобы просматривать детали аккаунта и торговый дашборд",
+    "purchaseChallenge": "Купить челлендж",
+    "account": "Аккаунт",
+    "started": "Дата начала",
+    "phase1": "Фаза 1",
+    "phase2": "Фаза 2",
+    "funded": "Профинансирован",
+    "failed": "Не пройден",
+    "phase1Completed": "Фаза 1 завершена!",
+    "phase1CompletedDesc": "Поздравляем! Все требования выполнены. Переходите к фазе 2",
+    "proceedToPhase2": "Перейти к фазе 2",
+    "accountSummary": "Сводка аккаунта",
+    "balance": "Баланс",
+    "equity": "Эквити",
+    "floatingPL": "Плавающий P/L",
+    "totalProfit": "Общая прибыль",
+    "profitTarget": "Цель по прибыли",
+    "dailyDrawdown": "Дневная просадка",
+    "overallDrawdown": "Общая просадка",
+    "target": "Цель",
+    "tradingDays": "Торговые дни",
+    "performanceStatistics": "Статистика производительности",
+    "winRate": "Процент побед",
+    "avgRiskReward": "Средний риск/прибыль",
+    "totalTrades": "Всего сделок",
+    "profitFactor": "Профит-фактор",
+    "largestWin": "Максимальная прибыль",
+    "largestLoss": "Максимальный убыток",
+    "avgLotSize": "Средний размер лота",
+    "avgDuration": "Средняя продолжительность",
+    "tradeHistory": "История сделок",
+    "noTradesFound": "Сделки не найдены",
+    "refresh": "Обновить",
+    "viewFullTradeHistory": "Посмотреть всю историю сделок",
+    "challengeProgress": "Прогресс челленджа",
+    "trackJourney": "Отслеживать путь",
+    "analytics": "Аналитика",
+    "detailedStats": "Подробная статистика",
+    "tradingRules": "Торговые правила",
+    "viewAllRules": "Посмотреть все правила",
+    "time": "Время",
+    "symbol": "Символ",
+    "type": "Тип",
+    "lots": "Лоты",
+    "open": "Открытие",
+    "close": "Закрытие",
+    "pl": "P/L",
+    "status": "Статус",
+    "closed": "Закрыто",
+    "buy": "Покупка",
+    "sell": "Продажа",
+    "minTradingDays": "Минимальные торговые дни",
+    "days": "Дней",
+    "newsTrading": "Торговля на новостях",
+    "weekendHolding": "Удержание на выходных",
+    "compliant": "Соответствует",
+    "allowed": "Разрешено",
+    "equityCurve": "Кривая эквити",
+    "dailyPerformance": "Дневная производительность",
+    "openPositions": {
+      "title": "Открытые позиции",
+      "noPositions": "Открытых позиций нет",
+      "noPositionsDesc": "Активные сделки будут отображаться здесь",
+      "lots": "Лоты",
+      "stopLoss": "SL",
+      "takeProfit": "TP",
+      "pips": "Пипсы"
+    },
+    "ruleCompliance": {
+      "title": "Соблюдение правил",
+      "violation": "Нарушение",
+      "violations": "Нарушения",
+      "warning": "Предупреждение",
+      "warnings": "Предупреждения",
+      "allClear": "Без нарушений",
+      "profitTarget": "Цель по прибыли",
+      "dailyDrawdown": "Дневная просадка",
+      "overallDrawdown": "Общая просадка",
+      "minTradingDays": "Минимальные торговые дни",
+      "newsTrading": "Торговля на новостях",
+      "weekendHolding": "Удержание на выходных",
+      "expertAdvisors": "Экспертные советники",
+      "reachProfitTarget": "Для прохождения необходимо достичь цели по прибыли",
+      "maxDailyLoss": "Максимальный дневной лимит убытков",
+      "maxTotalLoss": "Максимальный общий лимит убытков",
+      "minRequiredDays": "Минимально необходимое количество дней",
+      "tradingDuringNews": "Торговля во время новостей",
+      "holdingOverWeekend": "Удержание позиций на выходных",
+      "automatedTrading": "Разрешена автоматическая торговля",
+      "allowed": "Разрешено",
+      "notAllowed": "Запрещено",
+      "limit": "Лимит",
+      "violationDetected": "Обнаружено нарушение аккаунта",
+      "violationMessage": "Ваш аккаунт нарушил одно или несколько торговых правил. Пожалуйста, проверьте торговую активность"
+    }
+  },
+  "notifications": {
+    "title": "Уведомления",
+    "subtitle": "Обновления активности аккаунта",
+    "markAllAsRead": "Отметить все как прочитанные",
+    "markAsRead": "Отметить как прочитанное",
+    "total": "Все",
+    "unread": "Непрочитанные",
+    "warnings": "Предупреждения",
+    "violations": "Нарушения",
+    "all": "Все",
+    "challenges": "Челленджи",
+    "payouts": "Выплаты",
+    "account": "Аккаунт",
+    "noNotifications": "Уведомлений нет",
+    "noNewNotifications": "Новых уведомлений нет",
+    "allCaughtUp": "Всё просмотрено!",
+    "challenge": "Челлендж",
+    "payout": "Вывод",
+    "system": "Система",
+    "notification": "Уведомление",
+    "notifications": "Уведомления",
+    "titles": {
+      "drawdownWarning": "Предупреждение о просадке",
+      "payoutApproved": "Вывод одобрен",
+      "payoutRejected": "Вывод отклонён",
+      "payoutProcessed": "Вывод обработан",
+      "phase1Completed": "Фаза 1 пройдена!",
+      "phase2Completed": "Фаза 2 пройдена!",
+      "accountViolation": "Нарушение аккаунта",
+      "accountFailed": "Аккаунт дисквалифицирован",
+      "challengePurchased": "Челлендж куплен",
+      "tradingDaysMilestone": "Достижение по торговым дням",
+      "newChallengeAvailable": "Доступен новый челлендж",
+      "accountScalingApproved": "Масштабирование аккаунта одобрено",
+      "accountScalingRejected": "Масштабирование аккаунта отклонено",
+      "accountPaused": "Аккаунт приостановлен",
+      "accountClosed": "Аккаунт закрыт",
+      "accountResumed": "Аккаунт возобновлён"
+    },
+    "messages": {
+      "dailyDrawdownWarning": "Дневная просадка по аккаунту #{{accountNumber}} достигла {{dailyPercent}}%. Допустимый лимит — {{maxPercent}}%. Пожалуйста, соблюдайте риск-менеджмент",
+      "overallDrawdownWarning": "Общая просадка по аккаунту #{{accountNumber}} достигла {{overallPercent}}%. Допустимый лимит — {{maxPercent}}%. Пожалуйста, соблюдайте риск-менеджмент",
+      "dailyDrawdownViolation": "Дневная просадка по аккаунту #{{accountNumber}} достигла {{dailyPercent}}%. Допустимый лимит — {{maxPercent}}%. Торговля будет заблокирована до завтра",
+      "overallDrawdownViolation": "Общая просадка по аккаунту #{{accountNumber}} достигла {{overallPercent}}%. Допустимый лимит — {{maxPercent}}%. Челлендж дисквалифицирован",
+      "payoutApproved": "Запрос на вывод ${{amount}} одобрен. Средства будут отправлены в течение 24–48 часов",
+      "payoutRejected": "Запрос на вывод ${{amount}} отклонён. Для подробностей обратитесь в поддержку",
+      "payoutProcessed": "Вывод ${{amount}} обработан, перевод выполнен",
+      "phase1Completed": "Поздравляем! Вы прошли Фазу 1 в челлендже ${{accountSize}}. Продолжайте и переходите к Фазе 2",
+      "phase2Completed": "Поздравляем! Вы прошли Фазу 2 в челлендже ${{accountSize}}. Ваш аккаунт профинансирован!",
+      "tradingDaysMilestoneMet": "Вы достигли {{tradingDays}} торговых дней на аккаунте #{{accountNumber}}. Требование по минимальному числу торговых дней выполнено!",
+      "tradingDaysMilestone": "Вы достигли {{tradingDays}} торговых дней на аккаунте #{{accountNumber}}. Отличная работа!",
+      "challengePurchased": "Покупка челленджа {{challengeName}} завершена. Торговый аккаунт #{{accountNumber}} доступен со стартовым балансом ${{startingBalance}}",
+      "accountScalingApproved": "Заявка на масштабирование аккаунта #{{accountNumber}} одобрена. Баланс увеличен с ${{oldBalance}} до ${{newBalance}}",
+      "accountScalingRejected": "Заявка на масштабирование аккаунта #{{accountNumber}} отклонена. Для подробностей обратитесь в поддержку",
+      "newChallengeAvailable": "Оцените новый челлендж {{challengeName}}! {{platform}} — размер аккаунта {{accountSize}}. Начните прямо сейчас",
+      "accountViolationGeneric": "Аккаунт #{{accountNumber}} нарушил торговые правила{{violationPercent}}",
+      "accountPaused": "Торговый аккаунт #{{accountNumber}} приостановлен. Торговля временно остановлена",
+      "accountClosed": "Торговый аккаунт #{{accountNumber}} закрыт",
+      "accountResumed": "Торговый аккаунт #{{accountNumber}} возобновлён. Торговля активна"
+    }
+  },
+  "buyChallenge": {
+    "title": "Добавить новый челлендж",
+    "subtitle": "Расширьте торговый портфель дополнительными челленджами",
+    "purchaseSuccessful": "Покупка завершена!",
+    "purchaseSuccessfulDesc": "Мы настраиваем ваш челлендж-аккаунт. В течение 5 минут отправим данные для входа на email",
+    "orderSummary": "Сводка заказа",
+    "challenge": "Челлендж",
+    "platform": "Платформа",
+    "amountPaid": "Оплаченная сумма",
+    "goToDashboard": "Перейти в дашборд",
+    "chooseChallenge": "Выберите челлендж",
+    "selectPlatform": "Выберите платформу",
+    "payment": "Оплата",
+    "chooseYourChallenge": "Выберите челлендж",
+    "selectAccountSize": "Выберите размер аккаунта под ваш стиль торговли",
+    "popular": "Популярно",
+    "accountSize": "Размер аккаунта",
+    "profitTarget": "Цель по прибыли",
+    "drawdown": "Просадка",
+    "profitSplit": "Распределение прибыли",
+    "continue": "Продолжить",
+    "selectTradingPlatform": "Выберите торговую платформу",
+    "choosePlatform": "Выберите платформу, на которой хотите торговать",
+    "back": "Назад",
+    "completePurchase": "Завершить покупку",
+    "choosePaymentMethod": "Выберите способ оплаты и завершите оформление",
+    "paymentMethod": "Способ оплаты",
+    "couponCode": "Промокод",
+    "enterCode": "Введите код",
+    "apply": "Применить",
+    "applied": "Применено",
+    "off": "OFF",
+    "couponApplied": "Промокод {{code}} применён — скидка {{discount}}%!",
+    "subtotal": "Промежуточный итог",
+    "discount": "Скидка",
+    "total": "Итого",
+    "processing": "Обработка...",
+    "pay": "Оплатить",
+    "payAmount": "Оплатить ${{amount}}",
+    "secureEncryption": "Безопасное 256-bit SSL шифрование",
+    "platforms": {
+      "MT5": {
+        "name": "MetaTrader 5",
+        "desc": "Популярная торговая платформа"
+      },
+      "MT4": {
+        "name": "MetaTrader 4",
+        "desc": "Классическая торговая платформа"
+      },
+      "cTrader": {
+        "name": "cTrader",
+        "desc": "Платформа для профессионалов"
+      },
+      "DXTrade": {
+        "name": "DXTrade",
+        "desc": "Веб-платформа"
+      }
+    },
+    "paymentMethods": {
+      "card": {
+        "name": "Кредитная/дебетовая карта",
+        "desc": "Visa, Mastercard, Amex"
+      },
+      "crypto": {
+        "name": "Криптовалюта",
+        "desc": "BTC, ETH, USDT"
+      },
+      "paypal": {
+        "name": "PayPal",
+        "desc": "Оплата через PayPal"
+      }
+    }
+  },
+  "violationModal": {
+    "dailyLossTitle": "Достигнут дневной лимит убытков",
+    "drawdownTitle": "Достигнут максимальный лимит убытков",
+    "description": "Ваш аккаунт нарушил правила челленджа",
+    "ruleLimit": "Лимит по правилам",
+    "equityAtViolation": "Эквити на момент нарушения",
+    "actionTaken": "Принятые меры",
+    "positionsClosed": "Все позиции были автоматически закрыты",
+    "dailyLockedAction": "Торговля будет заблокирована до завтра",
+    "disqualifiedAction": "Челлендж дисквалифицирован",
+    "understood": "Понятно"
+  },
+  "violationAlert": {
+    "accountFailed": "Аккаунт дисквалифицирован",
+    "dailyDrawdownExceeded": "Превышен дневной лимит убытков",
+    "dailyDrawdownDescription": "Дневной убыток превысил допустимый лимит {{limit}}%",
+    "maximumDrawdownExceeded": "Превышен максимальный лимит убытков",
+    "maximumDrawdownDescription": "Общий убыток превысил допустимый лимит {{limit}}%",
+    "maximumTradingDaysExceeded": "Превышено максимальное число торговых дней",
+    "maximumTradingDaysDescription": "Превышено допустимое максимальное количество торговых дней",
+    "valueAtViolation": "Значение при нарушении",
+    "maximumAllowed": "Допустимый максимум",
+    "account": "Аккаунт",
+    "finalBalance": "Итоговый баланс",
+    "tradingDays": "Торговые дни",
+    "days": "Дней",
+    "startNewChallenge": "Начать новый челлендж",
+    "reviewTradingRules": "Проверить торговые правила"
+  },
+  "terminal": {
+    "title": "Торговый терминал",
+    "selectAccount": "Выберите аккаунт",
+    "phase1": "Фаза 1",
+    "phase2": "Фаза 2",
+    "funded": "Профинансирован",
+    "failed": "Не пройден",
+    "phase1Badge": "Фаза 1",
+    "phase2Badge": "Фаза 2",
+    "fundedBadge": "Профинансирован",
+    "failedBadge": "Не пройден",
+    "connected": "Подключено",
+    "disconnected": "Отключено",
+    "tabs": {
+      "chart": "График",
+      "trade": "Торговля",
+      "watch": "Наблюдение",
+      "watchlist": "Список наблюдения",
+      "positions": "Позиции",
+      "pending": "Ожидающие",
+      "history": "История"
+    },
+    "tradeHistory": "История сделок",
+    "modifyDialog": {
+      "title": "Редактировать {{symbol}}",
+      "lotSize": "Размер лота",
+      "enterTP": "Введите цену TP",
+      "enterSL": "Введите цену SL",
+      "saveChanges": "Сохранить изменения",
+      "saving": "Сохранение..."
+    },
+    "noPendingOrders": "Ожидающих ордеров нет",
+    "cancel": "Отмена",
+    "noClosedTrades": "Закрытых сделок пока нет",
+    "lots": "Лоты",
+    "lot": "Лот",
+    "drawdownWarning": {
+      "title": "Предупреждение об убытке",
+      "details": "Рекомендуем уменьшить размер позиции или закрыть часть сделок, чтобы защитить аккаунт"
+    },
+    "violation": {
+      "title": "Дисквалификация челленджа",
+      "message": "Превышен максимальный лимит убытков"
+    },
+    "accountFailed": {
+      "title": "Аккаунт дисквалифицирован — торговля отключена",
+      "resetDemo": "Сбросить демо",
+      "message": "Аккаунт дисквалифицирован, торговля отключена"
+    },
+    "tradeBlocked": "Торговля заблокирована",
+    "invalidTrade": "Недействительный ордер",
+    "missingFields": "Недостаточно данных в ордере",
+    "noAccount": "Аккаунт не выбран",
+    "selectAccountTitle": "Выберите аккаунт",
+    "selectAccountMessage": "Выберите торговый аккаунт в выпадающем списке выше, чтобы увидеть детали торговли",
+    "tradeExecuted": "Ордер исполнен",
+    "orderPlaced": "Ордер размещён",
+    "orderCancelled": "Ордер отменён",
+    "tradeFailed": "Не удалось выполнить ордер",
+    "saveError": "Не удалось сохранить ордер на сервере",
+    "positionClosed": "Позиция закрыта",
+    "stopLossHit": "Сработал стоп-лосс",
+    "takeProfitHit": "Сработал тейк-профит",
+    "closedAt": "Цена закрытия",
+    "closeFailed": "Не удалось закрыть позицию",
+    "updateError": "Не удалось обновить ордер на сервере",
+    "accountStatusBlocked": "Торговля не разрешена, так как статус аккаунта — {{status}}",
+    "invalidLotSize": "Неверный размер лота. Введите положительное число",
+    "duplicateTrade": "Дублирующий ордер",
+    "duplicateTradeMessage": "Похожий ордер был недавно исполнен. Пожалуйста, подождите",
+    "accountNotFound": "Торговый аккаунт не найден",
+    "invalidTradeData": "Неверные торговые данные. Проверьте введённую информацию",
+    "tradeNotAllowed": "Торговля на этом аккаунте запрещена",
+    "serverError": "Ошибка сервера. Пожалуйста, попробуйте снова",
+    "networkOffline": "Нет подключения к интернету. Проверьте сеть",
+    "networkError": "Сетевая ошибка. Проверьте подключение и повторите попытку",
+    "tradeNotFound": "Ордер не найден. Возможно, он был удалён",
+    "invalidCloseData": "Неверные данные для закрытия ордера",
+    "tradeAlreadyClosed": "Этот ордер уже закрыт",
+    "tradeInProgress": "Обработка ордера. Пожалуйста, подождите",
+    "dailyLossLimitReached": "Достигнут дневной лимит убытков. Торговля будет заблокирована до завтра",
+    "dailyLocked": "Достигнут дневной лимит убытков",
+    "dailyLockedMessage": "Аккаунт заблокирован до завтра из-за превышения дневного лимита убытков",
+    "disqualified": "Дисквалифицирован",
+    "disqualifiedMessage": "Аккаунт дисквалифицирован из-за превышения максимального лимита убытков",
+    "challengeDisqualified": "Челлендж дисквалифицирован. Дальнейшая торговля невозможна",
+    "modificationFailed": "Не удалось применить изменения",
+    "orderCancelledSuccess": "Ожидающий ордер успешно отменён",
+    "orderFailed": "Ордер не выполнен",
+    "orderExecutionFailed": "Не удалось исполнить ордер",
+    "cancelFailed": "Не удалось отменить",
+    "pendingOrderDescription": "Размещен лимитный ордер {{type}} {{symbol}}",
+    "tradingPanel": {
+      "newOrder": "Новый ордер",
+      "buyLong": "Покупка",
+      "sellShort": "Продажа",
+      "long": "Лонг",
+      "short": "Шорт",
+      "price": "Цена",
+      "market": "Рынок",
+      "leaveEmpty": "Оставьте пустым для рыночного ордера",
+      "amount": "Количество",
+      "takeProfit": "Тейк-профит",
+      "stopLoss": "Стоп-лосс",
+      "lot": "лот",
+      "optional": "Необязательно",
+      "orderValue": "Стоимость ордера",
+      "margin": "Маржа",
+      "leverage": "Плечо",
+      "placeBuyOrder": "Разместить ордер на покупку",
+      "placeSellOrder": "Разместить ордер на продажу",
+      "bid": "Bid (цена продажи)",
+      "ask": "Ask (цена покупки)",
+      "spread": "Спред",
+      "limit": "Лимит"
+    },
+    "chart": {
+      "lastUpdate": "Последнее обновление",
+      "candles": "Свечи",
+      "tf": "TF",
+      "loadingData": "Загрузка данных графика...",
+      "updating": "Обновление..."
+    },
+    "loadingAccounts": "Загрузка аккаунтов...",
+    "watchlist": {
+      "live": "В сети",
+      "offline": "Не в сети",
+      "search": "Поиск...",
+      "all": "Все",
+      "favorites": "★",
+      "forex": "Форекс",
+      "crypto": "Крипто",
+      "symbol": "Символ",
+      "bid": "Bid",
+      "ask": "Ask",
+      "chg": "Chg%",
+      "updated": "Обновлено",
+      "retry": "Повторить"
+    },
+    "positions": {
+      "title": "Открытые позиции",
+      "noPositions": "Открытых позиций нет",
+      "noPositionsDesc": "После начала торговли здесь будут отображаться позиции",
+      "modifySLTP": "Редактировать SL/TP",
+      "closePosition": "Закрыть позицию",
+      "entry": "Цена входа",
+      "current": "Текущая",
+      "closeAt": "Цена закрытия",
+      "pips": "пипсы",
+      "buy": "Покупка",
+      "sell": "Продажа"
+    },
+    "history": {
+      "filterBySymbol": "Фильтр по символу...",
+      "allTrades": "Все сделки",
+      "profitOnly": "Только прибыльные",
+      "lossOnly": "Только убыточные",
+      "allTime": "За всё время",
+      "today": "Сегодня",
+      "thisWeek": "На этой неделе",
+      "thisMonth": "В этом месяце",
+      "totalPL": "Общий P/L",
+      "winRate": "Процент побед",
+      "wins": "Победы",
+      "losses": "Убытки",
+      "noTradesMatch": "Нет сделок, соответствующих условиям",
+      "entry": "Вход",
+      "exit": "Выход",
+      "autoClosed": "Автозакрытие",
+      "breach": "Нарушение правил",
+      "breachPnL": "PnL при нарушении (на лимите)"
+    },
+    "accountMetrics": {
+      "balance": "Баланс",
+      "equity": "Эквити",
+      "margin": "Маржа",
+      "freeMargin": "Свободная маржа",
+      "marginLevel": "Уровень маржи",
+      "floatingPnL": "Плавающий PnL",
+      "profitPercent": "Прибыль %",
+      "dailyDrawdown": "Дневная просадка",
+      "overallDrawdown": "Общая просадка",
+      "used": "Использовано",
+      "free": "Свободно",
+      "marginUsed": "Использованная маржа",
+      "tradingDays": "Торговые дни",
+      "phase": "Фаза",
+      "loss": "Убыток",
+      "challengeActive": "Активный челлендж",
+      "workingTowardsPhase1": "Движемся к завершению Фазы 1",
+      "workingTowardsPhase2": "Движемся к завершению Фазы 2",
+      "phase1Complete": "Фаза 1 завершена",
+      "readyForPhase2": "Готовы перейти к Фазе 2",
+      "fundedAccount": "Финансируемый аккаунт",
+      "challengeCompleted": "Поздравляем! Вы завершили челлендж",
+      "phaseProgression": "Прогресс фаз",
+      "completePhase1": "Завершить Фазу 1",
+      "completePhase2": "Завершить Фазу 2",
+      "profit": "Прибыль",
+      "days": "Дней",
+      "phase1": "Фаза 1",
+      "phase2": "Фаза 2",
+      "funded": "Профинансирован",
+      "dailyLimitViolated": "Нарушен дневной лимит (заблокирован)",
+      "challengeFailed": "Челлендж дисквалифицирован / не пройден",
+      "accountLockedUntilTomorrow": "Аккаунт заблокирован до завтра из-за нарушения дневного лимита убытков",
+      "accountViolatedRules": "Аккаунт нарушил правила челленджа",
+      "daysRemaining_one": "Осталось {{count}} дней",
+      "daysRemaining_other": "Осталось {{count}} дней"
+    }
+  },
+  "nav": {
+    "home": "Главная",
+    "challenges": "Челленджи",
+    "howItWorks": "Как это работает",
+    "scaling": "Масштабирование",
+    "rules": "Правила",
+    "faq": "FAQ",
+    "contact": "Контакты",
+    "login": "Войти",
+    "getStarted": "Начать",
+    "dashboard": "Дашборд",
+    "tradingTerminal": "Торговый терминал",
+    "buyChallenge": "Купить челлендж",
+    "myAccounts": "Мои аккаунты",
+    "accountDetails": "Детали аккаунта",
+    "challengeProgress": "Прогресс челленджа",
+    "ruleCompliance": "Соблюдение правил",
+    "tradeHistory": "История сделок",
+    "analytics": "Аналитика",
+    "payouts": "Выплаты",
+    "notifications": "Уведомления",
+    "profile": "Профиль",
+    "support": "Поддержка",
+    "overview": "Обзор",
+    "users": "Пользователи",
+    "accounts": "Аккаунты",
+    "riskMonitor": "Мониторинг рисков",
+    "brokerServers": "Серверы брокера",
+    "payments": "Платежи",
+    "violations": "Нарушения",
+    "settings": "Настройки",
+    "website": "Сайт",
+    "logout": "Выйти",
+    "user": "Пользователь",
+    "adminPanel": "Панель администратора"
+  },
+  "status": {
+    "active": "Активен",
+    "ACTIVE": "Активен",
+    "passed": "Пройден",
+    "failed": "Не пройден",
+    "suspended": "Приостановлен",
+    "funded": "Профинансирован",
+    "pending": "В ожидании",
+    "approved": "Одобрено",
+    "rejected": "Отклонено",
+    "paid": "Оплачено",
+    "completed": "Завершено",
+    "refunded": "Возвращено",
+    "open": "Открыто",
+    "in_progress": "В процессе",
+    "inprogress": "В процессе",
+    "resolved": "Решено",
+    "closed": "Закрыто",
+    "CLOSED": "Закрыто",
+    "DAILY_LOCKED": "Дневная блокировка",
+    "DISQUALIFIED": "Дисквалифицирован",
+    "phase1": "Фаза 1",
+    "phase2": "Фаза 2",
+    "paused": "Приостановлено",
+    "daily_locked": "Дневная блокировка",
+    "dailylocked": "Дневная блокировка",
+    "Dailylocked": "Дневная блокировка",
+    "disqualified": "Дисквалифицирован"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Панель администратора",
+      "subtitle": "Обзор производительности и активности платформы",
+      "stats": {
+        "totalTraders": "Всего трейдеров",
+        "activeChallenges": "Активные челленджи",
+        "revenue": "Выручка",
+        "payouts": "Выплаты",
+        "fundedAccounts": "Финансируемые аккаунты",
+        "violationsToday": "Нарушения сегодня",
+        "changeThisMonth": "В этом месяце +{{percent}}%"
+      },
+      "chart": {
+        "title": "Выручка и выплаты (последние 30 дней)",
+        "revenue": "Выручка",
+        "payouts": "Выплаты",
+        "tooltip": {
+          "date": "Дата",
+          "revenue": "Выручка",
+          "payout": "Выплата"
+        }
+      },
+      "recentAccounts": {
+        "title": "Недавние аккаунты"
+      },
+      "recentViolations": {
+        "title": "Недавние нарушения"
+      },
+      "viewAll": "Показать все",
+      "noDataFound": "Данные не найдены",
+      "table": {
+        "account": "Аккаунт",
+        "platform": "Платформа",
+        "phase": "Фаза",
+        "status": "Статус",
+        "created": "Дата создания",
+        "type": "Тип",
+        "description": "Описание",
+        "time": "Время"
+      },
+      "quickActions": {
+        "manageUsers": "Управление пользователями",
+        "manageChallenges": "Управление челленджами",
+        "reviewPayouts": "Проверка выплат",
+        "platformSettings": "Настройки платформы"
+      },
+      "violations": {
+        "daily_drawdown": {
+          "type": "Дневной убыток",
+          "description": "Дневной убыток превысил 5%"
+        },
+        "overall_drawdown": {
+          "type": "Общий убыток",
+          "description": "Общий убыток превысил 10%"
+        },
+        "max_trading_days": {
+          "type": "Максимальные торговые дни",
+          "description": "Период торговли завершён"
+        },
+        "unknown": {
+          "type": "Неизвестно",
+          "description": "Неизвестное нарушение"
+        }
+      }
+    },
+    "users": {
+      "title": "Управление пользователями",
+      "subtitle": "Просмотр и управление всеми пользователями платформы",
+      "stats": {
+        "totalUsers": "Всего пользователей",
+        "traders": "Трейдеры",
+        "admins": "Администраторы",
+        "newThisWeek": "Новые за неделю"
+      },
+      "searchPlaceholder": "Поиск по имени или email...",
+      "filter": {
+        "role": "Роль",
+        "allRoles": "Все роли",
+        "traders": "Трейдеры",
+        "admins": "Администраторы"
+      },
+      "table": {
+        "user": "Пользователь",
+        "role": "Роль",
+        "joined": "Дата регистрации",
+        "actions": "Действия"
+      },
+      "roles": {
+        "user": "Трейдер",
+        "admin": "Администратор"
+      },
+      "actions": {
+        "viewDetails": "Посмотреть детали",
+        "sendEmail": "Отправить email",
+        "makeAdmin": "Сделать администратором",
+        "makeTrader": "Сделать трейдером"
+      },
+      "dialog": {
+        "title": "Детали пользователя",
+        "userId": "ID пользователя",
+        "role": "Роль",
+        "firstName": "Имя",
+        "lastName": "Фамилия",
+        "phone": "Телефон",
+        "country": "Страна",
+        "joined": "Дата регистрации",
+        "noDetails": "Не удалось загрузить детали пользователя",
+        "error": "Произошла ошибка при загрузке деталей пользователя"
+      },
+      "emptyMessage": "Пользователи не найдены"
+    },
+    "accounts": {
+      "title": "Управление аккаунтами",
+      "subtitle": "Просмотр и управление всеми торговыми аккаунтами",
+      "stats": {
+        "totalAccounts": "Всего аккаунтов",
+        "active": "Активные",
+        "passed": "Пройдено",
+        "funded": "Профинансировано",
+        "failed": "Не пройдено"
+      },
+      "searchPlaceholder": "Поиск по номеру аккаунта или email...",
+      "filter": {
+        "status": "Статус",
+        "phase": "Фаза",
+        "allStatus": "Все статусы",
+        "allPhases": "Все фазы",
+        "active": "Активные",
+        "passed": "Пройдено",
+        "funded": "Профинансировано",
+        "failed": "Не пройдено",
+        "suspended": "Приостановлено",
+        "phase1": "Фаза 1",
+        "phase2": "Фаза 2"
+      },
+      "table": {
+        "account": "Аккаунт",
+        "platform": "Платформа",
+        "balance": "Баланс",
+        "phase": "Фаза",
+        "status": "Статус",
+        "created": "Дата создания",
+        "actions": "Действия"
+      },
+      "actions": {
+        "viewDetails": "Посмотреть детали",
+        "forcePass": "Принудительно засчитать",
+        "forceFail": "Принудительно провалить",
+        "resetAccount": "Сбросить аккаунт",
+        "moveToFunded": "Перевести в финансируемый"
+      },
+      "dialog": {
+        "title": "Детали аккаунта",
+        "accountId": "ID аккаунта",
+        "brokerLogin": "Логин брокера",
+        "trader": "Трейдер",
+        "platform": "Платформа",
+        "challenge": "Челлендж",
+        "phase": "Фаза",
+        "status": "Статус",
+        "created": "Дата создания",
+        "initialBalance": "Начальный баланс",
+        "currentBalance": "Текущий баланс",
+        "equity": "Эквити",
+        "profit": "P/L",
+        "totalTrades": "Всего сделок",
+        "violations": "Нарушения",
+        "phaseTransitions": "Переходы фаз",
+        "recentViolations": "Недавние нарушения",
+        "error": "Ошибка загрузки деталей аккаунта",
+        "noDetails": "Детали аккаунта отсутствуют"
+      },
+      "emptyMessage": "Аккаунты не найдены"
+    },
+    "payouts": {
+      "title": "Управление выплатами",
+      "subtitle": "Проверка и обработка запросов на вывод",
+      "stats": {
+        "pending": "В ожидании",
+        "approved": "Одобрено",
+        "totalPaid": "Всего выплачено",
+        "pendingRequests": "Ожидающие запросы"
+      },
+      "searchPlaceholder": "Поиск по email трейдера...",
+      "filter": {
+        "status": "Статус",
+        "allStatus": "Все статусы",
+        "pending": "В ожидании",
+        "approved": "Одобрено",
+        "paid": "Оплачено",
+        "rejected": "Отклонено"
+      },
+      "table": {
+        "trader": "Трейдер",
+        "amount": "Сумма",
+        "method": "Способ",
+        "status": "Статус",
+        "requested": "Дата запроса",
+        "actions": "Действия"
+      },
+      "actions": {
+        "markAsPaid": "Отметить как оплачено",
+        "paid": "Оплачено",
+        "rejected": "Отклонено",
+        "rejecting": "Отклонение..."
+      },
+      "emptyMessage": "Запросы на вывод не найдены",
+      "dialog": {
+        "rejectTitle": "Отклонить запрос на вывод",
+        "rejectMessage": "Отклонить вывод {{amount}} для {{trader}}",
+        "rejectReasonPlaceholder": "Причина отклонения...",
+        "cancel": "Отмена",
+        "rejectPayout": "Отклонить вывод"
+      }
+    },
+    "payments": {
+      "title": "Управление платежами",
+      "subtitle": "Просмотр и управление всеми платежами за челленджи",
+      "stats": {
+        "totalRevenue": "Общая выручка",
+        "completed": "Завершено",
+        "pending": "В ожидании",
+        "refunded": "Возвращено",
+        "changeThisMonth": "В этом месяце +{{percent}}%"
+      },
+      "searchPlaceholder": "Поиск по email или ID транзакции...",
+      "filter": {
+        "status": "Статус",
+        "allStatus": "Все статусы",
+        "completed": "Завершено",
+        "pending": "В ожидании",
+        "failed": "Неудачно",
+        "refunded": "Возвращено"
+      },
+      "table": {
+        "trader": "Трейдер",
+        "amount": "Сумма",
+        "method": "Способ",
+        "transactionId": "ID транзакции",
+        "status": "Статус",
+        "date": "Дата",
+        "actions": "Действия"
+      },
+      "methods": {
+        "stripe": "Кредитная/дебетовая карта",
+        "internal": "Внутренний",
+        "unknown": "Неизвестно"
+      },
+      "actions": {
+        "refund": "Возврат",
+        "refunded": "Возвращено"
+      },
+      "emptyMessage": "Платежи не найдены",
+      "refundTitle": "Возврат",
+      "refundConfirm": "Вы хотите вернуть этот платеж?",
+      "refundReason": "Причина возврата (необязательно)",
+      "refundReasonPlaceholder": "Введите причину возврата...",
+      "cancel": "Отмена",
+      "confirmRefund": "Подтвердить возврат",
+      "refunding": "Обработка..."
+    },
+    "violations": {
+      "title": "Нарушения правил",
+      "subtitle": "Просмотр и отслеживание нарушений торговых правил",
+      "stats": {
+        "totalViolations": "Всего нарушений",
+        "fatalViolations": "Критические нарушения",
+        "warnings": "Предупреждения",
+        "today": "Сегодня"
+      },
+      "searchPlaceholder": "Поиск по аккаунту или email...",
+      "filter": {
+        "violationType": "Тип нарушения",
+        "allTypes": "Все типы",
+        "dailyDrawdown": "Дневной убыток",
+        "overallDrawdown": "Общий убыток",
+        "maxTradingDays": "Максимальные торговые дни",
+        "newsTrading": "Торговля на новостях",
+        "weekendHolding": "Удержание на выходных",
+        "restrictedInstrument": "Ограниченный инструмент",
+        "lotSize": "Размер лота",
+        "eaDetected": "Обнаружен EA",
+        "consistency": "Последовательность",
+        "ruleBreak": "Нарушение правил"
+      },
+      "table": {
+        "account": "Аккаунт",
+        "type": "Тип",
+        "description": "Описание",
+        "value": "Значение",
+        "fatal": "Критическое",
+        "time": "Время"
+      },
+      "types": {
+        "dailyDrawdown": "Дневной убыток",
+        "overallDrawdown": "Общий убыток",
+        "maxTradingDays": "Максимальные торговые дни",
+        "newsTrading": "Торговля на новостях",
+        "weekendHolding": "Удержание на выходных",
+        "restrictedInstrument": "Ограниченный инструмент",
+        "lotSize": "Размер лота",
+        "eaDetected": "Обнаружен EA"
+      },
+      "severity": {
+        "fatal": "Критическое",
+        "warning": "Предупреждение"
+      },
+      "descriptions": {
+        "daily_drawdown": "Дневной убыток превысил {{threshold}}%",
+        "overall_drawdown": "Общий убыток превысил {{threshold}}%",
+        "max_trading_days": "Максимальный период торговли завершён",
+        "news_trading": "Торговля в запрещённое время новостей",
+        "weekend_holding": "Удержание позиций на выходных",
+        "restricted_instrument": "Торговля по ограниченному инструменту",
+        "lot_size": "Превышен лимит размера лота",
+        "ea_detected": "Обнаружен Expert Advisor"
+      },
+      "emptyMessage": "Нарушения не найдены"
+    },
+    "coupons": {
+      "title": "Управление купонами",
+      "subtitle": "Создание и управление скидочными купонами",
+      "createCoupon": "Создать купон",
+      "editCoupon": "Редактировать купон",
+      "createNewCoupon": "Создать новый купон",
+      "stats": {
+        "totalCoupons": "Всего купонов",
+        "active": "Активные",
+        "totalUses": "Всего использований",
+        "expired": "Истекли"
+      },
+      "form": {
+        "couponCode": "Код купона",
+        "generate": "Сгенерировать",
+        "discountType": "Тип скидки",
+        "percentage": "Процент",
+        "fixedAmount": "Фиксированная сумма",
+        "discountValue": "Размер скидки",
+        "maxUses": "Макс. использование (необязательно)",
+        "validUntil": "Действителен до (необязательно)",
+        "active": "Активен",
+        "saving": "Сохранение...",
+        "updateCoupon": "Обновить купон",
+        "createCoupon": "Создать купон"
+      },
+      "table": {
+        "code": "Код",
+        "discount": "Скидка",
+        "usage": "Использование",
+        "validUntil": "Действителен до",
+        "status": "Статус",
+        "actions": "Действия"
+      },
+      "status": {
+        "active": "Активен",
+        "inactive": "Неактивен"
+      },
+      "noExpiry": "Без срока действия",
+      "emptyMessage": "Купоны не найдены"
+    },
+    "support": {
+      "title": "Тикеты поддержки",
+      "subtitle": "Управление и ответы на запросы поддержки",
+      "stats": {
+        "openTickets": "Открытые тикеты",
+        "inProgress": "В процессе",
+        "resolved": "Решено",
+        "today": "Сегодня",
+        "avgResponse": "Среднее время ответа"
+      },
+      "searchPlaceholder": "Поиск по email или теме...",
+      "filter": {
+        "status": "Статус",
+        "allStatus": "Все статусы",
+        "open": "Открыто",
+        "inProgress": "В процессе",
+        "resolved": "Решено",
+        "closed": "Закрыто"
+      },
+      "table": {
+        "ticket": "Тикет",
+        "category": "Категория",
+        "priority": "Приоритет",
+        "status": "Статус",
+        "created": "Дата создания",
+        "actions": "Действия"
+      },
+      "priority": {
+        "low": "Низкий",
+        "medium": "Средний",
+        "high": "Высокий"
+      },
+      "category": {
+        "technical": "Техническая",
+        "payout": "Вывод",
+        "account": "Аккаунт",
+        "payment": "Оплата",
+        "other": "Другое"
+      },
+      "actions": {
+        "take": "Взять в работу",
+        "resolve": "Решить"
+      },
+      "dialog": {
+        "from": "От",
+        "writeResponse": "Напишите ответ...",
+        "close": "Закрыть",
+        "sending": "Отправка...",
+        "sendAndResolve": "Отправить и закрыть"
+      },
+      "emptyMessage": "Тикеты не найдены",
+      "subjects": {
+        "unableToLoginMT5": "Не могу войти в MT5",
+        "payoutRequestTakingTooLong": "Запрос на вывод занимает слишком много времени",
+        "questionAboutScalingPlan": "Вопрос о плане масштабирования",
+        "refundRequest": "Запрос на возврат",
+        "challengeRulesClarification": "Уточнение правил челленджа"
+      }
+    },
+    "settings": {
+      "title": "Настройки платформы",
+      "subtitle": "Настройка параметров и интеграций",
+      "saveChanges": "Сохранить изменения",
+      "settingsSaved": "Настройки сохранены",
+      "tabs": {
+        "general": "Общие",
+        "branding": "Брендинг",
+        "payments": "Платежи",
+        "integrations": "Интеграции",
+        "email": "Email"
+      },
+      "general": {
+        "title": "Общие настройки",
+        "platformName": "Название платформы",
+        "supportEmail": "Email поддержки",
+        "maintenanceMode": "Режим обслуживания",
+        "maintenanceModeDesc": "Временно отключить доступ к платформе"
+      },
+      "branding": {
+        "title": "Настройки бренда",
+        "primaryColor": "Основной цвет",
+        "secondaryColor": "Дополнительный цвет",
+        "logoUrl": "Логотип {{url}}",
+        "logoUrlPlaceholder": "https://example.com/logo.png"
+      },
+      "payments": {
+        "title": "Настройки платежей",
+        "stripe": "Stripe",
+        "stripeDesc": "Принимать оплату банковскими картами",
+        "stripeApiKey": "Stripe API Key",
+        "stripeApiKeyPlaceholder": "sk_live_...",
+        "paypal": "PayPal",
+        "paypalDesc": "Принимать оплату через PayPal",
+        "cryptocurrency": "Криптовалюта",
+        "cryptocurrencyDesc": "Принимать оплату в BTC, ETH, USDT"
+      },
+      "integrations": {
+        "title": "Интеграции торговых платформ",
+        "mt4": "MetaTrader 4",
+        "mt4Desc": "Классическая торговая платформа MT4",
+        "mt5": "MetaTrader 5",
+        "mt5Desc": "Продвинутая торговая платформа MT5",
+        "ctrader": "cTrader",
+        "ctraderDesc": "Профессиональная платформа cTrader",
+        "dxtrade": "DXTrade",
+        "dxtradeDesc": "Торговая платформа DXTrade",
+        "note": "Примечание: для безопасности API-ключи торговых платформ нужно настраивать отдельно"
+      },
+      "email": {
+        "title": "Email-шаблоны",
+        "welcomeEmail": "Приветственное письмо",
+        "welcomeEmailDesc": "Отправляется при регистрации нового пользователя",
+        "challengePurchase": "Покупка челленджа",
+        "challengePurchaseDesc": "Отправляется при покупке челленджа",
+        "accountCredentials": "Данные для входа",
+        "accountCredentialsDesc": "Отправляется вместе с деталями торгового аккаунта",
+        "phasePassed": "Фаза пройдена",
+        "phasePassedDesc": "Отправляется, когда трейдер проходит фазу",
+        "accountFailed": "Аккаунт дисквалифицирован",
+        "accountFailedDesc": "Отправляется, когда аккаунт дисквалифицирован",
+        "payoutApproved": "Вывод одобрен",
+        "payoutApprovedDesc": "Отправляется при одобрении вывода",
+        "editTemplate": "Редактировать шаблон"
+      }
+    },
+    "riskMonitor": {
+      "title": "Мониторинг рисков",
+      "subtitle": "Мониторинг рисков аккаунтов в реальном времени",
+      "refresh": "Обновить",
+      "riskLevels": {
+        "critical": "Критический риск",
+        "high": "Высокий риск",
+        "medium": "Средний риск",
+        "low": "Низкий риск"
+      },
+      "riskBadges": {
+        "critical": "Критично",
+        "high": "Высокий",
+        "medium": "Средний",
+        "low": "Низкий"
+      },
+      "searchPlaceholder": "Поиск по номеру аккаунта или трейдеру...",
+      "table": {
+        "account": "Аккаунт",
+        "balance": "Баланс",
+        "equity": "Эквити",
+        "dailyDD": "Дневной DD",
+        "maxDD": "Макс. DD",
+        "riskLevel": "Уровень риска",
+        "actions": "Действия"
+      },
+      "confirmations": {
+        "emergencyClose": "Закрыть все позиции на этом аккаунте?",
+        "lockAccount": "Заблокировать этот аккаунт?"
+      },
+      "recentViolations": {
+        "title": "Недавние нарушения",
+        "noViolations": "Недавних нарушений нет",
+        "account": "Аккаунт"
+      }
+    },
+    "brokerServers": {
+      "title": "Серверы брокера",
+      "subtitle": "Управление подключением к торговым платформам",
+      "addServer": "Добавить сервер",
+      "adding": "Добавление...",
+      "dialog": {
+        "title": "Добавить сервер брокера",
+        "serverName": "Название сервера",
+        "serverNamePlaceholder": "Напр.: Props Capital MT5 Demo",
+        "platform": "Платформа",
+        "serverAddress": "Адрес сервера",
+        "serverAddressPlaceholder": "broker.server.com",
+        "port": "Порт",
+        "managerLogin": "Логин менеджера",
+        "managerPassword": "Пароль менеджера",
+        "apiKey": "API Key / Client ID",
+        "apiSecret": "API Secret",
+        "demoServer": "Демо-сервер"
+      },
+      "platforms": {
+        "mt4": "MetaTrader 4",
+        "mt5": "MetaTrader 5",
+        "ctrader": "cTrader",
+        "dxtrade": "DXTrade"
+      },
+      "status": {
+        "connected": "Подключено",
+        "error": "Ошибка",
+        "notConnected": "Не подключено"
+      },
+      "badges": {
+        "demo": "Демо"
+      },
+      "card": {
+        "platform": "Платформа",
+        "timezone": "Часовой пояс",
+        "lastSync": "Последняя синхронизация"
+      },
+      "actions": {
+        "test": "Тест"
+      },
+      "empty": {
+        "title": "Серверы брокера отсутствуют",
+        "description": "Добавьте первый сервер брокера, чтобы начать создавать торговые аккаунты"
+      }
+    },
+    "scaling": {
+      "title": "Управление масштабированием",
+      "subtitle": "Проверка и обработка заявок на масштабирование",
+      "summary": {
+        "pendingReview": "Ожидает проверки",
+        "readyToProcess": "Готово к обработке",
+        "completed": "Завершено"
+      },
+      "tabs": {
+        "pending": "В ожидании",
+        "approved": "Одобрено",
+        "completed": "Завершено",
+        "all": "Все"
+      },
+      "table": {
+        "trader": "Трейдер",
+        "currentToNew": "Текущий → Новый",
+        "profitSplit": "Распределение прибыли",
+        "profitAchieved": "Достигнутая прибыль",
+        "payoutCycles": "Циклы выплат",
+        "status": "Статус",
+        "actions": "Действия",
+        "level": "Уровень {{current}} → {{new}}"
+      },
+      "status": {
+        "pending": "В ожидании",
+        "approved": "Одобрено",
+        "completed": "Завершено",
+        "rejected": "Отклонено"
+      },
+      "actions": {
+        "approve": "Одобрить",
+        "reject": "Отклонить",
+        "process": "Обработать",
+        "processing": "Обработка...",
+        "approving": "Одобрение...",
+        "rejecting": "Отклонение..."
+      },
+      "emptyMessage": "Заявки на масштабирование не найдены",
+      "dialog": {
+        "approveTitle": "Одобрить масштабирование",
+        "rejectTitle": "Отклонить масштабирование",
+        "currentSize": "Текущий размер",
+        "newSize": "Новый размер",
+        "newProfitSplit": "Новое распределение прибыли",
+        "notes": "Заметки (необязательно)",
+        "notesPlaceholder": "Добавьте заметку...",
+        "cancel": "Отмена"
+      }
+    },
+    "challenges": {
+      "title": "Управление челленджами",
+      "subtitle": "Создание и управление торговыми челленджами",
+      "createChallenge": "Создать челлендж",
+      "editChallenge": "Редактировать челлендж",
+      "createNewChallenge": "Создать новый челлендж",
+      "updateChallenge": "Обновить челлендж",
+      "edit": "Редактировать",
+      "saving": "Сохранение...",
+      "inactive": "Неактивен",
+      "types": {
+        "one_phase": "1 фаза",
+        "two_phase": "2 фазы",
+        "instant_funding": "Мгновенное финансирование"
+      },
+      "form": {
+        "challengeName": "Название челленджа",
+        "challengeType": "Тип челленджа",
+        "onePhase": "1 фаза",
+        "twoPhase": "2 фазы",
+        "instantFunding": "Мгновенное финансирование",
+        "platform": "Платформа",
+        "accountSize": "Размер аккаунта ($)",
+        "price": "Цена ($)",
+        "phase1ProfitTarget": "Цель прибыли Фазы 1 (%)",
+        "phase2ProfitTarget": "Цель прибыли Фазы 2 (%)",
+        "dailyDrawdown": "Дневной убыток (%)",
+        "overallDrawdown": "Общий убыток (%)",
+        "profitSplit": "Распределение прибыли (%)",
+        "minTradingDays": "Минимальные торговые дни",
+        "minTradingDaysHint": "Минимальное количество дней, в которые трейдер должен торговать",
+        "maxTradingDays": "Максимальные торговые дни",
+        "maxTradingDaysHint": "Челлендж завершится через X дней (оставьте пустым для безлимита)",
+        "tradingRules": "Торговые правила",
+        "newsTradingAllowed": "Разрешить торговлю на новостях",
+        "weekendHolding": "Удержание на выходных",
+        "ea": "EA",
+        "bots": "Боты",
+        "eaBotsAllowed": "Разрешить {{ea}}/{{bots}}",
+        "active": "Активен"
+      },
+      "card": {
+        "accountSize": "Размер аккаунта",
+        "price": "Цена",
+        "profitTarget": "Цель по прибыли",
+        "drawdown": "Убыток",
+        "profitSplit": "Распределение прибыли"
+      },
+      "deleteConfirmTitle": "Удалить челлендж",
+      "deleteConfirmMessage": "Удалить \"{{name}}\"? Это действие нельзя отменить",
+      "deleteConfirmWarning": "Удалять можно только неактивные челленджи",
+      "cancel": "Отмена",
+      "confirmDelete": "Удалить челлендж",
+      "deleting": "Удаление...",
+      "deleteSuccess": "Челлендж удалён",
+      "deleteSuccessDesc": "Удаление челленджа завершено",
+      "deleteErrorTitle": "Невозможно удалить челлендж",
+      "deleteErrorMessage": "Этот челлендж нельзя удалить",
+      "deleteErrorDesc": "Невозможно удалить, так как он связан с существующими торговыми аккаунтами",
+      "understand": "Понятно"
+    }
+  },
+  "signIn": {
+    "title": "С возвращением",
+    "subtitle": "Войдите в торговый аккаунт",
+    "email": "Email",
+    "emailPlaceholder": "Введите email",
+    "password": "Пароль",
+    "passwordPlaceholder": "Введите пароль",
+    "rememberMe": "Запомнить меня",
+    "forgotPassword": "Забыли пароль?",
+    "signInButton": "Войти",
+    "noAccount": "Нет аккаунта?",
+    "createAccount": "Создать аккаунт",
+    "demoCredentials": "Пример: demo@the-bluehaven.com / demo1234",
+    "secureTrading": "Безопасная торговля",
+    "fundsProtected": "Средства защищены",
+    "securityDescription": "Торгуйте с уверенностью. Наша платформа использует безопасность банковского уровня для защиты вашего аккаунта и торговых данных.",
+    "errors": {
+      "invalidCredentials": "Неверный email или пароль"
+    }
+  },
+  "signUp": {
+    "title": "Создать аккаунт",
+    "subtitle": "Начните свой путь в трейдинге уже сегодня",
+    "otpTitle": "Подтвердите email",
+    "otpSubtitle": "Введите 6-значный код, который мы отправили",
+    "firstName": "Имя",
+    "firstNamePlaceholder": "Джон",
+    "lastName": "Фамилия",
+    "lastNamePlaceholder": "Доу",
+    "email": "Email",
+    "emailPlaceholder": "Введите email",
+    "password": "Пароль",
+    "passwordPlaceholder": "Создайте пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "confirmPasswordPlaceholder": "Введите пароль ещё раз",
+    "createAccountButton": "Создать аккаунт",
+    "otpSentTo": "Код подтверждения отправлен на:",
+    "otpLabel": "Код подтверждения",
+    "verifyOtpButton": "Подтвердить и создать аккаунт",
+    "resendCode": "Отправить код ещё раз",
+    "resendIn": "Повторная отправка через {{seconds}} сек.",
+    "changeEmail": "Изменить email",
+    "hasAccount": "Уже есть аккаунт?",
+    "signIn": "Войти",
+    "joinTraders": "Присоединяйтесь к тысячам трейдеров",
+    "startJourney": "Начните путь к финансируемому аккаунту",
+    "description": "Создайте аккаунт, чтобы получить доступ к профессиональному торговому аккаунту с реальными средствами. Торгуйте уверенно и увеличивайте прибыль.",
+    "errors": {
+      "passwordsNotMatch": "Пароли не совпадают",
+      "passwordTooShort": "Пароль должен быть не короче 6 символов",
+      "registrationFailed": "Регистрация не удалась. Попробуйте ещё раз",
+      "registrationSuccess": "Регистрация завершена! Пожалуйста, войдите"
+    }
+  },
+  "faq": {
+    "helpCenter": "Центр помощи",
+    "title": "FAQ",
+    "subtitle": "Найдите ответы на частые вопросы о челленджах и нашей платформе",
+    "searchPlaceholder": "Искать ответы...",
+    "questions": "Вопросы",
+    "stillHaveQuestions": "Остались вопросы?",
+    "supportDescription": "Наша команда поддержки работает 24/7",
+    "contactSupport": "Связаться с поддержкой",
+    "categories": {
+      "gettingStarted": {
+        "title": "Начало работы",
+        "faqs": {
+          "whatIsPropsCapital": {
+            "q": "Что такое Props Capital?",
+            "a": "Props Capital — это проп-трейдинговая компания, которая предоставляет трейдерам финансируемые аккаунты для торговли на капитал компании. После прохождения оценки вы можете получать до 90% прибыли. При торговле на финансируемом аккаунте ваши собственные средства не подвергаются риску."
+          },
+          "howToStartChallenge": {
+            "q": "Как начать челлендж?",
+            "a": "На странице челленджей выберите желаемый размер аккаунта и тип оценки, оплатите — и в течение нескольких минут получите торговые данные. После получения данных вы можете сразу начать торговлю."
+          },
+          "tradingPlatforms": {
+            "q": "Какие торговые платформы поддерживаются?",
+            "a": "Мы поддерживаем MetaTrader 4 (MT4), MetaTrader 5 (MT5), cTrader и DXTrade. При настройке аккаунта вы можете выбрать предпочтительную платформу."
+          },
+          "credentialsTiming": {
+            "q": "Как быстро приходят данные для входа?",
+            "a": "Обычно данные для входа отправляются в течение 5 минут после подтверждения оплаты. Вы получите email с деталями: сервер, номер аккаунта, пароль и т.д."
+          }
+        }
+      },
+      "tradingRules": {
+        "title": "Торговые правила",
+        "faqs": {
+          "profitTarget": {
+            "q": "Какая цель по прибыли?",
+            "a": "Для двухфазной оценки: Фаза 1 — 8% прибыли, Фаза 2 — 5% прибыли. Для однофазной оценки цель — 10%. Для мгновенного финансирования целей по прибыли на этапе челленджа нет."
+          },
+          "drawdownRules": {
+            "q": "Какие правила по просадке (убыткам)?",
+            "a": "Дневная просадка ограничена 5% от начального баланса дня. Общая просадка ограничена 10% от максимального достигнутого баланса (трейлинг). Это основные правила по убыткам, которые нужно соблюдать."
+          },
+          "timeLimit": {
+            "q": "Есть ли ограничение по времени на прохождение челленджа?",
+            "a": "Нет. Максимального ограничения по времени нет. Вы можете торговать сколько угодно, пока не достигнете цели по прибыли. Однако для прохождения каждой фазы требуется минимум 4 торговых дня."
+          },
+          "newsTrading": {
+            "q": "Можно ли торговать во время важных новостей?",
+            "a": "Да. Торговля на новостях разрешена для всех челленджей. Даже на новостях высокой важности можно торговать без ограничений и штрафов."
+          },
+          "weekendHolding": {
+            "q": "Можно ли держать позиции на выходные?",
+            "a": "Да. Вы можете удерживать позиции на выходные. Для всех типов челленджей нет ограничений на овернайт и удержание на выходные."
+          },
+          "expertAdvisors": {
+            "q": "Разрешены ли EA (автоторговля)?",
+            "a": "Да. Вы можете использовать EA и автоматические торговые системы. Однако нельзя использовать уязвимости платформы или заниматься запрещёнными методами, такими как latency arbitrage или tick scalping."
+          }
+        }
+      },
+      "violations": {
+        "title": "Нарушения и дисквалификация",
+        "faqs": {
+          "whatHappensIfViolate": {
+            "q": "Что будет, если нарушить правила?",
+            "a": "При нарушении строгих правил (дневного или общего лимита убытков) аккаунт автоматически отключается. Вы получите email с деталями нарушения, после чего сможете купить сброс или начать новый челлендж."
+          },
+          "freeRetry": {
+            "q": "Можно ли пройти повторно бесплатно?",
+            "a": "Да! Если до дисквалификации вы достигли 8% прибыли в челлендже, вы получаете право на бесплатную повторную попытку. Вы сможете попробовать снова без дополнительной оплаты."
+          },
+          "resetAccount": {
+            "q": "Можно ли сбросить аккаунт?",
+            "a": "Да. Если вы не прошли челлендж, вы можете купить сброс со скидкой и начать заново с тем же размером аккаунта. Цена сброса зависит от размера аккаунта."
+          },
+          "tradingDay": {
+            "q": "Что считается торговым днём?",
+            "a": "Торговый день — это день, когда у вас была хотя бы одна сделка, открытая не менее 2 минут. Для прохождения каждой фазы требуется минимум 4 торговых дня."
+          }
+        }
+      },
+      "payouts": {
+        "title": "Вывод и прибыль",
+        "faqs": {
+          "profitSplit": {
+            "q": "Какое распределение прибыли?",
+            "a": "Распределение прибыли начинается с 80% для небольших аккаунтов и может вырасти до 90% для больших аккаунтов или по мере прогресса в программе масштабирования. Доля увеличивается по мере подтверждения стабильности."
+          },
+          "payoutFrequency": {
+            "q": "Как часто можно запрашивать вывод?",
+            "a": "Выводы обрабатываются каждые 2 недели. Если есть прибыль, вы можете запрашивать вывод каждые 14 дней. Первый вывод доступен через 14 дней после получения финансируемого аккаунта."
+          },
+          "paymentMethods": {
+            "q": "Какие способы вывода доступны?",
+            "a": "Доступны банковский перевод, криптовалюта (BTC, ETH, USDT), PayPal и Wise. Все способы вывода — без комиссии."
+          },
+          "minimumPayout": {
+            "q": "Есть ли минимальная сумма вывода?",
+            "a": "Минимальная сумма вывода — $50. Верхнего лимита нет: при желании вы можете вывести всю прибыль."
+          },
+          "payoutProcessing": {
+            "q": "Сколько времени занимает обработка вывода?",
+            "a": "Обычно вывод обрабатывается в течение 24–48 рабочих часов после одобрения. Для банковского перевода зачисление может занять дополнительные 2–5 рабочих дней."
+          }
+        }
+      },
+      "scaling": {
+        "title": "План масштабирования",
+        "faqs": {
+          "howScalingWorks": {
+            "q": "Как работает план масштабирования?",
+            "a": "Каждый раз, когда вы достигаете 10% прибыли на финансируемом аккаунте и завершаете 2 цикла выплат, размер аккаунта увеличивается на 25%. Вы можете масштабироваться до $2,000,000 торгового капитала."
+          },
+          "profitSplitScaling": {
+            "q": "Как меняется распределение прибыли при масштабировании?",
+            "a": "С ростом уровня масштабирования увеличивается и доля прибыли. Старт — 80%, и на более высоких уровнях можно дойти до 90%. На каждом уровне вы приближаетесь к максимальной доле."
+          },
+          "scalingConditions": {
+            "q": "Есть ли условия для масштабирования?",
+            "a": "Для получения права на масштабирование нужно: минимум 10% прибыли, минимум 2 завершённых цикла выплат и соблюдение хорошего риск-менеджмента в течение оценочного периода."
+          }
+        }
+      },
+      "account": {
+        "title": "Управление аккаунтом",
+        "faqs": {
+          "refund": {
+            "q": "Можно ли запросить возврат средств?",
+            "a": "Да, возврат возможен в течение 14 дней после покупки, но только если вы не совершили ни одной сделки. После начала торговли оценка считается начатой, и возврат недоступен."
+          },
+          "multipleAccounts": {
+            "q": "Можно ли иметь несколько аккаунтов?",
+            "a": "Да. Вы можете одновременно иметь несколько челлендж-аккаунтов и финансируемых аккаунтов. Однако нельзя копировать сделки и использовать одну и ту же стратегию через копи-трейдинг между разными аккаунтами."
+          },
+          "weekendAccount": {
+            "q": "Что происходит с аккаунтом на выходных?",
+            "a": "Аккаунт остаётся активным на выходных. Вы можете держать позиции на выходные, а расчёт просадки продолжается в обычном режиме. Рынки закрыты, но мониторинг аккаунта продолжается."
+          },
+          "contactSupport": {
+            "q": "Как связаться с поддержкой?",
+            "a": "Вы можете связаться через 24/7 лайв-чат, по email support@the-bluehaven.com или через тикеты поддержки в дашборде."
+          }
+        }
+      }
+    }
+  },
+  "contact": {
+    "support24": "Поддержка 24/7",
+    "title": "Контакты",
+    "subtitle": "Есть вопросы? Мы поможем. Напишите нам — и мы ответим как можно скорее.",
+    "contactMethods": {
+      "emailSupport": {
+        "title": "Email-поддержка",
+        "description": "Для общих вопросов и подробных обращений",
+        "contact": "support@the-bluehaven.com"
+      },
+      "liveChat": {
+        "title": "Лайв-чат",
+        "description": "Получите быстрый ответ от нашей команды",
+        "contact": "Доступно 24/7"
+      },
+      "responseTime": {
+        "title": "Время ответа",
+        "description": "Среднее время ответа на все обращения",
+        "contact": "В течение 24 часов"
+      }
+    },
+    "contactInformation": "Контактная информация",
+    "email": "Email",
+    "address": "Адрес",
+    "website": "Сайт",
+    "workingHours": "Часы работы",
+    "followUs": "Подписывайтесь",
+    "liveChatTitle": "Лайв-чат",
+    "liveChatDescription": "Нужна помощь прямо сейчас? Лайв-чат доступен в любое время.",
+    "startChat": "Начать чат",
+    "sendMessage": "Отправить сообщение",
+    "formDescription": "Заполните форму ниже — мы ответим в течение 24 часов.",
+    "fullName": "Полное имя",
+    "fullNamePlaceholder": "Джон Доу",
+    "emailPlaceholder": "john@example.com",
+    "category": "Категория",
+    "selectCategory": "Выберите категорию",
+    "categories": {
+      "general": "Общий вопрос",
+      "account": "Проблема с аккаунтом",
+      "payment": "Оплата / биллинг",
+      "payout": "Запрос на вывод",
+      "technical": "Техническая поддержка",
+      "other": "Другое"
+    },
+    "subject": "Тема",
+    "subjectPlaceholder": "Чем мы можем помочь?",
+    "message": "Сообщение",
+    "messagePlaceholder": "Опишите ваш вопрос или проблему...",
+    "sendMessageButton": "Отправить",
+    "messageSent": "Отправлено!",
+    "thankYouMessage": "Спасибо за обращение. Мы ответим в течение 24 часов.",
+    "sendAnotherMessage": "Отправить ещё одно сообщение"
+  },
+  "howItWorks": {
+    "journeyBadge": "Путь к финансированию",
+    "title": "Как это работает",
+    "subtitle": "Получите финансирование и начните зарабатывать на капитале компании за 3 простых шага",
+    "step": "Шаг",
+    "phases": {
+      "purchaseChallenge": {
+        "title": "Купите челлендж",
+        "description": "Выберите размер аккаунта и тип оценки, оплатите безопасно и получите торговые данные почти сразу.",
+        "details": {
+          "selectAccountSize": "Выберите размер аккаунта от $10K до $200K",
+          "chooseType": "Выберите 1 фазу / 2 фазы / мгновенное финансирование",
+          "receiveCredentials": "Получите данные для входа за несколько минут",
+          "startTrading": "Начните торговлю сразу"
+        }
+      },
+      "passEvaluation": {
+        "title": "Пройдите оценку",
+        "description": "Достигните целей по прибыли, соблюдая правила риск-менеджмента и подтверждая свои навыки.",
+        "details": {
+          "reachProfitTarget": "Достигните цели по прибыли 8% (Фаза 1)",
+          "maintainDailyDrawdown": "Соблюдайте дневной лимит убытков 5%",
+          "maintainOverallDrawdown": "Соблюдайте общий лимит убытков 10%",
+          "tradeMinimumDays": "Торгуйте минимум 4 дня"
+        }
+      },
+      "getFunded": {
+        "title": "Получите финансирование",
+        "description": "После прохождения вы получите финансируемый аккаунт с реальными средствами. Торгуйте уверенно и выводите прибыль.",
+        "details": {
+          "tradeWithCapital": "Торгуйте на капитале компании",
+          "keepProfits": "Получайте до 90% прибыли",
+          "biWeeklyPayout": "Вывод каждые 2 недели",
+          "scaleUp": "Масштабируйтесь до $2,000,000"
+        }
+      }
+    },
+    "rules": {
+      "badge": "Торговые правила",
+      "title": "Чёткие правила на каждом этапе",
+      "subtitle": "Прозрачные и единые правила на всех этапах оценки",
+      "rule": "Правило",
+      "phase1": "Фаза 1",
+      "phase2": "Фаза 2",
+      "funded": "После финансирования",
+      "profitTarget": {
+        "title": "Цель по прибыли",
+        "description": "Процент прибыли, который нужно достичь",
+        "funded": "Без цели"
+      },
+      "dailyDrawdown": {
+        "title": "Дневной убыток",
+        "description": "Максимально допустимый дневной убыток"
+      },
+      "overallDrawdown": {
+        "title": "Общий убыток",
+        "description": "Максимальный убыток от максимального баланса"
+      },
+      "minTradingDays": {
+        "title": "Минимум торговых дней",
+        "description": "Минимальное число торговых дней",
+        "phase1": "4 дня",
+        "phase2": "4 дня",
+        "funded": "Нет"
+      },
+      "timeLimit": {
+        "title": "Ограничение по времени",
+        "description": "Максимального ограничения нет",
+        "phase1": "Безлимит",
+        "phase2": "Безлимит",
+        "funded": "Безлимит"
+      },
+      "profitSplit": {
+        "title": "Распределение прибыли",
+        "description": "Ваша доля прибыли",
+        "funded": "До 90%"
+      }
+    },
+    "allowedTrading": {
+      "badge": "Свобода торговли",
+      "title": "Что разрешено",
+      "subtitle": "Торгуйте в своём стиле с минимальными ограничениями",
+      "allTradingStyles": {
+        "title": "Любой стиль торговли",
+        "desc": "Скальпинг, дейтрейдинг, свинг"
+      },
+      "newsTrading": {
+        "title": "Торговля на новостях",
+        "desc": "Торгуйте во время новостей высокой важности"
+      },
+      "weekendHolding": {
+        "title": "Удержание на выходных",
+        "desc": "Держите позиции через выходные"
+      },
+      "expertAdvisors": {
+        "title": "EA (автоторговля)",
+        "desc": "Используйте торговых роботов"
+      },
+      "allMajorPairs": {
+        "title": "Все основные инструменты",
+        "desc": "FX, индексы, товары, крипто"
+      },
+      "anyStrategy": {
+        "title": "Любые стратегии",
+        "desc": "Хедж, грид и т.д."
+      },
+      "copyTrading": {
+        "title": "Копи-трейдинг",
+        "desc": "Копирование со своего другого аккаунта"
+      },
+      "multipleAccounts": {
+        "title": "Несколько аккаунтов",
+        "desc": "Ведите несколько челленджей параллельно"
+      }
+    },
+    "cta": {
+      "title": "Готовы начать?",
+      "subtitle": "Присоединяйтесь к тысячам финансируемых трейдеров и начните свой путь уже сегодня",
+      "viewChallenges": "Посмотреть челленджи"
+    }
+  },
+  "challenges": {
+    "badge": "Выберите путь к финансированию",
+    "title": "Выберите челлендж",
+    "subtitle": "Выберите тип оценки и размер аккаунта, чтобы начать путь к финансируемой торговле",
+    "typeLabels": {
+      "onePhase": "1 фаза",
+      "twoPhase": "2 фазы",
+      "instant": "Мгновенно"
+    },
+    "types": {
+      "onePhase": {
+        "title": "Челлендж 1 фаза",
+        "description": "Один этап оценки с целью 10% прибыли. Более быстрый путь к финансированию."
+      },
+      "twoPhase": {
+        "title": "Челлендж 2 фазы",
+        "description": "Стандартная оценка: Фаза 1 (8%) и Фаза 2 (5%). Самый популярный вариант."
+      },
+      "instantFunding": {
+        "title": "Мгновенное финансирование",
+        "description": "Пропустите оценку и начните торговать на капитале сразу."
+      }
+    },
+    "rules": {
+      "title": "Кратко о правилах челленджа",
+      "phase1Target": "Цель Фазы 1",
+      "phase2Target": "Цель Фазы 2",
+      "dailyDrawdown": "Дневной убыток",
+      "maxDrawdown": "Макс. убыток",
+      "minTradingDays": "Минимум торговых дней",
+      "timeLimit": "Ограничение по времени",
+      "fourDays": "4 дня",
+      "unlimited": "Безлимит"
+    },
+    "card": {
+      "mostPopular": "Самый популярный",
+      "accountSize": "Размер аккаунта",
+      "phase1": "Фаза 1",
+      "phase2": "Фаза 2",
+      "dailyDD": "Дневной убыток",
+      "maxDD": "Макс. убыток",
+      "profitSplit": "Распределение прибыли",
+      "getStarted": "Начать"
+    },
+    "comparison": {
+      "title": "Сравнить все челленджи",
+      "accountSize": "Размер аккаунта",
+      "price": "Цена",
+      "phase1": "Фаза 1",
+      "phase2": "Фаза 2",
+      "dailyDD": "Дневной убыток",
+      "maxDD": "Макс. убыток",
+      "profitSplit": "Распределение прибыли",
+      "select": "Выбрать"
+    },
+    "allChallengesInclude": {
+      "title": "Что входит во все челленджи",
+      "subtitle": "Каждый челлендж включает следующие возможности",
+      "features": {
+        "unlimitedTrading": "Без ограничений по времени торговли",
+        "allMajorPairs": "Торговля основными FX-парами, индексами и товарами",
+        "weekendHolding": "Удержание на выходных разрешено",
+        "newsTrading": "Торговля на важных новостях разрешена",
+        "expertAdvisors": "EA (роботы) разрешены",
+        "biWeeklyPayouts": "Вывод каждые 2 недели",
+        "support24": "Поддержка 24/7",
+        "analyticsDashboard": "Дашборд аналитики в реальном времени"
+      }
+    },
+    "whyChoose": {
+      "title": "Почему Props Capital?",
+      "subtitle": "Почему нас выбирают",
+      "transparentRules": {
+        "title": "Прозрачные правила",
+        "desc": "Без скрытых условий и неожиданных дисквалификаций"
+      },
+      "fastPayouts": {
+        "title": "Быстрые выплаты",
+        "desc": "Получайте прибыль за 24–48 часов"
+      },
+      "scaleTo2M": {
+        "title": "Масштабирование до $2M",
+        "desc": "Развивайте аккаунт по плану масштабирования"
+      },
+      "bestSupport": {
+        "title": "Лучшая поддержка",
+        "desc": "Выделенная команда 24/7"
+      }
+    },
+    "faq": {
+      "title": "Частые вопросы",
+      "timeLimit": {
+        "q": "Сколько времени нужно, чтобы пройти челлендж?",
+        "a": "Ограничения по времени нет. Вы можете торговать сколько угодно, соблюдая правила риска, пока не достигнете цели по прибыли."
+      },
+      "newsTrading": {
+        "q": "Можно ли торговать во время важных новостей?",
+        "a": "Да. Торговля на новостях полностью разрешена для всех челленджей. Ограничений нет."
+      },
+      "ifFail": {
+        "q": "Что будет, если я не пройду?",
+        "a": "Вы можете купить сброс со скидкой или начать новый челлендж. Если до провала вы достигли 8% прибыли — мы также предоставляем бесплатную повторную попытку."
+      },
+      "payoutSpeed": {
+        "q": "Насколько быстрый вывод?",
+        "a": "Вывод обрабатывается в течение 24–48 часов после одобрения и выплачивается выбранным способом."
+      }
+    },
+    "compareTableTitle": "Сравнить все челленджи"
+  },
+  "scalingPlan": {
+    "badge": "Неограниченный потенциал роста",
+    "title": "До",
+    "subtitle": "Увеличивайте торговый капитал на основе стабильных результатов. На каждом уровне открываются более крупные счета и более высокий процент распределения прибыли.",
+    "startJourney": "Начать сейчас",
+    "stats": {
+      "maxAccountSize": "Максимальный размер счёта",
+      "maxProfitSplit": "Максимальная доля прибыли",
+      "scalingLevels": "Уровни масштабирования",
+      "growthPerLevel": "Рост на уровень"
+    },
+    "benefits": {
+      "badge": "Преимущества",
+      "title": "Почему стоит расти вместе с нами",
+      "subtitle": "Наша программа масштабирования вознаграждает стабильных трейдеров большими возможностями.",
+      "accountGrowth": {
+        "title": "+25% к размеру счёта",
+        "desc": "На каждом уровне масштабирования размер счёта увеличивается на 25%."
+      },
+      "profitSplit": {
+        "title": "До 90% распределения прибыли",
+        "desc": "Чем выше уровень — тем больше ваша доля прибыли."
+      },
+      "noFees": {
+        "title": "Без дополнительных комиссий",
+        "desc": "Масштабируйте счёт без дополнительных затрат."
+      },
+      "sameRules": {
+        "title": "Те же торговые правила",
+        "desc": "Единые правила действуют на всём протяжении пути."
+      },
+      "scaleTo2M": {
+        "title": "Рост до $2M",
+        "desc": "Увеличивайте торговый капитал до $2,000,000."
+      },
+      "automaticUpgrades": {
+        "title": "Автоматическое повышение",
+        "desc": "При выполнении условий апгрейд происходит автоматически и сразу."
+      }
+    },
+    "howToScale": {
+      "badge": "Процесс",
+      "title": "Как работает масштабирование",
+      "achieveProfit": {
+        "title": "Достигните цели по прибыли",
+        "description": "Получите минимум 10% прибыли на финансируемом счёте."
+      },
+      "completePayouts": {
+        "title": "Завершите циклы выплат",
+        "description": "Завершите как минимум 2 цикла выплат."
+      },
+      "automaticUpgrade": {
+        "title": "Автоматический апгрейд",
+        "description": "Ваш счёт автоматически повышается на следующий уровень."
+      }
+    },
+    "roadmap": {
+      "badge": "Дорожная карта",
+      "title": "Путь к $2,000,000",
+      "subtitle": "Посмотрите, как растёт ваш счёт на каждом уровне.",
+      "start": "Старт",
+      "max": "Максимум",
+      "level": "Уровень",
+      "split": "Доля",
+      "ultimateGoal": "Финальная цель",
+      "withProfitSplit": "С долей прибыли 90%",
+      "startScalingNow": "Начать рост сейчас"
+    },
+    "requirements": {
+      "badge": "Требования",
+      "title": "Что нужно, чтобы масштабироваться",
+      "passEvaluation": "Пройдите оценку",
+      "profitAndPayouts": "10% прибыли + 2 выплаты",
+      "profit10": {
+        "title": "10% прибыли",
+        "desc": "Достигните 10% прибыли на финансируемом счёте."
+      },
+      "payouts2": {
+        "title": "2 выплаты",
+        "desc": "Завершите минимум 2 цикла выплат."
+      },
+      "consistency": {
+        "title": "Стабильность",
+        "desc": "Поддерживайте стабильную торговую активность."
+      },
+      "noViolations": {
+        "title": "Без нарушений",
+        "desc": "Отсутствие нарушений правил в этот период."
+      }
+    },
+    "ctaSection": {
+      "title": "Готовы масштабироваться?",
+      "tradingCareer": "Выведите вашу трейдерскую карьеру на новый уровень.",
+      "subtitle": "Начните с любого размера счёта и увеличивайте торговый капитал до $2,000,000.",
+      "getStartedNow": "Начать сейчас",
+      "footer": "Старт от $99 • Рост до $2M • До 90% прибыли"
+    }
+  },
+  "payoutsPage": {
+    "badge": "Быстрые и надёжные выплаты",
+    "title": "Получайте то, что заработали",
+    "subtitle": "Быстрый вывод без лишних сложностей. Без скрытых комиссий, без задержек, без бюрократии.",
+    "stats": {
+      "totalPaidOut": "Всего выплачено",
+      "payoutsProcessed": "Выплат обработано",
+      "avgProcessing": "Среднее время обработки",
+      "payoutFees": "Комиссия за вывод"
+    },
+    "profitSharing": {
+      "badge": "Распределение прибыли",
+      "title": "Получайте до 90% прибыли",
+      "subtitle": "Конкурентное распределение прибыли — больше вознаграждения успешным трейдерам.",
+      "accountSize": "Размер счёта",
+      "profitSplit": "Доля прибыли",
+      "best": "Лучшее",
+      "tiers": {
+        "tier1": "$10K - $25K",
+        "tier2": "$50K",
+        "tier3": "$100K+",
+        "tier4": "После масштабирования"
+      }
+    },
+    "withdrawalOptions": {
+      "badge": "Способы вывода",
+      "title": "Несколько вариантов вывода",
+      "subtitle": "Выберите наиболее удобный способ получения средств.",
+      "processing": "Срок обработки",
+      "fee": "Комиссия",
+      "minimum": "Минимум",
+      "methods": {
+        "bankWire": "Банковский перевод",
+        "cryptocurrency": "Криптовалюта",
+        "paypal": "PayPal",
+        "wiseTransfer": "Перевод Wise",
+        "time": {
+          "businessDays": "2–5 рабочих дней",
+          "hours24": "24 часа",
+          "businessDays12": "1–2 рабочих дня"
+        }
+      }
+    },
+    "howItWorks": {
+      "title": "Как происходит вывод",
+      "requestPayout": {
+        "title": "Запросите вывод",
+        "desc": "Отправьте заявку из дашборда."
+      },
+      "verification": {
+        "title": "Проверка",
+        "desc": "Мы проверяем торговую активность и прибыль."
+      },
+      "processing": {
+        "title": "Обработка",
+        "desc": "Выплата обрабатывается в течение 24–48 часов."
+      },
+      "receiveFunds": {
+        "title": "Получение",
+        "desc": "Получите средства выбранным способом."
+      }
+    },
+    "recentPayouts": {
+      "badge": "Обновления в реальном времени",
+      "title": "Недавние выплаты",
+      "subtitle": "Реальные выплаты реальным трейдерам. Присоединяйтесь к сообществу успешных финансируемых трейдеров."
+    },
+    "payoutTerms": {
+      "title": "Условия выплат",
+      "biWeekly": "График выплат раз в 2 недели (каждые 14 дней)",
+      "minimumAmount": "Минимальная сумма вывода — $50",
+      "noMaximum": "Максимального лимита вывода нет",
+      "noFees": "Комиссия за вывод — $0 для всех способов",
+      "firstPayout": "Первый вывод доступен через 14 дней после получения финансирования",
+      "kycRequired": "Для первого вывода требуется KYC (подтверждение личности)",
+      "profitSplitRange": "Доля прибыли — от 80% до 90%",
+      "scaleUp": "Масштабируйтесь, чтобы увеличить долю прибыли"
+    },
+    "cta": {
+      "title": "Начните зарабатывать уже сегодня",
+      "subtitle": "Присоединяйтесь к тысячам финансируемых трейдеров, которые уже зарабатывают с Props Capital.",
+      "getFundedNow": "Получить финансирование сейчас"
+    }
+  },
+  "rules": {
+    "badge": "Прозрачно и честно",
+    "title": "Торговые правила",
+    "subtitle": "Чёткие и простые правила для успеха. Без скрытых условий и неожиданных дисквалификаций.",
+    "mainRules": {
+      "profitTarget": {
+        "title": "Цель по прибыли",
+        "description": "Процент прибыли, необходимый для прохождения каждой фазы",
+        "funded": "Без цели"
+      },
+      "dailyDrawdown": {
+        "title": "Дневной убыток",
+        "description": "Максимальный допустимый убыток за торговый день"
+      },
+      "maximumDrawdown": {
+        "title": "Максимальный убыток",
+        "description": "Максимальный суммарный убыток от максимального баланса"
+      },
+      "minTradingDays": {
+        "title": "Минимум торговых дней",
+        "description": "Минимальное число дней, когда нужно реально торговать",
+        "phase1": "4 дня",
+        "phase2": "4 дня",
+        "funded": "Нет"
+      },
+      "maxTradingPeriod": {
+        "title": "Максимальный период торговли",
+        "description": "Ограничение по времени на прохождение челленджа",
+        "phase1": "Безлимит",
+        "phase2": "Безлимит",
+        "funded": "Безлимит"
+      },
+      "profitSplit": {
+        "title": "Распределение прибыли",
+        "description": "Ваша доля прибыли на финансируемом счёте",
+        "funded": "До 90%"
+      }
+    },
+    "drawdownExplanation": {
+      "title": "Понимание просадки",
+      "subtitle": "Самое важное правило",
+      "dailyDrawdown": {
+        "title": "Дневной убыток (5%)",
+        "description": "Максимальный убыток за день. Рассчитывается от начального баланса дня и сбрасывается в полночь по серверному времени.",
+        "example": "Пример:",
+        "exampleText": "Если баланс $50,000 — дневной лимит убытка $2,500."
+      },
+      "maximumDrawdown": {
+        "title": "Максимальный убыток (10%)",
+        "description": "Максимальный убыток от наивысшего достигнутого баланса. Используется трейлинг по пику эквити.",
+        "example": "Пример:",
+        "exampleText": "Если пик баланса $55,000 — линия максимального убытка $49,500."
+      }
+    },
+    "allowedActions": {
+      "title": "Разрешено",
+      "subtitle": "Торгуйте свободно в своём стиле",
+      "allTradingStyles": {
+        "title": "Все стили торговли",
+        "desc": "Скальпинг, дейтрейдинг, свинг"
+      },
+      "newsTrading": {
+        "title": "Торговля на новостях",
+        "desc": "Торговля во время новостей высокой важности"
+      },
+      "weekendHolding": {
+        "title": "Удержание на выходных",
+        "desc": "Держите позиции через выходные"
+      },
+      "expertAdvisors": {
+        "title": "EA (автоторговля)",
+        "desc": "Использование торговых ботов"
+      },
+      "hedging": {
+        "title": "Хеджирование",
+        "desc": "Открытие противоположных позиций"
+      },
+      "allInstruments": {
+        "title": "Все инструменты",
+        "desc": "FX, индексы, товары, крипто"
+      },
+      "anyLotSize": {
+        "title": "Любой размер лота",
+        "desc": "Без ограничений по минимальному и максимальному лоту"
+      },
+      "copyTrading": {
+        "title": "Копи-трейдинг",
+        "desc": "Копирование со своего счёта"
+      }
+    },
+    "prohibitedActions": {
+      "title": "Запрещено",
+      "subtitle": "Действия, которые могут привести к отключению аккаунта",
+      "latencyArbitrage": {
+        "title": "Latency arbitrage",
+        "desc": "Торговля на задержках котировок"
+      },
+      "tickScalping": {
+        "title": "Тик-скальпинг",
+        "desc": "Сверхкороткий скальпинг менее 2 минут"
+      },
+      "accountManagement": {
+        "title": "Управление аккаунтом третьими лицами",
+        "desc": "Передача торговли по вашему аккаунту третьим лицам"
+      },
+      "propFirmCopying": {
+        "title": "Копирование с аккаунтов других проп-фирм",
+        "desc": "Копирование сделок с аккаунтов других проп-компаний"
+      },
+      "toxicFlowStrategies": {
+        "title": "Стратегии токсичного потока",
+        "desc": "Стратегии, которые несправедливо эксплуатируют брокера"
+      },
+      "highFrequencyTrading": {
+        "title": "Высокочастотная торговля (HFT)",
+        "desc": "Автоматизированные HFT-системы"
+      }
+    },
+    "scalingPlan": {
+      "title": "План масштабирования",
+      "subtitle": "Рост счёта до $2,000,000",
+      "accountSize": "Размер счёта",
+      "profitSplit": "Доля прибыли",
+      "howItWorks": {
+        "title": "Как работает масштабирование",
+        "description": "Каждый раз, когда вы достигаете 10% прибыли и завершаете 2 цикла выплат, ваш счёт автоматически переходит на следующий уровень. По мере роста увеличивается и доля прибыли — до 90% на максимальном уровне."
+      },
+      "requirements": {
+        "passEvaluation": "Пройдите оценку",
+        "profitAndPayouts": "10% прибыли + 2 выплаты"
+      }
+    },
+    "payoutPolicy": {
+      "title": "Политика выплат",
+      "subtitle": "Быстрый и надёжный вывод прибыли",
+      "frequency": {
+        "label": "Частота выплат",
+        "value": "Раз в 2 недели (каждые 14 дней)"
+      },
+      "minimum": {
+        "label": "Минимальная сумма вывода",
+        "value": "$50"
+      },
+      "maximum": {
+        "label": "Максимальная сумма вывода",
+        "value": "Безлимит"
+      },
+      "processingTime": {
+        "label": "Срок обработки",
+        "value": "24–48 часов"
+      },
+      "fee": {
+        "label": "Комиссия за вывод",
+        "value": "$0 (бесплатно)"
+      },
+      "firstPayout": {
+        "label": "Первый вывод",
+        "value": "Через 14 дней после начала торговли на финансируемом счёте"
+      }
+    },
+    "cta": {
+      "title": "Готовы начать торговать?",
+      "subtitle": "Разобрались с правилами — выберите челлендж и начните путь к финансированию.",
+      "viewChallenges": "Посмотреть челленджи"
+    },
+    "important": "Важно",
+    "phase1": "Фаза 1",
+    "phase2": "Фаза 2",
+    "funded": "Финансируемый"
+  },
+  "terms": {
+    "title": "Условия использования",
+    "lastUpdated": "Последнее обновление: январь 2024",
+    "acceptance": {
+      "title": "1. Принятие условий",
+      "content": "Получая доступ к сервисам Props Capital и используя их, вы соглашаетесь соблюдать настоящие Условия использования. Если вы не согласны — не используйте наши сервисы."
+    },
+    "description": {
+      "title": "2. Описание сервиса",
+      "content": "Props Capital предоставляет трейдерам программу оценки торговых навыков («челленджи»). Успешное прохождение челленджа может предоставить доступ к финансируемому торговому счёту."
+    },
+    "eligibility": {
+      "title": "3. Требования к пользователю",
+      "content": "Для использования сервиса вам должно быть не менее 18 лет. Используя Props Capital, вы подтверждаете, что имеете право заключать юридически обязательные соглашения."
+    },
+    "accountRegistration": {
+      "title": "4. Регистрация аккаунта",
+      "content": "Вы соглашаетесь предоставлять точную, актуальную и полную информацию при регистрации. Вы несёте ответственность за конфиденциальность ваших учётных данных."
+    },
+    "tradingRules": {
+      "title": "5. Торговые правила",
+      "content": "Все трейдеры обязаны соблюдать торговые правила, установленные для каждого типа челленджа. Нарушение правил может привести к отключению аккаунта без возврата средств."
+    },
+    "prohibitedActivities": {
+      "title": "6. Запрещённые действия",
+      "items": [
+        "Эксплуатация уязвимостей или ошибок платформы",
+        "Скрытое управление аккаунтом третьими лицами",
+        "Арбитраж между разными брокерами",
+        "Копирование сделок с аккаунтов других проп-фирм",
+        "Любые формы манипулирования рынком"
+      ]
+    },
+    "refundPolicy": {
+      "title": "7. Политика возвратов",
+      "content": "Возврат возможен в течение 14 дней с даты покупки только при отсутствии торговой активности. После начала торговли возврат невозможен."
+    },
+    "payouts": {
+      "title": "8. Выплаты",
+      "content": "Финансируемые трейдеры могут выводить прибыль каждые две недели согласно соглашению о распределении прибыли. Props Capital оставляет за собой право проверять торговую активность перед обработкой выплат."
+    },
+    "intellectualProperty": {
+      "title": "9. Интеллектуальная собственность",
+      "content": "Весь контент, товарные знаки и интеллектуальная собственность на платформе Props Capital принадлежат Props Capital и защищены применимым законодательством."
+    },
+    "limitationOfLiability": {
+      "title": "10. Ограничение ответственности",
+      "content": "Props Capital не несёт ответственности за любые косвенные, случайные или последующие убытки, возникающие из-за использования наших сервисов."
+    },
+    "modifications": {
+      "title": "11. Изменения",
+      "content": "Props Capital оставляет за собой право изменять настоящие условия в любое время. Продолжение использования сервиса означает согласие с обновлёнными условиями."
+    },
+    "contact": {
+      "title": "12. Контакты",
+      "content": "Если у вас есть вопросы по этим условиям, свяжитесь с нами по адресу support@the-bluehaven.com."
+    }
+  },
+  "privacy": {
+    "title": "Политика конфиденциальности",
+    "lastUpdated": "Последнее обновление: январь 2024",
+    "informationWeCollect": {
+      "title": "1. Какие данные мы собираем",
+      "intro": "Мы собираем информацию, которую вы предоставляете напрямую, включая:",
+      "items": [
+        "Персональные данные (имя, email, номер телефона)",
+        "Платёжные данные (безопасно обрабатываются сторонними платёжными провайдерами)",
+        "Данные и активность торгового аккаунта",
+        "Историю общения со службой поддержки",
+        "Документы KYC (удостоверение личности, подтверждение адреса)"
+      ]
+    },
+    "howWeUse": {
+      "title": "2. Как мы используем данные",
+      "items": [
+        "Предоставление и поддержка сервиса",
+        "Обработка платежей и отправка связанной информации",
+        "Мониторинг торговли и соблюдение правил",
+        "Отправка обновлений и промо-материалов",
+        "Выявление и предотвращение мошенничества"
+      ]
+    },
+    "dataSecurity": {
+      "title": "3. Безопасность данных",
+      "content": "Мы защищаем ваши данные мерами безопасности отраслевого уровня, включая шифрование, защищённые серверы и регулярные аудиты."
+    },
+    "dataSharing": {
+      "title": "4. Передача данных",
+      "intro": "Мы можем делиться данными со следующими сторонами:",
+      "items": [
+        "Поставщики торговых платформ (MT4, MT5, cTrader, DXTrade)",
+        "Платёжные провайдеры для обработки транзакций",
+        "Сервисы KYC/верификации личности",
+        "Государственные органы — если это требуется законом"
+      ]
+    },
+    "yourRights": {
+      "title": "5. Ваши права",
+      "intro": "Вы имеете право:",
+      "items": [
+        "Получить доступ к своим персональным данным",
+        "Запросить исправление неточной информации",
+        "Запросить удаление данных (в рамках требований закона)",
+        "Отказаться от маркетинговых рассылок",
+        "Запросить переносимость данных"
+      ]
+    },
+    "cookies": {
+      "title": "6. Cookies",
+      "content": "Мы используем cookies и похожие технологии для улучшения опыта, аналитики использования и оптимизации контента. Вы можете управлять cookies в настройках браузера."
+    },
+    "dataRetention": {
+      "title": "7. Срок хранения данных",
+      "content": "Мы храним данные, пока ваш аккаунт активен или пока это необходимо для предоставления сервиса. Некоторые данные могут храниться дольше для соблюдения закона и урегулирования споров."
+    },
+    "internationalTransfers": {
+      "title": "8. Международная передача данных",
+      "content": "Ваши данные могут обрабатываться и храниться в странах вне вашей страны проживания. Мы применяем соответствующие меры защиты."
+    },
+    "childrensPrivacy": {
+      "title": "9. Конфиденциальность детей",
+      "content": "Наш сервис не предназначен для лиц младше 18 лет. Нам не известно о намеренном сборе данных несовершеннолетних."
+    },
+    "contactUs": {
+      "title": "10. Свяжитесь с нами",
+      "content": "По вопросам конфиденциальности пишите на support@the-bluehaven.com."
+    }
+  }
+}  

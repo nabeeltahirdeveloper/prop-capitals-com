@@ -1,0 +1,2841 @@
+{
+  "common": {
+    "loading": "กำลังโหลด...",
+    "url": "URL",
+    "dismiss": "ปิด",
+    "allPlatforms": "ทุกแพลตฟอร์ม"
+  },
+  "home": {
+    "hero": {
+      "badge": "ได้รับความไว้วางใจจากเทรดเดอร์กว่า 15,000 คนทั่วโลก",
+      "title": "เทรดด้วย",
+      "titleHighlight": "เงินทุนของเรา",
+      "subtitle": "พิสูจน์ทักษะของคุณ รับเงินทุนสูงสุด $200,000 และเก็บกำไรได้สูงสุด 90% โดยไม่มีความเสี่ยงกับเงินทุนของคุณเอง",
+      "cta": "เริ่มต้นความท้าทาย",
+      "howItWorks": "วิธีการทำงาน",
+      "verified": "บริษัทที่ได้รับการยืนยัน",
+      "secure": "การชำระเงินที่ปลอดภัย",
+      "support": "สนับสนุน 24/7",
+      "profitToday": "กำไรวันนี้",
+      "winRate": "อัตราชนะ"
+    },
+    "stats": {
+      "fundedCapital": "เงินทุนที่ให้",
+      "activeTraders": "เทรดเดอร์ที่ใช้งาน",
+      "paidToTraders": "จ่ายให้เทรดเดอร์",
+      "trustScore": "คะแนนความน่าเชื่อถือ"
+    },
+    "features": {
+      "title": "ทำไมต้องเลือกเรา",
+      "subtitle": "สร้างมาสำหรับเทรดเดอร์มืออาชีพ",
+      "description": "เราสร้าง prop firm ที่เป็นมิตรกับเทรดเดอร์มากที่สุดด้วยกฎที่โปร่งใส เงื่อนไขที่เอื้อเฟื้อ และการสนับสนุนที่แท้จริง",
+      "clearObjectives": {
+        "title": "เป้าหมายการเทรดที่ชัดเจน",
+        "description": "เป้าหมายที่เรียบง่ายและทำได้จริงด้วยกฎที่โปร่งใส ไม่มีเงื่อนไขซ่อนเร้นหรือความล้มเหลวที่คาดไม่ถึง"
+      },
+      "generousDrawdown": {
+        "title": "ขีดจำกัดการขาดทุนที่เอื้อเฟื้อ",
+        "description": "การขาดทุนรายวัน 5% และสูงสุด 10% ให้คุณมีพื้นที่ในการเทรดอย่างสบายโดยไม่เครียด",
+        "drawdown": "การขาดทุน"
+      },
+      "profitSplit": {
+        "title": "แบ่งกำไรสูงสุด 90%",
+        "description": "เก็บกำไรส่วนใหญ่ของคุณ การจ่ายเงินทุกสองสัปดาห์โดยไม่มีความล่าช้าหรือค่าธรรมเนียมแอบแฝง"
+      },
+      "instantSetup": {
+        "title": "ตั้งค่าบัญชีทันที",
+        "description": "รับข้อมูลเข้าสู่ระบบการเทรดของคุณภายในไม่กี่นาทีหลังการซื้อ เริ่มเทรดได้ทันที"
+      },
+      "tradeAnywhere": {
+        "title": "เทรดได้ทุกที่",
+        "description": "รองรับ MT4, MT5, cTrader และ DXTrade เทรดจากอุปกรณ์ใดก็ได้ ทุกที่ในโลก"
+      },
+      "noTimeLimits": {
+        "title": "ไม่จำกัดเวลา",
+        "description": "ใช้เวลาของคุณให้ถึงเป้าหมาย ไม่มีระยะเวลาการเทรดสูงสุดหรือการเร่งรีบ"
+      }
+    },
+    "howItWorks": {
+      "label": "เริ่มต้นใช้งาน",
+      "title": "สามขั้นตอนสู่การได้รับเงินทุน",
+      "step1": {
+        "title": "เลือกความท้าทายของคุณ",
+        "description": "เลือกขนาดบัญชีที่คุณต้องการและทำการซื้ออย่างปลอดภัย"
+      },
+      "step2": {
+        "title": "ผ่านการประเมิน",
+        "description": "บรรลุเป้าหมายกำไรในขณะที่เคารพกฎการจัดการความเสี่ยง"
+      },
+      "step3": {
+        "title": "รับเงินทุน",
+        "description": "เทรดด้วยเงินทุนของเราและเก็บกำไรได้สูงสุด 90%"
+      },
+      "learnMore": "เรียนรู้เพิ่มเติมเกี่ยวกับกระบวนการ"
+    },
+    "challenges": {
+      "label": "ราคา",
+      "title": "เลือกความท้าทายของคุณ",
+      "subtitle": "เลือกขนาดบัญชีที่เหมาะกับสไตล์การเทรดและงบประมาณของคุณ",
+      "accountSize": "ขนาดบัญชี",
+      "price": "ราคา",
+      "profitTarget": "เป้าหมายกำไร",
+      "profitSplit": "แบ่งกำไร",
+      "getStarted": "เริ่มต้น",
+      "viewAll": "ดูความท้าทายทั้งหมด",
+      "popular": "ยอดนิยม"
+    },
+    "testimonials": {
+      "label": "คำรับรอง",
+      "title": "เทรดเดอร์รักเรา",
+      "subtitle": "เข้าร่วมกับเทรดเดอร์ที่ประสบความสำเร็จหลายพันคนที่ได้รับรายได้จาก Props Capital",
+      "totalEarned": "รายได้รวม"
+    },
+    "cta": {
+      "title": "พร้อมเริ่มต้น",
+      "titleHighlight": "อาชีพการเทรดของคุณแล้วหรือยัง?",
+      "subtitle": "เข้าร่วมกับเทรดเดอร์ที่ได้รับเงินทุนหลายพันคนและเริ่มหารายได้วันนี้ ไม่มีความเสี่ยงกับเงินทุนส่วนตัวของคุณ",
+      "button": "รับเงินทุนตอนนี้",
+      "footer": "เริ่มต้นเพียง $99 • ตั้งค่าบัญชีทันที • สนับสนุน 24/7"
+    },
+    "footer": {
+      "description": "บริษัทเทรดที่เป็นมิตรกับเทรดเดอร์มากที่สุด รับเงินทุนและเทรดด้วยเงินทุนของเรา",
+      "propFirm": "บริษัทเทรด",
+      "verified": "ยืนยันและเชื่อถือได้",
+      "company": "บริษัท",
+      "support": "สนับสนุน",
+      "legal": "กฎหมาย",
+      "copyright": "© 2024 BLUEHAVEN MANAGEMENT LTD สงวนลิขสิทธิ์",
+      "secure": "ปลอดภัยและเข้ารหัส",
+      "howItWorks": "วิธีการทำงาน",
+      "challenges": "ความท้าทาย",
+      "scalingPlan": "แผนการขยาย",
+      "payouts": "การจ่ายเงิน",
+      "faq": "คำถามที่พบบ่อย",
+      "contact": "ติดต่อ",
+      "terms": "เงื่อนไขการให้บริการ",
+      "privacy": "นโยบายความเป็นส่วนตัว"
+    },
+    "partners": {
+      "title": "ได้รับความไว้วางใจจากเทรดเดอร์ที่ใช้:"
+    }
+  },
+  "dashboard": {
+    "welcome": "ยินดีต้อนรับกลับ, {{name}}",
+    "overview": "นี่คือภาพรวมการเทรดของคุณ",
+    "newChallenge": "ความท้าทายใหม่",
+    "stats": {
+      "totalChallenges": "ความท้าทายทั้งหมด",
+      "activeChallenges": "ความท้าทายที่ใช้งาน",
+      "fundedAccounts": "บัญชีที่ได้รับเงินทุน",
+      "totalPayouts": "การจ่ายเงินทั้งหมด"
+    },
+    "accounts": {
+      "title": "บัญชีการเทรดที่ใช้งาน",
+      "viewAll": "ดูทั้งหมด",
+      "profitProgress": "ความคืบหน้ากำไร",
+      "target": "เป้าหมาย",
+      "dailyDD": "DD รายวัน",
+      "overallDD": "DD รวม",
+      "details": "รายละเอียด",
+      "trade": "เทรด",
+      "violation": {
+        "dailyDrawdown": "DD รายวันเกิน: {{actual}}% > {{threshold}}%",
+        "overallDrawdown": "DD รวมเกิน: {{actual}}% > {{threshold}}%",
+        "maximumDrawdown": "DD สูงสุดเกิน: {{actual}}% > {{threshold}}%",
+        "maxTradingDays": "เกินจำนวนวันเทรดสูงสุด",
+        "default": "{{message}}"
+      }
+    },
+    "metrics": {
+      "title": "ตัวชี้วัดด่วน",
+      "currentBalance": "ยอดเงินปัจจุบัน",
+      "profitThisCycle": "กำไรในรอบนี้",
+      "ddRemaining": "DD ที่เหลือ",
+      "tradingDays": "วันเทรด",
+      "nextPayoutDate": "วันที่จ่ายเงินครั้งถัดไป",
+      "requestPayout": "ขอจ่ายเงิน",
+      "account": "บัญชี",
+      "accounts": "บัญชี"
+    },
+    "notifications": {
+      "title": "การแจ้งเตือน",
+      "noNewNotifications": "ไม่มีการแจ้งเตือนใหม่",
+      "markAsRead": "ทำเครื่องหมายว่าอ่านแล้ว",
+      "notification": "การแจ้งเตือน",
+      "notifications": "การแจ้งเตือน",
+      "noNotifications": "ไม่มีการแจ้งเตือน",
+      "seeMore": "ดูเพิ่มเติม"
+    },
+    "rules": {
+      "title": "การปฏิบัติตามกฎ",
+      "selectAccount": "เลือกบัญชี",
+      "phase": "เฟส",
+      "phase1": "เฟส 1",
+      "phase2": "เฟส 2",
+      "funded": "ได้รับเงินทุน",
+      "failed": "ล้มเหลว"
+    },
+    "quickActions": {
+      "tradingTerminal": "เทอร์มินัลการเทรด",
+      "openTrading": "เปิดการเทรด",
+      "myAccounts": "บัญชีของฉัน",
+      "viewAllAccounts": "ดูบัญชีทั้งหมด",
+      "analytics": "การวิเคราะห์",
+      "performanceStats": "สถิติประสิทธิภาพ",
+      "payouts": "การจ่ายเงิน",
+      "requestPayouts": "ขอจ่ายเงิน",
+      "scalingPlan": "แผนการขยาย",
+      "growthRoadmap": "แผนการเติบโต"
+    },
+    "links": {
+      "challengeProgress": "ความคืบหน้าความท้าทาย",
+      "trackJourney": "ติดตามการเดินทางสู่การได้รับเงินทุน",
+      "tradeHistory": "ประวัติการเทรด",
+      "viewAllTrades": "ดูการเทรดทั้งหมดของคุณ"
+    },
+    "empty": {
+      "welcome": "ยินดีต้อนรับ, {{name}}!",
+      "description": "เริ่มต้นการเดินทางของคุณสู่การเป็นเทรดเดอร์ที่ได้รับเงินทุน เลือกความท้าทาย พิสูจน์ทักษะของคุณ และเทรดด้วยเงินทุนของเรา",
+      "startChallenge": "เริ่มต้นความท้าทายแรกของคุณ"
+    },
+    "rulesPanel": {
+      "title": "กฎและข้อกำหนดของความท้าทาย",
+      "profitTarget": "เป้าหมายกำไร",
+      "dailyLossLimit": "ขีดจำกัดการขาดทุนรายวัน",
+      "overallDrawdown": "การขาดทุนรวม",
+      "minTradingDays": "วันเทรดขั้นต่ำ",
+      "daysRemaining": "วันที่เหลือ",
+      "tradingStyleRules": "กฎสไตล์การเทรด",
+      "newsTrading": "การเทรดข่าว",
+      "weekendHolding": "ถือครองช่วงสุดสัปดาห์",
+      "expertAdvisors": "ผู้เชี่ยวชาญ",
+      "hedging": "การป้องกันความเสี่ยง",
+      "copyTrading": "การเทรดแบบคัดลอก",
+      "leverage": "เลเวอเรจ",
+      "maxLot": "{{max}} {{lot}}",
+      "lot": "ล็อต",
+      "max": "สูงสุด",
+      "profitSplit": "แบ่งกำไร",
+      "target": "เป้าหมาย",
+      "limit": "ขีดจำกัด",
+      "status": {
+        "reached": "ถึงแล้ว",
+        "loss": "ขาดทุน",
+        "violated": "ละเมิด",
+        "danger": "อันตราย",
+        "warning": "เตือน",
+        "safe": "ปลอดภัย"
+      }
+    }
+  },
+  "myAccounts": {
+    "title": "บัญชีของฉัน",
+    "subtitle": "จัดการความท้าทายการเทรดและบัญชีที่มีเงินทุนทั้งหมดของคุณ",
+    "newChallenge": "ความท้าทายใหม่",
+    "activeChallenges": "ความท้าทายที่ใช้งานอยู่",
+    "phase1": "เฟส 1",
+    "phase2": "เฟส 2",
+    "funded": "ได้รับเงินทุน",
+    "failed": "ล้มเหลว",
+    "all": "ทั้งหมด",
+    "active": "ใช้งานอยู่",
+    "noAccounts": "ไม่พบบัญชี",
+    "noAccountsDesc": "เริ่มความท้าทายใหม่เพื่อเริ่มต้นการเดินทางเทรดของคุณ",
+    "startChallenge": "เริ่มความท้าทาย",
+    "balance": "ยอดคงเหลือ",
+    "profit": "กำไร",
+    "days": "วัน",
+    "dailyDD": "การขาดทุนรายวัน",
+    "overallDD": "การขาดทุนโดยรวม",
+    "openDashboard": "เปิดแดชบอร์ดการเทรด",
+    "progress": "ความคืบหน้า",
+    "trades": "การเทรด",
+    "needChallenge": "ต้องการความท้าทายใหม่?",
+    "needChallengeDesc": "เริ่มต้นใหม่ด้วยความท้าทายการเทรดใหม่และพิสูจน์ทักษะของคุณ",
+    "buyChallenge": "ซื้อความท้าทาย"
+  },
+  "analytics": {
+    "title": "การวิเคราะห์",
+    "subtitle": "การวิเคราะห์ประสิทธิภาพและสถิติโดยละเอียด",
+    "selectAccount": "เลือกบัญชี",
+    "allAccounts": "บัญชีทั้งหมด",
+    "totalTrades": "การเทรดทั้งหมด",
+    "winRate": "อัตราชนะ",
+    "totalProfit": "กำไรรวม",
+    "profitFactor": "ปัจจัยกำไร",
+    "winningTrades": "การเทรดที่ชนะ",
+    "losingTrades": "การเทรดที่แพ้",
+    "bestTrade": "การเทรดที่ดีที่สุด",
+    "worstTrade": "การเทรดที่แย่ที่สุด",
+    "symbolDistribution": "การกระจายสัญลักษณ์",
+    "tradeHistory": "ประวัติการเทรด",
+    "noTrades": "ไม่พบการเทรด",
+    "symbol": "สัญลักษณ์",
+    "type": "ประเภท",
+    "lotSize": "ขนาดล็อต",
+    "open": "เปิด",
+    "close": "ปิด",
+    "profit": "กำไร",
+    "buy": "ซื้อ",
+    "sell": "ขาย",
+    "performanceMetrics": "ตัวชี้วัดประสิทธิภาพ",
+    "wins": "ชนะ",
+    "losses": "แพ้",
+    "maxWinStreak": "ชนะติดต่อกันสูงสุด",
+    "maxLossStreak": "แพ้ติดต่อกันสูงสุด",
+    "avgWin": "ชนะเฉลี่ย",
+    "avgLoss": "แพ้เฉลี่ย",
+    "avgRR": "R:R เฉลี่ย",
+    "avgHolding": "ถือครองเฉลี่ย",
+    "maxPosition": "ตำแหน่งสูงสุด",
+    "avgPosition": "ตำแหน่งเฉลี่ย",
+    "sharpeRatio": "อัตราส่วนชาร์ป",
+    "lots": "ล็อต",
+    "equityCurve": "เส้นโค้งส่วนของผู้ถือหุ้น",
+    "accountPerformance": "ประสิทธิภาพบัญชีตามเวลา",
+    "equity": "ส่วนของผู้ถือหุ้น",
+    "balance": "ยอดคงเหลือ",
+    "startingBalance": "ยอดคงเหลือเริ่มต้น",
+    "dailyPL": "P/L รายวัน",
+    "winningDays": "วันที่ชนะ",
+    "losingDays": "วันที่แพ้",
+    "totalLoss": "ขาดทุนรวม",
+    "netPL": "P/L สุทธิ",
+    "pl": "P/L",
+    "bestDay": "วันที่ดีที่สุด",
+    "worstDay": "วันที่แย่ที่สุด",
+    "noData": "ไม่มีข้อมูลการกระจายสัญลักษณ์",
+    "loading": "กำลังโหลด..."
+  },
+  "payouts": {
+    "title": "การจ่ายเงิน",
+    "subtitle": "ขอและติดตามการถอนผลกำไรของคุณ",
+    "requestPayout": "ขอถอนเงิน",
+    "selectAccount": "เลือกบัญชี",
+    "allAccounts": "บัญชีทั้งหมด",
+    "selectFundedAccount": "เลือกบัญชีที่มีเงินทุน",
+    "amount": "จำนวนเงิน (USD)",
+    "enterAmount": "ใส่จำนวนเงิน",
+    "minimum": "ขั้นต่ำ",
+    "paymentMethod": "วิธีการชำระเงิน",
+    "selectPaymentMethod": "เลือกวิธีการชำระเงิน",
+    "paymentDetails": "รายละเอียดการชำระเงิน",
+    "paymentDetailsPlaceholder": "ใส่รายละเอียดการชำระเงินของคุณ (ที่อยู่กระเป๋าเงิน, รายละเอียดธนาคาร, ฯลฯ)",
+    "submitting": "กำลังส่ง...",
+    "submitRequest": "ส่งคำขอ",
+    "totalEarnings": "รายได้รวม",
+    "pendingPayouts": "การจ่ายเงินที่รอดำเนินการ",
+    "totalPayouts": "การจ่ายเงินทั้งหมด",
+    "nextPayout": "การจ่ายเงินครั้งถัดไป",
+    "payoutSchedule": "ตารางการจ่ายเงิน",
+    "payoutFrequency": "ความถี่ในการจ่ายเงิน",
+    "biWeekly": "ทุกสองสัปดาห์ (14 วัน)",
+    "biWeeklyValue": "ทุกสองสัปดาห์",
+    "processingTime": "เวลาดำเนินการ",
+    "processingTimeValue": "24-48 ชั่วโมง",
+    "businessDays": "2-5 วันทำการ",
+    "businessDaysOnly": "วันทำการ",
+    "minimumAmount": "จำนวนเงินขั้นต่ำ",
+    "payoutFee": "ค่าธรรมเนียมการจ่ายเงิน",
+    "free": "$0 (ฟรี)",
+    "freeValue": "ฟรี",
+    "availablePaymentMethods": "วิธีการชำระเงินที่มี",
+    "bankTransfer": "โอนเงินผ่านธนาคาร",
+    "bankTransferTime": "2-5 วัน",
+    "cryptocurrency": "สกุลเงินดิจิทัล",
+    "cryptoTime": "24 ชั่วโมง",
+    "paypal": "PayPal",
+    "paypalTime": "24 ชั่วโมง",
+    "wise": "Wise",
+    "wiseTime": "1-2 วัน",
+    "yourProfitSplit": "การแบ่งกำไรของคุณ",
+    "profitSplitDesc": "เก็บกำไรได้สูงสุด 90% ด้วยการขยายขนาด",
+    "currentSplit": "การแบ่งปัจจุบัน",
+    "withScaling": "ด้วยการขยายขนาด",
+    "viewScalingPlan": "ดูแผนการขยายขนาด",
+    "payoutHistory": "ประวัติการจ่ายเงิน",
+    "noPayouts": "ยังไม่มีการจ่ายเงิน เริ่มเทรดเพื่อรับผลกำไร!",
+    "needHelp": "ต้องการความช่วยเหลือเกี่ยวกับการจ่ายเงิน?",
+    "needHelpDesc": "ติดต่อทีมสนับสนุนของเราสำหรับคำถามที่เกี่ยวข้องกับการจ่ายเงิน",
+    "contactSupport": "ติดต่อฝ่ายสนับสนุน",
+    "date": "วันที่",
+    "method": "วิธีการ",
+    "status": "สถานะ",
+    "processed": "ดำเนินการแล้ว"
+  },
+  "profile": {
+    "title": "โปรไฟล์",
+    "subtitle": "จัดการการตั้งค่าบัญชีและการตั้งค่าของคุณ",
+    "loadError": "โหลดโปรไฟล์ไม่สำเร็จ กรุณาลองอีกครั้ง",
+    "user": "ผู้ใช้",
+    "admin": "ผู้ดูแลระบบ",
+    "trader": "เทรดเดอร์",
+    "personalInfo": "ข้อมูลส่วนตัว",
+    "security": "ความปลอดภัย",
+    "verification": "การยืนยันตัวตน",
+    "notifications": "การแจ้งเตือน",
+    "personalInformation": "ข้อมูลส่วนตัว",
+    "firstName": "ชื่อ",
+    "firstNamePlaceholder": "จอห์น",
+    "lastName": "นามสกุล",
+    "lastNamePlaceholder": "โด",
+    "email": "อีเมล",
+    "phoneNumber": "หมายเลขโทรศัพท์",
+    "phonePlaceholder": "+66 123 456 789",
+    "country": "ประเทศ",
+    "countryPlaceholder": "ประเทศไทย",
+    "city": "เมือง",
+    "cityPlaceholder": "กรุงเทพ",
+    "address": "ที่อยู่",
+    "addressPlaceholder": "123 ถนนหลัก",
+    "saving": "กำลังบันทึก...",
+    "saveChanges": "บันทึกการเปลี่ยนแปลง",
+    "changesSaved": "บันทึกการเปลี่ยนแปลงแล้ว",
+    "securitySettings": "การตั้งค่าความปลอดภัย",
+    "password": "รหัสผ่าน",
+    "lastChanged": "เปลี่ยนล่าสุด",
+    "never": "ไม่เคย",
+    "changePassword": "เปลี่ยนรหัสผ่าน",
+    "twoFactorAuth": "การยืนยันตัวตนสองขั้นตอน",
+    "twoFactorDesc": "เพิ่มชั้นความปลอดภัยเพิ่มเติม",
+    "enable2FA": "เปิดใช้งาน 2FA",
+    "emailNotifications": "การแจ้งเตือนทางอีเมล",
+    "emailNotificationsDesc": "รับการแจ้งเตือนเกี่ยวกับกิจกรรมบัญชี",
+    "enabled": "เปิดใช้งาน",
+    "identityVerification": "การยืนยันตัวตน",
+    "verificationDesc": "ทำการยืนยันตัวตนให้เสร็จสมบูรณ์เพื่อปลดล็อกฟีเจอร์ทั้งหมดรวมถึงการจ่ายเงิน จำเป็นสำหรับการถอนเงินครั้งแรกของคุณ",
+    "governmentID": "บัตรประจำตัวประชาชน",
+    "governmentIDDesc": "หนังสือเดินทาง ใบขับขี่ หรือบัตรประจำตัวประชาชน",
+    "pending": "รอดำเนินการ",
+    "uploadDocument": "อัปโหลดเอกสาร",
+    "proofOfAddress": "หลักฐานที่อยู่",
+    "proofOfAddressDesc": "ใบแจ้งหนี้สาธารณูปโภคหรือใบแจ้งยอดธนาคาร (3 เดือนล่าสุด)",
+    "changePasswordDesc": "อัปเดตรหัสผ่านของคุณเพื่อรักษาความปลอดภัยของบัญชี",
+    "currentPassword": "รหัสผ่านปัจจุบัน",
+    "newPassword": "รหัสผ่านใหม่",
+    "confirmPassword": "ยืนยันรหัสผ่าน",
+    "passwordChanged": "เปลี่ยนรหัสผ่านสำเร็จ",
+    "passwordsDoNotMatch": "รหัสผ่านไม่ตรงกัน",
+    "passwordTooShort": "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร",
+    "changing": "กำลังเปลี่ยน...",
+    "uploading": "กำลังอัปโหลด...",
+    "uploadGovernmentID": "อัปโหลดบัตรประจำตัวประชาชน",
+    "uploadProofOfAddress": "อัปโหลดหลักฐานที่อยู่",
+    "documentUploaded": "อัปโหลดเอกสารสำเร็จ",
+    "approved": "อนุมัติแล้ว",
+    "rejected": "ปฏิเสธแล้ว",
+    "comingSoon": "เร็วๆ นี้",
+    "notUploaded": "ยังไม่ได้อัปโหลด",
+    "notificationPreferences": "การตั้งค่าการแจ้งเตือน",
+    "tradeNotifications": "การแจ้งเตือนการเทรด",
+    "tradeNotificationsDesc": "รับการแจ้งเตือนเมื่อมีการเปิดหรือปิดการเทรด",
+    "accountAlerts": "การแจ้งเตือนบัญชี",
+    "accountAlertsDesc": "คำเตือนการขาดทุนและการอัปเดตสถานะบัญชี",
+    "payoutUpdates": "อัปเดตการจ่ายเงิน",
+    "payoutUpdatesDesc": "การแจ้งเตือนเกี่ยวกับคำขอการจ่ายเงินและการดำเนินการ",
+    "challengeUpdates": "อัปเดตความท้าทาย",
+    "challengeUpdatesDesc": "อัปเดตความคืบหน้าและการเปลี่ยนเฟส",
+    "marketingEmails": "อีเมลการตลาด",
+    "marketingEmailsDesc": "ข่าวสาร โปรโมชั่น และข้อเสนอพิเศษ",
+    "personal": "ข้อมูลส่วนตัว",
+    "sec": "ความปลอดภัย",
+    "verify": "ยืนยัน",
+    "notif": "แจ้งเตือน"
+  },
+  "support": {
+    "title": "ฝ่ายสนับสนุน",
+    "subtitle": "รับความช่วยเหลือเกี่ยวกับบัญชีและการเทรดของคุณ",
+    "newTicket": "ตั๋วใหม่",
+    "createTicket": "สร้างตั๋วสนับสนุน",
+    "subject": "หัวข้อ",
+    "subjectPlaceholder": "คำอธิบายสั้นๆ เกี่ยวกับปัญหาของคุณ",
+    "category": "หมวดหมู่",
+    "select": "เลือก",
+    "account": "บัญชี",
+    "payment": "การชำระเงิน",
+    "payout": "การจ่ายเงิน",
+    "technical": "เทคนิค",
+    "other": "อื่นๆ",
+    "priority": "ความสำคัญ",
+    "low": "ต่ำ",
+    "medium": "ปานกลาง",
+    "high": "สูง",
+    "message": "ข้อความ",
+    "messagePlaceholder": "อธิบายปัญหาของคุณโดยละเอียด...",
+    "submitting": "กำลังส่ง...",
+    "submitTicket": "ส่งตั๋ว",
+    "openTickets": "ตั๋วที่เปิดอยู่",
+    "inProgress": "กำลังดำเนินการ",
+    "resolved": "แก้ไขแล้ว",
+    "avgResponse": "เวลาตอบกลับเฉลี่ย",
+    "totalTickets": "ตั๋วทั้งหมด",
+    "faq": "คำถามที่พบบ่อย",
+    "searchFAQs": "ค้นหาคำถามที่พบบ่อย...",
+    "viewAllFAQs": "ดูคำถามที่พบบ่อยทั้งหมด",
+    "yourTickets": "ตั๋วของคุณ",
+    "noTickets": "ยังไม่มีตั๋วสนับสนุน สร้างตั๋วใหม่หากคุณต้องการความช่วยเหลือ",
+    "needImmediateHelp": "ต้องการความช่วยเหลือทันที?",
+    "liveChatDesc": "ทีมสนับสนุนของเราพร้อมให้บริการ 24/7 ผ่านแชทสด",
+    "startLiveChat": "เริ่มแชทสด",
+    "faq1Q": "ฉันจะขอถอนเงินได้อย่างไร?",
+    "faq1A": "ไปที่ส่วนการจ่ายเงินและคลิก \"ขอถอนเงิน\" กรอกข้อมูลที่จำเป็นและส่ง",
+    "faq2Q": "กฎการเทรดคืออะไร?",
+    "faq2A": "กฎมาตรฐานของเรารวมถึงการขาดทุนรายวัน 5% การขาดทุนโดยรวม 10% และวันเทรดขั้นต่ำ 4 วัน",
+    "faq3Q": "การจ่ายเงินใช้เวลานานเท่าไหร่?",
+    "faq3A": "การจ่ายเงินจะดำเนินการภายใน 24-48 ชั่วโมงหลังจากอนุมัติ การโอนเงินผ่านธนาคารอาจใช้เวลานานขึ้น 2-5 วันทำการ",
+    "faq4Q": "ฉันสามารถเทรดในช่วงข่าวได้หรือไม่?",
+    "faq4A": "ใช่ การเทรดข่าวได้รับอนุญาตในความท้าทายทุกประเภท ไม่มีข้อจำกัดในการเทรดในช่วงข่าวที่มีผลกระทบสูง"
+  },
+  "tradeHistory": {
+    "title": "ประวัติการเทรด",
+    "subtitle": "ประวัติการเทรดทั้งหมดของคุณ",
+    "selectAccount": "เลือกบัญชี",
+    "allAccounts": "บัญชีทั้งหมด",
+    "phase1": "เฟส 1",
+    "phase2": "เฟส 2",
+    "funded": "ได้รับเงินทุน",
+    "failed": "ล้มเหลว",
+    "export": "ส่งออก",
+    "totalTrades": "การเทรดทั้งหมด",
+    "winRate": "อัตราชนะ",
+    "totalProfit": "กำไรรวม",
+    "avgWin": "กำไรเฉลี่ย",
+    "avgLoss": "ขาดทุนเฉลี่ย",
+    "searchPlaceholder": "ค้นหาตามสัญลักษณ์หรือตั๋ว...",
+    "all": "ทั้งหมด",
+    "buy": "ซื้อ",
+    "sell": "ขาย",
+    "open": "เปิด",
+    "closed": "ปิด",
+    "openPositions": "ตำแหน่งที่เปิดอยู่",
+    "active": "ใช้งานอยู่",
+    "closedTrades": "การเทรดที่ปิดแล้ว",
+    "showing": "แสดง",
+    "trades": "การเทรด",
+    "noTradesFound": "ไม่พบการเทรดที่ตรงกับตัวกรองของคุณ",
+    "ticket": "ตั๋ว",
+    "time": "เวลา",
+    "symbol": "สัญลักษณ์",
+    "type": "ประเภท",
+    "lots": "ล็อต",
+    "openPrice": "ราคาเปิด",
+    "closePrice": "ราคาปิด",
+    "priceChange": "การเปลี่ยนแปลงราคา",
+    "commSwap": "ค่าคอม/สวอป",
+    "profit": "กำไร",
+    "status": "สถานะ",
+    "noAccounts": "ไม่มีบัญชีเทรด",
+    "noAccountsDesc": "คุณต้องสร้างบัญชีเทรดก่อนเพื่อดูประวัติการเทรด"
+  },
+  "challengeProgress": {
+    "title": "ความคืบหน้าความท้าทาย",
+    "subtitle": "ติดตามเส้นทางของคุณสู่เทรดเดอร์ที่มีเงินทุน",
+    "selectAccount": "เลือกบัญชี",
+    "viewTradingDashboard": "ดูแดชบอร์ดการเทรด",
+    "account": "บัญชี",
+    "profit": "กำไร",
+    "tradingDays": "วันเทรด",
+    "dailyDDUsed": "การขาดทุนรายวันที่ใช้",
+    "yourJourney": "เส้นทางของคุณ",
+    "purchase": "การซื้อ",
+    "purchaseDesc": "ซื้อความท้าทายสำเร็จ",
+    "challenge": "ความท้าทาย",
+    "phase1": "เฟส 1",
+    "phase2": "เฟส 2",
+    "funded": "ได้รับเงินทุน",
+    "scaling": "การขยายขนาด",
+    "reachTarget": "ถึงเป้าหมายกำไร {{target}}",
+    "profitTarget": "เป้าหมายกำไร",
+    "minTradingDays": "วันเทรดขั้นต่ำ",
+    "maxDailyDD": "การขาดทุนรายวันสูงสุด",
+    "maxOverallDD": "การขาดทุนโดยรวมสูงสุด",
+    "fundedDesc": "เทรดด้วยเงินทุนของเรา",
+    "profitSplit80": "แบ่งกำไร 80%",
+    "scalingDesc": "เติบโตเป็น $2,000,000",
+    "profitSplit90": "แบ่งกำไรสูงสุด 90%",
+    "currentPhaseRequirements": "ข้อกำหนดของเฟสปัจจุบัน",
+    "profitSplit": "การแบ่งกำไร",
+    "whenFunded": "เมื่อได้รับเงินทุน",
+    "upTo90WithScaling": "สูงสุด 90% ด้วยการขยายขนาด",
+    "payoutCycle": "รอบการจ่ายเงิน",
+    "biWeeklyPayouts": "การจ่ายเงินทุกสองสัปดาห์",
+    "days": "วัน",
+    "processedWithin24h": "ดำเนินการภายใน 24 ชั่วโมง",
+    "scaleTo": "ขยายเป็น",
+    "maximumAccountSize": "ขนาดบัญชีสูงสุด",
+    "scalingLevels": "10 ระดับการขยาย",
+    "readyToStart": "พร้อมเริ่มเทรดแล้วหรือยัง?",
+    "readyToStartDesc": "เปิดแพลตฟอร์มการเทรดของคุณและทำงานเพื่อให้บรรลุเป้าหมายกำไร",
+    "viewTradingRules": "ดูกฎการเทรด",
+    "failed": "ล้มเหลว",
+    "noAccountsDesc": "ซื้อความท้าทายเพื่อเริ่มติดตามความคืบหน้าของคุณ"
+  },
+  "phaseTimeline": {
+    "challengeJourney": "เส้นทางความท้าทาย",
+    "trackProgress": "ติดตามความคืบหน้าของคุณในแต่ละเฟส",
+    "proceedToNextPhase": "ดำเนินการไปยังเฟสถัดไป",
+    "phase1": "เฟส 1",
+    "phase2": "เฟส 2",
+    "funded": "ได้รับเงินทุน",
+    "scaling": "การขยายขนาด",
+    "evaluation": "การประเมิน",
+    "verification": "การยืนยัน",
+    "liveAccount": "บัญชีจริง",
+    "growth": "การเติบโต",
+    "profitTarget": "เป้าหมายกำไร {{target}}",
+    "minTradingDays": "วันเทรดขั้นต่ำ {{days}} วัน",
+    "maxDailyDD": "การขาดทุนรายวันสูงสุด {{dd}}",
+    "profitSplit80": "แบ่งกำไร 80%",
+    "biWeeklyPayouts": "การจ่ายเงินทุกสองสัปดาห์",
+    "scalingEligible": "มีสิทธิ์ขยายขนาด",
+    "profitSplit90": "แบ่งกำไรสูงสุด 90%",
+    "accountSizeIncrease": "เพิ่มขนาดบัญชี",
+    "vipBenefits": "สิทธิประโยชน์ VIP",
+    "completed": "เสร็จสมบูรณ์",
+    "active": "ใช้งานอยู่",
+    "unlocked": "ปลดล็อกแล้ว",
+    "locked": "ล็อก",
+    "phaseCompleted": "เฟสเสร็จสมบูรณ์แล้ว!",
+    "phaseCompletedDesc": "ยินดีด้วย! คุณได้บรรลุข้อกำหนดทั้งหมดแล้ว คลิกปุ่มด้านบนเพื่อดำเนินการต่อ"
+  },
+  "ruleCompliance": {
+    "title": "การปฏิบัติตามกฎ",
+    "subtitle": "ตรวจสอบกฎการเทรดและข้อกำหนดของความท้าทาย",
+    "selectAccount": "เลือกบัญชี",
+    "loading": "กำลังโหลด...",
+    "noAccounts": "คุณยังไม่มีบัญชีการเทรด",
+    "noAccountsDesc": "ซื้อความท้าทายเพื่อดูการปฏิบัติตามกฎและกฎการเทรด",
+    "purchaseChallenge": "ซื้อความท้าทาย",
+    "loadingCompliance": "กำลังโหลดการปฏิบัติตามกฎ...",
+    "loadError": "โหลดรายละเอียดบัญชีไม่สำเร็จ",
+    "goToMyAccounts": "ไปที่บัญชีของฉัน",
+    "allRulesCompliant": "ปฏิบัติตามกฎทั้งหมด",
+    "goodStanding": "บัญชีของคุณอยู่ในสถานะดีตามกฎความท้าทายทั้งหมด",
+    "active": "ใช้งานอยู่",
+    "phase1": "เฟส 1",
+    "phase2": "เฟส 2",
+    "funded": "ได้รับเงินทุน",
+    "failed": "ล้มเหลว",
+    "tradingStyleRules": "กฎรูปแบบการเทรด",
+    "newsTrading": "การเทรดข่าว",
+    "newsTradingDesc": "อนุญาตให้เทรดในช่วงข่าวที่มีผลกระทบสูง",
+    "newsTradingDetails": "คุณสามารถเทรดในช่วง NFP, FOMC และข่าวที่มีผลกระทบสูงอื่นๆ",
+    "weekendHolding": "การถือครองช่วงสุดสัปดาห์",
+    "weekendHoldingDesc": "อนุญาตให้ถือครองตำแหน่งในช่วงสุดสัปดาห์",
+    "weekendHoldingDetails": "สามารถถือครองตำแหน่งจากวันศุกร์ปิดถึงวันจันทร์เปิดโดยไม่มีโทษ",
+    "expertAdvisors": "ผู้เชี่ยวชาญ (EA)",
+    "expertAdvisorsDesc": "อนุญาตให้ใช้การเทรดอัตโนมัติด้วย EA",
+    "expertAdvisorsDetails": "คุณสามารถใช้ EA ได้ แต่กลยุทธ์ martingale และ grid จะถูกตรวจสอบ",
+    "hedging": "การป้องกันความเสี่ยง",
+    "hedgingDesc": "อนุญาตให้เปิดตำแหน่งตรงข้ามในเครื่องมือเดียวกัน",
+    "hedgingDetails": "อนุญาตให้ป้องกันความเสี่ยงเต็มรูปแบบในเครื่องมือทั้งหมด",
+    "copyTrading": "การคัดลอกการเทรด",
+    "copyTradingDesc": "ไม่อนุญาตให้คัดลอกการเทรดจากเทรดเดอร์อื่น",
+    "copyTradingDetails": "เทรดเดอร์แต่ละคนต้องดำเนินกลยุทธ์การเทรดของตนเองอย่างอิสระ",
+    "latencyArbitrage": "การเก็งกำไรจากความล่าช้า",
+    "latencyArbitrageDesc": "ห้ามใช้ประโยชน์จากความล่าช้าราคาระหว่างโบรกเกอร์",
+    "latencyArbitrageDetails": "การใช้ความล่าช้าของข้อมูลราคาเพื่อเก็งกำไรจะส่งผลให้บัญชีถูกยกเลิก",
+    "complianceHistory": "ประวัติการปฏิบัติตาม",
+    "last7Days": "7 วันที่ผ่านมา",
+    "dailyDrawdown": "การขาดทุนรายวัน",
+    "overallDrawdown": "การขาดทุนโดยรวม",
+    "limit": "ขีดจำกัด",
+    "loadingHistory": "กำลังโหลดประวัติการปฏิบัติตาม...",
+    "noComplianceHistory": "ไม่มีประวัติการปฏิบัติตาม",
+    "noComplianceHistoryDesc": "ประวัติการปฏิบัติตามจะปรากฏที่นี่เมื่อคุณเริ่มเทรด",
+    "importantInformation": "ข้อมูลสำคัญ",
+    "info1": "การขาดทุนรายวันคำนวณจากยอดคงเหลือปิดของวันก่อนหน้า",
+    "info2": "การขาดทุนโดยรวมคำนวณจากยอดคงเหลือสูงสุดของบัญชีของคุณ (จุดสูงสุดของส่วนของผู้ถือหุ้น)",
+    "info3": "การละเมิดกฎใดๆ จะส่งผลให้บัญชีล้มเหลวทันที",
+    "info4": "การละเมิดเบา (คำเตือน) จะถูกตรวจสอบแต่ไม่ทำให้ล้มเหลวทันที",
+    "info5": "การคำนวณกฎทั้งหมดจะดำเนินการแบบเรียลไทม์ในช่วงเวลาตลาด"
+  },
+  "accountDetails": {
+    "title": "รายละเอียดบัญชี",
+    "subtitle": "ดูข้อมูลรายละเอียดเกี่ยวกับบัญชีการเทรดของคุณ",
+    "selectAccountDesc": "เลือกบัญชีเพื่อดูรายละเอียด",
+    "selectAccount": "เลือกบัญชี",
+    "loading": "กำลังโหลดรายละเอียดบัญชี...",
+    "noAccounts": "คุณยังไม่มีบัญชีการเทรด",
+    "noAccountsDesc": "ซื้อความท้าทายเพื่อดูรายละเอียดบัญชีและแดชบอร์ดการเทรด",
+    "purchaseChallenge": "ซื้อความท้าทาย",
+    "account": "บัญชี",
+    "started": "เริ่มเมื่อ",
+    "phase1": "เฟส 1",
+    "phase2": "เฟส 2",
+    "funded": "ได้รับเงินทุน",
+    "failed": "ล้มเหลว",
+    "phase1Completed": "เฟส 1 เสร็จสมบูรณ์แล้ว!",
+    "phase1CompletedDesc": "ยินดีด้วย! คุณได้บรรลุข้อกำหนดทั้งหมดแล้ว ดำเนินการไปยังเฟส 2",
+    "proceedToPhase2": "ดำเนินการไปยังเฟส 2",
+    "accountSummary": "สรุปบัญชี",
+    "balance": "ยอดคงเหลือ",
+    "equity": "ส่วนของผู้ถือหุ้น",
+    "floatingPL": "P/L ลอยตัว",
+    "totalProfit": "กำไรรวม",
+    "profitTarget": "เป้าหมายกำไร",
+    "dailyDrawdown": "การขาดทุนรายวัน",
+    "overallDrawdown": "การขาดทุนโดยรวม",
+    "target": "เป้าหมาย",
+    "tradingDays": "วันเทรด",
+    "performanceStatistics": "สถิติประสิทธิภาพ",
+    "winRate": "อัตราชนะ",
+    "avgRiskReward": "ความเสี่ยง/ผลตอบแทนเฉลี่ย",
+    "totalTrades": "การเทรดทั้งหมด",
+    "profitFactor": "ปัจจัยกำไร",
+    "largestWin": "ชนะมากที่สุด",
+    "largestLoss": "แพ้มากที่สุด",
+    "avgLotSize": "ขนาดล็อตเฉลี่ย",
+    "avgDuration": "ระยะเวลาเฉลี่ย",
+    "tradeHistory": "ประวัติการเทรด",
+    "noTradesFound": "ไม่พบการเทรด",
+    "refresh": "รีเฟรช",
+    "viewFullTradeHistory": "ดูประวัติการเทรดทั้งหมด",
+    "challengeProgress": "ความคืบหน้าความท้าทาย",
+    "trackJourney": "ติดตามเส้นทางของคุณ",
+    "analytics": "การวิเคราะห์",
+    "detailedStats": "สถิติโดยละเอียด",
+    "tradingRules": "กฎการเทรด",
+    "viewAllRules": "ดูกฎทั้งหมด",
+    "time": "เวลา",
+    "symbol": "สัญลักษณ์",
+    "type": "ประเภท",
+    "lots": "ล็อต",
+    "open": "เปิด",
+    "close": "ปิด",
+    "pl": "P/L",
+    "status": "สถานะ",
+    "closed": "ปิด",
+    "buy": "ซื้อ",
+    "sell": "ขาย",
+    "minTradingDays": "วันเทรดขั้นต่ำ",
+    "days": "วัน",
+    "newsTrading": "การเทรดข่าว",
+    "weekendHolding": "การถือครองช่วงสุดสัปดาห์",
+    "compliant": "ปฏิบัติตาม",
+    "allowed": "อนุญาต",
+    "equityCurve": "เส้นโค้งส่วนของผู้ถือหุ้น",
+    "dailyPerformance": "ประสิทธิภาพรายวัน",
+    "openPositions": {
+      "title": "ตำแหน่งที่เปิดอยู่",
+      "noPositions": "ไม่มีตำแหน่งที่เปิดอยู่",
+      "noPositionsDesc": "การเทรดที่ใช้งานอยู่ของคุณจะปรากฏที่นี่",
+      "lots": "ล็อต",
+      "stopLoss": "SL",
+      "takeProfit": "TP",
+      "pips": "pips"
+    },
+    "ruleCompliance": {
+      "title": "การปฏิบัติตามกฎ",
+      "violation": "การละเมิด",
+      "violations": "การละเมิด",
+      "warning": "คำเตือน",
+      "warnings": "คำเตือน",
+      "allClear": "ปลอดภัย",
+      "profitTarget": "เป้าหมายกำไร",
+      "dailyDrawdown": "การขาดทุนรายวัน",
+      "overallDrawdown": "การขาดทุนโดยรวม",
+      "minTradingDays": "วันเทรดขั้นต่ำ",
+      "newsTrading": "การเทรดข่าว",
+      "weekendHolding": "การถือครองช่วงสุดสัปดาห์",
+      "expertAdvisors": "ที่ปรึกษาผู้เชี่ยวชาญ",
+      "reachProfitTarget": "บรรลุเป้าหมายกำไรเพื่อผ่าน",
+      "maxDailyLoss": "ขีดจำกัดการขาดทุนรายวันสูงสุด",
+      "maxTotalLoss": "ขีดจำกัดการขาดทุนรวมสูงสุด",
+      "minRequiredDays": "วันเทรดขั้นต่ำที่ต้องการ",
+      "tradingDuringNews": "การเทรดระหว่างเหตุการณ์ข่าว",
+      "holdingOverWeekend": "การถือครองตำแหน่งในช่วงสุดสัปดาห์",
+      "automatedTrading": "อนุญาตการเทรดอัตโนมัติ",
+      "allowed": "อนุญาต",
+      "notAllowed": "ไม่อนุญาต",
+      "limit": "ขีดจำกัด",
+      "violationDetected": "ตรวจพบการละเมิดบัญชี",
+      "violationMessage": "บัญชีของคุณได้ละเมิดกฎการเทรดหนึ่งข้อหรือมากกว่า กรุณาตรวจสอบกิจกรรมการเทรดของคุณ"
+    }
+  },
+  "notifications": {
+    "title": "การแจ้งเตือน",
+    "subtitle": "อัปเดตกิจกรรมบัญชีของคุณ",
+    "markAllAsRead": "ทำเครื่องหมายว่าอ่านทั้งหมด",
+    "markAsRead": "ทำเครื่องหมายว่าอ่านแล้ว",
+    "total": "ทั้งหมด",
+    "unread": "ยังไม่อ่าน",
+    "warnings": "คำเตือน",
+    "violations": "การละเมิด",
+    "all": "ทั้งหมด",
+    "challenges": "ความท้าทาย",
+    "payouts": "การจ่ายเงิน",
+    "account": "บัญชี",
+    "noNotifications": "ไม่มีการแจ้งเตือน",
+    "noNewNotifications": "ไม่มีการแจ้งเตือนใหม่",
+    "allCaughtUp": "คุณอัปเดตแล้ว!",
+    "challenge": "ความท้าทาย",
+    "payout": "การจ่ายเงิน",
+    "system": "ระบบ",
+    "notification": "การแจ้งเตือน",
+    "notifications": "การแจ้งเตือน",
+    "titles": {
+      "drawdownWarning": "คำเตือนการลดลง",
+      "payoutApproved": "อนุมัติการจ่ายเงิน",
+      "payoutRejected": "ปฏิเสธการจ่ายเงิน",
+      "payoutProcessed": "ดำเนินการจ่ายเงินแล้ว",
+      "phase1Completed": "ผ่านเฟส 1 แล้ว!",
+      "phase2Completed": "ผ่านเฟส 2 แล้ว!",
+      "accountViolation": "การละเมิดบัญชี",
+      "accountFailed": "บัญชีล้มเหลว",
+      "challengePurchased": "ซื้อความท้าทายแล้ว",
+      "tradingDaysMilestone": "ก้าวสำคัญวันเทรด",
+      "newChallengeAvailable": "ความท้าทายใหม่พร้อมใช้งาน",
+      "accountScalingApproved": "อนุมัติการขยายบัญชี",
+      "accountScalingRejected": "ปฏิเสธการขยายบัญชี",
+      "accountPaused": "บัญชีถูกระงับชั่วคราว",
+      "accountClosed": "บัญชีถูกปิดแล้ว",
+      "accountResumed": "บัญชีกลับมาใช้งานปกติ"
+    },
+    "messages": {
+      "dailyDrawdownWarning": "การลดลงรายวันของคุณถึง {{dailyPercent}}% ในบัญชี #{{accountNumber}} สูงสุดที่อนุญาตคือ {{maxPercent}}% กรุณาจัดการความเสี่ยงอย่างระมัดระวัง",
+      "overallDrawdownWarning": "การลดลงโดยรวมของคุณถึง {{overallPercent}}% ในบัญชี #{{accountNumber}} สูงสุดที่อนุญาตคือ {{maxPercent}}% กรุณาจัดการความเสี่ยงอย่างระมัดระวัง",
+      "dailyDrawdownViolation": "การลดลงรายวันของคุณถึง {{dailyPercent}}% ในบัญชี #{{accountNumber}} สูงสุดที่อนุญาตคือ {{maxPercent}}% การเทรดถูกล็อคจนกว่าพรุ่งนี้",
+      "overallDrawdownViolation": "การลดลงโดยรวมของคุณถึง {{overallPercent}}% ในบัญชี #{{accountNumber}} สูงสุดที่อนุญาตคือ {{maxPercent}}% ความท้าทายถูกตัดสิทธิ์",
+      "payoutApproved": "คำขอจ่ายเงิน ${{amount}} ของคุณได้รับการอนุมัติแล้ว เงินจะถูกโอนภายใน 24-48 ชั่วโมง",
+      "payoutRejected": "คำขอจ่ายเงิน ${{amount}} ของคุณถูกปฏิเสธ กรุณาติดต่อฝ่ายสนับสนุนสำหรับข้อมูลเพิ่มเติม",
+      "payoutProcessed": "การจ่ายเงิน ${{amount}} ของคุณได้รับการดำเนินการและโอนเข้าบัญชีแล้ว",
+      "phase1Completed": "ยินดีด้วย! คุณได้ผ่านเฟส 1 ของความท้าทาย ${{accountSize}} แล้ว ดำเนินการต่อเฟส 2 เพื่อดำเนินการต่อ",
+      "phase2Completed": "ยินดีด้วย! คุณได้ผ่านเฟส 2 ของความท้าทาย ${{accountSize}} แล้ว บัญชีของคุณได้รับการจัดหาเงินทุนแล้ว!",
+      "tradingDaysMilestoneMet": "คุณได้ทำวันเทรด {{tradingDays}} วันในบัญชี #{{accountNumber}} แล้ว ตรงตามข้อกำหนดวันเทรดขั้นต่ำแล้ว!",
+      "tradingDaysMilestone": "คุณได้ทำวันเทรด {{tradingDays}} วันในบัญชี #{{accountNumber}} แล้ว ทำได้ดีมาก!",
+      "challengePurchased": "ความท้าทาย {{challengeName}} ของคุณถูกซื้อสำเร็จแล้ว บัญชีเทรด #{{accountNumber}} ของคุณพร้อมใช้งานแล้วด้วยยอดเงินเริ่มต้น ${{startingBalance}}",
+      "accountScalingApproved": "คำขอขยายบัญชี #{{accountNumber}} ของคุณได้รับการอนุมัติแล้ว ยอดเงินในบัญชีเพิ่มจาก ${{oldBalance}} เป็น ${{newBalance}}",
+      "accountScalingRejected": "คำขอขยายบัญชี #{{accountNumber}} ของคุณถูกปฏิเสธ กรุณาติดต่อฝ่ายสนับสนุนสำหรับข้อมูลเพิ่มเติม",
+      "newChallengeAvailable": "ดูความท้าทายใหม่ {{challengeName}} ของเรา - ขนาดบัญชี {{accountSize}} บน {{platform}}! เริ่มต้นได้เลย",
+      "accountViolationGeneric": "บัญชี #{{accountNumber}} ละเมิดกฎการเทรด{{violationPercent}}",
+      "accountPaused": "บัญชีการเทรด #{{accountNumber}} ของคุณถูกระงับชั่วคราว การเทรดถูกระงับชั่วคราว",
+      "accountClosed": "บัญชีการเทรด #{{accountNumber}} ของคุณถูกปิดแล้ว",
+      "accountResumed": "บัญชีการเทรด #{{accountNumber}} ของคุณกลับมาใช้งานได้แล้ว ขณะนี้การเทรดเปิดใช้งานอยู่"
+    }
+  },
+  "buyChallenge": {
+    "title": "เพิ่มความท้าทายใหม่",
+    "subtitle": "ขยายพอร์ตการเทรดของคุณด้วยความท้าทายอีกชิ้น",
+    "purchaseSuccessful": "ซื้อสำเร็จ!",
+    "purchaseSuccessfulDesc": "บัญชีความท้าทายของคุณกำลังถูกตั้งค่า คุณจะได้รับข้อมูลการเข้าสู่ระบบทางอีเมลภายใน 5 นาที",
+    "orderSummary": "สรุปคำสั่งซื้อ",
+    "challenge": "ความท้าทาย",
+    "platform": "แพลตฟอร์ม",
+    "amountPaid": "จำนวนเงินที่จ่าย",
+    "goToDashboard": "ไปที่แดชบอร์ด",
+    "chooseChallenge": "เลือกความท้าทาย",
+    "selectPlatform": "เลือกแพลตฟอร์ม",
+    "payment": "การชำระเงิน",
+    "chooseYourChallenge": "เลือกความท้าทายของคุณ",
+    "selectAccountSize": "เลือกขนาดบัญชีที่เหมาะกับสไตล์การเทรดของคุณ",
+    "popular": "ยอดนิยม",
+    "accountSize": "ขนาดบัญชี",
+    "profitTarget": "เป้าหมายกำไร",
+    "drawdown": "การขาดทุน",
+    "profitSplit": "ส่วนแบ่งกำไร",
+    "continue": "ดำเนินการต่อ",
+    "selectTradingPlatform": "เลือกแพลตฟอร์มการเทรด",
+    "choosePlatform": "เลือกแพลตฟอร์มที่คุณต้องการเทรด",
+    "back": "ย้อนกลับ",
+    "completePurchase": "ทำการซื้อให้เสร็จสิ้น",
+    "choosePaymentMethod": "เลือกวิธีการชำระเงินและทำการชำระเงินให้เสร็จสิ้น",
+    "paymentMethod": "วิธีการชำระเงิน",
+    "couponCode": "รหัสคูปอง",
+    "enterCode": "ป้อนรหัส",
+    "apply": "ใช้",
+    "applied": "ใช้แล้ว",
+    "off": "ลด",
+    "couponApplied": "{{code}} ใช้แล้ว - ลด {{discount}}%!",
+    "subtotal": "ยอดรวมย่อย",
+    "discount": "ส่วนลด",
+    "total": "รวม",
+    "processing": "กำลังดำเนินการ...",
+    "pay": "จ่าย",
+    "payAmount": "จ่าย ${{amount}}",
+    "secureEncryption": "การเข้ารหัส SSL 256-bit ที่ปลอดภัย",
+    "platforms": {
+      "MT5": {
+        "name": "MetaTrader 5",
+        "desc": "แพลตฟอร์มการเทรดยอดนิยม"
+      },
+      "MT4": {
+        "name": "MetaTrader 4",
+        "desc": "แพลตฟอร์มการเทรดคลาสสิก"
+      },
+      "cTrader": {
+        "name": "cTrader",
+        "desc": "แพลตฟอร์มมืออาชีพ"
+      },
+      "DXTrade": {
+        "name": "DXTrade",
+        "desc": "แพลตฟอร์มบนเว็บ"
+      }
+    },
+    "paymentMethods": {
+      "card": {
+        "name": "บัตรเครดิต/เดบิต",
+        "desc": "Visa, Mastercard, Amex"
+      },
+      "crypto": {
+        "name": "สกุลเงินดิจิทัล",
+        "desc": "BTC, ETH, USDT"
+      },
+      "paypal": {
+        "name": "PayPal",
+        "desc": "ชำระด้วย PayPal"
+      }
+    }
+  },
+  "violationModal": {
+    "dailyLossTitle": "ถึงขีดจำกัดการขาดทุนรายวัน",
+    "drawdownTitle": "ถึงขีดจำกัดการขาดทุนสูงสุด",
+    "description": "บัญชีของคุณได้ละเมิดกฎการท้าทาย",
+    "ruleLimit": "ขีดจำกัดของกฎ",
+    "equityAtViolation": "ส่วนของผู้ถือหุ้นขณะที่เกิดการละเมิด",
+    "actionTaken": "มาตรการที่ดำเนินการ",
+    "positionsClosed": "ตำแหน่งทั้งหมดถูกปิดโดยอัตโนมัติ",
+    "dailyLockedAction": "การเทรดถูกล็อคจนถึงวันพรุ่งนี้",
+    "disqualifiedAction": "การท้าทายถูกตัดสิทธิ์",
+    "understood": "รับทราบ"
+  },
+  "violationAlert": {
+    "accountFailed": "บัญชีล้มเหลว",
+    "dailyDrawdownExceeded": "เกินขีดจำกัดการขาดทุนรายวัน",
+    "dailyDrawdownDescription": "การขาดทุนรายวันของคุณเกินขีดจำกัดสูงสุดที่อนุญาต {{limit}}%",
+    "maximumDrawdownExceeded": "เกินขีดจำกัดการขาดทุนสูงสุด",
+    "maximumDrawdownDescription": "การขาดทุนรวมของคุณเกินขีดจำกัดสูงสุดที่อนุญาต {{limit}}%",
+    "maximumTradingDaysExceeded": "เกินจำนวนวันเทรดสูงสุด",
+    "maximumTradingDaysDescription": "คุณเกินจำนวนวันเทรดสูงสุดที่อนุญาต",
+    "valueAtViolation": "มูลค่าตอนละเมิด",
+    "maximumAllowed": "สูงสุดที่อนุญาต",
+    "account": "บัญชี",
+    "finalBalance": "ยอดคงเหลือสุดท้าย",
+    "tradingDays": "วันเทรด",
+    "days": "วัน",
+    "startNewChallenge": "เริ่มความท้าทายใหม่",
+    "reviewTradingRules": "ตรวจสอบกฎการเทรด"
+  },
+  "terminal": {
+    "title": "เทอร์มินัลการเทรด",
+    "selectAccount": "เลือกบัญชี",
+    "phase1": "เฟส 1",
+    "phase2": "เฟส 2",
+    "funded": "ได้รับเงินทุน",
+    "failed": "ล้มเหลว",
+    "phase1Badge": "เฟส 1",
+    "phase2Badge": "เฟส 2",
+    "fundedBadge": "ได้รับเงินทุน",
+    "failedBadge": "ล้มเหลว",
+    "connected": "เชื่อมต่อแล้ว",
+    "disconnected": "ตัดการเชื่อมต่อ",
+    "tabs": {
+      "chart": "กราฟ",
+      "trade": "เทรด",
+      "watch": "ดู",
+      "watchlist": "ดู",
+      "positions": "ตำแหน่ง",
+      "pending": "รอดำเนินการ",
+      "history": "ประวัติ"
+    },
+    "tradeHistory": "ประวัติการเทรด",
+    "modifyDialog": {
+      "title": "แก้ไข {{symbol}}",
+      "lotSize": "ขนาดล็อต",
+      "enterTP": "ป้อนราคา TP",
+      "enterSL": "ป้อนราคา SL",
+      "saveChanges": "บันทึกการเปลี่ยนแปลง",
+      "saving": "กำลังบันทึก..."
+    },
+    "noPendingOrders": "ไม่มีคำสั่งรอดำเนินการ",
+    "cancel": "ยกเลิก",
+    "noClosedTrades": "ยังไม่มีรายการเทรดที่ปิด",
+    "lots": "มากมาย",
+    "lot": "ล็อต",
+    "drawdownWarning": {
+      "title": "คำเตือนการขาดทุน",
+      "details": "พิจารณาลดขนาดตำแหน่งหรือปิดการเทรดบางรายการเพื่อปกป้องบัญชีของคุณ"
+    },
+    "violation": {
+      "title": "ความท้าทายล้มเหลว",
+      "message": "เกินขีดจำกัดการขาดทุนสูงสุด"
+    },
+    "accountFailed": {
+      "title": "บัญชีล้มเหลว - การเทรดถูกปิดใช้งาน",
+      "resetDemo": "รีเซ็ตเดโม",
+      "message": "บัญชีล้มเหลว การเทรดถูกปิดใช้งาน"
+    },
+    "tradeBlocked": "การเทรดถูกบล็อก",
+    "invalidTrade": "คำสั่งซื้อขายไม่ถูกต้อง",
+    "missingFields": "ข้อมูลคำสั่งซื้อขายไม่ครบถ้วน",
+    "noAccount": "ไม่ได้เลือกบัญชี",
+    "selectAccountTitle": "เลือกบัญชี",
+    "selectAccountMessage": "กรุณาเลือกบัญชีการเทรดจากเมนูแบบหล่นลงด้านบนเพื่อดูรายละเอียดการเทรด",
+    "tradeExecuted": "คำสั่งซื้อขายสำเร็จ",
+    "orderPlaced": "วางคำสั่งสำเร็จ",
+    "orderCancelled": "ยกเลิกคำสั่งแล้ว",
+    "tradeFailed": "คำสั่งซื้อขายล้มเหลว",
+    "saveError": "ไม่สามารถบันทึกคำสั่งซื้อขายไปยังเซิร์ฟเวอร์ได้",
+    "positionClosed": "ปิดตำแหน่งแล้ว",
+    "stopLossHit": "Stop Loss ถูกชน",
+    "takeProfitHit": "Take Profit ถูกชน",
+    "closedAt": "ปิดที่",
+    "closeFailed": "ปิดตำแหน่งล้มเหลว",
+    "updateError": "ไม่สามารถอัปเดตคำสั่งซื้อขายในเซิร์ฟเวอร์ได้",
+    "accountStatusBlocked": "บัญชีอยู่ในสถานะ {{status}} การเทรดไม่ได้รับอนุญาต",
+    "invalidLotSize": "ขนาดล็อตไม่ถูกต้อง กรุณาใส่ตัวเลขที่เป็นบวก",
+    "duplicateTrade": "คำสั่งซื้อขายซ้ำ",
+    "duplicateTradeMessage": "คำสั่งซื้อขายที่คล้ายกันเพิ่งถูกดำเนินการ กรุณารอสักครู่",
+    "accountNotFound": "ไม่พบบัญชีเทรด",
+    "invalidTradeData": "ข้อมูลคำสั่งซื้อขายไม่ถูกต้อง กรุณาตรวจสอบข้อมูลของคุณ",
+    "tradeNotAllowed": "ไม่ได้รับอนุญาตให้เทรดในบัญชีนี้",
+    "serverError": "ข้อผิดพลาดของเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง",
+    "networkOffline": "ไม่มีการเชื่อมต่ออินเทอร์เน็ต กรุณาตรวจสอบเครือข่ายของคุณ",
+    "networkError": "ข้อผิดพลาดของเครือข่าย กรุณาตรวจสอบการเชื่อมต่อและลองอีกครั้ง",
+    "tradeNotFound": "ไม่พบคำสั่งซื้อขาย อาจถูกลบไปแล้ว",
+    "invalidCloseData": "ข้อมูลไม่ถูกต้องสำหรับการปิดคำสั่งซื้อขาย",
+    "tradeAlreadyClosed": "คำสั่งซื้อขายนี้ถูกปิดแล้ว",
+    "tradeInProgress": "กำลังดำเนินการคำสั่งซื้อขายอยู่ กรุณารอสักครู่",
+    "dailyLossLimitReached": "ถึงขีดจำกัดการขาดทุนรายวันแล้ว การเทรดถูกล็อคจนกว่าจะถึงวันพรุ่งนี้",
+    "dailyLocked": "ถึงขีดจำกัดการขาดทุนรายวัน",
+    "dailyLockedMessage": "บัญชีของคุณถูกล็อคจนกว่าจะถึงวันพรุ่งนี้เนื่องจากเกินขีดจำกัดการขาดทุนรายวัน",
+    "disqualified": "ความท้าทายถูกตัดสิทธิ์",
+    "disqualifiedMessage": "บัญชีของคุณถูกตัดสิทธิ์เนื่องจากเกินขีดจำกัดการขาดทุนสูงสุด",
+    "challengeDisqualified": "ความท้าทายถูกตัดสิทธิ์ ไม่ได้รับอนุญาตให้เทรดอีกต่อไป",
+    "modificationFailed": "การแก้ไขล้มเหลว",
+    "orderCancelledSuccess": "ยกเลิกคำสั่งรอดำเนินการสำเร็จ",
+    "orderFailed": "คำสั่งล้มเหลว",
+    "orderExecutionFailed": "การดำเนินการคำสั่งล้มเหลว",
+    "cancelFailed": "ยกเลิกล้มเหลว",
+    "pendingOrderDescription": "วางคำสั่ง {{type}} {{symbol}} แบบจำกัดราคาแล้ว",
+    "tradingPanel": {
+      "newOrder": "คำสั่งซื้อขายใหม่",
+      "buyLong": "ซื้อ",
+      "sellShort": "ขาย",
+      "long": "Long",
+      "short": "Short",
+      "price": "ราคา",
+      "market": "ตลาด",
+      "leaveEmpty": "ปล่อยว่างสำหรับคำสั่งตลาด",
+      "amount": "จำนวน",
+      "takeProfit": "เอา กำไร",
+      "stopLoss": "หยุด การสูญเสีย",
+      "lot": "lot",
+      "optional": "ไม่บังคับ",
+      "orderValue": "มูลค่าคำสั่ง",
+      "margin": "มาร์จิ้น",
+      "leverage": "เลเวอเรจ",
+      "placeBuyOrder": "วางคำสั่งซื้อ",
+      "placeSellOrder": "วางคำสั่งขาย",
+      "bid": "ราคาขาย",
+      "ask": "ราคาซื้อ",
+      "spread": "สเปรด",
+      "limit": "จำกัด"
+    },
+    "chart": {
+      "lastUpdate": "อัปเดตล่าสุด",
+      "candles": "เทียน",
+      "tf": "TF",
+      "loadingData": "กำลังโหลดข้อมูลกราฟ...",
+      "updating": "กำลังอัปเดต..."
+    },
+    "loadingAccounts": "กำลังโหลดบัญชี...",
+    "watchlist": {
+      "live": "สด",
+      "offline": "ออฟไลน์",
+      "search": "ค้นหา...",
+      "all": "ทั้งหมด",
+      "favorites": "★",
+      "forex": "Forex",
+      "crypto": "Crypto",
+      "symbol": "สัญลักษณ์",
+      "bid": "ราคาขาย",
+      "ask": "ราคาซื้อ",
+      "chg": "Chg%",
+      "updated": "อัปเดต",
+      "retry": "ลองอีกครั้ง"
+    },
+    "positions": {
+      "title": "ตำแหน่งที่เปิดอยู่",
+      "noPositions": "ไม่มีตำแหน่งที่เปิดอยู่",
+      "noPositionsDesc": "เปิดการเทรดเพื่อดูที่นี่",
+      "modifySLTP": "แก้ไข SL/TP",
+      "closePosition": "ปิดตำแหน่ง",
+      "entry": "เข้า",
+      "current": "ปัจจุบัน",
+      "closeAt": "ปิดที่",
+      "pips": "pips",
+      "buy": "ซื้อ",
+      "sell": "ขาย"
+    },
+    "history": {
+      "filterBySymbol": "กรองตามสัญลักษณ์...",
+      "allTrades": "การเทรดทั้งหมด",
+      "profitOnly": "กำไรเท่านั้น",
+      "lossOnly": "ขาดทุนเท่านั้น",
+      "allTime": "ตลอดเวลา",
+      "today": "วันนี้",
+      "thisWeek": "สัปดาห์นี้",
+      "thisMonth": "เดือนนี้",
+      "totalPL": "กำไร/ขาดทุนรวม",
+      "winRate": "อัตราชนะ",
+      "wins": "ชนะ",
+      "losses": "แพ้",
+      "noTradesMatch": "ไม่มีการเทรดที่ตรงกับตัวกรอง",
+      "entry": "เข้า",
+      "exit": "ออก",
+      "autoClosed": "ปิดอัตโนมัติ",
+      "breach": "การละเมิดกฎ",
+      "breachPnL": "PnL ตอนละเมิดกฎ (ที่ขีดจำกัด)"
+    },
+    "accountMetrics": {
+      "balance": "ยอดเงิน",
+      "equity": "ส่วนของผู้ถือหุ้น",
+      "margin": "มาร์จิ้น",
+      "freeMargin": "มาร์จิ้นว่าง",
+      "marginLevel": "ระดับมาร์จิ้น",
+      "floatingPnL": "กำไร/ขาดทุนลอยตัว",
+      "profitPercent": "กำไร %",
+      "dailyDrawdown": "Drawdown รายวัน",
+      "overallDrawdown": "Drawdown รวม",
+      "used": "ใช้แล้ว",
+      "free": "ว่าง",
+      "marginUsed": "มาร์จิ้นที่ใช้",
+      "tradingDays": "วันเทรด",
+      "phase": "เฟส",
+      "loss": "ขาดทุน",
+      "challengeActive": "ความท้าทายที่ใช้งานอยู่",
+      "workingTowardsPhase1": "กำลังมุ่งสู่การทำให้เฟส 1 เสร็จสมบูรณ์",
+      "workingTowardsPhase2": "กำลังมุ่งสู่การทำให้เฟส 2 เสร็จสมบูรณ์",
+      "phase1Complete": "เฟส 1 เสร็จสมบูรณ์",
+      "readyForPhase2": "พร้อมที่จะก้าวไปสู่เฟส 2",
+      "fundedAccount": "บัญชีที่ได้รับทุน",
+      "challengeCompleted": "ยินดีด้วย! คุณได้ทำให้ความท้าทายเสร็จสมบูรณ์แล้ว",
+      "phaseProgression": "ความคืบหน้าของเฟส",
+      "completePhase1": "ทำให้เฟส 1 เสร็จสมบูรณ์",
+      "completePhase2": "ทำให้เฟส 2 เสร็จสมบูรณ์",
+      "profit": "กำไร",
+      "days": "วัน",
+      "phase1": "เฟส 1",
+      "phase2": "เฟส 2",
+      "funded": "ได้รับทุน",
+      "dailyLimitViolated": "ละเมิดขีดจำกัดรายวัน (ล็อคแล้ว)",
+      "challengeFailed": "ความท้าทายล้มเหลว / ถูกตัดสิทธิ์",
+      "accountLockedUntilTomorrow": "บัญชีได้ถูกล็อคจนกว่าจะถึงวันพรุ่งนี้เนื่องจากละเมิดขีดจำกัดการขาดทุนรายวัน",
+      "accountViolatedRules": "บัญชีได้ละเมิดกฎความท้าทาย",
+      "daysRemaining_one": "{{count}} วันที่เหลือ",
+      "daysRemaining_other": "{{count}} วันที่เหลือ"
+    }
+  },
+  "nav": {
+    "home": "หน้าแรก",
+    "challenges": "ความท้าทาย",
+    "howItWorks": "วิธีการทำงาน",
+    "scaling": "การขยาย",
+    "rules": "กฎ",
+    "faq": "คำถามที่พบบ่อย",
+    "contact": "ติดต่อ",
+    "login": "เข้าสู่ระบบ",
+    "getStarted": "เริ่มต้น",
+    "dashboard": "แดชบอร์ด",
+    "tradingTerminal": "เทอร์มินัลการเทรด",
+    "buyChallenge": "ซื้อความท้าทาย",
+    "myAccounts": "บัญชีของฉัน",
+    "accountDetails": "รายละเอียดบัญชี",
+    "challengeProgress": "ความคืบหน้าความท้าทาย",
+    "ruleCompliance": "การปฏิบัติตามกฎ",
+    "tradeHistory": "ประวัติการเทรด",
+    "analytics": "การวิเคราะห์",
+    "payouts": "การจ่ายเงิน",
+    "notifications": "การแจ้งเตือน",
+    "profile": "โปรไฟล์",
+    "support": "สนับสนุน",
+    "overview": "ภาพรวม",
+    "users": "ผู้ใช้",
+    "accounts": "บัญชี",
+    "riskMonitor": "การตรวจสอบความเสี่ยง",
+    "brokerServers": "เซิร์ฟเวอร์โบรกเกอร์",
+    "payments": "การชำระเงิน",
+    "violations": "การละเมิด",
+    "coupons": "คูปอง",
+    "settings": "การตั้งค่า",
+    "website": "เว็บไซต์",
+    "logout": "ออกจากระบบ",
+    "user": "ผู้ใช้",
+    "adminPanel": "แผงควบคุมผู้ดูแลระบบ"
+  },
+  "status": {
+    "active": "ใช้งาน",
+    "ACTIVE": "ใช้งาน",
+    "passed": "ผ่าน",
+    "failed": "ล้มเหลว",
+    "suspended": "ระงับ",
+    "funded": "ได้รับเงินทุน",
+    "pending": "รอดำเนินการ",
+    "approved": "อนุมัติ",
+    "rejected": "ปฏิเสธ",
+    "paid": "จ่ายแล้ว",
+    "completed": "เสร็จสมบูรณ์",
+    "refunded": "คืนเงิน",
+    "open": "เปิด",
+    "in_progress": "กำลังดำเนินการ",
+    "inprogress": "กำลังดำเนินการ",
+    "resolved": "แก้ไขแล้ว",
+    "closed": "ปิด",
+    "CLOSED": "ปิด",
+    "DAILY_LOCKED": "ล็อครายวัน",
+    "DISQUALIFIED": "ถูกตัดสิทธิ์",
+    "phase1": "เฟส 1",
+    "phase2": "เฟส 2",
+    "paused": "หยุดชั่วคราว",
+    "daily_locked": "ล็อครายวัน",
+    "dailylocked": "ล็อครายวัน",
+    "Dailylocked": "ล็อครายวัน",
+    "disqualified": "ถูกตัดสิทธิ์"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "แดชบอร์ดผู้ดูแลระบบ",
+      "subtitle": "ภาพรวมประสิทธิภาพและกิจกรรมของแพลตฟอร์ม",
+      "stats": {
+        "totalTraders": "เทรดเดอร์ทั้งหมด",
+        "activeChallenges": "ความท้าทายที่ใช้งานอยู่",
+        "revenue": "รายได้",
+        "payouts": "การจ่ายเงิน",
+        "fundedAccounts": "บัญชีที่ได้รับเงินทุน",
+        "violationsToday": "การละเมิดวันนี้",
+        "changeThisMonth": "+{{percent}}% เดือนนี้"
+      },
+      "chart": {
+        "title": "รายได้และการจ่ายเงิน (30 วันล่าสุด)",
+        "revenue": "รายได้",
+        "payouts": "การจ่ายเงิน",
+        "tooltip": {
+          "date": "วันที่",
+          "revenue": "รายได้",
+          "payout": "การจ่ายเงิน"
+        }
+      },
+      "recentAccounts": {
+        "title": "บัญชีล่าสุด"
+      },
+      "recentViolations": {
+        "title": "การละเมิดล่าสุด"
+      },
+      "viewAll": "ดูทั้งหมด",
+      "noDataFound": "ไม่พบข้อมูล",
+      "table": {
+        "account": "บัญชี",
+        "platform": "แพลตฟอร์ม",
+        "phase": "เฟส",
+        "status": "สถานะ",
+        "created": "สร้างเมื่อ",
+        "type": "ประเภท",
+        "description": "คำอธิบาย",
+        "time": "เวลา"
+      },
+      "quickActions": {
+        "manageUsers": "จัดการผู้ใช้",
+        "manageChallenges": "จัดการความท้าทาย",
+        "reviewPayouts": "ตรวจสอบการจ่ายเงิน",
+        "platformSettings": "การตั้งค่าแพลตฟอร์ม"
+      },
+      "violations": {
+        "daily_drawdown": {
+          "type": "การขาดทุนรายวัน",
+          "description": "การขาดทุนรายวันเกิน 5%"
+        },
+        "overall_drawdown": {
+          "type": "การขาดทุนรวม",
+          "description": "การขาดทุนรวมเกิน 10%"
+        },
+        "max_trading_days": {
+          "type": "วันเทรดสูงสุด",
+          "description": "ระยะเวลาการเทรดหมดอายุ"
+        },
+        "unknown": {
+          "type": "ไม่ทราบ",
+          "description": "การละเมิดที่ไม่ทราบ"
+        }
+      }
+    },
+    "users": {
+      "title": "การจัดการผู้ใช้",
+      "subtitle": "ดูและจัดการผู้ใช้ทั้งหมดของแพลตฟอร์ม",
+      "stats": {
+        "totalUsers": "ผู้ใช้ทั้งหมด",
+        "traders": "เทรดเดอร์",
+        "admins": "ผู้ดูแลระบบ",
+        "newThisWeek": "ใหม่สัปดาห์นี้"
+      },
+      "searchPlaceholder": "ค้นหาตามชื่อหรืออีเมล...",
+      "filter": {
+        "role": "บทบาท",
+        "allRoles": "บทบาททั้งหมด",
+        "traders": "เทรดเดอร์",
+        "admins": "ผู้ดูแลระบบ"
+      },
+      "table": {
+        "user": "ผู้ใช้",
+        "role": "บทบาท",
+        "joined": "เข้าร่วม",
+        "actions": "การดำเนินการ"
+      },
+      "roles": {
+        "user": "เทรดเดอร์",
+        "admin": "ผู้ดูแลระบบ"
+      },
+      "actions": {
+        "viewDetails": "ดูรายละเอียด",
+        "sendEmail": "ส่งอีเมล",
+        "makeAdmin": "ทำให้เป็นผู้ดูแลระบบ",
+        "makeTrader": "ทำให้เป็นเทรดเดอร์"
+      },
+      "dialog": {
+        "title": "รายละเอียดผู้ใช้",
+        "userId": "รหัสผู้ใช้",
+        "role": "บทบาท",
+        "firstName": "ชื่อ",
+        "lastName": "นามสกุล",
+        "phone": "โทรศัพท์",
+        "country": "ประเทศ",
+        "joined": "เข้าร่วม",
+        "noDetails": "ไม่สามารถโหลดรายละเอียดผู้ใช้",
+        "error": "เกิดข้อผิดพลาดในการโหลดรายละเอียดผู้ใช้"
+      },
+      "emptyMessage": "ไม่พบผู้ใช้"
+    },
+    "accounts": {
+      "title": "การจัดการบัญชี",
+      "subtitle": "ดูและจัดการบัญชีการเทรดทั้งหมด",
+      "stats": {
+        "totalAccounts": "บัญชีทั้งหมด",
+        "active": "ใช้งานอยู่",
+        "passed": "ผ่าน",
+        "funded": "ได้รับเงินทุน",
+        "failed": "ล้มเหลว"
+      },
+      "searchPlaceholder": "ค้นหาตามหมายเลขบัญชีหรืออีเมล...",
+      "filter": {
+        "status": "สถานะ",
+        "phase": "เฟส",
+        "allStatus": "สถานะทั้งหมด",
+        "allPhases": "เฟสทั้งหมด",
+        "active": "ใช้งานอยู่",
+        "passed": "ผ่าน",
+        "funded": "ได้รับเงินทุน",
+        "failed": "ล้มเหลว",
+        "suspended": "ระงับ",
+        "phase1": "เฟส 1",
+        "phase2": "เฟส 2"
+      },
+      "table": {
+        "account": "บัญชี",
+        "platform": "แพลตฟอร์ม",
+        "balance": "ยอดคงเหลือ",
+        "phase": "เฟส",
+        "status": "สถานะ",
+        "created": "สร้างเมื่อ",
+        "actions": "การดำเนินการ"
+      },
+      "actions": {
+        "viewDetails": "ดูรายละเอียด",
+        "forcePass": "บังคับผ่าน",
+        "forceFail": "บังคับล้มเหลว",
+        "resetAccount": "รีเซ็ตบัญชี",
+        "moveToFunded": "ย้ายไปยังเงินทุน"
+      },
+      "dialog": {
+        "title": "รายละเอียดบัญชี",
+        "accountId": "รหัสบัญชี",
+        "brokerLogin": "บรอกเกอร์ล็อกอิน",
+        "trader": "เทรดเดอร์",
+        "platform": "แพลตฟอร์ม",
+        "challenge": "ความท้าทาย",
+        "phase": "เฟส",
+        "status": "สถานะ",
+        "created": "สร้างเมื่อ",
+        "initialBalance": "ยอดเงินเริ่มต้น",
+        "currentBalance": "ยอดเงินปัจจุบัน",
+        "equity": "เงินทุน",
+        "profit": "กำไร/ขาดทุน",
+        "totalTrades": "การเทรดทั้งหมด",
+        "violations": "การละเมิด",
+        "phaseTransitions": "การเปลี่ยนเฟส",
+        "recentViolations": "การละเมิดล่าสุด",
+        "error": "เกิดข้อผิดพลาดในการโหลดรายละเอียดบัญชี",
+        "noDetails": "ไม่มีรายละเอียดบัญชี"
+      },
+      "emptyMessage": "ไม่พบบัญชี"
+    },
+    "payouts": {
+      "title": "การจัดการการจ่ายเงิน",
+      "subtitle": "ตรวจสอบและดำเนินการคำขอจ่ายเงินของเทรดเดอร์",
+      "stats": {
+        "pending": "รอดำเนินการ",
+        "approved": "อนุมัติแล้ว",
+        "totalPaid": "จ่ายเงินรวม",
+        "pendingRequests": "คำขอที่รอดำเนินการ"
+      },
+      "searchPlaceholder": "ค้นหาตามอีเมลเทรดเดอร์...",
+      "filter": {
+        "status": "สถานะ",
+        "allStatus": "สถานะทั้งหมด",
+        "pending": "รอดำเนินการ",
+        "approved": "อนุมัติแล้ว",
+        "paid": "จ่ายแล้ว",
+        "rejected": "ปฏิเสธ"
+      },
+      "table": {
+        "trader": "เทรดเดอร์",
+        "amount": "จำนวนเงิน",
+        "method": "วิธีการ",
+        "status": "สถานะ",
+        "requested": "ขอเมื่อ",
+        "actions": "การดำเนินการ"
+      },
+      "actions": {
+        "markAsPaid": "ทำเครื่องหมายว่าจ่ายแล้ว",
+        "paid": "จ่ายแล้ว",
+        "rejected": "ปฏิเสธ",
+        "rejecting": "กำลังปฏิเสธ..."
+      },
+      "emptyMessage": "ไม่พบคำขอจ่ายเงิน",
+      "dialog": {
+        "rejectTitle": "ปฏิเสธคำขอจ่ายเงิน",
+        "rejectMessage": "กำลังปฏิเสธการจ่ายเงิน {{amount}} สำหรับ {{trader}}",
+        "rejectReasonPlaceholder": "เหตุผลในการปฏิเสธ...",
+        "cancel": "ยกเลิก",
+        "rejectPayout": "ปฏิเสธการจ่ายเงิน"
+      }
+    },
+    "payments": {
+      "title": "การจัดการการชำระเงิน",
+      "subtitle": "ดูและจัดการการชำระเงินความท้าทายทั้งหมด",
+      "stats": {
+        "totalRevenue": "รายได้รวม",
+        "completed": "เสร็จสมบูรณ์",
+        "pending": "รอดำเนินการ",
+        "refunded": "คืนเงิน",
+        "changeThisMonth": "+{{percent}}% เดือนนี้"
+      },
+      "searchPlaceholder": "ค้นหาตามอีเมลหรือรหัสธุรกรรม...",
+      "filter": {
+        "status": "สถานะ",
+        "allStatus": "สถานะทั้งหมด",
+        "completed": "เสร็จสมบูรณ์",
+        "pending": "รอดำเนินการ",
+        "failed": "ล้มเหลว",
+        "refunded": "คืนเงิน"
+      },
+      "table": {
+        "trader": "เทรดเดอร์",
+        "amount": "จำนวนเงิน",
+        "method": "วิธีการ",
+        "transactionId": "รหัสธุรกรรม",
+        "status": "สถานะ",
+        "date": "วันที่",
+        "actions": "การดำเนินการ"
+      },
+      "methods": {
+        "stripe": "บัตรเครดิต/เดบิต",
+        "internal": "ภายใน",
+        "unknown": "ไม่ทราบ"
+      },
+      "actions": {
+        "refund": "คืนเงิน",
+        "refunded": "คืนเงินแล้ว"
+      },
+      "emptyMessage": "ไม่พบการชำระเงิน",
+      "refundTitle": "คืนเงิน",
+      "refundConfirm": "คุณแน่ใจหรือไม่ว่าต้องการคืนเงินนี้?",
+      "refundReason": "เหตุผลในการคืนเงิน (ไม่บังคับ)",
+      "refundReasonPlaceholder": "ใส่เหตุผลในการคืนเงิน...",
+      "cancel": "ยกเลิก",
+      "confirmRefund": "ยืนยันการคืนเงิน",
+      "refunding": "กำลังดำเนินการ..."
+    },
+    "violations": {
+      "title": "การละเมิดกฎ",
+      "subtitle": "ตรวจสอบและติดตามการละเมิดกฎการเทรด",
+      "stats": {
+        "totalViolations": "การละเมิดทั้งหมด",
+        "fatalViolations": "การละเมิดร้ายแรง",
+        "warnings": "คำเตือน",
+        "today": "วันนี้"
+      },
+      "searchPlaceholder": "ค้นหาตามบัญชีหรืออีเมล...",
+      "filter": {
+        "violationType": "ประเภทการละเมิด",
+        "allTypes": "ประเภททั้งหมด",
+        "dailyDrawdown": "การขาดทุนรายวัน",
+        "overallDrawdown": "การขาดทุนรวม",
+        "maxTradingDays": "วันเทรดสูงสุด",
+        "newsTrading": "การเทรดข่าว",
+        "weekendHolding": "ถือครองสุดสัปดาห์",
+        "restrictedInstrument": "เครื่องมือที่ถูกจำกัด",
+        "lotSize": "ขนาดล็อต",
+        "eaDetected": "ตรวจพบ EA",
+        "consistency": "ความสม่ำเสมอ",
+        "ruleBreak": "การละเมิดกฎ"
+      },
+      "table": {
+        "account": "บัญชี",
+        "type": "ประเภท",
+        "description": "คำอธิบาย",
+        "value": "ค่า",
+        "fatal": "ร้ายแรง",
+        "time": "เวลา"
+      },
+      "types": {
+        "dailyDrawdown": "การขาดทุนรายวัน",
+        "overallDrawdown": "การขาดทุนรวม",
+        "maxTradingDays": "วันเทรดสูงสุด",
+        "newsTrading": "การเทรดข่าว",
+        "weekendHolding": "ถือครองสุดสัปดาห์",
+        "restrictedInstrument": "เครื่องมือที่ถูกจำกัด",
+        "lotSize": "ขนาดล็อต",
+        "eaDetected": "ตรวจพบ EA"
+      },
+      "severity": {
+        "fatal": "ร้ายแรง",
+        "warning": "คำเตือน"
+      },
+      "descriptions": {
+        "daily_drawdown": "การขาดทุนรายวันเกิน {{threshold}}%",
+        "overall_drawdown": "การขาดทุนรวมเกิน {{threshold}}%",
+        "max_trading_days": "ระยะเวลาการเทรดสูงสุดหมดอายุ",
+        "news_trading": "เทรดในช่วงข่าวที่ถูกจำกัด",
+        "weekend_holding": "ถือครองตำแหน่งในช่วงสุดสัปดาห์",
+        "restricted_instrument": "เทรดเครื่องมือที่ถูกจำกัด",
+        "lot_size": "เกินขีดจำกัดขนาดล็อต",
+        "ea_detected": "ตรวจพบ Expert Advisor"
+      },
+      "emptyMessage": "ไม่พบการละเมิด"
+    },
+    "coupons": {
+      "title": "การจัดการคูปอง",
+      "subtitle": "สร้างและจัดการคูปองส่วนลด",
+      "createCoupon": "สร้างคูปอง",
+      "editCoupon": "แก้ไขคูปอง",
+      "createNewCoupon": "สร้างคูปองใหม่",
+      "stats": {
+        "totalCoupons": "คูปองทั้งหมด",
+        "active": "ใช้งานอยู่",
+        "totalUses": "การใช้งานรวม",
+        "expired": "หมดอายุ"
+      },
+      "form": {
+        "couponCode": "รหัสคูปอง",
+        "generate": "สร้างอัตโนมัติ",
+        "discountType": "ประเภทส่วนลด",
+        "percentage": "เปอร์เซ็นต์",
+        "fixedAmount": "จำนวนเงินคงที่",
+        "discountValue": "มูลค่าส่วนลด",
+        "maxUses": "การใช้งานสูงสุด (ไม่บังคับ)",
+        "validUntil": "ใช้ได้จนถึง (ไม่บังคับ)",
+        "active": "ใช้งาน",
+        "saving": "กำลังบันทึก...",
+        "updateCoupon": "อัปเดตคูปอง",
+        "createCoupon": "สร้างคูปอง"
+      },
+      "table": {
+        "code": "รหัส",
+        "discount": "ส่วนลด",
+        "usage": "การใช้งาน",
+        "validUntil": "ใช้ได้จนถึง",
+        "status": "สถานะ",
+        "actions": "การดำเนินการ"
+      },
+      "status": {
+        "active": "ใช้งานอยู่",
+        "inactive": "ไม่ใช้งาน"
+      },
+      "noExpiry": "ไม่มีวันหมดอายุ",
+      "emptyMessage": "ไม่พบคูปอง"
+    },
+    "support": {
+      "title": "ตั๋วสนับสนุน",
+      "subtitle": "จัดการและตอบกลับคำขอสนับสนุน",
+      "stats": {
+        "openTickets": "ตั๋วที่เปิดอยู่",
+        "inProgress": "กำลังดำเนินการ",
+        "resolved": "แก้ไขแล้ว",
+        "today": "วันนี้",
+        "avgResponse": "เวลาตอบกลับเฉลี่ย"
+      },
+      "searchPlaceholder": "ค้นหาตามอีเมลหรือหัวข้อ...",
+      "filter": {
+        "status": "สถานะ",
+        "allStatus": "สถานะทั้งหมด",
+        "open": "เปิด",
+        "inProgress": "กำลังดำเนินการ",
+        "resolved": "แก้ไขแล้ว",
+        "closed": "ปิด"
+      },
+      "table": {
+        "ticket": "ตั๋ว",
+        "category": "หมวดหมู่",
+        "priority": "ความสำคัญ",
+        "status": "สถานะ",
+        "created": "สร้างเมื่อ",
+        "actions": "การดำเนินการ"
+      },
+      "priority": {
+        "low": "ต่ำ",
+        "medium": "ปานกลาง",
+        "high": "สูง"
+      },
+      "category": {
+        "technical": "เทคนิค",
+        "payout": "การจ่ายเงิน",
+        "account": "บัญชี",
+        "payment": "การชำระเงิน",
+        "other": "อื่นๆ"
+      },
+      "actions": {
+        "take": "รับ",
+        "resolve": "แก้ไข"
+      },
+      "dialog": {
+        "from": "จาก",
+        "writeResponse": "เขียนคำตอบของคุณ...",
+        "close": "ปิด",
+        "sending": "กำลังส่ง...",
+        "sendAndResolve": "ส่งและแก้ไข"
+      },
+      "emptyMessage": "ไม่พบตั๋ว",
+      "subjects": {
+        "unableToLoginMT5": "ไม่สามารถเข้าสู่ระบบ MT5 ได้",
+        "payoutRequestTakingTooLong": "คำขอจ่ายเงินใช้เวลานานเกินไป",
+        "questionAboutScalingPlan": "คำถามเกี่ยวกับแผนการขยายขนาด",
+        "refundRequest": "คำขอคืนเงิน",
+        "challengeRulesClarification": "คำชี้แจงกฎความท้าทาย"
+      }
+    },
+    "settings": {
+      "title": "การตั้งค่าแพลตฟอร์ม",
+      "subtitle": "กำหนดค่าการตั้งค่าและอินทิเกรชันของแพลตฟอร์ม",
+      "saveChanges": "บันทึกการเปลี่ยนแปลง",
+      "settingsSaved": "บันทึกการตั้งค่าแล้ว",
+      "tabs": {
+        "general": "ทั่วไป",
+        "branding": "แบรนด์",
+        "payments": "การชำระเงิน",
+        "integrations": "อินทิเกรชัน",
+        "email": "อีเมล"
+      },
+      "general": {
+        "title": "การตั้งค่าทั่วไป",
+        "platformName": "ชื่อแพลตฟอร์ม",
+        "supportEmail": "อีเมลสนับสนุน",
+        "maintenanceMode": "โหมดบำรุงรักษา",
+        "maintenanceModeDesc": "ปิดการเข้าถึงแพลตฟอร์มชั่วคราว"
+      },
+      "branding": {
+        "title": "การตั้งค่าแบรนด์",
+        "primaryColor": "สีหลัก",
+        "secondaryColor": "สีรอง",
+        "logoUrl": "{{url}} โลโก้",
+        "logoUrlPlaceholder": "https://example.com/logo.png"
+      },
+      "payments": {
+        "title": "การตั้งค่าการชำระเงิน",
+        "stripe": "Stripe",
+        "stripeDesc": "รับการชำระเงินด้วยบัตรเครดิต",
+        "stripeApiKey": "Stripe API Key",
+        "stripeApiKeyPlaceholder": "sk_live_...",
+        "paypal": "PayPal",
+        "paypalDesc": "รับการชำระเงินผ่าน PayPal",
+        "cryptocurrency": "สกุลเงินดิจิทัล",
+        "cryptocurrencyDesc": "รับการชำระเงินด้วย BTC, ETH, USDT"
+      },
+      "integrations": {
+        "title": "อินทิเกรชันแพลตฟอร์มการเทรด",
+        "mt4": "MetaTrader 4",
+        "mt4Desc": "แพลตฟอร์มการเทรด MT4 แบบคลาสสิก",
+        "mt5": "MetaTrader 5",
+        "mt5Desc": "แพลตฟอร์มการเทรด MT5 ขั้นสูง",
+        "ctrader": "cTrader",
+        "ctraderDesc": "แพลตฟอร์ม cTrader มืออาชีพ",
+        "dxtrade": "DXTrade",
+        "dxtradeDesc": "แพลตฟอร์มการเทรด DXTrade",
+        "note": "หมายเหตุ: API keys สำหรับแพลตฟอร์มการเทรดต้องกำหนดค่าแยกต่างหากเพื่อความปลอดภัย"
+      },
+      "email": {
+        "title": "เทมเพลตอีเมล",
+        "welcomeEmail": "อีเมลต้อนรับ",
+        "welcomeEmailDesc": "ส่งเมื่อผู้ใช้ใหม่ลงทะเบียน",
+        "challengePurchase": "การซื้อความท้าทาย",
+        "challengePurchaseDesc": "ส่งเมื่อซื้อความท้าทาย",
+        "accountCredentials": "ข้อมูลเข้าสู่ระบบบัญชี",
+        "accountCredentialsDesc": "ส่งพร้อมรายละเอียดบัญชีการเทรด",
+        "phasePassed": "ผ่านเฟส",
+        "phasePassedDesc": "ส่งเมื่อเทรดเดอร์ผ่านเฟส",
+        "accountFailed": "บัญชีล้มเหลว",
+        "accountFailedDesc": "ส่งเมื่อบัญชีล้มเหลว",
+        "payoutApproved": "อนุมัติการจ่ายเงิน",
+        "payoutApprovedDesc": "ส่งเมื่ออนุมัติการจ่ายเงิน",
+        "editTemplate": "แก้ไขเทมเพลต"
+      }
+    },
+    "riskMonitor": {
+      "title": "การตรวจสอบความเสี่ยง",
+      "subtitle": "ตรวจสอบความเสี่ยงบัญชีแบบเรียลไทม์",
+      "refresh": "รีเฟรช",
+      "riskLevels": {
+        "critical": "ความเสี่ยงวิกฤต",
+        "high": "ความเสี่ยงสูง",
+        "medium": "ความเสี่ยงปานกลาง",
+        "low": "ความเสี่ยงต่ำ"
+      },
+      "riskBadges": {
+        "critical": "วิกฤต",
+        "high": "สูง",
+        "medium": "ปานกลาง",
+        "low": "ต่ำ"
+      },
+      "searchPlaceholder": "ค้นหาตามหมายเลขบัญชีหรือเทรดเดอร์...",
+      "table": {
+        "account": "บัญชี",
+        "balance": "ยอดคงเหลือ",
+        "equity": "ส่วนของผู้ถือหุ้น",
+        "dailyDD": "DD รายวัน",
+        "maxDD": "DD สูงสุด",
+        "riskLevel": "ระดับความเสี่ยง",
+        "actions": "การดำเนินการ"
+      },
+      "confirmations": {
+        "emergencyClose": "คุณแน่ใจหรือไม่ว่าต้องการปิดตำแหน่งทั้งหมดสำหรับบัญชีนี้?",
+        "lockAccount": "คุณแน่ใจหรือไม่ว่าต้องการล็อกบัญชีนี้?"
+      },
+      "recentViolations": {
+        "title": "การละเมิดล่าสุด",
+        "noViolations": "ไม่มีการละเมิดล่าสุด",
+        "account": "บัญชี"
+      }
+    },
+    "brokerServers": {
+      "title": "เซิร์ฟเวอร์โบรกเกอร์",
+      "subtitle": "จัดการการเชื่อมต่อแพลตฟอร์มการเทรด",
+      "addServer": "เพิ่มเซิร์ฟเวอร์",
+      "adding": "กำลังเพิ่ม...",
+      "dialog": {
+        "title": "เพิ่มเซิร์ฟเวอร์โบรกเกอร์",
+        "serverName": "ชื่อเซิร์ฟเวอร์",
+        "serverNamePlaceholder": "เช่น Props Capital MT5 Demo",
+        "platform": "แพลตฟอร์ม",
+        "serverAddress": "ที่อยู่เซิร์ฟเวอร์",
+        "serverAddressPlaceholder": "broker.server.com",
+        "port": "พอร์ต",
+        "managerLogin": "เข้าสู่ระบบผู้จัดการ",
+        "managerPassword": "รหัสผ่านผู้จัดการ",
+        "apiKey": "API Key / Client ID",
+        "apiSecret": "API Secret",
+        "demoServer": "เซิร์ฟเวอร์เดโม"
+      },
+      "platforms": {
+        "mt4": "MetaTrader 4",
+        "mt5": "MetaTrader 5",
+        "ctrader": "cTrader",
+        "dxtrade": "DXTrade"
+      },
+      "status": {
+        "connected": "เชื่อมต่อแล้ว",
+        "error": "ข้อผิดพลาด",
+        "notConnected": "ไม่ได้เชื่อมต่อ"
+      },
+      "badges": {
+        "demo": "เดโม"
+      },
+      "card": {
+        "platform": "แพลตฟอร์ม",
+        "timezone": "เขตเวลา",
+        "lastSync": "ซิงค์ล่าสุด"
+      },
+      "actions": {
+        "test": "ทดสอบ"
+      },
+      "empty": {
+        "title": "ไม่มีเซิร์ฟเวอร์โบรกเกอร์",
+        "description": "เพิ่มเซิร์ฟเวอร์โบรกเกอร์แรกของคุณเพื่อเริ่มสร้างบัญชีการเทรด"
+      }
+    },
+    "scaling": {
+      "title": "การจัดการการขยายขนาด",
+      "subtitle": "ตรวจสอบและดำเนินการคำขอขยายขนาดบัญชี",
+      "summary": {
+        "pendingReview": "รอการตรวจสอบ",
+        "readyToProcess": "พร้อมดำเนินการ",
+        "completed": "เสร็จสมบูรณ์"
+      },
+      "tabs": {
+        "pending": "รอดำเนินการ",
+        "approved": "อนุมัติแล้ว",
+        "completed": "เสร็จสมบูรณ์",
+        "all": "ทั้งหมด"
+      },
+      "table": {
+        "trader": "เทรดเดอร์",
+        "currentToNew": "ปัจจุบัน → ใหม่",
+        "profitSplit": "แบ่งกำไร",
+        "profitAchieved": "กำไรที่ทำได้",
+        "payoutCycles": "รอบการจ่ายเงิน",
+        "status": "สถานะ",
+        "actions": "การดำเนินการ",
+        "level": "ระดับ {{current}} → {{new}}"
+      },
+      "status": {
+        "pending": "รอดำเนินการ",
+        "approved": "อนุมัติแล้ว",
+        "completed": "เสร็จสมบูรณ์",
+        "rejected": "ปฏิเสธ"
+      },
+      "actions": {
+        "approve": "อนุมัติ",
+        "reject": "ปฏิเสธ",
+        "process": "ดำเนินการ",
+        "processing": "กำลังดำเนินการ...",
+        "approving": "กำลังอนุมัติ...",
+        "rejecting": "กำลังปฏิเสธ..."
+      },
+      "emptyMessage": "ไม่พบคำขอขยายขนาด",
+      "dialog": {
+        "approveTitle": "อนุมัติคำขอขยายขนาด",
+        "rejectTitle": "ปฏิเสธคำขอขยายขนาด",
+        "currentSize": "ขนาดปัจจุบัน",
+        "newSize": "ขนาดใหม่",
+        "newProfitSplit": "แบ่งกำไรใหม่",
+        "notes": "หมายเหตุ (ไม่บังคับ)",
+        "notesPlaceholder": "เพิ่มหมายเหตุ...",
+        "cancel": "ยกเลิก"
+      }
+    },
+    "challenges": {
+      "title": "การจัดการความท้าทาย",
+      "subtitle": "สร้างและจัดการความท้าทายการเทรด",
+      "createChallenge": "สร้างความท้าทาย",
+      "editChallenge": "แก้ไขความท้าทาย",
+      "createNewChallenge": "สร้างความท้าทายใหม่",
+      "updateChallenge": "อัปเดตความท้าทาย",
+      "edit": "แก้ไข",
+      "saving": "กำลังบันทึก...",
+      "inactive": "ไม่ใช้งาน",
+      "types": {
+        "one_phase": "เฟสเดียว",
+        "two_phase": "สองเฟส",
+        "instant_funding": "เงินทุนทันที"
+      },
+      "form": {
+        "challengeName": "ชื่อความท้าทาย",
+        "challengeType": "ประเภทความท้าทาย",
+        "onePhase": "เฟสเดียว",
+        "twoPhase": "สองเฟส",
+        "instantFunding": "เงินทุนทันที",
+        "platform": "แพลตฟอร์ม",
+        "accountSize": "ขนาดบัญชี ($)",
+        "price": "ราคา ($)",
+        "phase1ProfitTarget": "เป้าหมายกำไรเฟส 1 (%)",
+        "phase2ProfitTarget": "เป้าหมายกำไรเฟส 2 (%)",
+        "dailyDrawdown": "การขาดทุนรายวัน (%)",
+        "overallDrawdown": "การขาดทุนรวม (%)",
+        "profitSplit": "ส่วนแบ่งกำไร (%)",
+        "minTradingDays": "วันเทรดขั้นต่ำ",
+        "minTradingDaysHint": "จำนวนวันขั้นต่ำที่เทรดเดอร์ต้องเทรด",
+        "maxTradingDays": "วันเทรดสูงสุด",
+        "maxTradingDaysHint": "ความท้าทายหมดอายุหลังจาก X วัน (เว้นว่างไว้สำหรับไม่จำกัด)",
+        "tradingRules": "กฎการเทรด",
+        "newsTradingAllowed": "อนุญาตการเทรดข่าว",
+        "weekendHolding": "ถือครองสุดสัปดาห์",
+        "ea": "EA",
+        "bots": "บอท",
+        "eaBotsAllowed": "{{ea}}/{{bots}} ได้รับอนุญาต",
+        "active": "ใช้งาน"
+      },
+      "card": {
+        "accountSize": "ขนาดบัญชี",
+        "price": "ราคา",
+        "profitTarget": "เป้าหมายกำไร",
+        "drawdown": "การขาดทุน",
+        "profitSplit": "ส่วนแบ่งกำไร"
+      },
+      "deleteConfirmTitle": "ลบความท้าทาย",
+      "deleteConfirmMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบ \"{{name}}\"? การกระทำนี้ไม่สามารถเลิกทำได้",
+      "deleteConfirmWarning": "เฉพาะความท้าทายที่ไม่ได้ใช้งานอยู่เท่านั้นที่สามารถลบได้",
+      "cancel": "ยกเลิก",
+      "confirmDelete": "ลบความท้าทาย",
+      "deleting": "กำลังลบ...",
+      "deleteSuccess": "ลบความท้าทายสำเร็จ",
+      "deleteSuccessDesc": "ลบความท้าทายสำเร็จแล้ว",
+      "deleteErrorTitle": "ไม่สามารถลบความท้าทาย",
+      "deleteErrorMessage": "ไม่สามารถลบความท้าทายนี้ได้",
+      "deleteErrorDesc": "ไม่สามารถลบความท้าทายได้เนื่องจากเชื่อมโยงกับบัญชีการเทรดที่มีอยู่",
+      "understand": "เข้าใจแล้ว"
+    }
+  },
+  "signIn": {
+    "title": "ยินดีต้อนรับกลับ",
+    "subtitle": "เข้าสู่ระบบบัญชีการเทรดของคุณ",
+    "email": "อีเมล",
+    "emailPlaceholder": "ป้อนอีเมลของคุณ",
+    "password": "รหัสผ่าน",
+    "passwordPlaceholder": "ป้อนรหัสผ่านของคุณ",
+    "rememberMe": "จดจำฉัน",
+    "forgotPassword": "ลืมรหัสผ่าน?",
+    "signInButton": "เข้าสู่ระบบ",
+    "noAccount": "ยังไม่มีบัญชี?",
+    "createAccount": "สร้างบัญชี",
+    "demoCredentials": "ตัวอย่าง: demo@the-bluehaven.com / demo1234",
+    "secureTrading": "การเทรดที่ปลอดภัย",
+    "fundsProtected": "เงินทุนของคุณได้รับการปกป้อง",
+    "securityDescription": "เทรดด้วยความมั่นใจ แพลตฟอร์มของเราใช้ความปลอดภัยระดับธนาคารเพื่อปกป้องบัญชีและข้อมูลการเทรดของคุณ",
+    "errors": {
+      "invalidCredentials": "อีเมลหรือรหัสผ่านไม่ถูกต้อง"
+    }
+  },
+  "signUp": {
+    "title": "สร้างบัญชีของคุณ",
+    "subtitle": "เริ่มต้นการเดินทางเทรดของคุณวันนี้",
+    "otpTitle": "ยืนยันอีเมลของคุณ",
+    "otpSubtitle": "ป้อนรหัส 6 หลักที่เราส่งให้คุณ",
+    "firstName": "ชื่อ",
+    "firstNamePlaceholder": "จอห์น",
+    "lastName": "นามสกุล",
+    "lastNamePlaceholder": "โด",
+    "email": "อีเมล",
+    "emailPlaceholder": "ป้อนอีเมลของคุณ",
+    "password": "รหัสผ่าน",
+    "passwordPlaceholder": "สร้างรหัสผ่าน",
+    "confirmPassword": "ยืนยันรหัสผ่าน",
+    "confirmPasswordPlaceholder": "ยืนยันรหัสผ่านของคุณ",
+    "createAccountButton": "สร้างบัญชี",
+    "otpSentTo": "เราได้ส่งรหัสยืนยันไปที่",
+    "otpLabel": "รหัสยืนยัน",
+    "verifyOtpButton": "ยืนยันและสร้างบัญชี",
+    "resendCode": "ส่งรหัสอีกครั้ง",
+    "resendIn": "ส่งอีกครั้งใน {{seconds}}s",
+    "changeEmail": "เปลี่ยนอีเมล",
+    "hasAccount": "มีบัญชีอยู่แล้ว?",
+    "signIn": "เข้าสู่ระบบ",
+    "joinTraders": "เข้าร่วมกับผู้เทรดหลายพันคน",
+    "startJourney": "เริ่มต้นการเดินทางบัญชีที่ได้รับเงินทุน",
+    "description": "สร้างบัญชีของคุณและเข้าถึงบัญชีการเทรดมืออาชีพด้วยเงินทุนจริง เทรดด้วยความมั่นใจและขยายผลกำไรของคุณ",
+    "errors": {
+      "passwordsNotMatch": "รหัสผ่านไม่ตรงกัน",
+      "passwordTooShort": "รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร",
+      "registrationFailed": "การลงทะเบียนล้มเหลว กรุณาลองอีกครั้ง",
+      "registrationSuccess": "ลงทะเบียนสำเร็จ! กรุณาเข้าสู่ระบบ"
+    }
+  },
+  "faq": {
+    "helpCenter": "ศูนย์ช่วยเหลือ",
+    "title": "คำถามที่พบบ่อย",
+    "subtitle": "ค้นหาคำตอบสำหรับคำถามทั่วไปเกี่ยวกับความท้าทายและแพลตฟอร์มของเรา",
+    "searchPlaceholder": "ค้นหาคำตอบ...",
+    "questions": "คำถาม",
+    "stillHaveQuestions": "ยังมีคำถามหรือไม่?",
+    "supportDescription": "ทีมสนับสนุนของเราพร้อมช่วยคุณตลอด 24/7",
+    "contactSupport": "ติดต่อฝ่ายสนับสนุน",
+    "categories": {
+      "gettingStarted": {
+        "title": "เริ่มต้น",
+        "faqs": {
+          "whatIsPropsCapital": {
+            "q": "Props Capital คืออะไร?",
+            "a": "Props Capital เป็นบริษัทเทรดแบบ proprietary ที่ให้บัญชีที่ได้รับเงินทุนกับเทรดเดอร์เพื่อเทรดด้วยเงินทุนของเรา ผ่านการประเมินของเราและเก็บกำไรได้สูงสุด 90% คุณไม่มีความเสี่ยงต่อเงินของคุณเองเมื่อเทรดบัญชีที่ได้รับเงินทุนของเรา"
+          },
+          "howToStartChallenge": {
+            "q": "ฉันจะเริ่มความท้าทายได้อย่างไร?",
+            "a": "เพียงเลือกขนาดบัญชีและประเภทการประเมินที่คุณต้องการในหน้าความท้าทายของเรา ชำระเงิน และคุณจะได้รับข้อมูลรับรองการเทรดภายในไม่กี่นาที คุณสามารถเริ่มเทรดได้ทันทีหลังจากได้รับข้อมูลรับรอง"
+          },
+          "tradingPlatforms": {
+            "q": "คุณรองรับแพลตฟอร์มการเทรดใดบ้าง?",
+            "a": "เรารองรับ MetaTrader 4 (MT4), MetaTrader 5 (MT5), cTrader และ DXTrade คุณสามารถเลือกแพลตฟอร์มที่คุณต้องการเมื่อตั้งค่าบัญชีของคุณ"
+          },
+          "credentialsTiming": {
+            "q": "ฉันจะได้รับข้อมูลรับรองเร็วแค่ไหน?",
+            "a": "ข้อมูลรับรองการเทรดมักจะส่งภายใน 5 นาทีหลังจากการยืนยันการชำระเงิน คุณจะได้รับอีเมลพร้อมรายละเอียดการเข้าสู่ระบบรวมถึงเซิร์ฟเวอร์ หมายเลขบัญชี และรหัสผ่าน"
+          }
+        }
+      },
+      "tradingRules": {
+        "title": "กฎการเทรด",
+        "faqs": {
+          "profitTarget": {
+            "q": "เป้าหมายกำไรคืออะไร?",
+            "a": "สำหรับการประเมิน 2 เฟส: เฟส 1 ต้องการกำไร 8% เฟส 2 ต้องการกำไร 5% สำหรับการประเมิน 1 เฟส เป้าหมายคือ 10% เงินทุนทันทีไม่มีเป้าหมายกำไรสำหรับเฟสความท้าทาย"
+          },
+          "drawdownRules": {
+            "q": "กฎการขาดทุนคืออะไร?",
+            "a": "การขาดทุนรายวันจำกัดที่ 5% ของยอดคงเหลือเริ่มต้นของวัน การขาดทุนรวมจำกัดที่ 10% จากยอดคงเหลือสูงสุดที่คุณบรรลุ (ติดตาม) นี่คือกฎการขาดทุนเพียงอย่างเดียวที่คุณต้องปฏิบัติตาม"
+          },
+          "timeLimit": {
+            "q": "มีข้อจำกัดเวลาในการทำความท้าทายให้สำเร็จหรือไม่?",
+            "a": "ไม่ ไม่มีข้อจำกัดเวลาสูงสุด คุณสามารถใช้เวลาตามที่คุณต้องการเพื่อบรรลุเป้าหมายกำไร อย่างไรก็ตาม มีความจำเป็นขั้นต่ำ 4 วันเทรดเพื่อผ่านแต่ละเฟส"
+          },
+          "newsTrading": {
+            "q": "ฉันสามารถเทรดในช่วงข่าวสำคัญได้หรือไม่?",
+            "a": "ได้ การเทรดข่าวได้รับอนุญาตในทุกความท้าทายของเรา คุณสามารถเทรดในช่วงข่าวที่มีผลกระทบสูงโดยไม่มีข้อจำกัดหรือบทลงโทษ"
+          },
+          "weekendHolding": {
+            "q": "ฉันสามารถถือการเทรดข้ามสุดสัปดาห์ได้หรือไม่?",
+            "a": "ได้ คุณได้รับอนุญาตให้ถือสถานะข้ามสุดสัปดาห์ ไม่มีข้อจำกัดในการถือข้ามคืนหรือสุดสัปดาห์ในประเภทความท้าทายใดๆ ของเรา"
+          },
+          "expertAdvisors": {
+            "q": "อนุญาตให้ใช้ Expert Advisors (EAs) หรือไม่?",
+            "a": "ได้ คุณสามารถใช้ Expert Advisors และระบบเทรดอัตโนมัติ อย่างไรก็ตาม พวกเขาต้องไม่ใช้ประโยชน์จากช่องโหว่ของแพลตฟอร์มหรือมีส่วนร่วมในแนวทางปฏิบัติเช่น latency arbitrage หรือ tick scalping"
+          }
+        }
+      },
+      "violations": {
+        "title": "การละเมิดและความล้มเหลว",
+        "faqs": {
+          "whatHappensIfViolate": {
+            "q": "จะเกิดอะไรขึ้นถ้าฉันละเมิดกฎ?",
+            "a": "หากคุณละเมิดกฎที่เข้มงวด (ขีดจำกัดการขาดทุนรายวันหรือโดยรวม) บัญชีของคุณจะถูกปิดใช้งานโดยอัตโนมัติ คุณจะได้รับอีเมลโดยละเอียดอธิบายการละเมิด จากนั้นคุณสามารถซื้อการรีเซ็ตหรือเริ่มความท้าทายใหม่"
+          },
+          "freeRetry": {
+            "q": "ฉันสามารถลองใหม่ฟรีได้หรือไม่?",
+            "a": "ได้! หากคุณทำกำไร 8% ในความท้าทายก่อนล้มเหลว คุณมีสิทธิ์ลองใหม่ฟรี นี่ให้โอกาสคุณอีกครั้งโดยไม่ต้องจ่ายอีก"
+          },
+          "resetAccount": {
+            "q": "ฉันสามารถรีเซ็ตบัญชีของฉันได้หรือไม่?",
+            "a": "ได้ คุณสามารถซื้อการรีเซ็ตในราคาส่วนลดหากคุณล้มเหลวในความท้าทาย นี่ให้คุณเริ่มต้นใหม่ด้วยขนาดบัญชีเดียวกัน ราคารีเซ็ตแตกต่างกันไปตามขนาดบัญชี"
+          },
+          "tradingDay": {
+            "q": "อะไรนับเป็นวันเทรด?",
+            "a": "วันเทรดคือวันใดก็ตามที่คุณมีการเทรดอย่างน้อยหนึ่งรายการเปิดเกินกว่า 2 นาที คุณต้องมีวันเทรดขั้นต่ำ 4 วันเพื่อผ่านแต่ละเฟส"
+          }
+        }
+      },
+      "payouts": {
+        "title": "การจ่ายเงินและกำไร",
+        "faqs": {
+          "profitSplit": {
+            "q": "การแบ่งกำไรคืออะไร?",
+            "a": "การแบ่งกำไรเริ่มต้นที่ 80% สำหรับบัญชีที่เล็กกว่าและสามารถไปถึง 90% สำหรับบัญชีที่ใหญ่กว่าและผ่านโปรแกรมการขยายของเรา เมื่อคุณพิสูจน์ความสม่ำเสมอ เปอร์เซ็นต์การแบ่งกำไรของคุณเพิ่มขึ้น"
+          },
+          "payoutFrequency": {
+            "q": "ฉันสามารถขอการจ่ายเงินได้บ่อยแค่ไหน?",
+            "a": "การจ่ายเงินดำเนินการทุกสองสัปดาห์ คุณสามารถขอการจ่ายเงินทุก 14 วันเมื่อคุณมีกำไรที่จะถอน การจ่ายเงินครั้งแรกของคุณพร้อมใช้งาน 14 วันหลังจากได้รับบัญชีที่ได้รับเงินทุน"
+          },
+          "paymentMethods": {
+            "q": "มีวิธีการชำระเงินอะไรบ้างสำหรับการจ่ายเงิน?",
+            "a": "เรารองรับการโอนเงินผ่านธนาคาร สกุลเงินดิจิทัล (BTC, ETH, USDT), PayPal และการโอน Wise วิธีการจ่ายเงินทั้งหมดไม่มีค่าธรรมเนียม"
+          },
+          "minimumPayout": {
+            "q": "มีจำนวนการจ่ายเงินขั้นต่ำหรือไม่?",
+            "a": "จำนวนการจ่ายเงินขั้นต่ำคือ $50 ไม่มีขีดจำกัดสูงสุดในการถอน - คุณสามารถถอนกำไรทั้งหมดของคุณได้หากคุณต้องการ"
+          },
+          "payoutProcessing": {
+            "q": "การจ่ายเงินใช้เวลานานแค่ไหนในการประมวลผล?",
+            "a": "การจ่ายเงินมักดำเนินการภายใน 24-48 ชั่วโมงทำการหลังได้รับอนุมัติ การโอนเงินผ่านธนาคารอาจใช้เวลาเพิ่มอีก 2-5 วันทำการเพื่อเข้าบัญชีของคุณ"
+          }
+        }
+      },
+      "scaling": {
+        "title": "แผนการขยาย",
+        "faqs": {
+          "howScalingWorks": {
+            "q": "แผนการขยายทำงานอย่างไร?",
+            "a": "ทุกครั้งที่คุณทำกำไร 10% ในบัญชีที่ได้รับเงินทุนและทำวงจรการจ่ายเงิน 2 ครั้งสำเร็จ ขนาดบัญชีของคุณเพิ่มขึ้น 25% คุณสามารถขยายได้สูงสุด $2,000,000 ในเงินทุนการเทรด"
+          },
+          "profitSplitScaling": {
+            "q": "จะเกิดอะไรขึ้นกับการแบ่งกำไรของฉันเมื่อฉันขยาย?",
+            "a": "การแบ่งกำไรของคุณเพิ่มขึ้นเมื่อคุณขยาย เริ่มต้นที่ 80% สามารถไปถึง 90% ในระดับที่สูงขึ้นของแผนการขยาย แต่ละระดับการขยายนำคุณเข้าใกล้การแบ่งกำไรสูงสุด"
+          },
+          "scalingConditions": {
+            "q": "มีเงื่อนไขสำหรับการขยายหรือไม่?",
+            "a": "เพื่อมีสิทธิ์ขยาย คุณต้องทำกำไรอย่างน้อย 10% ทำวงจรการจ่ายเงินอย่างน้อย 2 ครั้งสำเร็จ และรักษาแนวทางการจัดการความเสี่ยงที่ดีตลอดระยะเวลาการประเมิน"
+          }
+        }
+      },
+      "account": {
+        "title": "การจัดการบัญชี",
+        "faqs": {
+          "refund": {
+            "q": "ฉันสามารถขอคืนเงินได้หรือไม่?",
+            "a": "การคืนเงินมีให้ภายใน 14 วันหลังจากซื้อหากคุณยังไม่ได้วางการเทรดใดๆ เมื่อกิจกรรมการเทรดเริ่มต้น การคืนเงินจะไม่สามารถใช้ได้อีกต่อไปเนื่องจากการประเมินได้เริ่มต้นแล้ว"
+          },
+          "multipleAccounts": {
+            "q": "ฉันสามารถมีหลายบัญชีได้หรือไม่?",
+            "a": "ได้ คุณสามารถมีบัญชีความท้าทายหรือบัญชีที่ได้รับเงินทุนหลายบัญชีพร้อมกัน อย่างไรก็ตาม คุณไม่สามารถใช้กลยุทธ์การเทรดเดียวกันผ่านการคัดลอกการเทรดระหว่างบัญชีที่แตกต่างกันของคุณ"
+          },
+          "weekendAccount": {
+            "q": "จะเกิดอะไรขึ้นกับบัญชีของฉันในช่วงสุดสัปดาห์?",
+            "a": "บัญชีของคุณยังคงใช้งานได้ในช่วงสุดสัปดาห์ คุณสามารถถือสถานะข้ามสุดสัปดาห์และการคำนวณการขาดทุนของคุณดำเนินต่อไปตามปกติ ตลาดปิดแต่บัญชีของคุณยังคงได้รับการตรวจสอบ"
+          },
+          "contactSupport": {
+            "q": "ฉันจะติดต่อฝ่ายสนับสนุนได้อย่างไร?",
+            "a": "คุณสามารถติดต่อทีมสนับสนุนของเราตลอด 24/7 ผ่านแชทสดบนเว็บไซต์ของเรา อีเมลที่ support@the-bluehaven.com หรือผ่านระบบตั๋วสนับสนุนในแดชบอร์ดของคุณ"
+          }
+        }
+      }
+    }
+  },
+  "contact": {
+    "support24": "สนับสนุน 24/7",
+    "title": "ติดต่อเรา",
+    "subtitle": "มีคำถามหรือไม่? เราพร้อมช่วยเหลือ ติดต่อเราและเราจะตอบกลับโดยเร็วที่สุด",
+    "contactMethods": {
+      "emailSupport": {
+        "title": "สนับสนุนทางอีเมล",
+        "description": "สำหรับคำถามทั่วไปและคำถามโดยละเอียด",
+        "contact": "support@the-bluehaven.com"
+      },
+      "liveChat": {
+        "title": "แชทสด",
+        "description": "รับคำตอบทันทีจากทีมของเรา",
+        "contact": "พร้อมใช้งาน 24/7"
+      },
+      "responseTime": {
+        "title": "เวลาตอบกลับ",
+        "description": "เวลาตอบกลับโดยเฉลี่ยสำหรับคำถามทั้งหมด",
+        "contact": "ภายใน 24 ชั่วโมง"
+      }
+    },
+    "contactInformation": "ข้อมูลติดต่อ",
+    "email": "อีเมล",
+    "address": "ที่อยู่",
+    "website": "เว็บไซต์",
+    "workingHours": "เวลาทำการ",
+    "followUs": "ติดตามเรา",
+    "liveChatTitle": "แชทสด",
+    "liveChatDescription": "ต้องการความช่วยเหลือทันทีหรือไม่? การสนับสนุนแชทสดของเรามีให้ตลอดเวลา",
+    "startChat": "เริ่มแชท",
+    "sendMessage": "ส่งข้อความถึงเรา",
+    "formDescription": "กรอกแบบฟอร์มด้านล่างและเราจะติดต่อกลับภายใน 24 ชั่วโมง",
+    "fullName": "ชื่อเต็ม",
+    "fullNamePlaceholder": "จอห์น โด",
+    "emailPlaceholder": "john@example.com",
+    "category": "หมวดหมู่",
+    "selectCategory": "เลือกหมวดหมู่",
+    "categories": {
+      "general": "สอบถามทั่วไป",
+      "account": "ปัญหาบัญชี",
+      "payment": "การชำระเงินและการเรียกเก็บเงิน",
+      "payout": "คำขอการจ่ายเงิน",
+      "technical": "การสนับสนุนทางเทคนิค",
+      "other": "อื่นๆ"
+    },
+    "subject": "หัวข้อ",
+    "subjectPlaceholder": "เราจะช่วยคุณได้อย่างไร?",
+    "message": "ข้อความ",
+    "messagePlaceholder": "อธิบายคำถามหรือปัญหาของคุณโดยละเอียด...",
+    "sendMessageButton": "ส่งข้อความ",
+    "messageSent": "ส่งข้อความแล้ว!",
+    "thankYouMessage": "ขอบคุณที่ติดต่อมา เราจะติดต่อกลับภายใน 24 ชั่วโมงพร้อมคำตอบ",
+    "sendAnotherMessage": "ส่งข้อความอีกครั้ง"
+  },
+  "howItWorks": {
+    "journeyBadge": "เส้นทางสู่การได้รับเงินทุนของคุณ",
+    "title": "วิธีการทำงาน",
+    "subtitle": "สามขั้นตอนง่ายๆ เพื่อรับเงินทุนและเริ่มสร้างรายได้ด้วยเงินทุนของเรา",
+    "step": "ขั้นตอน",
+    "phases": {
+      "purchaseChallenge": {
+        "title": "ซื้อความท้าทายของคุณ",
+        "description": "เลือกขนาดบัญชีและประเภทการประเมินที่คุณต้องการ ชำระเงินอย่างปลอดภัยและรับข้อมูลรับรองการเทรดทันที",
+        "details": {
+          "selectAccountSize": "เลือกขนาดบัญชีตั้งแต่ $10K ถึง $200K",
+          "chooseType": "เลือก 1 เฟส, 2 เฟส หรือเงินทุนทันที",
+          "receiveCredentials": "รับข้อมูลรับรองภายในไม่กี่นาที",
+          "startTrading": "เริ่มเทรดทันที"
+        }
+      },
+      "passEvaluation": {
+        "title": "ผ่านการประเมิน",
+        "description": "แสดงทักษะการเทรดของคุณโดยบรรลุเป้าหมายกำไรพร้อมเคารพกฎการจัดการความเสี่ยงของเรา",
+        "details": {
+          "reachProfitTarget": "บรรลุเป้าหมายกำไร 8% (เฟส 1)",
+          "maintainDailyDrawdown": "รักษาการขาดทุนรายวันสูงสุด 5%",
+          "maintainOverallDrawdown": "รักษาการขาดทุนรวมสูงสุด 10%",
+          "tradeMinimumDays": "เทรดอย่างน้อย 4 วัน"
+        }
+      },
+      "getFunded": {
+        "title": "รับเงินทุน",
+        "description": "เมื่อคุณผ่าน รับบัญชีที่ได้รับเงินทุนพร้อมเงินทุนจริง เทรดด้วยความมั่นใจและถอนกำไรของคุณ",
+        "details": {
+          "tradeWithCapital": "เทรดด้วยเงินทุนของเรา",
+          "keepProfits": "เก็บกำไรได้สูงสุด 90%",
+          "biWeeklyPayout": "ตารางการจ่ายเงินทุกสองสัปดาห์",
+          "scaleUp": "ขยายได้สูงสุด $2,000,000"
+        }
+      }
+    },
+    "rules": {
+      "badge": "กฎการเทรด",
+      "title": "กฎที่ชัดเจนสำหรับทุกเฟส",
+      "subtitle": "กฎที่โปร่งใสและสอดคล้องกันในทุกเฟสของการประเมิน",
+      "rule": "กฎ",
+      "phase1": "เฟส 1",
+      "phase2": "เฟส 2",
+      "funded": "ได้รับเงินทุนแล้ว",
+      "profitTarget": {
+        "title": "เป้าหมายกำไร",
+        "description": "เปอร์เซ็นต์กำไรที่คุณต้องบรรลุ",
+        "funded": "ไม่มีเป้าหมาย"
+      },
+      "dailyDrawdown": {
+        "title": "การขาดทุนรายวัน",
+        "description": "การขาดทุนรายวันสูงสุดที่อนุญาต"
+      },
+      "overallDrawdown": {
+        "title": "การขาดทุนโดยรวม",
+        "description": "การขาดทุนรวมสูงสุดจากยอดคงเหลือสูงสุด"
+      },
+      "minTradingDays": {
+        "title": "วันเทรดขั้นต่ำ",
+        "description": "จำนวนวันเทรดขั้นต่ำที่ต้องการ",
+        "phase1": "4 วัน",
+        "phase2": "4 วัน",
+        "funded": "ไม่มี"
+      },
+      "timeLimit": {
+        "title": "ข้อจำกัดเวลา",
+        "description": "ไม่มีเวลาสูงสุดในการทำให้สำเร็จ",
+        "phase1": "ไม่จำกัด",
+        "phase2": "ไม่จำกัด",
+        "funded": "ไม่จำกัด"
+      },
+      "profitSplit": {
+        "title": "แบ่งกำไร",
+        "description": "ส่วนแบ่งกำไรของคุณ",
+        "funded": "สูงสุด 90%"
+      }
+    },
+    "allowedTrading": {
+      "badge": "อิสระในการเทรด",
+      "title": "สิ่งที่อนุญาต",
+      "subtitle": "เราให้อิสระคุณในการเทรดตามแบบของคุณโดยมีข้อจำกัดน้อยที่สุด",
+      "allTradingStyles": {
+        "title": "ทุกสไตล์การเทรด",
+        "desc": "การเทรดแบบสเกลปปิ้ง, การเทรดรายวัน, การซื้อขายสวิง"
+      },
+      "newsTrading": {
+        "title": "เทรดข่าว",
+        "desc": "เทรดในช่วงข่าวที่มีผลกระทบสูง"
+      },
+      "weekendHolding": {
+        "title": "ถือข้ามสุดสัปดาห์",
+        "desc": "เก็บสถานะการเทรดข้ามสุดสัปดาห์"
+      },
+      "expertAdvisors": {
+        "title": "ที่ปรึกษาผู้เชี่ยวชาญ",
+        "desc": "ใช้ระบบเทรดอัตโนมัติ"
+      },
+      "allMajorPairs": {
+        "title": "คู่สกุลเงินหลักทั้งหมด",
+        "desc": "Forex, ดัชนี, สินค้าโภคภัณฑ์, คริปโต"
+      },
+      "anyStrategy": {
+        "title": "ทุกกลยุทธ์",
+        "desc": "การป้องกันความเสี่ยง, การเทรดแบบ grid และอื่นๆ"
+      },
+      "copyTrading": {
+        "title": "คัดลอกการเทรด",
+        "desc": "คัดลอกจากบัญชีอื่นของคุณ"
+      },
+      "multipleAccounts": {
+        "title": "หลายบัญชี",
+        "desc": "ทำความท้าทายหลายอันพร้อมกัน"
+      }
+    },
+    "cta": {
+      "title": "พร้อมที่จะเริ่มต้นแล้วหรือยัง?",
+      "subtitle": "เข้าร่วมกับเทรดเดอร์ที่ได้รับเงินทุนหลายพันคนและเริ่มต้นการเดินทางของคุณวันนี้",
+      "viewChallenges": "ดูความท้าทาย"
+    }
+  },
+  "challenges": {
+    "badge": "เลือกเส้นทางสู่การได้รับเงินทุน",
+    "title": "เลือกความท้าทายของคุณ",
+    "subtitle": "เลือกประเภทการประเมินและขนาดบัญชีเพื่อเริ่มต้นการเดินทางการเทรดที่ได้รับเงินทุน",
+    "typeLabels": {
+      "onePhase": "1 เฟส",
+      "twoPhase": "2 เฟส",
+      "instant": "ทันที"
+    },
+    "types": {
+      "onePhase": {
+        "title": "ความท้าทาย 1 เฟส",
+        "description": "เฟสการประเมินเดียวพร้อมเป้าหมายกำไร 10% เส้นทางที่เร็วกว่าสู่การได้รับเงินทุน"
+      },
+      "twoPhase": {
+        "title": "ความท้าทาย 2 เฟส",
+        "description": "การประเมินมาตรฐานด้วยเฟส 1 (8%) และเฟส 2 (5%) ตัวเลือกที่ได้รับความนิยมมากที่สุด"
+      },
+      "instantFunding": {
+        "title": "เงินทุนทันที",
+        "description": "ข้ามการประเมินทั้งหมด เริ่มเทรดด้วยเงินทุนทันที"
+      }
+    },
+    "rules": {
+      "title": "กฎความท้าทายโดยสรุป",
+      "phase1Target": "เป้าหมายเฟส 1",
+      "phase2Target": "เป้าหมายเฟส 2",
+      "dailyDrawdown": "การขาดทุนรายวัน",
+      "maxDrawdown": "การขาดทุนสูงสุด",
+      "minTradingDays": "วันเทรดขั้นต่ำ",
+      "timeLimit": "ข้อจำกัดเวลา",
+      "fourDays": "4 วัน",
+      "unlimited": "ไม่จำกัด"
+    },
+    "card": {
+      "mostPopular": "ได้รับความนิยมมากที่สุด",
+      "accountSize": "ขนาดบัญชี",
+      "phase1": "เฟส 1",
+      "phase2": "เฟส 2",
+      "dailyDD": "การขาดทุนรายวัน",
+      "maxDD": "การขาดทุนสูงสุด",
+      "profitSplit": "แบ่งกำไร",
+      "getStarted": "เริ่มต้น"
+    },
+    "comparison": {
+      "title": "เปรียบเทียบความท้าทายทั้งหมด",
+      "accountSize": "ขนาดบัญชี",
+      "price": "ราคา",
+      "phase1": "เฟส 1",
+      "phase2": "เฟส 2",
+      "dailyDD": "การขาดทุนรายวัน",
+      "maxDD": "การขาดทุนสูงสุด",
+      "profitSplit": "แบ่งกำไร",
+      "select": "เลือก"
+    },
+    "allChallengesInclude": {
+      "title": "ความท้าทายทั้งหมดรวมถึง",
+      "subtitle": "ทุกความท้าทายมาพร้อมกับคุณสมบัติเหล่านี้",
+      "features": {
+        "unlimitedTrading": "ระยะเวลาการเทรดไม่จำกัด",
+        "allMajorPairs": "เทรดคู่สกุลเงิน ดัชนี และสินค้าโภคภัณฑ์หลักทั้งหมด",
+        "weekendHolding": "ถือการเทรดข้ามสุดสัปดาห์",
+        "newsTrading": "เทรดในช่วงข่าวสำคัญ",
+        "expertAdvisors": "ใช้ Expert Advisors (EAs)",
+        "biWeeklyPayouts": "จ่ายเงินทุกสองสัปดาห์",
+        "support24": "สนับสนุน 24/7",
+        "analyticsDashboard": "แดชบอร์ดวิเคราะห์แบบเรียลไทม์"
+      }
+    },
+    "whyChoose": {
+      "title": "ทำไมต้องเลือก Props Capital?",
+      "subtitle": "อะไรที่ทำให้เราแตกต่าง",
+      "transparentRules": {
+        "title": "กฎที่โปร่งใส",
+        "desc": "ไม่มีเงื่อนไขที่ซ่อนเร้นหรือความล้มเหลวที่ไม่คาดคิด"
+      },
+      "fastPayouts": {
+        "title": "จ่ายเงินเร็ว",
+        "desc": "รับกำไรของคุณภายใน 24-48 ชั่วโมง"
+      },
+      "scaleTo2M": {
+        "title": "ขยายถึง $2M",
+        "desc": "เติบโตบัญชีของคุณด้วยแผนการขยายของเรา"
+      },
+      "bestSupport": {
+        "title": "การสนับสนุนที่ดีที่สุด",
+        "desc": "ทีมสนับสนุนเฉพาะ 24/7"
+      }
+    },
+    "faq": {
+      "title": "คำถามที่พบบ่อย",
+      "timeLimit": {
+        "q": "ฉันมีเวลาเท่าไรในการทำความท้าทายให้สำเร็จ?",
+        "a": "ไม่มีข้อจำกัดด้านเวลา ใช้เวลาตามที่คุณต้องการเพื่อบรรลุเป้าหมายกำไรพร้อมเคารพกฎความเสี่ยง"
+      },
+      "newsTrading": {
+        "q": "ฉันสามารถเทรดในช่วงข่าวสำคัญได้หรือไม่?",
+        "a": "ได้ การเทรดข่าวได้รับอนุญาตอย่างเต็มที่ในทุกความท้าทายของเรา ไม่มีข้อจำกัด"
+      },
+      "ifFail": {
+        "q": "จะเกิดอะไรขึ้นถ้าฉันล้มเหลว?",
+        "a": "คุณสามารถซื้อการรีเซ็ตในราคาส่วนลดหรือเริ่มความท้าทายใหม่ เรายังเสนอการทำซ้ำฟรีหากคุณทำกำไรได้ 8% ก่อนล้มเหลว"
+      },
+      "payoutSpeed": {
+        "q": "การจ่ายเงินใช้เวลาเร็วแค่ไหน?",
+        "a": "การจ่ายเงินดำเนินการภายใน 24-48 ชั่วโมงหลังได้รับอนุมัติ เงินจะมาถึงผ่านวิธีการชำระเงินที่คุณเลือก"
+      }
+    },
+    "compareTableTitle": "เปรียบเทียบความท้าทายทั้งหมด"
+  },
+  "scalingPlan": {
+    "badge": "ศักยภาพการเติบโตไม่จำกัด",
+    "title": "ขยายได้สูงสุดถึง",
+    "subtitle": "เติบโตเงินทุนการเทรดของคุณผ่านผลงานที่สม่ำเสมอ ทุกระดับปลดล็อกบัญชีที่ใหญ่ขึ้นและการแบ่งกำไรที่สูงขึ้น",
+    "startJourney": "เริ่มต้นการเดินทางของคุณ",
+    "stats": {
+      "maxAccountSize": "ขนาดบัญชีสูงสุด",
+      "maxProfitSplit": "การแบ่งกำไรสูงสุด",
+      "scalingLevels": "ระดับการขยาย",
+      "growthPerLevel": "การเติบโตต่อระดับ"
+    },
+    "benefits": {
+      "badge": "ประโยชน์",
+      "title": "ทำไมต้องขยายกับเรา?",
+      "subtitle": "โปรแกรมการขยายของเรามอบรางวัลให้เทรดเดอร์ที่สม่ำเสมอด้วยโอกาสที่ใหญ่ขึ้น",
+      "accountGrowth": {
+        "title": "การเติบโตของบัญชี 25%",
+        "desc": "ขนาดบัญชีของคุณเพิ่มขึ้น 25% ในแต่ละระดับการขยาย"
+      },
+      "profitSplit": {
+        "title": "แบ่งกำไรสูงสุด 90%",
+        "desc": "เพิ่มส่วนแบ่งกำไรของคุณเมื่อคุณขยาย"
+      },
+      "noFees": {
+        "title": "ไม่มีค่าธรรมเนียมเพิ่มเติม",
+        "desc": "ขยายบัญชีของคุณโดยไม่ต้องจ่ายค่าธรรมเนียมเพิ่มเติม"
+      },
+      "sameRules": {
+        "title": "กฎการเทรดเหมือนเดิม",
+        "desc": "กฎที่สอดคล้องตลอดการเดินทางของคุณ"
+      },
+      "scaleTo2M": {
+        "title": "ขยายถึง $2M",
+        "desc": "เติบโตเงินทุนการเทรดของคุณสูงสุดถึง 2 ล้านดอลลาร์"
+      },
+      "automaticUpgrades": {
+        "title": "อัพเกรดอัตโนมัติ",
+        "desc": "ตอบสนองข้อกำหนดและอัพเกรดทันที"
+      }
+    },
+    "howToScale": {
+      "badge": "กระบวนการ",
+      "title": "การขยายทำงานอย่างไร",
+      "achieveProfit": {
+        "title": "บรรลุเป้าหมายกำไร",
+        "description": "สร้างกำไรอย่างน้อย 10% ในบัญชีที่ได้รับเงินทุน"
+      },
+      "completePayouts": {
+        "title": "ทำวงจรการจ่ายเงินให้สำเร็จ",
+        "description": "ทำวงจรการจ่ายเงินให้สำเร็จอย่างน้อย 2 ครั้ง"
+      },
+      "automaticUpgrade": {
+        "title": "อัพเกรดอัตโนมัติ",
+        "description": "บัญชีของคุณจะได้รับการอัพเกรดไปยังระดับถัดไปโดยอัตโนมัติ"
+      }
+    },
+    "roadmap": {
+      "badge": "แผนผัง",
+      "title": "เส้นทางของคุณสู่ 2 ล้านดอลลาร์",
+      "subtitle": "ดูว่าบัญชีของคุณเติบโตอย่างไรในแต่ละระดับ",
+      "start": "เริ่มต้น",
+      "max": "สูงสุด",
+      "level": "ระดับ",
+      "split": "แบ่ง",
+      "ultimateGoal": "เป้าหมายสูงสุด",
+      "withProfitSplit": "พร้อมการแบ่งกำไร 90%",
+      "startScalingNow": "เริ่มขยายตอนนี้"
+    },
+    "requirements": {
+      "badge": "ข้อกำหนด",
+      "title": "สิ่งที่คุณต้องการเพื่อขยาย",
+      "passEvaluation": "ผ่านการประเมิน",
+      "profitAndPayouts": "กำไร 10% + 2 การจ่ายเงิน",
+      "profit10": {
+        "title": "กำไร 10%",
+        "desc": "บรรลุกำไร 10% ในบัญชีที่ได้รับเงินทุน"
+      },
+      "payouts2": {
+        "title": "2 การจ่ายเงิน",
+        "desc": "ทำวงจรการจ่ายเงินให้สำเร็จอย่างน้อย 2 ครั้ง"
+      },
+      "consistency": {
+        "title": "ความสม่ำเสมอ",
+        "desc": "รักษากิจกรรมการเทรดที่สม่ำเสมอ"
+      },
+      "noViolations": {
+        "title": "ไม่มีการละเมิด",
+        "desc": "ไม่มีการละเมิดกฎในช่วงเวลานั้น"
+      }
+    },
+    "ctaSection": {
+      "title": "พร้อมขยาย",
+      "tradingCareer": "อาชีพเทรดของคุณแล้วหรือยัง?",
+      "subtitle": "เริ่มต้นด้วยความท้าทายขนาดใดก็ได้และขยายทางของคุณสู่เงินทุนการเทรด 2 ล้านดอลลาร์",
+      "getStartedNow": "เริ่มต้นตอนนี้",
+      "footer": "เริ่มต้นเพียง $99 • ขยายได้สูงสุด $2M • แบ่งกำไรสูงสุด 90%"
+    }
+  },
+  "payoutsPage": {
+    "badge": "การจ่ายเงินที่รวดเร็วและเชื่อถือได้",
+    "title": "รับเงินที่คุณหาได้",
+    "subtitle": "ถอนกำไรของคุณอย่างรวดเร็วด้วยระบบการจ่ายเงินที่ปราศจากความยุ่งยาก ไม่มีค่าธรรมเนียมแอบแฝง ไม่มีความล่าช้า ไม่มีความซับซ้อน",
+    "stats": {
+      "totalPaidOut": "จ่ายเงินรวม",
+      "payoutsProcessed": "การจ่ายเงินที่ดำเนินการ",
+      "avgProcessing": "การประมวลผลโดยเฉลี่ย",
+      "payoutFees": "ค่าธรรมเนียมการจ่ายเงิน"
+    },
+    "profitSharing": {
+      "badge": "การแบ่งกำไร",
+      "title": "เก็บกำไรได้สูงสุด 90%",
+      "subtitle": "การแบ่งกำไรที่แข่งขันได้ของเรามอบรางวัลให้เทรดเดอร์ที่ประสบความสำเร็จอย่างใจกว้าง",
+      "accountSize": "ขนาดบัญชี",
+      "profitSplit": "การแบ่งกำไร",
+      "best": "ดีที่สุด",
+      "tiers": {
+        "tier1": "$10K - $25K",
+        "tier2": "$50K",
+        "tier3": "$100K+",
+        "tier4": "ขยายแล้ว"
+      }
+    },
+    "withdrawalOptions": {
+      "badge": "ตัวเลือกการถอนเงิน",
+      "title": "วิธีการจ่ายเงินหลายวิธี",
+      "subtitle": "เลือกวิธีการชำระเงินที่เหมาะกับคุณที่สุด",
+      "processing": "การประมวลผล",
+      "fee": "ค่าธรรมเนียม",
+      "minimum": "ขั้นต่ำ",
+      "methods": {
+        "bankWire": "การโอนเงินผ่านธนาคาร",
+        "cryptocurrency": "สกุลเงินดิจิทัล",
+        "paypal": "PayPal",
+        "wiseTransfer": "การโอน Wise",
+        "time": {
+          "businessDays": "2-5 วันทำการ",
+          "hours24": "24 ชั่วโมง",
+          "businessDays12": "1-2 วันทำการ"
+        }
+      }
+    },
+    "howItWorks": {
+      "title": "การจ่ายเงินทำงานอย่างไร",
+      "requestPayout": {
+        "title": "ขอการจ่ายเงิน",
+        "desc": "ส่งคำขอของคุณผ่านแดชบอร์ด"
+      },
+      "verification": {
+        "title": "การยืนยัน",
+        "desc": "เราตรวจสอบกิจกรรมการเทรดและกำไรของคุณ"
+      },
+      "processing": {
+        "title": "การประมวลผล",
+        "desc": "การจ่ายเงินของคุณจะถูกประมวลผลภายใน 24-48 ชั่วโมง"
+      },
+      "receiveFunds": {
+        "title": "รับเงิน",
+        "desc": "เงินจะมาถึงผ่านวิธีการที่คุณเลือก"
+      }
+    },
+    "recentPayouts": {
+      "badge": "อัพเดทสด",
+      "title": "การจ่ายเงินล่าสุด",
+      "subtitle": "การจ่ายเงินจริงให้เทรดเดอร์จริง เข้าร่วมชุมชนเทรดเดอร์ที่ได้รับเงินทุนที่ประสบความสำเร็จของเรา"
+    },
+    "payoutTerms": {
+      "title": "เงื่อนไขการจ่ายเงิน",
+      "biWeekly": "ตารางการจ่ายเงินทุกสองสัปดาห์ (ทุก 14 วัน)",
+      "minimumAmount": "จำนวนการจ่ายเงินขั้นต่ำคือ $50",
+      "noMaximum": "ไม่มีขีดจำกัดการจ่ายเงินสูงสุด",
+      "noFees": "ไม่มีค่าธรรมเนียมการจ่ายเงินในวิธีใด",
+      "firstPayout": "การจ่ายเงินครั้งแรกหลังจากเทรดด้วยเงินทุน 14 วัน",
+      "kycRequired": "ต้องยืนยันตัวตน KYC สำหรับการจ่ายเงินครั้งแรก",
+      "profitSplitRange": "การแบ่งกำไรอยู่ในช่วง 80% ถึง 90%",
+      "scaleUp": "ขยายเพื่อเพิ่มการแบ่งกำไรของคุณ"
+    },
+    "cta": {
+      "title": "เริ่มสร้างรายได้วันนี้",
+      "subtitle": "เข้าร่วมกับเทรดเดอร์ที่ได้รับเงินทุนหลายพันคนที่กำลังสร้างรายได้กับ Props Capital อยู่แล้ว",
+      "getFundedNow": "รับเงินทุนตอนนี้"
+    }
+  },
+  "rules": {
+    "badge": "โปร่งใสและยุติธรรม",
+    "title": "กฎการเทรด",
+    "subtitle": "กฎที่ชัดเจนและเรียบง่ายที่ออกแบบมาเพื่อช่วยให้คุณประสบความสำเร็จ ไม่มีเงื่อนไขที่ซ่อนเร้นหรือความล้มเหลวที่ไม่คาดคิด",
+    "mainRules": {
+      "profitTarget": {
+        "title": "เป้าหมายกำไร",
+        "description": "เปอร์เซ็นต์กำไรที่ต้องการเพื่อผ่านแต่ละเฟส",
+        "funded": "ไม่มีเป้าหมาย"
+      },
+      "dailyDrawdown": {
+        "title": "การขาดทุนรายวัน",
+        "description": "การขาดทุนสูงสุดที่อนุญาตในวันเทรดเดียว"
+      },
+      "maximumDrawdown": {
+        "title": "การขาดทุนสูงสุด",
+        "description": "การขาดทุนรวมสูงสุดจากยอดคงเหลือสูงสุดของคุณ"
+      },
+      "minTradingDays": {
+        "title": "วันเทรดขั้นต่ำ",
+        "description": "จำนวนวันขั้นต่ำที่คุณต้องเทรดอย่างจริงจัง",
+        "phase1": "4 วัน",
+        "phase2": "4 วัน",
+        "funded": "ไม่มี"
+      },
+      "maxTradingPeriod": {
+        "title": "ระยะเวลาการเทรดสูงสุด",
+        "description": "ข้อจำกัดเวลาในการทำความท้าทายให้สำเร็จ",
+        "phase1": "ไม่จำกัด",
+        "phase2": "ไม่จำกัด",
+        "funded": "ไม่จำกัด"
+      },
+      "profitSplit": {
+        "title": "การแบ่งกำไร",
+        "description": "ส่วนแบ่งกำไรของคุณในบัญชีที่ได้รับเงินทุน",
+        "funded": "สูงสุด 90%"
+      }
+    },
+    "drawdownExplanation": {
+      "title": "ทำความเข้าใจการขาดทุน",
+      "subtitle": "กฎที่สำคัญที่สุดที่ต้องปฏิบัติตาม",
+      "dailyDrawdown": {
+        "title": "การขาดทุนรายวัน (5%)",
+        "description": "จำนวนสูงสุดที่คุณสามารถขาดทุนในวันเดียว คำนวณจากยอดคงเหลือเริ่มต้นของวัน รีเซ็ตที่เที่ยงคืนเวลาเซิร์ฟเวอร์",
+        "example": "ตัวอย่าง:",
+        "exampleText": "ด้วยยอดคงเหลือ $50,000 ขีดจำกัดการขาดทุนรายวันของคุณคือ $2,500"
+      },
+      "maximumDrawdown": {
+        "title": "การขาดทุนสูงสุด (10%)",
+        "description": "การขาดทุนรวมสูงสุดจากยอดคงเหลือสูงสุดที่คุณบรรลุ นี่คือการขาดทุนที่ติดตามที่ติดตามส่วนของผู้ถือหุ้นสูงสุดของคุณ",
+        "example": "ตัวอย่าง:",
+        "exampleText": "หากยอดคงเหลือสูงสุดของคุณคือ $55,000 ระดับการขาดทุนสูงสุดของคุณคือ $49,500"
+      }
+    },
+    "allowedActions": {
+      "title": "การกระทำที่อนุญาต",
+      "subtitle": "คุณมีอิสระในการเทรดตามแบบของคุณ",
+      "allTradingStyles": {
+        "title": "ทุกสไตล์การเทรด",
+        "desc": "การเทรดแบบสเกลปปิ้ง, การเทรดรายวัน, การซื้อขายสวิง"
+      },
+      "newsTrading": {
+        "title": "เทรดข่าว",
+        "desc": "เทรดในช่วงข่าวที่มีผลกระทบสูง"
+      },
+      "weekendHolding": {
+        "title": "ถือข้ามสุดสัปดาห์",
+        "desc": "เก็บสถานะข้ามสุดสัปดาห์"
+      },
+      "expertAdvisors": {
+        "title": "ที่ปรึกษาผู้เชี่ยวชาญ",
+        "desc": "ใช้บอทเทรดอัตโนมัติ"
+      },
+      "hedging": {
+        "title": "การป้องกันความเสี่ยง",
+        "desc": "เปิดสถานะตรงข้าม"
+      },
+      "allInstruments": {
+        "title": "ทุกตราสาร",
+        "desc": "Forex, ดัชนี, สินค้าโภคภัณฑ์, คริปโต"
+      },
+      "anyLotSize": {
+        "title": "ขนาดล็อตใดก็ได้",
+        "desc": "ไม่มีข้อจำกัดขนาดล็อตขั้นต่ำหรือสูงสุด"
+      },
+      "copyTrading": {
+        "title": "คัดลอกการเทรด",
+        "desc": "คัดลอกจากบัญชีของคุณเอง"
+      }
+    },
+    "prohibitedActions": {
+      "title": "การกระทำที่ห้าม",
+      "subtitle": "กิจกรรมที่จะส่งผลให้บัญชีถูกยกเลิก",
+      "latencyArbitrage": {
+        "title": "อาร์บิทราจความล่าช้า",
+        "desc": "การใช้ประโยชน์จากความล่าช้าของราคา"
+      },
+      "tickScalping": {
+        "title": "การเทรดแบบติ๊กสแกลปปิ้ง",
+        "desc": "เปิดการเทรดแบบสเกลปปิ้งน้อยกว่า 2 นาที"
+      },
+      "accountManagement": {
+        "title": "การจัดการบัญชี",
+        "desc": "ให้ผู้อื่นเทรดบัญชีของคุณ"
+      },
+      "propFirmCopying": {
+        "title": "คัดลอกจากบริษัท บริษัท พร็อพ อื่น",
+        "desc": "คัดลอกการเทรดจากบริษัท บริษัท พร็อพ อื่น"
+      },
+      "toxicFlowStrategies": {
+        "title": "กลยุทธ์การไหลที่เป็นพิษ",
+        "desc": "กลยุทธ์ที่ใช้ประโยชน์จากโบรกเกอร์"
+      },
+      "highFrequencyTrading": {
+        "title": "การเทรดความถี่สูง",
+        "desc": "ระบบ HFT อัตโนมัติ"
+      }
+    },
+    "scalingPlan": {
+      "title": "แผนการขยาย",
+      "subtitle": "เติบโตบัญชีของคุณสูงสุดถึง $2,000,000",
+      "accountSize": "ขนาดบัญชี",
+      "profitSplit": "แบ่งกำไร",
+      "howItWorks": {
+        "title": "การขยายทำงานอย่างไร",
+        "description": "ทุกครั้งที่คุณทำกำไร 10% และทำวงจรการจ่ายเงิน 2 ครั้งสำเร็จ บัญชีของคุณจะขยายไปยังระดับถัดไปโดยอัตโนมัติ การแบ่งกำไรของคุณเพิ่มขึ้นเมื่อคุณขยาย สูงสุดถึง 90% ในระดับสูงสุด"
+      },
+      "requirements": {
+        "passEvaluation": "ผ่านการประเมิน",
+        "profitAndPayouts": "กำไร 10% + 2 การจ่ายเงิน"
+      }
+    },
+    "payoutPolicy": {
+      "title": "นโยบายการจ่ายเงิน",
+      "subtitle": "การถอนกำไรที่รวดเร็วและเชื่อถือได้",
+      "frequency": {
+        "label": "ความถี่ในการจ่ายเงิน",
+        "value": "ทุกสองสัปดาห์ (ทุก 14 วัน)"
+      },
+      "minimum": {
+        "label": "การจ่ายเงินขั้นต่ำ",
+        "value": "$50"
+      },
+      "maximum": {
+        "label": "การจ่ายเงินสูงสุด",
+        "value": "ไม่จำกัด"
+      },
+      "processingTime": {
+        "label": "เวลาในการประมวลผล",
+        "value": "24-48 ชั่วโมง"
+      },
+      "fee": {
+        "label": "ค่าธรรมเนียมการจ่ายเงิน",
+        "value": "$0 (ฟรี)"
+      },
+      "firstPayout": {
+        "label": "การจ่ายเงินครั้งแรก",
+        "value": "หลังจากเทรดด้วยเงินทุน 14 วัน"
+      }
+    },
+    "cta": {
+      "title": "พร้อมเริ่มเทรดแล้วหรือยัง?",
+      "subtitle": "ตอนนี้คุณเข้าใจกฎแล้ว เลือกความท้าทายของคุณและเริ่มต้นการเดินทางการเทรดที่ได้รับเงินทุน",
+      "viewChallenges": "ดูความท้าทาย"
+    },
+    "important": "สำคัญ",
+    "phase1": "เฟส 1",
+    "phase2": "เฟส 2",
+    "funded": "ได้รับเงินทุน"
+  },
+  "terms": {
+    "title": "ข้อกำหนดการให้บริการ",
+    "lastUpdated": "อัพเดทล่าสุด: มกราคม 2024",
+    "acceptance": {
+      "title": "1. การยอมรับข้อกำหนด",
+      "content": "โดยการเข้าถึงและใช้บริการของ Props Capital คุณตกลงที่จะผูกพันกับข้อกำหนดการให้บริการเหล่านี้ หากคุณไม่เห็นด้วยกับข้อกำหนดเหล่านี้ โปรดอย่าใช้บริการของเรา"
+    },
+    "description": {
+      "title": "2. คำอธิบายบริการ",
+      "content": "Props Capital ให้บริการโปรแกรมประเมินการเทรดที่เป็นกรรมสิทธิ์ (\"ความท้าทาย\") ที่ช่วยให้เทรดเดอร์แสดงทักษะการเทรดของตน การทำความท้าทายให้สำเร็จอาจส่งผลให้เข้าถึงบัญชีเทรดที่ได้รับเงินทุน"
+    },
+    "eligibility": {
+      "title": "3. คุณสมบัติ",
+      "content": "คุณต้องมีอายุอย่างน้อย 18 ปีเพื่อใช้บริการของเรา โดยการใช้ Props Capital คุณแสดงว่าคุณมีความสามารถทางกฎหมายในการเข้าสู่ข้อตกลงนี้"
+    },
+    "accountRegistration": {
+      "title": "4. การลงทะเบียนบัญชี",
+      "content": "คุณตกลงที่จะให้ข้อมูลที่ถูกต้อง ปัจจุบัน และสมบูรณ์ระหว่างการลงทะเบียน คุณมีหน้าที่รับผิดชอบในการรักษาความลับของข้อมูลประจำตัวบัญชีของคุณ"
+    },
+    "tradingRules": {
+      "title": "5. กฎการเทรด",
+      "content": "เทรดเดอร์ทั้งหมดต้องปฏิบัติตามกฎการเทรดที่ระบุสำหรับประเภทความท้าทายของตน การละเมิดกฎเหล่านี้อาจส่งผลให้บัญชีถูกยกเลิกโดยไม่คืนเงิน"
+    },
+    "prohibitedActivities": {
+      "title": "6. กิจกรรมที่ห้าม",
+      "items": [
+        "การใช้ประโยชน์จากช่องโหว่หรือข้อบกพร่องของแพลตฟอร์ม",
+        "การใช้การจัดการบัญชีของบุคคลที่สามโดยไม่เปิดเผย",
+        "การมีส่วนร่วมในการเทรดอาร์บิทราจระหว่างโบรกเกอร์ที่แตกต่างกัน",
+        "การคัดลอกการเทรดจากบัญชีที่ prop firms ที่แตกต่างกัน",
+        "การจัดการตลาดในรูปแบบใดก็ตาม"
+      ]
+    },
+    "refundPolicy": {
+      "title": "7. นโยบายการคืนเงิน",
+      "content": "การคืนเงินมีให้ภายใน 14 วันนับจากวันที่ซื้อหากยังไม่มีการทำการเทรด เมื่อเริ่มกิจกรรมการเทรดแล้ว จะไม่มีการคืนเงิน"
+    },
+    "payouts": {
+      "title": "8. การจ่ายเงิน",
+      "content": "เทรดเดอร์ที่ได้รับเงินทุนมีสิทธิ์ถอนกำไรทุกสองสัปดาห์ตามข้อตกลงการแบ่งกำไรของพวกเขา Props Capital ขอสงวนสิทธิ์ในการตรวจสอบกิจกรรมการเทรดทั้งหมดก่อนดำเนินการจ่ายเงิน"
+    },
+    "intellectualProperty": {
+      "title": "9. ทรัพย์สินทางปัญญา",
+      "content": "เนื้อหา เครื่องหมายการค้า และทรัพย์สินทางปัญญาทั้งหมดบนแพลตฟอร์ม Props Capital เป็นของ Props Capital และได้รับการคุ้มครองตามกฎหมายที่ใช้บังคับ"
+    },
+    "limitationOfLiability": {
+      "title": "10. ข้อจำกัดความรับผิด",
+      "content": "Props Capital จะไม่รับผิดชอบต่อความเสียหายทางอ้อม ตามบังเอิญ หรือตามผลที่เกิดจากการใช้บริการของเรา"
+    },
+    "modifications": {
+      "title": "11. การแก้ไข",
+      "content": "Props Capital ขอสงวนสิทธิ์ในการแก้ไขข้อกำหนดเหล่านี้ได้ตลอดเวลา การใช้บริการของเราต่อไปหลังจากแก้ไขถือเป็นการยอมรับข้อกำหนดที่อัพเดทแล้ว"
+    },
+    "contact": {
+      "title": "12. ติดต่อ",
+      "content": "สำหรับคำถามเกี่ยวกับข้อกำหนดเหล่านี้ โปรดติดต่อเราที่ support@the-bluehaven.com"
+    }
+  },
+  "privacy": {
+    "title": "นโยบายความเป็นส่วนตัว",
+    "lastUpdated": "อัพเดทล่าสุด: มกราคม 2024",
+    "informationWeCollect": {
+      "title": "1. ข้อมูลที่เรารวบรวม",
+      "intro": "เรารวบรวมข้อมูลที่คุณให้มาโดยตรง:",
+      "items": [
+        "ข้อมูลระบุตัวตนส่วนบุคคล (ชื่อ อีเมล หมายเลขโทรศัพท์)",
+        "ข้อมูลการชำระเงิน (ประมวลผลอย่างปลอดภัยผ่านผู้ให้บริการบุคคลที่สาม)",
+        "ข้อมูลและกิจกรรมบัญชีเทรด",
+        "บันทึกการสื่อสารกับทีมสนับสนุนของเรา",
+        "เอกสาร KYC (บัตรประจำตัวประชาชน หลักฐานที่อยู่)"
+      ]
+    },
+    "howWeUse": {
+      "title": "2. วิธีที่เราใช้ข้อมูลของคุณ",
+      "items": [
+        "เพื่อให้และรักษาบริการของเรา",
+        "เพื่อประมวลผลธุรกรรมและส่งข้อมูลที่เกี่ยวข้อง",
+        "เพื่อตรวจสอบกิจกรรมการเทรดและบังคับใช้กฎของเรา",
+        "เพื่อสื่อสารกับคุณเกี่ยวกับอัพเดทและโปรโมชั่น",
+        "เพื่อตรวจจับและป้องกันการฉ้อโกง"
+      ]
+    },
+    "dataSecurity": {
+      "title": "3. ความปลอดภัยของข้อมูล",
+      "content": "เราดำเนินการมาตรการรักษาความปลอดภัยตามมาตรฐานอุตสาหกรรมเพื่อปกป้องข้อมูลส่วนบุคคลของคุณ ซึ่งรวมถึงการเข้ารหัส เซิร์ฟเวอร์ที่ปลอดภัย และการตรวจสอบความปลอดภัยเป็นประจำ"
+    },
+    "dataSharing": {
+      "title": "4. การแบ่งปันข้อมูล",
+      "intro": "เราอาจแบ่งปันข้อมูลของคุณกับ:",
+      "items": [
+        "ผู้ให้บริการแพลตฟอร์มเทรด (MT4, MT5, cTrader, DXTrade)",
+        "ผู้ประมวลผลการชำระเงินสำหรับการจัดการธุรกรรม",
+        "บริการยืนยันตัวตน KYC",
+        "หน่วยงานทางกฎหมายเมื่อกฎหมายกำหนด"
+      ]
+    },
+    "yourRights": {
+      "title": "5. สิทธิของคุณ",
+      "intro": "คุณมีสิทธิ์:",
+      "items": [
+        "เข้าถึงข้อมูลส่วนบุคคลของคุณ",
+        "ขอแก้ไขข้อมูลที่ไม่ถูกต้อง",
+        "ขอลบข้อมูลของคุณ (ขึ้นอยู่กับข้อกำหนดทางกฎหมาย)",
+        "เลือกไม่รับการสื่อสารทางการตลาด",
+        "ขอการพกพาข้อมูล"
+      ]
+    },
+    "cookies": {
+      "title": "6. คุกกี้",
+      "content": "เราใช้คุกกี้และเทคโนโลยีที่คล้ายกันเพื่อปรับปรุงประสบการณ์ของคุณ วิเคราะห์รูปแบบการใช้งาน และปรับเนื้อหาให้เป็นส่วนตัว คุณสามารถจัดการการตั้งค่าคุกกี้ผ่านการตั้งค่าเบราว์เซอร์ของคุณ"
+    },
+    "dataRetention": {
+      "title": "7. การเก็บรักษาข้อมูล",
+      "content": "เราจะเก็บรักษาข้อมูลส่วนบุคคลของคุณตราบเท่าที่บัญชีของคุณยังใช้งานอยู่หรือตามที่จำเป็นเพื่อให้บริการ เราอาจเก็บรักษาข้อมูลบางอย่างเพื่อการปฏิบัติตามกฎหมายและการแก้ไขข้อพิพาท"
+    },
+    "internationalTransfers": {
+      "title": "8. การโอนข้อมูลระหว่างประเทศ",
+      "content": "ข้อมูลของคุณอาจถูกโอนไปและประมวลผลในประเทศอื่นนอกเหนือจากประเทศที่คุณอาศัยอยู่ เรามั่นใจว่ามีการป้องกันที่เหมาะสมสำหรับการโอนดังกล่าว"
+    },
+    "childrensPrivacy": {
+      "title": "9. ความเป็นส่วนตัวของเด็ก",
+      "content": "บริการของเราไม่ได้มีไว้สำหรับบุคคลที่มีอายุต่ำกว่า 18 ปี เราไม่ทราบว่ากำลังรวบรวมข้อมูลจากเด็ก"
+    },
+    "contactUs": {
+      "title": "10. ติดต่อเรา",
+      "content": "สำหรับคำถามเกี่ยวกับความเป็นส่วนตัว โปรดติดต่อเจ้าหน้าที่คุ้มครองข้อมูลของเราที่ support@the-bluehaven.com"
+    }
+  }
+}
