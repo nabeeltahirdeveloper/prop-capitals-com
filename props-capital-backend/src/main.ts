@@ -13,7 +13,7 @@ async function bootstrap() {
     origin: true, // Allow all origins in development
     credentials: true,
   });
-  
-  await app.listen(4000);
+  console.log('Server is running on port 5002');
+  await app.listen(process.env.PORT || 5002);
 }
 bootstrap();
