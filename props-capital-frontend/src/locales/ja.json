@@ -87,7 +87,7 @@
     "testimonials": {
       "label": "お客様の声",
       "title": "トレーダーに愛されています",
-      "subtitle": "Props Capitalで収益を上げている何千人もの成功したトレーダーに参加しましょう",
+      "subtitle": "Prop Capitalsで収益を上げている何千人もの成功したトレーダーに参加しましょう",
       "totalEarned": "総獲得額"
     },
     "cta": {
@@ -1718,7 +1718,7 @@
       "dialog": {
         "title": "ブローカーサーバーを追加",
         "serverName": "サーバー名",
-        "serverNamePlaceholder": "例: Props Capital MT5 Demo",
+        "serverNamePlaceholder": "例: Prop Capitals MT5 Demo",
         "platform": "プラットフォーム",
         "serverAddress": "サーバーアドレス",
         "serverAddressPlaceholder": "broker.server.com",
@@ -1935,9 +1935,9 @@
       "gettingStarted": {
         "title": "はじめに",
         "faqs": {
-          "whatIsPropsCapital": {
-            "q": "Props Capitalとは何ですか？",
-            "a": "Props Capitalは、当社資金で取引できる資金提供アカウントをトレーダーに提供するプロップトレーディング会社です。評価に合格すると、最大90%の利益を受け取れます。資金提供アカウントで取引する際、あなた自身の資金はリスクにさらされません。"
+          "whatIsPropCapitals": {
+            "q": "Prop Capitalsとは何ですか？",
+            "a": "Prop Capitalsは、当社資金で取引できる資金提供アカウントをトレーダーに提供するプロップトレーディング会社です。評価に合格すると、最大90%の利益を受け取れます。資金提供アカウントで取引する際、あなた自身の資金はリスクにさらされません。"
           },
           "howToStartChallenge": {
             "q": "チャレンジはどうやって始めますか？",
@@ -2313,7 +2313,7 @@
       }
     },
     "whyChoose": {
-      "title": "なぜProps Capital？",
+      "title": "なぜProp Capitals？",
       "subtitle": "当社が選ばれる理由",
       "transparentRules": {
         "title": "透明なルール",
@@ -2531,7 +2531,7 @@
     },
     "cta": {
       "title": "今日から収益を作ろう",
-      "subtitle": "すでにProps Capitalで収益を得ている数千人の資金提供トレーダーに参加しましょう。",
+      "subtitle": "すでにProp Capitalsで収益を得ている数千人の資金提供トレーダーに参加しましょう。",
       "getFundedNow": "今すぐ資金提供を受ける"
     }
   },
@@ -2710,15 +2710,15 @@
     "lastUpdated": "最終更新: 2024年1月",
     "acceptance": {
       "title": "1. 規約への同意",
-      "content": "Props Capitalのサービスにアクセスし利用することで、あなたは本利用規約に拘束されることに同意します。規約に同意できない場合は、当社サービスを利用しないでください。"
+      "content": "Prop Capitalsのサービスにアクセスし利用することで、あなたは本利用規約に拘束されることに同意します。規約に同意できない場合は、当社サービスを利用しないでください。"
     },
     "description": {
       "title": "2. サービスの説明",
-      "content": "Props Capitalは、トレーダーが取引スキルを証明できる独自の取引評価プログラム（「チャレンジ」）を提供します。チャレンジの成功により、資金提供取引口座へのアクセスが付与される場合があります。"
+      "content": "Prop Capitalsは、トレーダーが取引スキルを証明できる独自の取引評価プログラム（「チャレンジ」）を提供します。チャレンジの成功により、資金提供取引口座へのアクセスが付与される場合があります。"
     },
     "eligibility": {
       "title": "3. 利用資格",
-      "content": "当社サービスを利用するには18歳以上である必要があります。Props Capitalを利用することで、あなたは本契約を締結する法的能力を有することを表明します。"
+      "content": "当社サービスを利用するには18歳以上である必要があります。Prop Capitalsを利用することで、あなたは本契約を締結する法的能力を有することを表明します。"
     },
     "accountRegistration": {
       "title": "4. アカウント登録",
@@ -2744,19 +2744,19 @@
     },
     "payouts": {
       "title": "8. 出金",
-      "content": "資金提供トレーダーは、利益分配契約に基づき2週間ごとに利益を出金できます。Props Capitalは、出金処理前にすべての取引活動を審査する権利を留保します。"
+      "content": "資金提供トレーダーは、利益分配契約に基づき2週間ごとに利益を出金できます。Prop Capitalsは、出金処理前にすべての取引活動を審査する権利を留保します。"
     },
     "intellectualProperty": {
       "title": "9. 知的財産",
-      "content": "Props Capitalプラットフォーム上のすべてのコンテンツ、商標、知的財産はProps Capitalに帰属し、適用法により保護されています。"
+      "content": "Prop Capitalsプラットフォーム上のすべてのコンテンツ、商標、知的財産はProp Capitalsに帰属し、適用法により保護されています。"
     },
     "limitationOfLiability": {
       "title": "10. 責任の制限",
-      "content": "Props Capitalは、当社サービスの利用に起因する間接的、付随的、結果的損害について責任を負いません。"
+      "content": "Prop Capitalsは、当社サービスの利用に起因する間接的、付随的、結果的損害について責任を負いません。"
     },
     "modifications": {
       "title": "11. 変更",
-      "content": "Props Capitalはいつでも本規約を変更する権利を留保します。変更後もサービス利用を継続することは、更新された規約への同意を意味します。"
+      "content": "Prop Capitalsはいつでも本規約を変更する権利を留保します。変更後もサービス利用を継続することは、更新された規約への同意を意味します。"
     },
     "contact": {
       "title": "12. 連絡先",

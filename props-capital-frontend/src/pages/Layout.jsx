@@ -212,7 +212,7 @@ export default function Layout({ children, currentPageName }) {
                 <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
-                <span className="text-lg sm:text-xl font-bold text-white">Props Capital</span>
+                <span className="text-lg sm:text-xl font-bold text-white">Prop Capitals</span>
               </Link>
 
               {/* Desktop Nav */}
@@ -295,7 +295,7 @@ export default function Layout({ children, currentPageName }) {
                     <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
                       <TrendingUp className="w-6 h-6 text-white" />
                     </div>
-                    <span className="text-xl font-bold text-white">Props Capital</span>
+                    <span className="text-xl font-bold text-white">Prop Capitals</span>
                   </Link>
                   <button onClick={() => setSidebarOpen(false)} className="text-slate-400 hover:text-white">
                     <X className="w-6 h-6" />
@@ -398,7 +398,7 @@ export default function Layout({ children, currentPageName }) {
               <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl font-bold text-white">Props Capital</span>
+              <span className="text-xl font-bold text-white">Prop Capitals</span>
             </Link>
             <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-slate-400 hover:text-white">
               <X className="w-6 h-6" />

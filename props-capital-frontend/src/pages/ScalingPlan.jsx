@@ -372,7 +372,7 @@ export default function ScalingPlan() {
                 <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
-                <span className="text-xl font-bold text-white">Props Capital</span>
+                <span className="text-xl font-bold text-white">Prop Capitals</span>
               </div>
               <p className="text-slate-400 mb-6">
                 {t('home.footer.description')}

@@ -31,7 +31,7 @@ export default function AdminSettings() {
 
   // Default settings (used as fallback if backend doesn't have values)
   const defaultGeneral = {
-    platform_name: 'Props Capital',
+    platform_name: 'Prop Capitals',
     support_email: 'support@the-bluehaven.com',
     maintenance_mode: false
   };

@@ -87,7 +87,7 @@
         "testimonials": {
           "label": "Yorumlar",
           "title": "Traderlar tarafından seviliyor",
-          "subtitle": "Props Capital ile kazanan binlerce başarılı tradere katılın",
+          "subtitle": "Prop Capitals ile kazanan binlerce başarılı tradere katılın",
           "totalEarned": "Toplam kazanç"
         },
         "cta": {
@@ -1718,7 +1718,7 @@
       "dialog": {
         "title": "Broker sunucusu ekle",
         "serverName": "Sunucu adı",
-        "serverNamePlaceholder": "Örn: Props Capital MT5 Demo",
+        "serverNamePlaceholder": "Örn: Prop Capitals MT5 Demo",
         "platform": "Platform",
         "serverAddress": "Sunucu adresi",
         "serverAddressPlaceholder": "broker.server.com",
@@ -1935,9 +1935,9 @@
       "gettingStarted": {
         "title": "Başlarken",
         "faqs": {
-          "whatIsPropsCapital": {
-            "q": "Props Capital nedir?",
-            "a": "Props Capital, traderlara şirket sermayesiyle işlem yapabilecekleri fonlanan hesaplar sunan bir prop trading şirketidir. Değerlendirmeyi geçtiğinizde kârın %90’ına kadarını alabilirsiniz. Fonlanan hesapta işlem yaparken kendi paranız risk altında olmaz."
+          "whatIsPropCapitals": {
+            "q": "Prop Capitals nedir?",
+            "a": "Prop Capitals, traderlara şirket sermayesiyle işlem yapabilecekleri fonlanan hesaplar sunan bir prop trading şirketidir. Değerlendirmeyi geçtiğinizde kârın %90’ına kadarını alabilirsiniz. Fonlanan hesapta işlem yaparken kendi paranız risk altında olmaz."
           },
           "howToStartChallenge": {
             "q": "Meydan okumaya nasıl başlarım?",
@@ -2313,7 +2313,7 @@
       }
     },
     "whyChoose": {
-      "title": "Neden Props Capital?",
+      "title": "Neden Prop Capitals?",
       "subtitle": "Bizi seçmeniz için nedenler",
       "transparentRules": {
         "title": "Şeffaf kurallar",
@@ -2531,7 +2531,7 @@
     },
     "cta": {
       "title": "Bugün kazanmaya başla",
-      "subtitle": "Props Capital’da zaten kazanan binlerce fonlanan trader’a katılın.",
+      "subtitle": "Prop Capitals’da zaten kazanan binlerce fonlanan trader’a katılın.",
       "getFundedNow": "Hemen fonlan"
     }
   },
@@ -2710,15 +2710,15 @@
     "lastUpdated": "Son güncelleme: Ocak 2024",
     "acceptance": {
       "title": "1. Şartların kabulü",
-      "content": "Props Capital hizmetlerine erişerek ve kullanarak bu Kullanım Şartları ile bağlı olmayı kabul edersiniz. Şartları kabul etmiyorsanız hizmetlerimizi kullanmayın."
+      "content": "Prop Capitals hizmetlerine erişerek ve kullanarak bu Kullanım Şartları ile bağlı olmayı kabul edersiniz. Şartları kabul etmiyorsanız hizmetlerimizi kullanmayın."
     },
     "description": {
       "title": "2. Hizmetin tanımı",
-      "content": "Props Capital, trader’ların işlem becerilerini kanıtlayabildiği özel bir işlem değerlendirme programı (“Meydan Okuma”) sunar. Meydan okumanın başarıyla tamamlanması, fonlanan işlem hesabına erişim sağlayabilir."
+      "content": "Prop Capitals, trader’ların işlem becerilerini kanıtlayabildiği özel bir işlem değerlendirme programı (“Meydan Okuma”) sunar. Meydan okumanın başarıyla tamamlanması, fonlanan işlem hesabına erişim sağlayabilir."
     },
     "eligibility": {
       "title": "3. Uygunluk",
-      "content": "Hizmetlerimizi kullanmak için 18 yaşında veya daha büyük olmalısınız. Props Capital’u kullanarak bu sözleşmeyi yapabilecek yasal ehliyete sahip olduğunuzu beyan edersiniz."
+      "content": "Hizmetlerimizi kullanmak için 18 yaşında veya daha büyük olmalısınız. Prop Capitals’u kullanarak bu sözleşmeyi yapabilecek yasal ehliyete sahip olduğunuzu beyan edersiniz."
     },
     "accountRegistration": {
       "title": "4. Hesap kaydı",
@@ -2744,19 +2744,19 @@
     },
     "payouts": {
       "title": "8. Çekimler",
-      "content": "Fonlanan trader’lar, kâr paylaşımı anlaşmasına göre iki haftada bir kâr çekebilir. Props Capital, çekim işlemi öncesinde tüm işlem aktivitelerini inceleme hakkını saklı tutar."
+      "content": "Fonlanan trader’lar, kâr paylaşımı anlaşmasına göre iki haftada bir kâr çekebilir. Prop Capitals, çekim işlemi öncesinde tüm işlem aktivitelerini inceleme hakkını saklı tutar."
     },
     "intellectualProperty": {
       "title": "9. Fikri mülkiyet",
-      "content": "Props Capital platformundaki tüm içerik, ticari markalar ve fikri mülkiyet Props Capital’a aittir ve yürürlükteki yasalarla korunur."
+      "content": "Prop Capitals platformundaki tüm içerik, ticari markalar ve fikri mülkiyet Prop Capitals’a aittir ve yürürlükteki yasalarla korunur."
     },
     "limitationOfLiability": {
       "title": "10. Sorumluluğun sınırlandırılması",
-      "content": "Props Capital, hizmetlerimizin kullanımından doğan dolaylı, arızi veya sonuçsal zararlardan sorumlu değildir."
+      "content": "Prop Capitals, hizmetlerimizin kullanımından doğan dolaylı, arızi veya sonuçsal zararlardan sorumlu değildir."
     },
     "modifications": {
       "title": "11. Değişiklikler",
-      "content": "Props Capital, bu şartları herhangi bir zamanda değiştirme hakkını saklı tutar. Hizmeti kullanmaya devam etmeniz, güncellenmiş şartları kabul ettiğiniz anlamına gelir."
+      "content": "Prop Capitals, bu şartları herhangi bir zamanda değiştirme hakkını saklı tutar. Hizmeti kullanmaya devam etmeniz, güncellenmiş şartları kabul ettiğiniz anlamına gelir."
     },
     "contact": {
       "title": "12. İletişim",

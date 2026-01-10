@@ -327,7 +327,7 @@ export default function AccountDetails() {
     id: accountData.id,
     account_number: accountData.brokerLogin || accountData.id.slice(0, 8),
     platform: accountData.platform || challenge.platform || 'MT5',
-    server: 'Props Capital-Live',
+    server: 'Prop Capitals-Live',
     status: statusMap[accountData.status] || accountData.status?.toLowerCase() || 'active',
     current_phase: phaseMap[accountData.phase] || accountData.phase?.toLowerCase() || 'phase1',
     initial_balance: accountData.initialBalance || challenge.accountSize || 0,

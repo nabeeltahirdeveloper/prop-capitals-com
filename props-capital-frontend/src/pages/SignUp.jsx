@@ -157,7 +157,7 @@ export default function SignUp() {
             <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
               <TrendingUp className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-white">Props Capital</span>
+            <span className="text-xl font-bold text-white">Prop Capitals</span>
           </Link>
 
           <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">

@@ -87,7 +87,7 @@
     "testimonials": {
       "label": "Témoignages",
       "title": "Apprécié par les traders",
-      "subtitle": "Rejoignez des milliers de traders à succès qui gagnent avec Props Capital",
+      "subtitle": "Rejoignez des milliers de traders à succès qui gagnent avec Prop Capitals",
       "totalEarned": "Gains totaux"
     },
     "cta": {
@@ -1718,7 +1718,7 @@
       "dialog": {
         "title": "Ajouter un serveur broker",
         "serverName": "Nom du serveur",
-        "serverNamePlaceholder": "Ex : Props Capital MT5 Demo",
+        "serverNamePlaceholder": "Ex : Prop Capitals MT5 Demo",
         "platform": "Plateforme",
         "serverAddress": "Adresse du serveur",
         "serverAddressPlaceholder": "broker.server.com",
@@ -1935,9 +1935,9 @@
       "gettingStarted": {
         "title": "Bien démarrer",
         "faqs": {
-          "whatIsPropsCapital": {
-            "q": "Qu’est-ce que Props Capital ?",
-            "a": "Props Capital est une société de prop trading qui fournit aux traders des comptes financés pour trader avec notre capital. Une fois l’évaluation réussie, vous pouvez recevoir jusqu’à 90 % des profits. Lorsque vous tradez sur un compte financé, votre propre capital n’est pas exposé au risque."
+          "whatIsPropCapitals": {
+            "q": "Qu’est-ce que Prop Capitals ?",
+            "a": "Prop Capitals est une société de prop trading qui fournit aux traders des comptes financés pour trader avec notre capital. Une fois l’évaluation réussie, vous pouvez recevoir jusqu’à 90 % des profits. Lorsque vous tradez sur un compte financé, votre propre capital n’est pas exposé au risque."
           },
           "howToStartChallenge": {
             "q": "Comment démarrer un challenge ?",
@@ -2313,7 +2313,7 @@
       }
     },
     "whyChoose": {
-      "title": "Pourquoi Props Capital ?",
+      "title": "Pourquoi Prop Capitals ?",
       "subtitle": "Pourquoi les traders nous choisissent",
       "transparentRules": {
         "title": "Règles transparentes",
@@ -2531,7 +2531,7 @@
     },
     "cta": {
       "title": "Commencez à générer des revenus dès aujourd’hui",
-      "subtitle": "Rejoignez des milliers de traders financés qui gagnent déjà avec Props Capital.",
+      "subtitle": "Rejoignez des milliers de traders financés qui gagnent déjà avec Prop Capitals.",
       "getFundedNow": "Obtenir un compte financé maintenant"
     }
   },
@@ -2710,15 +2710,15 @@
     "lastUpdated": "Dernière mise à jour : janvier 2024",
     "acceptance": {
       "title": "1. Acceptation des conditions",
-      "content": "En accédant aux services Props Capital et en les utilisant, vous acceptez d’être lié par les présentes Conditions d’utilisation. Si vous n’acceptez pas ces conditions, veuillez ne pas utiliser nos services."
+      "content": "En accédant aux services Prop Capitals et en les utilisant, vous acceptez d’être lié par les présentes Conditions d’utilisation. Si vous n’acceptez pas ces conditions, veuillez ne pas utiliser nos services."
     },
     "description": {
       "title": "2. Description du service",
-      "content": "Props Capital propose un programme d’évaluation de trading propriétaire (« Challenges ») permettant aux traders de démontrer leurs compétences. La réussite d’un challenge peut donner accès à un compte de trading financé."
+      "content": "Prop Capitals propose un programme d’évaluation de trading propriétaire (« Challenges ») permettant aux traders de démontrer leurs compétences. La réussite d’un challenge peut donner accès à un compte de trading financé."
     },
     "eligibility": {
       "title": "3. Éligibilité",
-      "content": "Vous devez avoir au moins 18 ans pour utiliser nos services. En utilisant Props Capital, vous déclarez avoir la capacité juridique de conclure le présent accord."
+      "content": "Vous devez avoir au moins 18 ans pour utiliser nos services. En utilisant Prop Capitals, vous déclarez avoir la capacité juridique de conclure le présent accord."
     },
     "accountRegistration": {
       "title": "4. Inscription du compte",
@@ -2744,19 +2744,19 @@
     },
     "payouts": {
       "title": "8. Retraits",
-      "content": "Les traders financés peuvent retirer leurs profits toutes les deux semaines selon l’accord de partage des profits. Props Capital se réserve le droit de vérifier toute activité de trading avant de traiter un retrait."
+      "content": "Les traders financés peuvent retirer leurs profits toutes les deux semaines selon l’accord de partage des profits. Prop Capitals se réserve le droit de vérifier toute activité de trading avant de traiter un retrait."
     },
     "intellectualProperty": {
       "title": "9. Propriété intellectuelle",
-      "content": "Tout le contenu, les marques et la propriété intellectuelle sur la plateforme Props Capital appartiennent à Props Capital et sont protégés par la loi applicable."
+      "content": "Tout le contenu, les marques et la propriété intellectuelle sur la plateforme Prop Capitals appartiennent à Prop Capitals et sont protégés par la loi applicable."
     },
     "limitationOfLiability": {
       "title": "10. Limitation de responsabilité",
-      "content": "Props Capital n’est pas responsable des dommages indirects, accessoires ou consécutifs résultant de l’utilisation de nos services."
+      "content": "Prop Capitals n’est pas responsable des dommages indirects, accessoires ou consécutifs résultant de l’utilisation de nos services."
     },
     "modifications": {
       "title": "11. Modifications",
-      "content": "Props Capital se réserve le droit de modifier ces conditions à tout moment. La poursuite de l’utilisation des services après modification signifie votre acceptation des conditions mises à jour."
+      "content": "Prop Capitals se réserve le droit de modifier ces conditions à tout moment. La poursuite de l’utilisation des services après modification signifie votre acceptation des conditions mises à jour."
     },
     "contact": {
       "title": "12. Contact",

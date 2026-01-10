@@ -87,7 +87,7 @@
     "testimonials": {
       "label": "고객 후기",
       "title": "트레이더들이 사랑합니다",
-      "subtitle": "Props Capital에서 수익을 올리고 있는 수천 명의 성공한 트레이더와 함께하세요",
+      "subtitle": "Prop Capitals에서 수익을 올리고 있는 수천 명의 성공한 트레이더와 함께하세요",
       "totalEarned": "총 수익"
     },
     "cta": {
@@ -1718,7 +1718,7 @@
       "dialog": {
         "title": "브로커 서버 추가",
         "serverName": "서버 이름",
-        "serverNamePlaceholder": "예: Props Capital MT5 Demo",
+        "serverNamePlaceholder": "예: Prop Capitals MT5 Demo",
         "platform": "플랫폼",
         "serverAddress": "서버 주소",
         "serverAddressPlaceholder": "broker.server.com",
@@ -1935,9 +1935,9 @@
       "gettingStarted": {
         "title": "시작하기",
         "faqs": {
-          "whatIsPropsCapital": {
-            "q": "Props Capital란 무엇인가요?",
-            "a": "Props Capital는 트레이더에게 당사 자금으로 거래할 수 있는 자금 지원 계정을 제공하는 프로프 트레이딩 회사입니다. 평가에 합격하면 최대 90%의 수익을 받을 수 있습니다. 자금 지원 계정으로 거래할 때는 본인 자금이 위험에 노출되지 않습니다."
+          "whatIsPropCapitals": {
+            "q": "Prop Capitals란 무엇인가요?",
+            "a": "Prop Capitals는 트레이더에게 당사 자금으로 거래할 수 있는 자금 지원 계정을 제공하는 프로프 트레이딩 회사입니다. 평가에 합격하면 최대 90%의 수익을 받을 수 있습니다. 자금 지원 계정으로 거래할 때는 본인 자금이 위험에 노출되지 않습니다."
           },
           "howToStartChallenge": {
             "q": "챌린지는 어떻게 시작하나요?",
@@ -2313,7 +2313,7 @@
       }
     },
     "whyChoose": {
-      "title": "왜 Props Capital인가요?",
+      "title": "왜 Prop Capitals인가요?",
       "subtitle": "당사가 선택되는 이유",
       "transparentRules": {
         "title": "투명한 규칙",
@@ -2531,7 +2531,7 @@
     },
     "cta": {
       "title": "오늘부터 수익을 만드세요",
-      "subtitle": "이미 Props Capital에서 수익을 내고 있는 수천 명의 자금 지원 트레이더와 함께하세요.",
+      "subtitle": "이미 Prop Capitals에서 수익을 내고 있는 수천 명의 자금 지원 트레이더와 함께하세요.",
       "getFundedNow": "지금 자금 지원 받기"
     }
   },
@@ -2710,15 +2710,15 @@
     "lastUpdated": "최종 업데이트: 2024년 1월",
     "acceptance": {
       "title": "1. 약관 동의",
-      "content": "Props Capital 서비스에 접근하고 이용함으로써, 귀하는 본 이용약관에 구속되는 것에 동의합니다. 약관에 동의할 수 없다면 서비스를 이용하지 마세요."
+      "content": "Prop Capitals 서비스에 접근하고 이용함으로써, 귀하는 본 이용약관에 구속되는 것에 동의합니다. 약관에 동의할 수 없다면 서비스를 이용하지 마세요."
     },
     "description": {
       "title": "2. 서비스 설명",
-      "content": "Props Capital는 트레이더가 거래 실력을 증명할 수 있는 독자적인 거래 평가 프로그램(“챌린지”)을 제공합니다. 챌린지를 성공적으로 완료하면 자금 지원 거래 계정에 접근할 수 있습니다."
+      "content": "Prop Capitals는 트레이더가 거래 실력을 증명할 수 있는 독자적인 거래 평가 프로그램(“챌린지”)을 제공합니다. 챌린지를 성공적으로 완료하면 자금 지원 거래 계정에 접근할 수 있습니다."
     },
     "eligibility": {
       "title": "3. 이용 자격",
-      "content": "서비스 이용을 위해서는 만 18세 이상이어야 합니다. Props Capital를 이용함으로써 귀하는 본 계약을 체결할 법적 능력이 있음을 진술합니다."
+      "content": "서비스 이용을 위해서는 만 18세 이상이어야 합니다. Prop Capitals를 이용함으로써 귀하는 본 계약을 체결할 법적 능력이 있음을 진술합니다."
     },
     "accountRegistration": {
       "title": "4. 계정 등록",
@@ -2744,19 +2744,19 @@
     },
     "payouts": {
       "title": "8. 출금",
-      "content": "자금 지원 트레이더는 수익 분배 계약에 따라 2주마다 수익을 출금할 수 있습니다. Props Capital는 출금 처리 전 모든 거래 활동을 검토할 권리를 보유합니다."
+      "content": "자금 지원 트레이더는 수익 분배 계약에 따라 2주마다 수익을 출금할 수 있습니다. Prop Capitals는 출금 처리 전 모든 거래 활동을 검토할 권리를 보유합니다."
     },
     "intellectualProperty": {
       "title": "9. 지식재산권",
-      "content": "Props Capital 플랫폼의 모든 콘텐츠, 상표 및 지식재산은 Props Capital에 귀속되며 관련 법률에 의해 보호됩니다."
+      "content": "Prop Capitals 플랫폼의 모든 콘텐츠, 상표 및 지식재산은 Prop Capitals에 귀속되며 관련 법률에 의해 보호됩니다."
     },
     "limitationOfLiability": {
       "title": "10. 책임 제한",
-      "content": "Props Capital는 서비스 이용으로 인해 발생하는 간접적, 부수적, 결과적 손해에 대해 책임을 지지 않습니다."
+      "content": "Prop Capitals는 서비스 이용으로 인해 발생하는 간접적, 부수적, 결과적 손해에 대해 책임을 지지 않습니다."
     },
     "modifications": {
       "title": "11. 변경",
-      "content": "Props Capital는 언제든 본 약관을 변경할 권리를 보유합니다. 변경 후에도 서비스를 계속 이용하는 것은 업데이트된 약관에 동의하는 것을 의미합니다."
+      "content": "Prop Capitals는 언제든 본 약관을 변경할 권리를 보유합니다. 변경 후에도 서비스를 계속 이용하는 것은 업데이트된 약관에 동의하는 것을 의미합니다."
     },
     "contact": {
       "title": "12. 연락처",

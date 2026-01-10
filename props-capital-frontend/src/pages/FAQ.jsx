@@ -41,8 +41,8 @@ export default function FAQ() {
       image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop',
       faqs: [
         {
-          q: t('faq.categories.gettingStarted.faqs.whatIsPropsCapital.q'),
-          a: t('faq.categories.gettingStarted.faqs.whatIsPropsCapital.a')
+          q: t('faq.categories.gettingStarted.faqs.whatIsPropCapitals.q'),
+          a: t('faq.categories.gettingStarted.faqs.whatIsPropCapitals.a')
         },
         {
           q: t('faq.categories.gettingStarted.faqs.howToStartChallenge.q'),

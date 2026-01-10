@@ -87,7 +87,7 @@
     "testimonials": {
       "label": "Testimonials",
       "title": "Traders Love Us",
-      "subtitle": "Join thousands of successful traders who have earned with Props Capital.",
+      "subtitle": "Join thousands of successful traders who have earned with Prop Capitals.",
       "totalEarned": "Total Earned"
     },
     "cta": {
@@ -1726,7 +1726,7 @@
       "dialog": {
         "title": "Add Broker Server",
         "serverName": "Server Name",
-        "serverNamePlaceholder": "e.g., Props Capital MT5 Demo",
+        "serverNamePlaceholder": "e.g., Prop Capitals MT5 Demo",
         "platform": "Platform",
         "serverAddress": "Server Address",
         "serverAddressPlaceholder": "broker.server.com",
@@ -1943,9 +1943,9 @@
       "gettingStarted": {
         "title": "Getting Started",
         "faqs": {
-          "whatIsPropsCapital": {
-            "q": "What is Props Capital?",
-            "a": "Props Capital is a proprietary trading firm that provides traders with funded accounts to trade our capital. Pass our evaluation and keep up to 90% of the profits you generate. You risk nothing of your own money when trading our funded accounts."
+          "whatIsPropCapitals": {
+            "q": "What is Prop Capitals?",
+            "a": "Prop Capitals is a proprietary trading firm that provides traders with funded accounts to trade our capital. Pass our evaluation and keep up to 90% of the profits you generate. You risk nothing of your own money when trading our funded accounts."
           },
           "howToStartChallenge": {
             "q": "How do I start a challenge?",
@@ -2321,7 +2321,7 @@
       }
     },
     "whyChoose": {
-      "title": "Why Choose Props Capital?",
+      "title": "Why Choose Prop Capitals?",
       "subtitle": "What makes us different",
       "transparentRules": {
         "title": "Transparent Rules",
@@ -2539,7 +2539,7 @@
     },
     "cta": {
       "title": "Start Earning Today",
-      "subtitle": "Join thousands of funded traders who are already earning with Props Capital.",
+      "subtitle": "Join thousands of funded traders who are already earning with Prop Capitals.",
       "getFundedNow": "Get Funded Now"
     }
   },
@@ -2718,15 +2718,15 @@
     "lastUpdated": "Last updated: January 2024",
     "acceptance": {
       "title": "1. Acceptance of Terms",
-      "content": "By accessing and using Props Capital's services, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services."
+      "content": "By accessing and using Prop Capitals's services, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services."
     },
     "description": {
       "title": "2. Description of Services",
-      "content": "Props Capital provides proprietary trading evaluation programs (\"Challenges\") that allow traders to demonstrate their trading skills. Successful completion of a Challenge may result in access to a funded trading account."
+      "content": "Prop Capitals provides proprietary trading evaluation programs (\"Challenges\") that allow traders to demonstrate their trading skills. Successful completion of a Challenge may result in access to a funded trading account."
     },
     "eligibility": {
       "title": "3. Eligibility",
-      "content": "You must be at least 18 years old to use our services. By using Props Capital, you represent that you have the legal capacity to enter into this agreement."
+      "content": "You must be at least 18 years old to use our services. By using Prop Capitals, you represent that you have the legal capacity to enter into this agreement."
     },
     "accountRegistration": {
       "title": "4. Account Registration",
@@ -2752,19 +2752,19 @@
     },
     "payouts": {
       "title": "8. Payouts",
-      "content": "Funded traders are eligible for bi-weekly profit withdrawals according to their profit split agreement. Props Capital reserves the right to verify all trading activity before processing payouts."
+      "content": "Funded traders are eligible for bi-weekly profit withdrawals according to their profit split agreement. Prop Capitals reserves the right to verify all trading activity before processing payouts."
     },
     "intellectualProperty": {
       "title": "9. Intellectual Property",
-      "content": "All content, trademarks, and intellectual property on Props Capital's platform are owned by Props Capital and protected by applicable laws."
+      "content": "All content, trademarks, and intellectual property on Prop Capitals's platform are owned by Prop Capitals and protected by applicable laws."
     },
     "limitationOfLiability": {
       "title": "10. Limitation of Liability",
-      "content": "Props Capital shall not be liable for any indirect, incidental, or consequential damages arising from your use of our services."
+      "content": "Prop Capitals shall not be liable for any indirect, incidental, or consequential damages arising from your use of our services."
     },
     "modifications": {
       "title": "11. Modifications",
-      "content": "Props Capital reserves the right to modify these terms at any time. Continued use of our services after modifications constitutes acceptance of the updated terms."
+      "content": "Prop Capitals reserves the right to modify these terms at any time. Continued use of our services after modifications constitutes acceptance of the updated terms."
     },
     "contact": {
       "title": "12. Contact",
