@@ -22,6 +22,7 @@ import {
 
 export default function SignIn() {
   const { t } = useTranslation();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -61,20 +62,10 @@ export default function SignIn() {
       return response.data;
     },
     onSuccess: async (data) => {
-      // Save token to localStorage
-      localStorage.setItem('token', data.accessToken);
-
-      // Immediately update the query cache with user data from login response
-      // This prevents the ProtectedRoute from thinking user is not authenticated
-      if (data.user) {
-        queryClient.setQueryData(['user', 'me'], data.user);
-      }
-
-      // Invalidate user query to trigger a refetch (in case we need fresh data)
-      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+      // Use the login function from AuthContext to handle token and user data
+      login(data.accessToken, data.user);
 
       // Redirect to appropriate dashboard based on user role
-      // The query cache is already updated, so ProtectedRoute will see the user
       const userRole = data.user?.role;
       if (userRole === 'ADMIN') {
         navigate(createPageUrl('AdminDashboard'));

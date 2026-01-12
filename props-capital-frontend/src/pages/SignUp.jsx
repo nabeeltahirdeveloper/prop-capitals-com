@@ -23,6 +23,7 @@ import {
 
 export default function SignUp() {
   const { t } = useTranslation();
+  const { login } = useAuth();
   const [step, setStep] = useState('details'); // 'details' | 'otp'
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -66,13 +67,12 @@ export default function SignUp() {
     onSuccess: async (response) => {
       const accessToken = response.data?.accessToken;
       const user = response.data?.user;
+
       if (accessToken) {
-        localStorage.setItem('token', accessToken);
+        // Use the login function from AuthContext
+        login(accessToken, user);
       }
-      if (user) {
-        queryClient.setQueryData(['user', 'me'], user);
-      }
-      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+
       navigate(createPageUrl('TraderDashboard'));
     },
     onError: (err) => {

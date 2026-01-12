@@ -406,3 +406,115 @@ enum TicketStatus {
   RESOLVED
   CLOSED
 }
+
+model Lead {
+  id               String           @id @default(cuid())
+  personName       String
+  onlineStatus     LeadOnlineStatus @default(OFFLINE)
+  leadReceivedDate DateTime         @default(now())
+  email            String
+  phoneNumber      String?
+  country          String?
+  source           String?
+  leadStatus       LeadStatus       @default(NEW)
+  ftdAmount        Float?
+  paymentMethod    PaymentMethod?
+  paymentProvider  PaymentProvider?
+  priority         LeadPriority     @default(MEDIUM)
+  assignedAgent    String?
+  callAttempts     Int              @default(0)
+  age              Int?
+  salary           String?
+  jobIndustry      String?
+  workTitle        String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  affiliateId      String?
+  convertedAt      DateTime?
+  funnelName       String?
+  subParameters    String?
+  activities       LeadActivity[]
+
+  @@index([leadStatus])
+  @@index([assignedAgent])
+  @@index([leadReceivedDate])
+}
+
+model CRMMeeting {
+  id          String   @id @default(cuid())
+  title       String
+  clientName  String
+  startTime   DateTime
+  duration    Int      // in minutes
+  type        String   // "Call", "Meeting", etc.
+  status      String   @default("SCHEDULED") // "SCHEDULED", "COMPLETED", "CANCELLED"
+  description String?
+  agentName   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([startTime])
+  @@index([status])
+}
+
+
+model LeadActivity {
+  id           String           @id @default(cuid())
+  leadId       String
+  activityType LeadActivityType
+  notes        String?
+  createdAt    DateTime         @default(now())
+  lead         Lead             @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+  @@index([createdAt])
+}
+
+enum LeadOnlineStatus {
+  ONLINE
+  OFFLINE
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CALLBACK
+  FOLLOW_UP
+  CONVERTED
+  LOST
+}
+
+enum PaymentMethod {
+  CARD
+  BANK_TRANSFER
+  CRYPTO
+}
+
+enum PaymentProvider {
+  STRIPE
+  PAYPAL
+  SKRILL
+  NETELLER
+  BINANCE_PAY
+  COINBASE
+  WIRE_TRANSFER
+  OTHER
+}
+
+enum LeadPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum LeadActivityType {
+  CALL
+  EMAIL
+  WHATSAPP
+  TELEGRAM
+  NOTE
+  STATUS_CHANGE
+  FIELD_UPDATE
+}

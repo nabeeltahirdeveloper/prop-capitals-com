@@ -82,92 +82,101 @@ import SignUp from "./SignUp";
 
 import TraderBuyChallenge from "./TraderBuyChallenge";
 
+import CRMLeads from "./CRMLeads";
+import CRMPipeline from "./CRMPipeline";
+import CRMFTDReport from "./CRMFTDReport";
+import CRMCalendar from "./CRMCalendar";
+
 import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import ProtectedRoute, { DashboardRedirect, PublicOnlyRoute } from '../components/ProtectedRoute';
 import { PriceProviderWithRouter } from '../contexts/PriceContext';
 
 const PAGES = {
-    
+
     Home: Home,
-    
+
     Challenges: Challenges,
-    
+
     HowItWorks: HowItWorks,
-    
+
     FAQ: FAQ,
-    
+
     Contact: Contact,
-    
+
     ScalingPlan: ScalingPlan,
-    
+
     Payouts: Payouts,
-    
+
     Terms: Terms,
-    
+
     Privacy: Privacy,
-    
+
     TraderDashboard: TraderDashboard,
-    
+
     MyAccounts: MyAccounts,
-    
+
     Analytics: Analytics,
-    
+
     TraderPayouts: TraderPayouts,
-    
+
     Profile: Profile,
-    
+
     AdminProfile: AdminProfile,
-    
+
     Support: Support,
-    
+
     AdminDashboard: AdminDashboard,
-    
+
     AdminUsers: AdminUsers,
-    
+
     AdminChallenges: AdminChallenges,
-    
+
     AdminAccounts: AdminAccounts,
-    
+
     AdminPayouts: AdminPayouts,
-    
+
     AdminPayments: AdminPayments,
-    
+
     AdminViolations: AdminViolations,
-    
+
     AdminCoupons: AdminCoupons,
-    
+
     AdminSupport: AdminSupport,
-    
+
     AdminSettings: AdminSettings,
-    
+
     Rules: Rules,
-    
+
     BuyChallenge: BuyChallenge,
-    
+
     AccountDetails: AccountDetails,
-    
+
     AdminBrokerServers: AdminBrokerServers,
-    
+
     AdminRiskMonitor: AdminRiskMonitor,
-    
+
     AdminScaling: AdminScaling,
-    
+
     Notifications: Notifications,
-    
+
     TradeHistory: TradeHistory,
-    
+
     ChallengeProgress: ChallengeProgress,
-    
+
     TradingTerminal: TradingTerminal,
-    
+
     RuleCompliance: RuleCompliance,
-    
+
     SignIn: SignIn,
-    
+
     SignUp: SignUp,
-    
+
     TraderBuyChallenge: TraderBuyChallenge,
-    
+
+    CRMLeads: CRMLeads,
+    CRMPipeline: CRMPipeline,
+    CRMFTDReport: CRMFTDReport,
+    CRMCalendar: CRMCalendar,
 }
 
 function _getCurrentPage(url) {
@@ -187,79 +196,83 @@ function _getCurrentPage(url) {
 function PagesContent() {
     const location = useLocation();
     const currentPage = _getCurrentPage(location.pathname);
-    
+
     return (
         <PriceProviderWithRouter>
-        <LanguageProvider>
-        <ErrorBoundary>
-            <Layout currentPageName={currentPage}>
-                    <Routes key={location.pathname}>
-                
-                    {/* Public Routes */}
-                    <Route path="/" element={<Home />} />
-                    <Route path="/Home" element={<Home />} />
-                    <Route path="/Challenges" element={<Challenges />} />
-                    <Route path="/HowItWorks" element={<HowItWorks />} />
-                    <Route path="/FAQ" element={<FAQ />} />
-                    <Route path="/Contact" element={<Contact />} />
-                    <Route path="/ScalingPlan" element={<ScalingPlan />} />
-                    <Route path="/Payouts" element={<Payouts />} />
-                    <Route path="/Terms" element={<Terms />} />
-                    <Route path="/Privacy" element={<Privacy />} />
-                    <Route path="/Rules" element={<Rules />} />
-                    <Route path="/SignIn" element={<PublicOnlyRoute><SignIn /></PublicOnlyRoute>} />
-                    <Route path="/login" element={<Navigate to="/SignIn" replace />} />
-                    <Route path="/SignUp" element={<PublicOnlyRoute><SignUp /></PublicOnlyRoute>} />
-                    <Route path="/dashboard" element={<DashboardRedirect />} />
-                
-                    {/* Trader Routes */}
-                    <Route element={<ProtectedRoute allowedRoles={['TRADER']} />}>
-                      <Route path="/TraderDashboard" element={<TraderDashboard />} />
-                      <Route path="/MyAccounts" element={<MyAccounts />} />
-                      <Route path="/Analytics" element={<Analytics />} />
-                      <Route path="/TraderPayouts" element={<TraderPayouts />} />
-                      <Route path="/Support" element={<Support />} />
-                      <Route path="/BuyChallenge" element={<BuyChallenge />} />
-                      <Route path="/AccountDetails" element={<AccountDetails />} />
-                      <Route path="/TradeHistory" element={<TradeHistory />} />
-                      <Route path="/ChallengeProgress" element={<ChallengeProgress />} />
-                      <Route path="/TradingTerminal" element={<TradingTerminal />} />
-                      <Route path="/RuleCompliance" element={<RuleCompliance />} />
-                      <Route path="/TraderBuyChallenge" element={<TraderBuyChallenge />} />
-                    </Route>
-                
-                    {/* Admin Routes */}
-                    <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
-                      <Route path="/AdminDashboard" element={<AdminDashboard />} />
-                      <Route path="/AdminUsers" element={<AdminUsers />} />
-                      <Route path="/AdminChallenges" element={<AdminChallenges />} />
-                      <Route path="/AdminAccounts" element={<AdminAccounts />} />
-                      <Route path="/AdminPayouts" element={<AdminPayouts />} />
-                      <Route path="/AdminPayments" element={<AdminPayments />} />
-                      <Route path="/AdminViolations" element={<AdminViolations />} />
-                      <Route path="/AdminCoupons" element={<AdminCoupons />} />
-                      <Route path="/AdminSupport" element={<AdminSupport />} />
-                      <Route path="/AdminSettings" element={<AdminSettings />} />
-                      <Route path="/AdminBrokerServers" element={<AdminBrokerServers />} />
-                      <Route path="/AdminRiskMonitor" element={<AdminRiskMonitor />} />
-                      <Route path="/AdminScaling" element={<AdminScaling />} />
-                      <Route path="/AdminProfile" element={<AdminProfile />} />
-                    </Route>
-                
-                    {/* Trader Profile Route */}
-                    <Route element={<ProtectedRoute allowedRoles={['TRADER']} />}>
-                      <Route path="/Profile" element={<Profile />} />
-                    </Route>
-                
-                    {/* Shared Routes (TRADER and ADMIN) */}
-                    <Route element={<ProtectedRoute allowedRoles={['TRADER', 'ADMIN']} />}>
-                      <Route path="/Notifications" element={<Notifications />} />
-                    </Route>
-                
-                </Routes>
-            </Layout>
-        </ErrorBoundary>
-        </LanguageProvider>
+            <LanguageProvider>
+                <ErrorBoundary>
+                    <Layout currentPageName={currentPage}>
+                        <Routes key={location.pathname}>
+
+                            {/* Public Routes */}
+                            <Route path="/" element={<Home />} />
+                            <Route path="/Home" element={<Home />} />
+                            <Route path="/Challenges" element={<Challenges />} />
+                            <Route path="/HowItWorks" element={<HowItWorks />} />
+                            <Route path="/FAQ" element={<FAQ />} />
+                            <Route path="/Contact" element={<Contact />} />
+                            <Route path="/ScalingPlan" element={<ScalingPlan />} />
+                            <Route path="/Payouts" element={<Payouts />} />
+                            <Route path="/Terms" element={<Terms />} />
+                            <Route path="/Privacy" element={<Privacy />} />
+                            <Route path="/Rules" element={<Rules />} />
+                            <Route path="/SignIn" element={<PublicOnlyRoute><SignIn /></PublicOnlyRoute>} />
+                            <Route path="/login" element={<Navigate to="/SignIn" replace />} />
+                            <Route path="/SignUp" element={<PublicOnlyRoute><SignUp /></PublicOnlyRoute>} />
+                            <Route path="/dashboard" element={<DashboardRedirect />} />
+
+                            {/* Trader Routes */}
+                            <Route element={<ProtectedRoute allowedRoles={['TRADER']} />}>
+                                <Route path="/TraderDashboard" element={<TraderDashboard />} />
+                                <Route path="/MyAccounts" element={<MyAccounts />} />
+                                <Route path="/Analytics" element={<Analytics />} />
+                                <Route path="/TraderPayouts" element={<TraderPayouts />} />
+                                <Route path="/Support" element={<Support />} />
+                                <Route path="/BuyChallenge" element={<BuyChallenge />} />
+                                <Route path="/AccountDetails" element={<AccountDetails />} />
+                                <Route path="/TradeHistory" element={<TradeHistory />} />
+                                <Route path="/ChallengeProgress" element={<ChallengeProgress />} />
+                                <Route path="/TradingTerminal" element={<TradingTerminal />} />
+                                <Route path="/RuleCompliance" element={<RuleCompliance />} />
+                                <Route path="/TraderBuyChallenge" element={<TraderBuyChallenge />} />
+                            </Route>
+
+                            {/* Admin Routes */}
+                            <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+                                <Route path="/AdminDashboard" element={<AdminDashboard />} />
+                                <Route path="/AdminUsers" element={<AdminUsers />} />
+                                <Route path="/AdminChallenges" element={<AdminChallenges />} />
+                                <Route path="/AdminAccounts" element={<AdminAccounts />} />
+                                <Route path="/AdminPayouts" element={<AdminPayouts />} />
+                                <Route path="/AdminPayments" element={<AdminPayments />} />
+                                <Route path="/AdminViolations" element={<AdminViolations />} />
+                                <Route path="/AdminCoupons" element={<AdminCoupons />} />
+                                <Route path="/AdminSupport" element={<AdminSupport />} />
+                                <Route path="/AdminSettings" element={<AdminSettings />} />
+                                <Route path="/AdminBrokerServers" element={<AdminBrokerServers />} />
+                                <Route path="/AdminRiskMonitor" element={<AdminRiskMonitor />} />
+                                <Route path="/AdminScaling" element={<AdminScaling />} />
+                                <Route path="/AdminProfile" element={<AdminProfile />} />
+                                <Route path="/CRMLeads" element={<CRMLeads />} />
+                                <Route path="/CRMPipeline" element={<CRMPipeline />} />
+                                <Route path="/CRMFTDReport" element={<CRMFTDReport />} />
+                                <Route path="/CRMCalendar" element={<CRMCalendar />} />
+                            </Route>
+
+                            {/* Trader Profile Route */}
+                            <Route element={<ProtectedRoute allowedRoles={['TRADER']} />}>
+                                <Route path="/Profile" element={<Profile />} />
+                            </Route>
+
+                            {/* Shared Routes (TRADER and ADMIN) */}
+                            <Route element={<ProtectedRoute allowedRoles={['TRADER', 'ADMIN']} />}>
+                                <Route path="/Notifications" element={<Notifications />} />
+                            </Route>
+
+                        </Routes>
+                    </Layout>
+                </ErrorBoundary>
+            </LanguageProvider>
         </PriceProviderWithRouter>
     );
 }

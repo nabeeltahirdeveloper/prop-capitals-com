@@ -31,6 +31,7 @@ import { AdminSettingsModule } from './admin/settings/admin-settings.module';
 import { AdminDashboardModule } from './admin/dashboard/admin-dashboard.module';
 import { AdminSupportModule } from './admin/support/admin-support.module';
 import { WebsocketModule } from './websocket/websocket.module';
+import { CrmModule } from './crm/crm.module';
 
 @Module({
 
@@ -98,10 +99,12 @@ import { WebsocketModule } from './websocket/websocket.module';
 
     AdminSupportModule,
 
-    WebsocketModule
+    WebsocketModule,
+
+    CrmModule
 
   ],
 
 })
 
-export class AppModule {}
+export class AppModule { }

@@ -1,11 +1,13 @@
-import React, { createContext, useContext, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { createContext, useContext, useMemo, useState, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getCurrentUser } from '@/api/auth';
 
 const AuthContext = createContext({
   status: 'checking',
   user: null,
   isAdmin: false,
+  login: () => { },
+  logout: () => { },
 });
 
 export const useAuth = () => {
@@ -17,8 +19,13 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  // Check if token exists in localStorage to determine if we should fetch
-  const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('token');
+  const queryClient = useQueryClient();
+  const [token, setToken] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('token');
+    }
+    return null;
+  });
 
   // Fetch current user - enabled only if token exists
   const { data: user, isLoading, isError, error } = useQuery({
@@ -26,31 +33,47 @@ export const AuthProvider = ({ children }) => {
     queryFn: getCurrentUser,
     retry: false,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    enabled: hasToken, // Only fetch if token exists
+    enabled: !!token, // Only fetch if token exists
     refetchOnWindowFocus: false,
   });
 
+  const login = useCallback((newToken, userData) => {
+    localStorage.setItem('token', newToken);
+    setToken(newToken);
+    if (userData) {
+      queryClient.setQueryData(['user', 'me'], userData);
+    }
+    queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+  }, [queryClient]);
+
+  const logout = useCallback(() => {
+    localStorage.removeItem('token');
+    setToken(null);
+    queryClient.setQueryData(['user', 'me'], null);
+    queryClient.removeQueries({ queryKey: ['user', 'me'] });
+    window.location.href = '/SignIn';
+  }, [queryClient]);
+
   // Determine auth status
   const status = useMemo(() => {
-    // If no token exists, we're immediately unauthenticated (no need to check)
-    if (!hasToken) {
+    // If no token exists, we're immediately unauthenticated
+    if (!token) {
       return 'unauthenticated';
     }
-    
-    // If query is loading or hasn't started yet, we're checking
-    // Note: when enabled=false, isLoading can be false immediately, so we check both
-    if (isLoading || (hasToken && user === undefined && !isError)) {
+
+    // If query is loading and we have no cached data, we're checking
+    if (isLoading && !user) {
       return 'checking';
     }
-    
+
     // If query errored or returned no user, we're unauthenticated
-    if (isError || !user || error) {
+    if (isError || !user) {
       return 'unauthenticated';
     }
-    
+
     // User exists and query succeeded
     return 'authenticated';
-  }, [hasToken, isLoading, isError, user, error]);
+  }, [token, isLoading, isError, user]);
 
   // Determine if user is admin
   const isAdmin = useMemo(() => {
@@ -64,8 +87,10 @@ export const AuthProvider = ({ children }) => {
       status,
       user,
       isAdmin,
+      login,
+      logout,
     }),
-    [status, user, isAdmin]
+    [status, user, isAdmin, login, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

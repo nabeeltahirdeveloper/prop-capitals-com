@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -29,7 +29,10 @@ import {
   Server,
   Activity,
   Target,
-  Check
+  Check,
+  Calendar,
+  PieChart,
+  Columns3
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -47,6 +50,7 @@ import { translateNotification } from '../utils/notificationTranslations';
 export default function Layout({ children, currentPageName }) {
   const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [openSubmenu, setOpenSubmenu] = useState(null);
   const [user, setUser] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
@@ -133,6 +137,72 @@ export default function Layout({ children, currentPageName }) {
       };
     });
 
+  // Determine if current page is an admin page
+  const adminPages = ['AdminDashboard', 'AdminUsers', 'AdminChallenges', 'AdminAccounts', 'AdminPayments', 'AdminPayouts', 'AdminViolations', 'AdminCoupons', 'AdminSupport', 'AdminSettings', 'AdminBrokerServers', 'AdminRiskMonitor', 'AdminScaling', 'AdminProfile', 'CRMLeads', 'CRMPipeline', 'CRMFTDReport', 'CRMCalendar'];
+  const isAdminPage = adminPages.includes(currentPageName);
+
+  // Show admin menu only if user is admin AND on admin pages
+  const showAdminMenu = isAdmin && isAdminPage;
+
+  const traderNavItems = useMemo(() => [
+    { name: t('nav.dashboard'), icon: LayoutDashboard, page: 'TraderDashboard' },
+    { name: t('nav.tradingTerminal'), icon: Activity, page: 'TradingTerminal' },
+    { name: t('nav.buyChallenge'), icon: Award, page: 'TraderBuyChallenge' },
+    { name: t('nav.myAccounts'), icon: TrendingUp, page: 'MyAccounts' },
+    { name: t('nav.accountDetails'), icon: FileText, page: 'AccountDetails' },
+    { name: t('nav.challengeProgress'), icon: Target, page: 'ChallengeProgress' },
+    { name: t('nav.ruleCompliance'), icon: Shield, page: 'RuleCompliance' },
+    { name: t('nav.tradeHistory'), icon: FileText, page: 'TradeHistory' },
+    { name: t('nav.analytics'), icon: BarChart3, page: 'Analytics' },
+    { name: t('nav.payouts'), icon: Wallet, page: 'TraderPayouts' },
+    { name: t('nav.notifications'), icon: Bell, page: 'Notifications' },
+    { name: t('nav.profile'), icon: User, page: 'Profile' },
+    { name: t('nav.support'), icon: HelpCircle, page: 'Support' },
+  ], [t]);
+
+  const adminNavItems = useMemo(() => [
+    { name: t('nav.overview'), icon: LayoutDashboard, page: 'AdminDashboard' },
+    { name: t('nav.users'), icon: Users, page: 'AdminUsers' },
+    { name: t('nav.challenges'), icon: Award, page: 'AdminChallenges' },
+    { name: t('nav.accounts'), icon: TrendingUp, page: 'AdminAccounts' },
+    { name: t('nav.riskMonitor'), icon: Activity, page: 'AdminRiskMonitor' },
+    { name: t('nav.brokerServers'), icon: Server, page: 'AdminBrokerServers' },
+    { name: t('nav.scaling'), icon: Zap, page: 'AdminScaling' },
+    { name: t('nav.payments'), icon: CreditCard, page: 'AdminPayments' },
+    { name: t('nav.payouts'), icon: Wallet, page: 'AdminPayouts' },
+    { name: t('nav.coupons'), icon: Zap, page: 'AdminCoupons' },
+    {
+      name: 'CRM',
+      icon: Users,
+      children: [
+        { name: 'Leads', icon: Users, page: 'CRMLeads' },
+        { name: 'Pipeline', icon: Columns3, page: 'CRMPipeline' },
+        { name: 'FTD Report', icon: PieChart, page: 'CRMFTDReport' },
+        { name: 'Calendar', icon: Calendar, page: 'CRMCalendar' },
+      ]
+    },
+    { name: t('nav.violations'), icon: Shield, page: 'AdminViolations' },
+    { name: t('nav.support'), icon: HelpCircle, page: 'AdminSupport' },
+    { name: t('nav.settings'), icon: Settings, page: 'AdminSettings' },
+    { name: t('nav.profile'), icon: User, page: 'AdminProfile' },
+  ], [t]);
+
+  const navItems = useMemo(() => showAdminMenu ? adminNavItems : traderNavItems, [showAdminMenu, adminNavItems, traderNavItems]);
+
+  // Auto-open submenu if a child is active - only run once when the current page changes
+  useEffect(() => {
+    let activeSubmenu = null;
+    navItems.forEach(item => {
+      if (item.children && item.children.some(child => child.page === currentPageName)) {
+        activeSubmenu = item.name;
+      }
+    });
+
+    if (activeSubmenu) {
+      setOpenSubmenu(activeSubmenu);
+    }
+  }, [currentPageName]); // Only trigger when navigating to a new page
+
   // Return early for SignIn/SignUp pages (no layout)
   if (isNoLayoutPage) {
     return <>{children}</>;
@@ -157,48 +227,6 @@ export default function Layout({ children, currentPageName }) {
   if (isProtectedPage && status !== 'authenticated') {
     return <>{children}</>;
   }
-
-  // Determine if current page is an admin page
-  const adminPages = ['AdminDashboard', 'AdminUsers', 'AdminChallenges', 'AdminAccounts', 'AdminPayments', 'AdminPayouts', 'AdminViolations', 'AdminCoupons', 'AdminSupport', 'AdminSettings', 'AdminBrokerServers', 'AdminRiskMonitor', 'AdminScaling', 'AdminProfile'];
-  const isAdminPage = adminPages.includes(currentPageName);
-
-  // Show admin menu only if user is admin AND on admin pages
-  const showAdminMenu = isAdmin && isAdminPage;
-
-  const traderNavItems = [
-    { name: t('nav.dashboard'), icon: LayoutDashboard, page: 'TraderDashboard' },
-    { name: t('nav.tradingTerminal'), icon: Activity, page: 'TradingTerminal' },
-    { name: t('nav.buyChallenge'), icon: Award, page: 'TraderBuyChallenge' },
-    { name: t('nav.myAccounts'), icon: TrendingUp, page: 'MyAccounts' },
-    { name: t('nav.accountDetails'), icon: FileText, page: 'AccountDetails' },
-    { name: t('nav.challengeProgress'), icon: Target, page: 'ChallengeProgress' },
-    { name: t('nav.ruleCompliance'), icon: Shield, page: 'RuleCompliance' },
-    { name: t('nav.tradeHistory'), icon: FileText, page: 'TradeHistory' },
-    { name: t('nav.analytics'), icon: BarChart3, page: 'Analytics' },
-    { name: t('nav.payouts'), icon: Wallet, page: 'TraderPayouts' },
-    { name: t('nav.notifications'), icon: Bell, page: 'Notifications' },
-    { name: t('nav.profile'), icon: User, page: 'Profile' },
-    { name: t('nav.support'), icon: HelpCircle, page: 'Support' },
-  ];
-
-  const adminNavItems = [
-    { name: t('nav.overview'), icon: LayoutDashboard, page: 'AdminDashboard' },
-    { name: t('nav.users'), icon: Users, page: 'AdminUsers' },
-    { name: t('nav.challenges'), icon: Award, page: 'AdminChallenges' },
-    { name: t('nav.accounts'), icon: TrendingUp, page: 'AdminAccounts' },
-    { name: t('nav.riskMonitor'), icon: Activity, page: 'AdminRiskMonitor' },
-    { name: t('nav.brokerServers'), icon: Server, page: 'AdminBrokerServers' },
-    { name: t('nav.scaling'), icon: Zap, page: 'AdminScaling' },
-    { name: t('nav.payments'), icon: CreditCard, page: 'AdminPayments' },
-    { name: t('nav.payouts'), icon: Wallet, page: 'AdminPayouts' },
-    { name: t('nav.coupons'), icon: Zap, page: 'AdminCoupons' },
-    { name: t('nav.violations'), icon: Shield, page: 'AdminViolations' },
-    { name: t('nav.support'), icon: HelpCircle, page: 'AdminSupport' },
-    { name: t('nav.settings'), icon: Settings, page: 'AdminSettings' },
-    { name: t('nav.profile'), icon: User, page: 'AdminProfile' },
-  ];
-
-  const navItems = showAdminMenu ? adminNavItems : traderNavItems;
 
   if (isPublicPage) {
     return (
@@ -412,7 +440,60 @@ export default function Layout({ children, currentPageName }) {
                 <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">{t('nav.adminPanel')}</Badge>
               </div>
             )}
-            {navItems.map((item) => {
+            {navItems.map((item, index) => {
+              // Handle divider type for section labels
+              if (item.type === 'divider') {
+                return (
+                  <div key={`divider-${index}`} className="pt-4 pb-2 px-3">
+                    <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{item.label}</span>
+                  </div>
+                );
+              }
+
+              if (item.children) {
+                const isSubmenuOpen = openSubmenu === item.name;
+                const isAnyChildActive = item.children.some(child => child.page === currentPageName);
+
+                return (
+                  <div key={`submenu-${item.name}`} className="space-y-1">
+                    <button
+                      onClick={() => setOpenSubmenu(isSubmenuOpen ? null : item.name)}
+                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${isAnyChildActive
+                        ? 'bg-slate-800 text-white'
+                        : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                        }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <item.icon className={`w-5 h-5 ${isAnyChildActive ? 'text-emerald-400' : ''}`} />
+                        <span className="font-medium">{item.name}</span>
+                      </div>
+                      <ChevronDown className={`w-4 h-4 transition-transform ${isSubmenuOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {isSubmenuOpen && (
+                      <div className="pl-4 ml-2 border-l border-slate-800 space-y-1 mt-1">
+                        {item.children.map((child) => {
+                          const isChildActive = currentPageName === child.page;
+                          return (
+                            <Link
+                              key={child.page}
+                              to={createPageUrl(child.page)}
+                              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${isChildActive
+                                ? 'bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-white'
+                                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                                }`}
+                            >
+                              <child.icon className={`w-4 h-4 ${isChildActive ? 'text-emerald-400' : ''}`} />
+                              <span className="text-sm font-medium">{child.name}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
               const isActive = currentPageName === item.page;
               const handleClick = (e) => {
                 // Force navigation even if on TradingTerminal
