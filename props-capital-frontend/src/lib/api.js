@@ -1,14 +1,14 @@
-import axios from 'axios';
+import axios from "axios";
 
 // Create axios instance with base URL from environment variable
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:4000',
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5002",
 });
 
 // Request interceptor: automatically attach JWT token from localStorage
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -27,24 +27,44 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Clear token from localStorage
-      localStorage.removeItem('token');
+      localStorage.removeItem("token");
       // Only redirect to sign in page if we're on a protected page
       const currentPath = window.location.pathname.toLowerCase();
-      const publicPages = ['/home', '/challenges', '/howitworks', '/payouts', '/faq', '/contact', '/terms', '/privacy', '/rules', '/buychallenge', '/scalingplan', '/signin', '/signup', '/login', '/'];
-      
+      const publicPages = [
+        "/home",
+        "/challenges",
+        "/howitworks",
+        "/payouts",
+        "/faq",
+        "/contact",
+        "/terms",
+        "/privacy",
+        "/rules",
+        "/buychallenge",
+        "/scalingplan",
+        "/signin",
+        "/signup",
+        "/login",
+        "/",
+      ];
+
       // Check if current path is a public page
-      const isPublicPage = publicPages.some(page => 
-        currentPath === page || currentPath === page + '/' || currentPath.startsWith(page + '?')
+      const isPublicPage = publicPages.some(
+        (page) =>
+          currentPath === page ||
+          currentPath === page + "/" ||
+          currentPath.startsWith(page + "?")
       );
-      
+
       // Only redirect if we're on a protected page
       if (!isPublicPage) {
-        window.location.href = '/SignIn';
+        window.location.href = "/SignIn";
       }
     }
     // Normalize error response
     const normalizedError = {
-      message: error.response?.data?.message || error.message || 'An error occurred',
+      message:
+        error.response?.data?.message || error.message || "An error occurred",
       status: error.response?.status,
       data: error.response?.data,
     };
@@ -74,4 +94,3 @@ export const apiDelete = async (url, config) => {
 };
 
 export default api;
-
