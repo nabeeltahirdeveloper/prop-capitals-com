@@ -19,6 +19,7 @@ import {
   Shield,
   Loader2
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function SignIn() {
   const { t } = useTranslation();

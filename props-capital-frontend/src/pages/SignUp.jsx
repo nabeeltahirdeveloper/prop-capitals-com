@@ -20,6 +20,7 @@ import {
   Loader2,
   User
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function SignUp() {
   const { t } = useTranslation();
