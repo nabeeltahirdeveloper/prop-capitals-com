@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "../utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -155,6 +155,71 @@ export default function Layout({ children, currentPageName }) {
       };
     });
 
+  // Determine if current page is an admin page
+  const adminPages = [
+    "AdminDashboard",
+    "AdminUsers",
+    "AdminChallenges",
+    "AdminAccounts",
+    "AdminPayments",
+    "AdminPayouts",
+    "AdminViolations",
+    "AdminCoupons",
+    "AdminSupport",
+    "AdminSettings",
+    "AdminBrokerServers",
+    "AdminRiskMonitor",
+    "AdminScaling",
+    "AdminProfile",
+  ];
+  const isAdminPage = adminPages.includes(currentPageName);
+
+  // Show admin menu only if user is admin AND on admin pages
+  const showAdminMenu = isAdmin && isAdminPage;
+
+  const traderNavItems = useMemo(() => [
+    {
+      name: t("nav.dashboard"),
+      icon: LayoutDashboard,
+      page: "TraderDashboard",
+    },
+    { name: t("nav.tradingTerminal"), icon: Activity, page: "TradingTerminal" },
+    { name: t("nav.buyChallenge"), icon: Award, page: "TraderBuyChallenge" },
+    { name: t("nav.myAccounts"), icon: TrendingUp, page: "MyAccounts" },
+    { name: t("nav.accountDetails"), icon: FileText, page: "AccountDetails" },
+    {
+      name: t("nav.challengeProgress"),
+      icon: Target,
+      page: "ChallengeProgress",
+    },
+    { name: t("nav.ruleCompliance"), icon: Shield, page: "RuleCompliance" },
+    { name: t("nav.tradeHistory"), icon: FileText, page: "TradeHistory" },
+    { name: t("nav.analytics"), icon: BarChart3, page: "Analytics" },
+    { name: t("nav.payouts"), icon: Wallet, page: "TraderPayouts" },
+    { name: t("nav.notifications"), icon: Bell, page: "Notifications" },
+    { name: t("nav.profile"), icon: User, page: "Profile" },
+    { name: t("nav.support"), icon: HelpCircle, page: "Support" },
+  ], [t]);
+
+  const adminNavItems = useMemo(() => [
+    { name: t("nav.overview"), icon: LayoutDashboard, page: "AdminDashboard" },
+    { name: t("nav.users"), icon: Users, page: "AdminUsers" },
+    { name: t("nav.challenges"), icon: Award, page: "AdminChallenges" },
+    { name: t("nav.accounts"), icon: TrendingUp, page: "AdminAccounts" },
+    { name: t("nav.riskMonitor"), icon: Activity, page: "AdminRiskMonitor" },
+    { name: t("nav.brokerServers"), icon: Server, page: "AdminBrokerServers" },
+    { name: t("nav.scaling"), icon: Zap, page: "AdminScaling" },
+    { name: t("nav.payments"), icon: CreditCard, page: "AdminPayments" },
+    { name: t("nav.payouts"), icon: Wallet, page: "AdminPayouts" },
+    { name: t("nav.coupons"), icon: Zap, page: "AdminCoupons" },
+    { name: t("nav.violations"), icon: Shield, page: "AdminViolations" },
+    { name: t("nav.support"), icon: HelpCircle, page: "AdminSupport" },
+    { name: t("nav.settings"), icon: Settings, page: "AdminSettings" },
+    { name: t("nav.profile"), icon: User, page: "AdminProfile" },
+  ], [t]);
+
+  const navItems = useMemo(() => showAdminMenu ? adminNavItems : traderNavItems, [showAdminMenu, adminNavItems, traderNavItems]);
+
   // Auto-open submenu if a child is active - only run once when the current page changes
   useEffect(() => {
     let activeSubmenu = null;
@@ -170,7 +235,7 @@ export default function Layout({ children, currentPageName }) {
     if (activeSubmenu) {
       setOpenSubmenu(activeSubmenu);
     }
-  }, [currentPageName]); // Only trigger when navigating to a new page
+  }, [currentPageName, navItems]);
 
   // Return early for SignIn/SignUp pages (no layout)
   if (isNoLayoutPage) {
@@ -196,71 +261,6 @@ export default function Layout({ children, currentPageName }) {
   if (isProtectedPage && status !== "authenticated") {
     return <>{children}</>;
   }
-
-  // Determine if current page is an admin page
-  const adminPages = [
-    "AdminDashboard",
-    "AdminUsers",
-    "AdminChallenges",
-    "AdminAccounts",
-    "AdminPayments",
-    "AdminPayouts",
-    "AdminViolations",
-    "AdminCoupons",
-    "AdminSupport",
-    "AdminSettings",
-    "AdminBrokerServers",
-    "AdminRiskMonitor",
-    "AdminScaling",
-    "AdminProfile",
-  ];
-  const isAdminPage = adminPages.includes(currentPageName);
-
-  // Show admin menu only if user is admin AND on admin pages
-  const showAdminMenu = isAdmin && isAdminPage;
-
-  const traderNavItems = [
-    {
-      name: t("nav.dashboard"),
-      icon: LayoutDashboard,
-      page: "TraderDashboard",
-    },
-    { name: t("nav.tradingTerminal"), icon: Activity, page: "TradingTerminal" },
-    { name: t("nav.buyChallenge"), icon: Award, page: "TraderBuyChallenge" },
-    { name: t("nav.myAccounts"), icon: TrendingUp, page: "MyAccounts" },
-    { name: t("nav.accountDetails"), icon: FileText, page: "AccountDetails" },
-    {
-      name: t("nav.challengeProgress"),
-      icon: Target,
-      page: "ChallengeProgress",
-    },
-    { name: t("nav.ruleCompliance"), icon: Shield, page: "RuleCompliance" },
-    { name: t("nav.tradeHistory"), icon: FileText, page: "TradeHistory" },
-    { name: t("nav.analytics"), icon: BarChart3, page: "Analytics" },
-    { name: t("nav.payouts"), icon: Wallet, page: "TraderPayouts" },
-    { name: t("nav.notifications"), icon: Bell, page: "Notifications" },
-    { name: t("nav.profile"), icon: User, page: "Profile" },
-    { name: t("nav.support"), icon: HelpCircle, page: "Support" },
-  ];
-
-  const adminNavItems = [
-    { name: t("nav.overview"), icon: LayoutDashboard, page: "AdminDashboard" },
-    { name: t("nav.users"), icon: Users, page: "AdminUsers" },
-    { name: t("nav.challenges"), icon: Award, page: "AdminChallenges" },
-    { name: t("nav.accounts"), icon: TrendingUp, page: "AdminAccounts" },
-    { name: t("nav.riskMonitor"), icon: Activity, page: "AdminRiskMonitor" },
-    { name: t("nav.brokerServers"), icon: Server, page: "AdminBrokerServers" },
-    { name: t("nav.scaling"), icon: Zap, page: "AdminScaling" },
-    { name: t("nav.payments"), icon: CreditCard, page: "AdminPayments" },
-    { name: t("nav.payouts"), icon: Wallet, page: "AdminPayouts" },
-    { name: t("nav.coupons"), icon: Zap, page: "AdminCoupons" },
-    { name: t("nav.violations"), icon: Shield, page: "AdminViolations" },
-    { name: t("nav.support"), icon: HelpCircle, page: "AdminSupport" },
-    { name: t("nav.settings"), icon: Settings, page: "AdminSettings" },
-    { name: t("nav.profile"), icon: User, page: "AdminProfile" },
-  ];
-
-  const navItems = showAdminMenu ? adminNavItems : traderNavItems;
 
   if (isPublicPage) {
     return (
@@ -512,9 +512,8 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
@@ -571,24 +570,21 @@ export default function Layout({ children, currentPageName }) {
                       onClick={() =>
                         setOpenSubmenu(isSubmenuOpen ? null : item.name)
                       }
-                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                        isAnyChildActive
-                          ? "bg-slate-800 text-white"
-                          : "text-slate-400 hover:text-white hover:bg-slate-800"
-                      }`}
+                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${isAnyChildActive
+                        ? "bg-slate-800 text-white"
+                        : "text-slate-400 hover:text-white hover:bg-slate-800"
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <item.icon
-                          className={`w-5 h-5 ${
-                            isAnyChildActive ? "text-emerald-400" : ""
-                          }`}
+                          className={`w-5 h-5 ${isAnyChildActive ? "text-emerald-400" : ""
+                            }`}
                         />
                         <span className="font-medium">{item.name}</span>
                       </div>
                       <ChevronDown
-                        className={`w-4 h-4 transition-transform ${
-                          isSubmenuOpen ? "rotate-180" : ""
-                        }`}
+                        className={`w-4 h-4 transition-transform ${isSubmenuOpen ? "rotate-180" : ""
+                          }`}
                       />
                     </button>
 
@@ -600,16 +596,14 @@ export default function Layout({ children, currentPageName }) {
                             <Link
                               key={child.page}
                               to={createPageUrl(child.page)}
-                              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${
-                                isChildActive
-                                  ? "bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-white"
-                                  : "text-slate-400 hover:text-white hover:bg-slate-800"
-                              }`}
+                              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${isChildActive
+                                ? "bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-white"
+                                : "text-slate-400 hover:text-white hover:bg-slate-800"
+                                }`}
                             >
                               <child.icon
-                                className={`w-4 h-4 ${
-                                  isChildActive ? "text-emerald-400" : ""
-                                }`}
+                                className={`w-4 h-4 ${isChildActive ? "text-emerald-400" : ""
+                                  }`}
                               />
                               <span className="text-sm font-medium">
                                 {child.name}
@@ -641,11 +635,10 @@ export default function Layout({ children, currentPageName }) {
                   key={item.page}
                   to={createPageUrl(item.page)}
                   onClick={handleClick}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
-                    isActive
-                      ? "bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-white border border-emerald-500/30"
-                      : "text-slate-400 hover:text-white hover:bg-slate-800"
-                  }`}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${isActive
+                    ? "bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-white border border-emerald-500/30"
+                    : "text-slate-400 hover:text-white hover:bg-slate-800"
+                    }`}
                 >
                   <item.icon
                     className={`w-5 h-5 ${isActive ? "text-emerald-400" : ""}`}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPageUrl } from '../utils';
@@ -32,30 +32,13 @@ export default function SignIn() {
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
-  const historySetupRef = useRef(false);
-
-  // Ensure back button always goes to Home from SignIn page
+  // Clean up any redirect state when component mounts
   useEffect(() => {
-    // Only set up history once
-    if (historySetupRef.current) return;
-    historySetupRef.current = true;
-
     // Replace current entry to clear any 'from' state reference
     if (location.state?.from) {
       navigate(createPageUrl('SignIn'), { replace: true, state: null });
     }
-
-    // Ensure Home is in history before SignIn
-    // We use window.history API directly to manipulate the stack
-    // without triggering React Router navigation (which would cause flashing)
-
-    // Push Home to history - this becomes the previous entry
-    window.history.pushState({ page: 'Home' }, '', createPageUrl('Home'));
-
-    // Push SignIn to history - now history is: [..., Home, SignIn]
-    // When user presses back, they'll go to Home
-    window.history.pushState({ page: 'SignIn' }, '', createPageUrl('SignIn'));
-  }, [location.state, navigate]);
+  }, []); // Empty dependency array - only run once on mount
 
   const loginMutation = useMutation({
     mutationFn: async (credentials) => {
