@@ -243,7 +243,7 @@ export default function AdminCoupons() {
           <Button
             size="sm"
             variant="ghost"
-            className="text-slate-400 hover:text-white"
+            className="text-slate-400 "
             onClick={() => handleEdit(row)}
           >
             <Pencil className="w-4 h-4" />
