@@ -697,12 +697,8 @@ export default function Layout({ children, currentPageName }) {
             {/* Notifications */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="relative text-slate-400 hover:text-white"
-                >
-                  <Bell className="w-5 h-5 text-slate-400 transition-colors data-[state=open]:text-white" />
+                <Button variant="ghost" size="icon" className="relative text-slate-400">
+                  <Bell className="w-5 h-5" />
                   {notifications.length > 0 && (
                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
                       {notifications.length}
@@ -742,7 +738,7 @@ export default function Layout({ children, currentPageName }) {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7 text-slate-400 hover:text-white flex-shrink-0"
+                          className="h-7 w-7 text-slate-400  flex-shrink-0"
                           onClick={(e) => {
                             e.stopPropagation();
                             markAsReadMutation.mutate(notif.id);
