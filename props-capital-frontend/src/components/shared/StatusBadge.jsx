@@ -33,7 +33,7 @@ export default function StatusBadge({ status, className = '' }) {
   const translatedStatus = t(`status.${statusKey}`) || status?.replace(/_/g, ' ');
   
   return (
-    <Badge className={`${style} border capitalize ${className}`}>
+    <Badge className={`${style} border capitalize pointer-events-none ${className}`} >
       {translatedStatus}
     </Badge>
   );

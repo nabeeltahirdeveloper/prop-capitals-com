@@ -3281,13 +3281,13 @@ export default function TradingTerminal() {
             <div className="col-span-7">
               <Tabs defaultValue="positions" className="w-full">
                 <TabsList className="bg-slate-900 border border-slate-800">
-                  <TabsTrigger value="positions" className="data-[state=active]:bg-slate-800">
+                  <TabsTrigger value="positions" className="data-[state=active]:bg-slate-800 data-[state=active]:text-white ">
                     {t('terminal.tabs.positions')} ({positions.length})
                   </TabsTrigger>
-                  <TabsTrigger value="pending" className="data-[state=active]:bg-slate-800">
+                  <TabsTrigger value="pending" className="data-[state=active]:bg-slate-800 data-[state=active]:text-white ">
                     {t('terminal.tabs.pending')} ({pendingOrders.length})
                   </TabsTrigger>
-                  <TabsTrigger value="history" className="data-[state=active]:bg-slate-800">
+                  <TabsTrigger value="history" className="data-[state=active]:bg-slate-800 data-[state=active]:text-white ">
                     {t('terminal.tabs.history')} ({tradeHistory.length})
                   </TabsTrigger>
                 </TabsList>

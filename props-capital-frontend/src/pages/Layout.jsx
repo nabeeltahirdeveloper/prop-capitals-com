@@ -553,7 +553,7 @@ export default function Layout({ children, currentPageName }) {
             {/* Notifications */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative text-slate-400 hover:text-white">
+                <Button variant="ghost" size="icon" className="relative text-slate-400">
                   <Bell className="w-5 h-5" />
                   {notifications.length > 0 && (
                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
@@ -583,7 +583,7 @@ export default function Layout({ children, currentPageName }) {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7 text-slate-400 hover:text-white flex-shrink-0"
+                          className="h-7 w-7 text-slate-400  flex-shrink-0"
                           onClick={(e) => {
                             e.stopPropagation();
                             markAsReadMutation.mutate(notif.id);
@@ -602,7 +602,7 @@ export default function Layout({ children, currentPageName }) {
             {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2 text-slate-300 hover:text-white">
+                <Button variant="ghost" className="flex items-center gap-2 text-slate-300">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-white font-bold text-sm">
                     {currentUser?.profile?.firstName?.[0] || currentUser?.email?.[0] || 'U'}
                   </div>
@@ -610,7 +610,7 @@ export default function Layout({ children, currentPageName }) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 bg-slate-900 border-slate-800">
-                <DropdownMenuItem asChild className="cursor-pointer focus:bg-slate-800 text-slate-300">
+                <DropdownMenuItem asChild className="cursor-pointer focus:bg-slate-800 focus:text-white text-slate-300">
                   <Link
                     to={createPageUrl(isAdmin ? 'AdminProfile' : 'Profile')}
                     className="flex items-center gap-2"
@@ -627,7 +627,7 @@ export default function Layout({ children, currentPageName }) {
                     {t('nav.profile')}
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="cursor-pointer focus:bg-slate-800 text-slate-300">
+                <DropdownMenuItem asChild className="cursor-pointer focus:bg-slate-800 focus:text-white text-slate-300">
                   <Link
                     to={createPageUrl('Home')}
                     className="flex items-center gap-2"
@@ -646,13 +646,13 @@ export default function Layout({ children, currentPageName }) {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-slate-800" />
                 <DropdownMenuItem
-                  className="cursor-pointer focus:bg-slate-800 text-red-400"
+                  className="cursor-pointer focus:bg-slate-800 focus:text-red-500 text-red-400"
                   onClick={() => {
                     localStorage.removeItem('token');
                     window.location.href = createPageUrl('SignIn');
                   }}
                 >
-                  <LogOut className="w-4 h-4 mr-2" />
+                  <LogOut className="w-4 h-4" />
                   {t('nav.logout')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
