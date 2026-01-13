@@ -197,6 +197,7 @@ export default function ChallengeRulesPanel({ account, challenge }) {
               overallDrawdownProgress >= 50 ? 'bg-amber-500/10 border-amber-500/30' :
                 'bg-emerald-500/10 border-emerald-500/30'
           }`}>
+            
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               {overallDrawdown >= maxOverallDrawdown ? <XCircle className="w-4 h-4 text-red-400" /> :
