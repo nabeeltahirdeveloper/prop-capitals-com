@@ -157,7 +157,7 @@ export default function AdminUsers() {
           </div>
           <div>
             <p className="text-white font-medium">{row.full_name}</p>
-            <p className="text-xs text-slate-400">{row.email}</p>
+            <p className="text-xs text-slate-300">{row.email}</p>
           </div>
         </div>
       ),

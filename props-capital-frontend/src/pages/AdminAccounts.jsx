@@ -213,7 +213,7 @@ export default function AdminAccounts() {
       cell: (row) => (
         <div>
           <p className="text-white font-medium">{row.account_number}</p>
-          <p className="text-xs text-slate-400">{row.trader_id}</p>
+          <p className="text-xs text-slate-300 ">{row.trader_id}</p>
         </div>
       ),
     },

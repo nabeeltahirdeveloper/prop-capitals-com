@@ -748,7 +748,7 @@ export default function Layout({ children, currentPageName }) {
                     window.location.href = createPageUrl("SignIn");
                   }}
                 >
-                  <LogOut className="w-4 h-4 mr-2 data-[highlighted]:text-red-500" />
+                  <LogOut className="w-4 h-4 mr- data-[highlighted]:text-red-500" />
                   {t("nav.logout")}
                 </DropdownMenuItem>
               </DropdownMenuContent>

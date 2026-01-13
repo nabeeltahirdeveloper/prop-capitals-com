@@ -240,7 +240,6 @@ export default function AdminCoupons() {
       accessorKey: "id",
       cell: (row) => (
         <div className="flex items-center gap-2">
-          kj
           <Button
             size="sm"
             variant="ghost"
