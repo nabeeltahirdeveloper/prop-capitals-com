@@ -593,7 +593,7 @@ export default function Layout({ children, currentPageName }) {
                     </button>
 
                     {isSubmenuOpen && (
-                      <div className="pl-4 ml-2 border-l border-slate-800 space-y-1 mt-1">
+                      <div className="pl-4 ml-2  border-slate-800 space-y-1 mt-1">
                         {item.children.map((child) => {
                           const isChildActive = currentPageName === child.page;
                           return (
