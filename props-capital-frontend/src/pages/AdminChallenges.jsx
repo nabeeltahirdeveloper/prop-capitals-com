@@ -805,7 +805,7 @@ export default function AdminChallenges() {
             <div className="flex gap-3 justify-end">
               <Button
                 variant="outline"
-                className="border-slate-700 text-slate-300 hover:text-black"
+                className="border-slate-700 text-black"
                 onClick={() => {
                   setDeleteConfirmOpen(false);
                   setChallengeToDelete(null);
