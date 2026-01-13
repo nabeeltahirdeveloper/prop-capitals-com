@@ -1,9 +1,9 @@
-import React, { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { adminGetAllViolations } from '@/api/admin';
-import { useTranslation } from '../contexts/LanguageContext';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import React, { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { adminGetAllViolations } from "@/api/admin";
+import { useTranslation } from "../contexts/LanguageContext";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -11,32 +11,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import DataTable from '../components/shared/DataTable';
-import StatsCard from '../components/shared/StatsCard';
+import DataTable from "../components/shared/DataTable";
+import StatsCard from "../components/shared/StatsCard";
 import {
   Search,
   AlertTriangle,
   Shield,
   Clock,
-  TrendingDown
-} from 'lucide-react';
-import { format } from 'date-fns';
+  TrendingDown,
+} from "lucide-react";
+import { format } from "date-fns";
 
 export default function AdminViolations() {
   const { t } = useTranslation();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [typeFilter, setTypeFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
 
   // Fetch violations from backend
   const { data: violationsData = [], isLoading } = useQuery({
-    queryKey: ['admin-violations'],
+    queryKey: ["admin-violations"],
     queryFn: adminGetAllViolations,
     refetchInterval: 30000, // Real-time updates every 30 seconds
   });
 
   // Helper function to determine if violation is fatal
   const isFatalViolation = (type) => {
-    const fatalTypes = ['DAILY_DRAWDOWN', 'OVERALL_DRAWDOWN', 'CONSISTENCY'];
+    const fatalTypes = ["DAILY_DRAWDOWN", "OVERALL_DRAWDOWN", "CONSISTENCY"];
     return fatalTypes.includes(type);
   };
 
@@ -48,16 +48,22 @@ export default function AdminViolations() {
 
   // Map backend violation data to frontend format
   const displayViolations = useMemo(() => {
-    return (violationsData || []).map(violation => {
+    return (violationsData || []).map((violation) => {
       // Convert backend enum type to frontend lowercase format
-      const violationType = violation.type?.toLowerCase() || 'unknown';
+      const violationType = violation.type?.toLowerCase() || "unknown";
 
       // Get threshold from challenge if available
       const challenge = violation.tradingAccount?.challenge;
       let threshold = null;
-      if (violationType === 'daily_drawdown' && challenge?.dailyDrawdownPercent) {
+      if (
+        violationType === "daily_drawdown" &&
+        challenge?.dailyDrawdownPercent
+      ) {
         threshold = challenge.dailyDrawdownPercent;
-      } else if (violationType === 'overall_drawdown' && challenge?.overallDrawdownPercent) {
+      } else if (
+        violationType === "overall_drawdown" &&
+        challenge?.overallDrawdownPercent
+      ) {
         threshold = challenge.overallDrawdownPercent;
       }
 
@@ -66,10 +72,13 @@ export default function AdminViolations() {
 
       return {
         id: violation.id,
-        account_id: violation.tradingAccount?.brokerLogin || violation.tradingAccount?.id || 'N/A',
-        trader_id: violation.tradingAccount?.user?.email || 'N/A',
+        account_id:
+          violation.tradingAccount?.brokerLogin ||
+          violation.tradingAccount?.id ||
+          "N/A",
+        trader_id: violation.tradingAccount?.user?.email || "N/A",
         type: violationType,
-        description: violation.message || 'Violation occurred',
+        description: violation.message || "Violation occurred",
         value_at_violation: valueAtViolation,
         threshold: threshold,
         is_fatal: isFatalViolation(violation.type),
@@ -78,97 +87,148 @@ export default function AdminViolations() {
     });
   }, [violationsData]);
 
-  const filteredViolations = displayViolations.filter(violation => {
-    const matchesSearch = violation.trader_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  const filteredViolations = displayViolations.filter((violation) => {
+    const matchesSearch =
+      violation.trader_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       violation.account_id?.includes(searchQuery);
-    const matchesType = typeFilter === 'all' || violation.type === typeFilter;
+    const matchesType = typeFilter === "all" || violation.type === typeFilter;
     return matchesSearch && matchesType;
   });
 
   const violationTypes = {
-    daily_drawdown: { label: t('admin.violations.types.dailyDrawdown'), color: 'text-red-400' },
-    overall_drawdown: { label: t('admin.violations.types.overallDrawdown'), color: 'text-red-400' },
-    news: { label: t('admin.violations.types.newsTrading', { defaultValue: 'News Trading' }), color: 'text-amber-400' },
-    consistency: { label: t('admin.violations.types.consistency', { defaultValue: 'Consistency' }), color: 'text-red-400' },
-    rule_break: { label: t('admin.violations.types.ruleBreak', { defaultValue: 'Rule Break' }), color: 'text-orange-400' },
-    max_trading_days: { label: t('admin.violations.types.maxTradingDays'), color: 'text-amber-400' },
-    weekend_holding: { label: t('admin.violations.types.weekendHolding'), color: 'text-amber-400' },
-    restricted_instrument: { label: t('admin.violations.types.restrictedInstrument'), color: 'text-orange-400' },
-    lot_size: { label: t('admin.violations.types.lotSize'), color: 'text-orange-400' },
-    ea_detected: { label: t('admin.violations.types.eaDetected'), color: 'text-purple-400' },
+    daily_drawdown: {
+      label: t("admin.violations.types.dailyDrawdown"),
+      color: "text-red-400",
+    },
+    overall_drawdown: {
+      label: t("admin.violations.types.overallDrawdown"),
+      color: "text-red-400",
+    },
+    news: {
+      label: t("admin.violations.types.newsTrading", {
+        defaultValue: "News Trading",
+      }),
+      color: "text-amber-400",
+    },
+    consistency: {
+      label: t("admin.violations.types.consistency", {
+        defaultValue: "Consistency",
+      }),
+      color: "text-red-400",
+    },
+    rule_break: {
+      label: t("admin.violations.types.ruleBreak", {
+        defaultValue: "Rule Break",
+      }),
+      color: "text-orange-400",
+    },
+    max_trading_days: {
+      label: t("admin.violations.types.maxTradingDays"),
+      color: "text-amber-400",
+    },
+    weekend_holding: {
+      label: t("admin.violations.types.weekendHolding"),
+      color: "text-amber-400",
+    },
+    restricted_instrument: {
+      label: t("admin.violations.types.restrictedInstrument"),
+      color: "text-orange-400",
+    },
+    lot_size: {
+      label: t("admin.violations.types.lotSize"),
+      color: "text-orange-400",
+    },
+    ea_detected: {
+      label: t("admin.violations.types.eaDetected"),
+      color: "text-purple-400",
+    },
   };
 
   const columns = [
     {
-      header: t('admin.violations.table.account'),
-      accessorKey: 'account_id',
+      header: t("admin.violations.table.account"),
+      accessorKey: "account_id",
       cell: (row) => (
         <div>
           <p className="text-white font-medium">{row.account_id}</p>
-          <p className="text-xs text-slate-400">{row.trader_id}</p>
+          <p className="text-xs text-slate-300">{row.trader_id}</p>
         </div>
-      )
+      ),
     },
     {
-      header: t('admin.violations.table.type'),
-      accessorKey: 'type',
+      header: t("admin.violations.table.type"),
+      accessorKey: "type",
       cell: (row) => (
-        <span className={`font-medium ${violationTypes[row.type]?.color || 'text-slate-400'}`}>
+        <span
+          className={`font-medium ${
+            violationTypes[row.type]?.color || "text-slate-400"
+          }`}
+        >
           {violationTypes[row.type]?.label || row.type}
         </span>
-      )
+      ),
     },
     {
-      header: t('admin.violations.table.description'),
-      accessorKey: 'description',
+      header: t("admin.violations.table.description"),
+      accessorKey: "description",
       cell: (row) => {
         // Try to translate description based on type, fallback to original description
         const descriptionKey = `admin.violations.descriptions.${row.type}`;
         const translated = t(descriptionKey, {
-          threshold: row.threshold || 5
+          threshold: row.threshold || 5,
         });
         // If translation key doesn't exist (returns the key itself), use original description
         return translated === descriptionKey ? row.description : translated;
-      }
+      },
     },
     {
-      header: t('admin.violations.table.value'),
-      accessorKey: 'value_at_violation',
-      cell: (row) => row.value_at_violation ? (
-        <span className="text-red-400">
-          {row.value_at_violation}% / {row.threshold}%
-        </span>
-      ) : '-'
+      header: t("admin.violations.table.value"),
+      accessorKey: "value_at_violation",
+      cell: (row) =>
+        row.value_at_violation ? (
+          <span className="text-red-400">
+            {row.value_at_violation}% / {row.threshold}%
+          </span>
+        ) : (
+          "-"
+        ),
     },
     {
-      header: t('admin.violations.table.fatal'),
-      accessorKey: 'is_fatal',
+      header: t("admin.violations.table.fatal"),
+      accessorKey: "is_fatal",
       cell: (row) => (
-        <span className={`px-2 py-1 rounded text-xs font-medium ${row.is_fatal ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'
-          }`}>
-          {row.is_fatal ? t('admin.violations.severity.fatal') : t('admin.violations.severity.warning')}
+        <span
+          className={`px-2 py-1 rounded text-xs font-medium ${
+            row.is_fatal
+              ? "bg-red-500/20 text-red-400"
+              : "bg-amber-500/20 text-amber-400"
+          }`}
+        >
+          {row.is_fatal
+            ? t("admin.violations.severity.fatal")
+            : t("admin.violations.severity.warning")}
         </span>
-      )
+      ),
     },
     {
-      header: t('admin.violations.table.time'),
-      accessorKey: 'created_date',
+      header: t("admin.violations.table.time"),
+      accessorKey: "created_date",
       cell: (row) => {
         try {
-          if (!row.created_date) return '-';
+          if (!row.created_date) return "-";
           const date = new Date(row.created_date);
-          if (isNaN(date.getTime())) return '-';
-          return format(date, 'MMM d, HH:mm');
+          if (isNaN(date.getTime())) return "-";
+          return format(date, "MMM d, HH:mm");
         } catch (error) {
-          return '-';
+          return "-";
         }
-      }
+      },
     },
   ];
 
-  const fatalCount = displayViolations.filter(v => v.is_fatal).length;
-  const warningCount = displayViolations.filter(v => !v.is_fatal).length;
-  const todayCount = displayViolations.filter(v => {
+  const fatalCount = displayViolations.filter((v) => v.is_fatal).length;
+  const warningCount = displayViolations.filter((v) => !v.is_fatal).length;
+  const todayCount = displayViolations.filter((v) => {
     try {
       if (!v.created_date) return false;
       const date = new Date(v.created_date);
@@ -184,33 +244,37 @@ export default function AdminViolations() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">{t('admin.violations.title')}</h1>
-          <p className="text-sm sm:text-base text-slate-400">{t('admin.violations.subtitle')}</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-white">
+            {t("admin.violations.title")}
+          </h1>
+          <p className="text-sm sm:text-base text-slate-400">
+            {t("admin.violations.subtitle")}
+          </p>
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatsCard
-          title={t('admin.violations.stats.totalViolations')}
+          title={t("admin.violations.stats.totalViolations")}
           value={displayViolations.length}
           icon={AlertTriangle}
           gradient="from-red-500 to-pink-500"
         />
         <StatsCard
-          title={t('admin.violations.stats.fatalViolations')}
+          title={t("admin.violations.stats.fatalViolations")}
           value={fatalCount}
           icon={Shield}
           gradient="from-red-600 to-red-500"
         />
         <StatsCard
-          title={t('admin.violations.stats.warnings')}
+          title={t("admin.violations.stats.warnings")}
           value={warningCount}
           icon={TrendingDown}
           gradient="from-amber-500 to-orange-500"
         />
         <StatsCard
-          title={t('admin.violations.stats.today')}
+          title={t("admin.violations.stats.today")}
           value={todayCount}
           icon={Clock}
           gradient="from-blue-500 to-cyan-500"
@@ -223,7 +287,7 @@ export default function AdminViolations() {
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <Input
-              placeholder={t('admin.violations.searchPlaceholder')}
+              placeholder={t("admin.violations.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm"
@@ -231,15 +295,33 @@ export default function AdminViolations() {
           </div>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
             <SelectTrigger className="w-full sm:w-[200px] bg-slate-800 border-slate-700 text-white text-sm">
-              <SelectValue placeholder={t('admin.violations.filter.violationType')} />
+              <SelectValue
+                placeholder={t("admin.violations.filter.violationType")}
+              />
             </SelectTrigger>
             <SelectContent className="bg-slate-800 border-slate-700 text-white">
-              <SelectItem value="all" className="text-white">{t('admin.violations.filter.allTypes')}</SelectItem>
-              <SelectItem value="daily_drawdown" className="text-white">{t('admin.violations.filter.dailyDrawdown')}</SelectItem>
-              <SelectItem value="overall_drawdown" className="text-white">{t('admin.violations.filter.overallDrawdown')}</SelectItem>
-              <SelectItem value="news" className="text-white">{t('admin.violations.filter.newsTrading')}</SelectItem>
-              <SelectItem value="consistency" className="text-white">{t('admin.violations.filter.consistency', { defaultValue: 'Consistency' })}</SelectItem>
-              <SelectItem value="rule_break" className="text-white">{t('admin.violations.filter.ruleBreak', { defaultValue: 'Rule Break' })}</SelectItem>
+              <SelectItem value="all" className="text-white">
+                {t("admin.violations.filter.allTypes")}
+              </SelectItem>
+              <SelectItem value="daily_drawdown" className="text-white">
+                {t("admin.violations.filter.dailyDrawdown")}
+              </SelectItem>
+              <SelectItem value="overall_drawdown" className="text-white">
+                {t("admin.violations.filter.overallDrawdown")}
+              </SelectItem>
+              <SelectItem value="news" className="text-white">
+                {t("admin.violations.filter.newsTrading")}
+              </SelectItem>
+              <SelectItem value="consistency" className="text-white">
+                {t("admin.violations.filter.consistency", {
+                  defaultValue: "Consistency",
+                })}
+              </SelectItem>
+              <SelectItem value="rule_break" className="text-white">
+                {t("admin.violations.filter.ruleBreak", {
+                  defaultValue: "Rule Break",
+                })}
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -251,7 +333,7 @@ export default function AdminViolations() {
           columns={columns}
           data={filteredViolations}
           isLoading={isLoading}
-          emptyMessage={t('admin.violations.emptyMessage')}
+          emptyMessage={t("admin.violations.emptyMessage")}
         />
       </Card>
     </div>

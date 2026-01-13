@@ -361,8 +361,12 @@ export default function AdminChallenges() {
             </Button>
           </DialogTrigger>
           <DialogContent
-            className="bg-slate-900 border-slate-800 w-[95vw] sm:w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6"
             key={editingChallenge?.id || "new"}
+            className="
+    bg-slate-900 border-slate-800 w-[95vw] sm:w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6
+    [&>button]:text-white
+    [&>button]:hover:text-white
+  "
           >
             <DialogHeader>
               <DialogTitle className="text-white text-base sm:text-lg md:text-xl">
@@ -784,7 +788,13 @@ export default function AdminChallenges() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <DialogContent className="bg-slate-900 border-slate-800 mx-4 sm:mx-auto">
+        <DialogContent
+          className="
+    bg-slate-900 border-slate-800 mx-4 sm:mx-auto
+    [&>button]:text-white
+    [&>button]:hover:text-white
+  "
+        >
           <DialogHeader>
             <DialogTitle className="text-white flex items-center gap-2 text-base sm:text-lg">
               <AlertTriangle className="w-5 h-5 text-amber-400" />
@@ -830,7 +840,13 @@ export default function AdminChallenges() {
 
       {/* Delete Error Dialog */}
       <Dialog open={deleteErrorOpen} onOpenChange={setDeleteErrorOpen}>
-        <DialogContent className="bg-slate-900 border-slate-800 mx-4 sm:mx-auto">
+        <DialogContent
+          className="
+    bg-slate-900 border-slate-800 mx-4 sm:mx-auto
+    [&>button]:text-white
+    [&>button]:hover:text-white
+  "
+        >
           <DialogHeader>
             <DialogTitle className="text-white flex items-center gap-2 text-base sm:text-lg">
               <AlertCircle className="w-5 h-5 text-red-400" />

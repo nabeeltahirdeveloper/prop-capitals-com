@@ -179,7 +179,7 @@ export default function AdminCoupons() {
           </code>
           <button
             onClick={() => copyCode(row.code)}
-            className="text-slate-400 hover:text-white transition-colors"
+            className="text-white transition-colors"
           >
             {copiedCode === row.code ? (
               <Check className="w-4 h-4 text-emerald-400" />
@@ -286,7 +286,13 @@ export default function AdminCoupons() {
               {t("admin.coupons.createCoupon")}
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-slate-900 border-slate-800 w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+          <DialogContent
+            className="
+    bg-slate-900 border-slate-800 w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6 max-h-[90vh] overflow-y-auto
+    [&>button]:text-white
+    [&>button]:hover:text-white
+  "
+          >
             <DialogHeader>
               <DialogTitle className="text-white text-base sm:text-lg">
                 {editingCoupon

@@ -266,7 +266,7 @@ export default function AdminScaling() {
             <TableRow>
               <TableCell
                 colSpan={showActions ? 7 : 6}
-                className="text-center text-slate-400 py-8 text-sm"
+                className="text-center text-slate-200 py-8 text-sm"
               >
                 {t("admin.scaling.emptyMessage")}
               </TableCell>
