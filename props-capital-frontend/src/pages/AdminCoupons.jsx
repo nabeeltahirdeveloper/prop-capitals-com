@@ -240,6 +240,7 @@ export default function AdminCoupons() {
       accessorKey: "id",
       cell: (row) => (
         <div className="flex items-center gap-2">
+          kj
           <Button
             size="sm"
             variant="ghost"
@@ -392,7 +393,12 @@ export default function AdminCoupons() {
                     onChange={(e) =>
                       setFormData({ ...formData, valid_until: e.target.value })
                     }
-                    className="bg-slate-800 border-slate-700 text-white text-sm h-9 sm:h-10"
+                    className="
+    bg-slate-800 border-slate-700 text-white text-sm h-9 sm:h-10
+    [&::-webkit-calendar-picker-indicator]:invert
+    [&::-webkit-calendar-picker-indicator]:opacity-100
+    [&::-webkit-calendar-picker-indicator]:cursor-pointer
+  "
                   />
                 </div>
               </div>
