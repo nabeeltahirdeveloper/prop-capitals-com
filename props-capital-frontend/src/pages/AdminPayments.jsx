@@ -231,7 +231,13 @@ export default function AdminPayments() {
                   {t("admin.payments.actions.refund")}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-slate-900 border-slate-800 w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6">
+              <DialogContent
+                className="
+    bg-slate-900 border-slate-800 w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6
+    [&>button]:text-white
+    [&>button]:hover:text-white
+  "
+              >
                 <DialogHeader>
                   <DialogTitle className="text-white text-base sm:text-lg md:text-xl">
                     {t("admin.payments.refundTitle") || "Refund Payment"}
