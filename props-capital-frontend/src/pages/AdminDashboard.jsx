@@ -294,7 +294,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Revenue Chart */}
-      <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
+      <Card className="bg-slate-900 border-slate-900 p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
           <h3 className="text-base sm:text-lg font-semibold text-white">
             {t("admin.dashboard.chart.title")}
