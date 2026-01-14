@@ -1612,6 +1612,7 @@
       "title": "プラットフォーム設定",
       "subtitle": "設定および連携を構成",
       "saveChanges": "変更を保存",
+      "saveChange": "保存中...",
       "settingsSaved": "設定を保存しました",
       "tabs": {
         "general": "一般",
