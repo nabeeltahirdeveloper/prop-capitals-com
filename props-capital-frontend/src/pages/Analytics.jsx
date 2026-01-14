@@ -320,6 +320,7 @@ export default function Analytics() {
                     <Tooltip
                       contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '8px' }}
                       labelStyle={{ color: '#fff' }}
+                     itemStyle={{ color: '#fff' }}
                     />
                   </RechartsPie>
                 </ResponsiveContainer>

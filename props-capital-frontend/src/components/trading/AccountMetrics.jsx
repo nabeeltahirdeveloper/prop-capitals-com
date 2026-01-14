@@ -537,7 +537,7 @@ export default function AccountMetrics({ account, positions = [], getPriceForPos
               </>
             )}
           </div>
-          <Badge className={`text-sm px-3 py-1 ${isFailed
+          <Badge className={` min-w-[60px] text-xs sm:text-sm px-1 sm:px-3 py-1 ${isFailed
             ? 'bg-red-500/20 text-red-400'
             : isFunded
               ? 'bg-purple-500/20 text-purple-400'
@@ -556,7 +556,7 @@ export default function AccountMetrics({ account, positions = [], getPriceForPos
           <Layers className="w-4 h-4 text-slate-400" />
           <h3 className="text-sm font-semibold text-white">{t('terminal.accountMetrics.phaseProgression')}</h3>
         </div>
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
           {/* Phase 1 */}
           <div className={`flex-1 p-3 rounded-lg border-2 transition-all ${getPhaseStatus('phase1') === 'completed'
             ? 'bg-emerald-500/10 border-emerald-500/50'

@@ -234,10 +234,10 @@ export default function MyAccounts() {
         <Filter className="w-4 h-4 text-slate-400" />
         <Tabs value={filter} onValueChange={setFilter}>
           <TabsList className="bg-slate-900 border border-slate-800">
-            <TabsTrigger value="all" className="data-[state=active]:bg-slate-800">{t('myAccounts.all')} ({accountCounts.all})</TabsTrigger>
-            <TabsTrigger value="challenges" className="data-[state=active]:bg-slate-800">{t('myAccounts.active')}</TabsTrigger>
-            <TabsTrigger value="funded" className="data-[state=active]:bg-slate-800">{t('myAccounts.funded')}</TabsTrigger>
-            <TabsTrigger value="failed" className="data-[state=active]:bg-slate-800">{t('myAccounts.failed')}</TabsTrigger>
+            <TabsTrigger value="all" className="data-[state=active]:bg-slate-800 data-[state=active]:text-white ">{t('myAccounts.all')} ({accountCounts.all})</TabsTrigger>
+            <TabsTrigger value="challenges" className="data-[state=active]:bg-slate-800 data-[state=active]:text-white ">{t('myAccounts.active')}</TabsTrigger>
+            <TabsTrigger value="funded" className="data-[state=active]:bg-slate-800 data-[state=active]:text-white ">{t('myAccounts.funded')}</TabsTrigger>
+            <TabsTrigger value="failed" className="data-[state=active]:bg-slate-800 data-[state=active]:text-white ">{t('myAccounts.failed')}</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -272,7 +272,7 @@ export default function MyAccounts() {
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-xl font-bold text-white">${account.initial_balance?.toLocaleString()}</span>
-                        <Badge variant="outline" className="text-xs">{account.platform}</Badge>
+                        <Badge variant="default" className="text-xs">{account.platform}</Badge>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-slate-400">
                         <span>#{account.account_number}</span>
@@ -364,7 +364,7 @@ export default function MyAccounts() {
                   {/* Actions */}
                   <div className="space-y-2">
                     <Link to={`${createPageUrl('TradingTerminal')}?accountId=${account.id}`}>
-                      <Button variant="outline" className="w-full border-slate-700 hover:bg-slate-800">
+                      <Button variant="outline" className="w-full border-slate-700 hover:bg-slate-800 hover:text-white">
                         <Eye className="w-4 h-4 mr-2" />
                         {t('myAccounts.openDashboard')}
                       </Button>

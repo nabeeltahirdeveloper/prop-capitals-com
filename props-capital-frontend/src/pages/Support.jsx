@@ -160,7 +160,8 @@ export default function Support() {
               {t('support.newTicket')}
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-slate-900 border-slate-800">
+          
+          <DialogContent className="bg-slate-900 border-slate-800 text-white">
             <DialogHeader>
               <DialogTitle className="text-white">{t('support.createTicket')}</DialogTitle>
             </DialogHeader>

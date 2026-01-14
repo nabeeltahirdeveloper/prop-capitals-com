@@ -559,7 +559,7 @@ export default function TraderPayouts() {
             <p className="text-slate-400 text-sm">{t('payouts.needHelpDesc')}</p>
           </div>
           <Link to={createPageUrl('Support')}>
-            <Button variant="outline" className="border-slate-700 bg-slate-800/50 text-white hover:bg-slate-700">
+            <Button variant="outline" className="border-slate-700 bg-slate-800/50 text-white hover:bg-slate-700 hover:text-white">
               {t('payouts.contactSupport')}
               <ChevronRight className="w-4 h-4 ml-2" />
             </Button>

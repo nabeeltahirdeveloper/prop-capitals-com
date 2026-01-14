@@ -535,16 +535,16 @@ export default function TraderDashboard() {
         {/* Notifications */}
         <Card className="bg-slate-900 border-slate-800 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+            <h3 className="sm:text-lg font-semibold text-white flex items-center gap-2">
               <Bell className="w-5 h-5 text-emerald-400" />
               {t('dashboard.notifications.title')}
             </h3>
             <div className="flex items-center gap-2">
-              <Badge className="bg-slate-700/50 text-slate-300 border-slate-600 pointer-events-none">
+              <Badge className="bg-slate-700/50 text-slate-300 border-slate-600 pointer-events-none sm:px-2 px-1">
                 {notifications.length} {notifications.length === 1 ? t('dashboard.notifications.notification') : t('dashboard.notifications.notifications')}
               </Badge>
               {notifications.filter(n => !n.read).length > 0 && (
-                <Badge className="bg-emerald-500/20 text-emerald-400 pointer-events-none">
+                <Badge className="bg-emerald-500/20 text-emerald-400 pointer-events-none sm:px-2 px-1">
                   {notifications.filter(n => !n.read).length} {t('notifications.unread')}
                 </Badge>
               )}
@@ -618,10 +618,10 @@ export default function TraderDashboard() {
       {activeAccounts.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-white">{t('dashboard.rules.title')}</h2>
+            <h2 className="text-md sm:text-lg font-semibold text-white">{t('dashboard.rules.title')}</h2>
             {activeAccounts.length > 1 && (
               <Select value={selectedAccountForRules} onValueChange={setSelectedAccountForRules}>
-                <SelectTrigger className="w-[280px] bg-slate-800 border-slate-700 text-white">
+                <SelectTrigger className="w-[150px] sm:w-[280px] bg-slate-800 border-slate-700 text-white">
                   <SelectValue placeholder={t('dashboard.rules.selectAccount')} />
                 </SelectTrigger>
                 <SelectContent className="bg-slate-800 border-slate-700 text-white [&>svg]:text-white">

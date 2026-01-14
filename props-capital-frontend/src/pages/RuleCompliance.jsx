@@ -298,7 +298,8 @@ export default function RuleCompliance() {
           <SelectTrigger className="w-[280px] bg-slate-900 border-slate-800 text-white">
             <SelectValue placeholder={t('ruleCompliance.selectAccount')} />
           </SelectTrigger>
-          <SelectContent className="bg-slate-900 border-slate-800 text-white">
+          <SelectContent className="bg-slate-800 border-slate-700 text-white [&>svg]:text-white">
+
             {accounts.map((acc) => {
               const accChallenge = acc.challenge || {};
               const accInitialBalance = acc.initialBalance || accChallenge.accountSize || 0;
@@ -317,7 +318,13 @@ export default function RuleCompliance() {
                 'failed': t('ruleCompliance.failed')
               };
               return (
-                <SelectItem key={acc.id} value={acc.id} className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                <SelectItem key={acc.id} value={acc.id} className=" text-white
+                          hover:text-white
+                          focus:text-white
+                          data-[highlighted]:text-white
+                          data-[state=checked]:text-white
+                          hover:bg-slate-700
+                          focus:bg-slate-700">
                   <div className="flex items-center gap-2">
                     <span className="font-medium">${accInitialBalance?.toLocaleString()}</span>
                     <span className="text-slate-400">•</span>

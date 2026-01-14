@@ -216,7 +216,7 @@ export default function AccountDetails() {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">{t('accountDetails.title')}</h1>
+            <h1 className="text-base sm:text-2xl font-bold text-white">{t('accountDetails.title')}</h1>
             <p className="text-slate-400">{t('accountDetails.subtitle')}</p>
           </div>
         </div>
@@ -244,11 +244,11 @@ export default function AccountDetails() {
           <div className="flex items-center gap-4">
             <Link to={createPageUrl('MyAccounts')}>
               <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeft className="w-5 h-5 hover:text-black" />
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-white">{t('accountDetails.title')}</h1>
+              <h1 className="text-base sm:text-2xl font-bold text-white">{t('accountDetails.title')}</h1>
               <p className="text-slate-400">{t('accountDetails.selectAccountDesc')}</p>
             </div>
           </div>
@@ -534,17 +534,17 @@ export default function AccountDetails() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex items-center gap-4">
           <Link to={createPageUrl('MyAccounts')}>
-            <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
-              <ArrowLeft className="w-5 h-5" />
+            <Button variant="ghost" size="icon" className="text-slate-400">
+              <ArrowLeft className="w-5 h-5 hover:text-black" />
             </Button>
           </Link>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-white">${account.initial_balance?.toLocaleString()} {t('accountDetails.account')}</h1>
+              <h1 className="text-base sm:text-2xl font-bold text-white">${account.initial_balance?.toLocaleString()} {t('accountDetails.account')}</h1>
               <StatusBadge status={account.current_phase} />
               <StatusBadge status={account.status} />
             </div>
-            <div className="flex items-center gap-4 text-sm text-slate-400 mt-1">
+            <div className="flex items-center gap-4 text-[10px] sm:text-sm text-slate-400 mt-1">
               <span>{account.platform}</span>
               <span>•</span>
               <span className="flex items-center gap-1">
@@ -573,7 +573,7 @@ export default function AccountDetails() {
               <SelectValue placeholder={t('accountDetails.selectAccount')} />
             </div>
           </SelectTrigger>
-          <SelectContent className="bg-slate-900 border-slate-800 text-white">
+          <SelectContent className="bg-slate-800 border-slate-700 text-white [&>svg]:text-white">
             {displayAccounts.map((acc) => {
               const phaseTranslations = {
                 'phase1': t('accountDetails.phase1'),
@@ -585,7 +585,13 @@ export default function AccountDetails() {
                 <SelectItem
                   key={acc.id}
                   value={acc.id}
-                  className="text-white hover:bg-slate-700 focus:bg-slate-700"
+                  className=" text-white
+                          hover:text-white
+                          focus:text-white
+                          data-[highlighted]:text-white
+                          data-[state=checked]:text-white
+                          hover:bg-slate-700
+                          focus:bg-slate-700"
                 >
                   <div className="flex items-center gap-2">
                     <span className="font-medium">${acc.initial_balance?.toLocaleString()}</span>
@@ -635,21 +641,21 @@ export default function AccountDetails() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             <div>
               <p className="text-sm text-slate-400 mb-1">{t('accountDetails.balance')}</p>
-              <p className="text-xl sm:text-2xl font-bold text-white">${account.current_balance?.toLocaleString()}</p>
+              <p className="text-base sm:text-2xl font-bold text-white">${account.current_balance?.toLocaleString()}</p>
             </div>
             <div>
               <p className="text-sm text-slate-400 mb-1">{t('accountDetails.equity')}</p>
-              <p className="text-2xl font-bold text-white">${account.current_equity?.toLocaleString()}</p>
+              <p className="text-base sm:text-2xl font-bold text-white">${account.current_equity?.toLocaleString()}</p>
             </div>
             <div>
               <p className="text-sm text-slate-400 mb-1">{t('accountDetails.floatingPL')}</p>
-              <p className={`text-2xl font-bold ${account.floating_pl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              <p className={`text-base sm:text-2xl font-bold  ${account.floating_pl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                 {account.floating_pl >= 0 ? '+' : ''}${account.floating_pl}
               </p>
             </div>
             <div>
               <p className="text-sm text-slate-400 mb-1">{t('accountDetails.totalProfit')}</p>
-              <p className={`text-2xl font-bold ${account.current_profit_percent >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              <p className={`text-base sm:text-2xl font-bold  ${account.current_profit_percent >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                 +${(account.current_balance - account.initial_balance).toLocaleString()}
               </p>
             </div>
@@ -719,19 +725,19 @@ export default function AccountDetails() {
         <h3 className="text-lg font-semibold text-white mb-6">{t('accountDetails.performanceStatistics')}</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           <div className="text-center p-4 bg-slate-800/50 rounded-xl">
-            <p className="text-2xl sm:text-3xl font-bold text-emerald-400">{stats.winRate.toFixed(2)}%</p>
+            <p className="text-xl sm:text-3xl font-bold text-emerald-400">{stats.winRate.toFixed(2)}%</p>
             <p className="text-sm text-slate-400">{t('accountDetails.winRate')}</p>
           </div>
           <div className="text-center p-4 bg-slate-800/50 rounded-xl">
-            <p className="text-3xl font-bold text-cyan-400">{stats.avgRR.toFixed(2)}</p>
+            <p className="text-lg sm:text-3xl font-bold text-cyan-400">{stats.avgRR.toFixed(2)}</p>
             <p className="text-sm text-slate-400">{t('accountDetails.avgRiskReward')}</p>
           </div>
           <div className="text-center p-4 bg-slate-800/50 rounded-xl">
-            <p className="text-3xl font-bold text-white">{stats.totalTrades}</p>
+            <p className="text-lg sm:text-3xl font-bold text-white">{stats.totalTrades}</p>
             <p className="text-sm text-slate-400">{t('accountDetails.totalTrades')}</p>
           </div>
           <div className="text-center p-4 bg-slate-800/50 rounded-xl">
-            <p className="text-3xl font-bold text-purple-400">
+            <p className="text-lg sm:text-3xl font-bold text-purple-400">
               {stats.profitFactor > 0
                 ? stats.profitFactor.toFixed(2)
                 : '0.00'}
@@ -739,23 +745,23 @@ export default function AccountDetails() {
             <p className="text-sm text-slate-400">{t('accountDetails.profitFactor')}</p>
           </div>
           <div className="text-center p-4 bg-slate-800/50 rounded-xl">
-            <p className="text-3xl font-bold text-emerald-400">
+            <p className="text-lg sm:text-3xl font-bold text-emerald-400">
               {stats.largestWin >= 0 ? '+' : ''}${Math.abs(stats.largestWin).toFixed(2)}
             </p>
             <p className="text-sm text-slate-400">{t('accountDetails.largestWin')}</p>
           </div>
           <div className="text-center p-4 bg-slate-800/50 rounded-xl">
-            <p className="text-3xl font-bold text-red-400">
+            <p className="text-lg sm:text-3xl font-bold text-red-400">
               -${Math.abs(stats.largestLoss).toFixed(2)}
             </p>
             <p className="text-sm text-slate-400">{t('accountDetails.largestLoss')}</p>
           </div>
           <div className="text-center p-4 bg-slate-800/50 rounded-xl">
-            <p className="text-3xl font-bold text-white">{stats.avgTradeSize.toFixed(2)}</p>
+            <p className="text-lg sm:text-3xl font-bold text-white">{stats.avgTradeSize.toFixed(2)}</p>
             <p className="text-sm text-slate-400">{t('accountDetails.avgLotSize')}</p>
           </div>
           <div className="text-center p-4 bg-slate-800/50 rounded-xl">
-            <p className="text-3xl font-bold text-white">{stats.avgDuration}</p>
+            <p className="text-lg sm:text-3xl font-bold text-white">{stats.avgDuration}</p>
             <p className="text-sm text-slate-400">{t('accountDetails.avgDuration')}</p>
           </div>
         </div>
@@ -777,7 +783,7 @@ export default function AccountDetails() {
         />
         <div className="mt-4 flex justify-center">
           <Link to={createPageUrl('TradeHistory')}>
-            <Button variant="outline" className="border-slate-700 bg-slate-800/50 text-white hover:bg-slate-700">
+            <Button variant="outline" className="border-slate-700 bg-slate-800/50 text-white hover:bg-slate-700 hover:text-white">
               {t('accountDetails.viewFullTradeHistory')}
               <ExternalLink className="w-4 h-4 ml-2" />
             </Button>
