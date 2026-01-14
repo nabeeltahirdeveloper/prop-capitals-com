@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getCurrentUser } from '@/api/auth';
+import React, { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getCurrentUser } from "@/api/auth";
 import {
   updateProfile,
   changePassword,
   updateNotificationPreferences,
-} from '@/api/profile';
-import { useTranslation } from '../contexts/LanguageContext';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from "@/api/profile";
+import { useTranslation } from "../contexts/LanguageContext";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   User,
   Mail,
@@ -32,25 +32,33 @@ import {
   Eye,
   EyeOff,
   CheckCircle,
-} from 'lucide-react';
+} from "lucide-react";
 
 export default function AdminProfile() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [saved, setSaved] = useState(false);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
-  const [showPassword, setShowPassword] = useState({ current: false, new: false, confirm: false });
+  const [showPassword, setShowPassword] = useState({
+    current: false,
+    new: false,
+    confirm: false,
+  });
 
   // Password change form
   const [passwordForm, setPasswordForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
   // Fetch user data from /auth/me
-  const { data: user, isLoading, error } = useQuery({
-    queryKey: ['user', 'me'],
+  const {
+    data: user,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["user", "me"],
     queryFn: getCurrentUser,
     retry: false,
     refetchInterval: 30000,
@@ -58,12 +66,12 @@ export default function AdminProfile() {
 
   // Profile form data
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    phone: '',
-    address: '',
-    city: '',
-    country: '',
+    firstName: "",
+    lastName: "",
+    phone: "",
+    address: "",
+    city: "",
+    country: "",
   });
 
   // Notification preferences
@@ -80,12 +88,12 @@ export default function AdminProfile() {
   useEffect(() => {
     if (user) {
       setFormData({
-        firstName: user.profile?.firstName || '',
-        lastName: user.profile?.lastName || '',
-        phone: user.profile?.phone || '',
-        address: user.profile?.address || '',
-        city: user.profile?.city || '',
-        country: user.profile?.country || '',
+        firstName: user.profile?.firstName || "",
+        lastName: user.profile?.lastName || "",
+        phone: user.profile?.phone || "",
+        address: user.profile?.address || "",
+        city: user.profile?.city || "",
+        country: user.profile?.country || "",
       });
 
       if (user.notificationPreference) {
@@ -98,26 +106,31 @@ export default function AdminProfile() {
   const updateProfileMutation = useMutation({
     mutationFn: updateProfile,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+      queryClient.invalidateQueries({ queryKey: ["user", "me"] });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     },
     onError: (error) => {
-      console.error('Failed to save profile:', error);
+      console.error("Failed to save profile:", error);
     },
   });
 
   // Change password mutation
   const changePasswordMutation = useMutation({
-    mutationFn: ({ currentPassword, newPassword }) => changePassword(currentPassword, newPassword),
+    mutationFn: ({ currentPassword, newPassword }) =>
+      changePassword(currentPassword, newPassword),
     onSuccess: () => {
       setIsPasswordDialogOpen(false);
-      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      alert(t('profile.passwordChanged') || 'Password changed successfully');
+      setPasswordForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      alert(t("profile.passwordChanged") || "Password changed successfully");
     },
     onError: (error) => {
-      console.error('Failed to change password:', error);
-      alert(error.response?.data?.message || 'Failed to change password');
+      console.error("Failed to change password:", error);
+      alert(error.response?.data?.message || "Failed to change password");
     },
   });
 
@@ -125,7 +138,7 @@ export default function AdminProfile() {
   const updateNotificationPrefsMutation = useMutation({
     mutationFn: updateNotificationPreferences,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+      queryClient.invalidateQueries({ queryKey: ["user", "me"] });
     },
   });
 
@@ -135,11 +148,14 @@ export default function AdminProfile() {
 
   const handlePasswordChange = () => {
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      alert(t('profile.passwordsDoNotMatch') || 'Passwords do not match');
+      alert(t("profile.passwordsDoNotMatch") || "Passwords do not match");
       return;
     }
     if (passwordForm.newPassword.length < 8) {
-      alert(t('profile.passwordTooShort') || 'Password must be at least 8 characters');
+      alert(
+        t("profile.passwordTooShort") ||
+          "Password must be at least 8 characters"
+      );
       return;
     }
     changePasswordMutation.mutate({
@@ -166,24 +182,36 @@ export default function AdminProfile() {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg">
-          {t('profile.loadError')}
+          {t("profile.loadError")}
         </div>
       </div>
     );
   }
 
   const displayName = user?.profile
-    ? `${user.profile.firstName || ''} ${user.profile.lastName || ''}`.trim() || user?.email || t('profile.user')
-    : user?.email || t('profile.user');
-  const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'U';
+    ? `${user.profile.firstName || ""} ${user.profile.lastName || ""}`.trim() ||
+      user?.email ||
+      t("profile.user")
+    : user?.email || t("profile.user");
+  const initials =
+    displayName
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .substring(0, 2) || "U";
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">{t('profile.title')}</h1>
-          <p className="text-sm sm:text-base text-slate-400">{t('profile.subtitle')}</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-white">
+            {t("profile.title")}
+          </h1>
+          <p className="text-sm sm:text-base text-slate-400">
+            {t("profile.subtitle")}
+          </p>
         </div>
       </div>
 
@@ -194,11 +222,13 @@ export default function AdminProfile() {
             {initials}
           </div>
           <div className="min-w-0">
-            <h2 className="text-lg sm:text-xl font-bold text-white truncate">{displayName}</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-white truncate">
+              {displayName}
+            </h2>
             <p className="text-sm text-slate-400 truncate">{user?.email}</p>
             <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
               <span className="px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs font-medium bg-amber-500/20 text-amber-400">
-                {t('profile.admin')}
+                {t("profile.admin")}
               </span>
             </div>
           </div>
@@ -207,83 +237,120 @@ export default function AdminProfile() {
 
       <Tabs defaultValue="personal" className="space-y-4 sm:space-y-6">
         <TabsList className="bg-slate-900 border border-slate-800 h-auto p-1 grid grid-cols-1 sm:grid-cols-3 gap-1">
-          <TabsTrigger value="personal" className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-slate-800 text-slate-400 data-[state=active]:text-white text-xs sm:text-sm">
+          <TabsTrigger
+            value="personal"
+            className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-slate-800 text-slate-400 data-[state=active]:text-white text-xs sm:text-sm"
+          >
             <User className="w-4 h-4 mr-2 flex-shrink-0" />
-            {t('profile.personalInfo')}
+            {t("profile.personalInfo")}
           </TabsTrigger>
-          <TabsTrigger value="security" className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-slate-800 text-slate-400 data-[state=active]:text-white text-xs sm:text-sm">
+          <TabsTrigger
+            value="security"
+            className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-slate-800 text-slate-400 data-[state=active]:text-white text-xs sm:text-sm"
+          >
             <Shield className="w-4 h-4 mr-2 flex-shrink-0" />
-            {t('profile.security')}
+            {t("profile.security")}
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-slate-800 text-slate-400 data-[state=active]:text-white text-xs sm:text-sm">
+          <TabsTrigger
+            value="notifications"
+            className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-slate-800 text-slate-400 data-[state=active]:text-white text-xs sm:text-sm"
+          >
             <Bell className="w-4 h-4 mr-2 flex-shrink-0" />
-            {t('profile.notifications')}
+            {t("profile.notifications")}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="personal">
           <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-white mb-4 sm:mb-6">{t('profile.personalInformation')}</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-white mb-4 sm:mb-6">
+              {t("profile.personalInformation")}
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-slate-300 text-xs sm:text-sm">{t('profile.firstName')}</Label>
+                <Label className="text-slate-300 text-xs sm:text-sm">
+                  {t("profile.firstName")}
+                </Label>
                 <Input
                   value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, firstName: e.target.value })
+                  }
                   className="bg-slate-800 border-slate-700 text-white text-sm"
-                  placeholder={t('profile.firstNamePlaceholder')}
+                  placeholder={t("profile.firstNamePlaceholder")}
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-slate-300 text-xs sm:text-sm">{t('profile.lastName')}</Label>
+                <Label className="text-slate-300 text-xs sm:text-sm">
+                  {t("profile.lastName")}
+                </Label>
                 <Input
                   value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastName: e.target.value })
+                  }
                   className="bg-slate-800 border-slate-700 text-white text-sm"
-                  placeholder={t('profile.lastNamePlaceholder')}
+                  placeholder={t("profile.lastNamePlaceholder")}
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-slate-300 text-xs sm:text-sm">{t('profile.email')}</Label>
+                <Label className="text-slate-300 text-xs sm:text-sm">
+                  {t("profile.email")}
+                </Label>
                 <Input
-                  value={user?.email || ''}
+                  value={user?.email || ""}
                   disabled
                   className="bg-slate-800 border-slate-700 text-white opacity-50 text-sm"
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-slate-300 text-xs sm:text-sm">{t('profile.phoneNumber')}</Label>
+                <Label className="text-slate-300 text-xs sm:text-sm">
+                  {t("profile.phoneNumber")}
+                </Label>
                 <Input
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder={t('profile.phonePlaceholder')}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
+                  placeholder={t("profile.phonePlaceholder")}
                   className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm"
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-slate-300 text-xs sm:text-sm">{t('profile.country')}</Label>
+                <Label className="text-slate-300 text-xs sm:text-sm">
+                  {t("profile.country")}
+                </Label>
                 <Input
                   value={formData.country}
-                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                  placeholder={t('profile.countryPlaceholder')}
+                  onChange={(e) =>
+                    setFormData({ ...formData, country: e.target.value })
+                  }
+                  placeholder={t("profile.countryPlaceholder")}
                   className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm"
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-slate-300 text-xs sm:text-sm">{t('profile.city')}</Label>
+                <Label className="text-slate-300 text-xs sm:text-sm">
+                  {t("profile.city")}
+                </Label>
                 <Input
                   value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                  placeholder={t('profile.cityPlaceholder')}
+                  onChange={(e) =>
+                    setFormData({ ...formData, city: e.target.value })
+                  }
+                  placeholder={t("profile.cityPlaceholder")}
                   className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm"
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2 md:col-span-2">
-                <Label className="text-slate-300 text-xs sm:text-sm">{t('profile.address')}</Label>
+                <Label className="text-slate-300 text-xs sm:text-sm">
+                  {t("profile.address")}
+                </Label>
                 <Input
                   value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  placeholder={t('profile.addressPlaceholder')}
+                  onChange={(e) =>
+                    setFormData({ ...formData, address: e.target.value })
+                  }
+                  placeholder={t("profile.addressPlaceholder")}
                   className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm"
                 />
               </div>
@@ -297,19 +364,19 @@ export default function AdminProfile() {
                 {updateProfileMutation.isPending ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {t('profile.saving')}
+                    {t("profile.saving")}
                   </>
                 ) : (
                   <>
                     <Save className="w-4 h-4 mr-2" />
-                    {t('profile.saveChanges')}
+                    {t("profile.saveChanges")}
                   </>
                 )}
               </Button>
               {saved && (
                 <span className="text-emerald-400 flex items-center justify-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4" />
-                  {t('profile.changesSaved')}
+                  {t("profile.changesSaved")}
                 </span>
               )}
             </div>
@@ -318,7 +385,9 @@ export default function AdminProfile() {
 
         <TabsContent value="security">
           <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-white mb-4 sm:mb-6">{t('profile.securitySettings')}</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-white mb-4 sm:mb-6">
+              {t("profile.securitySettings")}
+            </h3>
             <div className="space-y-3 sm:space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-slate-800/50 rounded-lg gap-3">
                 <div className="flex items-center gap-3 sm:gap-4">
@@ -326,72 +395,132 @@ export default function AdminProfile() {
                     <Key className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-white font-medium text-sm sm:text-base">{t('profile.password')}</p>
-                    <p className="text-xs sm:text-sm text-slate-400 leading-tight">{t('profile.changePasswordDesc')}</p>
+                    <p className="text-white  font-medium text-sm sm:text-base">
+                      {t("profile.password")}
+                    </p>
+                    <p className="text-xs sm:text-sm text-slate-400 leading-tight">
+                      {t("profile.changePasswordDesc")}
+                    </p>
                   </div>
                 </div>
-                <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+                <Dialog
+                  open={isPasswordDialogOpen}
+                  onOpenChange={setIsPasswordDialogOpen}
+                >
                   <DialogTrigger asChild>
-                    <Button variant="outline" className="w-full sm:w-auto border-slate-600 bg-slate-800/50 text-white hover:bg-slate-700 text-xs sm:text-sm h-9">
-                      {t('profile.changePassword')}
+                    <Button
+                      variant="outline"
+                      className="w-full sm:w-auto border-slate-600 bg-slate-800/50 text-white hover:text-white hover:bg-slate-700  text-xs sm:text-sm h-9"
+                    >
+                      {t("profile.changePassword")}
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="bg-slate-900 border-slate-800 w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6">
                     <DialogHeader>
-                      <DialogTitle className="text-white text-base sm:text-lg">{t('profile.changePassword')}</DialogTitle>
+                      <DialogTitle className="text-white text-base sm:text-lg">
+                        {t("profile.changePassword")}
+                      </DialogTitle>
                     </DialogHeader>
                     <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
                       <div className="space-y-1.5 sm:space-y-2">
-                        <Label className="text-slate-300 text-xs sm:text-sm">{t('profile.currentPassword')}</Label>
+                        <Label className="text-slate-300 text-xs sm:text-sm">
+                          {t("profile.currentPassword")}
+                        </Label>
                         <div className="relative">
                           <Input
-                            type={showPassword.current ? 'text' : 'password'}
+                            type={showPassword.current ? "text" : "password"}
                             value={passwordForm.currentPassword}
-                            onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
+                            onChange={(e) =>
+                              setPasswordForm({
+                                ...passwordForm,
+                                currentPassword: e.target.value,
+                              })
+                            }
                             className="bg-slate-800 border-slate-700 text-white pr-10 text-sm h-9 sm:h-10"
                           />
                           <button
                             type="button"
-                            onClick={() => setShowPassword({ ...showPassword, current: !showPassword.current })}
+                            onClick={() =>
+                              setShowPassword({
+                                ...showPassword,
+                                current: !showPassword.current,
+                              })
+                            }
                             className="absolute right-2 top-2.5 sm:top-3 text-slate-400"
                           >
-                            {showPassword.current ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            {showPassword.current ? (
+                              <EyeOff className="w-4 h-4" />
+                            ) : (
+                              <Eye className="w-4 h-4" />
+                            )}
                           </button>
                         </div>
                       </div>
                       <div className="space-y-1.5 sm:space-y-2">
-                        <Label className="text-slate-300 text-xs sm:text-sm">{t('profile.newPassword')}</Label>
+                        <Label className="text-slate-300 text-xs sm:text-sm">
+                          {t("profile.newPassword")}
+                        </Label>
                         <div className="relative">
                           <Input
-                            type={showPassword.new ? 'text' : 'password'}
+                            type={showPassword.new ? "text" : "password"}
                             value={passwordForm.newPassword}
-                            onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                            onChange={(e) =>
+                              setPasswordForm({
+                                ...passwordForm,
+                                newPassword: e.target.value,
+                              })
+                            }
                             className="bg-slate-800 border-slate-700 text-white pr-10 text-sm h-9 sm:h-10"
                           />
                           <button
                             type="button"
-                            onClick={() => setShowPassword({ ...showPassword, new: !showPassword.new })}
+                            onClick={() =>
+                              setShowPassword({
+                                ...showPassword,
+                                new: !showPassword.new,
+                              })
+                            }
                             className="absolute right-2 top-2.5 sm:top-3 text-slate-400"
                           >
-                            {showPassword.new ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            {showPassword.new ? (
+                              <EyeOff className="w-4 h-4" />
+                            ) : (
+                              <Eye className="w-4 h-4" />
+                            )}
                           </button>
                         </div>
                       </div>
                       <div className="space-y-1.5 sm:space-y-2">
-                        <Label className="text-slate-300 text-xs sm:text-sm">{t('profile.confirmPassword')}</Label>
+                        <Label className="text-slate-300 text-xs sm:text-sm">
+                          {t("profile.confirmPassword")}
+                        </Label>
                         <div className="relative">
                           <Input
-                            type={showPassword.confirm ? 'text' : 'password'}
+                            type={showPassword.confirm ? "text" : "password"}
                             value={passwordForm.confirmPassword}
-                            onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                            onChange={(e) =>
+                              setPasswordForm({
+                                ...passwordForm,
+                                confirmPassword: e.target.value,
+                              })
+                            }
                             className="bg-slate-800 border-slate-700 text-white pr-10 text-sm h-9 sm:h-10"
                           />
                           <button
                             type="button"
-                            onClick={() => setShowPassword({ ...showPassword, confirm: !showPassword.confirm })}
+                            onClick={() =>
+                              setShowPassword({
+                                ...showPassword,
+                                confirm: !showPassword.confirm,
+                              })
+                            }
                             className="absolute right-2 top-2.5 sm:top-3 text-slate-400"
                           >
-                            {showPassword.confirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            {showPassword.confirm ? (
+                              <EyeOff className="w-4 h-4" />
+                            ) : (
+                              <Eye className="w-4 h-4" />
+                            )}
                           </button>
                         </div>
                       </div>
@@ -403,10 +532,10 @@ export default function AdminProfile() {
                         {changePasswordMutation.isPending ? (
                           <>
                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            {t('profile.changing')}
+                            {t("profile.changing")}
                           </>
                         ) : (
-                          t('profile.changePassword')
+                          t("profile.changePassword")
                         )}
                       </Button>
                     </div>
@@ -419,27 +548,64 @@ export default function AdminProfile() {
 
         <TabsContent value="notifications">
           <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-white mb-4 sm:mb-6">{t('profile.notificationPreferences')}</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-white mb-4 sm:mb-6">
+              {t("profile.notificationPreferences")}
+            </h3>
             <div className="space-y-3 sm:space-y-4">
               {[
-                { key: 'tradeNotifications', title: t('profile.tradeNotifications'), desc: t('profile.tradeNotificationsDesc') },
-                { key: 'accountAlerts', title: t('profile.accountAlerts'), desc: t('profile.accountAlertsDesc') },
-                { key: 'payoutUpdates', title: t('profile.payoutUpdates'), desc: t('profile.payoutUpdatesDesc') },
-                { key: 'challengeUpdates', title: t('profile.challengeUpdates'), desc: t('profile.challengeUpdatesDesc') },
-                { key: 'marketingEmails', title: t('profile.marketingEmails'), desc: t('profile.marketingEmailsDesc') },
+                {
+                  key: "tradeNotifications",
+                  title: t("profile.tradeNotifications"),
+                  desc: t("profile.tradeNotificationsDesc"),
+                },
+                {
+                  key: "accountAlerts",
+                  title: t("profile.accountAlerts"),
+                  desc: t("profile.accountAlertsDesc"),
+                },
+                {
+                  key: "payoutUpdates",
+                  title: t("profile.payoutUpdates"),
+                  desc: t("profile.payoutUpdatesDesc"),
+                },
+                {
+                  key: "challengeUpdates",
+                  title: t("profile.challengeUpdates"),
+                  desc: t("profile.challengeUpdatesDesc"),
+                },
+                {
+                  key: "marketingEmails",
+                  title: t("profile.marketingEmails"),
+                  desc: t("profile.marketingEmailsDesc"),
+                },
               ].map((item) => (
-                <div key={item.key} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-slate-800/50 rounded-lg gap-3">
+                <div
+                  key={item.key}
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-slate-800/50 rounded-lg gap-3"
+                >
                   <div className="min-w-0">
-                    <p className="text-white font-medium text-sm sm:text-base">{item.title}</p>
-                    <p className="text-xs sm:text-sm text-slate-400 leading-tight">{item.desc}</p>
+                    <p className="text-white font-medium text-sm sm:text-base">
+                      {item.title}
+                    </p>
+                    <p className="text-xs sm:text-sm text-slate-400 leading-tight">
+                      {item.desc}
+                    </p>
                   </div>
                   <div
-                    className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${notificationPrefs[item.key] ? 'bg-amber-500' : 'bg-slate-600'
-                      }`}
+                    className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
+                      notificationPrefs[item.key]
+                        ? "bg-amber-500"
+                        : "bg-slate-600"
+                    }`}
                     onClick={() => handleNotificationToggle(item.key)}
                   >
-                    <div className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full transition-all ${notificationPrefs[item.key] ? 'right-0.5 sm:right-1' : 'left-0.5 sm:left-1'
-                      }`} />
+                    <div
+                      className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                        notificationPrefs[item.key]
+                          ? "right-0.5 sm:right-1"
+                          : "left-0.5 sm:left-1"
+                      }`}
+                    />
                   </div>
                 </div>
               ))}
@@ -450,4 +616,3 @@ export default function AdminProfile() {
     </div>
   );
 }
-

@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 // TODO: Replace with scaling API when available
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useTranslation } from '../contexts/LanguageContext';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "../contexts/LanguageContext";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -19,30 +19,25 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Zap,
   CheckCircle,
   XCircle,
   Clock,
   ArrowUpRight,
-  TrendingUp
-} from 'lucide-react';
+  TrendingUp,
+} from "lucide-react";
 
 export default function AdminScaling() {
   const { t } = useTranslation();
   const [selectedRequest, setSelectedRequest] = useState(null);
-  const [notes, setNotes] = useState('');
+  const [notes, setNotes] = useState("");
   const queryClient = useQueryClient();
 
   const { data: requests = [], isLoading } = useQuery({
-    queryKey: ['scaling-requests'],
+    queryKey: ["scaling-requests"],
     queryFn: () => Promise.resolve([]), // TODO: Replace with scaling requests API
   });
 
@@ -53,10 +48,10 @@ export default function AdminScaling() {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['scaling-requests'] });
+      queryClient.invalidateQueries({ queryKey: ["scaling-requests"] });
       setSelectedRequest(null);
-      setNotes('');
-    }
+      setNotes("");
+    },
   });
 
   const processMutation = useMutation({
@@ -66,8 +61,8 @@ export default function AdminScaling() {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['scaling-requests'] });
-    }
+      queryClient.invalidateQueries({ queryKey: ["scaling-requests"] });
+    },
   });
 
   const rejectMutation = useMutation({
@@ -76,28 +71,52 @@ export default function AdminScaling() {
       await Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['scaling-requests'] });
+      queryClient.invalidateQueries({ queryKey: ["scaling-requests"] });
       setSelectedRequest(null);
-      setNotes('');
-    }
+      setNotes("");
+    },
   });
 
-  const pendingRequests = requests.filter(r => r.status === 'pending');
-  const approvedRequests = requests.filter(r => r.status === 'approved');
-  const completedRequests = requests.filter(r => r.status === 'completed');
+  const pendingRequests = requests.filter((r) => r.status === "pending");
+  const approvedRequests = requests.filter((r) => r.status === "approved");
+  const completedRequests = requests.filter((r) => r.status === "completed");
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case 'pending':
-        return <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 whitespace-nowrap"><Clock className="w-3 h-3 mr-1" /> {t('admin.scaling.status.pending')}</Badge>;
-      case 'approved':
-        return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 whitespace-nowrap"><CheckCircle className="w-3 h-3 mr-1" /> {t('admin.scaling.status.approved')}</Badge>;
-      case 'completed':
-        return <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 whitespace-nowrap"><CheckCircle className="w-3 h-3 mr-1" /> {t('admin.scaling.status.completed')}</Badge>;
-      case 'rejected':
-        return <Badge className="bg-red-500/20 text-red-400 border-red-500/30 whitespace-nowrap"><XCircle className="w-3 h-3 mr-1" /> {t('admin.scaling.status.rejected')}</Badge>;
+      case "pending":
+        return (
+          <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 whitespace-nowrap">
+            <Clock className="w-3 h-3 mr-1" />{" "}
+            {t("admin.scaling.status.pending")}
+          </Badge>
+        );
+      case "approved":
+        return (
+          <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 whitespace-nowrap">
+            <CheckCircle className="w-3 h-3 mr-1" />{" "}
+            {t("admin.scaling.status.approved")}
+          </Badge>
+        );
+      case "completed":
+        return (
+          <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 whitespace-nowrap">
+            <CheckCircle className="w-3 h-3 mr-1" />{" "}
+            {t("admin.scaling.status.completed")}
+          </Badge>
+        );
+      case "rejected":
+        return (
+          <Badge className="bg-red-500/20 text-red-400 border-red-500/30 whitespace-nowrap">
+            <XCircle className="w-3 h-3 mr-1" />{" "}
+            {t("admin.scaling.status.rejected")}
+          </Badge>
+        );
       default:
-        return <Badge className="bg-slate-500/20 text-slate-400 whitespace-nowrap">{status}</Badge>;
+        return (
+          <Badge className="bg-slate-500/20 text-slate-400 whitespace-nowrap">
+            {status}
+          </Badge>
+        );
     }
   };
 
@@ -106,79 +125,136 @@ export default function AdminScaling() {
       <Table>
         <TableHeader>
           <TableRow className="border-slate-800 hover:bg-slate-800/50">
-            <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">{t('admin.scaling.table.trader')}</TableHead>
-            <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">{t('admin.scaling.table.currentToNew')}</TableHead>
-            <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">{t('admin.scaling.table.profitSplit')}</TableHead>
-            <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">{t('admin.scaling.table.profitAchieved')}</TableHead>
-            <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">{t('admin.scaling.table.payoutCycles')}</TableHead>
-            <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">{t('admin.scaling.table.status')}</TableHead>
-            {showActions && <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">{t('admin.scaling.table.actions')}</TableHead>}
+            <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+              {t("admin.scaling.table.trader")}
+            </TableHead>
+            <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+              {t("admin.scaling.table.currentToNew")}
+            </TableHead>
+            <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+              {t("admin.scaling.table.profitSplit")}
+            </TableHead>
+            <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+              {t("admin.scaling.table.profitAchieved")}
+            </TableHead>
+            <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+              {t("admin.scaling.table.payoutCycles")}
+            </TableHead>
+            <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+              {t("admin.scaling.table.status")}
+            </TableHead>
+            {showActions && (
+              <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+                {t("admin.scaling.table.actions")}
+              </TableHead>
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.map((request) => (
-            <TableRow key={request.id} className="border-slate-800 hover:bg-slate-800/30">
+            <TableRow
+              key={request.id}
+              className="border-slate-800 hover:bg-slate-800/30"
+            >
               <TableCell className="px-2 sm:px-4 py-3">
                 <div>
-                  <p className="text-white font-medium text-xs sm:text-sm">{request.trader_id?.slice(0, 8)}...</p>
-                  <p className="text-[10px] sm:text-xs text-slate-400">{t('admin.scaling.table.level', { current: request.current_level, new: request.requested_level })}</p>
+                  <p className="text-white font-medium text-xs sm:text-sm">
+                    {request.trader_id?.slice(0, 8)}...
+                  </p>
+                  <p className="text-[10px] sm:text-xs text-slate-400">
+                    {t("admin.scaling.table.level", {
+                      current: request.current_level,
+                      new: request.requested_level,
+                    })}
+                  </p>
                 </div>
               </TableCell>
               <TableCell className="px-2 sm:px-4 py-3 whitespace-nowrap">
                 <div className="flex items-center gap-1.5 sm:gap-2">
-                  <span className="text-slate-400 text-xs sm:text-sm">${request.current_account_size?.toLocaleString()}</span>
+                  <span className="text-slate-400 text-xs sm:text-sm">
+                    ${request.current_account_size?.toLocaleString()}
+                  </span>
                   <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400" />
-                  <span className="text-emerald-400 font-medium text-xs sm:text-sm">${request.new_account_size?.toLocaleString()}</span>
+                  <span className="text-emerald-400 font-medium text-xs sm:text-sm">
+                    ${request.new_account_size?.toLocaleString()}
+                  </span>
                 </div>
               </TableCell>
               <TableCell className="px-2 sm:px-4 py-3 whitespace-nowrap">
                 <div className="flex items-center gap-1.5 sm:gap-2">
-                  <span className="text-slate-400 text-xs sm:text-sm">{request.current_profit_split}%</span>
+                  <span className="text-slate-400 text-xs sm:text-sm">
+                    {request.current_profit_split}%
+                  </span>
                   <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400" />
-                  <span className="text-emerald-400 font-medium text-xs sm:text-sm">{request.new_profit_split}%</span>
+                  <span className="text-emerald-400 font-medium text-xs sm:text-sm">
+                    {request.new_profit_split}%
+                  </span>
                 </div>
               </TableCell>
               <TableCell className="px-2 sm:px-4 py-3 text-xs sm:text-sm">
-                <span className={request.eligibility_check?.profit_requirement_met ? 'text-emerald-400' : 'text-red-400'}>
+                <span
+                  className={
+                    request.eligibility_check?.profit_requirement_met
+                      ? "text-emerald-400"
+                      : "text-red-400"
+                  }
+                >
                   {request.profit_achieved?.toFixed(2)}%
                 </span>
               </TableCell>
               <TableCell className="px-2 sm:px-4 py-3 text-xs sm:text-sm">
-                <span className={request.eligibility_check?.payout_cycles_met ? 'text-emerald-400' : 'text-red-400'}>
+                <span
+                  className={
+                    request.eligibility_check?.payout_cycles_met
+                      ? "text-emerald-400"
+                      : "text-red-400"
+                  }
+                >
                   {request.payout_cycles_completed}
                 </span>
               </TableCell>
-              <TableCell className="px-2 sm:px-4 py-3">{getStatusBadge(request.status)}</TableCell>
+              <TableCell className="px-2 sm:px-4 py-3">
+                {getStatusBadge(request.status)}
+              </TableCell>
               {showActions && (
                 <TableCell className="px-2 sm:px-4 py-3">
                   <div className="flex gap-1.5 sm:gap-2">
-                    {request.status === 'pending' && (
+                    {request.status === "pending" && (
                       <>
                         <Button
                           size="sm"
                           className="bg-emerald-500 hover:bg-emerald-600 h-7 sm:h-9 text-[10px] sm:text-sm"
-                          onClick={() => setSelectedRequest({ ...request, action: 'approve' })}
+                          onClick={() =>
+                            setSelectedRequest({
+                              ...request,
+                              action: "approve",
+                            })
+                          }
                         >
-                          {t('admin.scaling.actions.approve')}
+                          {t("admin.scaling.actions.approve")}
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
                           className="border-red-800 text-red-400 h-7 sm:h-9 text-[10px] sm:text-sm whitespace-nowrap"
-                          onClick={() => setSelectedRequest({ ...request, action: 'reject' })}
+                          onClick={() =>
+                            setSelectedRequest({ ...request, action: "reject" })
+                          }
                         >
-                          {t('admin.scaling.actions.reject')}
+                          {t("admin.scaling.actions.reject")}
                         </Button>
                       </>
                     )}
-                    {request.status === 'approved' && (
+                    {request.status === "approved" && (
                       <Button
                         size="sm"
                         className="bg-blue-500 hover:bg-blue-600 h-7 sm:h-9 text-[10px] sm:text-sm w-full"
                         onClick={() => processMutation.mutate(request.id)}
                         disabled={processMutation.isPending}
                       >
-                        {processMutation.isPending ? t('admin.scaling.actions.processing') : t('admin.scaling.actions.process')}
+                        {processMutation.isPending
+                          ? t("admin.scaling.actions.processing")
+                          : t("admin.scaling.actions.process")}
                       </Button>
                     )}
                   </div>
@@ -188,8 +264,11 @@ export default function AdminScaling() {
           ))}
           {data.length === 0 && (
             <TableRow>
-              <TableCell colSpan={showActions ? 7 : 6} className="text-center text-slate-400 py-8 text-sm">
-                {t('admin.scaling.emptyMessage')}
+              <TableCell
+                colSpan={showActions ? 7 : 6}
+                className="text-center text-slate-200 py-8 text-sm"
+              >
+                {t("admin.scaling.emptyMessage")}
               </TableCell>
             </TableRow>
           )}
@@ -202,8 +281,12 @@ export default function AdminScaling() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">{t('admin.scaling.title')}</h1>
-          <p className="text-sm sm:text-base text-slate-400">{t('admin.scaling.subtitle')}</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-white">
+            {t("admin.scaling.title")}
+          </h1>
+          <p className="text-sm sm:text-base text-slate-400">
+            {t("admin.scaling.subtitle")}
+          </p>
         </div>
       </div>
 
@@ -215,8 +298,12 @@ export default function AdminScaling() {
               <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl sm:text-2xl font-bold text-amber-400 truncate">{pendingRequests.length}</p>
-              <p className="text-[10px] sm:text-xs text-slate-400 truncate">{t('admin.scaling.summary.pendingReview')}</p>
+              <p className="text-xl sm:text-2xl font-bold text-amber-400 truncate">
+                {pendingRequests.length}
+              </p>
+              <p className="text-[10px] sm:text-xs text-slate-400 truncate">
+                {t("admin.scaling.summary.pendingReview")}
+              </p>
             </div>
           </div>
         </Card>
@@ -227,8 +314,12 @@ export default function AdminScaling() {
               <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl sm:text-2xl font-bold text-blue-400 truncate">{approvedRequests.length}</p>
-              <p className="text-[10px] sm:text-xs text-slate-400 truncate">{t('admin.scaling.summary.readyToProcess')}</p>
+              <p className="text-xl sm:text-2xl font-bold text-blue-400 truncate">
+                {approvedRequests.length}
+              </p>
+              <p className="text-[10px] sm:text-xs text-slate-400 truncate">
+                {t("admin.scaling.summary.readyToProcess")}
+              </p>
             </div>
           </div>
         </Card>
@@ -239,8 +330,12 @@ export default function AdminScaling() {
               <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl sm:text-2xl font-bold text-emerald-400 truncate">{completedRequests.length}</p>
-              <p className="text-[10px] sm:text-xs text-slate-400 truncate">{t('admin.scaling.summary.completed')}</p>
+              <p className="text-xl sm:text-2xl font-bold text-emerald-400 truncate">
+                {completedRequests.length}
+              </p>
+              <p className="text-[10px] sm:text-xs text-slate-400 truncate">
+                {t("admin.scaling.summary.completed")}
+              </p>
             </div>
           </div>
         </Card>
@@ -250,17 +345,50 @@ export default function AdminScaling() {
       <Tabs defaultValue="pending" className="space-y-4">
         <div className="overflow-x-auto pb-1 scrollbar-hide">
           <TabsList className="bg-slate-800 w-full sm:w-auto flex min-w-max">
-            <TabsTrigger value="pending" className="data-[state=active]:bg-slate-700 text-xs sm:text-sm px-3 sm:px-6">
-              {t('admin.scaling.tabs.pending')} ({pendingRequests.length})
+            <TabsTrigger
+              value="pending"
+              className="
+    text-slate-400
+    text-xs sm:text-sm px-3 sm:px-6
+    data-[state=active]:bg-slate-700
+    data-[state=active]:text-white
+  "
+            >
+              {t("admin.scaling.tabs.pending")} ({pendingRequests.length})
             </TabsTrigger>
-            <TabsTrigger value="approved" className="data-[state=active]:bg-slate-700 text-xs sm:text-sm px-3 sm:px-6">
-              {t('admin.scaling.tabs.approved')} ({approvedRequests.length})
+
+            <TabsTrigger
+              value="approved"
+              className="
+    text-slate-400
+    text-xs sm:text-sm px-3 sm:px-6
+    data-[state=active]:bg-slate-700
+    data-[state=active]:text-white
+  "
+            >
+              {t("admin.scaling.tabs.approved")} ({approvedRequests.length})
             </TabsTrigger>
-            <TabsTrigger value="completed" className="data-[state=active]:bg-slate-700 text-xs sm:text-sm px-3 sm:px-6">
-              {t('admin.scaling.tabs.completed')} ({completedRequests.length})
+            <TabsTrigger
+              value="completed"
+              className="
+    text-slate-400
+    text-xs sm:text-sm px-3 sm:px-6
+    data-[state=active]:bg-slate-700
+    data-[state=active]:text-white
+  "
+            >
+              {t("admin.scaling.tabs.completed")} ({completedRequests.length})
             </TabsTrigger>
-            <TabsTrigger value="all" className="data-[state=active]:bg-slate-700 text-xs sm:text-sm px-3 sm:px-6">
-              {t('admin.scaling.tabs.all')}
+            <TabsTrigger
+              value="all"
+              className="
+    text-slate-400
+    text-xs sm:text-sm px-3 sm:px-6
+    data-[state=active]:bg-slate-700
+    data-[state=active]:text-white
+  "
+            >
+              {t("admin.scaling.tabs.all")}
             </TabsTrigger>
           </TabsList>
         </div>
@@ -282,36 +410,55 @@ export default function AdminScaling() {
       </Tabs>
 
       {/* Approve/Reject Dialog */}
-      <Dialog open={!!selectedRequest} onOpenChange={() => setSelectedRequest(null)}>
+      <Dialog
+        open={!!selectedRequest}
+        onOpenChange={() => setSelectedRequest(null)}
+      >
         <DialogContent className="bg-slate-900 border-slate-800 w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-white text-base sm:text-lg md:text-xl">
-              {selectedRequest?.action === 'approve' ? t('admin.scaling.dialog.approveTitle') : t('admin.scaling.dialog.rejectTitle')}
+              {selectedRequest?.action === "approve"
+                ? t("admin.scaling.dialog.approveTitle")
+                : t("admin.scaling.dialog.rejectTitle")}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
             <div className="bg-slate-800 rounded-lg p-3 sm:p-4 space-y-1.5 sm:space-y-2">
               <div className="flex justify-between text-[11px] sm:text-sm">
-                <span className="text-slate-400">{t('admin.scaling.dialog.currentSize')}</span>
-                <span className="text-white">${selectedRequest?.current_account_size?.toLocaleString()}</span>
+                <span className="text-slate-400">
+                  {t("admin.scaling.dialog.currentSize")}
+                </span>
+                <span className="text-white">
+                  ${selectedRequest?.current_account_size?.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between text-[11px] sm:text-sm">
-                <span className="text-slate-400">{t('admin.scaling.dialog.newSize')}</span>
-                <span className="text-emerald-400 font-medium">${selectedRequest?.new_account_size?.toLocaleString()}</span>
+                <span className="text-slate-400">
+                  {t("admin.scaling.dialog.newSize")}
+                </span>
+                <span className="text-emerald-400 font-medium">
+                  ${selectedRequest?.new_account_size?.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between text-[11px] sm:text-sm">
-                <span className="text-slate-400">{t('admin.scaling.dialog.newProfitSplit')}</span>
-                <span className="text-emerald-400 font-medium">{selectedRequest?.new_profit_split}%</span>
+                <span className="text-slate-400">
+                  {t("admin.scaling.dialog.newProfitSplit")}
+                </span>
+                <span className="text-emerald-400 font-medium">
+                  {selectedRequest?.new_profit_split}%
+                </span>
               </div>
             </div>
 
             <div className="space-y-1 sm:space-y-1.5">
-              <label className="text-xs sm:text-sm text-slate-400 block">{t('admin.scaling.dialog.notes')}</label>
+              <label className="text-xs sm:text-sm text-slate-400 block">
+                {t("admin.scaling.dialog.notes")}
+              </label>
               <Textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm min-h-[80px]"
-                placeholder={t('admin.scaling.dialog.notesPlaceholder')}
+                placeholder={t("admin.scaling.dialog.notesPlaceholder")}
               />
             </div>
 
@@ -321,23 +468,32 @@ export default function AdminScaling() {
                 className="w-full sm:flex-1 border-slate-700 text-slate-300 hover:text-white h-9 sm:h-11 order-2 sm:order-1"
                 onClick={() => setSelectedRequest(null)}
               >
-                {t('admin.scaling.dialog.cancel')}
+                {t("admin.scaling.dialog.cancel")}
               </Button>
-              {selectedRequest?.action === 'approve' ? (
+              {selectedRequest?.action === "approve" ? (
                 <Button
                   className="w-full sm:flex-1 bg-emerald-500 hover:bg-emerald-600 h-9 sm:h-11 order-1 sm:order-2"
                   onClick={() => approveMutation.mutate(selectedRequest.id)}
                   disabled={approveMutation.isPending}
                 >
-                  {approveMutation.isPending ? t('admin.scaling.actions.approving') : t('admin.scaling.actions.approve')}
+                  {approveMutation.isPending
+                    ? t("admin.scaling.actions.approving")
+                    : t("admin.scaling.actions.approve")}
                 </Button>
               ) : (
                 <Button
                   className="w-full sm:flex-1 bg-red-500 hover:bg-red-600 h-9 sm:h-11 order-1 sm:order-2"
-                  onClick={() => rejectMutation.mutate({ requestId: selectedRequest.id, reason: notes })}
+                  onClick={() =>
+                    rejectMutation.mutate({
+                      requestId: selectedRequest.id,
+                      reason: notes,
+                    })
+                  }
                   disabled={rejectMutation.isPending}
                 >
-                  {rejectMutation.isPending ? t('admin.scaling.actions.rejecting') : t('admin.scaling.actions.reject')}
+                  {rejectMutation.isPending
+                    ? t("admin.scaling.actions.rejecting")
+                    : t("admin.scaling.actions.reject")}
                 </Button>
               )}
             </div>

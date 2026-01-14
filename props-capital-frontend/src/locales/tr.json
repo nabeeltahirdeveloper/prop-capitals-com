@@ -1612,6 +1612,7 @@
       "title": "Platform ayarları",
       "subtitle": "Ayarları ve entegrasyonları yapılandırın",
       "saveChanges": "Değişiklikleri kaydet",
+      "saveChange": "Kaydediliyor...",
       "settingsSaved": "Ayarlar kaydedildi",
       "tabs": {
         "general": "Genel",

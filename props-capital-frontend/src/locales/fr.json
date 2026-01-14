@@ -1612,6 +1612,7 @@
       "title": "Paramètres de la plateforme",
       "subtitle": "Configurer les paramètres et les intégrations",
       "saveChanges": "Enregistrer les modifications",
+      "saveChange": "Enregistrement de...",
       "settingsSaved": "Paramètres enregistrés",
       "tabs": {
         "general": "Général",

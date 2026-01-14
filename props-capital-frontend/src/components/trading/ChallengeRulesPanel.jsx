@@ -105,10 +105,11 @@ export default function ChallengeRulesPanel({ account, challenge }) {
               <span className="text-white font-medium">{t('dashboard.rulesPanel.profitTarget')}</span>
             </div>
             <Badge className={
-              profitPercent >= profitTarget ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' :
-                profitPercent >= profitTarget * 0.7 ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' :
-                  profitPercent < 0 ? 'bg-red-500/20 text-red-400 border-red-500/30' :
-                    'bg-slate-500/20 text-slate-400 border-slate-500/30'
+              profitPercent >= profitTarget ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 pointer-events-none' :
+                profitPercent >= profitTarget * 0.7 ? 'bg-amber-500/20 text-amber-400 border-amber-500/30 pointer-events-none' :
+                  profitPercent < 0 ? 'bg-red-500/20 text-red-400 border-red-500/30 pointer-events-none' :
+                    'bg-slate-500/20 text-slate-400 border-slate-500/30 pointer-events-none'
+                   
             }>
               {profitPercent >= profitTarget ? t('dashboard.rulesPanel.status.reached') : profitPercent < 0 ? t('dashboard.rulesPanel.status.loss') : `${profitProgress.toFixed(0)}%`}
             </Badge>
@@ -155,10 +156,10 @@ export default function ChallengeRulesPanel({ account, challenge }) {
               <span className="text-white font-medium">{t('dashboard.rulesPanel.dailyLossLimit')}</span>
             </div>
             <Badge className={
-              dailyLoss >= maxDailyLoss ? 'bg-red-500/20 text-red-400 border-red-500/30' :
-                dailyLossProgress >= 80 ? 'bg-red-500/20 text-red-400 border-red-500/30' :
-                  dailyLossProgress >= 50 ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' :
-                    'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+              dailyLoss >= maxDailyLoss ? 'bg-red-500/20 text-red-400 border-red-500/30 pointer-events-none' :
+                dailyLossProgress >= 80 ? 'bg-red-500/20 text-red-400 border-red-500/30 pointer-events-none' :
+                  dailyLossProgress >= 50 ? 'bg-amber-500/20 text-amber-400 border-amber-500/30 pointer-events-none' :
+                    'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 pointer-events-none'
             }>
               {dailyLoss >= maxDailyLoss ? t('dashboard.rulesPanel.status.violated') :
                 dailyLossProgress >= 80 ? t('dashboard.rulesPanel.status.danger') :
@@ -196,6 +197,7 @@ export default function ChallengeRulesPanel({ account, challenge }) {
               overallDrawdownProgress >= 50 ? 'bg-amber-500/10 border-amber-500/30' :
                 'bg-emerald-500/10 border-emerald-500/30'
           }`}>
+            
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               {overallDrawdown >= maxOverallDrawdown ? <XCircle className="w-4 h-4 text-red-400" /> :
@@ -205,10 +207,11 @@ export default function ChallengeRulesPanel({ account, challenge }) {
               <span className="text-white font-medium">{t('dashboard.rulesPanel.overallDrawdown')}</span>
             </div>
             <Badge className={
-              overallDrawdown >= maxOverallDrawdown ? 'bg-red-500/20 text-red-400 border-red-500/30' :
-                overallDrawdownProgress >= 80 ? 'bg-red-500/20 text-red-400 border-red-500/30' :
-                  overallDrawdownProgress >= 50 ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' :
-                    'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+              
+              overallDrawdown >= maxOverallDrawdown ? 'bg-red-500/20 text-red-400 border-red-500/30 border-none pointer-events-none ' :
+                overallDrawdownProgress >= 80 ? 'bg-red-500/20 text-red-400 border-red-500/30 border-none pointer-events-none ' :
+                  overallDrawdownProgress >= 50 ? 'bg-amber-500/20 text-amber-400 border-amber-500/30 border-none pointer-events-none' :
+                    'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 pointer-events-none'
             }>
               {overallDrawdown >= maxOverallDrawdown ? t('dashboard.rulesPanel.status.violated') :
                 overallDrawdownProgress >= 80 ? t('dashboard.rulesPanel.status.danger') :

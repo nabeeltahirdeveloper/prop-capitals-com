@@ -386,7 +386,7 @@ export default function TraderDashboard() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-white">{t('dashboard.accounts.title')}</h2>
           <Link to={createPageUrl('MyAccounts')}>
-            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
+            <Button variant="ghost" size="sm" className="text-slate-400">
               {t('dashboard.accounts.viewAll')} <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           </Link>
@@ -399,7 +399,7 @@ export default function TraderDashboard() {
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-white font-semibold">${account.initial_balance?.toLocaleString()}</span>
-                    <Badge variant="outline" className="text-xs">{account.platform}</Badge>
+                    <Badge variant="default" className="text-xs">{account.platform}</Badge>
                   </div>
                   <p className="text-sm text-slate-400">#{account.account_number}</p>
                 </div>
@@ -454,7 +454,7 @@ export default function TraderDashboard() {
 
               <div className="flex gap-2">
                 <Link to={`${createPageUrl('AccountDetails')}?id=${account.id}`} className="flex-1">
-                  <Button variant="outline" className="w-full border-slate-700 hover:bg-slate-800">
+                  <Button variant="outline" className="w-full border-slate-700 hover:bg-slate-800 hover:text-white">
                     <Eye className="w-4 h-4 mr-2" />
                     {t('dashboard.accounts.details')}
                   </Button>
@@ -480,7 +480,7 @@ export default function TraderDashboard() {
           <Card className="bg-slate-900 border-slate-800 p-6 lg:col-span-2">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">{t('dashboard.metrics.title')}</h3>
-              <Badge className="bg-emerald-500/20 text-emerald-400 text-xs">
+              <Badge className="bg-emerald-500/20 text-emerald-400 text-xs pointer-events-none">
                 {aggregatedMetrics.accountCount} {aggregatedMetrics.accountCount === 1 ? t('dashboard.metrics.account') : t('dashboard.metrics.accounts')}
               </Badge>
             </div>
@@ -540,11 +540,11 @@ export default function TraderDashboard() {
               {t('dashboard.notifications.title')}
             </h3>
             <div className="flex items-center gap-2">
-              <Badge className="bg-slate-700/50 text-slate-300 border-slate-600">
+              <Badge className="bg-slate-700/50 text-slate-300 border-slate-600 pointer-events-none">
                 {notifications.length} {notifications.length === 1 ? t('dashboard.notifications.notification') : t('dashboard.notifications.notifications')}
               </Badge>
               {notifications.filter(n => !n.read).length > 0 && (
-                <Badge className="bg-emerald-500/20 text-emerald-400">
+                <Badge className="bg-emerald-500/20 text-emerald-400 pointer-events-none">
                   {notifications.filter(n => !n.read).length} {t('notifications.unread')}
                 </Badge>
               )}
@@ -587,7 +587,7 @@ export default function TraderDashboard() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 text-slate-400 hover:text-white flex-shrink-0"
+                        className="h-7 w-7 text-slate-400  flex-shrink-0"
                         onClick={() => markAsReadMutation.mutate(notif.id)}
                         title={t('notifications.markAsRead')}
                       >
@@ -603,7 +603,7 @@ export default function TraderDashboard() {
                 <Link to={createPageUrl('Notifications')}>
                   <Button
                     variant="outline"
-                    className="w-full border-slate-700 bg-slate-800/50 text-white hover:bg-slate-700"
+                    className="w-full border-slate-700 bg-slate-800/50 text-white hover:bg-slate-700 hover:text-white"
                   >
                     {t('dashboard.notifications.seeMore')}
                   </Button>
@@ -624,7 +624,7 @@ export default function TraderDashboard() {
                 <SelectTrigger className="w-[280px] bg-slate-800 border-slate-700 text-white">
                   <SelectValue placeholder={t('dashboard.rules.selectAccount')} />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-800 border-slate-700">
+                <SelectContent className="bg-slate-800 border-slate-700 text-white [&>svg]:text-white">
                   {activeAccounts.map((acc) => {
                     const phaseTranslations = {
                       'phase1': t('dashboard.rules.phase1'),
@@ -636,15 +636,23 @@ export default function TraderDashboard() {
                       <SelectItem
                         key={acc.id}
                         value={acc.id}
-                        className="text-white hover:bg-slate-700 focus:bg-slate-700"
+                        className="
+                            text-white
+                          hover:text-white
+                          focus:text-white
+                          data-[highlighted]:text-white
+                          data-[state=checked]:text-white
+                          hover:bg-slate-700
+                          focus:bg-slate-700
+                        "
                       >
                         <div className="flex items-center gap-2">
-                          <span className="font-medium">${acc.initial_balance?.toLocaleString()}</span>
+                          <span className="font-medium text-white">${acc.initial_balance?.toLocaleString()}</span>
                           <span className="text-slate-400">•</span>
                           <span className="text-slate-400 text-xs">{acc.platform}</span>
                           <span className="text-slate-400">•</span>
                           <span className="text-xs text-slate-400">{t('dashboard.rules.phase')}:</span>
-                          <span className="text-xs text-emerald-400">{phaseTranslations[acc.current_phase] || acc.current_phase}</span>
+                          <span className="text-xs text-emerald-400 ">{phaseTranslations[acc.current_phase] || acc.current_phase}</span>
                         </div>
                       </SelectItem>
                     );

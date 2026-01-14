@@ -1620,6 +1620,7 @@
       "title": "Platform Settings",
       "subtitle": "Configure your platform settings and integrations",
       "saveChanges": "Save Changes",
+      "saveChange": "Saving ...",
       "settingsSaved": "Settings saved",
       "tabs": {
         "general": "General",

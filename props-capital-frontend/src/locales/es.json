@@ -1612,6 +1612,7 @@
       "title": "Configuración de la plataforma",
       "subtitle": "Configurar ajustes e integraciones",
       "saveChanges": "Guardar cambios",
+      "saveChange": "Guardando...",
       "settingsSaved": "Se guardaron los ajustes",
       "tabs": {
         "general": "General",
