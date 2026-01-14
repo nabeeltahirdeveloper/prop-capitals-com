@@ -629,6 +629,7 @@ export default function Layout({ children, currentPageName }) {
                   e.preventDefault();
                   e.stopPropagation();
                   setSidebarOpen(false)
+                  
                   // console.log('CAkked the data')
 
                   // Use window.location for hard navigation to force page reload
