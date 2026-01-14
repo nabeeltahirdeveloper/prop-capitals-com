@@ -294,7 +294,7 @@ export default function ChallengeProgress() {
             <SelectTrigger className="w-full sm:w-[280px] bg-slate-900 border-slate-800 text-white">
               <SelectValue placeholder={t('challengeProgress.selectAccount')} />
             </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-slate-800 text-white">
+              <SelectContent className="bg-slate-800 border-slate-700 text-white [&>svg]:text-white">
               {accounts.map((acc) => {
                 const accChallenge = acc.challenge || {};
                 const accInitialBalance = acc.initialBalance || accChallenge.accountSize || 0;
@@ -313,7 +313,14 @@ export default function ChallengeProgress() {
                   'failed': t('challengeProgress.failed')
                 };
                 return (
-                  <SelectItem key={acc.id} value={acc.id} className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                  <SelectItem key={acc.id} value={acc.id}
+                        className="text-white
+                          hover:text-white
+                          focus:text-white
+                          data-[highlighted]:text-white
+                          data-[state=checked]:text-white
+                          hover:bg-slate-700
+                          focus:bg-slate-700">
                     <div className="flex items-center gap-2">
                       <span className="font-medium">${accInitialBalance?.toLocaleString()}</span>
                       <span className="text-slate-400">•</span>
@@ -350,23 +357,23 @@ export default function ChallengeProgress() {
             />
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <h2 className="text-xl font-bold text-white">${initialBalance?.toLocaleString()} {t('challengeProgress.challenge')}</h2>
-                <StatusBadge status={currentPhase} />
+                <h2 className="text-sm sm:text-xl font-bold text-white">${initialBalance?.toLocaleString()} {t('challengeProgress.challenge')}</h2>
+                <StatusBadge status={currentPhase}  />
               </div>
               <p className="text-slate-400">{t('challengeProgress.account')} #{accountNumber} • {platform}</p>
             </div>
           </div>
           <div className="grid grid-cols-3 gap-6">
             <div className="text-center">
-              <p className="text-xl sm:text-2xl font-bold text-emerald-400">+{profitPercent?.toFixed(2)}%</p>
+              <p className="text-base sm:text-2xl font-bold text-emerald-400">+{profitPercent?.toFixed(2)}%</p>
               <p className="text-sm text-slate-400">{t('challengeProgress.profit')}</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-white">{tradingDaysCount}</p>
+              <p className="text-base sm:text-2xl font-bold text-white">{tradingDaysCount}</p>
               <p className="text-sm text-slate-400">{t('challengeProgress.tradingDays')}</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-amber-400">{dailyDrawdownPercent?.toFixed(1)}%</p>
+              <p className="text-base sm:text-2xl font-bold text-amber-400">{dailyDrawdownPercent?.toFixed(1)}%</p>
               <p className="text-sm text-slate-400">{t('challengeProgress.dailyDDUsed')}</p>
             </div>
           </div>
@@ -403,7 +410,7 @@ export default function ChallengeProgress() {
           {phases.map((phase, index) => (
             <div
               key={phase.id}
-              className={`relative rounded-xl border-2 p-4 transition-all ${getStatusBorder(phase.status)} ${phase.status === 'active' ? 'bg-cyan-500/5' :
+              className={`relative rounded-xl border-2 p-2 sm:p-4 transition-all ${getStatusBorder(phase.status)} ${phase.status === 'active' ? 'bg-cyan-500/5' :
                 phase.status === 'completed' ? 'bg-emerald-500/5' : 'bg-slate-800/50'
                 }`}
             >
@@ -423,14 +430,14 @@ export default function ChallengeProgress() {
               <h4 className={`font-semibold mb-1 ${phase.status === 'locked' ? 'text-slate-500' : 'text-white'
                 }`}>{phase.name}</h4>
 
-              <p className={`text-sm mb-3 ${phase.status === 'locked' ? 'text-slate-600' : 'text-slate-400'
+              <p className={`text-xs sm:text-sm mb-3 ${phase.status === 'locked' ? 'text-slate-600' : 'text-slate-400'
                 }`}>{phase.description}</p>
 
               {phase.details && (
                 <Badge className={
-                  phase.status === 'completed' ? 'bg-emerald-500/20 text-emerald-400' :
+                  'text-[10px] ' +  ( phase.status === 'completed' ? 'bg-emerald-500/20 text-emerald-400' :
                     phase.status === 'active' ? 'bg-cyan-500/20 text-cyan-400' :
-                      'bg-slate-700 text-slate-500'
+                      'bg-slate-700 text-slate-500')
                 }>
                   {phase.details}
                 </Badge>
@@ -556,7 +563,7 @@ export default function ChallengeProgress() {
             </Link>
           )}
           <Link to={createPageUrl('Rules')} className="w-full sm:w-auto">
-            <Button variant="outline" className="border-slate-700 bg-slate-800/50 text-white hover:bg-slate-700 w-full">
+            <Button variant="outline" className="border-slate-700 bg-slate-800/50 text-white  w-full">
               {t('challengeProgress.viewTradingRules')}
             </Button>
           </Link>

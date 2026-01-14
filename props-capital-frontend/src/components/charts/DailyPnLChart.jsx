@@ -19,9 +19,9 @@ export default function DailyPnLChart({ data }) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Calendar className="w-5 h-5 text-slate-400" />
-          <h3 className="text-lg font-semibold text-white">{t('analytics.dailyPL')}</h3>
+          <h3 className="text-xs   sm:text-lg font-semibold text-white">{t('analytics.dailyPL')}</h3>
         </div>
-        <div className="flex items-center gap-6 text-sm">
+        <div className="flex items-center  gap-1 sm:gap-6 text-sm">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-emerald-400" />
             <span className="text-slate-400">{winningDays} {t('analytics.winningDays')}</span>
@@ -34,18 +34,18 @@ export default function DailyPnLChart({ data }) {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3 text-center">
           <p className="text-xs text-emerald-400 mb-1">{t('analytics.totalProfit')}</p>
-          <p className="text-lg font-bold text-emerald-400">+${totalProfit.toLocaleString()}</p>
+          <p className="text-xs sm:text-lg font-bold text-emerald-400">+${totalProfit.toLocaleString()}</p>
         </div>
         <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-center">
           <p className="text-xs text-red-400 mb-1">{t('analytics.totalLoss')}</p>
-          <p className="text-lg font-bold text-red-400">${totalLoss.toLocaleString()}</p>
+          <p className="text-xs sm:text-lg font-bold text-red-400">${totalLoss.toLocaleString()}</p>
         </div>
         <div className={`${netPnL >= 0 ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-red-500/10 border-red-500/30'} border rounded-lg p-3 text-center`}>
           <p className={`text-xs ${netPnL >= 0 ? 'text-emerald-400' : 'text-red-400'} mb-1`}>{t('analytics.netPL')}</p>
-          <p className={`text-lg font-bold ${netPnL >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+          <p className={`text-xs sm:text-lg font-bold ${netPnL >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
             {netPnL >= 0 ? '+' : ''}${netPnL.toLocaleString()}
           </p>
         </div>
@@ -73,7 +73,8 @@ export default function DailyPnLChart({ data }) {
                 border: '1px solid #334155',
                 borderRadius: '8px'
               }}
-              labelStyle={{ color: '#94a3b8' }}
+              itemStyle={{ color: '#fff' }} 
+              labelStyle={{ color: '#fff'  }}
               formatter={(value) => [`$${value.toLocaleString()}`, t('analytics.pl')]}
             />
             <ReferenceLine y={0} stroke="#64748b" strokeDasharray="3 3" />

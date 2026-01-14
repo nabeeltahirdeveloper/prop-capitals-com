@@ -235,7 +235,7 @@ export default function Layout({ children, currentPageName }) {
     if (activeSubmenu) {
       setOpenSubmenu(activeSubmenu);
     }
-  }, [currentPageName, navItems]);
+  }, [currentPageName, navItems ]);
 
   // Return early for SignIn/SignUp pages (no layout)
   if (isNoLayoutPage) {
@@ -520,6 +520,8 @@ export default function Layout({ children, currentPageName }) {
           <div className="flex items-center justify-between h-16 px-6 border-b border-slate-800">
             <Link
               to={createPageUrl("Home")}
+             onClick={() => setSidebarOpen(false)}
+
               className="flex items-center gap-2"
             >
               <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
@@ -626,15 +628,20 @@ export default function Layout({ children, currentPageName }) {
                 ) {
                   e.preventDefault();
                   e.stopPropagation();
+                  setSidebarOpen(false)
+                  // console.log('CAkked the data')
+
                   // Use window.location for hard navigation to force page reload
                   window.location.href = createPageUrl(item.page);
+
                 }
               };
               return (
+               
                 <Link
                   key={item.page}
+                  onClick={()=>setSidebarOpen(false)}
                   to={createPageUrl(item.page)}
-                  onClick={handleClick}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${isActive
                     ? "bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-white border border-emerald-500/30"
                     : "text-slate-400 hover:text-white hover:bg-slate-800"

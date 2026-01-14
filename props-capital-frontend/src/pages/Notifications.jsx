@@ -162,7 +162,7 @@ export default function Notifications() {
         {unreadCount > 0 && (
           <Button
             variant="outline"
-            className="border-slate-700 bg-slate-800/50 text-white hover:bg-slate-700"
+            className="border-slate-700 bg-slate-800/50 text-white hover:bg-slate-700 hover:text-white"
             onClick={markAllAsRead}
           >
             <Check className="w-4 h-4 mr-2" />
@@ -280,27 +280,14 @@ export default function Notifications() {
                         )}
                       </div>
                       <p className="text-slate-400 text-sm leading-relaxed">{notification.message}</p>
-                      <div className="flex items-center gap-3 mt-3">
-                        <Badge variant="outline" className="text-xs border-slate-700 text-slate-400">
-                          {getCategoryIcon(notification.category)}
-                          <span className="ml-1 capitalize">
-                            {notification.category === 'challenge' ? t('notifications.challenge') :
-                              notification.category === 'payout' ? t('notifications.payout') :
-                                notification.category === 'account' ? t('notifications.account') :
-                                  t('notifications.system')}
-                          </span>
-                        </Badge>
-                        <span className="text-xs text-slate-500">
-                          {formatDistanceToNow(new Date(notification.created_date), { addSuffix: true, locale: dateLocale })}
-                        </span>
-                      </div>
+                  
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       {!notification.is_read && (
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="text-slate-400 hover:text-white h-8 w-8"
+                          className="text-slate-400  h-8 w-8"
                           onClick={() => markAsReadMutation.mutate(notification.id)}
                         >
                           <Check className="w-4 h-4" />
@@ -316,6 +303,20 @@ export default function Notifications() {
                       </Button>
                     </div>
                   </div>
+                      <div className="flex items-center gap-3 mt-3">
+                        <Badge variant="outline" className="text-xs border-slate-700 text-slate-400">
+                          {getCategoryIcon(notification.category)}
+                          <span className="ml-1 capitalize">
+                            {notification.category === 'challenge' ? t('notifications.challenge') :
+                              notification.category === 'payout' ? t('notifications.payout') :
+                                notification.category === 'account' ? t('notifications.account') :
+                                  t('notifications.system')}
+                          </span>
+                        </Badge>
+                        <span className="text-xs text-slate-500">
+                          {formatDistanceToNow(new Date(notification.created_date), { addSuffix: true, locale: dateLocale })}
+                        </span>
+                      </div>
                 </div>
               </div>
             </Card>

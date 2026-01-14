@@ -362,7 +362,7 @@ export default function TraderBuyChallenge() {
           </div>
 
           <div className="flex justify-between mt-8">
-            <Button variant="outline" onClick={() => setStep(1)} className="border-slate-700 text-slate-300 hover:text-white">
+            <Button variant="outline" onClick={() => setStep(1)} className="border-slate-700 text-slate-800 hover:bg-slate-100">
               <ArrowLeft className="mr-2 w-4 h-4" />
               {t('buyChallenge.back')}
             </Button>
@@ -424,7 +424,7 @@ export default function TraderBuyChallenge() {
                     onChange={(e) => setCouponCode(e.target.value)}
                     className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
                   />
-                  <Button variant="outline" onClick={applyCoupon} className="border-slate-700 text-slate-300 hover:text-white">
+                  <Button variant="outline" onClick={applyCoupon} className="border-slate-700 text-slate-800 hover:bg-slate-100">
                     {t('buyChallenge.apply')}
                   </Button>
                 </div>
@@ -504,7 +504,7 @@ export default function TraderBuyChallenge() {
           </div>
 
           <div className="flex justify-start mt-8">
-            <Button variant="outline" onClick={() => setStep(2)} className="border-slate-700 text-slate-300 hover:text-white">
+            <Button variant="outline" onClick={() => setStep(2)} className="border-slate-700 text-slate-800 hover:bg-slate-100">
               <ArrowLeft className="mr-2 w-4 h-4" />
               {t('buyChallenge.back')}
             </Button>

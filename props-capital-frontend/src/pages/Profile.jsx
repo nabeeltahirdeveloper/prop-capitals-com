@@ -254,8 +254,8 @@ export default function Profile() {
           <div>
             <h2 className="text-lg sm:text-xl font-bold text-white">{displayName}</h2>
             <p className="text-slate-400">{user?.email}</p>
-            <div className="flex items-center gap-2 mt-2">
-              <span className={`px-2 py-1 rounded text-xs font-medium ${user?.role === 'ADMIN'
+            <div className="flex items-center gap-2 mt-2 justify-center sm:justify-start">
+              <span className={`px-2 py-1  rounded text-xs font-medium ${user?.role === 'ADMIN'
                 ? 'bg-amber-500/20 text-amber-400'
                 : 'bg-emerald-500/20 text-emerald-400'
                 }`}>
@@ -401,7 +401,7 @@ export default function Profile() {
                 </div>
                 <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button variant="outline" className="border-slate-600 bg-slate-800/50 text-white hover:bg-slate-700 w-full sm:w-auto">
+                    <Button variant="outline" className="border-slate-600 bg-slate-800/50 text-white hover:bg-slate-700 hover:text-white w-full sm:w-auto">
                       {t('profile.changePassword')}
                     </Button>
                   </DialogTrigger>
@@ -483,7 +483,7 @@ export default function Profile() {
                 </Dialog>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-slate-800/50 rounded-lg gap-3">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center">
                     <Shield className="w-5 h-5 text-slate-400" />
@@ -540,7 +540,7 @@ export default function Profile() {
                       <p className="text-sm text-slate-400">{t('profile.governmentIDDesc')}</p>
                     </div>
                   </div>
-                  <span className={`px-3 py-1 rounded text-sm ${getDocumentStatus('GOVERNMENT_ID') === 'APPROVED' ? 'bg-emerald-500/20 text-emerald-400' :
+                  <span className={`min-w-[88px] px-1 sm:px-3 py-1 rounded text-xs sm:text-sm ${getDocumentStatus('GOVERNMENT_ID') === 'APPROVED' ? 'bg-emerald-500/20 text-emerald-400' :
                     getDocumentStatus('GOVERNMENT_ID') === 'PENDING' ? 'bg-amber-500/20 text-amber-400' :
                       getDocumentStatus('GOVERNMENT_ID') === 'REJECTED' ? 'bg-red-500/20 text-red-400' :
                         'bg-slate-700 text-slate-400'
@@ -550,7 +550,7 @@ export default function Profile() {
                 </div>
                 <Dialog open={isUploadDialogOpen.govId} onOpenChange={(open) => setIsUploadDialogOpen({ ...isUploadDialogOpen, govId: open })}>
                   <DialogTrigger asChild>
-                    <Button variant="outline" className="border-slate-600 bg-slate-800/50 text-white hover:bg-slate-700" disabled={uploadingFile === 'GOVERNMENT_ID'}>
+                    <Button variant="outline" className="border-slate-600 bg-slate-800/50 text-white hover:bg-slate-700 hover:text-white" disabled={uploadingFile === 'GOVERNMENT_ID'}>
                       {uploadingFile === 'GOVERNMENT_ID' ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -594,7 +594,7 @@ export default function Profile() {
                       <p className="text-sm text-slate-400">{t('profile.proofOfAddressDesc')}</p>
                     </div>
                   </div>
-                  <span className={`px-3 py-1 rounded text-sm ${getDocumentStatus('PROOF_OF_ADDRESS') === 'APPROVED' ? 'bg-emerald-500/20 text-emerald-400' :
+                  <span className={`min-w-[88px] px-1 sm:px-3 py-1 rounded text-xs sm:text-sm ${getDocumentStatus('PROOF_OF_ADDRESS') === 'APPROVED' ? 'bg-emerald-500/20 text-emerald-400' :
                     getDocumentStatus('PROOF_OF_ADDRESS') === 'PENDING' ? 'bg-amber-500/20 text-amber-400' :
                       getDocumentStatus('PROOF_OF_ADDRESS') === 'REJECTED' ? 'bg-red-500/20 text-red-400' :
                         'bg-slate-700 text-slate-400'
@@ -604,7 +604,7 @@ export default function Profile() {
                 </div>
                 <Dialog open={isUploadDialogOpen.address} onOpenChange={(open) => setIsUploadDialogOpen({ ...isUploadDialogOpen, address: open })}>
                   <DialogTrigger asChild>
-                    <Button variant="outline" className="border-slate-600 bg-slate-800/50 text-white hover:bg-slate-700" disabled={uploadingFile === 'PROOF_OF_ADDRESS'}>
+                    <Button variant="outline" className="border-slate-600 bg-slate-800/50 text-white hover:bg-slate-700 hover:text-white" disabled={uploadingFile === 'PROOF_OF_ADDRESS'}>
                       {uploadingFile === 'PROOF_OF_ADDRESS' ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />

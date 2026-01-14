@@ -511,7 +511,7 @@ export default function TradingTerminal() {
     // Mark as syncing
     isSyncingRef.current[accountId] = true;
     lastSyncTimeRef.current[accountId] = now;
-    
+
     // Only show loading state if explicitly requested (account switches, not background syncs)
     if (showLoading) {
       setIsAccountLoading(true);
@@ -749,7 +749,7 @@ export default function TradingTerminal() {
     } finally {
       // Mark as not syncing
       isSyncingRef.current[accountId] = false;
-      
+
       // Only clear loading state if it was set
       if (showLoading) {
         setIsAccountLoading(false);
@@ -1575,7 +1575,7 @@ export default function TradingTerminal() {
 
     if (priceData && typeof priceData === 'object') {
       // BUY position closes by SELLING → use BID
-      // SELL position closes by BUYING → use ASK
+      // SELL                              closes by BUYING → use ASK
       price = positionType === 'buy' ? priceData.bid : priceData.ask;
     } else {
       // Backward compatibility: if it's a simple number, use it
@@ -2313,7 +2313,7 @@ export default function TradingTerminal() {
 
       // Force update on first run (when equity is 0) to ensure immediate display
       const isFirstUpdate = prevMetrics.equity === 0 && newEquity !== 0;
-      
+
       if (!equityChanged && !pnlChanged && !profitChanged && !dailyDDChanged && !overallDDChanged && !isFirstUpdate) {
         return; // No change, skip update (unless first update)
       }
@@ -2967,12 +2967,18 @@ export default function TradingTerminal() {
                   )}
                 </div>
               </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-700">
+              <SelectContent className="bg-slate-800 border-slate-700 text-white [&>svg]:text-white">
                 {availableAccounts.map((acc) => (
                   <SelectItem
                     key={acc.id}
                     value={acc.id}
-                    className="text-white hover:bg-slate-700 focus:bg-slate-700"
+                    className=" text-white
+                          hover:text-white
+                          focus:text-white
+                          data-[highlighted]:text-white
+                          data-[state=checked]:text-white
+                          hover:bg-slate-700
+                          focus:bg-slate-700"
                   >
                     <div className="flex items-center gap-2">
                       {acc.isDemo && (
@@ -3079,19 +3085,19 @@ export default function TradingTerminal() {
         <div className="lg:hidden">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="w-full bg-slate-900 border border-slate-800 grid grid-cols-4">
-              <TabsTrigger value="chart" className="text-xs data-[state=active]:bg-slate-800">{t('terminal.tabs.chart')}</TabsTrigger>
-              <TabsTrigger value="trade" className="text-xs data-[state=active]:bg-slate-800">{t('terminal.tabs.trade')}</TabsTrigger>
-              <TabsTrigger value="watchlist" className="text-xs data-[state=active]:bg-slate-800">{t('terminal.tabs.watch')}</TabsTrigger>
-              <TabsTrigger value="positions" className="text-xs data-[state=active]:bg-slate-800">{t('terminal.tabs.positions')}</TabsTrigger>
+              <TabsTrigger value="chart" className="text-xs data-[state=active]:bg-slate-800 data-[state=active]:text-white">{t('terminal.tabs.chart')}</TabsTrigger>
+              <TabsTrigger value="trade" className="text-xs data-[state=active]:bg-slate-800 data-[state=active]:text-white">{t('terminal.tabs.trade')}</TabsTrigger>
+              <TabsTrigger value="watchlist" className="text-xs data-[state=active]:bg-slate-800 data-[state=active]:text-white">{t('terminal.tabs.watch')}</TabsTrigger>
+              <TabsTrigger value="positions" className="text-xs data-[state=active]:bg-slate-800 data-[state=active]:text-white">{t('terminal.tabs.positions')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="chart" className="mt-4">
               <div className="h-[400px]">
-                <TradingChart 
+                <TradingChart
                   key={`chart-mobile-${selectedSymbol?.symbol}`}
-                  symbol={selectedSymbol} 
-                  openPositions={positions} 
-                  onPriceUpdate={handlePriceUpdate} 
+                  symbol={selectedSymbol}
+                  openPositions={positions}
+                  onPriceUpdate={handlePriceUpdate}
                 />
               </div>
             </TabsContent>

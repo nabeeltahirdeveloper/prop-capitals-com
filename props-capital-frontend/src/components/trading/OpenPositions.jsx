@@ -288,7 +288,7 @@ export default function OpenPositions({
                     <DropdownMenuContent align="end" className="bg-slate-800 border-slate-700">
                       <DropdownMenuItem
                         onClick={() => onModifyPosition?.(position)}
-                        className="text-slate-300 focus:bg-slate-700"
+                        className="text-slate-300 focus:bg-slate-700 hover:text-white focus:text-white"
                       >
                         <Edit className="w-4 h-4 mr-2" />
                         {t('terminal.positions.modifySLTP')}
@@ -296,7 +296,7 @@ export default function OpenPositions({
                       <DropdownMenuItem
                         onClick={() => !isAccountLocked && onClosePosition?.(position)}
                         disabled={isAccountLocked}
-                        className="text-red-400 focus:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="text-red-400 focus:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed focus:text-red-400"
                       >
                         <X className="w-4 h-4 mr-2" />
                         {t('terminal.positions.closePosition')}
@@ -341,7 +341,7 @@ export default function OpenPositions({
                 disabled={isAccountLocked}
                 size="sm"
                 variant="outline"
-                className="w-full mt-3 border-red-500/30 text-red-400 hover:bg-red-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full mt-3 border-red-500/30 text-red-600 hover:bg-red-500/10 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <X className="w-4 h-4 mr-2" />
                 {isAccountLocked

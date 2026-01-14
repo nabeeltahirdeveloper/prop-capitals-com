@@ -270,8 +270,14 @@ export default function TradeHistory() {
             <SelectTrigger className="w-full md:w-[280px] bg-slate-900 border-slate-800 text-white">
               <SelectValue placeholder={t('tradeHistory.selectAccount')} />
             </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-slate-800">
-              <SelectItem value="all" className="text-white">{t('tradeHistory.allAccounts')}</SelectItem>
+              <SelectContent className="bg-slate-800 border-slate-700 text-white [&>svg]:text-white">
+              <SelectItem value="all"   className="text-white
+                          hover:text-white
+                          focus:text-white
+                          data-[highlighted]:text-white
+                          data-[state=checked]:text-white
+                          hover:bg-slate-700
+                          focus:bg-slate-700">{t('tradeHistory.allAccounts')}</SelectItem>
               {accounts.map((acc) => {
                 const accInitialBalance = acc.initial_balance || acc.initialBalance || 0;
                 const accPlatform = acc.platform || 'MT5';
@@ -295,7 +301,13 @@ export default function TradeHistory() {
                   'failed': t('tradeHistory.failed')
                 };
                 return (
-                  <SelectItem key={acc.id} value={acc.id} className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                  <SelectItem key={acc.id} value={acc.id} className=" text-white
+                          hover:text-white
+                          focus:text-white
+                          data-[highlighted]:text-white
+                          data-[state=checked]:text-white
+                          hover:bg-slate-700
+                          focus:bg-slate-700">
                     <div className="flex items-center gap-2">
                       <span className="font-medium">${accInitialBalance.toLocaleString()}</span>
                       <span className="text-slate-400">•</span>
@@ -308,7 +320,7 @@ export default function TradeHistory() {
               })}
             </SelectContent>
           </Select>
-          <Button variant="outline" className="border-slate-700 bg-slate-800/50 text-white hover:bg-slate-700 w-full md:w-auto">
+          <Button variant="outline" className="border-slate-700 bg-slate-800/50 text-white hover:bg-slate-700 w-full md:w-auto hover:text-white">
             <Download className="w-4 h-4 mr-2" />
             {t('tradeHistory.export')}
           </Button>
@@ -361,17 +373,17 @@ export default function TradeHistory() {
           <div className="flex items-center gap-3 flex-wrap">
             <Tabs value={typeFilter} onValueChange={setTypeFilter}>
               <TabsList className="bg-slate-800 border border-slate-700">
-                <TabsTrigger value="all" className="data-[state=active]:bg-slate-700 text-slate-300 data-[state=active]:text-white">{t('tradeHistory.all')}</TabsTrigger>
-                <TabsTrigger value="buy" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400 text-slate-300">{t('tradeHistory.buy')}</TabsTrigger>
-                <TabsTrigger value="sell" className="data-[state=active]:bg-red-500/20 data-[state=active]:text-red-400 text-slate-300">{t('tradeHistory.sell')}</TabsTrigger>
+                <TabsTrigger value="all" className="data-[state=active]:bg-slate-700 text-slate-300 data-[state=active]:text-white px-2 sm:px-3 ">{t('tradeHistory.all')}</TabsTrigger>
+                <TabsTrigger value="buy" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400 text-slate-300 px-2 sm:px-3">{t('tradeHistory.buy')}</TabsTrigger>
+                <TabsTrigger value="sell" className="data-[state=active]:bg-red-500/20 data-[state=active]:text-red-400 text-slate-300 px-2 sm:px-3">{t('tradeHistory.sell')}</TabsTrigger>
               </TabsList>
             </Tabs>
 
             <Tabs value={statusFilter} onValueChange={setStatusFilter}>
               <TabsList className="bg-slate-800 border border-slate-700">
-                <TabsTrigger value="all" className="data-[state=active]:bg-slate-700 text-slate-300 data-[state=active]:text-white">{t('tradeHistory.all')}</TabsTrigger>
-                <TabsTrigger value="open" className="data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400 text-slate-300">{t('tradeHistory.open')}</TabsTrigger>
-                <TabsTrigger value="closed" className="data-[state=active]:bg-slate-700 text-slate-300 data-[state=active]:text-white">{t('tradeHistory.closed')}</TabsTrigger>
+                <TabsTrigger value="all" className="data-[state=active]:bg-slate-700 text-slate-300 data-[state=active]:text-white px-2 sm:px-3 ">{t('tradeHistory.all')}</TabsTrigger>
+                <TabsTrigger value="open" className="data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400 text-slate-300 px-2 sm:px-3">{t('tradeHistory.open')}</TabsTrigger>
+                <TabsTrigger value="closed" className="data-[state=active]:bg-slate-700 text-slate-300 data-[state=active]:text-white px-2 sm:px-3 ">{t('tradeHistory.closed')}</TabsTrigger>
               </TabsList>
             </Tabs>
           </div>

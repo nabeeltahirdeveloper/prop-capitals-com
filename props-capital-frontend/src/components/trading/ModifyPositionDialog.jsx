@@ -173,7 +173,7 @@ export default function ModifyPositionDialog({
           <Button
             variant="outline"
             onClick={onClose}
-            className="border-slate-700 text-slate-300"
+            className="border-slate-700 text-slate-800 hover:bg-slate-200"
             disabled={isSaving}
           >
             {t('terminal.cancel')}

@@ -41,7 +41,7 @@ export default function ProgressRing({
         />
       </svg>
       <div className="absolute flex flex-col items-center justify-center">
-        <span className="text-2xl font-bold text-white">{(value !== undefined ? value : progress).toFixed(2)}%</span>
+        <span className="text-lg font-bold text-white">{(value !== undefined ? value : progress).toFixed(2)}%</span>
         {label && <span className="text-xs text-slate-400 mt-1">{label}</span>}
         {sublabel && <span className="text-xs text-slate-500">{sublabel}</span>}
       </div>

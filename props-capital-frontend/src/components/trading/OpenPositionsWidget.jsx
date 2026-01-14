@@ -25,7 +25,7 @@ export default function OpenPositionsWidget({ trades = [], onRefresh }) {
             <TrendingUp className="w-5 h-5 text-blue-400" />
             {t('accountDetails.openPositions.title')}
           </h3>
-          <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white" onClick={onRefresh}>
+          <Button variant="ghost" size="sm" className="text-slate-400 " onClick={onRefresh}>
             <RefreshCw className="w-4 h-4" />
           </Button>
         </div>
@@ -54,7 +54,7 @@ export default function OpenPositionsWidget({ trades = [], onRefresh }) {
           <span className={`font-bold ${totalFloatingPL >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
             {totalFloatingPL >= 0 ? '+' : ''}${totalFloatingPL.toFixed(2)}
           </span>
-          <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white" onClick={onRefresh}>
+          <Button variant="ghost" size="sm" className="text-slate-400" onClick={onRefresh}>
             <RefreshCw className="w-4 h-4" />
           </Button>
         </div>
