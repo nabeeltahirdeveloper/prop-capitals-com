@@ -32,8 +32,8 @@ export class PricesService {
 
   // Cache TTL (Time To Live) in milliseconds
   // Optimized for real-time trading - prices update every 1 second
-  private readonly FOREX_CACHE_TTL = 1000; // 1 second for forex (real-time updates)
-  private readonly CRYPTO_CACHE_TTL = 1000; // 1 second for crypto (real-time updates with WebSocket support)
+  private readonly FOREX_CACHE_TTL = 100000; // 1 second for forex (real-time updates)
+  private readonly CRYPTO_CACHE_TTL = 100000; // 1 second for crypto (real-time updates with WebSocket support)
 
   // API endpoints
   private readonly FRANKFURTER_API = 'https://api.frankfurter.app/latest?from=USD';
@@ -70,65 +70,141 @@ export class PricesService {
   }
 
   /**
-   * Fetch forex rates from Frankfurter API
+   * Fetch forex rates from Frankfurter API with timeout and retry
    */
   private async fetchForexRates(): Promise<ForexRates> {
-    try {
-      const response = await fetch(this.FRANKFURTER_API);
-      if (!response.ok) {
-        throw new Error(`Frankfurter API error: ${response.statusText}`);
+    const MAX_RETRIES = 3;
+    const TIMEOUT_MS = 5000; // 5 second timeout
+    const BASE_DELAY_MS = 1000; // Start with 1 second
+
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      try {
+        // Create abort controller for timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+        const response = await fetch(this.FRANKFURTER_API, {
+          signal: controller.signal,
+        });
+        
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          throw new Error(`Frankfurter API error: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        // Only log on first successful fetch after error
+        if (attempt > 0) {
+          this.logger.log(`✅ Forex API recovered after ${attempt} retries`);
+        }
+        
+        return data.rates || {};
+      } catch (error) {
+        const isLastAttempt = attempt === MAX_RETRIES - 1;
+        
+        // Log only on first failure and last attempt (reduce spam)
+        if (attempt === 0 || isLastAttempt) {
+          this.logger.warn(
+            `Forex API attempt ${attempt + 1}/${MAX_RETRIES} failed: ${error.message}`
+          );
+        }
+        
+        if (isLastAttempt) {
+          // Return cached data if available, otherwise throw
+          if (this.forexCache) {
+            this.logger.warn('⚠️ Using stale forex cache due to API failure');
+            return this.forexCache.data;
+          }
+          throw new Error(`Forex API failed after ${MAX_RETRIES} attempts: ${error.message}`);
+        }
+        
+        // Exponential backoff: 1s, 2s, 4s
+        const delayMs = BASE_DELAY_MS * Math.pow(2, attempt);
+        await new Promise(resolve => setTimeout(resolve, delayMs));
       }
-      const data = await response.json();
-      return data.rates || {};
-    } catch (error) {
-      this.logger.error(`Failed to fetch forex rates: ${error.message}`);
-      throw error;
     }
+    
+    // Should never reach here, but TypeScript wants a return
+    throw new Error('Forex API failed unexpectedly');
   }
 
   /**
-   * Fetch crypto prices from Binance API (replaces CoinGecko)
+   * Fetch crypto prices from Binance API with timeout and retry
    */
   private async fetchCryptoPrices(): Promise<CryptoPrices> {
-    try {
-      // Fetch all tickers from Binance in one call
-      const url = `${this.BINANCE_API}/ticker/24hr`;
-      this.logger.log('Fetching crypto prices from Binance API');
-      
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Binance API error: ${response.statusText}`);
-      }
-      
-      const allTickers: any[] = await response.json();
-      
-      // Map Binance tickers to CoinGecko-like format for compatibility
-      const cryptoPrices: CryptoPrices = {};
-      const coinIdMap: { [binanceSymbol: string]: string } = {
-        'BTCUSDT': 'bitcoin',
-        'ETHUSDT': 'ethereum',
-        'XRPUSDT': 'ripple',
-        'SOLUSDT': 'solana',
-        'ADAUSDT': 'cardano',
-        'DOGEUSDT': 'dogecoin',
-      };
-      
-      for (const ticker of allTickers) {
-        const coinId = coinIdMap[ticker.symbol];
-        if (coinId) {
-          cryptoPrices[coinId] = {
-            usd: parseFloat(ticker.lastPrice || '0'),
-            usd_24h_change: parseFloat(ticker.priceChangePercent || '0'),
-          };
+    const MAX_RETRIES = 3;
+    const TIMEOUT_MS = 5000;
+    const BASE_DELAY_MS = 1000;
+
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+        
+        const url = `${this.BINANCE_API}/ticker/24hr`;
+        
+        const response = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          throw new Error(`Binance API error: ${response.statusText}`);
         }
+        
+        const allTickers: any[] = await response.json();
+        
+        // Map Binance tickers to CoinGecko-like format for compatibility
+        const cryptoPrices: CryptoPrices = {};
+        const coinIdMap: { [binanceSymbol: string]: string } = {
+          'BTCUSDT': 'bitcoin',
+          'ETHUSDT': 'ethereum',
+          'XRPUSDT': 'ripple',
+          'SOLUSDT': 'solana',
+          'ADAUSDT': 'cardano',
+          'DOGEUSDT': 'dogecoin',
+        };
+        
+        for (const ticker of allTickers) {
+          const coinId = coinIdMap[ticker.symbol];
+          if (coinId) {
+            cryptoPrices[coinId] = {
+              usd: parseFloat(ticker.lastPrice || '0'),
+              usd_24h_change: parseFloat(ticker.priceChangePercent || '0'),
+            };
+          }
+        }
+        
+        if (attempt > 0) {
+          this.logger.log(`✅ Binance API recovered after ${attempt} retries`);
+        }
+        
+        this.logger.log(`Fetched crypto prices from Binance for ${Object.keys(cryptoPrices).length} coins`);
+        return cryptoPrices;
+      } catch (error) {
+        const isLastAttempt = attempt === MAX_RETRIES - 1;
+        
+        if (attempt === 0 || isLastAttempt) {
+          this.logger.warn(
+            `Binance API attempt ${attempt + 1}/${MAX_RETRIES} failed: ${error.message}`
+          );
+        }
+        
+        if (isLastAttempt) {
+          // Return cached data if available
+          if (this.cryptoCache) {
+            this.logger.warn('⚠️ Using stale crypto cache due to Binance API failure');
+            return this.cryptoCache.data;
+          }
+          throw new Error(`Binance API failed after ${MAX_RETRIES} attempts: ${error.message}`);
+        }
+        
+        const delayMs = BASE_DELAY_MS * Math.pow(2, attempt);
+        await new Promise(resolve => setTimeout(resolve, delayMs));
       }
-      
-      this.logger.log(`Fetched crypto prices from Binance for ${Object.keys(cryptoPrices).length} coins`);
-      return cryptoPrices;
-    } catch (error) {
-      this.logger.error(`Failed to fetch crypto prices from Binance: ${error.message}`);
-      throw error;
     }
+    
+    throw new Error('Binance API failed unexpectedly');
   }
 
   /**

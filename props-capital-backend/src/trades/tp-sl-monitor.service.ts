@@ -19,6 +19,13 @@ interface PositionToClose {
 export class TpSlMonitorService {
   private readonly logger = new Logger(TpSlMonitorService.name);
   private isProcessing = false; // Prevent concurrent executions
+  
+  // Circuit breaker for repeated failures
+  private failureCount = 0;
+  private circuitBreakerOpen = false;
+  private circuitBreakerResetTime = 0;
+  private readonly FAILURE_THRESHOLD = 5;
+  private readonly CIRCUIT_BREAKER_TIMEOUT_MS = 60000; // 1 minute
 
   constructor(
     private readonly prisma: PrismaService,
@@ -28,11 +35,36 @@ export class TpSlMonitorService {
   ) {}
 
   /**
+   * Timeout wrapper for price fetching
+   */
+  private async getUnifiedPricesWithTimeout(symbols: string[]): Promise<any> {
+    const TIMEOUT_MS = 5000; // 5 second timeout
+    
+    return Promise.race([
+      this.marketDataService.getUnifiedPrices(symbols),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Price fetch timeout')), TIMEOUT_MS)
+      ),
+    ]);
+  }
+
+  /**
    * Check all open positions for TP/SL hits every 1 second
    * Runs: Every 1 second
    */
   @Cron(CronExpression.EVERY_SECOND)
   async checkAllPositions() {
+    // Skip if circuit breaker is open
+    if (this.circuitBreakerOpen) {
+      // Check if we should reset the circuit breaker
+      if (Date.now() >= this.circuitBreakerResetTime) {
+        this.circuitBreakerOpen = false;
+        this.failureCount = 0;
+        this.logger.log('✅ Circuit breaker CLOSED - resuming normal operation');
+      }
+      return;
+    }
+
     // Prevent concurrent executions
     if (this.isProcessing) {
       return;
@@ -74,11 +106,29 @@ export class TpSlMonitorService {
       // 2. Get unique symbols from all positions
       const symbols = [...new Set(openPositions.map(pos => pos.symbol))];
 
-      // 3. Fetch current prices for all symbols (WebSocket-backed)
-      const pricesData = await this.marketDataService.getUnifiedPrices(symbols);
+      // 3. Fetch current prices for all symbols (WebSocket-backed) with timeout
+      let pricesData;
+      try {
+        pricesData = await this.getUnifiedPricesWithTimeout(symbols);
+        
+        // Reset failure count on success
+        this.failureCount = 0;
+      } catch (error) {
+        this.logger.warn(`⚠️ Failed to fetch prices: ${error.message}`);
+        this.failureCount++;
+        
+        // Open circuit breaker if too many failures
+        if (this.failureCount >= this.FAILURE_THRESHOLD) {
+          this.circuitBreakerOpen = true;
+          this.circuitBreakerResetTime = Date.now() + this.CIRCUIT_BREAKER_TIMEOUT_MS;
+          this.logger.error(`🚨 Circuit breaker OPENED due to ${this.FAILURE_THRESHOLD} consecutive failures`);
+        }
+        
+        return; // Skip this iteration
+      }
       
       // Create a price map for quick lookup
-      const priceMap = new Map(
+      const priceMap = new Map<string, { bid: number; ask: number }>(
         pricesData.map(p => [p.symbol, { bid: p.bid, ask: p.ask }])
       );
 
@@ -187,6 +237,15 @@ export class TpSlMonitorService {
       }
     } catch (error) {
       this.logger.error(`❌ Error checking positions for TP/SL: ${error.message}`, error.stack);
+      
+      // Increment failure count for circuit breaker
+      this.failureCount++;
+      
+      if (this.failureCount >= this.FAILURE_THRESHOLD) {
+        this.circuitBreakerOpen = true;
+        this.circuitBreakerResetTime = Date.now() + this.CIRCUIT_BREAKER_TIMEOUT_MS;
+        this.logger.error(`🚨 Circuit breaker OPENED due to ${this.FAILURE_THRESHOLD} consecutive failures`);
+      }
     } finally {
       this.isProcessing = false;
     }
@@ -204,5 +263,3 @@ export class TpSlMonitorService {
            symbol.includes('DOGE');
   }
 }
-
-
