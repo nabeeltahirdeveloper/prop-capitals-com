@@ -66,6 +66,7 @@ export class AuthService {
     }
 
     const otp = this.generateOtp();
+    console.log(`🔐 GENERATED OTP FOR ${email}: ${otp}`);
     const otpHash = this.hashOtp(email, otp);
     const expiresAt = new Date(now.getTime() + 10 * 60 * 1000); // 10 minutes
     const resendAvailableAt = new Date(now.getTime() + 60 * 1000); // 60 seconds
