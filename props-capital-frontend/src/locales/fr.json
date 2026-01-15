@@ -1615,6 +1615,7 @@
       "saveChanges": "Enregistrer les modifications",
       "saveChange": "Enregistrement de...",
       "settingsSaved": "Paramètres enregistrés",
+      "settingsSaveDescription":"Les paramètres ont été enregistrés avec succès.",
       "tabs": {
         "general": "Général",
         "branding": "Branding",

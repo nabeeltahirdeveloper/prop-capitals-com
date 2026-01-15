@@ -1616,6 +1616,7 @@
       "saveChanges": "Değişiklikleri kaydet",
       "saveChange": "Kaydediliyor...",
       "settingsSaved": "Ayarlar kaydedildi",
+      "settingsSaveDescription":"Ayarlar başarıyla kaydedildi.",
       "tabs": {
         "general": "Genel",
         "branding": "Marka",

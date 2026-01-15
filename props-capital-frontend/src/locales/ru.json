@@ -1616,6 +1616,7 @@
       "saveChange": "Сохранение ...",
       
       "settingsSaved": "Настройки сохранены",
+      "settingsSaveDescription":"Настройки успешно сохранены.",
       "tabs": {
         "general": "Общие",
         "branding": "Брендинг",

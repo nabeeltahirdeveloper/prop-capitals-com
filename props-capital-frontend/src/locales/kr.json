@@ -1615,6 +1615,7 @@
       "saveChanges": "변경 사항 저장",
       "settingsSaved": "설정을 저장했습니다",
       "saveChange": "저장 중...",
+      "settingsSaveDescription":"설정이 성공적으로 저장되었습니다.",
       "tabs": {
         "general": "일반",
         "branding": "브랜딩",
