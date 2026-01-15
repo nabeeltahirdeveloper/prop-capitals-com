@@ -1614,6 +1614,7 @@
       "saveChanges": "Guardar cambios",
       "saveChange": "Guardando...",
       "settingsSaved": "Se guardaron los ajustes",
+      "settingsSaveDescription":"La configuración se ha guardado correctamente",
       "tabs": {
         "general": "General",
         "branding": "Branding",

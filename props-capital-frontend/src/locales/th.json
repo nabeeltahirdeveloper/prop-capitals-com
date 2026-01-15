@@ -1619,6 +1619,7 @@
       "saveChanges": "บันทึกการเปลี่ยนแปลง",
 "saveChange": "กำลังบันทึก...",
       "settingsSaved": "บันทึกการตั้งค่าแล้ว",
+      "settingsSaveDescription":"การตั้งค่าได้รับการบันทึกเรียบร้อยแล้ว",
       "tabs": {
         "general": "ทั่วไป",
         "branding": "แบรนด์",

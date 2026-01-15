@@ -1622,6 +1622,7 @@
       "saveChanges": "Save Changes",
       "saveChange": "Saving ...",
       "settingsSaved": "Settings saved",
+      "settingsSaveDescription":"Settings have been saved successfully",
       "tabs": {
         "general": "General",
         "branding": "Branding",

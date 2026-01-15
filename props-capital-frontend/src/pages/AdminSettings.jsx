@@ -116,7 +116,7 @@ export default function AdminSettings() {
       setTimeout(() => setSaved(false), 3000);
       toast({
         title: t("admin.settings.settingsSaved"),
-        description: "Settings have been saved successfully",
+        description: t("admin.settings.settingsSaveDescription"),
       });
     },
     onError: (error) => {
