@@ -1,7 +1,13 @@
-import { Controller, Get, Param, Query, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  BadRequestException,
+} from '@nestjs/common';
 import { MarketDataService } from './market-data.service';
 import { Candlestick } from './market-data.service';
-import { BinanceWebSocketService } from './binance-websocket.service';
+import { BinanceWebSocketService } from '../prices/binance-websocket.service';
 
 @Controller('market-data')
 export class MarketDataController {
@@ -16,7 +22,10 @@ export class MarketDataController {
    */
   @Get('test')
   test() {
-    return { message: 'Market data controller is working', timestamp: new Date().toISOString() };
+    return {
+      message: 'Market data controller is working',
+      timestamp: new Date().toISOString(),
+    };
   }
 
   /**
@@ -28,7 +37,9 @@ export class MarketDataController {
     return {
       connected: this.binanceWebSocketService.isWSConnected(),
       uptime: this.binanceWebSocketService.getConnectionUptime(),
-      prices: Array.from(this.binanceWebSocketService.getAllPrices().entries()).map(([symbol, price]) => ({
+      prices: Array.from(
+        this.binanceWebSocketService.getAllPrices().entries(),
+      ).map(([symbol, price]) => ({
         symbol,
         bid: price.bid,
         ask: price.ask,
@@ -91,9 +102,11 @@ export class MarketDataController {
   @Get('crypto/quote')
   async getCryptoQuotes(@Query('symbols') symbols: string) {
     if (!symbols) {
-      throw new BadRequestException('Symbols parameter is required (comma-separated)');
+      throw new BadRequestException(
+        'Symbols parameter is required (comma-separated)',
+      );
     }
-    const symbolList = symbols.split(',').map(s => s.trim());
+    const symbolList = symbols.split(',').map((s) => s.trim());
     return this.marketDataService.getCryptoQuotes(symbolList);
   }
 
@@ -104,14 +117,16 @@ export class MarketDataController {
    */
   @Get('prices')
   async getUnifiedPrices(@Query('symbols') symbols?: string) {
-    const symbolList = symbols ? symbols.split(',').map(s => s.trim()) : [];
-    
+    const symbolList = symbols ? symbols.split(',').map((s) => s.trim()) : [];
+
     // Get prices from WebSocket (if available) and REST (fallback)
     const prices = await this.marketDataService.getUnifiedPrices(symbolList);
-    
+
     return {
       prices,
-      source: this.binanceWebSocketService.isWSConnected() ? 'websocket' : 'rest',
+      source: this.binanceWebSocketService.isWSConnected()
+        ? 'websocket'
+        : 'rest',
       timestamp: Date.now(),
     };
   }
