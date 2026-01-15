@@ -816,6 +816,7 @@
     "purchaseSuccessful": "購入が完了しました！",
     "purchaseSuccessfulDesc": "チャレンジアカウントを設定中です。5分以内にログイン情報をメールでお送りします",
     "orderSummary": "注文概要",
+    "noChallenges": "チャレンジなし",
     "challenge": "チャレンジ",
     "platform": "プラットフォーム",
     "amountPaid": "支払金額",

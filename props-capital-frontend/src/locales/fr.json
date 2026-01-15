@@ -818,6 +818,7 @@
     "orderSummary": "Récapitulatif de commande",
     "challenge": "Challenge",
     "platform": "Plateforme",
+    "noChallenges": "Aucun défi",
     "amountPaid": "Montant payé",
     "goToDashboard": "Aller au tableau de bord",
     "chooseChallenge": "Choisir un challenge",

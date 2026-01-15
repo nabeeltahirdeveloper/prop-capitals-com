@@ -262,13 +262,13 @@ export default function TraderBuyChallenge() {
                   </Card>
                 ))}
               </div>
-            ) : displayChallenges.length === 0 ? (
+            ) : displayChallenges.length  === 0 ? (
               <div className="text-center py-12">
                 <p className="text-slate-400">{t('buyChallenge.noChallenges')}</p>
               </div>
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {displayChallenges.map((challenge) => (
+                {displayChallenges?.map((challenge) => (
                   <Card
                     key={challenge.id}
                     className={`bg-slate-900 border-slate-800 p-6 cursor-pointer transition-all hover:border-emerald-500/50 ${selectedChallenge?.id === challenge.id ? 'ring-2 ring-emerald-500 border-emerald-500' : ''

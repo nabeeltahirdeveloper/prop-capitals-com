@@ -817,6 +817,7 @@
     "purchaseSuccessfulDesc": "Estamos configurando tu cuenta del desafío. Te enviaremos las credenciales por correo en menos de 5 minutos",
     "orderSummary": "Resumen del pedido",
     "challenge": "Desafío",
+    "noChallenges": "Sin desafíos",
     "platform": "Plataforma",
     "amountPaid": "Monto pagado",
     "goToDashboard": "Ir al panel",

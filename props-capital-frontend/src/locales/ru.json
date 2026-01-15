@@ -816,6 +816,7 @@
     "purchaseSuccessful": "Покупка завершена!",
     "purchaseSuccessfulDesc": "Мы настраиваем ваш челлендж-аккаунт. В течение 5 минут отправим данные для входа на email",
     "orderSummary": "Сводка заказа",
+    "noChallenges": "Нет испытаний",
     "challenge": "Челлендж",
     "platform": "Платформа",
     "amountPaid": "Оплаченная сумма",

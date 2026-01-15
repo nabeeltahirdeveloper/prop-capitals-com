@@ -7,11 +7,13 @@ export function getPlatform(account, fallback = 'MT5') {
     if (!account) return fallback;
     const challenge = account.challenge || {};
 
+
     // Prioritize account-level platform fields
     const platform = account.platform ||
         account.tradingPlatform ||
         account.trading_platform ||
         account.brokerPlatform;
+
 
     if (platform) return platform;
 

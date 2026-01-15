@@ -628,7 +628,6 @@ export default function Layout({ children, currentPageName }) {
                 ) {
                   e.preventDefault();
                   e.stopPropagation();
-                  setSidebarOpen(false)
                   
                   // console.log('CAkked the data')
 
@@ -636,12 +635,16 @@ export default function Layout({ children, currentPageName }) {
                   window.location.href = createPageUrl(item.page);
 
                 }
+                else{
+                  setSidebarOpen(false)
+
+                }
               };
               return (
                
                 <Link
                   key={item.page}
-                  onClick={()=>setSidebarOpen(false)}
+                  onClick={handleClick}
                   to={createPageUrl(item.page)}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${isActive
                     ? "bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-white border border-emerald-500/30"

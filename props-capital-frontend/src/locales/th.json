@@ -854,6 +854,7 @@
     "pay": "จ่าย",
     "payAmount": "จ่าย ${{amount}}",
     "secureEncryption": "การเข้ารหัส SSL 256-bit ที่ปลอดภัย",
+    "noChallenges": "ไม่มีความท้าทายs",
     "platforms": {
       "MT5": {
         "name": "MetaTrader 5",

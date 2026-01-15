@@ -142,6 +142,13 @@ export default function TradingTerminal() {
   const [isAccountLoading, setIsAccountLoading] = useState(false);
   const [hasTriggeredWarning, setHasTriggeredWarning] = useState(false);
   const [hasTriggeredViolation, setHasTriggeredViolation] = useState(false);
+  
+  const [activeTab, setActiveTab] = useState('chart');
+
+  // Trade history filters
+  const [historySymbolFilter, setHistorySymbolFilter] = useState('');
+  const [historyPnLFilter, setHistoryPnLFilter] = useState('all'); // 'all', 'profit', 'loss'
+  const [historyDateFilter, setHistoryDateFilter] = useState('all'); // 'all', 'today', 'week', 'month'
 
   // Refs for tracking daily balance
   const dailyStartBalanceRef = useRef(null);
@@ -2910,12 +2917,6 @@ export default function TradingTerminal() {
     await closePositionWithBackendUpdate(position, true);
   }, [closePositionWithBackendUpdate]);
 
-  const [activeTab, setActiveTab] = useState('chart');
-
-  // Trade history filters
-  const [historySymbolFilter, setHistorySymbolFilter] = useState('');
-  const [historyPnLFilter, setHistoryPnLFilter] = useState('all'); // 'all', 'profit', 'loss'
-  const [historyDateFilter, setHistoryDateFilter] = useState('all'); // 'all', 'today', 'week', 'month'
 
   // Demo account is always available, so we don't need to show empty state
   // But we can show a brief loading state if accounts are still loading

@@ -817,6 +817,8 @@
     "purchaseSuccessfulDesc": "Meydan okuma hesabınız kuruluyor. Giriş bilgilerini 5 dakika içinde e-posta ile göndereceğiz",
     "orderSummary": "Sipariş özeti",
     "challenge": "Meydan okuma",
+    "noChallenges": "Zorluk yok",
+    
     "platform": "Platform",
     "amountPaid": "Ödenen tutar",
     "goToDashboard": "Panoya git",

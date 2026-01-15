@@ -854,6 +854,7 @@
     "pay": "Pay",
     "payAmount": "Pay ${{amount}}",
     "secureEncryption": "Secure 256-bit SSL encryption",
+    "noChallenges": "No Challenges",
     "platforms": {
       "MT5": {
         "name": "MetaTrader 5",
