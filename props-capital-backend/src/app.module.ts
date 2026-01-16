@@ -32,6 +32,7 @@ import { AdminDashboardModule } from './admin/dashboard/admin-dashboard.module';
 import { AdminSupportModule } from './admin/support/admin-support.module';
 import { WebsocketModule } from './websocket/websocket.module';
 import { CrmModule } from './crm/crm.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
 
@@ -44,6 +45,8 @@ import { CrmModule } from './crm/crm.module';
     }),
 
     ScheduleModule.forRoot(),
+
+    CommonModule,
 
     PrismaModule,
 

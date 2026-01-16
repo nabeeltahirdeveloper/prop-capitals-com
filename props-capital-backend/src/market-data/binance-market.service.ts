@@ -1,10 +1,14 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Candlestick } from './market-data.service';
+import { ResilientHttpService } from 'src/common/resilient-http.service';
 
 @Injectable()
 export class BinanceMarketService {
   private readonly logger = new Logger(BinanceMarketService.name);
   private readonly BINANCE_API = 'https://api.binance.com/api/v3';
+
+  constructor(private readonly httpService: ResilientHttpService) {}
+
 
   // Symbol mapping: frontend format -> Binance format
   private readonly SYMBOL_MAP: { [key: string]: string } = {

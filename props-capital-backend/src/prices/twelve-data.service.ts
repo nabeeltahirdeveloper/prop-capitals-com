@@ -1,6 +1,7 @@
 import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import WebSocket from 'ws';
+import { ResilientHttpService, CircuitState } from '../common/resilient-http.service';
 
 export interface Candlestick {
   time: number;
@@ -30,10 +31,16 @@ export class TwelveDataService implements OnModuleInit, OnModuleDestroy {
   private reconnectTimeout: NodeJS.Timeout;
   private pingInterval: NodeJS.Timeout;
   private restFallbackInterval: NodeJS.Timeout;
-  private useRestFallback = false; // Flag to switch modes
+  private useRestFallback = false;
 
-  constructor(private configService: ConfigService) {
-    // Trim to ensure no accidental spaces
+  // Track consecutive failures to reduce log spam
+  private consecutiveFailures = 0;
+  private readonly MAX_LOG_FAILURES = 3;
+
+  constructor(
+    private configService: ConfigService,
+    private httpService: ResilientHttpService, // Inject resilient HTTP service
+  ) {
     const key = this.configService.get<string>('TWELVE_DATA_API_KEY');
     this.apiKey = key ? key.trim() : '';
   }
@@ -54,7 +61,6 @@ export class TwelveDataService implements OnModuleInit, OnModuleDestroy {
   // --- WEBSOCKET CONNECTION ---
 
   private connectWebSocket() {
-    // Stop any existing fallback
     if (this.useRestFallback) return; 
 
     const url = `wss://ws.twelvedata.com/v1/quotes?apikey=${this.apiKey}`;
@@ -73,12 +79,10 @@ export class TwelveDataService implements OnModuleInit, OnModuleDestroy {
           try {
             const response = JSON.parse(data.toString());
             
-            // Handle Price
             if (response.event === 'price') {
               this.updatePriceCache(response.symbol, parseFloat(response.price), response.timestamp);
             }
             
-            // Handle Errors (Like 404/401)
             if (response.event === 'error') {
               this.logger.warn(`WS Error Response: ${JSON.stringify(response)}`);
             }
@@ -87,7 +91,6 @@ export class TwelveDataService implements OnModuleInit, OnModuleDestroy {
 
         this.ws.on('close', (code) => {
           this.stopHeartbeat();
-          // If 1006 (Abnormal) or 404 related, might switch to REST
           this.logger.warn(`⚠️ Twelve Data WS Closed (Code: ${code}). Retrying in 5s...`);
           this.reconnectTimeout = setTimeout(() => this.connectWebSocket(), 5000);
         });
@@ -95,7 +98,6 @@ export class TwelveDataService implements OnModuleInit, OnModuleDestroy {
         this.ws.on('error', (err) => {
           this.logger.error(`Twelve Data WS Error: ${err.message}`);
           
-          // 🚨 CRITICAL: If 404 or Connection Refused, switch to REST Fallback immediately
           if (err.message.includes('404') || err.message.includes('400') || err.message.includes('401') || err.message.includes('403')) {
              this.logger.warn('🚨 WebSocket rejected. Switching to REST Polling Mode (Safe Mode).');
              this.useRestFallback = true;
@@ -117,39 +119,116 @@ export class TwelveDataService implements OnModuleInit, OnModuleDestroy {
     this.ws.send(JSON.stringify(msg));
   }
 
-  // --- REST FALLBACK (The Safety Net) ---
+  // --- REST FALLBACK (Using Resilient HTTP) ---
 
   private startRestFallback() {
     if (this.restFallbackInterval) clearInterval(this.restFallbackInterval);
     
     this.logger.log('🔄 Starting REST Polling for Forex (3s Interval)...');
     
-    // Poll immediately then interval
     this.pollRestPrices();
-    this.restFallbackInterval = setInterval(() => this.pollRestPrices(), 3000); // 3 seconds
+    this.restFallbackInterval = setInterval(() => this.pollRestPrices(), 3000);
   }
 
   private stopRestFallback() {
     if (this.restFallbackInterval) clearInterval(this.restFallbackInterval);
   }
 
+  /**
+   * Poll REST API with resilient HTTP (timeout, retry, circuit breaker)
+   */
   private async pollRestPrices() {
-    try {
-      const symbolsStr = this.symbols.join(',');
-      const url = `${this.REST_BASE}/price?symbol=${symbolsStr}&apikey=${this.apiKey}`;
-      
-      const response = await fetch(url);
-      const data = await response.json();
+    const symbolsStr = this.symbols.join(',');
+    const url = `${this.REST_BASE}/price?symbol=${symbolsStr}&apikey=${this.apiKey}`;
+    
+    // Use resilient HTTP service instead of raw fetch
+    const result = await this.httpService.get<Record<string, { price: string }>>(url, {
+      timeout: 5000,           // 5 second timeout for polling
+      retries: 1,              // Only 1 retry for polling (we'll try again in 3s anyway)
+      retryDelay: 500,
+      circuitName: 'twelvedata-rest',
+    });
 
-      // Data format: { "EUR/USD": { "price": "1.08" }, ... }
-      for (const [symbol, val] of Object.entries(data)) {
-        if ((val as any).price) {
-           this.updatePriceCache(symbol, parseFloat((val as any).price), Date.now() / 1000);
+    if (result.success && result.data) {
+      // Reset failure counter on success
+      this.consecutiveFailures = 0;
+
+      for (const [symbol, val] of Object.entries(result.data)) {
+        if (val?.price) {
+          this.updatePriceCache(symbol, parseFloat(val.price), Date.now() / 1000);
         }
       }
-    } catch (e) {
-      this.logger.debug(`REST Polling Error: ${e.message}`);
+    } else {
+      // Only log first few failures to reduce spam
+      this.consecutiveFailures++;
+      if (this.consecutiveFailures <= this.MAX_LOG_FAILURES) {
+        this.logger.warn(`REST Polling failed (${this.consecutiveFailures}): ${result.error}`);
+      } else if (this.consecutiveFailures === this.MAX_LOG_FAILURES + 1) {
+        this.logger.warn(`REST Polling continues to fail. Suppressing further logs until recovery.`);
+      }
+
+      // If circuit is open, we could switch back to trying WebSocket
+      if (result.errorCode === 'CIRCUIT_OPEN') {
+        this.logger.warn('Circuit open for TwelveData REST. Consider trying WebSocket again.');
+      }
     }
+  }
+
+  /**
+   * Get historical candles with resilient HTTP
+   */
+  async getHistory(symbol: string, timeframe: string, limit: number = 50): Promise<Candlestick[]> {
+    if (!this.apiKey) return [];
+
+    const intervalMap: { [key: string]: string } = {
+      'M1': '1min', 'M5': '5min', 'M15': '15min', 'M30': '30min',
+      'H1': '1h', 'H4': '4h', 'D1': '1day'
+    };
+    const interval = intervalMap[timeframe] || '1h';
+
+    const url = `${this.REST_BASE}/time_series?apikey=${this.apiKey}&symbol=${symbol}&interval=${interval}&outputsize=${limit}`;
+
+    // Use resilient HTTP service
+    const result = await this.httpService.get<{
+      status?: string;
+      message?: string;
+      values?: Array<{
+        datetime: string;
+        open: string;
+        high: string;
+        low: string;
+        close: string;
+        volume?: string;
+      }>;
+    }>(url, {
+      timeout: 15000,          // 15 second timeout for history (larger response)
+      retries: 2,              // 2 retries for history requests
+      retryDelay: 1000,
+      circuitName: 'twelvedata-rest',
+    });
+
+    if (!result.success) {
+      this.logger.warn(`History fetch failed for ${symbol}: ${result.error}`);
+      return [];
+    }
+
+    const data = result.data;
+
+    if (data?.status === 'error') {
+      this.logger.warn(`History Error for ${symbol}: ${data.message}`);
+      return [];
+    }
+
+    if (!data?.values) return [];
+
+    return data.values.map((item) => ({
+      time: new Date(item.datetime).getTime(),
+      open: parseFloat(item.open),
+      high: parseFloat(item.high),
+      low: parseFloat(item.low),
+      close: parseFloat(item.close),
+      volume: parseInt(item.volume || '0'),
+    })).reverse();
   }
 
   // --- UTILS ---
@@ -192,42 +271,11 @@ export class TwelveDataService implements OnModuleInit, OnModuleDestroy {
     return this.priceCache.get(symbol);
   }
 
-  async getHistory(symbol: string, timeframe: string, limit: number = 50): Promise<Candlestick[]> {
-    if (!this.apiKey) return [];
-
-    // Map timeframe
-    const intervalMap: { [key: string]: string } = {
-      'M1': '1min', 'M5': '5min', 'M15': '15min', 'M30': '30min',
-      'H1': '1h', 'H4': '4h', 'D1': '1day'
-    };
-    const interval = intervalMap[timeframe] || '1h';
-
-    // Matches your provided URL format exactly
-    const url = `${this.REST_BASE}/time_series?apikey=${this.apiKey}&symbol=${symbol}&interval=${interval}&outputsize=${limit}`;
-
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-
-      if (data.status === 'error') {
-        this.logger.warn(`History Error for ${symbol}: ${data.message}`);
-        return [];
-      }
-
-      if (!data.values) return [];
-
-      return data.values.map((item: any) => ({
-        time: new Date(item.datetime).getTime(),
-        open: parseFloat(item.open),
-        high: parseFloat(item.high),
-        low: parseFloat(item.low),
-        close: parseFloat(item.close),
-        volume: parseInt(item.volume || '0'),
-      })).reverse();
-
-    } catch (error) {
-      this.logger.error(`History Fetch Failed: ${error.message}`);
-      return [];
-    }
+  /**
+   * Get circuit breaker status for monitoring
+   */
+  getCircuitStatus(): CircuitState {
+    const status = this.httpService.getCircuitStatus('twelvedata-rest');
+    return status['twelvedata-rest']?.state || 'CLOSED';
   }
 }

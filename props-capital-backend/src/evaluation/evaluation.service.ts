@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, forwardRef, Inject, Logger } from '@nestjs/common';
-import { Cron, CronExpression, Interval } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { MarketDataService } from '../market-data/market-data.service';
@@ -244,12 +244,12 @@ export class EvaluationService {
         violationDailyDrawdown = ruleOutputs.dailyLossPercent;
         violationOverallDrawdown = ruleOutputs.drawdownPercent;
         
-        this.logger.log(`[processPriceTick] 🚨 Daily violation detected! dailyLossPercent=${ruleOutputs.dailyLossPercent.toFixed(2)}%, drawdownPercent=${ruleOutputs.drawdownPercent.toFixed(2)}%, openTrades=${openTrades.length}`);
+        this.logger.log(`[processPriceTick] ðŸš¨ Daily violation detected! dailyLossPercent=${ruleOutputs.dailyLossPercent.toFixed(2)}%, drawdownPercent=${ruleOutputs.drawdownPercent.toFixed(2)}%, openTrades=${openTrades.length}`);
         
         // CRITICAL: Capture breach snapshot BEFORE auto-closing positions
         // This ensures we capture the worst moment even if price rebounds during close
         if (openTrades.length > 0) {
-          this.logger.log(`[processPriceTick] 📸 Capturing breach snapshot for ${openTrades.length} trades before auto-close...`);
+          this.logger.log(`[processPriceTick] ðŸ“¸ Capturing breach snapshot for ${openTrades.length} trades before auto-close...`);
           await this.captureBreachSnapshot(
             accountId,
             openTrades,
@@ -261,9 +261,9 @@ export class EvaluationService {
             todayStartEquity,
             maxEquityToDate,
           );
-          this.logger.log(`[processPriceTick] ✅ Breach snapshot captured, now closing positions...`);
+          this.logger.log(`[processPriceTick] âœ… Breach snapshot captured, now closing positions...`);
         } else {
-          this.logger.warn(`[processPriceTick] ⚠️ Daily violation detected but no open trades to capture snapshot for!`);
+          this.logger.warn(`[processPriceTick] âš ï¸ Daily violation detected but no open trades to capture snapshot for!`);
         }
         
         // Daily violation - auto-close with prices from cache
@@ -301,12 +301,12 @@ export class EvaluationService {
         violationDailyDrawdown = ruleOutputs.dailyLossPercent;
         violationOverallDrawdown = ruleOutputs.drawdownPercent;
         
-        this.logger.log(`[processPriceTick] 🚨 Overall drawdown violation detected! drawdownPercent=${ruleOutputs.drawdownPercent.toFixed(2)}%, dailyLossPercent=${ruleOutputs.dailyLossPercent.toFixed(2)}%, openTrades=${openTrades.length}`);
+        this.logger.log(`[processPriceTick] ðŸš¨ Overall drawdown violation detected! drawdownPercent=${ruleOutputs.drawdownPercent.toFixed(2)}%, dailyLossPercent=${ruleOutputs.dailyLossPercent.toFixed(2)}%, openTrades=${openTrades.length}`);
         
         // CRITICAL: Capture breach snapshot BEFORE auto-closing positions
         // This ensures we capture the worst moment even if price rebounds during close
         if (openTrades.length > 0) {
-          this.logger.log(`[processPriceTick] 📸 Capturing breach snapshot for ${openTrades.length} trades before auto-close...`);
+          this.logger.log(`[processPriceTick] ðŸ“¸ Capturing breach snapshot for ${openTrades.length} trades before auto-close...`);
           await this.captureBreachSnapshot(
             accountId,
             openTrades,
@@ -318,9 +318,9 @@ export class EvaluationService {
             todayStartEquity,
             maxEquityToDate,
           );
-          this.logger.log(`[processPriceTick] ✅ Breach snapshot captured, now closing positions...`);
+          this.logger.log(`[processPriceTick] âœ… Breach snapshot captured, now closing positions...`);
         } else {
-          this.logger.warn(`[processPriceTick] ⚠️ Overall drawdown violation detected but no open trades to capture snapshot for!`);
+          this.logger.warn(`[processPriceTick] âš ï¸ Overall drawdown violation detected but no open trades to capture snapshot for!`);
         }
         
         // Overall drawdown violation - auto-close with prices from cache
@@ -609,7 +609,7 @@ export class EvaluationService {
       });
     }
 
-    // 1️⃣ Snapshot equity for today
+    // 1ï¸âƒ£ Snapshot equity for today
     await this.prisma.equitySnapshot.create({
       data: {
         tradingAccountId: account.id,
@@ -618,7 +618,7 @@ export class EvaluationService {
       },
     });
 
-    // 2️⃣ Use ChallengeRulesService for calculations
+    // 2ï¸âƒ£ Use ChallengeRulesService for calculations
     const ruleInputs: RuleInputs = {
       startingBalance: initialBalance,
       currentBalance: balance,
@@ -639,7 +639,7 @@ export class EvaluationService {
     const drawdownViolatedFlag = (account as any).drawdownViolated ?? false;
     const dailyLossViolatedFlag = (account as any).dailyLossViolated ?? false;
 
-    // 3️⃣ Check violations and auto-close if needed
+    // 3ï¸âƒ£ Check violations and auto-close if needed
     if (account.status === TradingAccountStatus.ACTIVE) {
       // Check daily violation first (higher priority for detection)
       if (ruleOutputs.dailyViolated && !dailyLossViolatedFlag) {
@@ -698,7 +698,7 @@ export class EvaluationService {
       }
     }
 
-    // 4️⃣ Trading days (distinct trade dates)
+    // 4ï¸âƒ£ Trading days (distinct trade dates)
     const tradingDaysCompleted = new Set(
       account.trades
         .filter((t) => t.openedAt)
@@ -741,7 +741,7 @@ export class EvaluationService {
       }
     }
 
-    // 5️⃣ Phase progression
+    // 5ï¸âƒ£ Phase progression
     const currentPhaseTarget =
       account.phase === TradingPhase.PHASE1
         ? challenge.phase1TargetPercent
@@ -1074,165 +1074,6 @@ export class EvaluationService {
     });
   }
 
-  /**
-   * Check Stop Loss and Take Profit on all open positions
-   * Runs every 10 seconds to auto-close positions when SL/TP is hit
-   */
-  @Interval(10000) // Run every 10 seconds
-  async checkStopLossAndTakeProfit() {
-    try {
-      // Get all accounts with open positions (non-closed trades)
-      const accountsWithOpenTrades = await this.prisma.tradingAccount.findMany({
-        where: {
-          trades: {
-            some: {
-              closePrice: null, // Only open positions
-            },
-          },
-        },
-        include: {
-          trades: {
-            where: {
-              closePrice: null, // Only open positions
-              OR: [
-                { stopLoss: { not: null } },
-                { takeProfit: { not: null } },
-              ],
-            },
-          },
-        },
-      });
-
-      if (accountsWithOpenTrades.length === 0) {
-        // No accounts with open positions that have SL/TP - skip
-        return;
-      }
-
-      this.logger.debug(`[SL/TP Checker] Checking ${accountsWithOpenTrades.length} accounts with open positions`);
-
-      // Fetch all current prices from market data service (includes both forex and crypto)
-      const allPrices = await this.marketDataService.getUnifiedPrices();
-      
-      // Create a symbol -> price map for quick lookup
-      const priceMap = new Map<string, { bid: number; ask: number }>();
-      for (const priceData of allPrices) {
-        priceMap.set(priceData.symbol, {
-          bid: priceData.bid,
-          ask: priceData.ask,
-        });
-      }
-
-      let totalPositionsClosed = 0;
-
-      // Check each account's open positions
-      for (const account of accountsWithOpenTrades) {
-        if (account.trades.length === 0) continue;
-
-        for (const trade of account.trades) {
-          // Skip if no SL/TP set
-          if (!trade.stopLoss && !trade.takeProfit) continue;
-
-          try {
-            // Get current price for this symbol
-            const priceData = priceMap.get(trade.symbol);
-            if (!priceData) {
-              this.logger.warn(`[SL/TP Checker] No price data for ${trade.symbol}, skipping`);
-              continue;
-            }
-
-            // Use correct price side: BID for BUY (selling to close), ASK for SELL (buying to close)
-            const currentPrice = trade.type === 'BUY' ? priceData.bid : priceData.ask;
-
-            let shouldClose = false;
-            let closeReason = '';
-
-            // Check Take Profit
-            if (trade.takeProfit) {
-              if (trade.type === 'BUY' && currentPrice >= trade.takeProfit) {
-                shouldClose = true;
-                closeReason = 'TP_HIT';
-              } else if (trade.type === 'SELL' && currentPrice <= trade.takeProfit) {
-                shouldClose = true;
-                closeReason = 'TP_HIT';
-              }
-            }
-
-            // Check Stop Loss (if TP didn't trigger)
-            if (!shouldClose && trade.stopLoss) {
-              if (trade.type === 'BUY' && currentPrice <= trade.stopLoss) {
-                shouldClose = true;
-                closeReason = 'SL_HIT';
-              } else if (trade.type === 'SELL' && currentPrice >= trade.stopLoss) {
-                shouldClose = true;
-                closeReason = 'SL_HIT';
-              }
-            }
-
-            if (shouldClose) {
-              // Calculate PnL
-              const isCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE/.test(trade.symbol);
-              let profit: number;
-              
-              if (isCrypto) {
-                const priceDiff = trade.type === 'BUY'
-                  ? (currentPrice - trade.openPrice)
-                  : (trade.openPrice - currentPrice);
-                profit = priceDiff * trade.volume;
-              } else {
-                const contractSize = 100000;
-                const priceDiff = trade.type === 'BUY'
-                  ? (currentPrice - trade.openPrice)
-                  : (trade.openPrice - currentPrice);
-                profit = priceDiff * trade.volume * contractSize;
-              }
-
-              this.logger.log(
-                `[SL/TP Checker] ${closeReason}: Closing ${trade.type} ${trade.volume} ${trade.symbol} @ ${currentPrice} (P/L: ${profit.toFixed(2)})`,
-              );
-
-              // Close the position using TradesService.updateTrade
-              // This will handle balance updates and evaluation
-              await this.tradesService.updateTrade(trade.id, {
-                closePrice: currentPrice,
-                profit: profit,
-                closeReason: closeReason,
-              });
-
-              // Emit WebSocket event to notify frontend in real-time
-              this.tradingEventsGateway.emitPositionClosed(account.id, {
-                tradeId: trade.id,
-                symbol: trade.symbol,
-                type: trade.type,
-                closePrice: currentPrice,
-                profit: profit,
-                closeReason: closeReason as 'TP_HIT' | 'SL_HIT',
-                timestamp: new Date().toISOString(),
-              });
-
-              this.logger.log(
-                `✅ WebSocket event emitted for closed position: ${trade.symbol} ${trade.type} (${closeReason})`,
-              );
-
-              totalPositionsClosed++;
-            }
-          } catch (error) {
-            this.logger.error(
-              `[SL/TP Checker] Error processing trade ${trade.id}: ${error.message}`,
-            );
-            // Continue with next trade even if one fails
-          }
-        }
-      }
-
-      if (totalPositionsClosed > 0) {
-        this.logger.log(
-          `[SL/TP Checker] Successfully closed ${totalPositionsClosed} positions`,
-        );
-      }
-    } catch (error) {
-      this.logger.error(`[SL/TP Checker] Error in SL/TP check: ${error.message}`);
-    }
-  }
 
   /**
    * Reset daily tracking at midnight (cron job)
