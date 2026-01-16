@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { TwelveDataService } from './twelve-data.service';
+import { MassiveWebSocketService } from './massive-websocket.service'; // ADD
 import { BinanceWebSocketService } from './binance-websocket.service';
 import { ResilientHttpService } from 'src/common/resilient-http.service';
 
@@ -22,7 +22,7 @@ export class PricesService {
   private readonly BINANCE_API = 'https://api.binance.com/api/v3';
 
   constructor(
-    private readonly twelveDataService: TwelveDataService,
+    private readonly massiveWebSocketService: MassiveWebSocketService, // CHANGED
     private readonly binanceWebSocketService: BinanceWebSocketService, // <--- Injected
     private readonly httpService: ResilientHttpService,
   ) {}
@@ -43,7 +43,7 @@ export class PricesService {
     ];
 
     for (const p of pairs) {
-      const quote = this.twelveDataService.getPrice(p.symbol);
+      const quote = this.massiveWebSocketService.getPrice(p.symbol);
       if (quote) {
         rates[p.base] = p.inverse ? 1 / quote.bid : quote.bid;
       } else {
@@ -159,7 +159,7 @@ export class PricesService {
     ];
 
     const formattedForex = forexSymbols.map((s) => {
-      const directQuote = this.twelveDataService.getPrice(s.symbol);
+      const directQuote = this.massiveWebSocketService.getPrice(s.symbol);
       if (directQuote) {
         return {
           symbol: s.symbol,
@@ -218,7 +218,7 @@ export class PricesService {
 
   async getSymbolPrice(symbol: string): Promise<number | null> {
     // 1. Check Forex WS
-    const wsPrice = this.twelveDataService.getPrice(symbol);
+    const wsPrice = this.massiveWebSocketService.getPrice(symbol);
     if (wsPrice) return wsPrice.bid;
 
     // 2. Check Crypto WS
