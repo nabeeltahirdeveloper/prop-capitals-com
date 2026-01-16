@@ -2,8 +2,9 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PricesService } from '../prices/prices.service';
 import { BinanceMarketService } from './binance-market.service';
 import { BinanceWebSocketService } from '../prices/binance-websocket.service';
-import { TwelveDataService, Candlestick } from '../prices/twelve-data.service';
+import {Candlestick } from '../prices/twelve-data.service';
 import { ResilientHttpService } from 'src/common/resilient-http.service';
+import { MassiveWebSocketService } from '../prices/massive-websocket.service'; // CHANGED
 
 @Injectable()
 export class MarketDataService {
@@ -33,7 +34,7 @@ export class MarketDataService {
     private readonly pricesService: PricesService,
     private readonly binanceMarketService: BinanceMarketService,
     private readonly binanceWebSocketService: BinanceWebSocketService,
-    private readonly twelveDataService: TwelveDataService,
+    private readonly massiveWebSocketService: MassiveWebSocketService, // CHANGED
     private readonly httpService: ResilientHttpService,
   ) {}
 
@@ -51,7 +52,7 @@ export class MarketDataService {
     try {
       // 1. FOREX (Twelve Data WS)
       if (this.isForexSymbol(symbol)) {
-        const wsPrice = this.twelveDataService.getPrice(symbol);
+        const wsPrice = this.massiveWebSocketService.getPrice(symbol);
         if (wsPrice) {
           return {
             symbol,
@@ -102,7 +103,12 @@ export class MarketDataService {
     try {
       if (this.isForexSymbol(symbol)) {
         // ✅ Twelve Data Real History
-        return await this.twelveDataService.getHistory(
+        // this.logger.warn(
+        //   `Historical forex data temporarily disabled for ${symbol}`,
+        // );
+        // return []; // Return empty array instead of calling API
+
+        return await this.massiveWebSocketService.getHistory(
           symbol,
           timeframe,
           limit,
