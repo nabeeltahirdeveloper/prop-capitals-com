@@ -18,40 +18,40 @@ export interface Candlestick {
  * Message format for quotes (ev: "C"):
  * {
  *   ev: "C",        // Event type: Quote
- *   p: "EUR-USD",   // Pair (with dash)
+ *   p: "EUR/USD",   // Pair (with slash - actual format from API)
  *   x: 48,          // Exchange ID
  *   a: 1.0852,      // Ask price
  *   b: 1.0850,      // Bid price
  *   t: 1705435200000 // Timestamp in Unix MS
  * }
- * 
- * Subscription format: "C.{ticker}" where ticker is "EUR-USD"
  */
 @Injectable()
 export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(MassiveWebSocketService.name);
   private ws: WebSocket | null = null;
   private readonly apiKey: string;
-  private readonly wsUrl = 'wss://socket.massive.com/forex'; // PAID: Real-time forex endpoint
+  private readonly wsUrl = 'wss://socket.massive.com/forex'; // Real-time forex endpoint
   
-  // Forex pairs in Massive.com format (dash-separated)
+  // Forex pairs (API actually uses slash format)
   private readonly massivePairs = [
-    'EUR-USD', 'GBP-USD', 'USD-JPY', 'AUD-USD',
-    'USD-CAD', 'USD-CHF', 'NZD-USD', 'EUR-GBP'
-  ];
-  
-  // Map for conversion: "EUR/USD" -> "EUR-USD"
-  private readonly normalizedSymbols = [
     'EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD',
     'USD/CAD', 'USD/CHF', 'NZD/USD', 'EUR/GBP'
   ];
   
-  // Real-time cache (using normalized symbols like "EUR/USD")
+  // Real-time cache
   private priceCache = new Map<string, { bid: number; ask: number; timestamp: number }>();
   
-  private reconnectTimeout: NodeJS.Timeout;
+  private reconnectTimeout: NodeJS.Timeout | null = null;
   private isConnected = false;
   private authenticated = false;
+  private reconnectAttempts = 0;
+  private readonly MAX_RECONNECT_ATTEMPTS = 10;
+  private readonly BASE_RECONNECT_DELAY = 5000;
+
+  // Historical API retry configuration
+  private readonly HISTORY_TIMEOUT_MS = 10000;
+  private readonly HISTORY_MAX_RETRIES = 2;
+  private readonly HISTORY_RETRY_DELAY_MS = 1000;
 
   constructor(private configService: ConfigService) {
     this.apiKey = this.configService.get<string>('MASSIVE_API_KEY') || '';
@@ -60,9 +60,11 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
   onModuleInit() {
     if (!this.apiKey) {
       this.logger.error('❌ MASSIVE_API_KEY missing! Get your key from: https://massive.com/dashboard/keys');
+      // Start mock prices as fallback
+      this.startMockPrices();
       return;
     }
-    this.logger.log('🚀 Starting Massive.com Forex WebSocket (PAID subscription)...');
+    this.logger.log('🚀 Starting Massive.com Forex WebSocket...');
     this.connect();
   }
 
@@ -72,23 +74,20 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
 
   private connect() {
     try {
-      this.logger.log(`🔌 Connecting to Massive.com WebSocket (Forex)...`);
+      this.logger.log(`🔌 Connecting to Massive.com WebSocket (Forex)... Attempt ${this.reconnectAttempts + 1}`);
       
-      // Connect to forex-specific endpoint
       this.ws = new WebSocket(this.wsUrl);
 
       this.ws.on('open', () => {
         this.logger.log('✅ Massive.com WebSocket Connected - Authenticating...');
         this.isConnected = true;
+        this.reconnectAttempts = 0; // Reset on successful connection
         this.authenticate();
       });
 
       this.ws.on('message', (data) => {
         try {
           const messages = JSON.parse(data.toString());
-          
-          // DEBUG: Log raw messages to understand format
-          this.logger.debug(`[Massive WS] Received: ${JSON.stringify(messages).substring(0, 200)}`);
           
           // Massive sends array of messages
           const msgArray = Array.isArray(messages) ? messages : [messages];
@@ -103,7 +102,7 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
               }
               
               if (msg.status === 'auth_success') {
-                this.logger.log('🔐 Massive.com: Authenticated successfully');
+                this.logger.log('🔑 Massive.com: Authenticated successfully');
                 this.authenticated = true;
                 this.subscribe();
                 return;
@@ -111,8 +110,9 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
               
               if (msg.status === 'auth_failed') {
                 this.logger.error('❌ Massive.com: Authentication failed - Check your API key');
-                this.logger.error('Get valid key from: https://massive.com/dashboard/keys');
                 this.authenticated = false;
+                // Fall back to mock prices
+                this.startMockPrices();
                 return;
               }
               
@@ -120,21 +120,35 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
             }
             
             // Handle quote messages (ev: "C")
-            if (msg.ev === 'C' && msg.p && msg.a && msg.b) {
+            // Note: API sends "EUR/USD" format directly (not "EUR-USD")
+            if (msg.ev === 'C' && msg.p && msg.a !== undefined && msg.b !== undefined) {
               this.updatePriceCache(msg.p, msg.b, msg.a, msg.t);
             }
           });
           
         } catch (e) {
-          this.logger.warn(`Failed to parse message: ${e.message}`);
+          // Only log occasionally to prevent spam
+          if (Math.random() < 0.01) {
+            this.logger.warn(`Failed to parse message: ${e.message}`);
+          }
         }
       });
 
       this.ws.on('close', (code) => {
         this.isConnected = false;
         this.authenticated = false;
-        this.logger.warn(`⚠️ Massive.com WS Closed (Code: ${code}). Reconnecting in 5s...`);
-        this.reconnectTimeout = setTimeout(() => this.connect(), 5000);
+        
+        // Calculate exponential backoff delay
+        const delay = this.calculateReconnectDelay();
+        
+        if (this.reconnectAttempts < this.MAX_RECONNECT_ATTEMPTS) {
+          this.logger.warn(`⚠️ Massive.com WS Closed (Code: ${code}). Reconnecting in ${delay / 1000}s...`);
+          this.reconnectAttempts++;
+          this.reconnectTimeout = setTimeout(() => this.connect(), delay);
+        } else {
+          this.logger.error(`❌ Max reconnect attempts reached. Switching to mock prices.`);
+          this.startMockPrices();
+        }
       });
 
       this.ws.on('error', (err) => {
@@ -143,29 +157,44 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
 
     } catch (error) {
       this.logger.error(`Failed to connect to Massive.com: ${error.message}`);
-      this.reconnectTimeout = setTimeout(() => this.connect(), 5000);
+      
+      const delay = this.calculateReconnectDelay();
+      if (this.reconnectAttempts < this.MAX_RECONNECT_ATTEMPTS) {
+        this.reconnectAttempts++;
+        this.reconnectTimeout = setTimeout(() => this.connect(), delay);
+      } else {
+        this.startMockPrices();
+      }
     }
+  }
+
+  /**
+   * Calculate exponential backoff delay for reconnection
+   */
+  private calculateReconnectDelay(): number {
+    const exponentialDelay = this.BASE_RECONNECT_DELAY * Math.pow(2, this.reconnectAttempts);
+    // Cap at 60 seconds
+    return Math.min(exponentialDelay, 60000);
   }
 
   private authenticate() {
     if (this.ws?.readyState !== WebSocket.OPEN) return;
     
-    // Send authentication message as per Massive.com docs
     const authMsg = {
       action: 'auth',
       params: this.apiKey
     };
     
     this.ws.send(JSON.stringify(authMsg));
-    this.logger.log('🔑 Sent authentication...');
+    this.logger.log('🔒 Sent authentication...');
   }
 
   private subscribe() {
     if (!this.authenticated || this.ws?.readyState !== WebSocket.OPEN) return;
     
     // Subscribe to Quote feed (C) for each forex pair
-    // Format: "C.EUR-USD" for EUR/USD quotes
-    const subscriptions = this.massivePairs.map(pair => `C.${pair}`);
+    // Format matches what API expects
+    const subscriptions = this.massivePairs.map(pair => `C.${pair.replace('/', '-')}`);
     
     const subscribeMsg = {
       action: 'subscribe',
@@ -176,11 +205,9 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
     this.logger.log(`📊 Subscribed to ${this.massivePairs.length} forex quote feeds`);
   }
 
-  private updatePriceCache(massivePair: string, bid: number, ask: number, timestamp: number) {
-    // Convert "EUR-USD" to "EUR/USD" for internal consistency
-    const normalizedSymbol = massivePair.replace('-', '/');
-    
-    this.priceCache.set(normalizedSymbol, {
+  private updatePriceCache(symbol: string, bid: number, ask: number, timestamp: number) {
+    // Symbol comes as "EUR/USD" from API - use directly
+    this.priceCache.set(symbol, {
       bid,
       ask,
       timestamp: timestamp || Date.now()
@@ -190,6 +217,7 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
   private disconnect() {
     if (this.reconnectTimeout) {
       clearTimeout(this.reconnectTimeout);
+      this.reconnectTimeout = null;
     }
     if (this.ws) {
       this.ws.removeAllListeners();
@@ -201,24 +229,28 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * EMERGENCY MOCK PRICES FOR DEMO
-   * Generates realistic fluctuating forex prices
+   * Mock prices for fallback when API is unavailable
    */
   private startMockPrices() {
+    if (this.priceCache.size > 0) {
+      this.logger.log('📊 Price cache already populated, skipping mock initialization');
+      return;
+    }
+
     const basePrices: Record<string, number> = {
-      'EUR/USD': 1.0850,
-      'GBP/USD': 1.2650,
-      'USD/JPY': 150.25,
-      'AUD/USD': 0.6550,
-      'USD/CAD': 1.3950,
-      'USD/CHF': 0.9050,
-      'NZD/USD': 0.6050,
-      'EUR/GBP': 0.8580,
+      'EUR/USD': 1.1600,
+      'GBP/USD': 1.3380,
+      'USD/JPY': 158.06,
+      'AUD/USD': 0.6681,
+      'USD/CAD': 1.3912,
+      'USD/CHF': 0.8025,
+      'NZD/USD': 0.5748,
+      'EUR/GBP': 0.8666,
     };
 
     // Initialize with base prices
-    this.normalizedSymbols.forEach(symbol => {
-      const basePrice = basePrices[symbol];
+    this.massivePairs.forEach(symbol => {
+      const basePrice = basePrices[symbol] || 1.0;
       const spread = symbol === 'USD/JPY' ? 0.02 : 0.0002;
       this.priceCache.set(symbol, {
         bid: basePrice,
@@ -229,11 +261,11 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
 
     // Update prices every second with realistic movement
     setInterval(() => {
-      this.normalizedSymbols.forEach(symbol => {
+      this.massivePairs.forEach(symbol => {
         const current = this.priceCache.get(symbol);
         if (current) {
           // Random walk: +/- 0.05% movement
-          const changePercent = (Math.random() - 0.5) * 0.001; // 0.1% max change
+          const changePercent = (Math.random() - 0.5) * 0.001;
           const newBid = current.bid * (1 + changePercent);
           const spread = symbol === 'USD/JPY' ? 0.02 : 0.0002;
           
@@ -246,17 +278,17 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
       });
     }, 1000);
 
-    this.logger.log('📊 Mock forex prices initialized and updating every 1 second');
+    this.logger.log('📊 Mock forex prices initialized (API unavailable)');
   }
 
-  // Public API (matches TwelveDataService interface)
+  // ============ PUBLIC API ============
   
   getPrice(symbol: string) {
     return this.priceCache.get(symbol);
   }
 
   isWSConnected(): boolean {
-    return this.isConnected && this.authenticated && this.priceCache.size > 0;
+    return (this.isConnected && this.authenticated) || this.priceCache.size > 0;
   }
 
   getAllPrices(): Map<string, { bid: number; ask: number; timestamp: number }> {
@@ -264,37 +296,68 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * Historical data via REST API
-   * Fetches OHLC candles from Massive.com REST endpoint
-   * 
-   * API Format: /v2/aggs/ticker/C:EURUSD/range/{multiplier}/{timespan}/{from}/{to}
-   * Example: /v2/aggs/ticker/C:EURUSD/range/5/minute/2026-01-15/2026-01-16
+   * Historical data via REST API with retry logic
    */
   async getHistory(symbol: string, timeframe: string, limit: number = 50): Promise<Candlestick[]> {
     if (!this.apiKey) {
-      this.logger.warn('Cannot fetch history: MASSIVE_API_KEY not configured');
+      this.logger.debug('Cannot fetch history: MASSIVE_API_KEY not configured');
       return [];
     }
 
+    let lastError: Error | null = null;
+
+    for (let attempt = 0; attempt <= this.HISTORY_MAX_RETRIES; attempt++) {
+      try {
+        const result = await this.fetchHistoryOnce(symbol, timeframe, limit);
+        if (result.length > 0) {
+          return result;
+        }
+        // Empty result might be valid - don't retry
+        return [];
+      } catch (error) {
+        lastError = error;
+        
+        if (attempt < this.HISTORY_MAX_RETRIES) {
+          const delay = this.HISTORY_RETRY_DELAY_MS * Math.pow(2, attempt);
+          this.logger.debug(
+            `[Massive REST] Retry ${attempt + 1}/${this.HISTORY_MAX_RETRIES} for ${symbol} in ${delay}ms`
+          );
+          await this.sleep(delay);
+        }
+      }
+    }
+
+    this.logger.warn(
+      `[Massive REST] All retries failed for ${symbol}: ${lastError?.message || 'Unknown error'}`
+    );
+    return [];
+  }
+
+  /**
+   * Single attempt to fetch historical data
+   */
+  private async fetchHistoryOnce(
+    symbol: string,
+    timeframe: string,
+    limit: number
+  ): Promise<Candlestick[]> {
+    // Convert symbol format: "EUR/USD" -> "C:EURUSD"
+    const massiveTicker = this.convertToMassiveTicker(symbol);
+    
+    // Convert timeframe: "M5" -> multiplier=5, timespan="minute"
+    const { multiplier, timespan } = this.convertTimeframe(timeframe);
+    
+    // Calculate date range based on limit
+    const { from, to } = this.calculateDateRange(limit, multiplier, timespan);
+    
+    // Build API URL
+    const url = `https://api.massive.com/v2/aggs/ticker/${massiveTicker}/range/${multiplier}/${timespan}/${from}/${to}?adjusted=true&sort=asc&limit=${limit}`;
+    
+    // Make request with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.HISTORY_TIMEOUT_MS);
+    
     try {
-      // Convert symbol format: "EUR/USD" -> "C:EURUSD"
-      const massiveTicker = this.convertToMassiveTicker(symbol);
-      
-      // Convert timeframe: "M5" -> multiplier=5, timespan="minute"
-      const { multiplier, timespan } = this.convertTimeframe(timeframe);
-      
-      // Calculate date range based on limit
-      const { from, to } = this.calculateDateRange(limit, multiplier, timespan);
-      
-      // Build API URL
-      const url = `https://api.massive.com/v2/aggs/ticker/${massiveTicker}/range/${multiplier}/${timespan}/${from}/${to}?adjusted=true&sort=asc&limit=${limit}`;
-      
-      this.logger.debug(`[Massive REST] Fetching history: ${url}`);
-      
-      // Make request with timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-      
       const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
@@ -305,21 +368,20 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
       clearTimeout(timeoutId);
       
       if (!response.ok) {
-        const errorText = await response.text();
-        this.logger.error(`[Massive REST] HTTP ${response.status}: ${errorText}`);
-        return [];
+        const errorText = await response.text().catch(() => 'Unknown error');
+        throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 100)}`);
       }
       
       const data = await response.json();
       
       if (data.status !== 'OK' || !data.results || data.results.length === 0) {
-        this.logger.warn(`[Massive REST] No data returned for ${symbol}`);
+        // This is a normal "no data" response, not an error
         return [];
       }
       
       // Convert to Candlestick format
       const candles: Candlestick[] = data.results.map((bar: any) => ({
-        time: bar.t, // Unix millisecond timestamp
+        time: bar.t,
         open: bar.o,
         high: bar.h,
         low: bar.l,
@@ -327,16 +389,16 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
         volume: bar.v || 0,
       }));
       
-      this.logger.log(`[Massive REST] Fetched ${candles.length} candles for ${symbol} ${timeframe}`);
+      this.logger.debug(`[Massive REST] Fetched ${candles.length} candles for ${symbol} ${timeframe}`);
       return candles;
       
     } catch (error) {
+      clearTimeout(timeoutId);
+      
       if (error.name === 'AbortError') {
-        this.logger.error(`[Massive REST] Request timeout for ${symbol}`);
-      } else {
-        this.logger.error(`[Massive REST] Error fetching history: ${error.message}`);
+        throw new Error(`Request timeout for ${symbol}`);
       }
-      return [];
+      throw error;
     }
   }
 
@@ -366,7 +428,6 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
 
   /**
    * Calculate date range for fetching candles
-   * Goes back in time based on limit and timeframe
    */
   private calculateDateRange(
     limit: number,
@@ -374,35 +435,51 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
     timespan: string,
   ): { from: string; to: string } {
     const now = new Date();
-    const to = now.toISOString().split('T')[0]; // YYYY-MM-DD format
+    const to = now.toISOString().split('T')[0];
     
-    // Calculate how many days back to fetch
     let daysBack: number;
     
     switch (timespan) {
       case 'minute':
-        // For minute candles, go back enough days to get the limit
-        // Forex market is open 24/5, so roughly 1440 minutes per day
-        daysBack = Math.ceil((limit * multiplier) / 1440) + 1;
+        daysBack = Math.ceil((limit * multiplier) / 1440) + 2;
         break;
       case 'hour':
-        // 24 hours per day
-        daysBack = Math.ceil((limit * multiplier) / 24) + 1;
+        daysBack = Math.ceil((limit * multiplier) / 24) + 2;
         break;
       case 'day':
-        daysBack = limit * multiplier + 1;
+        daysBack = limit * multiplier + 2;
         break;
       default:
-        daysBack = 7; // Default to 1 week
+        daysBack = 7;
     }
     
     // Cap at reasonable limits
-    if (daysBack > 365) daysBack = 365; // Max 1 year back
+    if (daysBack > 365) daysBack = 365;
     
     const fromDate = new Date(now);
     fromDate.setDate(fromDate.getDate() - daysBack);
     const from = fromDate.toISOString().split('T')[0];
     
     return { from, to };
+  }
+
+  /**
+   * Helper to sleep for a given duration
+   */
+  private sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Get service status for debugging
+   */
+  getStatus() {
+    return {
+      connected: this.isConnected,
+      authenticated: this.authenticated,
+      reconnectAttempts: this.reconnectAttempts,
+      pricesCount: this.priceCache.size,
+      hasApiKey: !!this.apiKey,
+    };
   }
 }
