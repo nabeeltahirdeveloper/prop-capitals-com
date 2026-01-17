@@ -2,13 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../utils";
 import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
 import {
   adminGetDashboardOverview,
   adminGetRecentAccounts,
   adminGetRecentViolations,
   adminGetRevenueChart,
-  adminGetRegistrationsChart,
 } from "@/api/admin";
 import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
@@ -25,6 +23,7 @@ import {
   Award,
   ArrowRight,
   Activity,
+  Loader2,
 } from "lucide-react";
 import {
   AreaChart,
@@ -40,114 +39,183 @@ import { format } from "date-fns";
 export default function AdminDashboard() {
   const { t } = useTranslation();
 
-  // Get dashboard overview stats
-  const { data: overview = {} } = useQuery({
+  // Get dashboard overview stats with error/loading states
+  const {
+    data: overview = {},
+    isLoading: overviewLoading,
+    isError: overviewError,
+    error: overviewErrorObj,
+  } = useQuery({
     queryKey: ["admin-dashboard-overview"],
     queryFn: adminGetDashboardOverview,
-    refetchInterval: 30000, // Real-time updates every 30 seconds
+    refetchInterval: 30000,
+    retry: 2,
+    staleTime: 10000,
   });
 
-  // Get recent accounts
-  const { data: recentAccountsData = [] } = useQuery({
+  // Get recent accounts with error/loading states
+  const {
+    data: recentAccountsData = [],
+    isLoading: accountsLoading,
+    isError: accountsError,
+  } = useQuery({
     queryKey: ["admin-dashboard-recent-accounts"],
     queryFn: adminGetRecentAccounts,
     refetchInterval: 30000,
+    retry: 2,
   });
 
-  // Get recent violations
-  const { data: recentViolationsData = [] } = useQuery({
+  // Get recent violations with error/loading states
+  const {
+    data: recentViolationsData = [],
+    isLoading: violationsLoading,
+    isError: violationsError,
+  } = useQuery({
     queryKey: ["admin-dashboard-recent-violations"],
     queryFn: adminGetRecentViolations,
     refetchInterval: 30000,
+    retry: 2,
   });
 
-  // Get revenue chart data
-  const { data: revenueChartData = [] } = useQuery({
+  // Get revenue chart data with error/loading states
+  const {
+    data: revenueChartData = [],
+    isLoading: revenueLoading,
+    isError: revenueError,
+  } = useQuery({
     queryKey: ["admin-dashboard-revenue-chart"],
     queryFn: adminGetRevenueChart,
-    retry: false,
-    refetchInterval: 60000, // Refresh every minute (charts don't need to update as frequently)
+    retry: 1,
+    refetchInterval: 60000,
   });
 
-  // Map revenue chart data to frontend format (backend now returns daily data with date, revenue, payouts)
-  const revenueData =
-    revenueChartData.length > 0
-      ? revenueChartData
-          .map((item) => {
-            try {
-              const dateObj = item.date ? new Date(item.date) : new Date();
-              // Check if date is valid
-              if (isNaN(dateObj.getTime())) {
-                console.warn("Invalid date:", item.date);
-                return null;
-              }
-              return {
-                date: format(dateObj, "MMM d"),
-                revenue: item.revenue || 0,
-                payouts: item.payouts || 0,
-              };
-            } catch (error) {
-              console.error("Error formatting date:", item.date, error);
-              return null;
-            }
-          })
-          .filter(Boolean) // Remove null entries
-      : [];
+  // SAFE: Map revenue chart data with comprehensive error handling
+  const revenueData = React.useMemo(() => {
+    if (!Array.isArray(revenueChartData) || revenueChartData.length === 0) {
+      return [];
+    }
 
-  // Map backend accounts to frontend format
-  const recentAccounts = (recentAccountsData || []).map((account) => {
-    const challenge = account.challenge || {};
-    const statusMap = {
-      ACTIVE: "active",
-      PAUSED: "paused",
-      CLOSED: "closed",
-    };
-    const phaseMap = {
-      PHASE1: "phase1",
-      PHASE2: "phase2",
-      FUNDED: "funded",
-      FAILED: "failed",
-    };
+    return revenueChartData
+      .map((item) => {
+        try {
+          if (!item || !item.date) return null;
 
-    return {
-      id: account.id,
-      account_number: account.brokerLogin || account.id.slice(0, 8),
-      platform: challenge.platform || "MT5",
-      status:
-        statusMap[account.status] || account.status?.toLowerCase() || "active",
-      current_phase:
-        phaseMap[account.phase] || account.phase?.toLowerCase() || "phase1",
-      created_date: account.createdAt,
-    };
-  });
+          const dateObj = new Date(item.date);
+          
+          if (isNaN(dateObj.getTime())) {
+            console.warn("Invalid date in revenue chart:", item.date);
+            return null;
+          }
 
-  // Helper function to extract percentage from message
+          return {
+            date: format(dateObj, "MMM d"),
+            revenue: Number(item.revenue) || 0,
+            payouts: Number(item.payouts) || 0,
+          };
+        } catch (error) {
+          console.error("Error formatting revenue chart item:", item, error);
+          return null;
+        }
+      })
+      .filter(Boolean);
+  }, [revenueChartData]);
+
+  // SAFE: Map backend accounts to frontend format with null safety
+  const recentAccounts = React.useMemo(() => {
+    if (!Array.isArray(recentAccountsData)) return [];
+
+    return recentAccountsData.map((account) => {
+      try {
+        const challenge = account?.challenge || {};
+        const statusMap = {
+          ACTIVE: "active",
+          PAUSED: "paused",
+          CLOSED: "closed",
+        };
+        const phaseMap = {
+          PHASE1: "phase1",
+          PHASE2: "phase2",
+          FUNDED: "funded",
+          FAILED: "failed",
+        };
+
+        return {
+          id: account?.id || "",
+          account_number:
+            account?.brokerLogin || account?.id?.slice(0, 8) || "N/A",
+          platform: challenge?.platform || "MT5",
+          status:
+            statusMap[account?.status] ||
+            account?.status?.toLowerCase() ||
+            "active",
+          current_phase:
+            phaseMap[account?.phase] ||
+            account?.phase?.toLowerCase() ||
+            "phase1",
+          created_date: account?.createdAt || null,
+        };
+      } catch (error) {
+        console.error("Error mapping account:", account, error);
+        return null;
+      }
+    }).filter(Boolean);
+  }, [recentAccountsData]);
+
+  // SAFE: Helper function to extract percentage from message
   const extractPercentage = (message) => {
     if (!message) return null;
-    const match = message.match(/(\d+\.?\d*)%/);
-    return match ? parseFloat(match[1]) : null;
+    try {
+      const match = message.match(/(\d+\.?\d*)%/);
+      return match ? parseFloat(match[1]) : null;
+    } catch {
+      return null;
+    }
   };
 
-  // Map backend violations to frontend format
-  const recentViolations = (recentViolationsData || []).map((violation) => {
-    const violationType = violation.type?.toLowerCase() || "unknown";
-    const threshold = extractPercentage(violation.message) || 5; // Default to 5 if not found
-    return {
-      id: violation.id,
-      type: violationType,
-      description:
-        violation.message ||
-        t(`admin.dashboard.violations.${violationType}.description`, {
-          defaultValue: `${violation.type} violation`,
-        }),
-      threshold: threshold,
-      created_date: violation.createdAt,
-    };
-  });
+  // SAFE: Map backend violations to frontend format with null safety
+  const recentViolations = React.useMemo(() => {
+    if (!Array.isArray(recentViolationsData)) return [];
+
+    return recentViolationsData.map((violation) => {
+      try {
+        const violationType = violation?.type?.toLowerCase() || "unknown";
+        const threshold = extractPercentage(violation?.message) || 5;
+        
+        return {
+          id: violation?.id || "",
+          type: violationType,
+          description:
+            violation?.message ||
+            t(`admin.dashboard.violations.${violationType}.description`, {
+              defaultValue: `${violation?.type || "Unknown"} violation`,
+            }),
+          threshold: threshold,
+          created_date: violation?.createdAt || null,
+        };
+      } catch (error) {
+        console.error("Error mapping violation:", violation, error);
+        return null;
+      }
+    }).filter(Boolean);
+  }, [recentViolationsData, t]);
 
   const displayRecentAccounts = recentAccounts;
   const displayRecentViolations = recentViolations.slice(0, 5);
 
+  // SAFE: Date formatter with error handling
+  const formatDate = (dateValue, formatString) => {
+    try {
+      if (!dateValue) return "-";
+      const date = new Date(dateValue);
+      if (isNaN(date.getTime())) return "-";
+      return format(date, formatString);
+    } catch (error) {
+      console.error("Error formatting date:", dateValue, error);
+      return "-";
+    }
+  };
+
+  // Table column definitions
   const accountColumns = [
     {
       header: t("admin.dashboard.table.account"),
@@ -170,15 +238,7 @@ export default function AdminDashboard() {
     {
       header: t("admin.dashboard.table.created"),
       accessorKey: "created_date",
-      cell: (row) => {
-        try {
-          if (!row.created_date) return "-";
-          const date = new Date(row.created_date);
-          return isNaN(date.getTime()) ? "-" : format(date, "MMM d, HH:mm");
-        } catch (error) {
-          return "-";
-        }
-      },
+      cell: (row) => formatDate(row.created_date, "MMM d, HH:mm"),
     },
   ];
 
@@ -189,7 +249,7 @@ export default function AdminDashboard() {
       cell: (row) => (
         <span className="text-red-400 capitalize">
           {t(`admin.dashboard.violations.${row.type}.type`, {
-            defaultValue: row.type?.replace(/_/g, " "),
+            defaultValue: row.type?.replace(/_/g, " ") || "Unknown",
           })}
         </span>
       ),
@@ -198,31 +258,58 @@ export default function AdminDashboard() {
       header: t("admin.dashboard.table.description"),
       accessorKey: "description",
       cell: (row) => {
-        // Try to translate description based on type, similar to AdminViolations page
         const descriptionKey = `admin.violations.descriptions.${row.type}`;
-        const threshold = row.threshold || 5; // Use threshold from row data
+        const threshold = row.threshold || 5;
         const translated = t(descriptionKey, { threshold });
-        // If translation key doesn't exist (returns the key itself), use original description
         return translated === descriptionKey ? row.description : translated;
       },
     },
     {
       header: t("admin.dashboard.table.time"),
       accessorKey: "created_date",
-      cell: (row) => {
-        try {
-          if (!row.created_date) return "-";
-          const date = new Date(row.created_date);
-          return isNaN(date.getTime()) ? "-" : format(date, "HH:mm");
-        } catch (error) {
-          return "-";
-        }
-      },
+      cell: (row) => formatDate(row.created_date, "HH:mm"),
     },
   ];
 
+  // Show global loading state
+  if (overviewLoading && accountsLoading && violationsLoading && revenueLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
+        <span className="ml-3 text-white">Loading dashboard...</span>
+      </div>
+    );
+  }
+
+  // Show global error state
+  if (overviewError) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <AlertTriangle className="w-12 h-12 text-red-500 mb-4" />
+        <h2 className="text-xl font-bold text-white mb-2">Failed to Load Dashboard</h2>
+        <p className="text-slate-400 mb-4">
+          {overviewErrorObj?.message || "An unexpected error occurred"}
+        </p>
+        <Button onClick={() => window.location.reload()}>
+          Reload Dashboard
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
+      {/* Custom styles for hiding scrollbars */}
+      <style>{`
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
+
       {/* Header */}
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-white">
@@ -233,8 +320,8 @@ export default function AdminDashboard() {
         </p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      {/* Stats Grid - FIXED: Better responsive breakpoints */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4">
         <StatsCard
           title={t("admin.dashboard.stats.totalTraders")}
           value={overview.totalUsers || 0}
@@ -248,7 +335,7 @@ export default function AdminDashboard() {
               : undefined
           }
           changeType={
-            overview.usersChangePercent >= 0 ? "positive" : "negative"
+            (overview.usersChangePercent || 0) >= 0 ? "positive" : "negative"
           }
         />
         <StatsCard
@@ -270,7 +357,7 @@ export default function AdminDashboard() {
               : undefined
           }
           changeType={
-            overview.revenueChangePercent >= 0 ? "positive" : "negative"
+            (overview.revenueChangePercent || 0) >= 0 ? "positive" : "negative"
           }
         />
         <StatsCard
@@ -314,76 +401,85 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
-        <div className="h-[200px] sm:h-[250px] md:h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={revenueData}>
-              <defs>
-                <linearGradient
-                  id="revenueGradient"
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="payoutGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#a855f7" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis
-                dataKey="date"
-                stroke="#64748b"
-                tick={{ fill: "#64748b", fontSize: 10 }}
-                interval="preserveStartEnd"
-              />
-              <YAxis
-                stroke="#64748b"
-                tick={{ fill: "#64748b", fontSize: 10 }}
-                tickFormatter={(v) => `$${v / 1000}k`}
-                width={45}
-              />
-              <Tooltip
-                contentStyle={{
-                  background: "#1e293b",
-                  border: "1px solid #334155",
-                  borderRadius: "8px",
-                }}
-                labelStyle={{ color: "#fff" }}
-                labelFormatter={(label) =>
-                  `${t("admin.dashboard.chart.tooltip.date")}: ${label}`
-                }
-                formatter={(value, name) => {
-                  const label =
-                    name === "revenue"
-                      ? t("admin.dashboard.chart.tooltip.revenue")
-                      : t("admin.dashboard.chart.tooltip.payout");
-                  return [`$${value.toLocaleString()}`, label];
-                }}
-              />
-              <Area
-                type="monotone"
-                dataKey="revenue"
-                stroke="#10b981"
-                fill="url(#revenueGradient)"
-                strokeWidth={2}
-              />
-              <Area
-                type="monotone"
-                dataKey="payouts"
-                stroke="#a855f7"
-                fill="url(#payoutGradient)"
-                strokeWidth={2}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
+        
+        {revenueLoading ? (
+          <div className="h-[300px] flex items-center justify-center">
+            <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+          </div>
+        ) : revenueError ? (
+          <div className="h-[300px] flex items-center justify-center">
+            <p className="text-slate-400">Failed to load chart data</p>
+          </div>
+        ) : revenueData.length === 0 ? (
+          <div className="h-[300px] flex items-center justify-center">
+            <p className="text-slate-400">No revenue data available</p>
+          </div>
+        ) : (
+          <div className="h-[200px] sm:h-[250px] md:h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={revenueData}>
+                <defs>
+                  <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="payoutGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#a855f7" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                <XAxis
+                  dataKey="date"
+                  stroke="#64748b"
+                  tick={{ fill: "#64748b", fontSize: 10 }}
+                  interval="preserveStartEnd"
+                />
+                <YAxis
+                  stroke="#64748b"
+                  tick={{ fill: "#64748b", fontSize: 10 }}
+                  tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                  width={45}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: "#1e293b",
+                    border: "1px solid #334155",
+                    borderRadius: "8px",
+                  }}
+                  labelStyle={{ color: "#fff" }}
+                  labelFormatter={(label) =>
+                    `${t("admin.dashboard.chart.tooltip.date")}: ${label}`
+                  }
+                  formatter={(value, name) => {
+                    const label =
+                      name === "revenue"
+                        ? t("admin.dashboard.chart.tooltip.revenue")
+                        : t("admin.dashboard.chart.tooltip.payout");
+                    return [`$${Number(value).toLocaleString()}`, label];
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#10b981"
+                  fill="url(#revenueGradient)"
+                  strokeWidth={2}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="payouts"
+                  stroke="#a855f7"
+                  fill="url(#payoutGradient)"
+                  strokeWidth={2}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        )}
       </Card>
 
-      {/* Tables */}
+      {/* Tables - FIXED: Added no-scrollbar class */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Recent Accounts */}
         <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
@@ -402,11 +498,23 @@ export default function AdminDashboard() {
               </Button>
             </Link>
           </div>
-          <DataTable
-            columns={accountColumns}
-            data={displayRecentAccounts}
-            emptyMessage={t("admin.dashboard.noDataFound")}
-          />
+          {accountsLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+            </div>
+          ) : accountsError ? (
+            <p className="text-center text-slate-400 py-8">
+              Failed to load accounts
+            </p>
+          ) : (
+            <div className="overflow-x-auto no-scrollbar">
+              <DataTable
+                columns={accountColumns}
+                data={displayRecentAccounts}
+                emptyMessage={t("admin.dashboard.noDataFound")}
+              />
+            </div>
+          )}
         </Card>
 
         {/* Recent Violations */}
@@ -427,11 +535,23 @@ export default function AdminDashboard() {
               </Button>
             </Link>
           </div>
-          <DataTable
-            columns={violationColumns}
-            data={displayRecentViolations}
-            emptyMessage={t("admin.dashboard.noDataFound")}
-          />
+          {violationsLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+            </div>
+          ) : violationsError ? (
+            <p className="text-center text-slate-400 py-8">
+              Failed to load violations
+            </p>
+          ) : (
+            <div className="overflow-x-auto no-scrollbar">
+              <DataTable
+                columns={violationColumns}
+                data={displayRecentViolations}
+                emptyMessage={t("admin.dashboard.noDataFound")}
+              />
+            </div>
+          )}
         </Card>
       </div>
 
