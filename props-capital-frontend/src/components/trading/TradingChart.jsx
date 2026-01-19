@@ -208,47 +208,45 @@ export default function TradingChart({
             textColor: "#d1d4dc",
           },
           grid: {
-            vertLines: {
-              color: "rgba(42, 46, 57, 0.035)", // Barely perceptible - final TradingView parity
-              style: 0, // Solid
-            },
-            horzLines: {
-              color: "rgba(42, 46, 57, 0.035)", // Barely perceptible - final TradingView parity
-              style: 0, // Solid
-            },
+            vertLines: { color: "rgba(42, 46, 57, 0.035)", style: 0 },
+            horzLines: { color: "rgba(42, 46, 57, 0.035)", style: 0 },
           },
           crosshair: {
-            mode: 2, // Magnet mode - TradingView style
+            mode: 2,
             vertLine: {
               color: "rgba(117, 134, 150, 0.5)",
               width: 1,
-              style: 2, // Dashed
+              style: 2,
               labelBackgroundColor: "#131722",
             },
             horzLine: {
               color: "rgba(117, 134, 150, 0.5)",
               width: 1,
-              style: 2, // Dashed
+              style: 2,
               labelBackgroundColor: "#131722",
             },
           },
           rightPriceScale: {
             borderColor: "#2a2e39",
-            autoScale: true, // Enable auto-scaling
-            minimumWidth: 92, // Increased for better price label spacing and readability
-            scaleMargins: {
-              top: 0.22, // Calm intraday volatility - subtle compression without hiding data
-              bottom: 0.22, // Calm intraday volatility - subtle compression without hiding data
-            },
+            autoScale: true, // important to prevent vertical drag
+            minimumWidth: 92,
+            scaleMargins: { top: 0.22, bottom: 0.22 },
           },
           timeScale: {
             borderColor: "#2a2e39",
             timeVisible: true,
             secondsVisible: false,
-            barSpacing: 14, // Increased spacing makes candle bodies appear slimmer (TradingView parity)
-            rightOffset: 9, // TradingView spacing
+            barSpacing: 14,
+            rightOffset: 9,
             fixLeftEdge: true,
             fixRightEdge: true,
+          },
+          handleScroll: true, // enable scrolling
+          handleScale: true, // enable zoom
+          axisPressedMouseMove: true, // allow dragging
+          pinchZoom: true, // enable touch pinch zoom
+          handleScrollOptions: {
+            vertTouchDrag: false, // disables vertical movement
           },
         };
 
@@ -575,10 +573,14 @@ export default function TradingChart({
             const first = historyData[0];
             const last = historyData[historyData.length - 1];
             console.log(
-              `[TradingChart] First candle time: ${first.time} (${new Date(first.time * 1000).toISOString()})`,
+              `[TradingChart] First candle time: ${first.time} (${new Date(
+                first.time * 1000,
+              ).toISOString()})`,
             );
             console.log(
-              `[TradingChart] Last candle time: ${last.time} (${new Date(last.time * 1000).toISOString()})`,
+              `[TradingChart] Last candle time: ${last.time} (${new Date(
+                last.time * 1000,
+              ).toISOString()})`,
             );
           }
 
@@ -1464,8 +1466,8 @@ export default function TradingChart({
                 onClick={() => setTimeframe(tf)}
                 className={`h-6 px-1.5 sm:px-2 text-xs ${
                   timeframe === tf
-                    ? "bg-emerald-500/20 text-emerald-400"
-                    : "text-slate-400 hover:text-black"
+                    ? "bg-emerald-500/20 text-emerald-200 hover:text-white"
+                    : "text-slate-400 "
                 }`}
               >
                 {tf}
@@ -1482,7 +1484,7 @@ export default function TradingChart({
             }
             className={`h-6 w-6 p-0 ${
               chartType === "candle"
-                ? "text-emerald-400 bg-emerald-500/20"
+                ? "text-emerald-400 bg-emerald-500/20 "
                 : "text-slate-400 hover:text-white"
             }`}
             title={
