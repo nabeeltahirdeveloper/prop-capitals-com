@@ -481,7 +481,7 @@ export default function Home() {
               <Button
                 variant="outline"
                 size="lg"
-                className="border-slate-600 bg-slate-800/50 text-white hover:bg-slate-700"
+                className="border-slate-600 bg-slate-800/50 text-white hover:bg-slate-700 hover:text-white"
               >
                 {t("home.howItWorks.learnMore")}
                 <ArrowRight className="ml-2 w-4 h-4" />
