@@ -1,37 +1,36 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, forwardRef, Inject } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
-
 import { EvaluationService } from '../evaluation/evaluation.service';
+import { TradingEventsGateway } from '../websocket/trading-events.gateway';
+import { calculateTradingDaysMetrics } from '../utils/trading-days-utils';
 
 @Injectable()
-
 export class TradesService {
-
   constructor(
-
     private prisma: PrismaService,
-
+    @Inject(forwardRef(() => EvaluationService))
     private evaluationService: EvaluationService,
-
+    private tradingEventsGateway: TradingEventsGateway,
+    
   ) {}
 
-    // Create trade and trigger evaluation engine
-
+  // Create trade and trigger evaluation engine
   async createTrade(data: any) {
-
     const { accountId, profit, openPrice, closePrice, volume, symbol, stopLoss, takeProfit } = data;
 
     const account = await this.prisma.tradingAccount.findUnique({
-
       where: { id: accountId },
-
+      include: {
+        challenge: true,
+        trades: {
+          select: { openedAt: true },
+        },
+      },
     });
 
     if (!account) {
-
       throw new NotFoundException('Trading account not found');
-
     }
 
     // Check account status - block trading if locked or disqualified
@@ -46,39 +45,23 @@ export class TradesService {
     }
 
     // 1️⃣ Store trade
-
     const trade = await this.prisma.trade.create({
-
       data: {
-
         tradingAccountId: accountId,
-
         symbol,
-
         type: data.type || 'BUY',
-
         volume,
-
         openPrice,
-
         closePrice,
-
         stopLoss: stopLoss ?? null,
-
         takeProfit: takeProfit ?? null,
-
         profit: profit || 0,
-
         openedAt: new Date(),
-
         closedAt: closePrice ? new Date() : null,
-
       },
-
     });
 
     // 2️⃣ Update balance/equity (simple: balance += profit)
-
     const newBalance = (account.balance ?? account.initialBalance) + profit;
     const newEquity = newBalance;
 
@@ -92,43 +75,77 @@ export class TradesService {
     if (newEquity > currentMaxEquity) {
       updateData.maxEquityToDate = newEquity;
     }
+    
+    await this.tradingEventsGateway.emitAccountUpdate(accountId, {
+      balance: newBalance,
+      equity: newEquity,
+      timestamp: new Date().toISOString(),
+    });
 
     await this.prisma.tradingAccount.update({
-
       where: { id: accountId },
-
       data: updateData,
-
     });
 
     // 3️⃣ Run evaluation engine
+    const evaluation = await this.evaluationService.evaluateAccountAfterTrade(accountId);
 
-    const evaluation = await this.evaluationService.evaluateAccountAfterTrade(
+    // 🔥 4️⃣ Calculate trading days metrics for real-time update
+    const allTrades = [...account.trades, { openedAt: trade.openedAt }]; // Include the new trade
+    const tradingDaysCompleted = new Set(
+      allTrades
+        .filter((t) => t.openedAt)
+        .map((t) => t.openedAt.toISOString().substring(0, 10)),
+    ).size;
 
-      accountId,
-
+    // Check if traded today
+    const today = new Date().toISOString().substring(0, 10);
+    const tradedToday = allTrades.some(
+      (t) => t.openedAt && t.openedAt.toISOString().substring(0, 10) === today
     );
 
+    // Calculate days remaining
+    const daysRemaining = Math.max(0, account.challenge.minTradingDays - tradingDaysCompleted);
+
+    // Calculate profit percent for real-time display
+    const initialBalance = account.initialBalance || account.challenge.accountSize || 0;
+    const profitPercent = initialBalance > 0 
+      ? ((newEquity - initialBalance) / initialBalance) * 100 
+      : 0;
+
+    // 🔥 5️⃣ Emit real-time account update via WebSocket
+    this.tradingEventsGateway.emitAccountUpdate(accountId, {
+      tradingDaysCount: tradingDaysCompleted,
+      tradedToday,
+      daysRemaining,
+      balance: newBalance,
+      equity: newEquity,
+      profitPercent,
+      lastTradeId: trade.id,
+      timestamp: new Date().toISOString(),
+    });
+
+    // 🔥 6️⃣ Also emit trade executed event
+    this.tradingEventsGateway.emitTradeExecuted(accountId, {
+      tradeId: trade.id,
+      symbol: trade.symbol,
+      type: trade.type,
+      volume: trade.volume,
+      openPrice: trade.openPrice,
+      timestamp: new Date().toISOString(),
+    });
+
     return {
-
       trade,
-
       evaluation,
-
     };
-
   }
 
   async getTradesForAccount(accountId: string) {
-
     return this.prisma.trade.findMany({
-
       where: { tradingAccountId: accountId },
-
       orderBy: { openedAt: 'desc' },
-
     });
-
   }
 
   // Update trade when position is closed or SL/TP is modified
@@ -217,22 +234,20 @@ export class TradesService {
       const profitToAdd = profit !== undefined ? profit : updatedTrade.profit;
       const newBalance = (account.balance ?? account.initialBalance) + profitToAdd;
 
-    await this.prisma.tradingAccount.update({
-      where: { id: account.id },
-      data: {
-        balance: newBalance,
-        equity: newBalance,
-      },
-    });
+      await this.prisma.tradingAccount.update({
+        where: { id: account.id },
+        data: {
+          balance: newBalance,
+          equity: newBalance,
+        },
+      });
 
       // 3️⃣ Run evaluation engine when trade is closed
-    const evaluation = await this.evaluationService.evaluateAccountAfterTrade(
-      account.id,
-    );
+      const evaluation = await this.evaluationService.evaluateAccountAfterTrade(account.id);
 
-    return {
-      trade: updatedTrade,
-      evaluation,
+      return {
+        trade: updatedTrade,
+        evaluation,
       };
     }
 
@@ -289,5 +304,4 @@ export class TradesService {
       trade: updatedTrade,
     };
   }
-
 }
