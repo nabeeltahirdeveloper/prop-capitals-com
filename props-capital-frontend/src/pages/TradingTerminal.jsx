@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { playClosureAlert } from '@/utils/notificationSound';
+import socket from '../lib/socket';
 
 import MarketWatchlist from '../components/trading/MarketWatchlist';
 import TradingPanel from '../components/trading/TradingPanel';
@@ -158,12 +159,22 @@ export default function TradingTerminal() {
   const priceTickThrottleRef = useRef({}); // Throttle price tick calls (250ms per symbol)
   const [violationModal, setViolationModal] = React.useState(null); // { type: 'DAILY_LOCKED' | 'DISQUALIFIED', shown: boolean }
 
+  // 🔥 WebSocket state for real-time trading days updates
+  const [socketConnected, setSocketConnected] = useState(false);
+  const [tradingDaysCount, setTradingDaysCount] = useState(0);
+  const [tradedToday, setTradedToday] = useState(false);
+  const [daysRemaining, setDaysRemaining] = useState(0);
+  const [minTradingDays, setMinTradingDays] = useState(4);
+
+// Aliases for compatibility with existing code
+  const tradingDays = tradingDaysCount;
+
   // Ref to track active trade polling and prevent race conditions when switching accounts
   const activeTradePollRef = useRef({ accountId: null, pollId: 0, aborted: false });
 
   // Get accountId from URL using React Router
   const [searchParams] = useSearchParams();
-  const accountId = searchParams.get('accountId');
+  const accountId = searchParams.get('account') || searchParams.get('accountId');
 
   // Get current user
   const { data: user } = useQuery({
@@ -293,6 +304,142 @@ export default function TradingTerminal() {
 
   // Get selected account data - includes demo account
   const selectedAccount = availableAccounts.find(a => a.id === selectedAccountId);
+// 🔥 WebSocket Integration for Real-Time Trading Days Updates
+useEffect(() => {
+  if (!selectedAccountId) {
+    console.log('⏭️ No account selected, skipping WebSocket subscription');
+    return;
+  }
+
+  if (selectedAccount?.isDemo) {
+    console.log('⏭️ Demo account - skipping WebSocket subscription');
+    return;
+  }
+
+  console.log('📡 Setting up WebSocket for account:', selectedAccountId);
+
+  // Handle socket connection
+  const handleConnect = () => {
+    console.log('✅ Socket connected, subscribing to account:', selectedAccountId);
+    setSocketConnected(true);
+    socket.emit('subscribe:account', { accountId: selectedAccountId });
+  };
+
+  // Handle socket disconnection
+  const handleDisconnect = (reason) => {
+    console.log('❌ Socket disconnected:', reason);
+    setSocketConnected(false);
+  };
+
+  // Handle subscription confirmation
+  const handleSubscriptionConfirmed = (data) => {
+    console.log('✅ Subscription confirmed:', data);
+  };
+
+  // 🔥 Handle account updates (trading days, balance, equity, etc.)
+  const handleAccountUpdate = (data) => {
+    console.log('📊 Account update received:', data);
+    
+    // Update trading days count
+    if (data.tradingDaysCount !== undefined) {
+      setTradingDaysCount(data.tradingDaysCount);
+      console.log('✅ Trading days updated:', data.tradingDaysCount);
+    }
+    
+    // Update traded today flag
+    if (data.tradedToday !== undefined) {
+      setTradedToday(data.tradedToday);
+    }
+    
+    // Update days remaining
+    if (data.daysRemaining !== undefined) {
+      setDaysRemaining(data.daysRemaining);
+    }
+    
+    // Optionally refetch account data to ensure consistency
+    queryClient.invalidateQueries(['trading-account', selectedAccountId]);
+  };
+
+  // Handle trade execution events
+  const handleTradeExecuted = (data) => {
+    console.log('💼 Trade executed:', data);
+    toast({
+      title: 'Trade Executed',
+      description: `${data.symbol} ${data.type} - ${data.volume} lots`,
+    });
+    
+    // Refetch trades
+    queryClient.invalidateQueries(['account-trades', selectedAccountId]);
+  };
+
+  // Handle position closed events
+  const handlePositionClosed = (data) => {
+    console.log('🔒 Position closed:', data);
+    playClosureAlert(); // Play sound notification
+    
+    toast({
+      title: data.closeReason === 'TP_HIT' ? 'Take Profit Hit' : 'Stop Loss Hit',
+      description: `${data.symbol} - P/L: $${data.profit.toFixed(2)}`,
+      variant: data.profit >= 0 ? 'default' : 'destructive',
+    });
+    
+    // Refetch trades and account data
+    queryClient.invalidateQueries(['account-trades', selectedAccountId]);
+    queryClient.invalidateQueries(['trading-account', selectedAccountId]);
+  };
+
+  // Handle account status changes
+  const handleAccountStatusChanged = (data) => {
+    console.log('⚠️ Account status changed:', data);
+    
+    if (data.status === 'DAILY_LOCKED') {
+      setAccountStatusBanner({
+        type: 'warning',
+        title: 'Daily Loss Limit Reached',
+        message: 'Trading locked until tomorrow',
+      });
+      setViolationModal({ type: 'DAILY_LOCKED', shown: true });
+    } else if (data.status === 'DISQUALIFIED') {
+      setAccountStatusBanner({
+        type: 'error',
+        title: 'Account Disqualified',
+        message: 'Max drawdown exceeded',
+      });
+      setViolationModal({ type: 'DISQUALIFIED', shown: true });
+    }
+    
+    // Refetch account data
+    queryClient.invalidateQueries(['trading-account', selectedAccountId]);
+  };
+
+  // Subscribe when socket is connected
+  if (socket.connected) {
+    handleConnect();
+  } else {
+    socket.on('connect', handleConnect);
+  }
+
+  // Register all event listeners
+  socket.on('disconnect', handleDisconnect);
+  socket.on('subscription:confirmed', handleSubscriptionConfirmed);
+  socket.on('account:update', handleAccountUpdate);
+  socket.on('trade:executed', handleTradeExecuted);
+  socket.on('position:closed', handlePositionClosed);
+  socket.on('account:status-changed', handleAccountStatusChanged);
+
+  // Cleanup function
+  return () => {
+    console.log('🧹 Cleaning up WebSocket subscriptions');
+    socket.off('connect', handleConnect);
+    socket.off('disconnect', handleDisconnect);
+    socket.off('subscription:confirmed', handleSubscriptionConfirmed);
+    socket.off('account:update', handleAccountUpdate);
+    socket.off('trade:executed', handleTradeExecuted);
+    socket.off('position:closed', handlePositionClosed);
+    socket.off('account:status-changed', handleAccountStatusChanged);
+    socket.emit('unsubscribe:account', { accountId: selectedAccountId });
+  };
+}, [selectedAccountId, queryClient, toast]);
 
   // Account is valid if selected (demo account is always valid)
   const hasValidAccount = !!selectedAccount;
