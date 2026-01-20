@@ -748,16 +748,19 @@ export default function AccountMetrics({
             {t("terminal.accountMetrics.phaseProgression")}
           </h3>
         </div>
-        <div className="flex items-center justify-between gap-2 flex-wrap">
+
+        {/* RESPONSIVE CONTAINER */}
+        <div className="flex flex-col md:flex-row items-center md:justify-between gap-4">
           {/* Phase 1 */}
           <div
-            className={`flex-1 p-3 rounded-lg border-2 transition-all ${
-              getPhaseStatus("phase1") === "completed"
-                ? "bg-emerald-500/10 border-emerald-500/50"
-                : getPhaseStatus("phase1") === "active"
-                  ? "bg-blue-500/10 border-blue-500/50"
-                  : "bg-slate-800/50 border-slate-700"
-            }`}
+            className={`w-full md:flex-1 p-3 rounded-lg border-2 transition-all
+        ${
+          getPhaseStatus("phase1") === "completed"
+            ? "bg-emerald-500/10 border-emerald-500/50"
+            : getPhaseStatus("phase1") === "active"
+              ? "bg-blue-500/10 border-blue-500/50"
+              : "bg-slate-800/50 border-slate-700"
+        }`}
           >
             <div className="flex items-center gap-2 mb-2">
               {getPhaseStatus("phase1") === "completed" ? (
@@ -768,20 +771,22 @@ export default function AccountMetrics({
                 <div className="w-4 h-4 rounded-full bg-slate-600" />
               )}
               <span
-                className={`text-xs font-semibold ${
-                  getPhaseStatus("phase1") === "completed"
-                    ? "text-emerald-400"
-                    : getPhaseStatus("phase1") === "active"
-                      ? "text-blue-400"
-                      : "text-slate-400"
-                }`}
+                className={`text-xs font-semibold
+            ${
+              getPhaseStatus("phase1") === "completed"
+                ? "text-emerald-400"
+                : getPhaseStatus("phase1") === "active"
+                  ? "text-blue-400"
+                  : "text-slate-400"
+            }`}
               >
                 {t("terminal.accountMetrics.phase1")}
               </span>
             </div>
+
             {isPhase1 && (
               <div className="space-y-1 text-[10px]">
-                <div className="flex items-center justify-between">
+                <div className="flex justify-between">
                   <span className="text-slate-400">
                     {t("terminal.accountMetrics.profit")}:
                   </span>
@@ -794,7 +799,7 @@ export default function AccountMetrics({
                     {profitTarget}%
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex justify-between">
                   <span className="text-slate-400">
                     {t("terminal.accountMetrics.days")}:
                   </span>
@@ -813,19 +818,21 @@ export default function AccountMetrics({
             )}
           </div>
 
-          <ArrowRight className="w-4 h-4 text-slate-500 flex-shrink-0" />
+          {/* Arrow */}
+          <ArrowRight className="w-4 h-4 text-slate-500 rotate-90 md:rotate-0" />
 
           {/* Phase 2 */}
           <div
-            className={`flex-1 p-3 rounded-lg border-2 transition-all ${
-              getPhaseStatus("phase2") === "completed"
-                ? "bg-emerald-500/10 border-emerald-500/50"
-                : getPhaseStatus("phase2") === "active"
-                  ? "bg-cyan-500/10 border-cyan-500/50"
-                  : getPhaseStatus("phase2") === "locked"
-                    ? "bg-slate-800/30 border-slate-700 opacity-50"
-                    : "bg-slate-800/50 border-slate-700"
-            }`}
+            className={`w-full md:flex-1 p-3 rounded-lg border-2 transition-all
+        ${
+          getPhaseStatus("phase2") === "completed"
+            ? "bg-emerald-500/10 border-emerald-500/50"
+            : getPhaseStatus("phase2") === "active"
+              ? "bg-cyan-500/10 border-cyan-500/50"
+              : getPhaseStatus("phase2") === "locked"
+                ? "bg-slate-800/30 border-slate-700 opacity-50"
+                : "bg-slate-800/50 border-slate-700"
+        }`}
           >
             <div className="flex items-center gap-2 mb-2">
               {getPhaseStatus("phase2") === "completed" ? (
@@ -836,17 +843,19 @@ export default function AccountMetrics({
                 <div className="w-4 h-4 rounded-full bg-slate-600" />
               )}
               <span
-                className={`text-xs font-semibold ${
-                  getPhaseStatus("phase2") === "completed"
-                    ? "text-emerald-400"
-                    : getPhaseStatus("phase2") === "active"
-                      ? "text-cyan-400"
-                      : "text-slate-400"
-                }`}
+                className={`text-xs font-semibold
+            ${
+              getPhaseStatus("phase2") === "completed"
+                ? "text-emerald-400"
+                : getPhaseStatus("phase2") === "active"
+                  ? "text-cyan-400"
+                  : "text-slate-400"
+            }`}
               >
                 {t("terminal.accountMetrics.phase2")}
               </span>
             </div>
+
             {getPhaseStatus("phase2") === "locked" && (
               <p className="text-[10px] text-slate-500">
                 {t("terminal.accountMetrics.completePhase1")}
@@ -854,15 +863,17 @@ export default function AccountMetrics({
             )}
           </div>
 
-          <ArrowRight className="w-4 h-4 text-slate-500 flex-shrink-0" />
+          {/* Arrow */}
+          <ArrowRight className="w-4 h-4 text-slate-500 rotate-90 md:rotate-0" />
 
           {/* Funded */}
           <div
-            className={`flex-1 p-3 rounded-lg border-2 transition-all ${
-              getPhaseStatus("funded") === "completed"
-                ? "bg-purple-500/10 border-purple-500/50"
-                : "bg-slate-800/30 border-slate-700 opacity-50"
-            }`}
+            className={`w-full md:flex-1 p-3 rounded-lg border-2 transition-all
+        ${
+          getPhaseStatus("funded") === "completed"
+            ? "bg-purple-500/10 border-purple-500/50"
+            : "bg-slate-800/30 border-slate-700 opacity-50"
+        }`}
           >
             <div className="flex items-center gap-2 mb-2">
               {getPhaseStatus("funded") === "completed" ? (
@@ -871,15 +882,17 @@ export default function AccountMetrics({
                 <div className="w-4 h-4 rounded-full bg-slate-600" />
               )}
               <span
-                className={`text-xs font-semibold ${
-                  getPhaseStatus("funded") === "completed"
-                    ? "text-purple-400"
-                    : "text-slate-400"
-                }`}
+                className={`text-xs font-semibold
+            ${
+              getPhaseStatus("funded") === "completed"
+                ? "text-purple-400"
+                : "text-slate-400"
+            }`}
               >
                 {t("terminal.accountMetrics.funded")}
               </span>
             </div>
+
             {getPhaseStatus("funded") === "locked" && (
               <p className="text-[10px] text-slate-500">
                 {t("terminal.accountMetrics.completePhase2")}
