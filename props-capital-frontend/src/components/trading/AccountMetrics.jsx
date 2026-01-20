@@ -65,10 +65,10 @@ export default function AccountMetrics({ account, positions = [], getPriceForPos
       }
     });
 
-    // Real-time balance = base balance - margin used
+    // Balance should remain static during a trade (only changes when trades close)
     return {
       margin: totalMargin,
-      balance: Math.max(0, baseBalance - totalMargin)
+      balance: baseBalance
     };
   }, [account?.balance, positions, getPriceForPosition, isCryptoSymbol]);
 
@@ -84,9 +84,9 @@ export default function AccountMetrics({ account, positions = [], getPriceForPos
 
   // Calculate real-time free margin: equity - margin used
   const realTimeFreeMargin = React.useMemo(() => {
-    const currentEquity = account?.equity || 100000;
-    return Math.max(0, currentEquity - realTimeMargin);
-  }, [account?.equity, realTimeMargin]);
+    // Use displayEquity (real-time) instead of account.equity (static)
+    return Math.max(0, displayEquity - realTimeMargin);
+  }, [displayEquity, realTimeMargin]);
 
   const [displayProfitPercent, setDisplayProfitPercent] = React.useState(account?.profitPercent || 0);
   const [displayDailyDrawdown, setDisplayDailyDrawdown] = React.useState(account?.dailyDrawdown || 0);
@@ -213,7 +213,7 @@ export default function AccountMetrics({ account, positions = [], getPriceForPos
     // Initial set
     setDisplayEquity(currentEquity);
     setDisplayFloatingPnL(currentFloatingPnL);
-    setDisplayBalance(realTimeBalance);
+    setDisplayBalance(baseBalance);
     setDisplayProfitPercent(currentProfitPercent);
     setDisplayDailyDrawdown(currentDailyDrawdown);
     setDisplayOverallDrawdown(currentOverallDrawdown);
@@ -288,8 +288,8 @@ export default function AccountMetrics({ account, positions = [], getPriceForPos
           prev.floatingPnL = fpl;
         }
         if (balanceChanged) {
-          setDisplayBalance(realTimeBal);
-          prev.balance = realTimeBal;
+          setDisplayBalance(account?.balance || 100000);
+          prev.balance = account?.balance || 100000;
         }
         if (profitChanged) {
           setDisplayProfitPercent(profitPct);

@@ -577,12 +577,8 @@ export class TradingAccountsService {
         : 0;
 
     // Trading days based on distinct trade dates
-
-    const tradingDaysCompleted = new Set(
-
-      account.trades.map((t) => t.openedAt.toISOString().substring(0, 10)),
-
-    ).size;
+    const tradeDates = account.trades.map((t) => t.openedAt.toISOString().substring(0, 10));
+    const tradingDaysCompleted = new Set(tradeDates).size;
 
     // Phase-specific target
 
@@ -655,6 +651,8 @@ export class TradingAccountsService {
         tradingDaysCompleted,
 
         minTradingDays: challenge.minTradingDays,
+
+        daysRemaining: Math.max(0, challenge.minTradingDays - tradingDaysCompleted),
 
         phasePassed,
 

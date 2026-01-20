@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import api from '@/lib/api';
@@ -126,6 +126,24 @@ export default function TradingTerminal() {
     spread: 1.5,
     change: 0.05
   });
+
+  // Enrich selectedSymbol with real-time prices from unifiedPrices
+  const enrichedSelectedSymbol = useMemo(() => {
+    if (!selectedSymbol?.symbol) return selectedSymbol;
+
+    const priceData = unifiedPrices[selectedSymbol.symbol];
+    if (priceData && typeof priceData === 'object' && priceData.bid !== undefined && priceData.ask !== undefined) {
+      const spread = ((priceData.ask - priceData.bid) * 10000).toFixed(1); // Calculate spread in pips for forex
+      return {
+        ...selectedSymbol,
+        bid: priceData.bid,
+        ask: priceData.ask,
+        spread: parseFloat(spread),
+      };
+    }
+    return selectedSymbol;
+  }, [selectedSymbol, unifiedPrices]);
+
   const [positions, setPositions] = useState([]);
   const [demoClosedTrades, setDemoClosedTrades] = useState([]);
   const [demoPendingOrders, setDemoPendingOrders] = useState([]);
@@ -263,9 +281,22 @@ export default function TradingTerminal() {
       overall_drawdown_percent: overallDD,
       trading_days_count: account.trades ? new Set(account.trades.map(t => new Date(t.openedAt).toISOString().substring(0, 10))).size : 0,
       min_trading_days: challenge.minTradingDays || challenge.min_trading_days || 5,
-      days_remaining: Math.max(0, (challenge.minTradingDays || challenge.min_trading_days || 5) - (account.trades ? new Set(account.trades.map(t => new Date(t.openedAt).toISOString().substring(0, 10))).size : 0)),
+      max_trading_days: challenge.maxTradingDays || challenge.max_trading_days || 30,
+      days_remaining: account.daysRemaining ?? Math.max(0, (challenge.maxTradingDays || challenge.max_trading_days || 30) - (account.daysElapsed || 0)),
       margin_used: 0, // Will be updated from backend getAccountById
       free_margin: equity, // Will be updated from backend getAccountById
+      // Challenge fields for ChallengeRulesPanel (camelCase versions)
+      minTradingDays: challenge.minTradingDays || challenge.min_trading_days || 5,
+      maxTradingDays: challenge.maxTradingDays || challenge.max_trading_days || 30,
+      profitSplit: challenge.profitSplit || challenge.profit_split || 80,
+      leverage: challenge.leverage || 100,
+      maxLot: challenge.maxLot || challenge.max_lot || 10,
+      phase1_profit_target: challenge.phase1TargetPercent || challenge.phase1_profit_target || 8,
+      max_daily_drawdown: challenge.dailyDrawdownPercent || challenge.max_daily_drawdown || 5,
+      max_overall_drawdown: challenge.overallDrawdownPercent || challenge.max_overall_drawdown || 10,
+      news_trading_allowed: challenge.newsTradingAllowed ?? challenge.news_trading_allowed ?? true,
+      weekend_holding_allowed: challenge.weekendHoldingAllowed ?? challenge.weekend_holding_allowed ?? true,
+      ea_allowed: challenge.eaAllowed ?? challenge.ea_allowed ?? true,
     };
   });
 
@@ -304,142 +335,98 @@ export default function TradingTerminal() {
 
   // Get selected account data - includes demo account
   const selectedAccount = availableAccounts.find(a => a.id === selectedAccountId);
-// 🔥 WebSocket Integration for Real-Time Trading Days Updates
+
+  // 🔥 Real-time account updates via WebSocket
+  const handleAccountUpdate = useCallback((event) => {
+    if (!event) return;
+    
+    devLog('⚡ WebSocket Account Update:', event);
+
+    if (event.tradingDaysCount !== undefined) {
+      setTradingDaysCount(event.tradingDaysCount);
+      // Update account state to keep ChallengeRulesPanel in sync
+      setAccount(prev => ({
+        ...prev,
+        tradingDays: event.tradingDaysCount
+      }));
+    }
+
+    if (event.daysRemaining !== undefined) {
+      setDaysRemaining(event.daysRemaining);
+      setAccount(prev => ({
+        ...prev,
+        daysRemaining: event.daysRemaining
+      }));
+    }
+
+    if (event.tradedToday !== undefined) {
+      setTradedToday(event.tradedToday);
+    }
+  }, []);
+
+  // Initialize WebSocket connection
+  const { isConnected: isSocketConnected } = useTradingWebSocket({
+    accountId: selectedAccountId,
+    onAccountUpdate: handleAccountUpdate
+  });
+
+  // Update socket connection state
+  useEffect(() => {
+    setSocketConnected(isSocketConnected);
+  }, [isSocketConnected]);
+
+
+  // 🔥 Simple polling for trading days updates (fallback)
 useEffect(() => {
-  if (!selectedAccountId) {
-    console.log('⏭️ No account selected, skipping WebSocket subscription');
+  // Skip if no account or demo account
+  if (!selectedAccountId || selectedAccount?.isDemo) {
     return;
   }
 
-  if (selectedAccount?.isDemo) {
-    console.log('⏭️ Demo account - skipping WebSocket subscription');
-    return;
-  }
+  console.log('📊 Starting trading days polling for account:', selectedAccountId);
 
-  console.log('📡 Setting up WebSocket for account:', selectedAccountId);
+  // Function to fetch account data and update trading days
+  const updateTradingDays = async () => {
+    try {
+      const summary = await getAccountSummary(selectedAccountId);
 
-  // Handle socket connection
-  const handleConnect = () => {
-    console.log('✅ Socket connected, subscribing to account:', selectedAccountId);
-    setSocketConnected(true);
-    socket.emit('subscribe:account', { accountId: selectedAccountId });
-  };
+      if (summary?.metrics?.tradingDaysCompleted !== undefined) {
+        console.log('✅ Updated trading days:', summary.metrics.tradingDaysCompleted);
+        setTradingDaysCount(summary.metrics.tradingDaysCompleted);
+        // Also update account state so ChallengeRulesPanel gets the update
+        setAccount(prev => ({
+          ...prev,
+          tradingDays: summary.metrics.tradingDaysCompleted
+        }));
+      }
+      if (summary?.metrics?.daysRemaining !== undefined) {
+        setDaysRemaining(summary.metrics.daysRemaining);
+        setAccount(prev => ({
+          ...prev,
+          daysRemaining: summary.metrics.daysRemaining
+        }));
+      }
 
-  // Handle socket disconnection
-  const handleDisconnect = (reason) => {
-    console.log('❌ Socket disconnected:', reason);
-    setSocketConnected(false);
-  };
-
-  // Handle subscription confirmation
-  const handleSubscriptionConfirmed = (data) => {
-    console.log('✅ Subscription confirmed:', data);
-  };
-
-  // 🔥 Handle account updates (trading days, balance, equity, etc.)
-  const handleAccountUpdate = (data) => {
-    console.log('📊 Account update received:', data);
-    
-    // Update trading days count
-    if (data.tradingDaysCount !== undefined) {
-      setTradingDaysCount(data.tradingDaysCount);
-      console.log('✅ Trading days updated:', data.tradingDaysCount);
+      // Check if traded today
+      const traded = summary?.account?.tradedToday || false;
+      setTradedToday(traded);
+    } catch (error) {
+      console.error('❌ Failed to update trading days:', error);
     }
-    
-    // Update traded today flag
-    if (data.tradedToday !== undefined) {
-      setTradedToday(data.tradedToday);
-    }
-    
-    // Update days remaining
-    if (data.daysRemaining !== undefined) {
-      setDaysRemaining(data.daysRemaining);
-    }
-    
-    // Optionally refetch account data to ensure consistency
-    queryClient.invalidateQueries(['trading-account', selectedAccountId]);
   };
 
-  // Handle trade execution events
-  const handleTradeExecuted = (data) => {
-    console.log('💼 Trade executed:', data);
-    toast({
-      title: 'Trade Executed',
-      description: `${data.symbol} ${data.type} - ${data.volume} lots`,
-    });
-    
-    // Refetch trades
-    queryClient.invalidateQueries(['account-trades', selectedAccountId]);
-  };
+  // Update immediately
+  updateTradingDays();
 
-  // Handle position closed events
-  const handlePositionClosed = (data) => {
-    console.log('🔒 Position closed:', data);
-    playClosureAlert(); // Play sound notification
-    
-    toast({
-      title: data.closeReason === 'TP_HIT' ? 'Take Profit Hit' : 'Stop Loss Hit',
-      description: `${data.symbol} - P/L: $${data.profit.toFixed(2)}`,
-      variant: data.profit >= 0 ? 'default' : 'destructive',
-    });
-    
-    // Refetch trades and account data
-    queryClient.invalidateQueries(['account-trades', selectedAccountId]);
-    queryClient.invalidateQueries(['trading-account', selectedAccountId]);
-  };
+  // Then update every 5 seconds
+  const interval = setInterval(updateTradingDays, 5000);
 
-  // Handle account status changes
-  const handleAccountStatusChanged = (data) => {
-    console.log('⚠️ Account status changed:', data);
-    
-    if (data.status === 'DAILY_LOCKED') {
-      setAccountStatusBanner({
-        type: 'warning',
-        title: 'Daily Loss Limit Reached',
-        message: 'Trading locked until tomorrow',
-      });
-      setViolationModal({ type: 'DAILY_LOCKED', shown: true });
-    } else if (data.status === 'DISQUALIFIED') {
-      setAccountStatusBanner({
-        type: 'error',
-        title: 'Account Disqualified',
-        message: 'Max drawdown exceeded',
-      });
-      setViolationModal({ type: 'DISQUALIFIED', shown: true });
-    }
-    
-    // Refetch account data
-    queryClient.invalidateQueries(['trading-account', selectedAccountId]);
-  };
-
-  // Subscribe when socket is connected
-  if (socket.connected) {
-    handleConnect();
-  } else {
-    socket.on('connect', handleConnect);
-  }
-
-  // Register all event listeners
-  socket.on('disconnect', handleDisconnect);
-  socket.on('subscription:confirmed', handleSubscriptionConfirmed);
-  socket.on('account:update', handleAccountUpdate);
-  socket.on('trade:executed', handleTradeExecuted);
-  socket.on('position:closed', handlePositionClosed);
-  socket.on('account:status-changed', handleAccountStatusChanged);
-
-  // Cleanup function
+  // Cleanup
   return () => {
-    console.log('🧹 Cleaning up WebSocket subscriptions');
-    socket.off('connect', handleConnect);
-    socket.off('disconnect', handleDisconnect);
-    socket.off('subscription:confirmed', handleSubscriptionConfirmed);
-    socket.off('account:update', handleAccountUpdate);
-    socket.off('trade:executed', handleTradeExecuted);
-    socket.off('position:closed', handlePositionClosed);
-    socket.off('account:status-changed', handleAccountStatusChanged);
-    socket.emit('unsubscribe:account', { accountId: selectedAccountId });
+    console.log('🧹 Stopping trading days polling');
+    clearInterval(interval);
   };
-}, [selectedAccountId, queryClient, toast]);
+}, [selectedAccountId, selectedAccount?.isDemo]);
 
   // Account is valid if selected (demo account is always valid)
   const hasValidAccount = !!selectedAccount;
@@ -459,7 +446,7 @@ useEffect(() => {
     profitTarget: 10,
     tradingDays: 5,
     minTradingDays: 5,
-    daysRemaining: 0,
+    daysRemaining: 15, // Default to 15 days remaining (30 max - 15 elapsed)
     daysElapsed: 15,
     phase: 'phase1',
     startingBalance: 100000,
@@ -699,7 +686,6 @@ useEffect(() => {
         // Use backend metrics directly - never recalculate (single source of truth)
         const backendOverallDD = metrics.overallDrawdownPercent ?? 0;
         const backendDailyDD = metrics.dailyDrawdownPercent ?? 0;
-
         // CRITICAL: Get backend status and check for frozen violation values
         const backendStatus = acc.status || account.status;
         const statusUpper = String(backendStatus).toUpperCase();
@@ -848,22 +834,28 @@ useEffect(() => {
             equity: (acc.equity !== null && acc.equity !== undefined && Number.isFinite(acc.equity))
               ? acc.equity
               : prev.equity,
-            profitPercent: (metrics.profitPercent !== null && metrics.profitPercent !== undefined && Number.isFinite(metrics.profitPercent))
-              ? metrics.profitPercent
-              : prev.profitPercent,
-            overallDrawdown: (Number.isFinite(finalOverallDrawdown) && finalOverallDrawdown >= 0)
-              ? finalOverallDrawdown
-              : prev.overallDrawdown,
-            dailyDrawdown: (Number.isFinite(finalDailyDrawdown) && finalDailyDrawdown >= 0)
-              ? finalDailyDrawdown
-              : prev.dailyDrawdown,
+            profitPercent: Math.max(
+              prev.profitPercent ?? 0,
+              (metrics.profitPercent !== null && metrics.profitPercent !== undefined && Number.isFinite(metrics.profitPercent))
+                ? metrics.profitPercent
+                : 0
+            ),
+            // CRITICAL: Drawdowns should only INCREASE - never decrease when profit comes
+            overallDrawdown: Math.max(
+              prev.overallDrawdown ?? 0,
+              (Number.isFinite(finalOverallDrawdown) && finalOverallDrawdown >= 0) ? finalOverallDrawdown : 0
+            ),
+            dailyDrawdown: Math.max(
+              prev.dailyDrawdown ?? 0,
+              (Number.isFinite(finalDailyDrawdown) && finalDailyDrawdown >= 0) ? finalDailyDrawdown : 0
+            ),
             maxDailyDrawdown: maxDailyDD, // Use from challenge rules
             maxOverallDrawdown: maxOverallDD, // Use from challenge rules
             phase: acc.phase?.toLowerCase() || prev.phase,
             tradingDays: metrics.tradingDaysCompleted ?? prev.tradingDays, // Backend uses tradingDaysCompleted
             minTradingDays: challengeRules.minTradingDays ?? prev.minTradingDays,
-            daysRemaining: (acc.daysRemaining !== null && acc.daysRemaining !== undefined && Number.isFinite(acc.daysRemaining))
-              ? acc.daysRemaining
+            daysRemaining: (metrics.daysRemaining !== null && metrics.daysRemaining !== undefined && Number.isFinite(metrics.daysRemaining))
+              ? metrics.daysRemaining
               : prev.daysRemaining,
             margin: (acc.marginUsed !== null && acc.marginUsed !== undefined && Number.isFinite(acc.marginUsed))
               ? acc.marginUsed
@@ -1328,16 +1320,16 @@ useEffect(() => {
           equity: finalEquity,
           startingBalance: selectedAccount.initial_balance || 100000,
           highestBalance: selectedAccount.highest_balance || selectedAccount.initial_balance || 100000,
-          profitPercent: selectedAccount.current_profit_percent || 0,
+          profitPercent: Math.max(prev.profitPercent ?? 0, selectedAccount.current_profit_percent || 0),
           // CRITICAL: Don't reset dailyDrawdown - preserve it until syncAccountFromBackend updates it
           // If we reset here, we lose the value set by sync!
           dailyDrawdown: prev.dailyDrawdown, // Keep existing value
           overallDrawdown: selectedAccount.overall_drawdown_percent || prev.overallDrawdown || 0,
           maxDailyDrawdown: maxDailyDD, // Load from challenge rules
           maxOverallDrawdown: maxOverallDD, // Load from challenge rules
-          tradingDays: selectedAccount.trading_days_count || 0,
+          tradingDays: Math.max(selectedAccount.trading_days_count || 0, prev.tradingDays || 0),
           minTradingDays: selectedAccount.min_trading_days || challenge.minTradingDays || prev.minTradingDays || 5,
-          daysRemaining: selectedAccount.days_remaining !== undefined ? selectedAccount.days_remaining : Math.max(0, (challenge.minTradingDays || 5) - (selectedAccount.trading_days_count || 0)),
+          daysRemaining: selectedAccount.days_remaining !== undefined ? selectedAccount.days_remaining : (prev.daysRemaining !== undefined ? prev.daysRemaining : Math.max(0, (challenge.maxTradingDays || 30) - (daysElapsed || 0))),
           daysElapsed: daysElapsed,
           margin: selectedAccount.margin_used !== undefined ? selectedAccount.margin_used : prev.margin,
           freeMargin: selectedAccount.free_margin !== undefined ? selectedAccount.free_margin : prev.freeMargin,
@@ -1369,12 +1361,21 @@ useEffect(() => {
         currentDayRef.current = today;
         dailyStartBalanceRef.current = newBalance;
 
-        // Reset dailyDrawdown when switching accounts (will be updated by syncAccountFromBackend)
+        // Reset drawdowns when switching accounts (will be updated by syncAccountFromBackend)
+        // This is correct because each account has its own drawdown values
         setAccount(prev => ({
           ...prev,
           dailyDrawdown: 0,
           overallDrawdown: 0,
         }));
+        // Also reset prevMetricsRef so the "only increase" logic starts fresh for new account
+        prevMetricsRef.current = {
+          equity: 0,
+          floatingPnL: 0,
+          profitPercent: 0,
+          overallDrawdown: 0,
+          dailyDrawdown: 0,
+        };
       }
 
       setLastAccountId(selectedAccount.id);
@@ -2248,15 +2249,18 @@ useEffect(() => {
       // When no positions, just update based on balance
       if (positions.length === 0) {
         const newEquity = account.balance;
-        // Use initial_balance from account or startingBalance, fallback to 100000
         const initialBalance = account.initial_balance || account.startingBalance || 100000;
-        const profitPercent = initialBalance > 0 ? ((newEquity - initialBalance) / initialBalance) * 100 : 0;
+        const currentProfitPercent = initialBalance > 0 ? ((newEquity - initialBalance) / initialBalance) * 100 : 0;
+        const profitPercent = Math.max(prevMetricsRef.current.profitPercent ?? 0, currentProfitPercent);
 
-        // When no positions, use backend values directly (more accurate for closed trades)
-        // Backend has already calculated these using todayStartEquity and maxEquityToDate
+        // When no positions, use backend values but NEVER decrease drawdowns
+        // Drawdowns should only increase - track worst values seen
         const prevMetrics = prevMetricsRef.current;
-        let overallDrawdown = account.overallDrawdown ?? prevMetrics.overallDrawdown ?? 0;
-        const dailyDrawdown = account.dailyDrawdown ?? prevMetrics.dailyDrawdown ?? 0;
+        const backendOverallDD = account.overallDrawdown ?? 0;
+        const backendDailyDD = account.dailyDrawdown ?? 0;
+        // CRITICAL: Drawdowns should only INCREASE - use max of current, previous, and backend values
+        let overallDrawdown = Math.max(backendOverallDD, prevMetrics.overallDrawdown ?? 0);
+        const dailyDrawdown = Math.max(backendDailyDD, prevMetrics.dailyDrawdown ?? 0);
 
         // CRITICAL: If DAILY_LOCKED and overallDrawdown is 0, use breach snapshot (atomic)
         // This prevents reset-to-0 when positions are auto-closed
@@ -2350,9 +2354,9 @@ useEffect(() => {
       });
 
       const newEquity = account.balance + totalPnL;
-      // Use initial_balance from account or startingBalance, fallback to 100000
       const initialBalance = account.initial_balance || account.startingBalance || 100000;
-      const profitPercent = initialBalance > 0 ? ((newEquity - initialBalance) / initialBalance) * 100 : 0;
+      const currentProfitPercent = initialBalance > 0 ? ((newEquity - initialBalance) / initialBalance) * 100 : 0;
+      const profitPercent = Math.max(prevMetricsRef.current.profitPercent ?? 0, currentProfitPercent);
 
       // Debug logging for equity calculation (dev only)
       if (process.env.NODE_ENV !== 'production' && positions.length > 0) {
@@ -2381,14 +2385,17 @@ useEffect(() => {
         ? Math.max(0, ((maxEquityToDate - newEquity) / maxEquityToDate) * 100)
         : 0; // 0% when at or above peak equity
 
-      // Calculate daily drawdown: (todayStartEquity - current) / todayStartEquity * 100
+      // Calculate current daily drawdown: (todayStartEquity - current) / todayStartEquity * 100
       // Backend formula: (todayStartEquity - equity) / todayStartEquity * 100
-      const dailyDrawdownPercent = todayStartEquity > 0 && newEquity < todayStartEquity
+      const currentDailyDrawdownPercent = todayStartEquity > 0 && newEquity < todayStartEquity
         ? Math.max(0, ((todayStartEquity - newEquity) / todayStartEquity) * 100)
         : 0;
 
-      // Calculate daily drawdown for real-time updates (only when positions are open)
-      const dailyDrawdown = dailyDrawdownPercent;
+      // CRITICAL: Daily drawdown should only INCREASE - track worst drawdown of the day
+      // This ensures that if price rebounds, daily drawdown stays at the worst point
+      const prevWorstDailyDD = prevMetricsRef.current.dailyDrawdown ?? 0;
+      const backendDailyDD = account.dailyDrawdown ?? 0;
+      const dailyDrawdown = Math.max(currentDailyDrawdownPercent, prevWorstDailyDD, backendDailyDD);
 
       const prevMetrics = prevMetricsRef.current;
 
@@ -2874,6 +2881,34 @@ useEffect(() => {
 
       // Wait for backend response
       const response = await createTrade(tradeData);
+      queryClient.invalidateQueries(['trading-account', selectedAccountId]);
+
+      // Update trading days count after successful trade
+      try {
+        // Wait briefly for backend to persist the trade
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Sync full account data from backend (updates account.tradingDays via metrics.tradingDaysCompleted)
+        await syncAccountFromBackend(selectedAccountId, true, false); // Force refresh
+        
+        // Also fetch summary to update standalone tradingDaysCount state
+        const summary = await getAccountSummary(selectedAccountId);
+        
+        if (summary?.metrics?.tradingDaysCompleted !== undefined) {
+          setTradingDaysCount(summary.metrics.tradingDaysCompleted);
+          // Also update the account state directly to ensure ChallengeRulesPanel gets the update
+          setAccount(prev => ({
+            ...prev,
+            tradingDays: summary.metrics.tradingDaysCompleted
+          }));
+        }
+        if (summary?.metrics?.daysRemaining !== undefined) {
+          setDaysRemaining(summary.metrics.daysRemaining);
+        }
+      } catch (err) {
+        console.error('Failed to update trading days:', err);
+      }
+
       console.log('✅ Trade saved to backend:', response);
 
       // Verify we got a trade ID from backend
@@ -3252,7 +3287,7 @@ useEffect(() => {
 
             <TabsContent value="trade" className="mt-4">
               <TradingPanel
-                selectedSymbol={selectedSymbol}
+                selectedSymbol={enrichedSelectedSymbol}
                 accountBalance={account.freeMargin}
                 onExecuteTrade={handleExecuteTrade}
                 disabled={(() => {
@@ -3415,7 +3450,7 @@ useEffect(() => {
             {/* Right Sidebar - Trading Panel */}
             <div className="col-span-3">
               <TradingPanel
-                selectedSymbol={selectedSymbol}
+                selectedSymbol={enrichedSelectedSymbol}
                 accountBalance={account.freeMargin}
                 onExecuteTrade={handleExecuteTrade}
                 disabled={(() => {

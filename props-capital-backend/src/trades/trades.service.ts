@@ -75,12 +75,6 @@ export class TradesService {
     if (newEquity > currentMaxEquity) {
       updateData.maxEquityToDate = newEquity;
     }
-    
-    await this.tradingEventsGateway.emitAccountUpdate(accountId, {
-      balance: newBalance,
-      equity: newEquity,
-      timestamp: new Date().toISOString(),
-    });
 
     await this.prisma.tradingAccount.update({
       where: { id: accountId },

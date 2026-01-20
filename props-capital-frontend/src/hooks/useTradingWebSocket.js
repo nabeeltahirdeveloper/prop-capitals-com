@@ -12,7 +12,8 @@ export function useTradingWebSocket({
   accountId,
   onPositionClosed,
   onAccountStatusChange,
-}) {
+  onAccountUpdate,
+}) { // Updated hook signature
   const [isConnected, setIsConnected] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState("disconnected"); // 'disconnected', 'connecting', 'connected', 'reconnecting'
   const socketRef = useRef(null);
@@ -22,9 +23,12 @@ export function useTradingWebSocket({
   // Get auth token from localStorage
   const getAuthToken = useCallback(() => {
     try {
-      // Try 'token' first (main app key), then 'authToken' as fallback
+      // Try 'accessToken' first (common), then 'token', then others
       const token =
-        localStorage.getItem("token") || localStorage.getItem("authToken");
+        localStorage.getItem("accessToken") ||
+        localStorage.getItem("token") ||
+        localStorage.getItem("authToken") ||
+        localStorage.getItem("jwt_token");
       if (!token) {
         console.warn("[WebSocket] No auth token found in localStorage");
         return null;
@@ -125,8 +129,16 @@ export function useTradingWebSocket({
       }
     });
 
+    // Account update event (for trading days, balance, equity)
+    socket.on("account:update", (event) => {
+      console.log("[WebSocket] Account update:", event);
+      if (onAccountUpdate) {
+        onAccountUpdate(event);
+      }
+    });
+
     socketRef.current = socket;
-  }, [accountId, getAuthToken, onPositionClosed, onAccountStatusChange]);
+  }, [accountId, getAuthToken, onPositionClosed, onAccountStatusChange, onAccountUpdate]);
 
   // Subscribe to different account when accountId changes
   useEffect(() => {

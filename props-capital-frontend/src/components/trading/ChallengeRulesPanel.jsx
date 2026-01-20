@@ -75,10 +75,12 @@ export default function ChallengeRulesPanel({ account, challenge }) {
 
   const tradingDays = parseInt(account.tradingDays) || 0;
   const minTradingDays = parseInt(challenge?.min_trading_days || challenge?.minTradingDays || account.minTradingDays || 5);
-  const daysElapsed = parseInt(account.daysElapsed) || 0;
-  const maxDays = parseInt(challenge?.max_trading_days || 30);
+  const maxDays = parseInt(challenge?.max_trading_days || challenge?.maxTradingDays || 30);
 
-  const daysRemaining = Math.max(0, maxDays - daysElapsed);
+  // Use account.daysRemaining if available (updated via WebSocket/polling), otherwise calculate from daysElapsed
+  const daysRemaining = account.daysRemaining !== undefined
+    ? parseInt(account.daysRemaining)
+    : Math.max(0, maxDays - (parseInt(account.daysElapsed) || 0));
 
   const { profitPercent, dailyLoss, overallDrawdown, profitProgress, dailyLossProgress, overallDrawdownProgress } = metrics;
 
@@ -315,15 +317,15 @@ export default function ChallengeRulesPanel({ account, challenge }) {
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
             <p className="text-xs text-slate-400">{t('dashboard.rulesPanel.leverage')}</p>
-            <p className="text-white font-semibold">1:100</p>
+            <p className="text-white font-semibold">1:{challenge?.leverage || account?.leverage || 100}</p>
           </div>
           <div>
             <p className="text-xs text-slate-400">{t('dashboard.rulesPanel.maxLot', { max: t('dashboard.rulesPanel.max'), lot: t('dashboard.rulesPanel.lot') })}</p>
-            <p className="text-white font-semibold">10.00</p>
+            <p className="text-white font-semibold">{(challenge?.maxLot || challenge?.max_lot || account?.maxLot || 10).toFixed(2)}</p>
           </div>
           <div>
             <p className="text-xs text-slate-400">{t('dashboard.rulesPanel.profitSplit')}</p>
-            <p className="text-emerald-400 font-semibold">80%</p>
+            <p className="text-emerald-400 font-semibold">{challenge?.profitSplit || challenge?.profit_split || account?.profitSplit || 80}%</p>
           </div>
         </div>
       </div>
