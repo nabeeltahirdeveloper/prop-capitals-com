@@ -6,10 +6,7 @@ import { cn } from "@/lib/utils";
 const ToastProvider = React.forwardRef(({ ...props }, ref) => (
   <div
     ref={ref}
-    className="
-      fixed bottom-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4
-      sm:top-0 sm:right-0 sm:flex-col md:max-w-[420px]
-    "
+    className="fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]"
     {...props}
   />
 ));
@@ -18,10 +15,7 @@ ToastProvider.displayName = "ToastProvider";
 const ToastViewport = React.forwardRef(({ ...props }, ref) => (
   <div
     ref={ref}
-    className="
-      fixed bottom-0 z-[100] flex max-h-screen w-full flex-col p-4
-      sm:top-auto sm:right-0 sm:w-auto sm:max-w-[420px]
-    "
+    className="fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]"
     {...props}
   />
 ));
@@ -35,13 +29,14 @@ const toastVariants = cva(
         default: "border bg-background text-foreground",
         destructive:
           "destructive group border-destructive bg-destructive text-destructive-foreground",
-        success: "success group border-emerald-500 bg-emerald-500 text-white",
+        success:
+          "success group border-emerald-500 bg-emerald-500 text-white",
       },
     },
     defaultVariants: {
       variant: "default",
     },
-  },
+  }
 );
 
 const Toast = React.forwardRef(({ className, variant, ...props }, ref) => {
@@ -60,7 +55,7 @@ const ToastAction = React.forwardRef(({ className, ...props }, ref) => (
     ref={ref}
     className={cn(
       "inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-muted/40 group-[.destructive]:hover:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive",
-      className,
+      className
     )}
     {...props}
   />
@@ -71,28 +66,28 @@ const ToastClose = React.forwardRef(({ className, onClick, ...props }, ref) => {
   const handleClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("ToastClose clicked", onClick);
+    console.log('ToastClose clicked', onClick);
     if (onClick) {
       onClick(e);
     }
   };
 
   return (
-    <button
-      ref={ref}
+  <button
+    ref={ref}
       type="button"
-      className={cn(
-        "absolute right-2 top-2 z-10 rounded-md p-1 text-foreground/50 opacity-70 transition-opacity hover:text-foreground hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600 group-[.success]:text-emerald-100 group-[.success]:hover:text-white group-[.success]:focus:ring-emerald-400 cursor-pointer pointer-events-auto",
-        className,
-      )}
-      toast-close=""
+    className={cn(
+      "absolute right-2 top-2 z-10 rounded-md p-1 text-foreground/50 opacity-70 transition-opacity hover:text-foreground hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600 group-[.success]:text-emerald-100 group-[.success]:hover:text-white group-[.success]:focus:ring-emerald-400 cursor-pointer pointer-events-auto",
+      className
+    )}
+    toast-close=""
       onClick={handleClick}
       aria-label="Close"
-      style={{ pointerEvents: "auto" }}
-      {...props}
-    >
-      <X className="h-4 w-4 pointer-events-none" />
-    </button>
+      style={{ pointerEvents: 'auto' }}
+    {...props}
+  >
+    <X className="h-4 w-4 pointer-events-none" />
+  </button>
   );
 });
 ToastClose.displayName = "ToastClose";
@@ -107,7 +102,11 @@ const ToastTitle = React.forwardRef(({ className, ...props }, ref) => (
 ToastTitle.displayName = "ToastTitle";
 
 const ToastDescription = React.forwardRef(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("text-sm opacity-90", className)} {...props} />
+  <div
+    ref={ref}
+    className={cn("text-sm opacity-90", className)}
+    {...props}
+  />
 ));
 ToastDescription.displayName = "ToastDescription";
 
@@ -119,4 +118,4 @@ export {
   ToastDescription,
   ToastClose,
   ToastAction,
-};
+}; 
