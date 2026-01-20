@@ -505,7 +505,7 @@ export default function Layout({ children, currentPageName }) {
                     >
                       <Button
                         variant="outline"
-                        className="w-full border-slate-700 text-white"
+                        className="w-full border-slate-700 text-black"
                       >
                         {t("nav.login")}
                       </Button>
