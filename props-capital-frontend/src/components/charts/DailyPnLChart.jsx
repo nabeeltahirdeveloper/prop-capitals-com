@@ -149,7 +149,7 @@ export default function DailyPnLChart({ data }) {
       </div>
 
       {/* Best/Worst Days */}
-      <div className="grid grid-cols-2 gap-4 mt-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         <div className="bg-slate-800/50 rounded-lg p-3">
           <p className="text-xs text-slate-400 mb-1">
             {t("analytics.bestDay")}
