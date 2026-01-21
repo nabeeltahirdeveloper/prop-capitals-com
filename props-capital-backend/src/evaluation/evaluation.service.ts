@@ -108,7 +108,7 @@ export class EvaluationService {
     let totalUnrealizedPnL = 0;
     const { challenge } = account;
     const initialBalance = account.initialBalance || challenge.accountSize;
-
+    console.log('Initial balance:', initialBalance);
     for (const trade of account.trades) {
       const tradePrice = accountPriceCache.get(trade.symbol);
       if (!tradePrice) continue; // Skip if we don't have price for this symbol yet
@@ -138,8 +138,20 @@ export class EvaluationService {
       totalUnrealizedPnL += positionPnL;
     }
 
+
+
+
+
+
+
+
+
+
+
+    
     // Calculate equity = balance + unrealized PnL
     const balance = account.balance ?? initialBalance;
+    console.log('Current balance:', balance);
     const equity = balance + totalUnrealizedPnL;
 
     // Use stored tracking values
@@ -1096,7 +1108,6 @@ export class EvaluationService {
     });
 
     // Update todayStartEquity to current equity for all active accounts
-    // Also reset worstDailyDrawdown (daily metric resets each day)
     const activeAccounts = await this.prisma.tradingAccount.findMany({
       where: {
         status: 'ACTIVE' as TradingAccountStatus,
@@ -1107,9 +1118,7 @@ export class EvaluationService {
       const equity = account.equity ?? account.balance ?? account.initialBalance;
       await this.prisma.tradingAccount.update({
         where: { id: account.id },
-        data: {
-          todayStartEquity: equity,
-        } as any,
+        data: { todayStartEquity: equity } as any,
       });
     }
 
