@@ -39,7 +39,7 @@ export default function ViolationModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-slate-900 border-slate-800 text-white max-w-md max-h-[60vh] overflow-y-auto p-4">
+      <DialogContent className="bg-slate-900 border-slate-800 text-white max-w-md max-h-[70vh]   md:max-h-[90vh]  w-[500px]-auto p-2 md:p-4">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
             {isDisqualified ? (
@@ -47,9 +47,9 @@ export default function ViolationModal({
             ) : (
               <AlertTriangle className="w-8 h-8 text-orange-400" />
             )}
-            <DialogTitle className="text-xl font-bold">{title}</DialogTitle>
+            <DialogTitle className="md:text-xl font-bold">{title}</DialogTitle>
           </div>
-          <DialogDescription className="text-slate-300 pt-2">
+          <DialogDescription className="text-slate-300 md:pt-2">
             {t(
               "violationModal.description",
               "Your account has violated the challenge rules.",
@@ -57,10 +57,10 @@ export default function ViolationModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 md:py-4">
           {/* Rule Limit */}
-          <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
-            <div className="flex items-center gap-2 mb-2">
+          <div className="bg-slate-800/50 rounded-lg p-2 md:p-4 border border-slate-700">
+            <div className="flex items-center gap-2 mb-1 md:mb-2">
               <Shield className="w-4 h-4 text-slate-400" />
               <span className="text-sm font-semibold text-slate-300">
                 {t("violationModal.ruleLimit", "Rule Limit")}:
@@ -70,8 +70,8 @@ export default function ViolationModal({
           </div>
 
           {/* Equity at Violation */}
-          <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
-            <span className="text-sm font-semibold text-slate-300 block mb-2">
+          <div className="bg-slate-800/50 rounded-lg p-2 md:p-4 border border-slate-700">
+            <span className="text-sm font-semibold text-slate-300 block mb-1 md:mb-2">
               {t("violationModal.equityAtViolation", "Equity at Violation")}:
             </span>
             <p className="text-lg font-bold text-white">
@@ -84,11 +84,11 @@ export default function ViolationModal({
           </div>
 
           {/* Action Taken */}
-          <div className="bg-red-500/10 rounded-lg p-4 border border-red-500/30">
-            <p className="text-sm text-slate-300 mb-2">
+          <div className="bg-red-500/10 rounded-lg p-2 md:p-4 border border-red-500/30">
+            <p className="text-sm text-slate-300 md:mb-2">
               {t("violationModal.actionTaken", "Action Taken")}:
             </p>
-            <p className="font-semibold text-red-400 mb-2">
+            <p className="font-semibold text-red-400 md:mb-2">
               {t(
                 "violationModal.positionsClosed",
                 "All positions were closed automatically",
@@ -98,7 +98,7 @@ export default function ViolationModal({
           </div>
         </div>
 
-        <div className="flex justify-end pt-4 border-t border-slate-700">
+        <div className="flex justify-end pt-2 border-t border-slate-700">
           <Button
             onClick={onClose}
             className="bg-blue-600 hover:bg-blue-700 text-white"

@@ -170,11 +170,11 @@ export default function Home() {
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center ">
             <motion.div initial="initial" animate="animate" variants={stagger}>
               <motion.div
                 variants={fadeIn}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-8"
+                className="flex  md:inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-8 mx-auto text-center sm:mx-0 sm:text-left"
               >
                 <Star className="w-4 h-4 text-emerald-400" />
                 <span className="text-sm text-emerald-400">
@@ -184,10 +184,10 @@ export default function Home() {
 
               <motion.h1
                 variants={fadeIn}
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 md:mb-6 leading-tight text-center sm:text-left"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 md:mb-6 leading-tight text-center  sm:text-left"
               >
                 {t("home.hero.title")}
-                <span className="block bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+                <span className="md;block bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent w-full">
                   {t("home.hero.titleHighlight")}
                 </span>
               </motion.h1>
