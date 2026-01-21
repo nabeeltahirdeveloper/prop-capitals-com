@@ -3815,8 +3815,8 @@ export default function TradingTerminal() {
   return (
     <div className="space-y-4" style={{ pointerEvents: "auto" }}>
       {/* Top Bar */}
-      <div className="flex  items-center  flex-wrap gap-2   ">
-        <div className="flex items-center gap-2  sm:gap-4 w-full   ">
+      <div className="flex  items-center  gap-2   ">
+        <div className="flex items-center gap-2  sm:gap-4 w-full  ">
           <div className="w-full md:w-auto md:flex gap-3">
             <div className="flex justify-between py-2 md:justify-start  ">
               <h1 className="text-base sm:text-lg md:text-xl font-bold text-white">
@@ -4031,7 +4031,7 @@ export default function TradingTerminal() {
             </span>
           </Badge>
         </div>
-        <div className="flex items-center gap-1 sm:gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 w-[120px]">
           <div className="hidden sm:flex items-center gap-2 text-slate-400 text-sm mr-2">
             <Clock className="w-4 h-4" />
             <span>{new Date().toLocaleTimeString()}</span>
