@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getCurrentUser } from '@/api/auth';
 import { getChallenges } from '@/api/challenges';
-import { purchaseChallenge } from '@/api/payments';
+import { purchaseChallenge, validateCoupon } from '@/api/payments';
+import { toast } from '@/components/ui/use-toast';
 import { useTranslation } from '../contexts/LanguageContext';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -21,10 +22,8 @@ import {
   Bitcoin,
   Wallet,
   CheckCircle,
-  Award,
   Star,
   Lock,
-  TrendingUp
 } from 'lucide-react';
 
 export default function TraderBuyChallenge() {
@@ -35,7 +34,10 @@ export default function TraderBuyChallenge() {
   const [paymentMethod, setPaymentMethod] = useState('');
   const [couponCode, setCouponCode] = useState('');
   const [couponApplied, setCouponApplied] = useState(null);
+  const [couponError, setCouponError] = useState('');
+  const [couponLoading, setCouponLoading] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
+  const [purchaseError, setPurchaseError] = useState('');
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -62,7 +64,14 @@ export default function TraderBuyChallenge() {
     phase2_profit_target: challenge.phase2TargetPercent,
     max_daily_drawdown: challenge.dailyDrawdownPercent,
     max_overall_drawdown: challenge.overallDrawdownPercent,
-    profit_split: 80, // Default profit split
+    profit_split: challenge.profitSplit || 80,
+    min_trading_days: challenge.minTradingDays || 5,
+    max_trading_days: challenge.maxTradingDays,
+    ea_allowed: challenge.eaAllowed ?? true,
+    news_trading_allowed: challenge.newsTradingAllowed ?? true,
+    weekend_holding_allowed: challenge.weekendHoldingAllowed ?? true,
+    scaling_enabled: challenge.scalingEnabled ?? false,
+    challenge_type: challenge.challengeType || 'two_phase',
   }));
 
   // Only use real challenges from backend, no mock data fallback
@@ -81,13 +90,51 @@ export default function TraderBuyChallenge() {
     { id: 'paypal', name: t('buyChallenge.paymentMethods.paypal.name'), icon: Wallet, desc: t('buyChallenge.paymentMethods.paypal.desc') },
   ];
 
-  const applyCoupon = () => {
-    if (couponCode.toUpperCase() === 'WELCOME20') {
-      setCouponApplied({ code: 'WELCOME20', discount: 20, type: 'percentage' });
-    } else if (couponCode.toUpperCase() === 'TRADER10') {
-      setCouponApplied({ code: 'TRADER10', discount: 10, type: 'percentage' });
-    } else {
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) {
+      setCouponError('Please enter a coupon code');
       setCouponApplied(null);
+      return;
+    }
+
+    setCouponLoading(true);
+    setCouponError('');
+
+    try {
+      const result = await validateCoupon(couponCode.trim());
+
+      if (result.valid && result.coupon) {
+        setCouponApplied({
+          code: result.coupon.code,
+          discount: result.coupon.discountPct,
+          type: 'percentage'
+        });
+        setCouponError('');
+        toast({
+          title: t('buyChallenge.couponSuccess') || 'Coupon Applied',
+          description: `${result.coupon.discountPct}% discount applied`,
+          variant: 'default',
+        });
+      } else {
+        setCouponApplied(null);
+        setCouponError(result.message || 'Invalid coupon code');
+        toast({
+          title: t('buyChallenge.couponError') || 'Invalid Coupon',
+          description: result.message || 'The coupon code is invalid',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Coupon validation error:', error);
+      setCouponApplied(null);
+      setCouponError('Failed to validate coupon');
+      toast({
+        title: t('buyChallenge.couponError') || 'Error',
+        description: 'Failed to validate coupon. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setCouponLoading(false);
     }
   };
 
@@ -114,19 +161,33 @@ export default function TraderBuyChallenge() {
         tradingPlatform: purchaseData.tradingPlatform,
         trading_platform: purchaseData.trading_platform,
         brokerPlatform: purchaseData.brokerPlatform,
+        couponCode: purchaseData.couponCode,
+        paymentMethod: purchaseData.paymentMethod,
       });
     },
     onSuccess: (data) => {
       setOrderComplete(true);
+      setPurchaseError('');
       // Invalidate accounts query so dashboard refetches
       if (user?.userId) {
         queryClient.invalidateQueries({ queryKey: ['trader-accounts', user.userId] });
         queryClient.invalidateQueries({ queryKey: ['accounts'] });
       }
+      toast({
+        title: t('buyChallenge.purchaseSuccessful') || 'Purchase Successful',
+        description: t('buyChallenge.purchaseSuccessfulDesc') || 'Your challenge has been purchased successfully.',
+        variant: 'default',
+      });
     },
     onError: (error) => {
       console.error('Purchase failed:', error);
-      // Error handling can be added here
+      const errorMessage = error?.response?.data?.message || error?.message || 'Purchase failed. Please try again.';
+      setPurchaseError(errorMessage);
+      toast({
+        title: t('buyChallenge.purchaseError') || 'Purchase Failed',
+        description: errorMessage,
+        variant: 'destructive',
+      });
     },
   });
 
@@ -135,21 +196,33 @@ export default function TraderBuyChallenge() {
       user: user?.userId,
       challenge: selectedChallenge?.id,
       platform: selectedPlatform,
-      paymentMethod: paymentMethod
+      paymentMethod: paymentMethod,
+      couponCode: couponApplied?.code
     });
 
     // Check if user is logged in
     if (!user || !user.userId) {
       console.error('❌ User not logged in');
+      toast({
+        title: 'Authentication Required',
+        description: 'Please sign in to purchase a challenge.',
+        variant: 'destructive',
+      });
       navigate(createPageUrl('SignIn'));
       return;
     }
 
     if (!selectedChallenge) {
       console.error('❌ No challenge selected');
+      toast({
+        title: 'No Challenge Selected',
+        description: 'Please select a challenge to continue.',
+        variant: 'destructive',
+      });
       return;
     }
 
+    setPurchaseError('');
     console.log('✅ Calling purchase mutation...');
     purchaseMutation.mutate({
       userId: user.userId,
@@ -158,6 +231,8 @@ export default function TraderBuyChallenge() {
       tradingPlatform: selectedPlatform,
       trading_platform: selectedPlatform,
       brokerPlatform: selectedPlatform,
+      couponCode: couponApplied?.code || null,
+      paymentMethod: paymentMethod,
     });
   };
 
@@ -283,8 +358,11 @@ export default function TraderBuyChallenge() {
                       </div>
                     )}
                     <div className="text-center mb-4">
+                      <h3 className="text-slate-400 text-sm font-medium mb-1 uppercase tracking-wider">
+                        {challenge.name}
+                      </h3>
                       <p className="text-2xl font-bold text-white">${challenge.account_size?.toLocaleString()}</p>
-                      <p className="text-slate-400 text-sm">{t('buyChallenge.accountSize')}</p>
+                      <p className="text-slate-400 text-xs uppercase tracking-tight">{t('buyChallenge.accountSize')}</p>
                     </div>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
@@ -299,6 +377,36 @@ export default function TraderBuyChallenge() {
                         <span className="text-slate-400">{t('buyChallenge.profitSplit')}</span>
                         <span className="text-emerald-400 font-bold">{challenge.profit_split}%</span>
                       </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">{t('buyChallenge.minTradingDays')}</span>
+                        <span className="text-white">{challenge.min_trading_days}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">{t('buyChallenge.maxTradingDays')}</span>
+                        <span className="text-white">{challenge.max_trading_days}</span>
+                      </div>
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-1">
+                      {challenge.ea_allowed && (
+                        <Badge variant="outline" className="text-xs border-slate-600 text-slate-300">
+                          {t('buyChallenge.eaAllowed')}
+                        </Badge>
+                      )}
+                      {challenge.news_trading_allowed && (
+                        <Badge variant="outline" className="text-xs border-slate-600 text-slate-300">
+                          {t('buyChallenge.newsTrading')}
+                        </Badge>
+                      )}
+                      {challenge.weekend_holding_allowed && (
+                        <Badge variant="outline" className="text-xs border-slate-600 text-slate-300">
+                          {t('buyChallenge.weekendHolding')}
+                        </Badge>
+                      )}
+                      {challenge.scaling_enabled && (
+                        <Badge variant="outline" className="text-xs border-emerald-600 text-emerald-400">
+                          {t('buyChallenge.scalingEnabled')}
+                        </Badge>
+                      )}
                     </div>
                     <div className="mt-4 pt-4 border-t border-slate-800 text-center">
                       <p className="text-2xl font-bold text-white">${challenge.price}</p>
@@ -421,11 +529,20 @@ export default function TraderBuyChallenge() {
                   <Input
                     placeholder={t('buyChallenge.enterCode')}
                     value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
+                    onChange={(e) => {
+                      setCouponCode(e.target.value);
+                      setCouponError('');
+                    }}
                     className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
+                    disabled={couponLoading}
                   />
-                  <Button variant="outline" onClick={applyCoupon} className="border-slate-700 text-slate-800 hover:bg-slate-100">
-                    {t('buyChallenge.apply')}
+                  <Button
+                    variant="outline"
+                    onClick={applyCoupon}
+                    className="border-slate-700 text-slate-800 hover:bg-slate-100"
+                    disabled={couponLoading}
+                  >
+                    {couponLoading ? t('buyChallenge.validating') || 'Validating...' : t('buyChallenge.apply')}
                   </Button>
                 </div>
                 {couponApplied && (
@@ -434,6 +551,11 @@ export default function TraderBuyChallenge() {
                     <span className="text-emerald-400 text-sm">
                       {t('buyChallenge.couponApplied', { code: couponApplied.code, discount: couponApplied.discount })}
                     </span>
+                  </div>
+                )}
+                {couponError && !couponApplied && (
+                  <div className="mt-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-2">
+                    <span className="text-red-400 text-sm">{couponError}</span>
                   </div>
                 )}
               </Card>
@@ -479,6 +601,12 @@ export default function TraderBuyChallenge() {
                     <span className="text-emerald-400">${calculateTotal()}</span>
                   </div>
                 </div>
+
+                {purchaseError && (
+                  <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                    <span className="text-red-400 text-sm">{purchaseError}</span>
+                  </div>
+                )}
 
                 <Button
                   className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 h-14 text-lg"

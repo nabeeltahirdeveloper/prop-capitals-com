@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { CouponsService } from '../coupons/coupons.service';
 
 import { TradingPhase, TradingAccountStatus, NotificationType, NotificationCategory } from '@prisma/client';
 
@@ -12,13 +13,14 @@ export class PaymentsService {
   constructor(
     private prisma: PrismaService,
     private notificationsService: NotificationsService,
+    private couponsService: CouponsService,
   ) { }
 
   async purchaseChallenge(data: any) {
 
     console.log("PURCHASE DATA:", data);
 
-    const { userId, challengeId, platform, tradingPlatform, trading_platform, brokerPlatform } = data;
+    const { userId, challengeId, platform, tradingPlatform, trading_platform, brokerPlatform, couponCode, paymentMethod } = data;
 
     if (!userId || !challengeId) {
 
@@ -40,9 +42,33 @@ export class PaymentsService {
 
     }
 
-    // Final price
+    // 2. Validate and apply coupon if provided
+    let finalPrice = challenge.price;
+    let appliedCoupon: { code: string; discountPct: number } | null = null;
+    let discountAmount = 0;
 
-    const finalPrice = challenge.price;
+    if (couponCode) {
+      const couponValidation = await this.couponsService.validateCoupon(couponCode);
+
+      if (!couponValidation.valid) {
+        throw new BadRequestException(couponValidation.message);
+      }
+
+      if (couponValidation.coupon) {
+        appliedCoupon = couponValidation.coupon;
+        discountAmount = Math.floor(challenge.price * (appliedCoupon.discountPct / 100));
+        finalPrice = challenge.price - discountAmount;
+      }
+    }
+
+    console.log('💰 Price calculation:', {
+      originalPrice: challenge.price,
+      couponCode: couponCode || 'none',
+      discountPct: appliedCoupon?.discountPct || 0,
+      discountAmount,
+      finalPrice,
+      paymentMethod: paymentMethod || 'not specified'
+    });
 
     // 2. Create payment
 
