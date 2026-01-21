@@ -1096,6 +1096,7 @@ export class EvaluationService {
     });
 
     // Update todayStartEquity to current equity for all active accounts
+    // Also reset worstDailyDrawdown (daily metric resets each day)
     const activeAccounts = await this.prisma.tradingAccount.findMany({
       where: {
         status: 'ACTIVE' as TradingAccountStatus,
@@ -1106,7 +1107,9 @@ export class EvaluationService {
       const equity = account.equity ?? account.balance ?? account.initialBalance;
       await this.prisma.tradingAccount.update({
         where: { id: account.id },
-        data: { todayStartEquity: equity } as any,
+        data: {
+          todayStartEquity: equity,
+        } as any,
       });
     }
 

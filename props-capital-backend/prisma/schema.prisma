@@ -117,11 +117,11 @@ model TradingAccount {
   initialBalance    Float                @default(0)
   createdAt         DateTime             @default(now())
   updatedAt         DateTime             @updatedAt
-  dailyLockedUntil  DateTime?
-  maxEquityToDate   Float?
-  todayStartEquity  Float?
-  dailyLossViolated Boolean              @default(false)
-  drawdownViolated  Boolean              @default(false)
+  dailyLockedUntil     DateTime?
+  maxEquityToDate      Float?
+  todayStartEquity     Float?
+  dailyLossViolated    Boolean              @default(false)
+  drawdownViolated     Boolean              @default(false)
   equityShots       EquitySnapshot[]
   payouts           Payout[]
   pendingOrders     PendingOrder[]
