@@ -435,28 +435,28 @@ export default function TraderDashboard() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-4">
           {displayAccounts.slice(0, 3).map((account) => (
-            <Card key={account.id} className={`bg-slate-900 border-slate-800 p-5 hover:border-slate-700 transition-colors ${account.current_phase === 'failed' ? 'opacity-70' : ''}`}>
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-white font-semibold">${account.initial_balance?.toLocaleString()}</span>
+            <Card key={account.id} className={`bg-slate-900 border-slate-800 p-4 sm:p-5 hover:border-slate-700 transition-colors ${account.current_phase === 'failed' ? 'opacity-70' : ''}`}>
+              <div className="flex items-start justify-between gap-2 mb-3 sm:mb-4">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className="text-white font-semibold text-sm sm:text-base">${account.initial_balance?.toLocaleString()}</span>
                     <Badge variant="default" className="text-xs">{account.platform}</Badge>
                   </div>
-                  <p className="text-sm text-slate-400">#{account.account_number}</p>
+                  <p className="text-xs sm:text-sm text-slate-400 truncate">#{account.account_number}</p>
                 </div>
-                <div className="flex flex-col items-end gap-1">
+                <div className="flex flex-col items-end gap-1 flex-shrink-0">
                   <StatusBadge status={account.current_phase} />
                   <StatusBadge status={account.status} />
                 </div>
               </div>
 
               {/* Progress Bar */}
-              <div className="mb-4">
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-slate-400">{t('dashboard.accounts.profitProgress')}</span>
-                  <span className={account.current_profit_percent >= 0 ? 'text-emerald-400' : 'text-red-400'}>
+              <div className="mb-3 sm:mb-4">
+                <div className="flex justify-between text-xs sm:text-sm mb-1 gap-2">
+                  <span className="text-slate-400 truncate">{t('dashboard.accounts.profitProgress')}</span>
+                  <span className={`flex-shrink-0 ${account.current_profit_percent >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                     {account.current_profit_percent >= 0 ? '+' : ''}{account.current_profit_percent?.toFixed(2)}%
                   </span>
                 </div>
@@ -474,38 +474,38 @@ export default function TraderDashboard() {
               </div>
 
               {/* Quick Metrics */}
-              <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-4">
                 <div className="bg-slate-800/50 rounded-lg p-2">
-                  <p className="text-xs text-slate-400">{t('dashboard.accounts.dailyDD')}</p>
-                  <p className={`font-medium ${account.daily_drawdown_percent > (account.challenge?.dailyDrawdownPercent || 5) * 0.8 ? 'text-amber-400' : 'text-white'}`}>
+                  <p className="text-xs text-slate-400 truncate">{t('dashboard.accounts.dailyDD')}</p>
+                  <p className={`text-sm sm:text-base font-medium ${account.daily_drawdown_percent > (account.challenge?.dailyDrawdownPercent || 5) * 0.8 ? 'text-amber-400' : 'text-white'}`}>
                     {account.daily_drawdown_percent?.toFixed(2)}% / {account.challenge?.dailyDrawdownPercent || 5}%
                   </p>
                 </div>
                 <div className="bg-slate-800/50 rounded-lg p-2">
-                  <p className="text-xs text-slate-400">{t('dashboard.accounts.overallDD')}</p>
-                  <p className={`font-medium ${account.overall_drawdown_percent > (account.challenge?.overallDrawdownPercent || 10) * 0.8 ? 'text-red-400' : 'text-white'}`}>
+                  <p className="text-xs text-slate-400 truncate">{t('dashboard.accounts.overallDD')}</p>
+                  <p className={`text-sm sm:text-base font-medium ${account.overall_drawdown_percent > (account.challenge?.overallDrawdownPercent || 10) * 0.8 ? 'text-red-400' : 'text-white'}`}>
                     {account.overall_drawdown_percent?.toFixed(2)}% / {account.challenge?.overallDrawdownPercent || 10}%
                   </p>
                 </div>
               </div>
 
               {account.current_phase === 'failed' && account.violation_reason && (
-                <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-2 mb-4">
-                  <p className="text-xs text-red-400">{translateViolationMessage(account.violation_reason, t)}</p>
+                <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-2 mb-3 sm:mb-4">
+                  <p className="text-xs text-red-400 line-clamp-2">{translateViolationMessage(account.violation_reason, t)}</p>
                 </div>
               )}
 
               <div className="flex gap-2">
                 <Link to={`${createPageUrl('AccountDetails')}?id=${account.id}`} className="flex-1">
-                  <Button variant="outline" className="w-full border-slate-700 hover:bg-slate-800 hover:text-white">
-                    <Eye className="w-4 h-4 mr-2" />
+                  <Button variant="outline" size="sm" className="w-full border-slate-700 hover:bg-slate-800 hover:text-white text-xs sm:text-sm">
+                    <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
                     {t('dashboard.accounts.details')}
                   </Button>
                 </Link>
                 {account.current_phase !== 'failed' && (
                   <Link to={`${createPageUrl('TradingTerminal')}?accountId=${account.id}`} className="flex-1">
-                    <Button className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600">
-                      <Activity className="w-4 h-4 mr-2" />
+                    <Button size="sm" className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-xs sm:text-sm">
+                      <Activity className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
                       {t('dashboard.accounts.trade')}
                     </Button>
                   </Link>
@@ -585,12 +585,12 @@ export default function TraderDashboard() {
 
         {/* Notifications */}
         <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+          <div className="flex items-center justify-between gap-2 mb-4">
             <h3 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2">
               <Bell className="w-5 h-5 text-emerald-400 flex-shrink-0" />
               {t('dashboard.notifications.title')}
             </h3>
-            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <Badge className="bg-slate-700/50 text-slate-300 border-slate-600 pointer-events-none text-xs px-2 py-0.5">
                 {notifications.length}
               </Badge>
@@ -668,11 +668,11 @@ export default function TraderDashboard() {
       {/* Rule Compliance Section */}
       {activeAccounts.length > 0 && (
         <div>
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
             <h2 className="text-md sm:text-lg font-semibold text-white">{t('dashboard.rules.title')}</h2>
             {activeAccounts.length > 1 && (
               <Select value={selectedAccountForRules} onValueChange={setSelectedAccountForRules}>
-                <SelectTrigger className="w-[150px] sm:w-[280px] bg-slate-800 border-slate-700 text-white">
+                <SelectTrigger className="w-full sm:w-[320px] md:w-[380px] bg-slate-800 border-slate-700 text-white">
                   <SelectValue placeholder={t('dashboard.rules.selectAccount')} />
                 </SelectTrigger>
                 <SelectContent className="bg-slate-800 border-slate-700 text-white [&>svg]:text-white">
@@ -697,13 +697,12 @@ export default function TraderDashboard() {
                           focus:bg-slate-700
                         "
                       >
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5 sm:gap-2 text-sm">
                           <span className="font-medium text-white">${acc.initial_balance?.toLocaleString()}</span>
-                          <span className="text-slate-400">•</span>
-                          <span className="text-slate-400 text-xs">{acc.platform}</span>
-                          <span className="text-slate-400">•</span>
-                          <span className="text-xs text-slate-400">{t('dashboard.rules.phase')}:</span>
-                          <span className="text-xs text-emerald-400 ">{phaseTranslations[acc.current_phase] || acc.current_phase}</span>
+                          <span className="text-slate-500">•</span>
+                          <span className="text-slate-300">{acc.platform}</span>
+                          <span className="text-slate-500">•</span>
+                          <span className="text-emerald-400">{phaseTranslations[acc.current_phase] || acc.current_phase}</span>
                         </div>
                       </SelectItem>
                     );
