@@ -104,7 +104,8 @@ export default function TraderDashboard() {
     enabled: !!user?.userId,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-    refetchInterval: 30000, // Poll every 30 seconds to catch closed trades and update metrics
+    refetchInterval: 60000, // Poll every 60 seconds to reduce server load
+    staleTime: 30000, // Consider data fresh for 30 seconds
     retry: false,
   });
 
@@ -122,24 +123,41 @@ export default function TraderDashboard() {
     },
     enabled: !!user?.userId,
     retry: false,
-    refetchInterval: 5000, // Refetch every 5 seconds for real-time updates
+    refetchInterval: 30000, // Refetch every 30 seconds to reduce server load
+    staleTime: 15000, // Consider data fresh for 15 seconds
   });
 
-  // Mark notification as read mutation
+  // Mark notification as read mutation with proper optimistic update
   const markAsReadMutation = useMutation({
     mutationFn: (id) => markNotificationAsRead(id),
-    onSuccess: (_, id) => {
-      // Optimistically update the cache - mark notification as read
+    // Optimistic update BEFORE the mutation runs
+    onMutate: async (id) => {
+      // Cancel any outgoing refetches to avoid overwriting optimistic update
+      await queryClient.cancelQueries({ queryKey: ['notifications', user?.userId] });
+
+      // Snapshot the previous value
+      const previousNotifications = queryClient.getQueryData(['notifications', user?.userId]);
+
+      // Optimistically update to the new value
       queryClient.setQueryData(['notifications', user?.userId], (oldData = []) => {
         return oldData.map(n => n.id === id ? { ...n, read: true } : n);
       });
-      // Invalidate and refetch to ensure consistency with backend
-      queryClient.invalidateQueries({ queryKey: ['notifications', user?.userId] });
+
+      // Return context with previous value for rollback
+      return { previousNotifications };
     },
-    onError: (error) => {
+    onError: (error, id, context) => {
       console.error('Failed to mark notification as read:', error);
-      // Revert optimistic update on error by invalidating cache
-      queryClient.invalidateQueries({ queryKey: ['notifications', user?.userId] });
+      // Rollback to previous value on error
+      if (context?.previousNotifications) {
+        queryClient.setQueryData(['notifications', user?.userId], context.previousNotifications);
+      }
+    },
+    onSettled: () => {
+      // Refetch after error or success to ensure consistency (delayed to avoid flicker)
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['notifications', user?.userId] });
+      }, 1000);
     },
   });
 
@@ -157,6 +175,7 @@ export default function TraderDashboard() {
     },
     enabled: !!user?.userId,
     retry: false,
+    staleTime: 60000, // Payouts don't change often, cache for 1 minute
   });
 
   // Get payout statistics for next payout date
@@ -173,6 +192,7 @@ export default function TraderDashboard() {
     },
     enabled: !!user?.userId,
     retry: false,
+    staleTime: 60000, // Statistics don't change often, cache for 1 minute
   });
 
   // Map backend accounts to display format
@@ -189,36 +209,45 @@ export default function TraderDashboard() {
       'CLOSED': 'closed'
     };
 
-    const challenge = account.challenge || {};
-    const initialBalance = account.initialBalance || challenge.accountSize || 0;
-    const balance = account.balance || initialBalance;
-    const equity = account.equity || balance;
+    const challenge = account?.challenge || {};
+    const initialBalance = Number(account?.initialBalance) || Number(challenge?.accountSize) || 0;
+    const balance = Number(account?.balance) || initialBalance;
+    const equity = Number(account?.equity) || balance;
+    const maxEquityToDate = Number(account?.maxEquityToDate) || initialBalance;
+
+    // Calculate profit percent from initial balance
     const profitPercent = initialBalance > 0 ? ((equity - initialBalance) / initialBalance) * 100 : 0;
 
-    // Calculate drawdowns (approximations since we don't have full account details)
-    const overallDrawdownPercent = equity < initialBalance && initialBalance > 0
-      ? ((initialBalance - equity) / initialBalance) * 100
+    // Calculate overall drawdown from maxEquityToDate (peak equity) - matches backend calculation
+    // This is the industry standard: drawdown from highest equity ever reached
+    const overallDrawdownPercent = maxEquityToDate > 0 && equity < maxEquityToDate
+      ? ((maxEquityToDate - equity) / maxEquityToDate) * 100
       : 0;
-    const dailyDrawdownPercent = equity < balance && balance > 0
-      ? ((balance - equity) / balance) * 100
+
+    // Calculate daily drawdown from today's start balance
+    // If todayStartEquity is available from backend, use it; otherwise fall back to balance
+    const todayStartEquity = Number(account?.todayStartEquity) || balance;
+    const dailyDrawdownPercent = todayStartEquity > 0 && equity < todayStartEquity
+      ? ((todayStartEquity - equity) / todayStartEquity) * 100
       : 0;
 
     return {
-      id: account.id,
-      account_number: account.brokerLogin || account.id.slice(0, 8),
-      platform: account.platform || challenge.platform || 'MT5',
-      status: statusMap[account.status] || account.status?.toLowerCase() || 'active',
-      current_phase: phaseMap[account.phase] || account.phase?.toLowerCase() || 'phase1',
+      id: account?.id,
+      account_number: account?.brokerLogin || account?.id?.slice(0, 8) || 'N/A',
+      platform: account?.platform || challenge?.platform || 'MT5',
+      status: statusMap[account?.status] || account?.status?.toLowerCase() || 'active',
+      current_phase: phaseMap[account?.phase] || account?.phase?.toLowerCase() || 'phase1',
       initial_balance: initialBalance,
       current_balance: balance,
       current_equity: equity,
       current_profit_percent: profitPercent,
       daily_drawdown_percent: dailyDrawdownPercent,
       overall_drawdown_percent: overallDrawdownPercent,
-      trading_days_count: account.tradingDaysCount || 0,
-      violation_reason: account.lastViolationMessage,
-      challenge_id: account.challengeId,
+      trading_days_count: Number(account?.tradingDaysCount) || 0,
+      violation_reason: account?.lastViolationMessage,
+      challenge_id: account?.challengeId,
       challenge: challenge,
+      createdAt: account?.createdAt,
     };
   });
 
@@ -227,11 +256,25 @@ export default function TraderDashboard() {
   const allNotifications = (notifications || [])
     .map(notif => {
       const translated = translateNotification(notif.title, notif.body, t);
+
+      // Determine notification type based on content/category
+      let type = 'info';
+      const titleLower = (notif.title || '').toLowerCase();
+      const categoryLower = (notif.category || '').toLowerCase();
+
+      if (titleLower.includes('violation') || titleLower.includes('failed') || titleLower.includes('breach') || categoryLower === 'violation') {
+        type = 'warning';
+      } else if (titleLower.includes('passed') || titleLower.includes('funded') || titleLower.includes('approved') || titleLower.includes('success') || categoryLower === 'success') {
+        type = 'success';
+      } else if (titleLower.includes('payout') || categoryLower === 'payout') {
+        type = 'success';
+      }
+
       return {
         id: notif.id,
         title: translated.title,
         message: translated.message,
-        type: 'info', // Default type, could be enhanced based on notification content
+        type: type,
         created_date: notif.createdAt,
         is_read: notif.read || false,
       };
@@ -485,31 +528,39 @@ export default function TraderDashboard() {
               </Badge>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-              <div className="bg-slate-800/50 rounded-xl p-4 text-center">
-                <DollarSign className="w-6 h-6 text-emerald-400 mx-auto mb-2" />
-                <p className="text-xl sm:text-2xl font-bold text-white">${aggregatedMetrics.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                <p className="text-xs text-slate-400">{t('dashboard.metrics.currentBalance')}</p>
+              <div className="bg-slate-800/50 rounded-xl p-4 text-center flex flex-col justify-between min-h-[120px]">
+                <DollarSign className="w-6 h-6 text-emerald-400 mx-auto" />
+                <div>
+                  <p className="text-lg sm:text-xl font-bold text-white truncate">${aggregatedMetrics.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                  <p className="text-xs text-slate-400 mt-1">{t('dashboard.metrics.currentBalance')}</p>
+                </div>
               </div>
-              <div className="bg-slate-800/50 rounded-xl p-4 text-center">
-                <Target className="w-6 h-6 text-cyan-400 mx-auto mb-2" />
-                <p className={`text-xl sm:text-2xl font-bold ${aggregatedMetrics.profitPercent >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                  {aggregatedMetrics.profitPercent >= 0 ? '+' : ''}{aggregatedMetrics.profitPercent.toFixed(2)}%
-                </p>
-                <p className="text-xs text-slate-400">{t('dashboard.metrics.profitThisCycle')}</p>
+              <div className="bg-slate-800/50 rounded-xl p-4 text-center flex flex-col justify-between min-h-[120px]">
+                <Target className="w-6 h-6 text-cyan-400 mx-auto" />
+                <div>
+                  <p className={`text-lg sm:text-xl font-bold ${aggregatedMetrics.profitPercent >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {aggregatedMetrics.profitPercent >= 0 ? '+' : ''}{aggregatedMetrics.profitPercent.toFixed(2)}%
+                  </p>
+                  <p className="text-xs text-slate-400 mt-1">{t('dashboard.metrics.profitThisCycle')}</p>
+                </div>
               </div>
-              <div className="bg-slate-800/50 rounded-xl p-4 text-center">
-                <Shield className="w-6 h-6 text-amber-400 mx-auto mb-2" />
-                <p className="text-xl sm:text-2xl font-bold text-white">
-                  {aggregatedMetrics.ddRemaining.toFixed(2)}%
-                </p>
-                <p className="text-xs text-slate-400">{t('dashboard.metrics.ddRemaining')}</p>
+              <div className="bg-slate-800/50 rounded-xl p-4 text-center flex flex-col justify-between min-h-[120px]">
+                <Shield className="w-6 h-6 text-amber-400 mx-auto" />
+                <div>
+                  <p className="text-lg sm:text-xl font-bold text-white">
+                    {aggregatedMetrics.ddRemaining.toFixed(2)}%
+                  </p>
+                  <p className="text-xs text-slate-400 mt-1">{t('dashboard.metrics.ddRemaining')}</p>
+                </div>
               </div>
-              <div className="bg-slate-800/50 rounded-xl p-4 text-center">
-                <Calendar className="w-6 h-6 text-purple-400 mx-auto mb-2" />
-                <p className="text-xl sm:text-2xl font-bold text-white">
-                  {aggregatedMetrics.tradingDays}/{aggregatedMetrics.minTradingDays}
-                </p>
-                <p className="text-xs text-slate-400">{t('dashboard.metrics.tradingDays')}</p>
+              <div className="bg-slate-800/50 rounded-xl p-4 text-center flex flex-col justify-between min-h-[120px]">
+                <Calendar className="w-6 h-6 text-purple-400 mx-auto" />
+                <div>
+                  <p className="text-lg sm:text-xl font-bold text-white">
+                    {aggregatedMetrics.tradingDays}/{aggregatedMetrics.minTradingDays}
+                  </p>
+                  <p className="text-xs text-slate-400 mt-1">{t('dashboard.metrics.tradingDays')}</p>
+                </div>
               </div>
             </div>
             {fundedAccounts.length > 0 && payoutStatistics?.statistics?.nextPayoutDate && (
@@ -533,24 +584,24 @@ export default function TraderDashboard() {
         )}
 
         {/* Notifications */}
-        <Card className="bg-slate-900 border-slate-800 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="sm:text-lg font-semibold text-white flex items-center gap-2">
-              <Bell className="w-5 h-5 text-emerald-400" />
+        <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+            <h3 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2">
+              <Bell className="w-5 h-5 text-emerald-400 flex-shrink-0" />
               {t('dashboard.notifications.title')}
             </h3>
-            <div className="flex items-center gap-2">
-              <Badge className="bg-slate-700/50 text-slate-300 border-slate-600 pointer-events-none sm:px-2 px-1">
-                {notifications.length} {notifications.length === 1 ? t('dashboard.notifications.notification') : t('dashboard.notifications.notifications')}
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <Badge className="bg-slate-700/50 text-slate-300 border-slate-600 pointer-events-none text-xs px-2 py-0.5">
+                {notifications.length}
               </Badge>
               {notifications.filter(n => !n.read).length > 0 && (
-                <Badge className="bg-emerald-500/20 text-emerald-400 pointer-events-none sm:px-2 px-1">
+                <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 pointer-events-none text-xs px-2 py-0.5">
                   {notifications.filter(n => !n.read).length} {t('notifications.unread')}
                 </Badge>
               )}
             </div>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {displayNotifications.length === 0 ? (
               <div className="text-center text-slate-400 py-4 text-sm">
                 {t('dashboard.notifications.noNotifications')}
@@ -564,46 +615,46 @@ export default function TraderDashboard() {
                       'bg-slate-800/50 border-slate-700'
                     } ${!notif.is_read ? 'ring-1 ring-emerald-500/30' : ''}`}
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-start gap-2 flex-1">
-                      {notif.type === 'warning' ? (
-                        <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
-                      ) : notif.type === 'success' ? (
-                        <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
-                      ) : (
-                        <AlertCircle className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="text-white text-sm font-medium">{notif.title}</p>
+                  <div className="flex items-start gap-2">
+                    {notif.type === 'warning' ? (
+                      <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
+                    ) : notif.type === 'success' ? (
+                      <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <p className="text-white text-sm font-medium truncate">{notif.title}</p>
                           {!notif.is_read && (
-                            <span className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0" />
+                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full flex-shrink-0" />
                           )}
                         </div>
-                        <p className="text-slate-400 text-xs">{notif.message}</p>
+                        {!notif.is_read && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 text-slate-400 hover:text-white flex-shrink-0"
+                            onClick={() => markAsReadMutation.mutate(notif.id)}
+                            title={t('notifications.markAsRead')}
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                          </Button>
+                        )}
                       </div>
+                      <p className="text-slate-400 text-xs mt-0.5 line-clamp-2">{notif.message}</p>
                     </div>
-                    {!notif.is_read && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 text-slate-400  flex-shrink-0"
-                        onClick={() => markAsReadMutation.mutate(notif.id)}
-                        title={t('notifications.markAsRead')}
-                      >
-                        <Check className="w-4 h-4" />
-                      </Button>
-                    )}
                   </div>
                 </div>
               ))
             )}
             {hasMoreNotifications && (
-              <div className="pt-2 border-t border-slate-800">
+              <div className="pt-2 border-t border-slate-800 mt-3">
                 <Link to={createPageUrl('Notifications')}>
                   <Button
                     variant="outline"
-                    className="w-full border-slate-700 bg-slate-800/50 text-white hover:bg-slate-700 hover:text-white"
+                    className="w-full border-slate-700 bg-slate-800/50 text-white hover:bg-slate-700 hover:text-white text-sm"
                   >
                     {t('dashboard.notifications.seeMore')}
                   </Button>
@@ -663,12 +714,17 @@ export default function TraderDashboard() {
           </div>
 
           {selectedAccountData && (() => {
-            // Calculate days elapsed from account creation
-            const accountFromBackend = accounts.find(acc => acc.id === selectedAccountData.id);
-            const accountCreatedAt = accountFromBackend?.createdAt || accountFromBackend?.created_date;
-            const daysElapsed = accountCreatedAt
-              ? Math.floor((new Date().getTime() - new Date(accountCreatedAt).getTime()) / (1000 * 60 * 60 * 24))
-              : 0;
+            // Calculate days elapsed from account creation using UTC dates to avoid timezone issues
+            const accountCreatedAt = selectedAccountData.createdAt;
+            let daysElapsed = 0;
+            if (accountCreatedAt) {
+              const createdDate = new Date(accountCreatedAt);
+              const now = new Date();
+              // Use UTC dates to avoid timezone inconsistencies
+              const createdUTC = Date.UTC(createdDate.getFullYear(), createdDate.getMonth(), createdDate.getDate());
+              const nowUTC = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+              daysElapsed = Math.floor((nowUTC - createdUTC) / (1000 * 60 * 60 * 24));
+            }
 
             return (
               <ChallengeRulesPanel
@@ -705,21 +761,21 @@ export default function TraderDashboard() {
       {/* Quick Actions */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4">
         {[
-          { icon: Activity, title: t('dashboard.quickActions.tradingTerminal'), desc: t('dashboard.quickActions.openTrading'), page: 'TradingTerminal', color: 'blue' },
-          { icon: TrendingUp, title: t('dashboard.quickActions.myAccounts'), desc: t('dashboard.quickActions.viewAllAccounts'), page: 'MyAccounts', color: 'emerald' },
-          { icon: BarChart3, title: t('dashboard.quickActions.analytics'), desc: t('dashboard.quickActions.performanceStats'), page: 'Analytics', color: 'cyan' },
-          { icon: Wallet, title: t('dashboard.quickActions.payouts'), desc: t('dashboard.quickActions.requestPayouts'), page: 'TraderPayouts', color: 'purple' },
-          { icon: Award, title: t('dashboard.quickActions.scalingPlan'), desc: t('dashboard.quickActions.growthRoadmap'), page: 'ScalingPlan', color: 'amber' },
+          { icon: Activity, title: t('dashboard.quickActions.tradingTerminal'), desc: t('dashboard.quickActions.openTrading'), page: 'TradingTerminal', bgClass: 'bg-blue-500/20', textClass: 'text-blue-400', hoverClass: 'hover:border-blue-500/50' },
+          { icon: TrendingUp, title: t('dashboard.quickActions.myAccounts'), desc: t('dashboard.quickActions.viewAllAccounts'), page: 'MyAccounts', bgClass: 'bg-emerald-500/20', textClass: 'text-emerald-400', hoverClass: 'hover:border-emerald-500/50' },
+          { icon: BarChart3, title: t('dashboard.quickActions.analytics'), desc: t('dashboard.quickActions.performanceStats'), page: 'Analytics', bgClass: 'bg-cyan-500/20', textClass: 'text-cyan-400', hoverClass: 'hover:border-cyan-500/50' },
+          { icon: Wallet, title: t('dashboard.quickActions.payouts'), desc: t('dashboard.quickActions.requestPayouts'), page: 'TraderPayouts', bgClass: 'bg-purple-500/20', textClass: 'text-purple-400', hoverClass: 'hover:border-purple-500/50' },
+          { icon: Award, title: t('dashboard.quickActions.scalingPlan'), desc: t('dashboard.quickActions.growthRoadmap'), page: 'ScalingPlan', bgClass: 'bg-amber-500/20', textClass: 'text-amber-400', hoverClass: 'hover:border-amber-500/50' },
         ].map((action, i) => (
-          <Link key={i} to={createPageUrl(action.page)}>
-            <Card className={`bg-slate-900 border-slate-800 p-3 sm:p-4 hover:border-${action.color}-500/50 transition-colors cursor-pointer group`}>
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 bg-${action.color}-500/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                  <action.icon className={`w-5 h-5 text-${action.color}-400`} />
+          <Link key={i} to={createPageUrl(action.page)} className="h-full">
+            <Card className={`bg-slate-900 border-slate-800 p-3 sm:p-4 ${action.hoverClass} transition-colors cursor-pointer group h-full`}>
+              <div className="flex items-center gap-3 h-full">
+                <div className={`w-10 h-10 ${action.bgClass} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0`}>
+                  <action.icon className={`w-5 h-5 ${action.textClass}`} />
                 </div>
-                <div>
-                  <p className="text-sm sm:text-base text-white font-medium">{action.title}</p>
-                  <p className="text-xs text-slate-400">{action.desc}</p>
+                <div className="min-w-0">
+                  <p className="text-sm sm:text-base text-white font-medium leading-tight">{action.title}</p>
+                  <p className="text-xs text-slate-400 leading-tight">{action.desc}</p>
                 </div>
               </div>
             </Card>
