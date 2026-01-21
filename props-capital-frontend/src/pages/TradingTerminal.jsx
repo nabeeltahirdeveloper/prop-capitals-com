@@ -786,6 +786,10 @@ useEffect(() => {
         // Fetch fresh account summary from backend
         const accountSummary = await getAccountSummary(accountId);
 
+        // Extract account and metrics from response
+        const acc = accountSummary.account || {};
+        const metrics = accountSummary.metrics || {};
+
         // Use backend metrics directly - never recalculate (single source of truth)
         const backendOverallDD = metrics.overallDrawdownPercent ?? 0;
         const backendDailyDD = metrics.dailyDrawdownPercent ?? 0;
@@ -803,229 +807,204 @@ useEffect(() => {
           devLog('💾 Stored last known daily drawdown:', backendDailyDD);
         }
 
-          // Always use backend values for drawdown calculations (single source of truth)
-          // Backend uses equity snapshots to track highest equity today, which is more accurate
-          const balance = acc.balance ?? 0;
-          const equity = acc.equity ?? balance;
-          const initialBalance =
-            acc.initialBalance || account.startingBalance || 100000;
-          const todayStartEquity = acc.todayStartEquity ?? equity; // Equity at start of trading day
-          const maxEquityToDate = acc.maxEquityToDate ?? initialBalance; // Highest equity ever reached
+        // Always use backend values for drawdown calculations (single source of truth)
+        // Backend uses equity snapshots to track highest equity today, which is more accurate
+        const balance = acc.balance ?? 0;
+        const equity = acc.equity ?? balance;
+        const initialBalance =
+          acc.initialBalance || account.startingBalance || 100000;
+        const todayStartEquity = acc.todayStartEquity ?? equity; // Equity at start of trading day
+        const maxEquityToDate = acc.maxEquityToDate ?? initialBalance; // Highest equity ever reached
 
-          // Use backend metrics directly - never recalculate (single source of truth)
-          const backendOverallDD = metrics.overallDrawdownPercent ?? 0;
-          const backendDailyDD = metrics.dailyDrawdownPercent ?? 0;
-
-          // CRITICAL: Get backend status and check for frozen violation values
-          const backendStatus = acc.status || account.status;
-          const statusUpper = String(backendStatus).toUpperCase();
-
-          // Store last known metrics in sessionStorage for fallback (update on every successful sync)
-          if (typeof window !== "undefined" && backendOverallDD >= 0) {
-            sessionStorage.setItem(
-              `metrics:${accountId}:last_overall_dd`,
-              backendOverallDD.toString(),
+        // Handle daily drawdown: use frozen violation value when DAILY_LOCKED
+        let dailyDrawdown = backendDailyDD;
+        if (statusUpper.includes("DAILY")) {
+          const storedDailyDD = sessionStorage.getItem(
+            `violation:${accountId}:daily_dd`,
+          );
+          if (storedDailyDD !== null) {
+            dailyDrawdown = parseFloat(storedDailyDD);
+            devLog(
+              "🔒 Using frozen daily drawdown value from violation:",
+              dailyDrawdown,
             );
-            devLog("💾 Stored last known overall drawdown:", backendOverallDD);
           }
-          if (typeof window !== "undefined" && backendDailyDD >= 0) {
-            sessionStorage.setItem(
-              `metrics:${accountId}:last_daily_dd`,
-              backendDailyDD.toString(),
-            );
-            devLog("💾 Stored last known daily drawdown:", backendDailyDD);
-          }
+        }
 
-          // Handle daily drawdown: use frozen violation value when DAILY_LOCKED
-          let dailyDrawdown = backendDailyDD;
-          if (statusUpper.includes("DAILY")) {
-            const storedDailyDD = sessionStorage.getItem(
-              `violation:${accountId}:daily_dd`,
-            );
-            if (storedDailyDD !== null) {
-              dailyDrawdown = parseFloat(storedDailyDD);
+        // Handle overall drawdown: use breach snapshot if available, then fallback
+        let overallDrawdown = backendOverallDD;
+        const isLocked =
+          statusUpper.includes("DAILY") ||
+          statusUpper.includes("FAIL") ||
+          statusUpper.includes("DISQUAL");
+        const isDailyLocked = statusUpper.includes("DAILY");
+        const isDisqualified =
+          statusUpper.includes("FAIL") || statusUpper.includes("DISQUAL");
+
+        // If account is disqualified/failed, use frozen overall drawdown value if available (highest priority)
+        if (isDisqualified) {
+          const storedOverallDD = sessionStorage.getItem(
+            `violation:${accountId}:overall_dd`,
+          );
+          if (storedOverallDD !== null) {
+            const violationDD = parseFloat(storedOverallDD);
+            if (Number.isFinite(violationDD) && violationDD > 0) {
+              overallDrawdown = violationDD;
               devLog(
-                "🔒 Using frozen daily drawdown value from violation:",
-                dailyDrawdown,
+                "🔒 Using frozen overall drawdown value from violation:",
+                overallDrawdown,
               );
             }
           }
+        }
 
-          // Handle overall drawdown: use breach snapshot if available, then fallback
-          let overallDrawdown = backendOverallDD;
-          const isLocked =
-            statusUpper.includes("DAILY") ||
-            statusUpper.includes("FAIL") ||
-            statusUpper.includes("DISQUAL");
-          const isDailyLocked = statusUpper.includes("DAILY");
-          const isDisqualified =
-            statusUpper.includes("FAIL") || statusUpper.includes("DISQUAL");
-
-          // If account is disqualified/failed, use frozen overall drawdown value if available (highest priority)
-          if (isDisqualified) {
-            const storedOverallDD = sessionStorage.getItem(
-              `violation:${accountId}:overall_dd`,
+        // If DAILY_LOCKED and backend returns 0/null, use breach snapshot (atomic snapshot at breach moment)
+        if (
+          isDailyLocked &&
+          (backendOverallDD === 0 ||
+            backendOverallDD === null ||
+            backendOverallDD === undefined)
+        ) {
+          const snapshotDD = sessionStorage.getItem(
+            `violation:${accountId}:snapshot_overall_dd`,
+          );
+          if (snapshotDD !== null) {
+            const snapshotValue = parseFloat(snapshotDD);
+            if (Number.isFinite(snapshotValue) && snapshotValue > 0) {
+              overallDrawdown = snapshotValue;
+              devLog(
+                "🔒 [SNAPSHOT] Using overall drawdown from breach snapshot:",
+                overallDrawdown,
+              );
+            }
+          } else {
+            // Fallback to last known metrics if snapshot not available
+            const lastKnownOverallDD = sessionStorage.getItem(
+              `metrics:${accountId}:last_overall_dd`,
             );
-            if (storedOverallDD !== null) {
-              const violationDD = parseFloat(storedOverallDD);
-              if (Number.isFinite(violationDD) && violationDD > 0) {
-                overallDrawdown = violationDD;
+            if (lastKnownOverallDD !== null) {
+              const lastDD = parseFloat(lastKnownOverallDD);
+              if (Number.isFinite(lastDD) && lastDD > 0) {
+                overallDrawdown = lastDD;
                 devLog(
-                  "🔒 Using frozen overall drawdown value from violation:",
+                  "🔄 Using fallback overall drawdown from last known metrics:",
                   overallDrawdown,
                 );
               }
             }
           }
+        }
 
-          // If DAILY_LOCKED and backend returns 0/null, use breach snapshot (atomic snapshot at breach moment)
+        // Clear snapshot when account becomes ACTIVE again (unlocked)
+        if (backendStatus === "ACTIVE" && typeof window !== "undefined") {
+          const previousStatus = account.status;
+          const prevStatusUpper = String(previousStatus || "").toUpperCase();
+          // Only clear if transitioning from locked state to active
           if (
-            isDailyLocked &&
-            (backendOverallDD === 0 ||
-              backendOverallDD === null ||
-              backendOverallDD === undefined)
+            prevStatusUpper.includes("DAILY") ||
+            prevStatusUpper.includes("FAIL") ||
+            prevStatusUpper.includes("DISQUAL")
           ) {
-            const snapshotDD = sessionStorage.getItem(
+            sessionStorage.removeItem(
               `violation:${accountId}:snapshot_overall_dd`,
             );
-            if (snapshotDD !== null) {
-              const snapshotValue = parseFloat(snapshotDD);
-              if (Number.isFinite(snapshotValue) && snapshotValue > 0) {
-                overallDrawdown = snapshotValue;
-                devLog(
-                  "🔒 [SNAPSHOT] Using overall drawdown from breach snapshot:",
-                  overallDrawdown,
-                );
-              }
-            } else {
-              // Fallback to last known metrics if snapshot not available
-              const lastKnownOverallDD = sessionStorage.getItem(
-                `metrics:${accountId}:last_overall_dd`,
+            devLog("🧹 Cleared breach snapshot - account unlocked");
+          }
+        }
+
+        // Get challenge rules from accountSummary response
+        const challengeRules = accountSummary.challengeRules || {};
+        const maxDailyDD =
+          challengeRules.dailyDrawdownPercent ||
+          account.maxDailyDrawdown ||
+          5;
+        const maxOverallDD =
+          challengeRules.overallDrawdownPercent ||
+          account.maxOverallDrawdown ||
+          10;
+
+        // CRITICAL: For daily drawdown, use frozen violation value if DAILY_LOCKED
+        let finalDailyDrawdown = dailyDrawdown;
+        if (isDailyLocked && typeof window !== "undefined") {
+          const violationDailyDD = sessionStorage.getItem(
+            `violation:${accountId}:daily_dd`,
+          );
+          if (violationDailyDD !== null) {
+            const violationValue = parseFloat(violationDailyDD);
+            if (Number.isFinite(violationValue) && violationValue > 0) {
+              finalDailyDrawdown = violationValue;
+              devLog(
+                "🔒 Using frozen daily drawdown from violation:",
+                finalDailyDrawdown,
               );
-              if (lastKnownOverallDD !== null) {
-                const lastDD = parseFloat(lastKnownOverallDD);
-                if (Number.isFinite(lastDD) && lastDD > 0) {
-                  overallDrawdown = lastDD;
-                  devLog(
-                    "🔄 Using fallback overall drawdown from last known metrics:",
-                    overallDrawdown,
-                  );
-                }
-              }
             }
           }
+        }
 
-          // Clear snapshot when account becomes ACTIVE again (unlocked)
-          if (backendStatus === "ACTIVE" && typeof window !== "undefined") {
-            const previousStatus = account.status;
-            const prevStatusUpper = String(previousStatus || "").toUpperCase();
-            // Only clear if transitioning from locked state to active
-            if (
-              prevStatusUpper.includes("DAILY") ||
-              prevStatusUpper.includes("FAIL") ||
-              prevStatusUpper.includes("DISQUAL")
-            ) {
-              sessionStorage.removeItem(
-                `violation:${accountId}:snapshot_overall_dd`,
-              );
-              devLog("🧹 Cleared breach snapshot - account unlocked");
-            }
-          }
-
-          // Get challenge rules from accountSummary response
-          const challengeRules = accountSummary.challengeRules || {};
-          const maxDailyDD =
-            challengeRules.dailyDrawdownPercent ||
-            account.maxDailyDrawdown ||
-            5;
-          const maxOverallDD =
-            challengeRules.overallDrawdownPercent ||
-            account.maxOverallDrawdown ||
-            10;
-
-          // CRITICAL: For daily drawdown, use frozen violation value if DAILY_LOCKED
-          let finalDailyDrawdown = dailyDrawdown;
-          if (isDailyLocked && typeof window !== "undefined") {
-            const violationDailyDD = sessionStorage.getItem(
-              `violation:${accountId}:daily_dd`,
+        // CRITICAL: Never overwrite overallDrawdown with 0 if account is locked/disqualified and violation value exists
+        // This prevents reset-to-0 when backend returns 0 after positions close
+        let finalOverallDrawdown = overallDrawdown;
+        if (
+          (isDailyLocked || isDisqualified) &&
+          (overallDrawdown === 0 || !Number.isFinite(overallDrawdown))
+        ) {
+          // Try violation value first
+          if (typeof window !== "undefined") {
+            const violationOverallDD = sessionStorage.getItem(
+              `violation:${accountId}:overall_dd`,
             );
-            if (violationDailyDD !== null) {
-              const violationValue = parseFloat(violationDailyDD);
+            if (violationOverallDD !== null) {
+              const violationValue = parseFloat(violationOverallDD);
               if (Number.isFinite(violationValue) && violationValue > 0) {
-                finalDailyDrawdown = violationValue;
+                finalOverallDrawdown = violationValue;
                 devLog(
-                  "🔒 Using frozen daily drawdown from violation:",
-                  finalDailyDrawdown,
+                  "🔒 Using frozen overall drawdown from violation (fallback):",
+                  finalOverallDrawdown,
                 );
-              }
-            }
-          }
-
-          // CRITICAL: Never overwrite overallDrawdown with 0 if account is locked/disqualified and violation value exists
-          // This prevents reset-to-0 when backend returns 0 after positions close
-          let finalOverallDrawdown = overallDrawdown;
-          if (
-            (isDailyLocked || isDisqualified) &&
-            (overallDrawdown === 0 || !Number.isFinite(overallDrawdown))
-          ) {
-            // Try violation value first
-            if (typeof window !== "undefined") {
-              const violationOverallDD = sessionStorage.getItem(
-                `violation:${accountId}:overall_dd`,
-              );
-              if (violationOverallDD !== null) {
-                const violationValue = parseFloat(violationOverallDD);
-                if (Number.isFinite(violationValue) && violationValue > 0) {
-                  finalOverallDrawdown = violationValue;
-                  devLog(
-                    "🔒 Using frozen overall drawdown from violation (fallback):",
-                    finalOverallDrawdown,
-                  );
-                } else {
-                  // Fallback to account's existing value
-                  finalOverallDrawdown = account.overallDrawdown ?? 0;
-                }
               } else {
                 // Fallback to account's existing value
                 finalOverallDrawdown = account.overallDrawdown ?? 0;
               }
             } else {
+              // Fallback to account's existing value
               finalOverallDrawdown = account.overallDrawdown ?? 0;
             }
           } else {
-            finalOverallDrawdown = Number.isFinite(overallDrawdown)
-              ? overallDrawdown
-              : (account.overallDrawdown ?? 0);
+            finalOverallDrawdown = account.overallDrawdown ?? 0;
           }
+        } else {
+          finalOverallDrawdown = Number.isFinite(overallDrawdown)
+            ? overallDrawdown
+            : (account.overallDrawdown ?? 0);
+        }
 
-          setAccount((prev) => {
-            // PROTECTION: Prevent stale backend data from overwriting optimistic balance
-            // If we had a local update within the last 3 seconds, use the backend balance only if it's different
-            // from what we expect (meaning the backend has definitely processed our change)
-            const now = Date.now();
-            const isRecentlyUpdated = now - lastLocalUpdateRef.current < 3000;
+        setAccount((prev) => {
+          // PROTECTION: Prevent stale backend data from overwriting optimistic balance
+          // If we had a local update within the last 3 seconds, use the backend balance only if it's different
+          // from what we expect (meaning the backend has definitely processed our change)
+          const now = Date.now();
+          const isRecentlyUpdated = now - lastLocalUpdateRef.current < 3000;
 
-            let finalBalance =
-              acc.balance !== null &&
-              acc.balance !== undefined &&
-              Number.isFinite(acc.balance)
-                ? acc.balance
-                : prev.balance;
+          let finalBalance =
+            acc.balance !== null &&
+            acc.balance !== undefined &&
+            Number.isFinite(acc.balance)
+              ? acc.balance
+              : prev.balance;
 
-            if (isRecentlyUpdated && lastLocalBalanceRef.current !== null) {
-              // If the backend balance hasn't caught up to our optimistic balance yet, keep our optimistic one
-              if (Math.abs(finalBalance - lastLocalBalanceRef.current) > 0.01) {
-                devLog(
-                  "🛡️ Protected optimistic balance from stale backend data:",
-                  finalBalance,
-                  "->",
-                  lastLocalBalanceRef.current,
-                );
-                finalBalance = lastLocalBalanceRef.current;
-              } else {
-                // Backend caught up, we can clear our ref
-                lastLocalBalanceRef.current = null;
-              }
+          if (isRecentlyUpdated && lastLocalBalanceRef.current !== null) {
+            // If the backend balance hasn't caught up to our optimistic balance yet, keep our optimistic one
+            if (Math.abs(finalBalance - lastLocalBalanceRef.current) > 0.01) {
+              devLog(
+                "🛡️ Protected optimistic balance from stale backend data:",
+                finalBalance,
+                "->",
+                lastLocalBalanceRef.current,
+              );
+              finalBalance = lastLocalBalanceRef.current;
+            } else {
+              // Backend caught up, we can clear our ref
+              lastLocalBalanceRef.current = null;
             }
           }
 
@@ -1071,79 +1050,19 @@ useEffect(() => {
           };
         });
 
-            return {
-              ...prev,
-              balance: finalBalance,
-              equity:
-                acc.equity !== null &&
-                acc.equity !== undefined &&
-                Number.isFinite(acc.equity)
-                  ? acc.equity
-                  : prev.equity,
-              profitPercent:
-                metrics.profitPercent !== null &&
-                metrics.profitPercent !== undefined &&
-                Number.isFinite(metrics.profitPercent)
-                  ? metrics.profitPercent
-                  : prev.profitPercent,
-              overallDrawdown:
-                Number.isFinite(finalOverallDrawdown) &&
-                finalOverallDrawdown >= 0
-                  ? finalOverallDrawdown
-                  : prev.overallDrawdown,
-              dailyDrawdown:
-                Number.isFinite(finalDailyDrawdown) && finalDailyDrawdown >= 0
-                  ? finalDailyDrawdown
-                  : prev.dailyDrawdown,
-              maxDailyDrawdown: maxDailyDD, // Use from challenge rules
-              maxOverallDrawdown: maxOverallDD, // Use from challenge rules
-              phase: acc.phase?.toLowerCase() || prev.phase,
-              tradingDays: metrics.tradingDaysCompleted ?? prev.tradingDays, // Backend uses tradingDaysCompleted
-              minTradingDays:
-                challengeRules.minTradingDays ?? prev.minTradingDays,
-              daysRemaining:
-                acc.daysRemaining !== null &&
-                acc.daysRemaining !== undefined &&
-                Number.isFinite(acc.daysRemaining)
-                  ? acc.daysRemaining
-                  : prev.daysRemaining,
-              margin:
-                acc.marginUsed !== null &&
-                acc.marginUsed !== undefined &&
-                Number.isFinite(acc.marginUsed)
-                  ? acc.marginUsed
-                  : prev.margin,
-              freeMargin:
-                acc.freeMargin !== null &&
-                acc.freeMargin !== undefined &&
-                Number.isFinite(acc.freeMargin)
-                  ? acc.freeMargin
-                  : prev.freeMargin,
-              startingBalance: initialBalance,
-              todayStartEquity: todayStartEquity, // Store for consistent drawdown calculations
-              maxEquityToDate: maxEquityToDate, // Store for consistent drawdown calculations
-              status: backendStatus, // CRITICAL: Always update status from backend
-            };
-          });
+        devLog("✅ Account data synced from backend:", {
+          balance: acc.balance,
+          equity: acc.equity,
+          initialBalance: initialBalance,
+          profitPercent: metrics.profitPercent,
+          overallDrawdown: overallDrawdown,
+          dailyDrawdown: dailyDrawdown,
+          phase: acc.phase,
+          status: backendStatus,
+        });
 
-          devLog("✅ Account data synced from backend:", {
-            balance: acc.balance,
-            equity: acc.equity,
-            initialBalance: initialBalance,
-            profitPercent: metrics.profitPercent,
-            overallDrawdown: overallDrawdown,
-            dailyDrawdown: dailyDrawdown,
-            phase: acc.phase,
-            status: backendStatus,
-          });
-
-          // Return the resolved status so caller can act on it
-          return backendStatus;
-        }
-
-        // Don't invalidate accounts query here - it causes infinite loops
-        // Accounts will be invalidated after trade operations, not during sync
-        return account.status || null;
+        // Return the resolved status so caller can act on it
+        return backendStatus;
       } catch (error) {
         console.error("❌ Failed to sync account data from backend:", error);
         // Don't show error toast - this is a background sync
@@ -4236,15 +4155,23 @@ useEffect(() => {
       {/* Mobile Tabs */}
       {hasValidAccount && (
         <div className="lg:hidden space-y-6">
-          {/* ===== WATCHLIST ===== */}
-          <div className="h-[400px]">
-            <MarketWatchlist
-              onSymbolSelect={(symbol) => {
-                setSelectedSymbol(symbol);
-              }}
-              selectedSymbol={selectedSymbol}
-            />
-          </div>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid grid-cols-3 bg-slate-900 border border-slate-800">
+              <TabsTrigger value="chart">{t("terminal.tabs.chart")}</TabsTrigger>
+              <TabsTrigger value="trade">{t("terminal.tabs.trade")}</TabsTrigger>
+              <TabsTrigger value="positions">{t("terminal.tabs.positions")}</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="chart" className="mt-4">
+              <div className="h-[400px]">
+                <TradingChart
+                  key={`chart-mobile-${selectedSymbol?.symbol}`}
+                  symbol={selectedSymbol}
+                  openPositions={positions}
+                  onPriceUpdate={handlePriceUpdate}
+                />
+              </div>
+            </TabsContent>
 
             <TabsContent value="trade" className="mt-4">
               <TradingPanel
@@ -4357,10 +4284,10 @@ useEffect(() => {
                       </div>
                     ))}
                   </div>
-                ))}
-              </div>
-            </Card>
-          )}
+                </Card>
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
       )}
 
