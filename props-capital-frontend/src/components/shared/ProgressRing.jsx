@@ -40,8 +40,10 @@ export default function ProgressRing({
           className="transition-all duration-500 ease-out"
         />
       </svg>
-      <div className="absolute flex flex-col items-center justify-center">
-        <span className="text-lg font-bold text-white">{(value !== undefined ? value : progress).toFixed(2)}%</span>
+      <div className="absolute flex flex-col items-center justify-center" style={{ width: size * 0.7 }}>
+        <span className={`font-bold text-white ${Math.abs(value !== undefined ? value : progress) >= 100 ? 'text-xs' : Math.abs(value !== undefined ? value : progress) >= 10 ? 'text-sm' : 'text-lg'}`}>
+          {(value !== undefined ? value : progress).toFixed(2)}%
+        </span>
         {label && <span className="text-xs text-slate-400 mt-1">{label}</span>}
         {sublabel && <span className="text-xs text-slate-500">{sublabel}</span>}
       </div>
