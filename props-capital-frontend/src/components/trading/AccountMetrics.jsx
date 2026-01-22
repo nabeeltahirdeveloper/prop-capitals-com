@@ -44,18 +44,18 @@ export default function AccountMetrics({
     account?.floatingPnL || 0,
   );
   // const [displayBalance, setDisplayBalance] = React.useState(
-    //   account?.balance || 100000,
-    // );
-    
+  //   account?.balance || 100000,
+  // );
 
 
-    // console.log(account?.balance)
-    // Calculate real-time margin and "used" balance: baseBalance - totalMarginUsed
-    // This updates in real-time as positions open/close.
+
+  // console.log(account?.balance)
+  // Calculate real-time margin and "used" balance: baseBalance - totalMarginUsed
+  // This updates in real-time as positions open/close.
   // NOTE: Backend balance is the ledger balance and should only change when trades close.
   // We use this computed balance only for non-funded/demo-style views; real accounts keep balance static.
   // const calculateRealTimeMarginAndBalance = React.useCallback(() => {
-    //   const baseBalance = account?.balance || 100000;
+  //   const baseBalance = account?.balance || 100000;
 
   //   // If no positions, balance equals base balance, margin is 0
   //   if (!positions || positions.length === 0) {
@@ -73,11 +73,11 @@ export default function AccountMetrics({
   //     // For margin calculation, we use the entry price side (ask for BUY, bid for SELL)
   //     // But we need current market price, so we use getPriceForPosition with the position type
   //     const currentPrice = getPriceForPosition(
-    //       pos.symbol,
+  //       pos.symbol,
   //       pos.type,
   //       pos.entryPrice,
   //     );
-  
+
   //     if (!currentPrice || currentPrice <= 0) {
   //       // Fallback to entry price if current price unavailable
   //       const fallbackPrice = pos.entryPrice;
@@ -86,8 +86,8 @@ export default function AccountMetrics({
   //         (pos.lotSize * contractSize * fallbackPrice) / leverage;
   //       totalMargin += positionMargin;
   //     } else {
-    //       // Calculate margin using current price (margin changes as price moves)
-    //       const contractSize = isCryptoSymbol(pos.symbol) ? 1 : 100000;
+  //       // Calculate margin using current price (margin changes as price moves)
+  //       const contractSize = isCryptoSymbol(pos.symbol) ? 1 : 100000;
   //       const positionMargin =
   //         (pos.lotSize * contractSize * currentPrice) / leverage;
   //       totalMargin += positionMargin;
@@ -100,11 +100,11 @@ export default function AccountMetrics({
   //     balance: Math.max(0, baseBalance - totalMargin),
   //   };
   // }, [account?.balance, positions, getPriceForPosition, isCryptoSymbol]);
-  
+
   // Calculate real-time "used" balance (for backward compatibility)
   // const calculateRealTimeBalance = React.useCallback(() => {
-    //   return calculateRealTimeMarginAndBalance().balance;
-    
+  //   return calculateRealTimeMarginAndBalance().balance;
+
   // }, [calculateRealTimeMarginAndBalance]);
 
   // Calculate real-time margin for display
@@ -282,7 +282,16 @@ export default function AccountMetrics({
     // - Challenge/demo phases: keep previous behaviour (balance - used margin)
     // const initialDisplayBalance = isFunded ? baseBalance : "hardcode";
     // setDisplayBalance(initialDisplayBalance);
-    setDisplayProfitPercent(currentProfitPercent);
+    const totalProfit = !totalEquity == 0 ?
+    ((displayFloatingPnL.toFixed(2) / totalEquity) * 100)
+:0;
+
+
+    if (totalProfit <= 0) {
+      setDisplayProfitPercent(0)
+    }else{
+      setDisplayProfitPercent(totalProfit);
+    }
     setDisplayDailyDrawdown(currentDailyDrawdown);
     setDisplayOverallDrawdown(currentOverallDrawdown);
     // setEquityColor(
@@ -353,10 +362,10 @@ export default function AccountMetrics({
         //   setDisplayBalance(balanceForDisplay);
         //   prev.balance = balanceForDisplay;
         // }
-        if (profitChanged) {
-          setDisplayProfitPercent(profitPct);
-          prev.profitPercent = profitPct;
-        }
+        // if (profitChanged) {
+        //   setDisplayProfitPercent(profitPct);
+        //   prev.profitPercent = profitPct;
+        // }
         if (dailyDDChanged) {
           setDisplayDailyDrawdown(dailyDD);
           prev.dailyDrawdown = dailyDD;
@@ -605,19 +614,12 @@ export default function AccountMetrics({
       };
 
 
-
-
-
-
-
-
-
-
-
-
     // If progress is low (< 30%), it's danger
     return { color: "text-red-400", bg: "bg-red-500", statusKey: "danger" };
   };
+
+  const totalEquity = ((account?.balance || 0) + (account?.floatingPnL || 0)).toFixed(2)
+
 
   const dailyStatus = getDDStatus(dailyDDUsage);
   const overallStatus = getDDStatus(overallDDUsage);
@@ -908,7 +910,7 @@ export default function AccountMetrics({
               <p
                 className="text-sm sm:text-lg font-bold text-white font-mono"
               >
-                <div>${account?.balance?.toFixed(2)  || '0.00'}</div>
+                <div>${account?.balance?.toFixed(2) || '0.00'}</div>
               </p>
 
               {/* {(realTimeMargin > 0 || positions?.length > 0) && (
@@ -992,7 +994,8 @@ export default function AccountMetrics({
               className={`text-sm sm:text-lg font-bold font-mono ${equityColor}`}
             >
               {/* ${Math.round(displayEquity).toLocaleString()} */}
-              ${((account?.balance || 0) + (account?.floatingPnL || 0)).toFixed(2)}
+              {/* ${((account?.balance || 0) + (account?.floatingPnL || 0)).toFixed(2)} */}
+              ${totalEquity}
             </p>
           )}
         </Card>
@@ -1030,6 +1033,12 @@ export default function AccountMetrics({
 
 
 
+
+
+
+
+
+
         {/* floating pNl */}
 
         <Card className="bg-slate-900 border-slate-800 p-2 sm:p-3">
@@ -1045,8 +1054,12 @@ export default function AccountMetrics({
             <p
               className={`text-sm sm:text-lg font-bold font-mono ${displayProfitPercent >= 0 ? "text-emerald-400" : "text-red-400"}`}
             >
-              {displayProfitPercent >= 0 ? "+" : ""}
-              {displayProfitPercent.toFixed(2)}%
+              {/* {displayProfitPercent >= 0 ? "+" : ""} */}
+
+              {/* {((displayFloatingPnL.toFixed(2) / totalEquity) * 100).toFixed(3)}% */}
+              {displayProfitPercent.toFixed(3)}
+              {/* {displayProfitPercent.toFixed(2)}% */}
+              {/* hardcode */}
             </p>
           )}
         </Card>
