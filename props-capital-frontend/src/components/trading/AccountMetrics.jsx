@@ -43,7 +43,9 @@ export default function AccountMetrics({
   const [displayFloatingPnL, setDisplayFloatingPnL] = React.useState(
     account?.floatingPnL || 0,
   );
-  // const [displayBalance, setDisplayBalance] = React.useState(
+  // console.log(account)
+  // const [disp
+  // layBalance, setDisplayBalance] = React.useState(
   //   account?.balance || 100000,
   // );
 
@@ -283,13 +285,13 @@ export default function AccountMetrics({
     // const initialDisplayBalance = isFunded ? baseBalance : "hardcode";
     // setDisplayBalance(initialDisplayBalance);
     const totalProfit = !totalEquity == 0 ?
-    ((displayFloatingPnL.toFixed(2) / totalEquity) * 100)
-:0;
+      ((displayFloatingPnL.toFixed(2) / totalEquity) * 100)
+      : 0;
 
 
     if (totalProfit <= 0) {
       setDisplayProfitPercent(0)
-    }else{
+    } else {
       setDisplayProfitPercent(totalProfit);
     }
     setDisplayDailyDrawdown(currentDailyDrawdown);
@@ -310,6 +312,7 @@ export default function AccountMetrics({
       dailyDrawdown: currentDailyDrawdown,
       overallDrawdown: currentOverallDrawdown,
     };
+    console.log(account.profitPercent)
 
     // Update all metrics in real-time with smooth transitions
     // Use threshold checks to prevent flickering from tiny changes
@@ -536,7 +539,8 @@ export default function AccountMetrics({
   const isPhase1 = phase === "phase1" || phase === "PHASE1";
 
   // Check if Phase 1 requirements are met
-  const phase1ProfitMet = profitPercent >= profitTarget;
+  // const phase1ProfitMet = profitPercent >= profitTarget;
+  const phase1ProfitMet = displayProfitPercent >= profitTarget;
   const phase1TradingDaysMet = tradingDays >= minTradingDays;
   const phase1DailyDDMet = dailyDrawdown <= maxDailyDrawdown;
   const phase1OverallDDMet = overallDrawdown <= maxOverallDrawdown;
@@ -587,10 +591,11 @@ export default function AccountMetrics({
     };
   };
 
-  const getProfitStatus = (profitPercent, profitTarget, progress) => {
+  const getProfitStatus = (displayProfitPercent, profitTarget, progress) => {
     // If profit is negative, it's loss
-    if (profitPercent < 0)
-      return { color: "text-red-400", bg: "bg-red-500", statusKey: "loss" };
+    if (displayProfitPercent > 0)
+      // console.log(profitPercent)
+      return { color: "text-red-400", bg: "bg-red-500", statusKey: "safe" };
     // If target is reached, it's reached
     if (progress >= 100)
       return {
@@ -1057,7 +1062,7 @@ export default function AccountMetrics({
               {/* {displayProfitPercent >= 0 ? "+" : ""} */}
 
               {/* {((displayFloatingPnL.toFixed(2) / totalEquity) * 100).toFixed(3)}% */}
-              {displayProfitPercent.toFixed(3)}
+              {displayProfitPercent.toFixed(2)}%
               {/* {displayProfitPercent.toFixed(2)}% */}
               {/* hardcode */}
             </p>
@@ -1148,6 +1153,7 @@ export default function AccountMetrics({
               : ""
             }`}
         >
+
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Shield
@@ -1301,7 +1307,12 @@ export default function AccountMetrics({
             <Skeleton className="h-4 w-20 bg-slate-700" />
           ) : (
             <p className="text-white font-mono text-sm">
-              $hardcode
+
+              {displayFloatingPnL >= 0 ? "0" : displayFloatingPnL.toFixed(2).slice(1)}
+
+
+              {/* git */}
+              {/* {displayFloatingPnL.toFixed(2)} */}
               {/* {realTimeMargin.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
