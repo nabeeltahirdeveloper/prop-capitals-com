@@ -44,8 +44,7 @@ export default function AccountMetrics({
     account?.floatingPnL || 0,
   );
 
-  const [marginUsed, setMarginUsed] = useState(0)
-  // console.log(account)
+  console.log(account)
   // const [disp
   // layBalance, setDisplayBalance] = React.useState(
   //   account?.balance || 100000,
@@ -344,7 +343,7 @@ export default function AccountMetrics({
       if (
         equityChanged ||
         pnlChanged ||
-        balanceChanged ||
+        // balanceChanged ||
         profitChanged ||
         dailyDDChanged ||
         overallDDChanged
@@ -514,8 +513,9 @@ export default function AccountMetrics({
 
   // Calculate profit progress with aggressive smoothing removed for better responsiveness
   // Use ref to track previous value and only update if change is significant (very tiny threshold now)
-  const profitProgressRef = React.useRef(0);
-  const rawProfitProgress = (displayProfitPercent / profitTarget) * 100;
+  const profitProgressRef = React.useRef(100);
+  const rawProfitProgress = (profitPercent / profitTarget) * 100;
+  // console.log(rawProfitProgress)
   // Only update if change is at least 0.01% (prevents jumpy UI while staying responsive)
   const profitProgress = React.useMemo(() => {
     const rounded = Math.round(rawProfitProgress * 100) / 100; // Round to 2 decimal places for smoother feel
@@ -541,8 +541,8 @@ export default function AccountMetrics({
   const isPhase1 = phase === "phase1" || phase === "PHASE1";
 
   // Check if Phase 1 requirements are met
-  // const phase1ProfitMet = profitPercent >= profitTarget;
-  const phase1ProfitMet = displayProfitPercent >= profitTarget;
+  const phase1ProfitMet = profitPercent >= profitTarget;
+  // const phase1ProfitMet = displayProfitPercent >= profitTarget;
   const phase1TradingDaysMet = tradingDays >= minTradingDays;
   const phase1DailyDDMet = dailyDrawdown <= maxDailyDrawdown;
   const phase1OverallDDMet = overallDrawdown <= maxOverallDrawdown;
@@ -643,7 +643,7 @@ export default function AccountMetrics({
         let realMarginUsed = (balanceForMarginUsed - displayFloatingPnL)
       } else {
         let realMarginUsed = 0
-        
+
       }
 
     }
@@ -1132,6 +1132,19 @@ export default function AccountMetrics({
                             : "bg-slate-500/20 text-slate-400"
                     }`}
                 >
+
+
+
+
+
+
+
+
+
+
+
+
+
                   {t(`dashboard.rulesPanel.status.${profitStatus.statusKey}`)}
                 </Badge>
               </div>
@@ -1148,7 +1161,7 @@ export default function AccountMetrics({
           ) : (
             <>
               <Progress
-                value={Math.min(Math.max(0, profitProgress), 100)}
+                value={Math.min(Math.max(0, profitProgress),)}
                 className="h-3 bg-slate-800 transition-all duration-700 ease-out"
               />
               <div className="flex justify-between mt-2 text-xs">
@@ -1358,7 +1371,7 @@ export default function AccountMetrics({
           ) : (
             <p className="text-white font-mono text-sm">
               {/* $hardcode */}
-             ${totalEquity}
+              ${totalEquity}
               {/* {realTimeFreeMargin.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
