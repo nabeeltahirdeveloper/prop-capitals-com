@@ -283,13 +283,13 @@ export default function AccountMetrics({
     // const initialDisplayBalance = isFunded ? baseBalance : "hardcode";
     // setDisplayBalance(initialDisplayBalance);
     const totalProfit = !totalEquity == 0 ?
-    ((displayFloatingPnL.toFixed(2) / totalEquity) * 100)
-:0;
+      ((displayFloatingPnL.toFixed(2) / totalEquity) * 100)
+      : 0;
 
 
     if (totalProfit <= 0) {
       setDisplayProfitPercent(0)
-    }else{
+    } else {
       setDisplayProfitPercent(totalProfit);
     }
     setDisplayDailyDrawdown(currentDailyDrawdown);
@@ -1301,7 +1301,8 @@ export default function AccountMetrics({
             <Skeleton className="h-4 w-20 bg-slate-700" />
           ) : (
             <p className="text-white font-mono text-sm">
-              $hardcode
+               {displayFloatingPnL >= 0 ? "0" : displayFloatingPnL.toFixed(2) }
+              {/* {displayFloatingPnL.toFixed(2)} */}
               {/* {realTimeMargin.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
