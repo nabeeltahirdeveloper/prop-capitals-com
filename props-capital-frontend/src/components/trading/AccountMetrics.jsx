@@ -43,6 +43,8 @@ export default function AccountMetrics({
   const [displayFloatingPnL, setDisplayFloatingPnL] = React.useState(
     account?.floatingPnL || 0,
   );
+
+  const [marginUsed, setMarginUsed] = useState(0)
   // console.log(account)
   // const [disp
   // layBalance, setDisplayBalance] = React.useState(
@@ -623,7 +625,33 @@ export default function AccountMetrics({
     return { color: "text-red-400", bg: "bg-red-500", statusKey: "danger" };
   };
 
+
+
+
+
+
+
+
+
+
+
   const totalEquity = ((account?.balance || 0) + (account?.floatingPnL || 0)).toFixed(2)
+  const balanceForMarginUsed = account.balance
+  useEffect(() => {
+    const getMarginUsed = (displayFloatingPnL, balanceForMarginUsed) => {
+      if (displayFloatingPnL < 0) {
+        let realMarginUsed = (balanceForMarginUsed - displayFloatingPnL)
+      } else {
+        let realMarginUsed = 0
+        
+      }
+
+    }
+
+
+    getMarginUsed()
+  }, [balanceForMarginUsed])
+  // console.log(marginUsed)
 
 
   const dailyStatus = getDDStatus(dailyDDUsage);
@@ -1308,7 +1336,7 @@ export default function AccountMetrics({
           ) : (
             <p className="text-white font-mono text-sm">
 
-              {displayFloatingPnL >= 0 ? "0" : displayFloatingPnL.toFixed(2).slice(1)}
+              ${displayFloatingPnL >= 0 ? "0" : displayFloatingPnL.toFixed(2).slice(1)}
 
 
               {/* git */}
@@ -1329,7 +1357,8 @@ export default function AccountMetrics({
             <Skeleton className="h-4 w-20 bg-slate-700" />
           ) : (
             <p className="text-white font-mono text-sm">
-              $hardcode
+              {/* $hardcode */}
+             ${totalEquity}
               {/* {realTimeFreeMargin.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
