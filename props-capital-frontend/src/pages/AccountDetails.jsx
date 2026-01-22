@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../utils";
 import { useQuery } from "@tanstack/react-query";
@@ -15,7 +15,6 @@ import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StatusBadge from "../components/shared/StatusBadge";
 import ProgressRing from "../components/shared/ProgressRing";
 import EquityChart from "@/components/charts/EquityChart";
@@ -36,29 +35,29 @@ import {
   Wallet,
   Target,
   Shield,
-  Clock,
   ArrowLeft,
-  AlertTriangle,
   CheckCircle,
   BarChart3,
-  Calendar,
-  Award,
-  DollarSign,
-  Activity,
-  AlertCircle,
-  XCircle,
-  Check,
-  X,
-  Info,
-  Percent,
-  ArrowUpRight,
-  ArrowDownRight,
   RefreshCw,
   ChevronRight,
   Copy,
   ExternalLink,
 } from "lucide-react";
 import { format } from "date-fns";
+
+// Format large currency numbers compactly
+function formatCompactCurrency(num) {
+  const absNum = Math.abs(num);
+  if (absNum >= 1000000) {
+    return (num / 1000000).toFixed(1) + "M";
+  } else if (absNum >= 10000) {
+    return (num / 1000).toFixed(1) + "K";
+  }
+  return num.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
 
 export default function AccountDetails() {
   const { t } = useTranslation();
@@ -110,11 +109,7 @@ export default function AccountDetails() {
   }, [accounts, selectedAccountId]);
 
   // Get account details
-  const {
-    data: accountData,
-    isLoading: accountLoading,
-    error: accountError,
-  } = useQuery({
+  const { data: accountData, isLoading: accountLoading } = useQuery({
     queryKey: ["trading-account", selectedAccountId],
     queryFn: async () => {
       if (!selectedAccountId) return null;
@@ -162,7 +157,7 @@ export default function AccountDetails() {
   });
 
   // Get account trades
-  const { data: tradesData = [] } = useQuery({
+  const { data: tradesData = [], refetch: refetchTrades } = useQuery({
     queryKey: ["account-trades", selectedAccountId],
     queryFn: async () => {
       if (!selectedAccountId) return [];
@@ -354,13 +349,6 @@ export default function AccountDetails() {
     CLOSED: "closed",
   };
 
-  console.log("🔍 Account Details Platform Debug:", {
-    accountData_platform: accountData.platform,
-    challenge_platform: challenge.platform,
-    final_platform: accountData.platform || challenge.platform || "MT5",
-    account_id: accountData.id,
-  });
-
   const account = {
     id: accountData.id,
     account_number: accountData.brokerLogin || accountData.id.slice(0, 8),
@@ -414,6 +402,21 @@ export default function AccountDetails() {
       challenge.weekendHoldingAllowed ??
       true,
     ea_allowed: challengeRules.eaAllowed ?? challenge.eaAllowed ?? true,
+    // Add violation_reason from backend lastViolationMessage for ViolationAlert component
+    violation_reason: accountData.lastViolationMessage || null,
+    // Include challenge data for ViolationAlert
+    challenge: {
+      dailyDrawdownPercent:
+        challengeRules.dailyDrawdownPercent ||
+        challenge.dailyDrawdownPercent ||
+        5,
+      overallDrawdownPercent:
+        challengeRules.overallDrawdownPercent ||
+        challenge.overallDrawdownPercent ||
+        10,
+      maxTradingDays:
+        challengeRules.maxTradingDays || challenge.maxTradingDays || null,
+    },
   };
 
   // Get trades from account data or summary
@@ -437,6 +440,9 @@ export default function AccountDetails() {
         ? format(new Date(trade.closedAt), "yyyy-MM-dd HH:mm")
         : null,
       status: trade.closePrice || trade.closedAt ? "closed" : "open",
+      // Include stop loss and take profit for OpenPositionsWidget
+      stop_loss: trade.stopLoss || null,
+      take_profit: trade.takeProfit || null,
     };
   });
 
@@ -604,92 +610,6 @@ export default function AccountDetails() {
       integratedStats.avgDuration ?? calculatedStats.avgDuration ?? "0h 0m",
   };
 
-  // Build rule compliance from rules data
-  const ruleCompliance = rulesData
-    ? [
-        {
-          rule: t("accountDetails.dailyDrawdown"),
-          status:
-            metrics.dailyDrawdownPercent <= challengeRules.dailyDrawdownPercent
-              ? "ok"
-              : "violated",
-          value: `${metrics.dailyDrawdownPercent?.toFixed(2) || 0}%`,
-          limit: `${challengeRules.dailyDrawdownPercent || 5}%`,
-        },
-        {
-          rule: t("accountDetails.overallDrawdown"),
-          status:
-            metrics.overallDrawdownPercent <=
-            challengeRules.overallDrawdownPercent
-              ? "ok"
-              : "violated",
-          value: `${metrics.overallDrawdownPercent?.toFixed(2) || 0}%`,
-          limit: `${challengeRules.overallDrawdownPercent || 10}%`,
-        },
-        {
-          rule: t("accountDetails.minTradingDays"),
-          status:
-            metrics.tradingDaysCompleted >= challengeRules.minTradingDays
-              ? "completed"
-              : "pending",
-          value: `${metrics.tradingDaysCompleted || 0} ${t("accountDetails.days")}`,
-          limit: `${challengeRules.minTradingDays || 4} ${t("accountDetails.days")}`,
-        },
-        {
-          rule: t("accountDetails.newsTrading"),
-          status: "ok",
-          value: t("accountDetails.compliant"),
-          limit: t("accountDetails.allowed"),
-        },
-        {
-          rule: t("accountDetails.weekendHolding"),
-          status: "ok",
-          value: t("accountDetails.compliant"),
-          limit: t("accountDetails.allowed"),
-        },
-      ]
-    : [
-        {
-          rule: t("accountDetails.dailyDrawdown"),
-          status:
-            account.daily_drawdown_percent <= account.max_daily_dd
-              ? "ok"
-              : "violated",
-          value: `${account.daily_drawdown_percent}%`,
-          limit: `${account.max_daily_dd}%`,
-        },
-        {
-          rule: t("accountDetails.overallDrawdown"),
-          status:
-            account.overall_drawdown_percent <= account.max_overall_dd
-              ? "ok"
-              : "violated",
-          value: `${account.overall_drawdown_percent}%`,
-          limit: `${account.max_overall_dd}%`,
-        },
-        {
-          rule: t("accountDetails.minTradingDays"),
-          status:
-            account.trading_days_count >= account.min_trading_days
-              ? "completed"
-              : "pending",
-          value: `${account.trading_days_count} ${t("accountDetails.days")}`,
-          limit: `${account.min_trading_days} ${t("accountDetails.days")}`,
-        },
-        {
-          rule: t("accountDetails.newsTrading"),
-          status: "ok",
-          value: t("accountDetails.compliant"),
-          limit: t("accountDetails.allowed"),
-        },
-        {
-          rule: t("accountDetails.weekendHolding"),
-          status: "ok",
-          value: t("accountDetails.compliant"),
-          limit: t("accountDetails.allowed"),
-        },
-      ];
-
   const tradeColumns = [
     {
       header: t("accountDetails.time"),
@@ -781,25 +701,36 @@ export default function AccountDetails() {
               <ArrowLeft className="w-5 h-5 hover:text-black" />
             </Button>
           </Link>
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-base sm:text-2xl font-bold text-white">
+          <div className="min-w-0 flex-1">
+            {/* Challenge Name */}
+            {challenge.name && (
+              <p className="text-xs sm:text-sm text-cyan-400 font-medium mb-1 truncate">
+                {challenge.name}
+              </p>
+            )}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <h1 className="text-base sm:text-2xl font-bold text-white whitespace-nowrap">
                 ${account.initial_balance?.toLocaleString()}{" "}
                 {t("accountDetails.account")}
               </h1>
               <StatusBadge status={account.current_phase} />
               <StatusBadge status={account.status} />
             </div>
-            <div className="flex items-center gap-4 text-[10px] sm:text-sm text-slate-400 mt-1">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-[10px] sm:text-sm text-slate-400 mt-1">
               <span>{account.platform}</span>
-              <span>•</span>
+              <span className="hidden sm:inline">•</span>
               <span className="flex items-center gap-1">
                 #{account.account_number}
-                <button className="hover:text-white">
+                <button
+                  className="hover:text-white"
+                  onClick={() =>
+                    navigator.clipboard.writeText(account.account_number)
+                  }
+                >
                   <Copy className="w-3 h-3" />
                 </button>
               </span>
-              <span>•</span>
+              <span className="hidden sm:inline">•</span>
               <span>
                 {t("accountDetails.started")}{" "}
                 {format(new Date(account.start_date), "MMM d, yyyy")}
@@ -902,48 +833,66 @@ export default function AccountDetails() {
       {/* Account Summary - Top Section */}
       <div className="grid lg:grid-cols-4 gap-6">
         {/* Financial Metrics */}
-        <Card className="bg-slate-900 border-slate-800 p-6 lg:col-span-3">
+        <Card className="bg-slate-900 border-slate-800 p-6 lg:col-span-3 overflow-hidden">
           <h3 className="text-lg font-semibold text-white mb-6">
             {t("accountDetails.accountSummary")}
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            <div>
+            <div className="min-w-0">
               <p className="text-sm text-slate-400 mb-1">
                 {t("accountDetails.balance")}
               </p>
-              <p className="text-base sm:text-2xl font-bold text-white">
-                ${account.current_balance?.toLocaleString()}
+              <p className="text-sm sm:text-xl md:text-2xl font-bold text-white truncate">
+                $
+                {account.current_balance?.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </p>
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-sm text-slate-400 mb-1">
                 {t("accountDetails.equity")}
               </p>
-              <p className="text-base sm:text-2xl font-bold text-white">
-                ${account.current_equity?.toLocaleString()}
+              <p className="text-sm sm:text-xl md:text-2xl font-bold text-white truncate">
+                $
+                {account.current_equity?.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </p>
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-sm text-slate-400 mb-1">
                 {t("accountDetails.floatingPL")}
               </p>
               <p
-                className={`text-base sm:text-2xl font-bold  ${account.floating_pl >= 0 ? "text-emerald-400" : "text-red-400"}`}
+                className={`text-sm sm:text-xl md:text-2xl font-bold truncate ${account.floating_pl >= 0 ? "text-emerald-400" : "text-red-400"}`}
               >
-                {account.floating_pl >= 0 ? "+" : ""}${account.floating_pl}
+                {account.floating_pl >= 0 ? "+" : ""}$
+                {account.floating_pl?.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </p>
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-sm text-slate-400 mb-1">
                 {t("accountDetails.totalProfit")}
               </p>
               <p
-                className={`text-base sm:text-2xl font-bold  ${account.current_profit_percent >= 0 ? "text-emerald-400" : "text-red-400"}`}
+                className={`text-sm sm:text-xl md:text-2xl font-bold truncate ${account.current_profit_percent >= 0 ? "text-emerald-400" : "text-red-400"}`}
               >
-                +$
+                {account.current_balance - account.initial_balance >= 0
+                  ? "+"
+                  : ""}
+                $
                 {(
                   account.current_balance - account.initial_balance
-                ).toLocaleString()}
+                ).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </p>
             </div>
           </div>
@@ -1044,73 +993,78 @@ export default function AccountDetails() {
       )}
 
       {/* Performance Stats */}
-      <Card className="bg-slate-900 border-slate-800 p-6">
+      <Card className="bg-slate-900 border-slate-800 p-6 overflow-hidden">
         <h3 className="text-lg font-semibold text-white mb-6">
           {t("accountDetails.performanceStatistics")}
         </h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          <div className="text-center p-4 bg-slate-800/50 rounded-xl">
-            <p className="text-xl sm:text-3xl font-bold text-emerald-400">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          <div className="text-center p-3 sm:p-4 bg-slate-800/50 rounded-xl overflow-hidden">
+            <p className="text-lg sm:text-2xl md:text-3xl font-bold text-emerald-400 truncate">
               {stats.winRate.toFixed(2)}%
             </p>
-            <p className="text-sm text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-400">
               {t("accountDetails.winRate")}
             </p>
           </div>
-          <div className="text-center p-4 bg-slate-800/50 rounded-xl">
-            <p className="text-lg sm:text-3xl font-bold text-cyan-400">
+          <div className="text-center p-3 sm:p-4 bg-slate-800/50 rounded-xl overflow-hidden">
+            <p className="text-lg sm:text-2xl md:text-3xl font-bold text-cyan-400 truncate">
               {stats.avgRR.toFixed(2)}
             </p>
-            <p className="text-sm text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-400">
               {t("accountDetails.avgRiskReward")}
             </p>
           </div>
-          <div className="text-center p-4 bg-slate-800/50 rounded-xl">
-            <p className="text-lg sm:text-3xl font-bold text-white">
+          <div className="text-center p-3 sm:p-4 bg-slate-800/50 rounded-xl overflow-hidden">
+            <p className="text-lg sm:text-2xl md:text-3xl font-bold text-white truncate">
               {stats.totalTrades}
             </p>
-            <p className="text-sm text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-400">
               {t("accountDetails.totalTrades")}
             </p>
           </div>
-          <div className="text-center p-4 bg-slate-800/50 rounded-xl">
-            <p className="text-lg sm:text-3xl font-bold text-purple-400">
+          <div className="text-center p-3 sm:p-4 bg-slate-800/50 rounded-xl overflow-hidden">
+            <p className="text-lg sm:text-2xl md:text-3xl font-bold text-purple-400 truncate">
               {stats.profitFactor > 0 ? stats.profitFactor.toFixed(2) : "0.00"}
             </p>
-            <p className="text-sm text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-400">
               {t("accountDetails.profitFactor")}
             </p>
           </div>
-          <div className="text-center p-4 bg-slate-800/50 rounded-xl">
-            <p className="text-lg sm:text-3xl font-bold text-emerald-400">
-              {stats.largestWin >= 0 ? "+" : ""}$
-              {Math.abs(stats.largestWin).toFixed(2)}
+          <div className="text-center p-3 sm:p-4 bg-slate-800/50 rounded-xl overflow-hidden">
+            <p
+              className="text-lg sm:text-2xl md:text-3xl font-bold text-emerald-400 truncate"
+              title={`+$${Math.abs(stats.largestWin).toFixed(2)}`}
+            >
+              +${formatCompactCurrency(Math.abs(stats.largestWin))}
             </p>
-            <p className="text-sm text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-400">
               {t("accountDetails.largestWin")}
             </p>
           </div>
-          <div className="text-center p-4 bg-slate-800/50 rounded-xl">
-            <p className="text-lg sm:text-3xl font-bold text-red-400">
-              -${Math.abs(stats.largestLoss).toFixed(2)}
+          <div className="text-center p-3 sm:p-4 bg-slate-800/50 rounded-xl overflow-hidden">
+            <p
+              className="text-lg sm:text-2xl md:text-3xl font-bold text-red-400 truncate"
+              title={`-$${Math.abs(stats.largestLoss).toFixed(2)}`}
+            >
+              -${formatCompactCurrency(Math.abs(stats.largestLoss))}
             </p>
-            <p className="text-sm text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-400">
               {t("accountDetails.largestLoss")}
             </p>
           </div>
-          <div className="text-center p-4 bg-slate-800/50 rounded-xl">
-            <p className="text-lg sm:text-3xl font-bold text-white">
+          <div className="text-center p-3 sm:p-4 bg-slate-800/50 rounded-xl overflow-hidden">
+            <p className="text-lg sm:text-2xl md:text-3xl font-bold text-white truncate">
               {stats.avgTradeSize.toFixed(2)}
             </p>
-            <p className="text-sm text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-400">
               {t("accountDetails.avgLotSize")}
             </p>
           </div>
-          <div className="text-center p-4 bg-slate-800/50 rounded-xl">
-            <p className="text-lg sm:text-3xl font-bold text-white">
+          <div className="text-center p-3 sm:p-4 bg-slate-800/50 rounded-xl overflow-hidden">
+            <p className="text-lg sm:text-2xl md:text-3xl font-bold text-white truncate">
               {stats.avgDuration}
             </p>
-            <p className="text-sm text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-400">
               {t("accountDetails.avgDuration")}
             </p>
           </div>
@@ -1123,7 +1077,12 @@ export default function AccountDetails() {
           <h3 className="text-lg font-semibold text-white">
             {t("accountDetails.tradeHistory")}
           </h3>
-          <Button variant="outline" size="sm" className="border-slate-700">
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-slate-700 hover:bg-slate-700"
+            onClick={() => refetchTrades()}
+          >
             <RefreshCw className="w-4 h-4 mr-2" />
             {t("accountDetails.refresh")}
           </Button>
