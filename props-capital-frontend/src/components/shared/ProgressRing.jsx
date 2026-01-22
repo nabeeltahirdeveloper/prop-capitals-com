@@ -7,6 +7,7 @@ export default function ProgressRing({
   strokeWidth = 8,
   color = '#10b981',
   bgColor = '#1e293b',
+  textColor,
   label,
   sublabel
 }) {
@@ -40,9 +41,15 @@ export default function ProgressRing({
           className="transition-all duration-500 ease-out"
         />
       </svg>
-      <div className="absolute flex flex-col items-center justify-center" style={{ width: size * 0.7 }}>
-        <span className={`font-bold text-white ${Math.abs(value !== undefined ? value : progress) >= 100 ? 'text-xs' : Math.abs(value !== undefined ? value : progress) >= 10 ? 'text-sm' : 'text-lg'}`}>
-          {(value !== undefined ? value : progress).toFixed(2)}%
+      <div className="absolute flex flex-col items-center justify-center" style={{ width: size * 0.75 }}>
+        <span
+          className="font-bold leading-none"
+          style={{
+            color: textColor || 'white',
+            fontSize: size <= 50 ? '10px' : size <= 60 ? '11px' : size <= 80 ? '14px' : '18px'
+          }}
+        >
+          {(value !== undefined ? value : progress).toFixed(1)}%
         </span>
         {label && <span className="text-xs text-slate-400 mt-1">{label}</span>}
         {sublabel && <span className="text-xs text-slate-500">{sublabel}</span>}
