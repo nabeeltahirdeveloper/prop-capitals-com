@@ -848,6 +848,7 @@
     "applied": "ใช้แล้ว",
     "off": "ลด",
     "couponApplied": "{{code}} ใช้แล้ว - ลด {{discount}}%!",
+    "discountApplied": "ใช้ส่วนลด {{discount}}% แล้ว",
     "couponSuccess": "ใช้คูปองสำเร็จ",
     "couponError": "คูปองไม่ถูกต้อง",
     "purchaseError": "การซื้อล้มเหลว",

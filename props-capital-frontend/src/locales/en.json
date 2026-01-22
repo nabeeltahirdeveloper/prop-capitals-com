@@ -848,6 +848,7 @@
     "applied": "applied",
     "off": "off",
     "couponApplied": "{{code}} applied - {{discount}}% off!",
+    "discountApplied": "{{discount}}% discount applied",
     "couponSuccess": "Coupon Applied",
     "couponError": "Invalid Coupon",
     "purchaseError": "Purchase Failed",
