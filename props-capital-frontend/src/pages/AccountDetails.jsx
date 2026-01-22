@@ -1080,7 +1080,7 @@ export default function AccountDetails() {
           <Button
             variant="outline"
             size="sm"
-            className="border-slate-700 hover:bg-slate-700"
+            className="border-slate-700 hover:bg-slate-700 hover:text-white hover:border-slate-600 transition-all duration-200"
             onClick={() => refetchTrades()}
           >
             <RefreshCw className="w-4 h-4 mr-2" />

@@ -49,7 +49,7 @@ export default function ProgressRing({
             fontSize: size <= 50 ? '10px' : size <= 60 ? '11px' : size <= 80 ? '14px' : '18px'
           }}
         >
-          {(value !== undefined ? value : progress).toFixed(1)}%
+          {(value !== undefined ? value : progress).toFixed(2)}%
         </span>
         {label && <span className="text-xs text-slate-400 mt-1">{label}</span>}
         {sublabel && <span className="text-xs text-slate-500">{sublabel}</span>}

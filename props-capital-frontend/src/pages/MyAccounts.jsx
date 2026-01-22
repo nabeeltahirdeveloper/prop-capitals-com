@@ -429,7 +429,7 @@ export default function MyAccounts() {
                             ? "#f59e0b"
                             : account.status === "disqualified"
                               ? "#ef4444"
-                              : profitProgress >= 100
+                              : account.current_profit_percent > 0
                                 ? "#10b981"
                                 : "#06b6d4"
                         }

@@ -26,28 +26,24 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export default function EquityChart({ data, title = "Equity Curve" }) {
-  // Process and deduplicate data by date, keeping the last value for each day
-  const processedData =
-    data?.reduce((acc, item) => {
-      let dateStr = "N/A";
-      try {
-        const dateValue = item.date || item.timestamp;
-        if (dateValue) {
-          dateStr = format(new Date(dateValue), "MMM d");
-        }
-      } catch {
-        dateStr = "N/A";
-      }
-      const equity = item.ending_equity || item.equity || 0;
-      if (equity > 0) {
-        // Use date as key to deduplicate, keeping the latest value
-        acc[dateStr] = { date: dateStr, equity };
-      }
-      return acc;
-    }, {}) || {};
-
-  // Convert to array and sort by date
-  const chartData = Object.values(processedData);
+  // Process and sort data chronologically
+  const chartData = React.useMemo(() => {
+    if (!data || data.length === 0) return [];
+    
+    return [...data]
+      .filter(item => (item.ending_equity || item.equity || 0) > 0)
+      .map(item => ({
+        ...item,
+        rawDate: new Date(item.date || item.timestamp || 0),
+        equity: item.ending_equity || item.equity || 0
+      }))
+      .sort((a, b) => a.rawDate - b.rawDate)
+      .map(item => ({
+        ...item,
+        date: format(item.rawDate, "MMM d"),
+        equity: item.equity
+      }));
+  }, [data]);
 
   // Handle empty data gracefully
   if (chartData.length === 0) {
