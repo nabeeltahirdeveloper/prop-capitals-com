@@ -14,6 +14,22 @@ import {
 import { Calendar, TrendingUp, TrendingDown } from "lucide-react";
 import { useTranslation } from "../../contexts/LanguageContext";
 
+// Format large numbers compactly (e.g., 177666.809 -> 177.7K)
+function formatCompactNumber(num) {
+  const absNum = Math.abs(num);
+  if (absNum >= 1000000) {
+    return (num / 1000000).toFixed(1) + "M";
+  } else if (absNum >= 10000) {
+    return (num / 1000).toFixed(1) + "K";
+  } else if (absNum >= 1000) {
+    return (num / 1000).toFixed(2) + "K";
+  }
+  return num.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
 export default function DailyPnLChart({ data }) {
   const { t } = useTranslation();
   const chartData = data || generateSampleData();
@@ -56,22 +72,28 @@ export default function DailyPnLChart({ data }) {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3 text-center overflow-hidden">
-          <p className="text-[10px] sm:text-xs text-emerald-400 mb-1">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6">
+        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-2 sm:p-3 text-center overflow-hidden">
+          <p className="text-[10px] sm:text-xs text-emerald-400 mb-1 whitespace-nowrap">
             {t("analytics.totalProfit")}
           </p>
-          <p className="font-bold text-[clamp(10px,3vw,18px)] text-emerald-400 break-all">
-            +${totalProfit.toLocaleString()}
+          <p
+            className="font-bold text-xs sm:text-base md:text-lg text-emerald-400 truncate"
+            title={`+$${totalProfit.toLocaleString()}`}
+          >
+            +${formatCompactNumber(totalProfit)}
           </p>
         </div>
 
-        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-center overflow-hidden">
-          <p className="text-[10px] sm:text-xs text-red-400 mb-1">
+        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-2 sm:p-3 text-center overflow-hidden">
+          <p className="text-[10px] sm:text-xs text-red-400 mb-1 whitespace-nowrap">
             {t("analytics.totalLoss")}
           </p>
-          <p className="font-bold text-[clamp(10px,3vw,18px)] text-red-400 break-all">
-            ${totalLoss.toLocaleString()}
+          <p
+            className="font-bold text-xs sm:text-base md:text-lg text-red-400 truncate"
+            title={`$${totalLoss.toLocaleString()}`}
+          >
+            ${formatCompactNumber(totalLoss)}
           </p>
         </div>
 
@@ -80,21 +102,22 @@ export default function DailyPnLChart({ data }) {
             netPnL >= 0
               ? "bg-emerald-500/10 border-emerald-500/30"
               : "bg-red-500/10 border-red-500/30"
-          } border rounded-lg p-3 text-center overflow-hidden`}
+          } border rounded-lg p-2 sm:p-3 text-center overflow-hidden`}
         >
           <p
-            className={`text-[10px] sm:text-xs mb-1 ${
+            className={`text-[10px] sm:text-xs mb-1 whitespace-nowrap ${
               netPnL >= 0 ? "text-emerald-400" : "text-red-400"
             }`}
           >
             {t("analytics.netPL")}
           </p>
           <p
-            className={`font-bold text-[clamp(10px,3vw,18px)] break-all ${
+            className={`font-bold text-xs sm:text-base md:text-lg truncate ${
               netPnL >= 0 ? "text-emerald-400" : "text-red-400"
             }`}
+            title={`${netPnL >= 0 ? "+" : ""}$${netPnL.toLocaleString()}`}
           >
-            {netPnL >= 0 ? "+" : ""}${netPnL.toLocaleString()}
+            {netPnL >= 0 ? "+" : ""}${formatCompactNumber(netPnL)}
           </p>
         </div>
       </div>
@@ -118,9 +141,16 @@ export default function DailyPnLChart({ data }) {
             />
             <YAxis
               stroke="#64748b"
-              tick={{ fill: "#64748b", fontSize: 11 }}
+              tick={{ fill: "#64748b", fontSize: 10 }}
               tickLine={{ stroke: "#64748b" }}
-              tickFormatter={(value) => `$${value}`}
+              width={60}
+              tickFormatter={(value) => {
+                const absVal = Math.abs(value);
+                if (absVal >= 1000000)
+                  return `$${(value / 1000000).toFixed(0)}M`;
+                if (absVal >= 1000) return `$${(value / 1000).toFixed(0)}K`;
+                return `$${value}`;
+              }}
             />
             <Tooltip
               contentStyle={{
@@ -149,21 +179,27 @@ export default function DailyPnLChart({ data }) {
       </div>
 
       {/* Best/Worst Days */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        <div className="bg-slate-800/50 rounded-lg p-3">
+      <div className="grid grid-cols-2 gap-4 mt-4">
+        <div className="bg-slate-800/50 rounded-lg p-3 overflow-hidden">
           <p className="text-xs text-slate-400 mb-1">
             {t("analytics.bestDay")}
           </p>
-          <p className="text-emerald-400 font-bold">
-            +${Math.max(...chartData.map((d) => d.pnl)).toLocaleString()}
+          <p
+            className="text-emerald-400 font-bold text-sm sm:text-base truncate"
+            title={`+$${Math.max(...chartData.map((d) => d.pnl)).toLocaleString()}`}
+          >
+            +${formatCompactNumber(Math.max(...chartData.map((d) => d.pnl)))}
           </p>
         </div>
-        <div className="bg-slate-800/50 rounded-lg p-3">
+        <div className="bg-slate-800/50 rounded-lg p-3 overflow-hidden">
           <p className="text-xs text-slate-400 mb-1">
             {t("analytics.worstDay")}
           </p>
-          <p className="text-red-400 font-bold">
-            ${Math.min(...chartData.map((d) => d.pnl)).toLocaleString()}
+          <p
+            className="text-red-400 font-bold text-sm sm:text-base truncate"
+            title={`$${Math.min(...chartData.map((d) => d.pnl)).toLocaleString()}`}
+          >
+            ${formatCompactNumber(Math.min(...chartData.map((d) => d.pnl)))}
           </p>
         </div>
       </div>
