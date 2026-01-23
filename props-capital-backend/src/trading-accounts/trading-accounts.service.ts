@@ -984,9 +984,12 @@ export class TradingAccountsService {
   // Calculate analytics for a single account
   private calculateAccountAnalytics(account: any) {
     const trades = account.trades || [];
-    const closedTrades = trades.filter(
-      (t: any) => t.closePrice !== null && t.closePrice !== undefined,
-    );
+    const closedTrades = trades
+      .filter((t: any) => t.closePrice !== null && t.closePrice !== undefined)
+      .sort(
+        (a, b) =>
+          new Date(a.closedAt).getTime() - new Date(b.closedAt).getTime(),
+      );
 
     // Calculate statistics
     const totalTrades = closedTrades.length;
@@ -1015,11 +1018,77 @@ export class TradingAccountsService {
             ) / losingTrades.length,
           )
         : 0;
-    const profitFactor = avgLoss > 0 ? avgWin / avgLoss : 0;
+
+    // Calculate profit factor: Total Gross Profit / Total Gross Loss (absolute value)
+    const totalGrossProfit = winningTrades.reduce(
+      (sum: number, t: any) => sum + (t.profit || 0),
+      0,
+    );
+    const totalGrossLoss = Math.abs(
+      losingTrades.reduce((sum: number, t: any) => sum + (t.profit || 0), 0),
+    );
+    const profitFactor =
+      totalGrossLoss > 0 ? totalGrossProfit / totalGrossLoss : 0;
 
     const profits = closedTrades.map((t: any) => t.profit || 0);
     const bestTrade = profits.length > 0 ? Math.max(...profits) : 0;
     const worstTrade = profits.length > 0 ? Math.min(...profits) : 0;
+
+    // Calculate streaks
+    let maxConsecutiveWins = 0;
+    let maxConsecutiveLosses = 0;
+    let currentWins = 0;
+    let currentLosses = 0;
+
+    closedTrades.forEach((trade) => {
+      if (trade.profit > 0) {
+        currentWins++;
+        currentLosses = 0;
+        if (currentWins > maxConsecutiveWins) maxConsecutiveWins = currentWins;
+      } else if (trade.profit < 0) {
+        currentLosses++;
+        currentWins = 0;
+        if (currentLosses > maxConsecutiveLosses)
+          maxConsecutiveLosses = currentLosses;
+      }
+    });
+
+    // Calculate Avg R:R
+    const avgRR = avgLoss > 0 ? avgWin / avgLoss : 0;
+
+    // Calculate Avg Holding Time
+    let totalHoldingTimeMs = 0;
+    closedTrades.forEach((trade) => {
+      const open = new Date(trade.openedAt).getTime();
+      const close = new Date(trade.closedAt).getTime();
+      totalHoldingTimeMs += close - open;
+    });
+    const avgHoldingTimeMs =
+      totalTrades > 0 ? totalHoldingTimeMs / totalTrades : 0;
+    const hours = Math.floor(avgHoldingTimeMs / (1000 * 60 * 60));
+    const minutes = Math.floor(
+      (avgHoldingTimeMs % (1000 * 60 * 60)) / (1000 * 60),
+    );
+    const avgHoldingTime = `${hours}h ${minutes}m`;
+
+    // Position metrics
+    const volumes = closedTrades.map((t) => t.volume || 0);
+    const largestPosition = volumes.length > 0 ? Math.max(...volumes) : 0;
+    const avgPosition =
+      volumes.length > 0
+        ? volumes.reduce((a, b) => a + b, 0) / volumes.length
+        : 0;
+
+    // Sharpe Ratio (simplified: avg profit / std dev of profit)
+    let sharpeRatio = 0;
+    if (totalTrades > 1) {
+      const avgTradeProfit = totalProfit / totalTrades;
+      const variance =
+        profits.reduce((sum, p) => sum + Math.pow(p - avgTradeProfit, 2), 0) /
+        (totalTrades - 1);
+      const stdDev = Math.sqrt(variance);
+      sharpeRatio = stdDev > 0 ? avgTradeProfit / stdDev : 0;
+    }
 
     // Symbol distribution
     const symbolStats: Record<string, number> = {};
@@ -1046,21 +1115,37 @@ export class TradingAccountsService {
       };
     });
 
-    // Daily P/L
-    const dailyPnL: Array<{ date: string; pnl: number }> = [];
-    account.equityShots.forEach((shot: any, index: number) => {
-      const prevShot = index > 0 ? account.equityShots[index - 1] : null;
-      const dailyPnLValue = prevShot ? shot.equity - prevShot.equity : 0;
+    // Daily P/L - Group by date and calculate daily change
+    const equityByDate: Record<string, { first: number; last: number }> = {};
+    account.equityShots.forEach((shot: any) => {
       const date = new Date(shot.timestamp);
-      if (dailyPnLValue !== 0 || index === 0) {
-        dailyPnL.push({
-          date: date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-          }),
-          pnl: dailyPnLValue,
-        });
+      const dateKey = date.toISOString().substring(0, 10);
+      if (!equityByDate[dateKey]) {
+        equityByDate[dateKey] = { first: shot.equity, last: shot.equity };
+      } else {
+        equityByDate[dateKey].last = shot.equity;
       }
+    });
+
+    // Calculate daily P/L from day-over-day equity changes
+    const sortedDates = Object.keys(equityByDate).sort();
+    const dailyPnL: Array<{ date: string; pnl: number }> = [];
+    sortedDates.forEach((dateKey, index) => {
+      const date = new Date(dateKey);
+      const currentDayEquity = equityByDate[dateKey].last;
+      const prevDayEquity =
+        index > 0
+          ? equityByDate[sortedDates[index - 1]].last
+          : currentDayEquity;
+      const pnl = index > 0 ? currentDayEquity - prevDayEquity : 0;
+
+      dailyPnL.push({
+        date: date.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+        }),
+        pnl: parseFloat(pnl.toFixed(2)),
+      });
     });
 
     return {
@@ -1075,6 +1160,13 @@ export class TradingAccountsService {
         profitFactor: parseFloat(profitFactor.toFixed(2)),
         bestTrade: parseFloat(bestTrade.toFixed(2)),
         worstTrade: parseFloat(worstTrade.toFixed(2)),
+        maxConsecutiveWins,
+        maxConsecutiveLosses,
+        avgRR: parseFloat(avgRR.toFixed(2)),
+        avgHoldingTime,
+        largestPosition: parseFloat(largestPosition.toFixed(2)),
+        avgPosition: parseFloat(avgPosition.toFixed(2)),
+        sharpeRatio: parseFloat(sharpeRatio.toFixed(2)),
       },
       symbolDistribution,
       equityCurve,
@@ -1087,9 +1179,12 @@ export class TradingAccountsService {
   private calculateAggregatedAnalytics(accounts: any[]) {
     // Aggregate all trades
     const allTrades = accounts.flatMap((acc) => acc.trades || []);
-    const closedTrades = allTrades.filter(
-      (t: any) => t.closePrice !== null && t.closePrice !== undefined,
-    );
+    const closedTrades = allTrades
+      .filter((t: any) => t.closePrice !== null && t.closePrice !== undefined)
+      .sort(
+        (a, b) =>
+          new Date(a.closedAt).getTime() - new Date(b.closedAt).getTime(),
+      );
 
     // Calculate statistics (same as single account)
     const totalTrades = closedTrades.length;
@@ -1118,11 +1213,77 @@ export class TradingAccountsService {
             ) / losingTrades.length,
           )
         : 0;
-    const profitFactor = avgLoss > 0 ? avgWin / avgLoss : 0;
+
+    // Calculate profit factor: Total Gross Profit / Total Gross Loss (absolute value)
+    const totalGrossProfit = winningTrades.reduce(
+      (sum: number, t: any) => sum + (t.profit || 0),
+      0,
+    );
+    const totalGrossLoss = Math.abs(
+      losingTrades.reduce((sum: number, t: any) => sum + (t.profit || 0), 0),
+    );
+    const profitFactor =
+      totalGrossLoss > 0 ? totalGrossProfit / totalGrossLoss : 0;
 
     const profits = closedTrades.map((t: any) => t.profit || 0);
     const bestTrade = profits.length > 0 ? Math.max(...profits) : 0;
     const worstTrade = profits.length > 0 ? Math.min(...profits) : 0;
+
+    // Calculate streaks
+    let maxConsecutiveWins = 0;
+    let maxConsecutiveLosses = 0;
+    let currentWins = 0;
+    let currentLosses = 0;
+
+    closedTrades.forEach((trade) => {
+      if (trade.profit > 0) {
+        currentWins++;
+        currentLosses = 0;
+        if (currentWins > maxConsecutiveWins) maxConsecutiveWins = currentWins;
+      } else if (trade.profit < 0) {
+        currentLosses++;
+        currentWins = 0;
+        if (currentLosses > maxConsecutiveLosses)
+          maxConsecutiveLosses = currentLosses;
+      }
+    });
+
+    // Calculate Avg R:R
+    const avgRR = avgLoss > 0 ? avgWin / avgLoss : 0;
+
+    // Calculate Avg Holding Time
+    let totalHoldingTimeMs = 0;
+    closedTrades.forEach((trade) => {
+      const open = new Date(trade.openedAt).getTime();
+      const close = new Date(trade.closedAt).getTime();
+      totalHoldingTimeMs += close - open;
+    });
+    const avgHoldingTimeMs =
+      totalTrades > 0 ? totalHoldingTimeMs / totalTrades : 0;
+    const hours = Math.floor(avgHoldingTimeMs / (1000 * 60 * 60));
+    const minutes = Math.floor(
+      (avgHoldingTimeMs % (1000 * 60 * 60)) / (1000 * 60),
+    );
+    const avgHoldingTime = `${hours}h ${minutes}m`;
+
+    // Position metrics
+    const volumes = closedTrades.map((t) => t.volume || 0);
+    const largestPosition = volumes.length > 0 ? Math.max(...volumes) : 0;
+    const avgPosition =
+      volumes.length > 0
+        ? volumes.reduce((a, b) => a + b, 0) / volumes.length
+        : 0;
+
+    // Sharpe Ratio (simplified: avg profit / std dev of profit)
+    let sharpeRatio = 0;
+    if (totalTrades > 1) {
+      const avgTradeProfit = totalProfit / totalTrades;
+      const variance =
+        profits.reduce((sum, p) => sum + Math.pow(p - avgTradeProfit, 2), 0) /
+        (totalTrades - 1);
+      const stdDev = Math.sqrt(variance);
+      sharpeRatio = stdDev > 0 ? avgTradeProfit / stdDev : 0;
+    }
 
     // Symbol distribution
     const symbolStats: Record<string, number> = {};
@@ -1172,7 +1333,7 @@ export class TradingAccountsService {
         };
       });
 
-    // Daily P/L from aggregated equity
+    // Daily P/L from aggregated equity - day-over-day changes
     const dailyPnL: Array<{ date: string; pnl: number }> = [];
     const sortedEquity = Object.entries(equityByDate)
       .sort(([a], [b]) => a.localeCompare(b))
@@ -1180,17 +1341,16 @@ export class TradingAccountsService {
 
     sortedEquity.forEach((item, index) => {
       const prevItem = index > 0 ? sortedEquity[index - 1] : null;
-      const dailyPnLValue = prevItem ? item.equity - prevItem.equity : 0;
+      const pnl = prevItem ? item.equity - prevItem.equity : 0;
       const date = new Date(item.dateKey);
-      if (dailyPnLValue !== 0 || index === 0) {
-        dailyPnL.push({
-          date: date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-          }),
-          pnl: dailyPnLValue,
-        });
-      }
+
+      dailyPnL.push({
+        date: date.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+        }),
+        pnl: parseFloat(pnl.toFixed(2)),
+      });
     });
 
     return {
@@ -1205,6 +1365,13 @@ export class TradingAccountsService {
         profitFactor: parseFloat(profitFactor.toFixed(2)),
         bestTrade: parseFloat(bestTrade.toFixed(2)),
         worstTrade: parseFloat(worstTrade.toFixed(2)),
+        maxConsecutiveWins,
+        maxConsecutiveLosses,
+        avgRR: parseFloat(avgRR.toFixed(2)),
+        avgHoldingTime,
+        largestPosition: parseFloat(largestPosition.toFixed(2)),
+        avgPosition: parseFloat(avgPosition.toFixed(2)),
+        sharpeRatio: parseFloat(sharpeRatio.toFixed(2)),
       },
       symbolDistribution,
       equityCurve,
