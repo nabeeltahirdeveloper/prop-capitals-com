@@ -7,6 +7,7 @@ import {
   getUserPayouts,
   requestPayout,
   getPayoutStatistics,
+  getAvailablePayoutAmount,
 } from "@/api/payouts";
 import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
@@ -57,6 +58,9 @@ export default function TraderPayouts() {
     payment_method: "",
     payment_details: "",
   });
+  const [availablePayoutInfo, setAvailablePayoutInfo] = useState(null);
+  const [loadingAvailable, setLoadingAvailable] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
   const queryClient = useQueryClient();
 
   // Get current user
@@ -131,6 +135,25 @@ export default function TraderPayouts() {
     refetchInterval: 5000, // Real-time updates every 5 seconds
   });
 
+  // Fetch available payout when account is selected
+  const fetchAvailablePayoutAmount = async (accountId) => {
+    if (!user?.userId || !accountId) {
+      setAvailablePayoutInfo(null);
+      return;
+    }
+    setLoadingAvailable(true);
+    setSubmitError(null);
+    try {
+      const info = await getAvailablePayoutAmount(user.userId, accountId);
+      setAvailablePayoutInfo(info);
+    } catch (error) {
+      console.error("Failed to fetch available payout:", error);
+      setAvailablePayoutInfo(null);
+    } finally {
+      setLoadingAvailable(false);
+    }
+  };
+
   // Request payout mutation
   const createPayoutMutation = useMutation({
     mutationFn: async (data) => {
@@ -138,17 +161,30 @@ export default function TraderPayouts() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["payouts", user?.userId] });
+      queryClient.invalidateQueries({
+        queryKey: ["payout-statistics", user?.userId],
+      });
       setIsOpen(false);
       setRequestForm({
         tradingAccountId: "",
         payment_method: "",
         payment_details: "",
       });
+      setAvailablePayoutInfo(null);
+      setSubmitError(null);
+    },
+    onError: (error) => {
+      setSubmitError(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to request payout",
+      );
     },
   });
 
   const handleSubmit = () => {
     if (!user?.userId || !requestForm.tradingAccountId) return;
+    setSubmitError(null);
 
     createPayoutMutation.mutate({
       userId: user.userId,
@@ -156,6 +192,20 @@ export default function TraderPayouts() {
       payment_method: requestForm.payment_method,
       payment_details: requestForm.payment_details,
     });
+  };
+
+  // Reset dialog state when closed
+  const handleDialogChange = (open) => {
+    setIsOpen(open);
+    if (!open) {
+      setRequestForm({
+        tradingAccountId: "",
+        payment_method: "",
+        payment_details: "",
+      });
+      setAvailablePayoutInfo(null);
+      setSubmitError(null);
+    }
   };
 
   // Extract statistics and settings from backend
@@ -377,7 +427,7 @@ export default function TraderPayouts() {
             })}
           </SelectContent>
         </Select>
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <Dialog open={isOpen} onOpenChange={handleDialogChange}>
           <DialogTrigger asChild>
             <Button
               className="bg-gradient-to-r from-emerald-500 to-cyan-500"
@@ -399,9 +449,10 @@ export default function TraderPayouts() {
                   {t("payouts.selectAccount")}
                 </Label>
                 <Select
-                  onValueChange={(value) =>
-                    setRequestForm({ ...requestForm, tradingAccountId: value })
-                  }
+                  onValueChange={(value) => {
+                    setRequestForm({ ...requestForm, tradingAccountId: value });
+                    fetchAvailablePayoutAmount(value);
+                  }}
                 >
                   <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
                     <SelectValue
@@ -435,6 +486,62 @@ export default function TraderPayouts() {
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Available Payout Info */}
+              {loadingAvailable && (
+                <div className="bg-slate-800 rounded-lg p-4 text-center">
+                  <p className="text-slate-400 text-sm">
+                    {t("payouts.loadingAvailable") ||
+                      "Loading available amount..."}
+                  </p>
+                </div>
+              )}
+
+              {availablePayoutInfo && !loadingAvailable && (
+                <div className="bg-slate-800 rounded-lg p-4 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-400 text-sm">
+                      {t("payouts.availableForPayout") ||
+                        "Available for payout"}
+                    </span>
+                    <span className="text-emerald-400 font-bold text-lg">
+                      $
+                      {availablePayoutInfo.availablePayoutAmount?.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-slate-500">
+                      {t("payouts.profitSplitLabel") || "Profit split"}
+                    </span>
+                    <span className="text-slate-400">
+                      {availablePayoutInfo.profitSplit}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-slate-500">
+                      {t("payouts.minimumLabel") || "Minimum"}
+                    </span>
+                    <span className="text-slate-400">
+                      ${availablePayoutInfo.minimumPayoutAmount}
+                    </span>
+                  </div>
+                  {availablePayoutInfo.hasPendingPayout && (
+                    <div className="mt-2 p-2 bg-amber-500/10 border border-amber-500/30 rounded text-amber-400 text-xs">
+                      {t("payouts.pendingPayoutWarning") ||
+                        "You already have a pending payout request for this account"}
+                    </div>
+                  )}
+                  {!availablePayoutInfo.canRequestPayout &&
+                    !availablePayoutInfo.hasPendingPayout &&
+                    availablePayoutInfo.availablePayoutAmount <
+                      availablePayoutInfo.minimumPayoutAmount && (
+                      <div className="mt-2 p-2 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-xs">
+                        {t("payouts.belowMinimumWarning") ||
+                          `Available amount is below the minimum payout of $${availablePayoutInfo.minimumPayoutAmount}`}
+                      </div>
+                    )}
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label className="text-slate-300">
@@ -500,17 +607,27 @@ export default function TraderPayouts() {
                 />
               </div>
 
+              {submitError && (
+                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-sm">
+                  {submitError}
+                </div>
+              )}
+
               <Button
                 onClick={handleSubmit}
                 className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500"
                 disabled={
                   createPayoutMutation.isPending ||
-                  !requestForm.tradingAccountId
+                  !requestForm.tradingAccountId ||
+                  loadingAvailable ||
+                  (availablePayoutInfo && !availablePayoutInfo.canRequestPayout)
                 }
               >
                 {createPayoutMutation.isPending
                   ? t("payouts.submitting")
-                  : t("payouts.submitRequest")}
+                  : availablePayoutInfo?.availablePayoutAmount
+                    ? `${t("payouts.submitRequest")} - $${availablePayoutInfo.availablePayoutAmount.toLocaleString()}`
+                    : t("payouts.submitRequest")}
               </Button>
             </div>
           </DialogContent>

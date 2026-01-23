@@ -29,3 +29,7 @@ export const getPayoutStatistics = async (userId, accountId = null) => {
     params,
   });
 };
+
+export const getAvailablePayoutAmount = async (userId, tradingAccountId) => {
+  return apiGet(`/payouts/user/${userId}/available/${tradingAccountId}`);
+};

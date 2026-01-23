@@ -2,11 +2,14 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 
-import { PayoutStatus } from '@prisma/client';
+import { PayoutStatus, TradingPhase } from '@prisma/client';
+
+const MINIMUM_PAYOUT_AMOUNT = 50;
 
 @Injectable()
 export class PayoutsService {
@@ -19,37 +22,71 @@ export class PayoutsService {
     paymentDetails?: string,
   ) {
     // Verify account exists
-
     const account = await this.prisma.tradingAccount.findUnique({
       where: { id: tradingAccountId },
-
       include: {
         trades: true,
         challenge: true,
+        payouts: true,
       },
     });
 
     if (!account) throw new NotFoundException('Trading account not found');
 
     // Check ownership
-
     if (account.userId !== userId) {
       throw new ForbiddenException('You do not own this trading account');
     }
 
-    // Sum all profits
+    // Verify account is in FUNDED phase
+    if (account.phase !== TradingPhase.FUNDED) {
+      throw new BadRequestException(
+        'Payouts are only available for funded accounts',
+      );
+    }
 
+    // Check for existing pending/approved payout
+    const existingPendingPayout = account.payouts.find(
+      (p) =>
+        p.status === PayoutStatus.PENDING || p.status === PayoutStatus.APPROVED,
+    );
+    if (existingPendingPayout) {
+      throw new BadRequestException(
+        'You already have a pending payout request for this account',
+      );
+    }
+
+    // Sum all profits from trades
     const totalProfit = account.trades.reduce(
       (sum, t) => sum + (t.profit || 0),
       0,
     );
 
+    // Calculate previously paid/requested payout amounts
+    const previousPayoutAmount = account.payouts
+      .filter(
+        (p) =>
+          p.status === PayoutStatus.PAID ||
+          p.status === PayoutStatus.PENDING ||
+          p.status === PayoutStatus.APPROVED,
+      )
+      .reduce((sum, p) => sum + p.amount, 0);
+
     // Use challenge's profit split or default to 80%
     const profitSplit = account.challenge?.profitSplit || 80;
 
-    // Apply payout split based on account tier
+    // Calculate available profit (total profit minus already requested/paid amounts)
+    const availableProfit = Math.max(0, totalProfit - previousPayoutAmount);
 
-    const payoutAmount = Math.floor(totalProfit * (profitSplit / 100));
+    // Apply payout split based on account tier
+    const payoutAmount = Math.floor(availableProfit * (profitSplit / 100));
+
+    // Validate minimum payout amount
+    if (payoutAmount < MINIMUM_PAYOUT_AMOUNT) {
+      throw new BadRequestException(
+        `Minimum payout amount is $${MINIMUM_PAYOUT_AMOUNT}. Your available payout is $${payoutAmount}`,
+      );
+    }
 
     // Create payout record
     const data: any = {
@@ -59,12 +96,11 @@ export class PayoutsService {
       status: PayoutStatus.PENDING,
     };
 
-    // Add payment fields if provided (requires migration to be applied first)
     if (paymentMethod) {
-      (data as any).paymentMethod = paymentMethod;
+      data.paymentMethod = paymentMethod;
     }
     if (paymentDetails) {
-      (data as any).paymentDetails = paymentDetails;
+      data.paymentDetails = paymentDetails;
     }
 
     return this.prisma.payout.create({ data });
@@ -96,6 +132,71 @@ export class PayoutsService {
         },
       },
     });
+  }
+
+  async getAvailablePayoutAmount(userId: string, tradingAccountId: string) {
+    const account = await this.prisma.tradingAccount.findUnique({
+      where: { id: tradingAccountId },
+      include: {
+        trades: true,
+        challenge: true,
+        payouts: true,
+      },
+    });
+
+    if (!account) throw new NotFoundException('Trading account not found');
+
+    if (account.userId !== userId) {
+      throw new ForbiddenException('You do not own this trading account');
+    }
+
+    // Sum all profits from trades
+    const totalProfit = account.trades.reduce(
+      (sum, t) => sum + (t.profit || 0),
+      0,
+    );
+
+    // Calculate previously paid/requested payout amounts
+    const previousPayoutAmount = account.payouts
+      .filter(
+        (p) =>
+          p.status === PayoutStatus.PAID ||
+          p.status === PayoutStatus.PENDING ||
+          p.status === PayoutStatus.APPROVED,
+      )
+      .reduce((sum, p) => sum + p.amount, 0);
+
+    // Use challenge's profit split or default to 80%
+    const profitSplit = account.challenge?.profitSplit || 80;
+
+    // Calculate available profit
+    const availableProfit = Math.max(0, totalProfit - previousPayoutAmount);
+
+    // Apply payout split
+    const availablePayoutAmount = Math.floor(
+      availableProfit * (profitSplit / 100),
+    );
+
+    // Check for existing pending payout
+    const hasPendingPayout = account.payouts.some(
+      (p) =>
+        p.status === PayoutStatus.PENDING || p.status === PayoutStatus.APPROVED,
+    );
+
+    return {
+      totalProfit,
+      previousPayoutAmount,
+      availableProfit,
+      profitSplit,
+      availablePayoutAmount,
+      minimumPayoutAmount: MINIMUM_PAYOUT_AMOUNT,
+      canRequestPayout:
+        availablePayoutAmount >= MINIMUM_PAYOUT_AMOUNT &&
+        !hasPendingPayout &&
+        account.phase === TradingPhase.FUNDED,
+      hasPendingPayout,
+      isFunded: account.phase === TradingPhase.FUNDED,
+    };
   }
 
   async getPayoutStatistics(userId: string, accountId?: string) {

@@ -94,16 +94,42 @@ export class NotificationsService {
   }
 
   async markAsRead(id: string) {
+    const notification = await this.prisma.notification.findUnique({
+      where: { id },
+    });
+
+    if (!notification) {
+      return { updated: false, message: 'Notification not found' };
+    }
+
     return this.prisma.notification.update({
       where: { id },
-
       data: { read: true },
     });
   }
 
   async delete(id: string) {
-    return this.prisma.notification.delete({
+    const notification = await this.prisma.notification.findUnique({
       where: { id },
     });
+
+    if (!notification) {
+      return { deleted: false, message: 'Notification not found' };
+    }
+
+    await this.prisma.notification.delete({
+      where: { id },
+    });
+
+    return { deleted: true };
+  }
+
+  async markAllAsRead(userId: string) {
+    const result = await this.prisma.notification.updateMany({
+      where: { userId, read: false },
+      data: { read: true },
+    });
+
+    return { updatedCount: result.count };
   }
 }

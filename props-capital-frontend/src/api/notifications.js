@@ -16,3 +16,7 @@ export const markNotificationAsRead = async (id) => {
 export const deleteNotification = async (id) => {
   return apiDelete(`/notifications/${id}`);
 };
+
+export const markAllNotificationsAsRead = async (userId) => {
+  return apiPatch(`/notifications/user/${userId}/read-all`);
+};

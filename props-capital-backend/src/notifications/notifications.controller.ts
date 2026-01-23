@@ -44,6 +44,11 @@ export class NotificationsController {
     return this.notificationsService.markAsRead(id);
   }
 
+  @Patch('user/:userId/read-all')
+  async markAllAsRead(@Param('userId') userId: string) {
+    return this.notificationsService.markAllAsRead(userId);
+  }
+
   @Delete(':id')
   async deleteNotification(@Param('id') id: string) {
     return this.notificationsService.delete(id);

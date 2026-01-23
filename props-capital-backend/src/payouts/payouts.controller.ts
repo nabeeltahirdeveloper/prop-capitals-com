@@ -39,4 +39,15 @@ export class PayoutsController {
   ) {
     return this.payoutsService.getPayoutStatistics(userId, accountId);
   }
+
+  @Get('user/:userId/available/:tradingAccountId')
+  async getAvailablePayoutAmount(
+    @Param('userId') userId: string,
+    @Param('tradingAccountId') tradingAccountId: string,
+  ) {
+    return this.payoutsService.getAvailablePayoutAmount(
+      userId,
+      tradingAccountId,
+    );
+  }
 }
