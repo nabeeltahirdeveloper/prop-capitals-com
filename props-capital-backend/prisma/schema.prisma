@@ -106,7 +106,7 @@ model TradingAccount {
   id                String               @id @default(cuid())
   userId            String
   challengeId       String
-  platform          ChallengePlatform?   // User's selected trading platform
+  platform          ChallengePlatform? // User's selected trading platform
   phase             TradingPhase         @default(PHASE1)
   status            TradingAccountStatus @default(ACTIVE)
   balance           Float                @default(0)
@@ -117,11 +117,11 @@ model TradingAccount {
   initialBalance    Float                @default(0)
   createdAt         DateTime             @default(now())
   updatedAt         DateTime             @updatedAt
-  dailyLockedUntil     DateTime?
-  maxEquityToDate      Float?
-  todayStartEquity     Float?
-  dailyLossViolated    Boolean              @default(false)
-  drawdownViolated     Boolean              @default(false)
+  dailyLockedUntil  DateTime?
+  maxEquityToDate   Float?
+  todayStartEquity  Float?
+  dailyLossViolated Boolean              @default(false)
+  drawdownViolated  Boolean              @default(false)
   equityShots       EquitySnapshot[]
   payouts           Payout[]
   pendingOrders     PendingOrder[]
@@ -226,6 +226,9 @@ model Payout {
   amount           Int
   currency         String         @default("USD")
   status           PayoutStatus   @default(PENDING)
+  paymentMethod    String?
+  paymentDetails   String?
+  processedAt      DateTime?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
@@ -445,8 +448,8 @@ model CRMMeeting {
   title       String
   clientName  String
   startTime   DateTime
-  duration    Int      // in minutes
-  type        String   // "Call", "Meeting", etc.
+  duration    Int // in minutes
+  type        String // "Call", "Meeting", etc.
   status      String   @default("SCHEDULED") // "SCHEDULED", "COMPLETED", "CANCELLED"
   description String?
   agentName   String?
@@ -456,7 +459,6 @@ model CRMMeeting {
   @@index([startTime])
   @@index([status])
 }
-
 
 model LeadActivity {
   id           String           @id @default(cuid())

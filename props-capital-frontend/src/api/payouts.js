@@ -1,8 +1,13 @@
-import { apiGet, apiPost, apiPatch } from '@/lib/api';
+import { apiGet, apiPost, apiPatch } from "@/lib/api";
 
 // API Functions
 export const requestPayout = async (data) => {
-  return apiPost('/payouts/request', data);
+  return apiPost("/payouts/request", {
+    userId: data.userId,
+    tradingAccountId: data.tradingAccountId,
+    paymentMethod: data.payment_method,
+    paymentDetails: data.payment_details,
+  });
 };
 
 export const getUserPayouts = async (userId, accountId = null) => {
@@ -24,4 +29,3 @@ export const getPayoutStatistics = async (userId, accountId = null) => {
     params,
   });
 };
-

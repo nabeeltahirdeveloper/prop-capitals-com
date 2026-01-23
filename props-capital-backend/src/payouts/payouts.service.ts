@@ -1,25 +1,32 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 
 import { PayoutStatus } from '@prisma/client';
 
 @Injectable()
-
 export class PayoutsService {
-
   constructor(private prisma: PrismaService) {}
 
-  async requestPayout(userId: string, tradingAccountId: string) {
-
+  async requestPayout(
+    userId: string,
+    tradingAccountId: string,
+    paymentMethod?: string,
+    paymentDetails?: string,
+  ) {
     // Verify account exists
 
     const account = await this.prisma.tradingAccount.findUnique({
-
       where: { id: tradingAccountId },
 
-      include: { trades: true },
-
+      include: {
+        trades: true,
+        challenge: true,
+      },
     });
 
     if (!account) throw new NotFoundException('Trading account not found');
@@ -27,49 +34,50 @@ export class PayoutsService {
     // Check ownership
 
     if (account.userId !== userId) {
-
       throw new ForbiddenException('You do not own this trading account');
-
     }
 
     // Sum all profits
 
-    const totalProfit = account.trades.reduce((sum, t) => sum + (t.profit || 0), 0);
+    const totalProfit = account.trades.reduce(
+      (sum, t) => sum + (t.profit || 0),
+      0,
+    );
 
-    // Apply payout split (80%)
+    // Use challenge's profit split or default to 80%
+    const profitSplit = account.challenge?.profitSplit || 80;
 
-    const payoutAmount = Math.floor(totalProfit * 0.8);
+    // Apply payout split based on account tier
+
+    const payoutAmount = Math.floor(totalProfit * (profitSplit / 100));
 
     // Create payout record
+    const data: any = {
+      userId,
+      tradingAccountId,
+      amount: payoutAmount,
+      status: PayoutStatus.PENDING,
+    };
 
-    return this.prisma.payout.create({
+    // Add payment fields if provided (requires migration to be applied first)
+    if (paymentMethod) {
+      (data as any).paymentMethod = paymentMethod;
+    }
+    if (paymentDetails) {
+      (data as any).paymentDetails = paymentDetails;
+    }
 
-      data: {
-
-        userId,
-
-        tradingAccountId,
-
-        amount: payoutAmount,
-
-        status: PayoutStatus.PENDING,
-
-      },
-
-    });
-
+    return this.prisma.payout.create({ data });
   }
 
   async getUserPayouts(userId: string, accountId?: string) {
-
     const where: any = { userId };
-    
+
     if (accountId) {
       where.tradingAccountId = accountId;
     }
 
     return this.prisma.payout.findMany({
-
       where,
 
       orderBy: { createdAt: 'desc' },
@@ -87,32 +95,28 @@ export class PayoutsService {
           },
         },
       },
-
     });
-
   }
 
   async getPayoutStatistics(userId: string, accountId?: string) {
-
     const where: any = { userId };
-    
+
     if (accountId) {
       where.tradingAccountId = accountId;
     }
 
     // Get all payouts for statistics
     const payouts = await this.prisma.payout.findMany({
-
       where,
 
       orderBy: { createdAt: 'desc' },
-
     });
 
     // Calculate statistics
-    const paidPayouts = payouts.filter(p => p.status === PayoutStatus.PAID);
-    const pendingPayouts = payouts.filter(p => 
-      p.status === PayoutStatus.PENDING || p.status === PayoutStatus.APPROVED
+    const paidPayouts = payouts.filter((p) => p.status === PayoutStatus.PAID);
+    const pendingPayouts = payouts.filter(
+      (p) =>
+        p.status === PayoutStatus.PENDING || p.status === PayoutStatus.APPROVED,
     );
 
     const totalEarnings = paidPayouts.reduce((sum, p) => sum + p.amount, 0);
@@ -130,7 +134,6 @@ export class PayoutsService {
 
     // Payout settings (can be moved to config/database later)
     const settings = {
-
       profitSplit: {
         base: 80,
         withScaling: 90,
@@ -145,18 +148,23 @@ export class PayoutsService {
       fees: 'free',
 
       availablePaymentMethods: [
-        { id: 'bank_transfer', name: 'Bank Transfer', processingTime: '3-5 business days' },
-        { id: 'crypto', name: 'Cryptocurrency', processingTime: '1-2 business days' },
+        {
+          id: 'bank_transfer',
+          name: 'Bank Transfer',
+          processingTime: '3-5 business days',
+        },
+        {
+          id: 'crypto',
+          name: 'Cryptocurrency',
+          processingTime: '1-2 business days',
+        },
         { id: 'paypal', name: 'PayPal', processingTime: '1-3 business days' },
         { id: 'wise', name: 'Wise', processingTime: '2-4 business days' },
       ],
-
     };
 
     return {
-
       statistics: {
-
         totalEarnings,
 
         pendingPayouts: pendingAmount,
@@ -164,13 +172,9 @@ export class PayoutsService {
         totalPayoutsCount,
 
         nextPayoutDate: nextPayoutDate.toISOString(),
-
       },
 
       settings,
-
     };
-
   }
-
 }
