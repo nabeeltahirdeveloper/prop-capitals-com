@@ -18,7 +18,7 @@ export class TradesService {
   // Create trade and trigger evaluation engine
   async createTrade(data: any) {
     const { accountId, profit, openPrice, closePrice, volume, symbol, stopLoss, takeProfit } = data;
-
+console.log(data)
     const account = await this.prisma.tradingAccount.findUnique({
       where: { id: accountId },
       include: {

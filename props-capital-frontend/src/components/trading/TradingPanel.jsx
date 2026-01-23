@@ -335,8 +335,8 @@ export default function TradingPanel({
         </button>
 
         {/* Market Info */}
-        <div className="grid grid-cols-3 gap-3 pt-2">
-          <div className="text-center p-2 bg-slate-800/30 rounded-lg">
+        <div className="grid grid-cols-1 gap-3 pt-2">
+          <div className="text-center p-2 bg-slate-800 rounded-lg">
             <p className="text-[10px] text-slate-500 uppercase mb-1">{t('terminal.tradingPanel.bid')}</p>
             <p className="text-sm font-mono text-red-400 font-semibold">{formatPrice(symbol.bid)}</p>
           </div>
