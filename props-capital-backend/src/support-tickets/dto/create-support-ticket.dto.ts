@@ -1,14 +1,27 @@
-export class CreateSupportTicketDto {
+import { IsString, IsNotEmpty, IsOptional, IsEnum } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { TicketCategory, TicketPriority } from '@prisma/client';
 
+export class CreateSupportTicketDto {
+  @IsString()
+  @IsNotEmpty()
   userId: string;
 
+  @IsString()
+  @IsNotEmpty()
   subject: string;
 
+  @IsString()
+  @IsNotEmpty()
   message: string;
 
-  category?: string;
+  @IsOptional()
+  @Transform(({ value }) => value?.toUpperCase())
+  @IsEnum(TicketCategory, { message: 'Invalid ticket category' })
+  category?: TicketCategory;
 
-  priority?: string;
-
+  @IsOptional()
+  @Transform(({ value }) => value?.toUpperCase())
+  @IsEnum(TicketPriority, { message: 'Invalid ticket priority' })
+  priority?: TicketPriority;
 }
-
