@@ -1,15 +1,15 @@
-import React from 'react';
+import React from "react";
 
 export default function ProgressRing({
   progress,
   value,
   size = 120,
   strokeWidth = 8,
-  color = '#10b981',
-  bgColor = '#1e293b',
+  color = "#10b981",
+  bgColor = "#1e293b",
   textColor,
   label,
-  sublabel
+  sublabel,
 }) {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
@@ -41,12 +41,22 @@ export default function ProgressRing({
           className="transition-all duration-500 ease-out"
         />
       </svg>
-      <div className="absolute flex flex-col items-center justify-center" style={{ width: size * 0.75 }}>
+      <div
+        className="absolute flex flex-col items-center justify-center"
+        style={{ width: size * 0.75 }}
+      >
         <span
           className="font-bold leading-none"
           style={{
-            color: textColor || 'white',
-            fontSize: size <= 50 ? '10px' : size <= 60 ? '11px' : size <= 80 ? '14px' : '18px'
+            color: textColor || "white",
+            fontSize:
+              size <= 50
+                ? "10px"
+                : size <= 60
+                  ? "11px"
+                  : size <= 80
+                    ? "14px"
+                    : "18px",
           }}
         >
           {(value !== undefined ? value : progress).toFixed(2)}%

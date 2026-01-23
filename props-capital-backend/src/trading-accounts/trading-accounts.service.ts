@@ -1,4 +1,11 @@
-import { Injectable, NotFoundException, Inject, forwardRef, InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  Inject,
+  forwardRef,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { EvaluationService } from '../evaluation/evaluation.service';
@@ -6,7 +13,6 @@ import { EvaluationService } from '../evaluation/evaluation.service';
 import { TradingPhase } from '@prisma/client';
 
 @Injectable()
-
 export class TradingAccountsService {
   private readonly logger = new Logger(TradingAccountsService.name);
 
@@ -14,22 +20,17 @@ export class TradingAccountsService {
     private prisma: PrismaService,
     @Inject(forwardRef(() => EvaluationService))
     private evaluationService: EvaluationService,
-  ) { }
+  ) {}
 
   // Create trading account when user buys a challenge
 
   async createAccount(userId: string, challengeId: string) {
-
     const challenge = await this.prisma.challenge.findUnique({
-
       where: { id: challengeId },
-
     });
 
     if (!challenge) {
-
       throw new NotFoundException('Challenge not found');
-
     }
 
     // CRITICAL: Initialize maxEquityToDate to initialBalance (industry standard)
@@ -37,9 +38,7 @@ export class TradingAccountsService {
     const initialBalance = challenge.accountSize;
 
     return this.prisma.tradingAccount.create({
-
       data: {
-
         userId,
 
         challengeId,
@@ -55,30 +54,22 @@ export class TradingAccountsService {
         equity: initialBalance,
 
         maxEquityToDate: initialBalance, // Initialize to starting balance (peak equity starts here)
-
       } as any,
-
     });
-
   }
 
   // Get all accounts for a user
 
   async getUserAccounts(userId: string) {
-
     // Fetch all accounts for the user
     const accounts = await this.prisma.tradingAccount.findMany({
-
       where: { userId },
 
       include: {
-
         challenge: true,
-
       },
 
       orderBy: { createdAt: 'desc' },
-
     });
 
     // If no accounts, return empty array
@@ -91,11 +82,9 @@ export class TradingAccountsService {
 
     // Query trades for all accounts to compute tradingDaysCount
     const trades = await this.prisma.trade.findMany({
-
       where: { tradingAccountId: { in: accountIds } },
 
       select: { tradingAccountId: true, openedAt: true },
-
     });
 
     // Build map: accountId -> Set of distinct dates
@@ -119,13 +108,11 @@ export class TradingAccountsService {
 
     // Query violations for all accounts to get last violation message
     const violations = await this.prisma.violation.findMany({
-
       where: { tradingAccountId: { in: accountIds } },
 
       orderBy: { createdAt: 'desc' },
 
       select: { tradingAccountId: true, message: true },
-
     });
 
     // Build map: accountId -> most recent violation message
@@ -140,58 +127,42 @@ export class TradingAccountsService {
 
     // Map accounts to include computed fields
     return accounts.map((account) => ({
-
       ...account,
 
       tradingDaysCount: tradingDaysCountMap[account.id] || 0,
 
       lastViolationMessage: lastViolationMessageMap[account.id] || null,
-
     }));
-
   }
 
   // Get single trading account with full details
 
   async getAccountById(id: string) {
-
     // Fetch account with all relations
     const account = await this.prisma.tradingAccount.findUnique({
-
       where: { id },
 
       include: {
-
         challenge: true,
 
         trades: true,
 
         violations: {
-
           orderBy: { createdAt: 'desc' },
-
         },
 
         phaseHistory: {
-
           orderBy: { timestamp: 'asc' },
-
         },
 
         equityShots: {
-
           orderBy: { timestamp: 'asc' },
-
         },
-
       },
-
     });
 
     if (!account) {
-
       throw new NotFoundException('Trading account not found');
-
     }
 
     const { challenge } = account;
@@ -200,21 +171,16 @@ export class TradingAccountsService {
     const tradingDaysSet = new Set<string>();
 
     account.trades.forEach((trade) => {
-
       const dateKey = trade.openedAt.toISOString().substring(0, 10);
 
       tradingDaysSet.add(dateKey);
-
     });
 
     const tradingDaysCount = tradingDaysSet.size;
 
     // Get last violation message
-    const lastViolationMessage = account.violations.length > 0
-
-      ? account.violations[0].message
-
-      : null;
+    const lastViolationMessage =
+      account.violations.length > 0 ? account.violations[0].message : null;
 
     // Calculate initial balance (fallback to challenge accountSize)
     const initialBalance = account.initialBalance || challenge.accountSize || 0;
@@ -225,8 +191,9 @@ export class TradingAccountsService {
 
     // Calculate profit percent
     const profitPercent =
-
-      initialBalance > 0 ? ((equity - initialBalance) / initialBalance) * 100 : 0;
+      initialBalance > 0
+        ? ((equity - initialBalance) / initialBalance) * 100
+        : 0;
 
     // Calculate overall drawdown percent
     // Overall DD is calculated from maxEquityToDate (highest equity ever reached), not initialBalance
@@ -245,47 +212,41 @@ export class TradingAccountsService {
     today.setHours(0, 0, 0, 0);
 
     const todaySnapshots = account.equityShots.filter(
-
       (shot) => new Date(shot.timestamp) >= today,
-
     );
 
     // Find the highest equity today
     // If no snapshots for today, use the account's balance (start of day) or initial balance
     // This prevents using a lower equity as the "max" when account loads after a loss
-    const maxEquityToday = todaySnapshots.length > 0
-      ? Math.max(...todaySnapshots.map((s) => s.equity))
-      : Math.max(balance, initialBalance); // Use balance (start of day) or initial balance, not current equity
+    const maxEquityToday =
+      todaySnapshots.length > 0
+        ? Math.max(...todaySnapshots.map((s) => s.equity))
+        : Math.max(balance, initialBalance); // Use balance (start of day) or initial balance, not current equity
 
     // Daily drawdown is from today's highest equity to current equity
     const dailyDrawdownPercent =
-
       maxEquityToday > 0 && equity < maxEquityToday
-
         ? ((maxEquityToday - equity) / maxEquityToday) * 100
-
         : 0;
 
     // Calculate remaining drawdown allowances
     const remainingDailyDD = Math.max(
-
       0,
 
       challenge.dailyDrawdownPercent - dailyDrawdownPercent,
-
     );
 
     const remainingOverallDD = Math.max(
-
       0,
 
       challenge.overallDrawdownPercent - overallDrawdownPercent,
-
     );
 
     // Calculate margin used and free margin from open positions
     // Get open trades (trades without closePrice)
-    const openTrades = account.trades.filter(trade => trade.closePrice === null);
+    const openTrades = account.trades.filter(
+      (trade) => trade.closePrice === null,
+    );
 
     let marginUsed = 0;
     const leverage = 100; // Standard leverage for all positions
@@ -309,14 +270,16 @@ export class TradingAccountsService {
     const freeMargin = Math.max(0, equity - marginUsed);
 
     // Calculate days remaining
-    const daysRemaining = Math.max(0, challenge.minTradingDays - tradingDaysCount);
+    const daysRemaining = Math.max(
+      0,
+      challenge.minTradingDays - tradingDaysCount,
+    );
 
     // Calculate analytics for this account
     const analytics = this.calculateAccountAnalytics(account);
 
     // Build response DTO
     return {
-
       // Basic fields
       id: account.id,
 
@@ -345,7 +308,6 @@ export class TradingAccountsService {
 
       // Challenge details
       challenge: {
-
         id: challenge.id,
 
         name: challenge.name,
@@ -376,6 +338,7 @@ export class TradingAccountsService {
 
         weekendHoldingAllowed: challenge.weekendHoldingAllowed,
 
+        profitSplit: challenge.profitSplit,
       },
 
       // Metrics
@@ -410,7 +373,6 @@ export class TradingAccountsService {
 
       // Related arrays
       violations: account.violations.map((v) => ({
-
         id: v.id,
 
         type: v.type,
@@ -418,11 +380,9 @@ export class TradingAccountsService {
         message: v.message,
 
         createdAt: v.createdAt.toISOString(),
-
       })),
 
       phaseHistory: account.phaseHistory.map((ph) => ({
-
         id: ph.id,
 
         fromPhase: ph.fromPhase,
@@ -430,11 +390,9 @@ export class TradingAccountsService {
         toPhase: ph.toPhase,
 
         timestamp: ph.timestamp.toISOString(),
-
       })),
 
       equityShots: account.equityShots.map((es) => ({
-
         id: es.id,
 
         equity: es.equity,
@@ -442,23 +400,17 @@ export class TradingAccountsService {
         balance: es.balance,
 
         timestamp: es.timestamp.toISOString(),
-
       })),
-
     };
-
   }
 
   // 🔥 Rule compliance overview for a trading account
 
   async getRuleCompliance(accountId: string) {
-
     const account = await this.prisma.tradingAccount.findUnique({
-
       where: { id: accountId },
 
       include: {
-
         challenge: true,
 
         trades: true,
@@ -466,32 +418,29 @@ export class TradingAccountsService {
         violations: true,
 
         equityShots: {
-
           orderBy: { timestamp: 'asc' },
-
         },
 
         phaseHistory: {
-
           orderBy: { timestamp: 'asc' },
-
         },
-
       },
-
     });
 
     if (!account) {
-
       throw new NotFoundException('Trading account not found');
-
     }
 
     const { challenge } = account;
 
     // Validate challenge rule percentages - DO NOT default to 0, throw explicit error
-    if (challenge.dailyDrawdownPercent === null || challenge.dailyDrawdownPercent === undefined) {
-      this.logger.error(`[CHALLENGE_RULES_MISSING] Account ${accountId} has missing dailyDrawdownPercent. Challenge ID: ${challenge.id}`);
+    if (
+      challenge.dailyDrawdownPercent === null ||
+      challenge.dailyDrawdownPercent === undefined
+    ) {
+      this.logger.error(
+        `[CHALLENGE_RULES_MISSING] Account ${accountId} has missing dailyDrawdownPercent. Challenge ID: ${challenge.id}`,
+      );
       throw new InternalServerErrorException({
         code: 'CHALLENGE_RULES_MISSING',
         message: `Challenge rules are incomplete. Missing dailyDrawdownPercent for account ${accountId} (challenge ${challenge.id})`,
@@ -500,8 +449,13 @@ export class TradingAccountsService {
         missingField: 'dailyDrawdownPercent',
       });
     }
-    if (challenge.overallDrawdownPercent === null || challenge.overallDrawdownPercent === undefined) {
-      this.logger.error(`[CHALLENGE_RULES_MISSING] Account ${accountId} has missing overallDrawdownPercent. Challenge ID: ${challenge.id}`);
+    if (
+      challenge.overallDrawdownPercent === null ||
+      challenge.overallDrawdownPercent === undefined
+    ) {
+      this.logger.error(
+        `[CHALLENGE_RULES_MISSING] Account ${accountId} has missing overallDrawdownPercent. Challenge ID: ${challenge.id}`,
+      );
       throw new InternalServerErrorException({
         code: 'CHALLENGE_RULES_MISSING',
         message: `Challenge rules are incomplete. Missing overallDrawdownPercent for account ${accountId} (challenge ${challenge.id})`,
@@ -510,8 +464,13 @@ export class TradingAccountsService {
         missingField: 'overallDrawdownPercent',
       });
     }
-    if (challenge.phase1TargetPercent === null || challenge.phase1TargetPercent === undefined) {
-      this.logger.error(`[CHALLENGE_RULES_MISSING] Account ${accountId} has missing phase1TargetPercent. Challenge ID: ${challenge.id}`);
+    if (
+      challenge.phase1TargetPercent === null ||
+      challenge.phase1TargetPercent === undefined
+    ) {
+      this.logger.error(
+        `[CHALLENGE_RULES_MISSING] Account ${accountId} has missing phase1TargetPercent. Challenge ID: ${challenge.id}`,
+      );
       throw new InternalServerErrorException({
         code: 'CHALLENGE_RULES_MISSING',
         message: `Challenge rules are incomplete. Missing phase1TargetPercent for account ${accountId} (challenge ${challenge.id})`,
@@ -520,8 +479,13 @@ export class TradingAccountsService {
         missingField: 'phase1TargetPercent',
       });
     }
-    if (challenge.phase2TargetPercent === null || challenge.phase2TargetPercent === undefined) {
-      this.logger.error(`[CHALLENGE_RULES_MISSING] Account ${accountId} has missing phase2TargetPercent. Challenge ID: ${challenge.id}`);
+    if (
+      challenge.phase2TargetPercent === null ||
+      challenge.phase2TargetPercent === undefined
+    ) {
+      this.logger.error(
+        `[CHALLENGE_RULES_MISSING] Account ${accountId} has missing phase2TargetPercent. Challenge ID: ${challenge.id}`,
+      );
       throw new InternalServerErrorException({
         code: 'CHALLENGE_RULES_MISSING',
         message: `Challenge rules are incomplete. Missing phase2TargetPercent for account ${accountId} (challenge ${challenge.id})`,
@@ -542,8 +506,9 @@ export class TradingAccountsService {
     // Profit %
 
     const profitPercent =
-
-      initialBalance > 0 ? ((equity - initialBalance) / initialBalance) * 100 : 0;
+      initialBalance > 0
+        ? ((equity - initialBalance) / initialBalance) * 100
+        : 0;
 
     // Overall DD % - Calculate from maxEquityToDate (highest equity ever reached)
     // This matches ChallengeRulesService calculation: (maxEquityToDate - equity) / maxEquityToDate * 100
@@ -566,9 +531,10 @@ export class TradingAccountsService {
     // Find the highest equity today
     // If no snapshots for today, use the account's balance (start of day) or initial balance
     // This prevents using a lower equity as the "max" when account loads after a loss
-    const maxEquityToday = todaySnapshots.length > 0
-      ? Math.max(...todaySnapshots.map((s) => s.equity))
-      : Math.max(balance, initialBalance); // Use balance (start of day) or initial balance, not current equity
+    const maxEquityToday =
+      todaySnapshots.length > 0
+        ? Math.max(...todaySnapshots.map((s) => s.equity))
+        : Math.max(balance, initialBalance); // Use balance (start of day) or initial balance, not current equity
 
     // Daily drawdown is from today's highest equity to current equity
     const dailyDrawdownPercent =
@@ -577,7 +543,9 @@ export class TradingAccountsService {
         : 0;
 
     // Trading days based on distinct trade dates
-    const tradeDates = account.trades.map((t) => t.openedAt.toISOString().substring(0, 10));
+    const tradeDates = account.trades.map((t) =>
+      t.openedAt.toISOString().substring(0, 10),
+    );
     const tradingDaysCompleted = new Set(tradeDates).size;
 
     // Phase-specific target
@@ -585,31 +553,28 @@ export class TradingAccountsService {
     let currentPhaseTarget: number | null = null;
 
     if (account.phase === TradingPhase.PHASE1) {
-
       currentPhaseTarget = challenge.phase1TargetPercent;
-
     } else if (account.phase === TradingPhase.PHASE2) {
-
       currentPhaseTarget = challenge.phase2TargetPercent;
-
     }
 
     const phasePassed =
-
       currentPhaseTarget !== null ? profitPercent >= currentPhaseTarget : false;
 
     // Determine phase statuses
     const phase1Passed = account.phaseHistory.some(
-      (t) => t.fromPhase === TradingPhase.PHASE1 && t.toPhase === TradingPhase.PHASE2,
+      (t) =>
+        t.fromPhase === TradingPhase.PHASE1 &&
+        t.toPhase === TradingPhase.PHASE2,
     );
     const phase2Passed = account.phaseHistory.some(
-      (t) => t.fromPhase === TradingPhase.PHASE2 && t.toPhase === TradingPhase.FUNDED,
+      (t) =>
+        t.fromPhase === TradingPhase.PHASE2 &&
+        t.toPhase === TradingPhase.FUNDED,
     );
 
     return {
-
       account: {
-
         id: account.id,
 
         status: account.status,
@@ -621,11 +586,9 @@ export class TradingAccountsService {
         equity,
 
         createdAt: account.createdAt,
-
       },
 
       challengeRules: {
-
         dailyDrawdownPercent: challenge.dailyDrawdownPercent,
 
         overallDrawdownPercent: challenge.overallDrawdownPercent,
@@ -637,11 +600,9 @@ export class TradingAccountsService {
         minTradingDays: challenge.minTradingDays,
 
         maxTradingDays: challenge.maxTradingDays,
-
       },
 
       metrics: {
-
         profitPercent,
 
         dailyDrawdownPercent,
@@ -652,16 +613,17 @@ export class TradingAccountsService {
 
         minTradingDays: challenge.minTradingDays,
 
-        daysRemaining: Math.max(0, challenge.minTradingDays - tradingDaysCompleted),
+        daysRemaining: Math.max(
+          0,
+          challenge.minTradingDays - tradingDaysCompleted,
+        ),
 
         phasePassed,
-
       },
 
       violations: account.violations,
 
       phaseHistory: account.phaseHistory.map((t) => ({
-
         id: t.id,
 
         fromPhase: t.fromPhase,
@@ -669,21 +631,16 @@ export class TradingAccountsService {
         toPhase: t.toPhase,
 
         timestamp: t.timestamp,
-
       })),
 
       phaseStatus: {
-
         phase1Passed,
 
         phase2Passed,
 
         currentPhase: account.phase,
-
       },
-
     };
-
   }
 
   // Get phase transition history for an account
@@ -818,9 +775,13 @@ export class TradingAccountsService {
           const snapshotDate = new Date(snapshot.timestamp);
           return snapshotDate <= date && snapshotDate >= startDate;
         });
-        const peakEquity = allSnapshotsUpToDate.length > 0
-          ? Math.max(initialBalance, ...allSnapshotsUpToDate.map((s) => s.equity))
-          : initialBalance; // Fallback to initialBalance if no snapshots
+        const peakEquity =
+          allSnapshotsUpToDate.length > 0
+            ? Math.max(
+                initialBalance,
+                ...allSnapshotsUpToDate.map((s) => s.equity),
+              )
+            : initialBalance; // Fallback to initialBalance if no snapshots
 
         if (peakEquity > 0 && lastEquity < peakEquity) {
           overallDrawdown = ((peakEquity - lastEquity) / peakEquity) * 100;
@@ -828,7 +789,8 @@ export class TradingAccountsService {
 
         // Profit percent
         if (initialBalance > 0) {
-          profitPercent = ((lastEquity - initialBalance) / initialBalance) * 100;
+          profitPercent =
+            ((lastEquity - initialBalance) / initialBalance) * 100;
         }
       }
 
@@ -856,33 +818,24 @@ export class TradingAccountsService {
   // Unified summary for dashboard
 
   async getAccountSummary(id: string) {
-
     const account = await this.prisma.tradingAccount.findUnique({
-
       where: { id },
 
       include: {
-
         challenge: true,
 
         trades: {
-
           orderBy: { openedAt: 'desc' },
 
           take: 10,
-
         },
 
         violations: true,
 
         equityShots: {
-
           orderBy: { timestamp: 'asc' },
-
         },
-
       },
-
     });
 
     if (!account) throw new NotFoundException('Account not found');
@@ -890,7 +843,9 @@ export class TradingAccountsService {
     // Validate challenge rules before proceeding
     const { challenge } = account;
     if (!challenge) {
-      this.logger.error(`[CHALLENGE_RULES_MISSING] Account ${id} has no challenge associated`);
+      this.logger.error(
+        `[CHALLENGE_RULES_MISSING] Account ${id} has no challenge associated`,
+      );
       throw new InternalServerErrorException({
         code: 'CHALLENGE_RULES_MISSING',
         message: `Account ${id} has no challenge associated`,
@@ -900,8 +855,13 @@ export class TradingAccountsService {
     }
 
     // Validate challenge rule percentages - DO NOT default to 0, throw explicit error
-    if (challenge.dailyDrawdownPercent === null || challenge.dailyDrawdownPercent === undefined) {
-      this.logger.error(`[CHALLENGE_RULES_MISSING] Account ${id} has missing dailyDrawdownPercent. Challenge ID: ${challenge.id}`);
+    if (
+      challenge.dailyDrawdownPercent === null ||
+      challenge.dailyDrawdownPercent === undefined
+    ) {
+      this.logger.error(
+        `[CHALLENGE_RULES_MISSING] Account ${id} has missing dailyDrawdownPercent. Challenge ID: ${challenge.id}`,
+      );
       throw new InternalServerErrorException({
         code: 'CHALLENGE_RULES_MISSING',
         message: `Challenge rules are incomplete. Missing dailyDrawdownPercent for account ${id} (challenge ${challenge.id})`,
@@ -910,8 +870,13 @@ export class TradingAccountsService {
         missingField: 'dailyDrawdownPercent',
       });
     }
-    if (challenge.overallDrawdownPercent === null || challenge.overallDrawdownPercent === undefined) {
-      this.logger.error(`[CHALLENGE_RULES_MISSING] Account ${id} has missing overallDrawdownPercent. Challenge ID: ${challenge.id}`);
+    if (
+      challenge.overallDrawdownPercent === null ||
+      challenge.overallDrawdownPercent === undefined
+    ) {
+      this.logger.error(
+        `[CHALLENGE_RULES_MISSING] Account ${id} has missing overallDrawdownPercent. Challenge ID: ${challenge.id}`,
+      );
       throw new InternalServerErrorException({
         code: 'CHALLENGE_RULES_MISSING',
         message: `Challenge rules are incomplete. Missing overallDrawdownPercent for account ${id} (challenge ${challenge.id})`,
@@ -920,8 +885,13 @@ export class TradingAccountsService {
         missingField: 'overallDrawdownPercent',
       });
     }
-    if (challenge.phase1TargetPercent === null || challenge.phase1TargetPercent === undefined) {
-      this.logger.error(`[CHALLENGE_RULES_MISSING] Account ${id} has missing phase1TargetPercent. Challenge ID: ${challenge.id}`);
+    if (
+      challenge.phase1TargetPercent === null ||
+      challenge.phase1TargetPercent === undefined
+    ) {
+      this.logger.error(
+        `[CHALLENGE_RULES_MISSING] Account ${id} has missing phase1TargetPercent. Challenge ID: ${challenge.id}`,
+      );
       throw new InternalServerErrorException({
         code: 'CHALLENGE_RULES_MISSING',
         message: `Challenge rules are incomplete. Missing phase1TargetPercent for account ${id} (challenge ${challenge.id})`,
@@ -936,9 +906,7 @@ export class TradingAccountsService {
     const rules = await this.getRuleCompliance(id);
 
     return {
-
       account: {
-
         id: account.id,
 
         status: account.status,
@@ -956,7 +924,6 @@ export class TradingAccountsService {
         maxEquityToDate: (account as any).maxEquityToDate,
 
         createdAt: account.createdAt,
-
       },
 
       challengeRules: rules.challengeRules,
@@ -968,9 +935,7 @@ export class TradingAccountsService {
       violations: account.violations,
 
       equityHistory: account.equityShots,
-
     };
-
   }
 
   // Get analytics for a user (single account or aggregated for all accounts)
@@ -1019,21 +984,37 @@ export class TradingAccountsService {
   // Calculate analytics for a single account
   private calculateAccountAnalytics(account: any) {
     const trades = account.trades || [];
-    const closedTrades = trades.filter((t: any) => t.closePrice !== null && t.closePrice !== undefined);
+    const closedTrades = trades.filter(
+      (t: any) => t.closePrice !== null && t.closePrice !== undefined,
+    );
 
     // Calculate statistics
     const totalTrades = closedTrades.length;
     const winningTrades = closedTrades.filter((t: any) => (t.profit || 0) > 0);
     const losingTrades = closedTrades.filter((t: any) => (t.profit || 0) < 0);
-    const winRate = totalTrades > 0 ? (winningTrades.length / totalTrades) * 100 : 0;
+    const winRate =
+      totalTrades > 0 ? (winningTrades.length / totalTrades) * 100 : 0;
 
-    const totalProfit = closedTrades.reduce((sum: number, t: any) => sum + (t.profit || 0), 0);
-    const avgWin = winningTrades.length > 0
-      ? winningTrades.reduce((sum: number, t: any) => sum + (t.profit || 0), 0) / winningTrades.length
-      : 0;
-    const avgLoss = losingTrades.length > 0
-      ? Math.abs(losingTrades.reduce((sum: number, t: any) => sum + (t.profit || 0), 0) / losingTrades.length)
-      : 0;
+    const totalProfit = closedTrades.reduce(
+      (sum: number, t: any) => sum + (t.profit || 0),
+      0,
+    );
+    const avgWin =
+      winningTrades.length > 0
+        ? winningTrades.reduce(
+            (sum: number, t: any) => sum + (t.profit || 0),
+            0,
+          ) / winningTrades.length
+        : 0;
+    const avgLoss =
+      losingTrades.length > 0
+        ? Math.abs(
+            losingTrades.reduce(
+              (sum: number, t: any) => sum + (t.profit || 0),
+              0,
+            ) / losingTrades.length,
+          )
+        : 0;
     const profitFactor = avgLoss > 0 ? avgWin / avgLoss : 0;
 
     const profits = closedTrades.map((t: any) => t.profit || 0);
@@ -1045,16 +1026,21 @@ export class TradingAccountsService {
     closedTrades.forEach((trade: any) => {
       symbolStats[trade.symbol] = (symbolStats[trade.symbol] || 0) + 1;
     });
-    const symbolDistribution = Object.entries(symbolStats).map(([name, value]) => ({
-      name,
-      value,
-    }));
+    const symbolDistribution = Object.entries(symbolStats).map(
+      ([name, value]) => ({
+        name,
+        value,
+      }),
+    );
 
     // Equity curve
     const equityCurve = account.equityShots.map((shot: any) => {
       const date = new Date(shot.timestamp);
       return {
-        date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        date: date.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+        }),
         equity: shot.equity,
         balance: shot.balance,
       };
@@ -1068,7 +1054,10 @@ export class TradingAccountsService {
       const date = new Date(shot.timestamp);
       if (dailyPnLValue !== 0 || index === 0) {
         dailyPnL.push({
-          date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          date: date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+          }),
           pnl: dailyPnLValue,
         });
       }
@@ -1098,21 +1087,37 @@ export class TradingAccountsService {
   private calculateAggregatedAnalytics(accounts: any[]) {
     // Aggregate all trades
     const allTrades = accounts.flatMap((acc) => acc.trades || []);
-    const closedTrades = allTrades.filter((t: any) => t.closePrice !== null && t.closePrice !== undefined);
+    const closedTrades = allTrades.filter(
+      (t: any) => t.closePrice !== null && t.closePrice !== undefined,
+    );
 
     // Calculate statistics (same as single account)
     const totalTrades = closedTrades.length;
     const winningTrades = closedTrades.filter((t: any) => (t.profit || 0) > 0);
     const losingTrades = closedTrades.filter((t: any) => (t.profit || 0) < 0);
-    const winRate = totalTrades > 0 ? (winningTrades.length / totalTrades) * 100 : 0;
+    const winRate =
+      totalTrades > 0 ? (winningTrades.length / totalTrades) * 100 : 0;
 
-    const totalProfit = closedTrades.reduce((sum: number, t: any) => sum + (t.profit || 0), 0);
-    const avgWin = winningTrades.length > 0
-      ? winningTrades.reduce((sum: number, t: any) => sum + (t.profit || 0), 0) / winningTrades.length
-      : 0;
-    const avgLoss = losingTrades.length > 0
-      ? Math.abs(losingTrades.reduce((sum: number, t: any) => sum + (t.profit || 0), 0) / losingTrades.length)
-      : 0;
+    const totalProfit = closedTrades.reduce(
+      (sum: number, t: any) => sum + (t.profit || 0),
+      0,
+    );
+    const avgWin =
+      winningTrades.length > 0
+        ? winningTrades.reduce(
+            (sum: number, t: any) => sum + (t.profit || 0),
+            0,
+          ) / winningTrades.length
+        : 0;
+    const avgLoss =
+      losingTrades.length > 0
+        ? Math.abs(
+            losingTrades.reduce(
+              (sum: number, t: any) => sum + (t.profit || 0),
+              0,
+            ) / losingTrades.length,
+          )
+        : 0;
     const profitFactor = avgLoss > 0 ? avgWin / avgLoss : 0;
 
     const profits = closedTrades.map((t: any) => t.profit || 0);
@@ -1124,14 +1129,19 @@ export class TradingAccountsService {
     closedTrades.forEach((trade: any) => {
       symbolStats[trade.symbol] = (symbolStats[trade.symbol] || 0) + 1;
     });
-    const symbolDistribution = Object.entries(symbolStats).map(([name, value]) => ({
-      name,
-      value,
-    }));
+    const symbolDistribution = Object.entries(symbolStats).map(
+      ([name, value]) => ({
+        name,
+        value,
+      }),
+    );
 
     // Aggregate equity curve from all accounts
     // Group equity snapshots by date and sum them
-    const equityByDate: Record<string, { equity: number; balance: number; count: number }> = {};
+    const equityByDate: Record<
+      string,
+      { equity: number; balance: number; count: number }
+    > = {};
 
     accounts.forEach((account) => {
       account.equityShots.forEach((shot: any) => {
@@ -1153,7 +1163,10 @@ export class TradingAccountsService {
       .map(([dateKey, data]) => {
         const date = new Date(dateKey);
         return {
-          date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          date: date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+          }),
           equity: data.equity,
           balance: data.balance,
         };
@@ -1171,7 +1184,10 @@ export class TradingAccountsService {
       const date = new Date(item.dateKey);
       if (dailyPnLValue !== 0 || index === 0) {
         dailyPnL.push({
-          date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          date: date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+          }),
           pnl: dailyPnLValue,
         });
       }
@@ -1221,7 +1237,10 @@ export class TradingAccountsService {
    * Real-time evaluation with current equity (for frontend price updates)
    */
   async evaluateRealTime(accountId: string, currentEquity: number) {
-    return this.evaluationService.evaluateAccountRealTime(accountId, currentEquity);
+    return this.evaluationService.evaluateAccountRealTime(
+      accountId,
+      currentEquity,
+    );
   }
 
   /**
@@ -1234,7 +1253,12 @@ export class TradingAccountsService {
     ask: number,
     timestamp: number,
   ) {
-    return this.evaluationService.processPriceTick(accountId, symbol, bid, ask, timestamp);
+    return this.evaluationService.processPriceTick(
+      accountId,
+      symbol,
+      bid,
+      ask,
+      timestamp,
+    );
   }
-
 }
