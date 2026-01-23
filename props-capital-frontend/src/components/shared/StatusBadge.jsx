@@ -38,7 +38,9 @@ export default function StatusBadge({ status, className = "" }) {
     t(`status.${statusKey}`) || status?.replace(/_/g, " ");
 
   return (
-    <Badge className={`${style}  border capitalize pointer-events-none text-[10px] sm:text-sm px-1 sm:px-2  ${className}`} >
+    <Badge
+      className={`${style}  border capitalize pointer-events-none text-[10px] sm:text-sm px-1 sm:px-2  ${className}`}
+    >
       {translatedStatus}
     </Badge>
   );

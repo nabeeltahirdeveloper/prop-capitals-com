@@ -1,125 +1,125 @@
 {
-    "common": {
-      "loading": "Yükleniyor...",
-      "url": "URL",
-      "dismiss": "Kapat",
-      "allPlatforms": "Tüm platformlar"
+  "common": {
+    "loading": "Yükleniyor...",
+    "url": "URL",
+    "dismiss": "Kapat",
+    "allPlatforms": "Tüm platformlar"
+  },
+  "home": {
+    "hero": {
+      "badge": "Dünya çapında 15.000’den fazla trader tarafından güveniliyor",
+      "title": "İşlem yap",
+      "titleHighlight": "bizim sermayemizle",
+      "subtitle": "Becerilerini kanıtla ve $200.000’a kadar sermaye kazan. Kendi paranı riske atmadan kârın %90’ına kadarını koru",
+      "cta": "Meydan okumayı başlat",
+      "howItWorks": "Nasıl çalışır",
+      "verified": "Doğrulanmış şirket",
+      "secure": "Güvenli ödeme",
+      "support": "7/24 destek",
+      "profitToday": "Bugünkü kâr",
+      "winRate": "Kazanma oranı"
     },
-    "home": {
-        "hero": {
-          "badge": "Dünya çapında 15.000’den fazla trader tarafından güveniliyor",
-          "title": "İşlem yap",
-          "titleHighlight": "bizim sermayemizle",
-          "subtitle": "Becerilerini kanıtla ve $200.000’a kadar sermaye kazan. Kendi paranı riske atmadan kârın %90’ına kadarını koru",
-          "cta": "Meydan okumayı başlat",
-          "howItWorks": "Nasıl çalışır",
-          "verified": "Doğrulanmış şirket",
-          "secure": "Güvenli ödeme",
-          "support": "7/24 destek",
-          "profitToday": "Bugünkü kâr",
-          "winRate": "Kazanma oranı"
-        },
-        "stats": {
-          "fundedCapital": "Sağlanan sermaye",
-          "activeTraders": "Aktif traderlar",
-          "paidToTraders": "Traderlara ödenen tutar",
-          "trustScore": "Güven puanı"
-        },
-        "features": {
-          "title": "Neden bizi seçmelisiniz",
-          "subtitle": "Profesyonel traderlar için tasarlandı",
-          "description": "Şeffaf kurallar, avantajlı şartlar ve gerçek destek sunan, trader dostu bir prop firması oluşturduk",
-          "clearObjectives": {
-            "title": "Net işlem hedefleri",
-            "description": "Şeffaf kurallara dayalı, basit ve ulaşılabilir hedefler. Gizli şartlar veya beklenmedik başarısızlıklar yok"
-          },
-          "generousDrawdown": {
-            "title": "Cömert drawdown limiti",
-            "description": "Günlük %5, maksimum %10 kayıp. Stres olmadan rahatça işlem yapın",
-            "drawdown": "Drawdown"
-          },
-          "profitSplit": {
-            "title": "Kârın %90’ına kadar paylaşım",
-            "description": "Kârınızın büyük kısmını koruyun. Gecikme veya gizli ücretler olmadan iki haftada bir ödeme"
-          },
-          "instantSetup": {
-            "title": "Anında hesap kurulumu",
-            "description": "Satın alma işleminden dakikalar sonra giriş bilgilerini alın ve hemen işlem yapmaya başlayın"
-          },
-          "tradeAnywhere": {
-            "title": "Her yerden işlem yapın",
-            "description": "MT4, MT5, cTrader ve DXTrade desteklenir. Dünyanın her yerinden, her cihazda işlem yapın"
-          },
-          "noTimeLimits": {
-            "title": "Zaman sınırı yok",
-            "description": "Hedeflere kendi hızınızda ulaşın. Maksimum işlem süresi veya baskı yok"
-          }
-        },
-        "howItWorks": {
-          "label": "Nasıl başlarsınız",
-          "title": "Sermaye kazanmak için 3 adım",
-          "step1": {
-            "title": "Meydan okumayı seç",
-            "description": "İstediğiniz hesap büyüklüğünü seçin ve güvenle satın alın"
-          },
-          "step2": {
-            "title": "Değerlendirmeyi geç",
-            "description": "Risk yönetimi kurallarına uyarak kâr hedefini tamamlayın"
-          },
-          "step3": {
-            "title": "Sermaye kazanın",
-            "description": "Bizim sermayemizle işlem yapın ve kârın %90’ına kadarını koruyun"
-          },
-          "learnMore": "Süreç hakkında daha fazla bilgi"
-        },
-        "challenges": {
-          "label": "Fiyatlandırma",
-          "title": "Meydan okumanızı seçin",
-          "subtitle": "İşlem tarzınıza ve bütçenize uygun hesap boyutunu seçin",
-          "accountSize": "Hesap boyutu",
-          "price": "Fiyat",
-          "profitTarget": "Kâr hedefi",
-          "profitSplit": "Kâr paylaşımı",
-          "getStarted": "Başla",
-          "viewAll": "Tüm meydan okumaları görüntüle",
-          "popular": "Popüler"
-        },
-        "testimonials": {
-          "label": "Yorumlar",
-          "title": "Traderlar tarafından seviliyor",
-          "subtitle": "Prop Capitals ile kazanan binlerce başarılı tradere katılın",
-          "totalEarned": "Toplam kazanç"
-        },
-        "cta": {
-          "title": "Başlamaya hazır mısınız?",
-          "titleHighlight": "Trading kariyerinizi",
-          "subtitle": "Fonlanan binlerce tradere katılın ve bugün kazanmaya başlayın. Kendi paranız risk altında değil",
-          "button": "Hemen sermaye kazan",
-          "footer": "Başlangıç sadece $99 • Anında hesap kurulumu • 7/24 destek"
-        },
-        "footer": {
-          "description": "En trader dostu prop trading şirketi. Bizim sermayemizle işlem yapın ve kazanın",
-          "propFirm": "Prop trading şirketi",
-          "verified": "Doğrulanmış ve güvenilir",
-          "company": "Şirket",
-          "support": "Destek",
-          "legal": "Yasal",
-          "copyright": "© 2026 BLUEHAVEN MANAGEMENT LTD Tüm hakları saklıdır",
-          "secure": "Güvenli ve şifreli",
-          "howItWorks": "Nasıl çalışır",
-          "challenges": "Meydan okumalar",
-          "scalingPlan": "Ölçekleme planı",
-          "payouts": "Ödemeler",
-          "faq": "SSS",
-          "contact": "İletişim",
-          "terms": "Kullanım şartları",
-          "privacy": "Gizlilik politikası"
-        },
-        "partners": {
-          "title": "Aşağıdaki platformları kullanan traderlar tarafından güvenilmektedir:"
-        }
+    "stats": {
+      "fundedCapital": "Sağlanan sermaye",
+      "activeTraders": "Aktif traderlar",
+      "paidToTraders": "Traderlara ödenen tutar",
+      "trustScore": "Güven puanı"
+    },
+    "features": {
+      "title": "Neden bizi seçmelisiniz",
+      "subtitle": "Profesyonel traderlar için tasarlandı",
+      "description": "Şeffaf kurallar, avantajlı şartlar ve gerçek destek sunan, trader dostu bir prop firması oluşturduk",
+      "clearObjectives": {
+        "title": "Net işlem hedefleri",
+        "description": "Şeffaf kurallara dayalı, basit ve ulaşılabilir hedefler. Gizli şartlar veya beklenmedik başarısızlıklar yok"
       },
-      "dashboard": {
+      "generousDrawdown": {
+        "title": "Cömert drawdown limiti",
+        "description": "Günlük %5, maksimum %10 kayıp. Stres olmadan rahatça işlem yapın",
+        "drawdown": "Drawdown"
+      },
+      "profitSplit": {
+        "title": "Kârın %90’ına kadar paylaşım",
+        "description": "Kârınızın büyük kısmını koruyun. Gecikme veya gizli ücretler olmadan iki haftada bir ödeme"
+      },
+      "instantSetup": {
+        "title": "Anında hesap kurulumu",
+        "description": "Satın alma işleminden dakikalar sonra giriş bilgilerini alın ve hemen işlem yapmaya başlayın"
+      },
+      "tradeAnywhere": {
+        "title": "Her yerden işlem yapın",
+        "description": "MT4, MT5, cTrader ve DXTrade desteklenir. Dünyanın her yerinden, her cihazda işlem yapın"
+      },
+      "noTimeLimits": {
+        "title": "Zaman sınırı yok",
+        "description": "Hedeflere kendi hızınızda ulaşın. Maksimum işlem süresi veya baskı yok"
+      }
+    },
+    "howItWorks": {
+      "label": "Nasıl başlarsınız",
+      "title": "Sermaye kazanmak için 3 adım",
+      "step1": {
+        "title": "Meydan okumayı seç",
+        "description": "İstediğiniz hesap büyüklüğünü seçin ve güvenle satın alın"
+      },
+      "step2": {
+        "title": "Değerlendirmeyi geç",
+        "description": "Risk yönetimi kurallarına uyarak kâr hedefini tamamlayın"
+      },
+      "step3": {
+        "title": "Sermaye kazanın",
+        "description": "Bizim sermayemizle işlem yapın ve kârın %90’ına kadarını koruyun"
+      },
+      "learnMore": "Süreç hakkında daha fazla bilgi"
+    },
+    "challenges": {
+      "label": "Fiyatlandırma",
+      "title": "Meydan okumanızı seçin",
+      "subtitle": "İşlem tarzınıza ve bütçenize uygun hesap boyutunu seçin",
+      "accountSize": "Hesap boyutu",
+      "price": "Fiyat",
+      "profitTarget": "Kâr hedefi",
+      "profitSplit": "Kâr paylaşımı",
+      "getStarted": "Başla",
+      "viewAll": "Tüm meydan okumaları görüntüle",
+      "popular": "Popüler"
+    },
+    "testimonials": {
+      "label": "Yorumlar",
+      "title": "Traderlar tarafından seviliyor",
+      "subtitle": "Prop Capitals ile kazanan binlerce başarılı tradere katılın",
+      "totalEarned": "Toplam kazanç"
+    },
+    "cta": {
+      "title": "Başlamaya hazır mısınız?",
+      "titleHighlight": "Trading kariyerinizi",
+      "subtitle": "Fonlanan binlerce tradere katılın ve bugün kazanmaya başlayın. Kendi paranız risk altında değil",
+      "button": "Hemen sermaye kazan",
+      "footer": "Başlangıç sadece $99 • Anında hesap kurulumu • 7/24 destek"
+    },
+    "footer": {
+      "description": "En trader dostu prop trading şirketi. Bizim sermayemizle işlem yapın ve kazanın",
+      "propFirm": "Prop trading şirketi",
+      "verified": "Doğrulanmış ve güvenilir",
+      "company": "Şirket",
+      "support": "Destek",
+      "legal": "Yasal",
+      "copyright": "© 2026 BLUEHAVEN MANAGEMENT LTD Tüm hakları saklıdır",
+      "secure": "Güvenli ve şifreli",
+      "howItWorks": "Nasıl çalışır",
+      "challenges": "Meydan okumalar",
+      "scalingPlan": "Ölçekleme planı",
+      "payouts": "Ödemeler",
+      "faq": "SSS",
+      "contact": "İletişim",
+      "terms": "Kullanım şartları",
+      "privacy": "Gizlilik politikası"
+    },
+    "partners": {
+      "title": "Aşağıdaki platformları kullanan traderlar tarafından güvenilmektedir:"
+    }
+  },
+  "dashboard": {
     "welcome": "Tekrar hoş geldin, {{name}}",
     "overview": "İşte işlem özetin",
     "newChallenge": "Yeni meydan okuma",
@@ -608,6 +608,11 @@
     "allRulesCompliant": "Tüm kurallara uyuluyor",
     "goodStanding": "Hesabınız tüm meydan okuma kurallarına uygundur",
     "active": "Aktif",
+    "accountFailed": "Hesap başarısız",
+    "failedDesc": "Hesabınız kural ihlali nedeniyle sonlandırıldı",
+    "rulesAtRisk": "Kurallar risk altında",
+    "atRiskDesc": "Bir veya daha fazla kural ihlal eşiğine yaklaşıyor",
+    "warning": "UYARI",
     "phase1": "Aşama 1",
     "phase2": "Aşama 2",
     "funded": "Fonlandı",
@@ -818,7 +823,7 @@
     "orderSummary": "Sipariş özeti",
     "challenge": "Meydan okuma",
     "noChallenges": "Zorluk yok",
-    
+
     "platform": "Platform",
     "amountPaid": "Ödenen tutar",
     "goToDashboard": "Panoya git",
@@ -1628,7 +1633,7 @@
       "saveChanges": "Değişiklikleri kaydet",
       "saveChange": "Kaydediliyor...",
       "settingsSaved": "Ayarlar kaydedildi",
-      "settingsSaveDescription":"Ayarlar başarıyla kaydedildi.",
+      "settingsSaveDescription": "Ayarlar başarıyla kaydedildi.",
       "tabs": {
         "general": "Genel",
         "branding": "Marka",

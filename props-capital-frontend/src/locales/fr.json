@@ -1,11 +1,11 @@
 {
-    "common": {
-      "loading": "Chargement...",
-      "url": "URL",
-      "dismiss": "Fermer",
-      "allPlatforms": "Toutes les plateformes"
-    },
-    "home": {
+  "common": {
+    "loading": "Chargement...",
+    "url": "URL",
+    "dismiss": "Fermer",
+    "allPlatforms": "Toutes les plateformes"
+  },
+  "home": {
     "hero": {
       "badge": "Fait confiance par plus de 15 000 traders dans le monde entier",
       "title": "Tradez",
@@ -608,6 +608,11 @@
     "allRulesCompliant": "Toutes les règles sont respectées",
     "goodStanding": "Votre compte est conforme à toutes les règles du challenge",
     "active": "Actif",
+    "accountFailed": "Compte échoué",
+    "failedDesc": "Votre compte a été résilié en raison d'une violation de règle",
+    "rulesAtRisk": "Règles à risque",
+    "atRiskDesc": "Une ou plusieurs règles approchent du seuil de violation",
+    "warning": "AVERTISSEMENT",
     "phase1": "Phase 1",
     "phase2": "Phase 2",
     "funded": "Financé",
@@ -1627,7 +1632,7 @@
       "saveChanges": "Enregistrer les modifications",
       "saveChange": "Enregistrement de...",
       "settingsSaved": "Paramètres enregistrés",
-      "settingsSaveDescription":"Les paramètres ont été enregistrés avec succès.",
+      "settingsSaveDescription": "Les paramètres ont été enregistrés avec succès.",
       "tabs": {
         "general": "Général",
         "branding": "Branding",
@@ -2848,4 +2853,4 @@
       "content": "Pour toute question relative à la confidentialité, contactez-nous à support@the-bluehaven.com."
     }
   }
-  }
+}
