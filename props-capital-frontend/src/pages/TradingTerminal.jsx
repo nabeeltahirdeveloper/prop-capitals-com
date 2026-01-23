@@ -68,6 +68,7 @@ const devWarn = (...args) => {
     console.warn(...args);
   }
 };
+// const [tradeHistory, setTradeHistory] = useState([]);
 
 // Demo account localStorage helpers
 const DEMO_ACCOUNT_STORAGE_KEY = "demo-account:trades";
@@ -185,6 +186,7 @@ export default function TradingTerminal() {
   const prevPricesRef = useRef({}); // Track previous prices for limit order execution
   const violationCheckInProgressRef = useRef(false); // Prevent duplicate violation checks (deprecated - using price-tick now)
   const priceTickThrottleRef = useRef({}); // Throttle price tick calls (250ms per symbol)
+  const lastSyncedAccountIdRef = useRef(null); // ✅ Moved from line 60 (was outside component)
   const [violationModal, setViolationModal] = React.useState(null); // { type: 'DAILY_LOCKED' | 'DISQUALIFIED', shown: boolean }
 
   // 🔥 WebSocket state for real-time trading days updates
@@ -194,7 +196,7 @@ export default function TradingTerminal() {
   const [daysRemaining, setDaysRemaining] = useState(0);
   const [minTradingDays, setMinTradingDays] = useState(4);
 
-// Aliases for compatibility with existing code
+  // Aliases for compatibility with existing code
   const tradingDays = tradingDaysCount;
 
   // Ref to track active trade polling and prevent race conditions when switching accounts
@@ -369,7 +371,7 @@ export default function TradingTerminal() {
   // 🔥 Real-time account updates via WebSocket
   const handleAccountUpdate = useCallback((event) => {
     if (!event) return;
-    
+
     devLog('⚡ WebSocket Account Update:', event);
 
     if (event.tradingDaysCount !== undefined) {
@@ -407,56 +409,56 @@ export default function TradingTerminal() {
 
 
   // 🔥 Simple polling for trading days updates (fallback)
-useEffect(() => {
-  // Skip if no account or demo account
-  if (!selectedAccountId || selectedAccount?.isDemo) {
-    return;
-  }
-
-  console.log('📊 Starting trading days polling for account:', selectedAccountId);
-
-  // Function to fetch account data and update trading days
-  const updateTradingDays = async () => {
-    try {
-      const summary = await getAccountSummary(selectedAccountId);
-
-      if (summary?.metrics?.tradingDaysCompleted !== undefined) {
-        console.log('✅ Updated trading days:', summary.metrics.tradingDaysCompleted);
-        setTradingDaysCount(summary.metrics.tradingDaysCompleted);
-        // Also update account state so ChallengeRulesPanel gets the update
-        setAccount(prev => ({
-          ...prev,
-          tradingDays: summary.metrics.tradingDaysCompleted
-        }));
-      }
-      if (summary?.metrics?.daysRemaining !== undefined) {
-        setDaysRemaining(summary.metrics.daysRemaining);
-        setAccount(prev => ({
-          ...prev,
-          daysRemaining: summary.metrics.daysRemaining
-        }));
-      }
-
-      // Check if traded today
-      const traded = summary?.account?.tradedToday || false;
-      setTradedToday(traded);
-    } catch (error) {
-      console.error('❌ Failed to update trading days:', error);
+  useEffect(() => {
+    // Skip if no account or demo account
+    if (!selectedAccountId || selectedAccount?.isDemo) {
+      return;
     }
-  };
 
-  // Update immediately
-  updateTradingDays();
+    console.log('📊 Starting trading days polling for account:', selectedAccountId);
 
-  // Then update every 5 seconds
-  const interval = setInterval(updateTradingDays, 5000);
+    // Function to fetch account data and update trading days
+    const updateTradingDays = async () => {
+      try {
+        const summary = await getAccountSummary(selectedAccountId);
 
-  // Cleanup
-  return () => {
-    console.log('🧹 Stopping trading days polling');
-    clearInterval(interval);
-  };
-}, [selectedAccountId, selectedAccount?.isDemo]);
+        if (summary?.metrics?.tradingDaysCompleted !== undefined) {
+          console.log('✅ Updated trading days:', summary.metrics.tradingDaysCompleted);
+          setTradingDaysCount(summary.metrics.tradingDaysCompleted);
+          // Also update account state so ChallengeRulesPanel gets the update
+          setAccount(prev => ({
+            ...prev,
+            tradingDays: summary.metrics.tradingDaysCompleted
+          }));
+        }
+        if (summary?.metrics?.daysRemaining !== undefined) {
+          setDaysRemaining(summary.metrics.daysRemaining);
+          setAccount(prev => ({
+            ...prev,
+            daysRemaining: summary.metrics.daysRemaining
+          }));
+        }
+
+        // Check if traded today
+        const traded = summary?.account?.tradedToday || false;
+        setTradedToday(traded);
+      } catch (error) {
+        console.error('❌ Failed to update trading days:', error);
+      }
+    };
+
+    // Update immediately
+    updateTradingDays();
+
+    // Then update every 5 seconds
+    const interval = setInterval(updateTradingDays, 5000);
+
+    // Cleanup
+    return () => {
+      console.log('🧹 Stopping trading days polling');
+      clearInterval(interval);
+    };
+  }, [selectedAccountId, selectedAccount?.isDemo]);
 
   // Account is valid if selected (demo account is always valid)
   const hasValidAccount = !!selectedAccount;
@@ -469,6 +471,9 @@ useEffect(() => {
     freeMargin: 100000,
     floatingPnL: 0,
     profitPercent: 0,
+    realizedProfitPercent: 0, // ✅ Added from earliest version
+    liveProfitPercent: 0, // ✅ Added from earliest version
+    profitForTarget: 0, // ✅ Added from earliest version
     dailyDrawdown: 0,
     maxDailyDrawdown: 5,
     overallDrawdown: 0,
@@ -578,7 +583,7 @@ useEffect(() => {
             if (
               latestCloseTime &&
               new Date(latestCloseTime) >
-                new Date(beforeMarker.latestTradeTimestamp)
+              new Date(beforeMarker.latestTradeTimestamp)
             ) {
               devLog(
                 "✅ New closed trades detected! Latest close:",
@@ -987,8 +992,8 @@ useEffect(() => {
 
           let finalBalance =
             acc.balance !== null &&
-            acc.balance !== undefined &&
-            Number.isFinite(acc.balance)
+              acc.balance !== undefined &&
+              Number.isFinite(acc.balance)
               ? acc.balance
               : prev.balance;
 
@@ -1181,7 +1186,7 @@ useEffect(() => {
           breachType: trade.breachType || null,
           breachUnrealizedPnl:
             trade.breachUnrealizedPnl !== null &&
-            trade.breachUnrealizedPnl !== undefined
+              trade.breachUnrealizedPnl !== undefined
               ? trade.breachUnrealizedPnl
               : null,
           breachDrawdownPercentDaily: trade.breachDrawdownPercentDaily ?? null,
@@ -1543,190 +1548,266 @@ useEffect(() => {
   ]);
 
   // Update account when selected account changes - allow demo account too
+  // useEffect(() => {
+  //   if (selectedAccount) {
+  //     // Only reset positions if we're actually switching to a DIFFERENT account
+  //     const isNewAccount =
+  //       lastAccountId !== null && lastAccountId !== selectedAccount.id;
+
+  //     let newBalance =
+  //       selectedAccount.current_balance ||
+  //       selectedAccount.initial_balance ||
+  //       100000;
+  //     let newEquity =
+  //       selectedAccount.current_equity ||
+  //       selectedAccount.current_balance ||
+  //       100000;
+
+  //     // Special handling for demo account data loading
+  //     if (selectedAccount.isDemo) {
+  //       const demoData = loadDemoAccountTrades();
+  //       newBalance = demoData.balance;
+  //       newEquity = demoData.equity;
+
+  //       // Update local states for demo account
+  //       if (isNewAccount || lastAccountId === null) {
+  //         setPositions(demoData.positions);
+  //         setDemoClosedTrades(demoData.closedTrades);
+  //         setDemoPendingOrders(demoData.pendingOrders);
+  //       }
+  //     }
+
+  //     // Initialize daily starting balance on first load
+  //     const today = new Date().toDateString();
+  //     if (dailyStartBalanceRef.current === null) {
+  //       currentDayRef.current = today;
+  //       dailyStartBalanceRef.current = newBalance;
+  //     }
+  //     // Reset on new day
+  //     if (currentDayRef.current !== today) {
+  //       currentDayRef.current = today;
+  //       dailyStartBalanceRef.current = newBalance;
+  //     }
+
+  //     // Get challenge rules for max drawdown limits
+  //     const challenge = selectedAccount.challenge || {};
+  //     const maxDailyDD =
+  //       challenge.dailyDrawdownPercent ||
+  //       selectedAccount.max_daily_drawdown ||
+  //       5;
+  //     const maxOverallDD =
+  //       challenge.overallDrawdownPercent ||
+  //       selectedAccount.max_overall_drawdown ||
+  //       10;
+
+  //     // Calculate days elapsed from account creation (for real accounts only)
+  //     const accountFromBackend = allAccountsData.find(
+  //       (acc) => acc.id === selectedAccount.id,
+  //     );
+  //     const accountCreatedAt =
+  //       accountFromBackend?.createdAt || accountFromBackend?.created_date;
+  //     const daysElapsed = selectedAccount.isDemo
+  //       ? 15 // Keep hardcoded for demo account
+  //       : accountCreatedAt
+  //         ? Math.floor(
+  //             (new Date().getTime() - new Date(accountCreatedAt).getTime()) /
+  //               (1000 * 60 * 60 * 24),
+  //           )
+  //         : 0;
+
+  //     setAccount((prev) => {
+  //       // PROTECTION: Prevent stale backend data from overwriting optimistic balance during account switch
+  //       const now = Date.now();
+  //       const isRecentlyUpdated = now - lastLocalUpdateRef.current < 3000;
+
+  //       let finalBalance = newBalance;
+  //       let finalEquity = newEquity;
+
+  //       if (
+  //         isRecentlyUpdated &&
+  //         lastLocalBalanceRef.current !== null &&
+  //         !isNewAccount
+  //       ) {
+  //         if (Math.abs(newBalance - lastLocalBalanceRef.current) > 0.01) {
+  //           devLog(
+  //             "🛡️ [Switch] Protected optimistic balance:",
+  //             newBalance,
+  //             "->",
+  //             lastLocalBalanceRef.current,
+  //           );
+  //           finalBalance = lastLocalBalanceRef.current;
+  //           finalEquity = lastLocalBalanceRef.current; // Assume no positions if balance was just updated
+  //         }
+  //       }
+
+  //       return {
+  //         ...prev,
+  //         balance: finalBalance,
+  //         equity: finalEquity,
+  //         startingBalance: selectedAccount.initial_balance || 100000,
+  //         highestBalance: selectedAccount.highest_balance || selectedAccount.initial_balance || 100000,
+  //         profitPercent: Math.max(prev.profitPercent ?? 0, selectedAccount.current_profit_percent || 0),
+  //         // CRITICAL: Don't reset dailyDrawdown - preserve it until syncAccountFromBackend updates it
+  //         // If we reset here, we lose the value set by sync!
+  //         dailyDrawdown: prev.dailyDrawdown, // Keep existing value
+  //         overallDrawdown:
+  //           selectedAccount.overall_drawdown_percent ||
+  //           prev.overallDrawdown ||
+  //           0,
+  //         maxDailyDrawdown: maxDailyDD, // Load from challenge rules
+  //         maxOverallDrawdown: maxOverallDD, // Load from challenge rules
+  //         tradingDays: Math.max(selectedAccount.trading_days_count || 0, prev.tradingDays || 0),
+  //         minTradingDays: selectedAccount.min_trading_days || challenge.minTradingDays || prev.minTradingDays || 5,
+  //         daysRemaining: selectedAccount.days_remaining !== undefined ? selectedAccount.days_remaining : (prev.daysRemaining !== undefined ? prev.daysRemaining : Math.max(0, (challenge.maxTradingDays || 30) - (daysElapsed || 0))),
+  //         daysElapsed: daysElapsed,
+  //         margin:
+  //           selectedAccount.margin_used !== undefined
+  //             ? selectedAccount.margin_used
+  //             : prev.margin,
+  //         freeMargin:
+  //           selectedAccount.free_margin !== undefined
+  //             ? selectedAccount.free_margin
+  //             : prev.freeMargin,
+  //         phase: selectedAccount.current_phase || "phase1",
+  //         accountNumber: selectedAccount.account_number,
+  //         platform: selectedAccount.platform || "MT5",
+  //         status: selectedAccount.status || prev.status || "ACTIVE", // Preserve status or default to ACTIVE
+  //       };
+  //     });
+
+  //     // Only reset positions when switching to a different account
+  //     if (isNewAccount) {
+  //       devLog(
+  //         "🔄 Switching to new account:",
+  //         selectedAccount.id,
+  //         "from:",
+  //         lastAccountId,
+  //       );
+  //       setIsAccountLoading(true);
+  //       setPositions([]);
+  //       setPendingOrders([]);
+  //       // Abort any active trade polling when switching accounts
+  //       activeTradePollRef.current.aborted = true;
+  //       activeTradePollRef.current.accountId = null;
+  //       setAccountFailed(false);
+  //       setHasTriggeredWarning(false);
+  //       setHasTriggeredViolation(false);
+  //       // Reset flag to allow loading trades for new account
+  //       // This will trigger the trade loading useEffect to run
+  //       tradesLoadedForAccountRef.current = null;
+
+  //       // Reset daily starting balance for new account
+  //       const today = new Date().toDateString();
+  //       currentDayRef.current = today;
+  //       dailyStartBalanceRef.current = newBalance;
+
+  //       // Reset drawdowns when switching accounts (will be updated by syncAccountFromBackend)
+  //       // This is correct because each account has its own drawdown values
+  //       setAccount(prev => ({
+  //         ...prev,
+  //         dailyDrawdown: 0,
+  //         overallDrawdown: 0,
+  //       }));
+  //       // Also reset prevMetricsRef so the "only increase" logic starts fresh for new account
+  //       prevMetricsRef.current = {
+  //         equity: 0,
+  //         floatingPnL: 0,
+  //         profitPercent: 0,
+  //         overallDrawdown: 0,
+  //         dailyDrawdown: 0,
+  //       };
+  //     }
+
+  //     setLastAccountId(selectedAccount.id);
+
+  //     // Step 3: Sync account data from backend when switching accounts (for real accounts)
+  //     // CRITICAL FIX: Sync on FIRST load (lastAccountId === null) OR when switching to a different account
+  //     const shouldSync =
+  //       !selectedAccount.isDemo &&
+  //       selectedAccount.id &&
+  //       (lastAccountId === null || isNewAccount);
+  //     if (shouldSync) {
+  //       devLog("📊 Triggering account sync - first load or account switch");
+  //       syncAccountFromBackend(selectedAccount.id, true, true);
+  //     }
+  //   }
+  // }, [selectedAccount, lastAccountId]); // Removed allAccountsData and syncAccountFromBackend to 
+  // // prevent loops
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   useEffect(() => {
-    if (selectedAccount) {
-      // Only reset positions if we're actually switching to a DIFFERENT account
-      const isNewAccount =
-        lastAccountId !== null && lastAccountId !== selectedAccount.id;
+    if (!selectedAccount) return;
 
-      let newBalance =
-        selectedAccount.current_balance ||
-        selectedAccount.initial_balance ||
-        100000;
-      let newEquity =
-        selectedAccount.current_equity ||
-        selectedAccount.current_balance ||
-        100000;
+    // ✅ prevent re-sync on react-query refetch
+    if (lastSyncedAccountIdRef.current === selectedAccount.id) return;
+    lastSyncedAccountIdRef.current = selectedAccount.id;
 
-      // Special handling for demo account data loading
-      if (selectedAccount.isDemo) {
-        const demoData = loadDemoAccountTrades();
-        newBalance = demoData.balance;
-        newEquity = demoData.equity;
+    const starting = selectedAccount.initial_balance || 100000;
 
-        // Update local states for demo account
-        if (isNewAccount || lastAccountId === null) {
-          setPositions(demoData.positions);
-          setDemoClosedTrades(demoData.closedTrades);
-          setDemoPendingOrders(demoData.pendingOrders);
-        }
-      }
+    const newBalance =
+      selectedAccount.current_balance || selectedAccount.initial_balance || 100000;
 
-      // Initialize daily starting balance on first load
-      const today = new Date().toDateString();
-      if (dailyStartBalanceRef.current === null) {
-        currentDayRef.current = today;
-        dailyStartBalanceRef.current = newBalance;
-      }
-      // Reset on new day
-      if (currentDayRef.current !== today) {
-        currentDayRef.current = today;
-        dailyStartBalanceRef.current = newBalance;
-      }
+    const newEquity =
+      selectedAccount.current_equity || selectedAccount.current_balance || newBalance;
 
-      // Get challenge rules for max drawdown limits
-      const challenge = selectedAccount.challenge || {};
-      const maxDailyDD =
-        challenge.dailyDrawdownPercent ||
-        selectedAccount.max_daily_drawdown ||
-        5;
-      const maxOverallDD =
-        challenge.overallDrawdownPercent ||
-        selectedAccount.max_overall_drawdown ||
-        10;
+    // ✅ realized profit = balance based (closed trades / account progress)
+    const realized = ((newBalance - starting) / starting) * 100;
 
-      // Calculate days elapsed from account creation (for real accounts only)
-      const accountFromBackend = allAccountsData.find(
-        (acc) => acc.id === selectedAccount.id,
-      );
-      const accountCreatedAt =
-        accountFromBackend?.createdAt || accountFromBackend?.created_date;
-      const daysElapsed = selectedAccount.isDemo
-        ? 15 // Keep hardcoded for demo account
-        : accountCreatedAt
-          ? Math.floor(
-              (new Date().getTime() - new Date(accountCreatedAt).getTime()) /
-                (1000 * 60 * 60 * 24),
-            )
-          : 0;
+    // Reset daily tracking for this account
+    const today = new Date().toDateString();
+    currentDayRef.current = today;
+    dailyStartBalanceRef.current = newBalance;
 
-      setAccount((prev) => {
-        // PROTECTION: Prevent stale backend data from overwriting optimistic balance during account switch
-        const now = Date.now();
-        const isRecentlyUpdated = now - lastLocalUpdateRef.current < 3000;
+    setAccount(prev => ({
+      ...prev,
+      balance: newBalance,
+      equity: newEquity,
+      startingBalance: starting,
+      highestBalance:
+        selectedAccount.highest_balance || starting,
 
-        let finalBalance = newBalance;
-        let finalEquity = newEquity;
+      // ✅ NEW fields
+      realizedProfitPercent: realized,
+      liveProfitPercent: 0,
+      profitForTarget: Math.max(0, realized),
 
-        if (
-          isRecentlyUpdated &&
-          lastLocalBalanceRef.current !== null &&
-          !isNewAccount
-        ) {
-          if (Math.abs(newBalance - lastLocalBalanceRef.current) > 0.01) {
-            devLog(
-              "🛡️ [Switch] Protected optimistic balance:",
-              newBalance,
-              "->",
-              lastLocalBalanceRef.current,
-            );
-            finalBalance = lastLocalBalanceRef.current;
-            finalEquity = lastLocalBalanceRef.current; // Assume no positions if balance was just updated
-          }
-        }
+      // ✅ keep old profitPercent but don't use it for UI later
+      profitPercent: 0,
 
-        return {
-          ...prev,
-          balance: finalBalance,
-          equity: finalEquity,
-          startingBalance: selectedAccount.initial_balance || 100000,
-          highestBalance: selectedAccount.highest_balance || selectedAccount.initial_balance || 100000,
-          profitPercent: Math.max(prev.profitPercent ?? 0, selectedAccount.current_profit_percent || 0),
-          // CRITICAL: Don't reset dailyDrawdown - preserve it until syncAccountFromBackend updates it
-          // If we reset here, we lose the value set by sync!
-          dailyDrawdown: prev.dailyDrawdown, // Keep existing value
-          overallDrawdown:
-            selectedAccount.overall_drawdown_percent ||
-            prev.overallDrawdown ||
-            0,
-          maxDailyDrawdown: maxDailyDD, // Load from challenge rules
-          maxOverallDrawdown: maxOverallDD, // Load from challenge rules
-          tradingDays: Math.max(selectedAccount.trading_days_count || 0, prev.tradingDays || 0),
-          minTradingDays: selectedAccount.min_trading_days || challenge.minTradingDays || prev.minTradingDays || 5,
-          daysRemaining: selectedAccount.days_remaining !== undefined ? selectedAccount.days_remaining : (prev.daysRemaining !== undefined ? prev.daysRemaining : Math.max(0, (challenge.maxTradingDays || 30) - (daysElapsed || 0))),
-          daysElapsed: daysElapsed,
-          margin:
-            selectedAccount.margin_used !== undefined
-              ? selectedAccount.margin_used
-              : prev.margin,
-          freeMargin:
-            selectedAccount.free_margin !== undefined
-              ? selectedAccount.free_margin
-              : prev.freeMargin,
-          phase: selectedAccount.current_phase || "phase1",
-          accountNumber: selectedAccount.account_number,
-          platform: selectedAccount.platform || "MT5",
-          status: selectedAccount.status || prev.status || "ACTIVE", // Preserve status or default to ACTIVE
-        };
-      });
+      dailyDrawdown: 0,
+      overallDrawdown: selectedAccount.overall_drawdown_percent || 0,
+      tradingDays: selectedAccount.trading_days_count || 0,
+      phase: selectedAccount.current_phase || 'phase1',
+      accountNumber: selectedAccount.account_number,
+      platform: selectedAccount.platform || 'MT5'
+    }));
 
-      // Only reset positions when switching to a different account
-      if (isNewAccount) {
-        devLog(
-          "🔄 Switching to new account:",
-          selectedAccount.id,
-          "from:",
-          lastAccountId,
-        );
-        setIsAccountLoading(true);
-        setPositions([]);
-        setPendingOrders([]);
-        // Abort any active trade polling when switching accounts
-        activeTradePollRef.current.aborted = true;
-        activeTradePollRef.current.accountId = null;
-        setAccountFailed(false);
-        setHasTriggeredWarning(false);
-        setHasTriggeredViolation(false);
-        // Reset flag to allow loading trades for new account
-        // This will trigger the trade loading useEffect to run
-        tradesLoadedForAccountRef.current = null;
+    // Reset trading state on switch
+    setPositions([]);
+    setPendingOrders([]);
+    // setTradeHistory([]);
+    setAccountFailed(false);
+    setHasTriggeredWarning(false);
+    setHasTriggeredViolation(false);
 
-        // Reset daily starting balance for new account
-        const today = new Date().toDateString();
-        currentDayRef.current = today;
-        dailyStartBalanceRef.current = newBalance;
-
-        // Reset drawdowns when switching accounts (will be updated by syncAccountFromBackend)
-        // This is correct because each account has its own drawdown values
-        setAccount(prev => ({
-          ...prev,
-          dailyDrawdown: 0,
-          overallDrawdown: 0,
-        }));
-        // Also reset prevMetricsRef so the "only increase" logic starts fresh for new account
-        prevMetricsRef.current = {
-          equity: 0,
-          floatingPnL: 0,
-          profitPercent: 0,
-          overallDrawdown: 0,
-          dailyDrawdown: 0,
-        };
-      }
-
-      setLastAccountId(selectedAccount.id);
-
-      // Step 3: Sync account data from backend when switching accounts (for real accounts)
-      // CRITICAL FIX: Sync on FIRST load (lastAccountId === null) OR when switching to a different account
-      const shouldSync =
-        !selectedAccount.isDemo &&
-        selectedAccount.id &&
-        (lastAccountId === null || isNewAccount);
-      if (shouldSync) {
-        devLog("📊 Triggering account sync - first load or account switch");
-        syncAccountFromBackend(selectedAccount.id, true, true);
-      }
-    }
-  }, [selectedAccount, lastAccountId]); // Removed allAccountsData and syncAccountFromBackend to prevent loops
+    setLastAccountId(selectedAccount.id);
+  }, [selectedAccount]);
 
   // Reset loading flag and refetch trades when account changes
   // This ensures trades reload when switching accounts
@@ -1962,13 +2043,24 @@ useEffect(() => {
 
   // Handle price updates from chart - now uses unified price context
   // Chart can still trigger updates, but unified context is the source of truth
-  const handlePriceUpdate = useCallback((symbolName, price) => {
-    // Unified price context handles all updates - chart updates are already included
-    // This callback is kept for backward compatibility but doesn't need to do anything
-    // since unifiedPrices already contains the latest prices
-  }, []);
+
 
   // Helper function to check if symbol is crypto
+
+  const pricesRef = useRef({});
+
+  const [currentPrices, setCurrentPrices] = useState({});
+
+  const handlePriceUpdate = useCallback((symbolName, price) => {
+    pricesRef.current[symbolName] = price;
+  }, []);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCurrentPrices({ ...pricesRef.current });
+    }, 500);
+    return () => clearInterval(id);
+  }, []);
+
   const isCryptoSymbol = useCallback((symbolName) => {
     return (
       symbolName.includes("BTC") ||
@@ -1980,43 +2072,27 @@ useEffect(() => {
     );
   }, []);
 
-  // Helper function to calculate P/L for a position
-  const calculatePositionPnL = useCallback(
-    (pos, currentPrice) => {
-      const price = currentPrice || pos.entryPrice;
-      const priceDiff =
-        pos.type === "buy" ? price - pos.entryPrice : pos.entryPrice - price;
 
-      // For crypto - lotSize represents actual units (e.g., 0.5 BTC)
-      // P/L = priceDiff * lotSize
-      if (isCryptoSymbol(pos.symbol)) {
-        const pnl = priceDiff * pos.lotSize;
-        // Debug logging (dev only)
-        if (process.env.NODE_ENV !== "production") {
-          console.log(
-            `[PnL Debug - Crypto] ${pos.symbol} ${pos.type}: entry=${pos.entryPrice}, current=${price}, priceDiff=${priceDiff}, lotSize=${pos.lotSize}, pnl=$${pnl.toFixed(2)}`,
-          );
-        }
-        return pnl;
-      }
+  // Helper function to calculate P/L for a position (from earliest version)
+  const calculatePositionPnL = useCallback((pos, currentPrice) => {
+    const price = currentPrice || pos.entryPrice;
+    const priceDiff =
+      pos.type === "buy" || pos.type === "BUY"
+        ? price - pos.entryPrice
+        : pos.entryPrice - price;
 
-      // For forex - use standard lot calculation (100,000 units per lot)
-      // IMPORTANT: lotSize represents LOTS (e.g., 10 = 10 lots), NOT units
-      // P/L = priceDiff * lotSize * contractSize
-      const contractSize = 100000;
-      const pnl = priceDiff * pos.lotSize * contractSize;
+    // For crypto - lotSize represents actual units (e.g., 0.5 BTC)
+    // P/L = priceDiff * lotSize
+    if (isCryptoSymbol(pos.symbol)) {
+      return priceDiff * pos.lotSize;
+    }
 
-      // Debug logging (dev only) - helps identify scaling issues
-      if (process.env.NODE_ENV !== "production") {
-        console.log(
-          `[PnL Debug - Forex] ${pos.symbol} ${pos.type}: entry=${pos.entryPrice.toFixed(5)}, current=${price.toFixed(5)}, priceDiff=${priceDiff.toFixed(5)}, lotSize=${pos.lotSize} lots, contractSize=${contractSize}, pnl=$${pnl.toFixed(2)}`,
-        );
-      }
-
-      return pnl;
-    },
-    [isCryptoSymbol],
-  );
+    // For forex - use standard lot calculation (100,000 units per lot)
+    // IMPORTANT: lotSize represents LOTS (e.g., 10 = 10 lots), NOT units
+    // P/L = priceDiff * lotSize * contractSize
+    const contractSize = 100000;
+    return priceDiff * pos.lotSize * contractSize;
+  }, [isCryptoSymbol]);
 
   // Use unified price context for positions - prices update every 800ms automatically
   // Send price ticks to backend for violation checking when prices update
@@ -2110,13 +2186,13 @@ useEffect(() => {
                       : 0,
                     closedCount: Array.isArray(beforeTrades)
                       ? beforeTrades.filter((t) => t.closedAt || t.closePrice)
-                          .length
+                        .length
                       : 0,
                     latestTradeTimestamp:
                       Array.isArray(beforeTrades) && beforeTrades.length > 0
                         ? beforeTrades[0].closedAt ||
-                          beforeTrades[0].closeTime ||
-                          beforeTrades[0].openedAt
+                        beforeTrades[0].closeTime ||
+                        beforeTrades[0].openedAt
                         : null,
                   };
 
@@ -2363,7 +2439,7 @@ useEffect(() => {
               : 0,
             closedCount: Array.isArray(currentTradesData)
               ? currentTradesData.filter((t) => t.closedAt || t.closePrice)
-                  .length
+                .length
               : 0,
             latestTradeTimestamp: Date.now(),
           };
@@ -2725,6 +2801,9 @@ useEffect(() => {
     margin: null,
     freeMargin: null,
     profitPercent: null,
+    realizedProfitPercent: null, // ✅ Added from earliest version
+    liveProfitPercent: null, // ✅ Added from earliest version
+    profitForTarget: null, // ✅ Added from earliest version
     overallDrawdown: null,
     dailyDrawdown: null,
     highestBalance: null,
@@ -2786,6 +2865,16 @@ useEffect(() => {
           updates.profitPercent = pending.profitPercent;
         }
       }
+      // ✅ Update profit fields from earliest version
+      if (pending.realizedProfitPercent !== null && Number.isFinite(pending.realizedProfitPercent)) {
+        updates.realizedProfitPercent = pending.realizedProfitPercent;
+      }
+      if (pending.liveProfitPercent !== null && Number.isFinite(pending.liveProfitPercent)) {
+        updates.liveProfitPercent = pending.liveProfitPercent;
+      }
+      if (pending.profitForTarget !== null && Number.isFinite(pending.profitForTarget)) {
+        updates.profitForTarget = pending.profitForTarget;
+      }
       // Only update overallDrawdown if change is significant (0.005% threshold for smoother updates)
       if (
         pending.overallDrawdown !== null &&
@@ -2831,6 +2920,9 @@ useEffect(() => {
         margin: null,
         freeMargin: null,
         profitPercent: null,
+        realizedProfitPercent: null, // ✅ Added from earliest version
+        liveProfitPercent: null, // ✅ Added from earliest version
+        profitForTarget: null, // ✅ Added from earliest version
         overallDrawdown: null,
         dailyDrawdown: null,
         highestBalance: null,
@@ -2842,70 +2934,27 @@ useEffect(() => {
 
   useEffect(() => {
     const updateMetrics = () => {
-      // When no positions, just update based on balance
+      // ✅ When no positions -> equity = balance, floating = 0 (from earliest version)
       if (positions.length === 0) {
         const newEquity = account.balance;
-        const initialBalance = account.initial_balance || account.startingBalance || 100000;
-        const currentProfitPercent = initialBalance > 0 ? ((newEquity - initialBalance) / initialBalance) * 100 : 0;
-        const profitPercent = Math.max(prevMetricsRef.current.profitPercent ?? 0, currentProfitPercent);
+        const startingBalance = account.startingBalance || 100000;
 
-        // When no positions, use backend values but NEVER decrease drawdowns
-        // Drawdowns should only increase - track worst values seen
-        const prevMetrics = prevMetricsRef.current;
-        const backendOverallDD = account.overallDrawdown ?? 0;
-        const backendDailyDD = account.dailyDrawdown ?? 0;
-        // CRITICAL: Drawdowns should only INCREASE - use max of current, previous, and backend values
-        let overallDrawdown = Math.max(backendOverallDD, prevMetrics.overallDrawdown ?? 0);
-        const dailyDrawdown = Math.max(backendDailyDD, prevMetrics.dailyDrawdown ?? 0);
+        // ✅ Profit calculations from earliest version
+        const realized = startingBalance > 0 ? ((account.balance - startingBalance) / startingBalance) * 100 : 0;
+        const live = 0;
+        const profitForTarget = Math.max(0, realized);
 
-        // CRITICAL: If DAILY_LOCKED and overallDrawdown is 0, use breach snapshot (atomic)
-        // This prevents reset-to-0 when positions are auto-closed
-        const statusUpper = String(account.status || "").toUpperCase();
-        const isDailyLocked = statusUpper.includes("DAILY");
-        if (
-          isDailyLocked &&
-          (overallDrawdown === 0 || !Number.isFinite(overallDrawdown)) &&
-          typeof window !== "undefined"
-        ) {
-          // First try breach snapshot (most accurate - captured at breach moment)
-          const snapshotDD = sessionStorage.getItem(
-            `violation:${selectedAccountId}:snapshot_overall_dd`,
-          );
-          if (snapshotDD !== null) {
-            const snapshotValue = parseFloat(snapshotDD);
-            if (Number.isFinite(snapshotValue) && snapshotValue > 0) {
-              overallDrawdown = snapshotValue;
-              devLog(
-                "🔒 [SNAPSHOT] Using overall drawdown from breach snapshot in updateMetrics:",
-                overallDrawdown,
-              );
-            }
-          } else {
-            // Fallback to last known metrics
-            const lastKnownOverallDD = sessionStorage.getItem(
-              `metrics:${selectedAccountId}:last_overall_dd`,
-            );
-            if (lastKnownOverallDD !== null) {
-              const lastDD = parseFloat(lastKnownOverallDD);
-              if (Number.isFinite(lastDD) && lastDD > 0) {
-                overallDrawdown = lastDD;
-                devLog(
-                  "🔄 Using fallback overall drawdown in updateMetrics:",
-                  overallDrawdown,
-                );
-              }
-            }
-          }
-        }
+        // ✅ Drawdown calculations from earliest version (simple formula)
+        const totalLoss = Math.max(0, startingBalance - newEquity);
+        const overallDrawdownPercent = startingBalance > 0 ? (totalLoss / startingBalance) * 100 : 0;
+        const dailyDrawdown = 0; // When no positions, no daily drawdown
 
         // Only update if values actually changed (prevent unnecessary re-renders)
-        // prevMetrics already declared above
+        const prevMetrics = prevMetricsRef.current;
         if (
           Math.abs((prevMetrics.equity ?? 0) - newEquity) < 0.01 &&
-          Math.abs((prevMetrics.profitPercent ?? 0) - profitPercent) < 0.01 &&
           Math.abs((prevMetrics.floatingPnL ?? 0) - 0) < 0.01 &&
-          Math.abs((prevMetrics.overallDrawdown ?? 0) - overallDrawdown) <
-            0.01 &&
+          Math.abs((prevMetrics.overallDrawdown ?? 0) - overallDrawdownPercent) < 0.01 &&
           Math.abs((prevMetrics.dailyDrawdown ?? 0) - dailyDrawdown) < 0.01
         ) {
           return; // No significant change, skip update
@@ -2914,24 +2963,28 @@ useEffect(() => {
         prevMetricsRef.current = {
           equity: newEquity,
           floatingPnL: 0,
-          profitPercent: profitPercent,
-          overallDrawdown: overallDrawdown,
+          profitPercent: profitForTarget, // Store profitForTarget
+          overallDrawdown: overallDrawdownPercent,
           dailyDrawdown: dailyDrawdown,
         };
 
-        // Use requestAnimationFrame throttling for smooth UI updates
-        // Real-time equity = balance when no positions
+        // Use requestAnimationFrame throttling for smooth UI updates (keep advanced infrastructure)
         if (Number.isFinite(newEquity))
           pendingMetricsRef.current.equity = newEquity;
         pendingMetricsRef.current.floatingPnL = 0;
         pendingMetricsRef.current.margin = 0;
-        // Free margin = equity when no positions
         if (Number.isFinite(newEquity))
           pendingMetricsRef.current.freeMargin = newEquity;
-        if (Number.isFinite(profitPercent))
-          pendingMetricsRef.current.profitPercent = profitPercent;
-        if (Number.isFinite(overallDrawdown))
-          pendingMetricsRef.current.overallDrawdown = overallDrawdown;
+        if (Number.isFinite(profitForTarget))
+          pendingMetricsRef.current.profitPercent = profitForTarget; // Store profitForTarget
+        if (Number.isFinite(realized))
+          pendingMetricsRef.current.realizedProfitPercent = realized; // ✅ Store realized
+        if (Number.isFinite(live))
+          pendingMetricsRef.current.liveProfitPercent = live; // ✅ Store live
+        if (Number.isFinite(profitForTarget))
+          pendingMetricsRef.current.profitForTarget = profitForTarget; // ✅ Store profitForTarget
+        if (Number.isFinite(overallDrawdownPercent))
+          pendingMetricsRef.current.overallDrawdown = overallDrawdownPercent;
         if (Number.isFinite(dailyDrawdown))
           pendingMetricsRef.current.dailyDrawdown = dailyDrawdown;
         scheduleAccountUpdate();
@@ -2983,9 +3036,12 @@ useEffect(() => {
       });
 
       const newEquity = account.balance + totalPnL;
-      const initialBalance = account.initial_balance || account.startingBalance || 100000;
-      const currentProfitPercent = initialBalance > 0 ? ((newEquity - initialBalance) / initialBalance) * 100 : 0;
-      const profitPercent = Math.max(prevMetricsRef.current.profitPercent ?? 0, currentProfitPercent);
+      const startingBalance = account.startingBalance || 100000;
+
+      // ✅ Profit calculations from earliest version
+      const realized = startingBalance > 0 ? ((account.balance - startingBalance) / startingBalance) * 100 : 0;
+      const live = totalPnL > 0 ? (totalPnL / startingBalance) * 100 : 0;
+      const profitForTarget = Math.max(0, realized + live);
 
       // Debug logging for equity calculation (dev only)
       if (process.env.NODE_ENV !== "production" && positions.length > 0) {
@@ -2995,142 +3051,28 @@ useEffect(() => {
         const drawdownPercent =
           account.startingBalance > 0
             ? ((account.startingBalance - newEquity) /
-                account.startingBalance) *
-              100
+              account.startingBalance) *
+            100
             : 0;
         console.log(
           `[Equity Debug] balance=$${account.balance.toFixed(2)}, totalPnL=$${totalPnL.toFixed(2)}, equity=$${newEquity.toFixed(2)}, drawdown=${drawdownPercent.toFixed(2)}%`,
         );
       }
 
-      // Track highest equity for display purposes
-      const newHighestBalance = Math.max(
-        account.highestBalance ||
-          account.maxEquityToDate ||
-          account.startingBalance,
-        newEquity,
-      );
+      // ✅ Drawdown calculations from earliest version (simple formulas)
+      const newHighestBalance = Math.max(account.highestBalance || startingBalance, newEquity);
+      const totalLoss = Math.max(0, startingBalance - newEquity);
+      const overallDrawdownPercent = startingBalance > 0 ? (totalLoss / startingBalance) * 100 : 0;
 
-      // Calculate live drawdowns using backend's method (todayStartEquity for daily, maxEquityToDate for overall)
-      // IMPORTANT: Use todayStartEquity (start of day equity) NOT highestEquityToday (highest reached today)
-      // This matches backend calculation: (todayStartEquity - equity) / todayStartEquity * 100
-      // initialBalance already declared above at line 1837
-      const todayStartEquity =
-        account.todayStartEquity ??
-        account.today_start_equity ??
-        initialBalance;
-      const maxEquityToDate =
-        account.maxEquityToDate ??
-        account.max_equity_to_date ??
-        account.highestBalance ??
-        initialBalance;
-
-      // CRITICAL: For overall drawdown, use the stored maxEquityToDate (peak equity ever reached)
-      // DO NOT update it here - it should only be updated by the backend when equity actually increases
-      // If current equity is higher than maxEquityToDate, overall drawdown should be 0% (at new peak)
-      // Only calculate drawdown if equity is BELOW the peak
-      const overallDrawdownPercent =
-        maxEquityToDate > 0 && newEquity < maxEquityToDate
-          ? Math.max(0, ((maxEquityToDate - newEquity) / maxEquityToDate) * 100)
-          : 0; // 0% when at or above peak equity
-
-      // Calculate current daily drawdown: (todayStartEquity - current) / todayStartEquity * 100
-      // Backend formula: (todayStartEquity - equity) / todayStartEquity * 100
-      const currentDailyDrawdownPercent = todayStartEquity > 0 && newEquity < todayStartEquity
-        ? Math.max(0, ((todayStartEquity - newEquity) / todayStartEquity) * 100)
-        : 0;
-      const dailyDrawdownPercent =
-        todayStartEquity > 0 && newEquity < todayStartEquity
-          ? Math.max(
-              0,
-              ((todayStartEquity - newEquity) / todayStartEquity) * 100,
-            )
-          : 0;
-
-      // CRITICAL: Daily drawdown should only INCREASE - track worst drawdown of the day
-      // This ensures that if price rebounds, daily drawdown stays at the worst point
-      const prevWorstDailyDD = prevMetricsRef.current.dailyDrawdown ?? 0;
-      const backendDailyDD = account.dailyDrawdown ?? 0;
-      const dailyDrawdown = Math.max(currentDailyDrawdownPercent, prevWorstDailyDD, backendDailyDD);
-
-      const prevMetrics = prevMetricsRef.current;
-
-      // statusUpper already declared above at line 1850
-      const isDailyLocked = statusUpper.includes("DAILY");
-      const isDisqualified =
-        statusUpper.includes("FAIL") || statusUpper.includes("DISQUAL");
-
-      // CRITICAL: Overall drawdown should only INCREASE or stay the same - never decrease
-      // Track the worst drawdown from peak equity, not current drawdown
-      // This ensures that if price rebounds, overall drawdown stays at the worst point
-      let overallDrawdown = overallDrawdownPercent;
-
-      // If account is active, track worst drawdown (only increase, never decrease)
-      if (!isDailyLocked && !isDisqualified) {
-        // Use the maximum of: current drawdown, previous worst drawdown, or backend value
-        // This ensures overall drawdown never decreases when price rebounds
-        const prevWorstDD = prevMetrics.overallDrawdown ?? 0;
-        const backendDD = account.overallDrawdown ?? 0;
-        const worstDD = Math.max(
-          overallDrawdownPercent,
-          prevWorstDD,
-          backendDD,
-        );
-        overallDrawdown = worstDD;
-      } else {
-        // Account is locked/disqualified - use frozen violation values
-        // Try backend value first
-        const backendOverallDD =
-          account.overallDrawdown ?? prevMetrics.overallDrawdown ?? 0;
-        if (backendOverallDD > 0 && Number.isFinite(backendOverallDD)) {
-          overallDrawdown = backendOverallDD;
-        } else if (typeof window !== "undefined") {
-          // Fallback to violation snapshot if backend is 0
-          const violationDD = sessionStorage.getItem(
-            `violation:${selectedAccountId}:overall_dd`,
-          );
-          if (violationDD !== null) {
-            const violationValue = parseFloat(violationDD);
-            if (Number.isFinite(violationValue) && violationValue > 0) {
-              overallDrawdown = violationValue;
-              devLog(
-                "🔒 Using frozen overall drawdown from violation:",
-                overallDrawdown,
-              );
-            }
-          } else {
-            // Fallback to breach snapshot
-            const snapshotDD = sessionStorage.getItem(
-              `violation:${selectedAccountId}:snapshot_overall_dd`,
-            );
-            if (snapshotDD !== null) {
-              const snapshotValue = parseFloat(snapshotDD);
-              if (Number.isFinite(snapshotValue) && snapshotValue > 0) {
-                overallDrawdown = snapshotValue;
-                devLog(
-                  "🔒 [SNAPSHOT] Using overall drawdown from breach snapshot in updateMetrics:",
-                  overallDrawdown,
-                );
-              }
-            } else {
-              // Last fallback: use last known metrics
-              const lastKnownOverallDD = sessionStorage.getItem(
-                `metrics:${selectedAccountId}:last_overall_dd`,
-              );
-              if (lastKnownOverallDD !== null) {
-                const lastDD = parseFloat(lastKnownOverallDD);
-                if (Number.isFinite(lastDD) && lastDD > 0) {
-                  overallDrawdown = lastDD;
-                  devLog(
-                    "🔄 Using fallback overall drawdown in updateMetrics:",
-                    overallDrawdown,
-                  );
-                }
-              }
-            }
-          }
-        }
+      // ✅ Daily drawdown from earliest version
+      const today = new Date().toDateString();
+      if (currentDayRef.current !== today) {
+        currentDayRef.current = today;
+        dailyStartBalanceRef.current = account.balance;
       }
+      const dailyStartBalance = dailyStartBalanceRef.current ?? account.balance;
+      const dailyLossDollars = Math.max(0, dailyStartBalance - newEquity);
+      const dailyLossPercent = startingBalance > 0 ? (dailyLossDollars / startingBalance) * 100 : 0;
 
       // REMOVED: Frontend limit checking - now handled by event-driven price-tick endpoint
       // The price-tick endpoint (called in fetchPricesForPositions) triggers immediate backend evaluation
@@ -3138,7 +3080,7 @@ useEffect(() => {
 
       // Only update if values actually changed (prevent unnecessary re-renders and jumping)
       // Use $1 threshold to reduce flickering from small price movements
-      // prevMetrics already declared above at line 1908
+      const prevMetrics = prevMetricsRef.current;
       const equityChanged =
         Math.abs((prevMetrics.equity ?? 0) - newEquity) >= 1.0; // $1 threshold for stability
       const pnlChanged =
@@ -3146,13 +3088,11 @@ useEffect(() => {
       // Always update profit if prevMetrics is 0 (initial state) or if change is significant
       const prevProfit = prevMetrics.profitPercent ?? 0;
       const profitChanged =
-        prevProfit === 0 || Math.abs(prevProfit - profitPercent) >= 0.01; // 0.01% threshold
+        prevProfit === 0 || Math.abs(prevProfit - profitForTarget) >= 0.01; // 0.01% threshold
       const dailyDDChanged =
-        Math.abs((prevMetrics.dailyDrawdown ?? 0) - dailyDrawdown) >= 0.005; // 0.005% threshold
-      // For overall DD, use tiny threshold
-      const overallDDDiff =
-        overallDrawdown - (prevMetrics.overallDrawdown ?? 0);
-      const overallDDChanged = Math.abs(overallDDDiff) >= 0.005;
+        Math.abs((prevMetrics.dailyDrawdown ?? 0) - dailyLossPercent) >= 0.005; // 0.005% threshold
+      const overallDDChanged =
+        Math.abs((prevMetrics.overallDrawdown ?? 0) - overallDrawdownPercent) >= 0.005;
 
       // Force update on first run (when equity is 0) to ensure immediate display
       const isFirstUpdate = prevMetrics.equity === 0 && newEquity !== 0;
@@ -3168,14 +3108,13 @@ useEffect(() => {
         return; // No change, skip update (unless first update)
       }
 
-      // Update ref with new values
-      // Use computed overallDrawdown (which may include snapshot) for ref
+      // Update ref with new values (using earliest version calculations)
       prevMetricsRef.current = {
         equity: newEquity,
         floatingPnL: totalPnL,
-        profitPercent: profitPercent,
-        overallDrawdown: overallDrawdown, // Use computed value (may include snapshot)
-        dailyDrawdown: dailyDrawdown,
+        profitPercent: profitForTarget, // Store profitForTarget
+        overallDrawdown: overallDrawdownPercent,
+        dailyDrawdown: dailyLossPercent,
       };
 
       // Debug logging for equity calculation (dev only)
@@ -3185,34 +3124,37 @@ useEffect(() => {
         );
       }
 
-      // Use requestAnimationFrame throttling for smooth UI updates
+      // Use requestAnimationFrame throttling for smooth UI updates (keep advanced infrastructure)
       // Batch all updates into a single frame to prevent flickering
       // Real-time equity = balance + floating P/L
       if (Number.isFinite(newEquity))
         pendingMetricsRef.current.equity = newEquity;
       if (Number.isFinite(totalPnL))
         pendingMetricsRef.current.floatingPnL = totalPnL;
-      if (Number.isFinite(profitPercent))
-        pendingMetricsRef.current.profitPercent = profitPercent;
-      if (Number.isFinite(totalMargin))
-        pendingMetricsRef.current.margin = totalMargin;
-      // Free margin = real-time equity - margin used
-      if (Number.isFinite(newEquity) && Number.isFinite(totalMargin)) {
-        pendingMetricsRef.current.freeMargin = Math.max(
-          0,
-          newEquity - totalMargin,
-        );
-      }
-      // CRITICAL: Use computed overallDrawdown (real-time calculated when active, frozen when locked)
-      // This ensures smooth real-time updates during open positions, just like daily drawdown
-      if (Number.isFinite(overallDrawdown))
-        pendingMetricsRef.current.overallDrawdown = overallDrawdown;
-      if (Number.isFinite(dailyDrawdown))
-        pendingMetricsRef.current.dailyDrawdown = dailyDrawdown;
-      if (Number.isFinite(newHighestBalance))
-        pendingMetricsRef.current.highestBalance = newHighestBalance;
-      // NOTE: maxEquityToDate should only be updated by the backend, not locally
-      // The backend updates it when equity increases (in processPriceTick)
+        if (Number.isFinite(profitForTarget))
+          pendingMetricsRef.current.profitPercent = profitForTarget; // Store profitForTarget
+        if (Number.isFinite(realized))
+          pendingMetricsRef.current.realizedProfitPercent = realized; // ✅ Store realized
+        if (Number.isFinite(live))
+          pendingMetricsRef.current.liveProfitPercent = live; // ✅ Store live
+        if (Number.isFinite(profitForTarget))
+          pendingMetricsRef.current.profitForTarget = profitForTarget; // ✅ Store profitForTarget
+        if (Number.isFinite(totalMargin))
+          pendingMetricsRef.current.margin = totalMargin;
+        // Free margin = real-time equity - margin used
+        if (Number.isFinite(newEquity) && Number.isFinite(totalMargin)) {
+          pendingMetricsRef.current.freeMargin = Math.max(
+            0,
+            newEquity - totalMargin,
+          );
+        }
+        // Use earliest version's simple drawdown calculations
+        if (Number.isFinite(overallDrawdownPercent))
+          pendingMetricsRef.current.overallDrawdown = overallDrawdownPercent;
+        if (Number.isFinite(dailyLossPercent))
+          pendingMetricsRef.current.dailyDrawdown = dailyLossPercent;
+        if (Number.isFinite(newHighestBalance))
+          pendingMetricsRef.current.highestBalance = newHighestBalance;
 
       scheduleAccountUpdate();
     };
@@ -3239,11 +3181,12 @@ useEffect(() => {
     account.highestBalance,
     account.maxDailyDrawdown,
     account.maxOverallDrawdown,
-    account.todayStartEquity,
-    account.maxEquityToDate,
+    account.profitTarget,
     calculatePositionPnL,
     isCryptoSymbol,
+    getPriceForPosition,
     scheduleAccountUpdate,
+    selectedAccountId,
   ]);
 
   // REMOVED: Real-time violation checking via evaluate-real-time API
@@ -3631,13 +3574,13 @@ useEffect(() => {
       try {
         // Wait briefly for backend to persist the trade
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         // Sync full account data from backend (updates account.tradingDays via metrics.tradingDaysCompleted)
         await syncAccountFromBackend(selectedAccountId, true, false); // Force refresh
-        
+
         // Also fetch summary to update standalone tradingDaysCount state
         const summary = await getAccountSummary(selectedAccountId);
-        
+
         if (summary?.metrics?.tradingDaysCompleted !== undefined) {
           setTradingDaysCount(summary.metrics.tradingDaysCompleted);
           // Also update the account state directly to ensure ChallengeRulesPanel gets the update
@@ -3931,13 +3874,12 @@ useEffect(() => {
                 {/* WebSocket Connection Status */}
                 <Badge
                   className={`text-xs cursor-help transition-colors md:hidden
- ${
-   websocketStatus.connected
-     ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-     : websocketStatus.status === "reconnecting"
-       ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 animate-pulse"
-       : "bg-red-500/20 text-red-400 border border-red-500/30"
- }`}
+ ${websocketStatus.connected
+                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                      : websocketStatus.status === "reconnecting"
+                        ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 animate-pulse"
+                        : "bg-red-500/20 text-red-400 border border-red-500/30"
+                    }`}
                   title={
                     websocketStatus.connected
                       ? "WebSocket Connected - Real-time updates active"
@@ -3947,13 +3889,12 @@ useEffect(() => {
                   }
                 >
                   <div
-                    className={`w-2 h-2 rounded-full mr-1.5 ${
-                      websocketStatus.connected
+                    className={`w-2 h-2 rounded-full mr-1.5 ${websocketStatus.connected
                         ? "bg-emerald-400 animate-pulse"
                         : websocketStatus.status === "reconnecting"
                           ? "bg-yellow-400 animate-pulse"
                           : "bg-red-400"
-                    }`}
+                      }`}
                   />
                   <span className="hidden md:inline font-medium">
                     {websocketStatus.connected
@@ -4051,13 +3992,12 @@ useEffect(() => {
                         <>
                           <span className="text-slate-400">•</span>
                           <Badge
-                            className={`text-xs ${
-                              acc.status === "active"
+                            className={`text-xs ${acc.status === "active"
                                 ? "bg-emerald-500/20 text-emerald-400"
                                 : acc.status === "paused"
                                   ? "bg-amber-500/20 text-amber-400"
                                   : "bg-slate-500/20 text-slate-400"
-                            }`}
+                              }`}
                           >
                             {t(`status.${acc.status}`)}
                           </Badge>
@@ -4086,13 +4026,12 @@ useEffect(() => {
           {/* WebSocket Connection Status */}
           <Badge
             className={`text-xs cursor-help transition-colors hidden md:flex
- ${
-   websocketStatus.connected
-     ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-     : websocketStatus.status === "reconnecting"
-       ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 animate-pulse"
-       : "bg-red-500/20 text-red-400 border border-red-500/30"
- }`}
+ ${websocketStatus.connected
+                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                : websocketStatus.status === "reconnecting"
+                  ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 animate-pulse"
+                  : "bg-red-500/20 text-red-400 border border-red-500/30"
+              }`}
             title={
               websocketStatus.connected
                 ? "WebSocket Connected - Real-time updates active"
@@ -4102,13 +4041,12 @@ useEffect(() => {
             }
           >
             <div
-              className={`w-2 h-2 rounded-full mr-1.5 ${
-                websocketStatus.connected
+              className={`w-2 h-2 rounded-full mr-1.5 ${websocketStatus.connected
                   ? "bg-emerald-400 animate-pulse"
                   : websocketStatus.status === "reconnecting"
                     ? "bg-yellow-400 animate-pulse"
                     : "bg-red-400"
-              }`}
+                }`}
             />
             <span className="hidden md:inline font-medium">
               {websocketStatus.connected
@@ -4660,9 +4598,9 @@ useEffect(() => {
                           const winRate =
                             filteredTrades.length > 0
                               ? (
-                                  (winCount / filteredTrades.length) *
-                                  100
-                                ).toFixed(1)
+                                (winCount / filteredTrades.length) *
+                                100
+                              ).toFixed(1)
                               : 0;
 
                           return (
@@ -4738,11 +4676,11 @@ useEffect(() => {
                                           >
                                             {(trade.type === "buy"
                                               ? t(
-                                                  "terminal.tradingPanel.buyLong",
-                                                )
+                                                "terminal.tradingPanel.buyLong",
+                                              )
                                               : t(
-                                                  "terminal.tradingPanel.sellShort",
-                                                )
+                                                "terminal.tradingPanel.sellShort",
+                                              )
                                             ).toUpperCase()}
                                           </Badge>
                                           <div className="flex-1 min-w-0">
@@ -4780,25 +4718,25 @@ useEffect(() => {
                                             // Check if trade was auto-closed due to risk limit breach
                                             const isAutoClosed =
                                               trade.closeReason ===
-                                                "RISK_AUTO_CLOSE" ||
+                                              "RISK_AUTO_CLOSE" ||
                                               trade.closeReason ===
-                                                "risk_auto_close" ||
+                                              "risk_auto_close" ||
                                               String(
                                                 trade.closeReason || "",
                                               ).toUpperCase() ===
-                                                "RISK_AUTO_CLOSE";
+                                              "RISK_AUTO_CLOSE";
 
                                             // Check if breach snapshot exists
                                             const isBreachTriggered =
                                               trade.breachTriggered === true ||
                                               trade.breachTriggered === 1 ||
                                               String(trade.breachTriggered) ===
-                                                "true";
+                                              "true";
                                             const hasBreachPnL =
                                               trade.breachUnrealizedPnl !==
-                                                null &&
+                                              null &&
                                               trade.breachUnrealizedPnl !==
-                                                undefined &&
+                                              undefined &&
                                               Number.isFinite(
                                                 trade.breachUnrealizedPnl,
                                               );
@@ -4823,16 +4761,16 @@ useEffect(() => {
                                                 {/* Show breach PnL if available, otherwise show realized PnL */}
                                                 {trade.breachUnrealizedPnl !==
                                                   null &&
-                                                trade.breachUnrealizedPnl !==
+                                                  trade.breachUnrealizedPnl !==
                                                   undefined &&
-                                                Number.isFinite(
-                                                  trade.breachUnrealizedPnl,
-                                                ) ? (
+                                                  Number.isFinite(
+                                                    trade.breachUnrealizedPnl,
+                                                  ) ? (
                                                   <span
                                                     className={`font-mono font-bold text-sm ${trade.breachUnrealizedPnl >= 0 ? "text-emerald-400" : "text-red-400"}`}
                                                   >
                                                     {trade.breachUnrealizedPnl >=
-                                                    0
+                                                      0
                                                       ? "+"
                                                       : ""}
                                                     $
@@ -4922,16 +4860,16 @@ useEffect(() => {
         currentPrice={
           modifyingPosition
             ? (() => {
-                const priceData = unifiedPrices[modifyingPosition.symbol];
-                if (!priceData) return null;
-                // Use the correct price side (ask for BUY, bid for SELL)
-                if (typeof priceData === "object") {
-                  return modifyingPosition.type === "buy"
-                    ? priceData.ask
-                    : priceData.bid;
-                }
-                return priceData;
-              })()
+              const priceData = unifiedPrices[modifyingPosition.symbol];
+              if (!priceData) return null;
+              // Use the correct price side (ask for BUY, bid for SELL)
+              if (typeof priceData === "object") {
+                return modifyingPosition.type === "buy"
+                  ? priceData.ask
+                  : priceData.bid;
+              }
+              return priceData;
+            })()
             : null
         }
       />
@@ -4949,11 +4887,10 @@ useEffect(() => {
       {/* Account Status Banner (for locked/disqualified accounts) */}
       {accountStatusBanner && (
         <div
-          className={`fixed bottom-4 left-4 right-4 lg:left-72 ${
-            accountStatusBanner.type === "error"
+          className={`fixed bottom-4 left-4 right-4 lg:left-72 ${accountStatusBanner.type === "error"
               ? "bg-red-500/90"
               : "bg-orange-500/90"
-          } text-white px-4 py-3 rounded-lg flex items-center justify-between z-50`}
+            } text-white px-4 py-3 rounded-lg flex items-center justify-between z-50`}
         >
           <div className="flex items-center gap-2">
             <XCircle className="w-5 h-5" />
