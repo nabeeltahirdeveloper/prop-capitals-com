@@ -1,8 +1,8 @@
-import { apiGet, apiPost, apiPatch } from '@/lib/api';
+import { apiGet, apiPost, apiPatch, apiDelete } from "@/lib/api";
 
 // API Functions
 export const createNotification = async (data) => {
-  return apiPost('/notifications', data);
+  return apiPost("/notifications", data);
 };
 
 export const getUserNotifications = async (userId) => {
@@ -13,3 +13,6 @@ export const markNotificationAsRead = async (id) => {
   return apiPatch(`/notifications/${id}/read`);
 };
 
+export const deleteNotification = async (id) => {
+  return apiDelete(`/notifications/${id}`);
+};

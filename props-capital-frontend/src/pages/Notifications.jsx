@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/api/auth";
 import {
   getUserNotifications,
   markNotificationAsRead,
+  deleteNotification,
 } from "@/api/notifications";
 import { useTranslation } from "../contexts/LanguageContext";
 import { translateNotification } from "../utils/notificationTranslations";
@@ -77,10 +78,16 @@ export default function Notifications() {
     },
   });
 
-  // Note: Backend doesn't have delete endpoint, so we'll mark as read instead
+  // Delete notification
   const deleteNotificationMutation = useMutation({
-    mutationFn: (id) => markNotificationAsRead(id),
+    mutationFn: (id) => deleteNotification(id),
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["notifications", user?.userId],
+      });
+    },
+    onError: (error) => {
+      console.error("Failed to delete notification:", error);
       queryClient.invalidateQueries({
         queryKey: ["notifications", user?.userId],
       });
@@ -171,11 +178,35 @@ export default function Notifications() {
     }
   };
 
-  const markAllAsRead = () => {
+  const markAllAsRead = async () => {
     const unreadNotifications = displayNotifications.filter((n) => !n.is_read);
-    unreadNotifications.forEach((n) => {
-      markAsReadMutation.mutate(n.id);
-    });
+
+    if (unreadNotifications.length === 0) return;
+
+    let failedCount = 0;
+
+    for (const notification of unreadNotifications) {
+      try {
+        await new Promise((resolve, reject) => {
+          markAsReadMutation.mutate(notification.id, {
+            onSuccess: () => resolve(true),
+            onError: (error) => {
+              failedCount++;
+              reject(error);
+            },
+          });
+        });
+      } catch (error) {
+        console.error(
+          `Failed to mark notification ${notification.id} as read:`,
+          error,
+        );
+      }
+    }
+
+    if (failedCount > 0) {
+      console.error(`Failed to mark ${failedCount} notifications as read`);
+    }
   };
   const localeMap = {
     en: enUS,
@@ -183,7 +214,7 @@ export default function Notifications() {
     fr: fr,
     ja: ja,
     ru: ru,
-    kr: ko, // 🔥 IMPORTANT: kr → ko
+    ko: ko,
     es: es,
     tr: tr,
   };
