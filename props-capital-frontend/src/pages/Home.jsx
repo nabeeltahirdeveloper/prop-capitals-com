@@ -400,7 +400,7 @@ export default function Home() {
       {/* How It Works Section */}
       <section className="py-24 bg-slate-900/50 relative overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-emerald-500/30 to-transparent" />
+          {/* <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-emerald-500/30 to-transparent" /> */}
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -811,7 +811,7 @@ export default function Home() {
           </div>
           <div className="border-t border-slate-800 mt-12 pt-8">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
-              <p className="text-slate-500">{t("home.footer.copyright")}</p>
+              <p className="text-slate-500 text-sm md:text-md">{t("home.footer.copyright")}</p>
               <div className="flex items-center gap-4">
                 <Shield className="w-5 h-5 text-slate-600" />
                 <span className="text-sm text-slate-500">
