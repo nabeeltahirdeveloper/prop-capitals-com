@@ -73,6 +73,9 @@ export default function SignIn() {
     loginMutation.mutate({ email, password });
   };
 
+  // const handleForgetPassword =>(){
+
+  // }
   return (
     <div className="min-h-screen bg-slate-950 flex">
       {/* Left Side - Form */}
@@ -147,7 +150,7 @@ export default function SignIn() {
                   {t('signIn.rememberMe')}
                 </Label>
               </div>
-              <button type="button" className="text-sm text-emerald-400 hover:text-emerald-300">
+              <button  type="button" className="text-sm text-emerald-400 hover:text-emerald-300">
                 {t('signIn.forgotPassword')}
               </button>
             </div>
