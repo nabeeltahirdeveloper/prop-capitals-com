@@ -34,7 +34,8 @@ body {
 
 body {
   position: relative;
-  overflow-y: auto; /* Ensure vertical scrolling still works */
+  overflow-y: auto;
+  /* Ensure vertical scrolling still works */
 }
 
 /* ========================================
@@ -58,17 +59,20 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #1e293b; /* slate-800 */
+  background: #1e293b;
+  /* slate-800 */
   border-radius: 10px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #475569; /* slate-600 */
+  background: #475569;
+  /* slate-600 */
   border-radius: 10px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #64748b; /* slate-500 */
+  background: #64748b;
+  /* slate-500 */
 }
 
 /* ========================================
@@ -78,7 +82,8 @@ body {
 /* Better table responsive handling */
 .table-container {
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+  /* Smooth scrolling on iOS */
 }
 
 /* Ensure table doesn't create unnecessary horizontal scroll */
@@ -198,4 +203,8 @@ body {
    but use an explicit rgba() value to match the previewed styling. */
 input[data-input-otp] {
   color: rgba(255, 255, 255, 0) !important;
+}
+
+#tv-attr-logo {
+  display: none;
 }
