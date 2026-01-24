@@ -3333,11 +3333,16 @@ export default function TradingTerminal() {
       // Show modal if not dismissed by user for this account
       if (!wasDismissed) {
         console.log("[ViolationModal] Showing DAILY_LOCKED modal");
+        // Show modal initially but hidden, then show after 1 second
         setViolationModal({
           type: "DAILY_LOCKED",
-          shown: true,
+          shown: false,
           accountId: selectedAccountId,
         });
+        const timer = setTimeout(() => {
+          setViolationModal((prev) => (prev ? { ...prev, shown: true } : null));
+        }, 500);
+        return () => clearTimeout(timer);
       }
     }
     // Check for disqualification/failure status (includes 'FAIL' or 'DISQUAL')
@@ -3353,11 +3358,16 @@ export default function TradingTerminal() {
       // Show modal if not dismissed by user for this account
       if (!wasDismissed) {
         console.log("[ViolationModal] Showing DISQUALIFIED modal");
+        // Show modal initially but hidden, then show after 1 second
         setViolationModal({
           type: "DISQUALIFIED",
-          shown: true,
+          shown: false,
           accountId: selectedAccountId,
         });
+        const timer = setTimeout(() => {
+          setViolationModal((prev) => (prev ? { ...prev, shown: true } : null));
+        }, 500);
+        return () => clearTimeout(timer);
       }
     } else {
       setAccountStatusBanner(null);
