@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { validateEnvironment } from './config/env.validation';
@@ -8,6 +9,14 @@ async function bootstrap() {
   validateEnvironment();
 
   const app = await NestFactory.create(AppModule);
+
+  // Enable global validation pipe
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+    }),
+  );
 
   // Enable Socket.IO adapter for WebSocket support
   app.useWebSocketAdapter(new IoAdapter(app));

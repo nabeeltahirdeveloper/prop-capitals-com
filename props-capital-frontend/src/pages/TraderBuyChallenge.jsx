@@ -112,7 +112,7 @@ export default function TraderBuyChallenge() {
         setCouponError('');
         toast({
           title: t('buyChallenge.couponSuccess') || 'Coupon Applied',
-          description: `${result.coupon.discountPct}% discount applied`,
+          description: t('buyChallenge.discountApplied', { discount: result.coupon.discountPct }),
           variant: 'default',
         });
       } else {

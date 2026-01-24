@@ -1,125 +1,125 @@
 {
-    "common": {
-      "loading": "Cargando...",
-      "url": "URL",
-      "dismiss": "Cerrar",
-      "allPlatforms": "Todas las plataformas"
+  "common": {
+    "loading": "Cargando...",
+    "url": "URL",
+    "dismiss": "Cerrar",
+    "allPlatforms": "Todas las plataformas"
+  },
+  "home": {
+    "hero": {
+      "badge": "Con la confianza de más de 15,000 traders en todo el mundo",
+      "title": "Opera",
+      "titleHighlight": "con nuestro capital",
+      "subtitle": "Demuestra tus habilidades y obtén hasta $200,000 en capital. Mantén hasta el 90% de las ganancias sin arriesgar tu propio dinero",
+      "cta": "Comenzar el desafío",
+      "howItWorks": "Cómo funciona",
+      "verified": "Empresa verificada",
+      "secure": "Pagos seguros",
+      "support": "Soporte 24/7",
+      "profitToday": "Ganancia de hoy",
+      "winRate": "Tasa de éxito"
     },
-    "home": {
-        "hero": {
-          "badge": "Con la confianza de más de 15,000 traders en todo el mundo",
-          "title": "Opera",
-          "titleHighlight": "con nuestro capital",
-          "subtitle": "Demuestra tus habilidades y obtén hasta $200,000 en capital. Mantén hasta el 90% de las ganancias sin arriesgar tu propio dinero",
-          "cta": "Comenzar el desafío",
-          "howItWorks": "Cómo funciona",
-          "verified": "Empresa verificada",
-          "secure": "Pagos seguros",
-          "support": "Soporte 24/7",
-          "profitToday": "Ganancia de hoy",
-          "winRate": "Tasa de éxito"
-        },
-        "stats": {
-          "fundedCapital": "Capital financiado",
-          "activeTraders": "Traders activos",
-          "paidToTraders": "Pagado a los traders",
-          "trustScore": "Puntuación de confianza"
-        },
-        "features": {
-          "title": "Por qué elegirnos",
-          "subtitle": "Diseñado para traders profesionales",
-          "description": "Hemos creado la prop firm más amigable para traders, con reglas transparentes, condiciones favorables y soporte real",
-          "clearObjectives": {
-            "title": "Objetivos de trading claros",
-            "description": "Objetivos simples y alcanzables basados en reglas transparentes. Sin condiciones ocultas ni fallos inesperados"
-          },
-          "generousDrawdown": {
-            "title": "Límite de drawdown generoso",
-            "description": "5% de pérdida diaria y hasta 10% máximo. Opera con comodidad y sin estrés",
-            "drawdown": "Drawdown"
-          },
-          "profitSplit": {
-            "title": "Hasta 90% de reparto de ganancias",
-            "description": "Conserva la mayor parte de tus beneficios. Pagos quincenales sin retrasos ni comisiones ocultas"
-          },
-          "instantSetup": {
-            "title": "Configuración instantánea de la cuenta",
-            "description": "Recibe tus credenciales de trading en minutos tras la compra y empieza a operar de inmediato"
-          },
-          "tradeAnywhere": {
-            "title": "Opera desde cualquier lugar",
-            "description": "Compatible con MT4, MT5, cTrader y DXTrade. Opera desde cualquier parte del mundo y en cualquier dispositivo"
-          },
-          "noTimeLimits": {
-            "title": "Sin límites de tiempo",
-            "description": "Alcanza tus objetivos a tu propio ritmo. Sin plazos máximos ni presión"
-          }
-        },
-        "howItWorks": {
-          "label": "Cómo empezar",
-          "title": "3 pasos para obtener capital",
-          "step1": {
-            "title": "Elige un desafío",
-            "description": "Selecciona el tamaño de cuenta que prefieras y compra de forma segura"
-          },
-          "step2": {
-            "title": "Supera la evaluación",
-            "description": "Alcanza el objetivo de beneficios respetando las reglas de gestión de riesgo"
-          },
-          "step3": {
-            "title": "Obtén capital",
-            "description": "Opera con nuestro capital y conserva hasta el 90% de las ganancias"
-          },
-          "learnMore": "Más información sobre el proceso"
-        },
-        "challenges": {
-          "label": "Precios",
-          "title": "Elige tu desafío",
-          "subtitle": "Selecciona el tamaño de cuenta que se adapte a tu estilo de trading y presupuesto",
-          "accountSize": "Tamaño de la cuenta",
-          "price": "Precio",
-          "profitTarget": "Objetivo de beneficios",
-          "profitSplit": "Reparto de ganancias",
-          "getStarted": "Comenzar",
-          "viewAll": "Ver todos los desafíos",
-          "popular": "Popular"
-        },
-        "testimonials": {
-          "label": "Testimonios",
-          "title": "Amado por los traders",
-          "subtitle": "Únete a miles de traders exitosos que generan ingresos con Prop Capitals",
-          "totalEarned": "Total ganado"
-        },
-        "cta": {
-          "title": "¿Listo para empezar?",
-          "titleHighlight": "tu carrera de trading",
-          "subtitle": "Únete a miles de traders financiados y comienza a generar ingresos hoy. Sin riesgo de capital propio",
-          "button": "Obtén capital ahora",
-          "footer": "Empieza desde solo $99 • Configuración instantánea • Soporte 24/7"
-        },
-        "footer": {
-          "description": "La empresa de prop trading más amigable para traders. Opera con nuestro capital y obtén financiación",
-          "propFirm": "Empresa de prop trading",
-          "verified": "Verificada y confiable",
-          "company": "Empresa",
-          "support": "Soporte",
-          "legal": "Legal",
-          "copyright": "© 2026 BLUEHAVEN MANAGEMENT LTD. Todos los derechos reservados",
-          "secure": "Seguro y cifrado",
-          "howItWorks": "Cómo funciona",
-          "challenges": "Desafíos",
-          "scalingPlan": "Plan de escalado",
-          "payouts": "Pagos",
-          "faq": "Preguntas frecuentes",
-          "contact": "Contacto",
-          "terms": "Términos y condiciones",
-          "privacy": "Política de privacidad"
-        },
-        "partners": {
-          "title": "Con la confianza de traders que utilizan las siguientes plataformas:"
-        }
+    "stats": {
+      "fundedCapital": "Capital financiado",
+      "activeTraders": "Traders activos",
+      "paidToTraders": "Pagado a los traders",
+      "trustScore": "Puntuación de confianza"
+    },
+    "features": {
+      "title": "Por qué elegirnos",
+      "subtitle": "Diseñado para traders profesionales",
+      "description": "Hemos creado la prop firm más amigable para traders, con reglas transparentes, condiciones favorables y soporte real",
+      "clearObjectives": {
+        "title": "Objetivos de trading claros",
+        "description": "Objetivos simples y alcanzables basados en reglas transparentes. Sin condiciones ocultas ni fallos inesperados"
       },
-      "dashboard": {
+      "generousDrawdown": {
+        "title": "Límite de drawdown generoso",
+        "description": "5% de pérdida diaria y hasta 10% máximo. Opera con comodidad y sin estrés",
+        "drawdown": "Drawdown"
+      },
+      "profitSplit": {
+        "title": "Hasta 90% de reparto de ganancias",
+        "description": "Conserva la mayor parte de tus beneficios. Pagos quincenales sin retrasos ni comisiones ocultas"
+      },
+      "instantSetup": {
+        "title": "Configuración instantánea de la cuenta",
+        "description": "Recibe tus credenciales de trading en minutos tras la compra y empieza a operar de inmediato"
+      },
+      "tradeAnywhere": {
+        "title": "Opera desde cualquier lugar",
+        "description": "Compatible con MT4, MT5, cTrader y DXTrade. Opera desde cualquier parte del mundo y en cualquier dispositivo"
+      },
+      "noTimeLimits": {
+        "title": "Sin límites de tiempo",
+        "description": "Alcanza tus objetivos a tu propio ritmo. Sin plazos máximos ni presión"
+      }
+    },
+    "howItWorks": {
+      "label": "Cómo empezar",
+      "title": "3 pasos para obtener capital",
+      "step1": {
+        "title": "Elige un desafío",
+        "description": "Selecciona el tamaño de cuenta que prefieras y compra de forma segura"
+      },
+      "step2": {
+        "title": "Supera la evaluación",
+        "description": "Alcanza el objetivo de beneficios respetando las reglas de gestión de riesgo"
+      },
+      "step3": {
+        "title": "Obtén capital",
+        "description": "Opera con nuestro capital y conserva hasta el 90% de las ganancias"
+      },
+      "learnMore": "Más información sobre el proceso"
+    },
+    "challenges": {
+      "label": "Precios",
+      "title": "Elige tu desafío",
+      "subtitle": "Selecciona el tamaño de cuenta que se adapte a tu estilo de trading y presupuesto",
+      "accountSize": "Tamaño de la cuenta",
+      "price": "Precio",
+      "profitTarget": "Objetivo de beneficios",
+      "profitSplit": "Reparto de ganancias",
+      "getStarted": "Comenzar",
+      "viewAll": "Ver todos los desafíos",
+      "popular": "Popular"
+    },
+    "testimonials": {
+      "label": "Testimonios",
+      "title": "Amado por los traders",
+      "subtitle": "Únete a miles de traders exitosos que generan ingresos con Prop Capitals",
+      "totalEarned": "Total ganado"
+    },
+    "cta": {
+      "title": "¿Listo para empezar?",
+      "titleHighlight": "tu carrera de trading",
+      "subtitle": "Únete a miles de traders financiados y comienza a generar ingresos hoy. Sin riesgo de capital propio",
+      "button": "Obtén capital ahora",
+      "footer": "Empieza desde solo $99 • Configuración instantánea • Soporte 24/7"
+    },
+    "footer": {
+      "description": "La empresa de prop trading más amigable para traders. Opera con nuestro capital y obtén financiación",
+      "propFirm": "Empresa de prop trading",
+      "verified": "Verificada y confiable",
+      "company": "Empresa",
+      "support": "Soporte",
+      "legal": "Legal",
+      "copyright": "© 2026 BLUEHAVEN MANAGEMENT LTD. Todos los derechos reservados",
+      "secure": "Seguro y cifrado",
+      "howItWorks": "Cómo funciona",
+      "challenges": "Desafíos",
+      "scalingPlan": "Plan de escalado",
+      "payouts": "Pagos",
+      "faq": "Preguntas frecuentes",
+      "contact": "Contacto",
+      "terms": "Términos y condiciones",
+      "privacy": "Política de privacidad"
+    },
+    "partners": {
+      "title": "Con la confianza de traders que utilizan las siguientes plataformas:"
+    }
+  },
+  "dashboard": {
     "welcome": "Bienvenido de nuevo, {{name}}",
     "overview": "Este es el resumen de tu trading",
     "newChallenge": "Nuevo desafío",
@@ -608,6 +608,11 @@
     "allRulesCompliant": "Cumple con todas las reglas",
     "goodStanding": "Tu cuenta está en buen estado con todas las reglas del desafío",
     "active": "Activa",
+    "accountFailed": "Cuenta fallida",
+    "failedDesc": "Tu cuenta ha sido terminada debido a una violación de reglas",
+    "rulesAtRisk": "Reglas en riesgo",
+    "atRiskDesc": "Una o más reglas se acercan al umbral de violación",
+    "warning": "ADVERTENCIA",
     "phase1": "Fase 1",
     "phase2": "Fase 2",
     "funded": "Financiada",
@@ -844,6 +849,7 @@
     "validating": "Validando...",
     "applied": "Aplicado",
     "off": "OFF",
+    "discountApplied": "Descuento aplicado: -{{discount}}%",
     "couponApplied": "Se aplicó {{code}} - ¡{{discount}}% OFF!",
     "couponSuccess": "Cupón aplicado",
     "couponError": "Cupón inválido",
@@ -856,7 +862,6 @@
     "pay": "Pagar",
     "payAmount": "Pagar ${{amount}}",
     "secureEncryption": "Cifrado SSL seguro de 256 bits",
-    "noChallenges": "Sin desafíos",
     "minTradingDays": "Días mínimos de trading",
     "maxTradingDays": "Días máximos de trading",
     "eaAllowed": "EA permitido",
@@ -1627,7 +1632,7 @@
       "saveChanges": "Guardar cambios",
       "saveChange": "Guardando...",
       "settingsSaved": "Se guardaron los ajustes",
-      "settingsSaveDescription":"La configuración se ha guardado correctamente",
+      "settingsSaveDescription": "La configuración se ha guardado correctamente",
       "tabs": {
         "general": "General",
         "branding": "Branding",

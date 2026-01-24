@@ -63,7 +63,6 @@ export class EvaluationService {
     }
     const accountPriceCache = this.priceCache.get(accountId)!;
     accountPriceCache.set(symbol, { bid, ask, timestamp });
-
     // Get account with open positions
     const account = await this.prisma.tradingAccount.findUnique({
       where: { id: accountId },

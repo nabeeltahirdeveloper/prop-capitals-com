@@ -1,11 +1,11 @@
 {
-    "common": {
-      "loading": "Загрузка...",
-      "url": "URL",
-      "dismiss": "Закрыть",
-      "allPlatforms": "Все платформы"
-    },
-    "home": {
+  "common": {
+    "loading": "Загрузка...",
+    "url": "URL",
+    "dismiss": "Закрыть",
+    "allPlatforms": "Все платформы"
+  },
+  "home": {
     "hero": {
       "badge": "Нам доверяют более 15 000 трейдеров по всему миру",
       "title": "Торгуйте",
@@ -608,6 +608,11 @@
     "allRulesCompliant": "Все правила соблюдены",
     "goodStanding": "Ваш аккаунт находится в хорошем состоянии и соответствует всем правилам челленджа",
     "active": "Активно",
+    "accountFailed": "Аккаунт не пройден",
+    "failedDesc": "Ваш аккаунт был закрыт из-за нарушения правил",
+    "rulesAtRisk": "Правила под угрозой",
+    "atRiskDesc": "Одно или несколько правил приближаются к порогу нарушения",
+    "warning": "ПРЕДУПРЕЖДЕНИЕ",
     "phase1": "Фаза 1",
     "phase2": "Фаза 2",
     "funded": "Профинансирован",
@@ -844,6 +849,7 @@
     "validating": "Проверка...",
     "applied": "Применено",
     "off": "OFF",
+    "discountApplied": "Скидка применена: -{{discount}}%",
     "couponApplied": "Промокод {{code}} применён — скидка {{discount}}%!",
     "couponSuccess": "Промокод применён",
     "couponError": "Недействительный промокод",
@@ -856,7 +862,6 @@
     "pay": "Оплатить",
     "payAmount": "Оплатить ${{amount}}",
     "secureEncryption": "Безопасное 256-bit SSL шифрование",
-    "noChallenges": "Нет испытаний",
     "minTradingDays": "Мин. торговых дней",
     "maxTradingDays": "Макс. торговых дней",
     "eaAllowed": "EA разрешён",
@@ -1626,9 +1631,9 @@
       "subtitle": "Настройка параметров и интеграций",
       "saveChanges": "Сохранить изменения",
       "saveChange": "Сохранение ...",
-      
+
       "settingsSaved": "Настройки сохранены",
-      "settingsSaveDescription":"Настройки успешно сохранены.",
+      "settingsSaveDescription": "Настройки успешно сохранены.",
       "tabs": {
         "general": "Общие",
         "branding": "Брендинг",
@@ -2849,4 +2854,4 @@
       "content": "По вопросам конфиденциальности пишите на support@the-bluehaven.com."
     }
   }
-}  
+}

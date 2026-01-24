@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getCurrentUser } from "@/api/auth";
-import { getUserAccounts, getAccountById, getAnalytics } from "@/api/accounts";
+import { getUserAccounts, getAnalytics } from "@/api/accounts";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -17,15 +16,12 @@ import EquityCurve from "../components/charts/EquityCurve";
 import DailyPnLChart from "../components/charts/DailyPnLChart";
 import PerformanceMetrics from "../components/trading/PerformanceMetrics";
 import DataTable from "../components/shared/DataTable";
-import StatusBadge from "../components/shared/StatusBadge";
 import {
   TrendingUp,
   TrendingDown,
   Target,
   Percent,
   BarChart3,
-  PieChart,
-  Activity,
 } from "lucide-react";
 import {
   PieChart as RechartsPie,
@@ -368,7 +364,8 @@ export default function Analytics() {
             {t("analytics.worstTrade")}
           </p>
           <p className=" text-lg   sm:text-xl md:text-2xl font-bold text-red-400">
-            ${statistics.worstTrade.toFixed(2)}
+            {statistics.worstTrade < 0 ? "-" : ""}$
+            {Math.abs(statistics.worstTrade).toFixed(2)}
           </p>
         </Card>
       </div>
@@ -399,7 +396,7 @@ export default function Analytics() {
                       paddingAngle={2}
                       dataKey="value"
                     >
-                      {symbolDistribution.map((entry, index) => (
+                      {symbolDistribution.map((_, index) => (
                         <Cell
                           key={`cell-${index}`}
                           fill={COLORS[index % COLORS.length]}
@@ -452,6 +449,13 @@ export default function Analytics() {
               avgLoss: statistics.avgLoss,
               bestTrade: statistics.bestTrade,
               worstTrade: statistics.worstTrade,
+              avgRR: statistics.avgRR,
+              avgHoldingTime: statistics.avgHoldingTime,
+              largestPosition: statistics.largestPosition,
+              avgPosition: statistics.avgPosition,
+              sharpeRatio: statistics.sharpeRatio,
+              maxConsecutiveWins: statistics.maxConsecutiveWins,
+              maxConsecutiveLosses: statistics.maxConsecutiveLosses,
             }}
           />
         </div>

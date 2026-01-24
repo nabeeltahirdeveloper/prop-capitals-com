@@ -571,11 +571,11 @@ export default function TraderDashboard() {
                   </span>
                 </div>
                 <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                  {account.challenge && (
+                  {account.challenge && account.current_profit_percent > 0 && (
                     <div
-                      className={`h-full rounded-full ${account.current_profit_percent >= 0 ? "bg-emerald-500" : "bg-red-500"}`}
+                      className="h-full rounded-full bg-emerald-500"
                       style={{
-                        width: `${Math.min((Math.abs(account.current_profit_percent) / (account.challenge.phase1TargetPercent || 8)) * 100, 100)}%`,
+                        width: `${Math.min((account.current_profit_percent / (account.challenge.phase1TargetPercent || 8)) * 100, 100)}%`,
                       }}
                     />
                   )}
@@ -810,15 +810,13 @@ export default function TraderDashboard() {
                           )}
                         </div>
                         {!notif.is_read && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6 text-slate-400 hover:text-white flex-shrink-0"
+                          <button
+                            className="h-5 w-5 rounded-full bg-slate-700/50 hover:bg-emerald-500/20 flex items-center justify-center text-slate-400 hover:text-emerald-400 transition-colors flex-shrink-0"
                             onClick={() => markAsReadMutation.mutate(notif.id)}
                             title={t("notifications.markAsRead")}
                           >
-                            <Check className="w-3.5 h-3.5" />
-                          </Button>
+                            <Check className="w-3 h-3" />
+                          </button>
                         )}
                       </div>
                       <p className="text-slate-400 text-xs mt-0.5 line-clamp-2">
@@ -971,6 +969,9 @@ export default function TraderDashboard() {
                       selectedChallenge?.maxTradingDays ||
                       selectedChallenge?.max_trading_days ||
                       30,
+                    profitSplit: selectedChallenge?.profitSplit || 80,
+                    leverage: selectedChallenge?.leverage || 100,
+                    maxLot: selectedChallenge?.maxLot || 10,
                   }}
                 />
               );

@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getCurrentUser } from "@/api/auth";
 import {
   getUserNotifications,
   markNotificationAsRead,
+  markAllNotificationsAsRead,
+  deleteNotification,
 } from "@/api/notifications";
 import { useTranslation } from "../contexts/LanguageContext";
 import { translateNotification } from "../utils/notificationTranslations";
@@ -11,7 +13,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Bell,
   CheckCircle,
@@ -27,15 +29,13 @@ import {
   Clock,
   Filter,
 } from "lucide-react";
-import { format, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { enUS, th, fr, ja, ru, ko, es, tr } from "date-fns/locale";
 
 export default function Notifications() {
   const { t, language } = useTranslation();
   const [filter, setFilter] = useState("all");
 
-  // Get date-fns locale based on current language
-  const dateLocale = language === "th" ? th : enUS;
   const queryClient = useQueryClient();
 
   // Get current user
@@ -45,7 +45,7 @@ export default function Notifications() {
   });
 
   // Get user notifications
-  const { data: notifications = [], isLoading } = useQuery({
+  const { data: notifications = [] } = useQuery({
     queryKey: ["notifications", user?.userId],
     queryFn: () => getUserNotifications(user?.userId),
     enabled: !!user?.userId,
@@ -77,10 +77,16 @@ export default function Notifications() {
     },
   });
 
-  // Note: Backend doesn't have delete endpoint, so we'll mark as read instead
+  // Delete notification
   const deleteNotificationMutation = useMutation({
-    mutationFn: (id) => markNotificationAsRead(id),
+    mutationFn: (id) => deleteNotification(id),
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["notifications", user?.userId],
+      });
+    },
+    onError: (error) => {
+      console.error("Failed to delete notification:", error);
       queryClient.invalidateQueries({
         queryKey: ["notifications", user?.userId],
       });
@@ -171,11 +177,18 @@ export default function Notifications() {
     }
   };
 
-  const markAllAsRead = () => {
-    const unreadNotifications = displayNotifications.filter((n) => !n.is_read);
-    unreadNotifications.forEach((n) => {
-      markAsReadMutation.mutate(n.id);
-    });
+  const markAllAsRead = async () => {
+    if (unreadCount === 0 || !user?.userId) return;
+
+    try {
+      await markAllNotificationsAsRead(user.userId);
+      // Invalidate and refetch notifications
+      queryClient.invalidateQueries({
+        queryKey: ["notifications", user?.userId],
+      });
+    } catch (error) {
+      console.error("Failed to mark all notifications as read:", error);
+    }
   };
   const localeMap = {
     en: enUS,
@@ -183,7 +196,7 @@ export default function Notifications() {
     fr: fr,
     ja: ja,
     ru: ru,
-    kr: ko, // 🔥 IMPORTANT: kr → ko
+    ko: ko,
     es: es,
     tr: tr,
   };

@@ -1,5 +1,5 @@
 {
-    "common": {
+  "common": {
     "loading": "読み込み中...",
     "url": "URL",
     "dismiss": "閉じる",
@@ -608,6 +608,11 @@
     "allRulesCompliant": "すべてのルールに準拠",
     "goodStanding": "あなたのアカウントはすべてのチャレンジルールにおいて良好な状態です",
     "active": "進行中",
+    "accountFailed": "アカウント失敗",
+    "failedDesc": "ルール違反によりアカウントが終了しました",
+    "rulesAtRisk": "ルール警告",
+    "atRiskDesc": "1つ以上のルールが違反しきい値に近づいています",
+    "warning": "警告",
     "phase1": "フェーズ 1",
     "phase2": "フェーズ 2",
     "funded": "資金提供済み",
@@ -844,6 +849,7 @@
     "validating": "検証中...",
     "applied": "適用済み",
     "off": "OFF",
+    "discountApplied": "割引適用: -{{discount}}%",
     "couponApplied": "{{code}} を適用しました - {{discount}}%OFF！",
     "couponSuccess": "クーポン適用完了",
     "couponError": "無効なクーポン",
@@ -856,7 +862,6 @@
     "pay": "支払う",
     "payAmount": "${{amount}} を支払う",
     "secureEncryption": "安全な256-bit SSL暗号化",
-    "noChallenges": "チャレンジなし",
     "minTradingDays": "最低取引日数",
     "maxTradingDays": "最大取引日数",
     "eaAllowed": "EA許可",
@@ -1627,7 +1632,7 @@
       "saveChanges": "変更を保存",
       "saveChange": "保存中...",
       "settingsSaved": "設定を保存しました",
-      "settingsSaveDescription":"設定が正常に保存されました",
+      "settingsSaveDescription": "設定が正常に保存されました",
       "tabs": {
         "general": "一般",
         "branding": "ブランディング",
