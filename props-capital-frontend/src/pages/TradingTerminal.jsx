@@ -215,7 +215,7 @@ export default function TradingTerminal() {
   const violationCheckInProgressRef = useRef(false); // Prevent duplicate violation checks (deprecated - using price-tick now)
   const priceTickThrottleRef = useRef({}); // Throttle price tick calls (250ms per symbol)
   const lastSyncedAccountIdRef = useRef(null); // ✅ Moved from line 60 (was outside component)
-  const [violationModal, setViolationModal] = React.useState(null); // { type: 'DAILY_LOCKED' | 'DISQUALIFIED', shown: boolean }
+  const [violationModal, setViolationModal] = useState(null); // { type: 'DAILY_LOCKED' | 'DISQUALIFIED', shown: boolean }
 
   // 🔥 WebSocket state for real-time trading days updates
   const [socketConnected, setSocketConnected] = useState(false);
@@ -1624,7 +1624,6 @@ export default function TradingTerminal() {
     selectedAccountId,
     selectedAccount?.isDemo,
     queryClient,
-    ,
     t,
     syncAccountFromBackend,
   ]);
