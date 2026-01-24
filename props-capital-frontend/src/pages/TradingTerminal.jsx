@@ -55,7 +55,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-const [isCollapsed, setIsCollapsed] = useState(false)
 
 // Helper function for development-only logging
 const devLog = (...args) => {
@@ -3850,9 +3849,9 @@ export default function TradingTerminal() {
   return (
     <div className="space-y-4" style={{ pointerEvents: "auto" }}>
       {/* Top Bar */}
-      <div className="flex  items-center  gap-2   ">
+      <div className="flex   items-center  gap-2   ">
         <div className="flex items-center gap-2  sm:gap-4 w-full  ">
-          <div className="w-full md:w-auto md:flex gap-3">
+          <div className="w-96 md:w-auto  md:flex gap-3">
             <div className="flex justify-between py-2 md:justify-start  ">
               <h1 className="text-base sm:text-lg md:text-xl font-bold text-white">
                 {t("terminal.title")}
@@ -3912,15 +3911,16 @@ export default function TradingTerminal() {
             </div>
 
             {/* Account Selector */}
+            <div className="w-full lg:w-[280px]">
             <Select
               value={selectedAccountId || ""}
               onValueChange={setSelectedAccountId}
             >
-              <SelectTrigger className="w-full sm:w-[280px] bg-slate-800 border-slate-700 text-white">
+             <SelectTrigger className="w-full   bg-slate-800 border-slate-700 text-white">
                 <div className="flex items-center gap-2 w-full">
                   <Wallet className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                   {selectedAccount ? (
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-1 min-w-full">
                       {selectedAccount.isDemo && (
                         <Badge className="text-xs bg-purple-500/20 text-purple-400">
                           DEMO
@@ -4009,6 +4009,7 @@ export default function TradingTerminal() {
                 ))}
               </SelectContent>
             </Select>
+          </div>
           </div>
           <Badge
             className={`text-xs hidden md:flex   ${isConnected ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400 "}`}
