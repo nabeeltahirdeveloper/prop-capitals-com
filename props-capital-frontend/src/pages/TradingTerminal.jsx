@@ -55,6 +55,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+const [isCollapsed, setIsCollapsed] = useState(false)
 
 // Helper function for development-only logging
 const devLog = (...args) => {
@@ -3131,30 +3132,30 @@ export default function TradingTerminal() {
         pendingMetricsRef.current.equity = newEquity;
       if (Number.isFinite(totalPnL))
         pendingMetricsRef.current.floatingPnL = totalPnL;
-        if (Number.isFinite(profitForTarget))
-          pendingMetricsRef.current.profitPercent = profitForTarget; // Store profitForTarget
-        if (Number.isFinite(realized))
-          pendingMetricsRef.current.realizedProfitPercent = realized; // ✅ Store realized
-        if (Number.isFinite(live))
-          pendingMetricsRef.current.liveProfitPercent = live; // ✅ Store live
-        if (Number.isFinite(profitForTarget))
-          pendingMetricsRef.current.profitForTarget = profitForTarget; // ✅ Store profitForTarget
-        if (Number.isFinite(totalMargin))
-          pendingMetricsRef.current.margin = totalMargin;
-        // Free margin = real-time equity - margin used
-        if (Number.isFinite(newEquity) && Number.isFinite(totalMargin)) {
-          pendingMetricsRef.current.freeMargin = Math.max(
-            0,
-            newEquity - totalMargin,
-          );
-        }
-        // Use earliest version's simple drawdown calculations
-        if (Number.isFinite(overallDrawdownPercent))
-          pendingMetricsRef.current.overallDrawdown = overallDrawdownPercent;
-        if (Number.isFinite(dailyLossPercent))
-          pendingMetricsRef.current.dailyDrawdown = dailyLossPercent;
-        if (Number.isFinite(newHighestBalance))
-          pendingMetricsRef.current.highestBalance = newHighestBalance;
+      if (Number.isFinite(profitForTarget))
+        pendingMetricsRef.current.profitPercent = profitForTarget; // Store profitForTarget
+      if (Number.isFinite(realized))
+        pendingMetricsRef.current.realizedProfitPercent = realized; // ✅ Store realized
+      if (Number.isFinite(live))
+        pendingMetricsRef.current.liveProfitPercent = live; // ✅ Store live
+      if (Number.isFinite(profitForTarget))
+        pendingMetricsRef.current.profitForTarget = profitForTarget; // ✅ Store profitForTarget
+      if (Number.isFinite(totalMargin))
+        pendingMetricsRef.current.margin = totalMargin;
+      // Free margin = real-time equity - margin used
+      if (Number.isFinite(newEquity) && Number.isFinite(totalMargin)) {
+        pendingMetricsRef.current.freeMargin = Math.max(
+          0,
+          newEquity - totalMargin,
+        );
+      }
+      // Use earliest version's simple drawdown calculations
+      if (Number.isFinite(overallDrawdownPercent))
+        pendingMetricsRef.current.overallDrawdown = overallDrawdownPercent;
+      if (Number.isFinite(dailyLossPercent))
+        pendingMetricsRef.current.dailyDrawdown = dailyLossPercent;
+      if (Number.isFinite(newHighestBalance))
+        pendingMetricsRef.current.highestBalance = newHighestBalance;
 
       scheduleAccountUpdate();
     };
@@ -3890,10 +3891,10 @@ export default function TradingTerminal() {
                 >
                   <div
                     className={`w-2 h-2 rounded-full mr-1.5 ${websocketStatus.connected
-                        ? "bg-emerald-400 animate-pulse"
-                        : websocketStatus.status === "reconnecting"
-                          ? "bg-yellow-400 animate-pulse"
-                          : "bg-red-400"
+                      ? "bg-emerald-400 animate-pulse"
+                      : websocketStatus.status === "reconnecting"
+                        ? "bg-yellow-400 animate-pulse"
+                        : "bg-red-400"
                       }`}
                   />
                   <span className="hidden md:inline font-medium">
@@ -3993,10 +3994,10 @@ export default function TradingTerminal() {
                           <span className="text-slate-400">•</span>
                           <Badge
                             className={`text-xs ${acc.status === "active"
-                                ? "bg-emerald-500/20 text-emerald-400"
-                                : acc.status === "paused"
-                                  ? "bg-amber-500/20 text-amber-400"
-                                  : "bg-slate-500/20 text-slate-400"
+                              ? "bg-emerald-500/20 text-emerald-400"
+                              : acc.status === "paused"
+                                ? "bg-amber-500/20 text-amber-400"
+                                : "bg-slate-500/20 text-slate-400"
                               }`}
                           >
                             {t(`status.${acc.status}`)}
@@ -4042,10 +4043,10 @@ export default function TradingTerminal() {
           >
             <div
               className={`w-2 h-2 rounded-full mr-1.5 ${websocketStatus.connected
-                  ? "bg-emerald-400 animate-pulse"
-                  : websocketStatus.status === "reconnecting"
-                    ? "bg-yellow-400 animate-pulse"
-                    : "bg-red-400"
+                ? "bg-emerald-400 animate-pulse"
+                : websocketStatus.status === "reconnecting"
+                  ? "bg-yellow-400 animate-pulse"
+                  : "bg-red-400"
                 }`}
             />
             <span className="hidden md:inline font-medium">
@@ -4888,8 +4889,8 @@ export default function TradingTerminal() {
       {accountStatusBanner && (
         <div
           className={`fixed bottom-4 left-4 right-4 lg:left-72 ${accountStatusBanner.type === "error"
-              ? "bg-red-500/90"
-              : "bg-orange-500/90"
+            ? "bg-red-500/90"
+            : "bg-orange-500/90"
             } text-white px-4 py-3 rounded-lg flex items-center justify-between z-50`}
         >
           <div className="flex items-center gap-2">
