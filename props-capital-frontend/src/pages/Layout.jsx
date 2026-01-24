@@ -1153,7 +1153,8 @@ export default function Layout({ children, currentPageName }) {
                 <span className="text-lg sm:text-xl font-bold text-white">Prop Capitals</span>
               </Link>
 
-              <div className="hidden md:flex items-center gap-6 lg:gap-8">
+              {/* Desktop nav should start from lg+, so md shows hamburger */}
+              <div className="hidden lg:flex items-center gap-6 lg:gap-8">
                 <Link to={createPageUrl("Home")} className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors">
                   {t("nav.home")}
                 </Link>
@@ -1217,7 +1218,7 @@ export default function Layout({ children, currentPageName }) {
 
                 <button
                   onClick={() => setSidebarOpen(true)}
-                  className="md:hidden text-slate-400 hover:text-white p-2"
+                  className="lg:hidden text-slate-400 hover:text-white p-2"
                   aria-label="Open menu"
                 >
                   <Menu className="w-6 h-6" />
@@ -1229,8 +1230,8 @@ export default function Layout({ children, currentPageName }) {
 
         {sidebarOpen && (
           <>
-            <div className="fixed inset-0 bg-black/50 z-50 md:hidden" onClick={() => setSidebarOpen(false)} />
-            <div className="fixed top-0 right-0 bottom-0 w-72 bg-slate-900 z-50 md:hidden overflow-y-auto">
+            <div className="fixed inset-0 bg-black/50 z-50 lg:hidden" onClick={() => setSidebarOpen(false)} />
+            <div className="fixed top-0 right-0 bottom-0 w-72 bg-slate-900 z-50 lg:hidden overflow-y-auto">
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-between p-4 border-b border-slate-800">
                   <Link to={createPageUrl("Home")} className="flex items-center gap-2" onClick={() => setSidebarOpen(false)}>
