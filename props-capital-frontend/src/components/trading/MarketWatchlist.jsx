@@ -331,9 +331,6 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol }) {
               </>
             )}
           </div>
-          <div className="text-[9px] text-slate-500">
-            {priceSource === "websocket" ? "WS" : "REST"}
-          </div>
         </div>
 
         <div className="relative mb-2">

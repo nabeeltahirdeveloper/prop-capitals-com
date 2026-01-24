@@ -18,8 +18,6 @@ export default function ViolationModal({
 }) {
   const { t } = useTranslation();
 
-  if (!violationType) return null;
-
   const isDailyLocked = violationType === "DAILY_LOCKED";
   const isDisqualified = violationType === "DISQUALIFIED";
 
@@ -38,8 +36,13 @@ export default function ViolationModal({
     : t("violationModal.disqualifiedAction", "Challenge disqualified");
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-slate-900 border-slate-800 text-white max-w-md max-h-[70vh]   md:max-h-[90vh]  w-[500px]-auto p-2 md:p-4">
+    <Dialog
+      open={isOpen && !!violationType}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <DialogContent className="bg-slate-900 border-slate-800 text-white max-w-md p-4 md:p-6">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
             {isDisqualified ? (

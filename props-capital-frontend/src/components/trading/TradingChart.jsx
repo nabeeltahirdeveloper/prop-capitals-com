@@ -1523,25 +1523,15 @@ export default function TradingChart({
         <div ref={chartContainerRef} className="w-full h-full" />
       </div>
 
-      {/* Chart Footer */}
-      <div className="mt-2 flex items-center justify-between text-xs text-slate-500">
-        <div className="flex items-center gap-2">
-          <Clock className="w-3 h-3" />
+      {/* Chart Footer - Minimal */}
+      <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1">
+        <div className="flex items-center gap-1">
+          <Clock className="w-2.5 h-2.5" />
           <span>
-            {t("terminal.chart.lastUpdate")}:{" "}
             {new Date(lastUpdateTimeRef.current).toLocaleTimeString()}
           </span>
         </div>
-        <div className="flex items-center gap-4">
-          <span>
-            {t("terminal.chart.tf")}: {timeframe}
-          </span>
-          {isLoading && (
-            <span className="text-emerald-400">
-              {t("terminal.chart.updating")}
-            </span>
-          )}
-        </div>
+        <span>{timeframe}</span>
       </div>
     </Card>
   );

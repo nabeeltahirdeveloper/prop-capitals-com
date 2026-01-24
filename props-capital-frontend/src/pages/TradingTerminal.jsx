@@ -1,28 +1,50 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useSearchParams, useLocation } from 'react-router-dom';
-import api from '@/lib/api';
-import { getCurrentUser } from '@/api/auth';
-import { getUserAccounts, getAccountById, getAccountSummary, getAccountRules, processPriceTick } from '@/api/accounts';
-import { getAccountTrades, createTrade, updateTrade, modifyPosition } from '@/api/trades';
-import { createPendingOrder, getPendingOrders, cancelPendingOrder, executePendingOrder } from '@/api/pending-orders';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { playClosureAlert } from '@/utils/notificationSound';
-import socket from '../lib/socket';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSearchParams, useLocation } from "react-router-dom";
+import api from "@/lib/api";
+import { getCurrentUser } from "@/api/auth";
+import {
+  getUserAccounts,
+  getAccountById,
+  getAccountSummary,
+  getAccountRules,
+  processPriceTick,
+} from "@/api/accounts";
+import {
+  getAccountTrades,
+  createTrade,
+  updateTrade,
+  modifyPosition,
+} from "@/api/trades";
+import {
+  createPendingOrder,
+  getPendingOrders,
+  cancelPendingOrder,
+  executePendingOrder,
+} from "@/api/pending-orders";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { playClosureAlert } from "@/utils/notificationSound";
+import socket from "../lib/socket";
 
-import MarketWatchlist from '../components/trading/MarketWatchlist';
-import TradingPanel from '../components/trading/TradingPanel';
-import TradingChart from '../components/trading/TradingChart';
-import OpenPositions from '../components/trading/OpenPositions';
-import AccountMetrics from '../components/trading/AccountMetrics';
-import ChallengeRulesPanel from '../components/trading/ChallengeRulesPanel';
-import ViolationPopup from '../components/trading/ViolationPopup';
-import ModifyPositionDialog from '../components/trading/ModifyPositionDialog';
-import ViolationModal from '../components/trading/ViolationModal';
+import MarketWatchlist from "../components/trading/MarketWatchlist";
+import TradingPanel from "../components/trading/TradingPanel";
+import TradingChart from "../components/trading/TradingChart";
+import OpenPositions from "../components/trading/OpenPositions";
+import AccountMetrics from "../components/trading/AccountMetrics";
+import ChallengeRulesPanel from "../components/trading/ChallengeRulesPanel";
+import ViolationPopup from "../components/trading/ViolationPopup";
+import ModifyPositionDialog from "../components/trading/ModifyPositionDialog";
+import ViolationModal from "../components/trading/ViolationModal";
 
 import {
   LayoutGrid,
@@ -43,6 +65,7 @@ import {
   Calendar,
   TrendingUp,
   TrendingDown,
+  BarChart2,
 } from "lucide-react";
 import { useTranslation } from "../contexts/LanguageContext";
 import { useToast } from "@/components/ui/use-toast";
@@ -55,7 +78,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-const [isCollapsed, setIsCollapsed] = useState(false)
 
 // Helper function for development-only logging
 const devLog = (...args) => {
@@ -144,7 +166,12 @@ export default function TradingTerminal() {
     if (!selectedSymbol?.symbol) return selectedSymbol;
 
     const priceData = unifiedPrices[selectedSymbol.symbol];
-    if (priceData && typeof priceData === 'object' && priceData.bid !== undefined && priceData.ask !== undefined) {
+    if (
+      priceData &&
+      typeof priceData === "object" &&
+      priceData.bid !== undefined &&
+      priceData.ask !== undefined
+    ) {
       const spread = ((priceData.ask - priceData.bid) * 10000).toFixed(1); // Calculate spread in pips for forex
       return {
         ...selectedSymbol,
@@ -209,7 +236,8 @@ export default function TradingTerminal() {
 
   // Get accountId from URL using React Router
   const [searchParams] = useSearchParams();
-  const accountId = searchParams.get('account') || searchParams.get('accountId');
+  const accountId =
+    searchParams.get("account") || searchParams.get("accountId");
 
   // Get current user
   const { data: user } = useQuery({
@@ -307,23 +335,48 @@ export default function TradingTerminal() {
       current_profit_percent: profitPercent,
       daily_drawdown_percent: dailyDD,
       overall_drawdown_percent: overallDD,
-      trading_days_count: account.trades ? new Set(account.trades.map(t => new Date(t.openedAt).toISOString().substring(0, 10))).size : 0,
-      min_trading_days: challenge.minTradingDays || challenge.min_trading_days || 5,
-      max_trading_days: challenge.maxTradingDays || challenge.max_trading_days || 30,
-      days_remaining: account.daysRemaining ?? Math.max(0, (challenge.maxTradingDays || challenge.max_trading_days || 30) - (account.daysElapsed || 0)),
+      trading_days_count: account.trades
+        ? new Set(
+            account.trades.map((t) =>
+              new Date(t.openedAt).toISOString().substring(0, 10),
+            ),
+          ).size
+        : 0,
+      min_trading_days:
+        challenge.minTradingDays || challenge.min_trading_days || 5,
+      max_trading_days:
+        challenge.maxTradingDays || challenge.max_trading_days || 30,
+      days_remaining:
+        account.daysRemaining ??
+        Math.max(
+          0,
+          (challenge.maxTradingDays || challenge.max_trading_days || 30) -
+            (account.daysElapsed || 0),
+        ),
       margin_used: 0, // Will be updated from backend getAccountById
       free_margin: equity, // Will be updated from backend getAccountById
       // Challenge fields for ChallengeRulesPanel (camelCase versions)
-      minTradingDays: challenge.minTradingDays || challenge.min_trading_days || 5,
-      maxTradingDays: challenge.maxTradingDays || challenge.max_trading_days || 30,
+      minTradingDays:
+        challenge.minTradingDays || challenge.min_trading_days || 5,
+      maxTradingDays:
+        challenge.maxTradingDays || challenge.max_trading_days || 30,
       profitSplit: challenge.profitSplit || challenge.profit_split || 80,
       leverage: challenge.leverage || 100,
       maxLot: challenge.maxLot || challenge.max_lot || 10,
-      phase1_profit_target: challenge.phase1TargetPercent || challenge.phase1_profit_target || 8,
-      max_daily_drawdown: challenge.dailyDrawdownPercent || challenge.max_daily_drawdown || 5,
-      max_overall_drawdown: challenge.overallDrawdownPercent || challenge.max_overall_drawdown || 10,
-      news_trading_allowed: challenge.newsTradingAllowed ?? challenge.news_trading_allowed ?? true,
-      weekend_holding_allowed: challenge.weekendHoldingAllowed ?? challenge.weekend_holding_allowed ?? true,
+      phase1_profit_target:
+        challenge.phase1TargetPercent || challenge.phase1_profit_target || 8,
+      max_daily_drawdown:
+        challenge.dailyDrawdownPercent || challenge.max_daily_drawdown || 5,
+      max_overall_drawdown:
+        challenge.overallDrawdownPercent ||
+        challenge.max_overall_drawdown ||
+        10,
+      news_trading_allowed:
+        challenge.newsTradingAllowed ?? challenge.news_trading_allowed ?? true,
+      weekend_holding_allowed:
+        challenge.weekendHoldingAllowed ??
+        challenge.weekend_holding_allowed ??
+        true,
       ea_allowed: challenge.eaAllowed ?? challenge.ea_allowed ?? true,
     };
   });
@@ -373,22 +426,22 @@ export default function TradingTerminal() {
   const handleAccountUpdate = useCallback((event) => {
     if (!event) return;
 
-    devLog('⚡ WebSocket Account Update:', event);
+    devLog("⚡ WebSocket Account Update:", event);
 
     if (event.tradingDaysCount !== undefined) {
       setTradingDaysCount(event.tradingDaysCount);
       // Update account state to keep ChallengeRulesPanel in sync
-      setAccount(prev => ({
+      setAccount((prev) => ({
         ...prev,
-        tradingDays: event.tradingDaysCount
+        tradingDays: event.tradingDaysCount,
       }));
     }
 
     if (event.daysRemaining !== undefined) {
       setDaysRemaining(event.daysRemaining);
-      setAccount(prev => ({
+      setAccount((prev) => ({
         ...prev,
-        daysRemaining: event.daysRemaining
+        daysRemaining: event.daysRemaining,
       }));
     }
 
@@ -400,14 +453,13 @@ export default function TradingTerminal() {
   // Initialize WebSocket connection
   const { isConnected: isSocketConnected } = useTradingWebSocket({
     accountId: selectedAccountId,
-    onAccountUpdate: handleAccountUpdate
+    onAccountUpdate: handleAccountUpdate,
   });
 
   // Update socket connection state
   useEffect(() => {
     setSocketConnected(isSocketConnected);
   }, [isSocketConnected]);
-
 
   // 🔥 Simple polling for trading days updates (fallback)
   useEffect(() => {
@@ -416,7 +468,10 @@ export default function TradingTerminal() {
       return;
     }
 
-    console.log('📊 Starting trading days polling for account:', selectedAccountId);
+    console.log(
+      "📊 Starting trading days polling for account:",
+      selectedAccountId,
+    );
 
     // Function to fetch account data and update trading days
     const updateTradingDays = async () => {
@@ -424,19 +479,22 @@ export default function TradingTerminal() {
         const summary = await getAccountSummary(selectedAccountId);
 
         if (summary?.metrics?.tradingDaysCompleted !== undefined) {
-          console.log('✅ Updated trading days:', summary.metrics.tradingDaysCompleted);
+          console.log(
+            "✅ Updated trading days:",
+            summary.metrics.tradingDaysCompleted,
+          );
           setTradingDaysCount(summary.metrics.tradingDaysCompleted);
           // Also update account state so ChallengeRulesPanel gets the update
-          setAccount(prev => ({
+          setAccount((prev) => ({
             ...prev,
-            tradingDays: summary.metrics.tradingDaysCompleted
+            tradingDays: summary.metrics.tradingDaysCompleted,
           }));
         }
         if (summary?.metrics?.daysRemaining !== undefined) {
           setDaysRemaining(summary.metrics.daysRemaining);
-          setAccount(prev => ({
+          setAccount((prev) => ({
             ...prev,
-            daysRemaining: summary.metrics.daysRemaining
+            daysRemaining: summary.metrics.daysRemaining,
           }));
         }
 
@@ -444,7 +502,7 @@ export default function TradingTerminal() {
         const traded = summary?.account?.tradedToday || false;
         setTradedToday(traded);
       } catch (error) {
-        console.error('❌ Failed to update trading days:', error);
+        console.error("❌ Failed to update trading days:", error);
       }
     };
 
@@ -456,7 +514,7 @@ export default function TradingTerminal() {
 
     // Cleanup
     return () => {
-      console.log('🧹 Stopping trading days polling');
+      console.log("🧹 Stopping trading days polling");
       clearInterval(interval);
     };
   }, [selectedAccountId, selectedAccount?.isDemo]);
@@ -584,7 +642,7 @@ export default function TradingTerminal() {
             if (
               latestCloseTime &&
               new Date(latestCloseTime) >
-              new Date(beforeMarker.latestTradeTimestamp)
+                new Date(beforeMarker.latestTradeTimestamp)
             ) {
               devLog(
                 "✅ New closed trades detected! Latest close:",
@@ -804,13 +862,19 @@ export default function TradingTerminal() {
         const statusUpper = String(backendStatus).toUpperCase();
 
         // Store last known metrics in sessionStorage for fallback (update on every successful sync)
-        if (typeof window !== 'undefined' && backendOverallDD >= 0) {
-          sessionStorage.setItem(`metrics:${accountId}:last_overall_dd`, backendOverallDD.toString());
-          devLog('💾 Stored last known overall drawdown:', backendOverallDD);
+        if (typeof window !== "undefined" && backendOverallDD >= 0) {
+          sessionStorage.setItem(
+            `metrics:${accountId}:last_overall_dd`,
+            backendOverallDD.toString(),
+          );
+          devLog("💾 Stored last known overall drawdown:", backendOverallDD);
         }
-        if (typeof window !== 'undefined' && backendDailyDD >= 0) {
-          sessionStorage.setItem(`metrics:${accountId}:last_daily_dd`, backendDailyDD.toString());
-          devLog('💾 Stored last known daily drawdown:', backendDailyDD);
+        if (typeof window !== "undefined" && backendDailyDD >= 0) {
+          sessionStorage.setItem(
+            `metrics:${accountId}:last_daily_dd`,
+            backendDailyDD.toString(),
+          );
+          devLog("💾 Stored last known daily drawdown:", backendDailyDD);
         }
 
         // Always use backend values for drawdown calculations (single source of truth)
@@ -921,9 +985,7 @@ export default function TradingTerminal() {
         // Get challenge rules from accountSummary response
         const challengeRules = accountSummary.challengeRules || {};
         const maxDailyDD =
-          challengeRules.dailyDrawdownPercent ||
-          account.maxDailyDrawdown ||
-          5;
+          challengeRules.dailyDrawdownPercent || account.maxDailyDrawdown || 5;
         const maxOverallDD =
           challengeRules.overallDrawdownPercent ||
           account.maxOverallDrawdown ||
@@ -993,8 +1055,8 @@ export default function TradingTerminal() {
 
           let finalBalance =
             acc.balance !== null &&
-              acc.balance !== undefined &&
-              Number.isFinite(acc.balance)
+            acc.balance !== undefined &&
+            Number.isFinite(acc.balance)
               ? acc.balance
               : prev.balance;
 
@@ -1017,38 +1079,57 @@ export default function TradingTerminal() {
           return {
             ...prev,
             balance: finalBalance,
-            equity: (acc.equity !== null && acc.equity !== undefined && Number.isFinite(acc.equity))
-              ? acc.equity
-              : prev.equity,
+            equity:
+              acc.equity !== null &&
+              acc.equity !== undefined &&
+              Number.isFinite(acc.equity)
+                ? acc.equity
+                : prev.equity,
             profitPercent: Math.max(
               prev.profitPercent ?? 0,
-              (metrics.profitPercent !== null && metrics.profitPercent !== undefined && Number.isFinite(metrics.profitPercent))
+              metrics.profitPercent !== null &&
+                metrics.profitPercent !== undefined &&
+                Number.isFinite(metrics.profitPercent)
                 ? metrics.profitPercent
-                : 0
+                : 0,
             ),
             // CRITICAL: Drawdowns should only INCREASE - never decrease when profit comes
             overallDrawdown: Math.max(
               prev.overallDrawdown ?? 0,
-              (Number.isFinite(finalOverallDrawdown) && finalOverallDrawdown >= 0) ? finalOverallDrawdown : 0
+              Number.isFinite(finalOverallDrawdown) && finalOverallDrawdown >= 0
+                ? finalOverallDrawdown
+                : 0,
             ),
             dailyDrawdown: Math.max(
               prev.dailyDrawdown ?? 0,
-              (Number.isFinite(finalDailyDrawdown) && finalDailyDrawdown >= 0) ? finalDailyDrawdown : 0
+              Number.isFinite(finalDailyDrawdown) && finalDailyDrawdown >= 0
+                ? finalDailyDrawdown
+                : 0,
             ),
             maxDailyDrawdown: maxDailyDD, // Use from challenge rules
             maxOverallDrawdown: maxOverallDD, // Use from challenge rules
             phase: acc.phase?.toLowerCase() || prev.phase,
             tradingDays: metrics.tradingDaysCompleted ?? prev.tradingDays, // Backend uses tradingDaysCompleted
-            minTradingDays: challengeRules.minTradingDays ?? prev.minTradingDays,
-            daysRemaining: (metrics.daysRemaining !== null && metrics.daysRemaining !== undefined && Number.isFinite(metrics.daysRemaining))
-              ? metrics.daysRemaining
-              : prev.daysRemaining,
-            margin: (acc.marginUsed !== null && acc.marginUsed !== undefined && Number.isFinite(acc.marginUsed))
-              ? acc.marginUsed
-              : prev.margin,
-            freeMargin: (acc.freeMargin !== null && acc.freeMargin !== undefined && Number.isFinite(acc.freeMargin))
-              ? acc.freeMargin
-              : prev.freeMargin,
+            minTradingDays:
+              challengeRules.minTradingDays ?? prev.minTradingDays,
+            daysRemaining:
+              metrics.daysRemaining !== null &&
+              metrics.daysRemaining !== undefined &&
+              Number.isFinite(metrics.daysRemaining)
+                ? metrics.daysRemaining
+                : prev.daysRemaining,
+            margin:
+              acc.marginUsed !== null &&
+              acc.marginUsed !== undefined &&
+              Number.isFinite(acc.marginUsed)
+                ? acc.marginUsed
+                : prev.margin,
+            freeMargin:
+              acc.freeMargin !== null &&
+              acc.freeMargin !== undefined &&
+              Number.isFinite(acc.freeMargin)
+                ? acc.freeMargin
+                : prev.freeMargin,
             startingBalance: initialBalance,
             todayStartEquity: todayStartEquity, // Store for consistent drawdown calculations
             maxEquityToDate: maxEquityToDate, // Store for consistent drawdown calculations
@@ -1187,7 +1268,7 @@ export default function TradingTerminal() {
           breachType: trade.breachType || null,
           breachUnrealizedPnl:
             trade.breachUnrealizedPnl !== null &&
-              trade.breachUnrealizedPnl !== undefined
+            trade.breachUnrealizedPnl !== undefined
               ? trade.breachUnrealizedPnl
               : null,
           breachDrawdownPercentDaily: trade.breachDrawdownPercentDaily ?? null,
@@ -1732,25 +1813,8 @@ export default function TradingTerminal() {
   //       syncAccountFromBackend(selectedAccount.id, true, true);
   //     }
   //   }
-  // }, [selectedAccount, lastAccountId]); // Removed allAccountsData and syncAccountFromBackend to 
+  // }, [selectedAccount, lastAccountId]); // Removed allAccountsData and syncAccountFromBackend to
   // // prevent loops
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   useEffect(() => {
     if (!selectedAccount) return;
@@ -1762,10 +1826,14 @@ export default function TradingTerminal() {
     const starting = selectedAccount.initial_balance || 100000;
 
     const newBalance =
-      selectedAccount.current_balance || selectedAccount.initial_balance || 100000;
+      selectedAccount.current_balance ||
+      selectedAccount.initial_balance ||
+      100000;
 
     const newEquity =
-      selectedAccount.current_equity || selectedAccount.current_balance || newBalance;
+      selectedAccount.current_equity ||
+      selectedAccount.current_balance ||
+      newBalance;
 
     // ✅ realized profit = balance based (closed trades / account progress)
     const realized = ((newBalance - starting) / starting) * 100;
@@ -1775,13 +1843,12 @@ export default function TradingTerminal() {
     currentDayRef.current = today;
     dailyStartBalanceRef.current = newBalance;
 
-    setAccount(prev => ({
+    setAccount((prev) => ({
       ...prev,
       balance: newBalance,
       equity: newEquity,
       startingBalance: starting,
-      highestBalance:
-        selectedAccount.highest_balance || starting,
+      highestBalance: selectedAccount.highest_balance || starting,
 
       // ✅ NEW fields
       realizedProfitPercent: realized,
@@ -1794,9 +1861,11 @@ export default function TradingTerminal() {
       dailyDrawdown: 0,
       overallDrawdown: selectedAccount.overall_drawdown_percent || 0,
       tradingDays: selectedAccount.trading_days_count || 0,
-      phase: selectedAccount.current_phase || 'phase1',
+      phase: selectedAccount.current_phase || "phase1",
       accountNumber: selectedAccount.account_number,
-      platform: selectedAccount.platform || 'MT5'
+      platform: selectedAccount.platform || "MT5",
+      // ✅ CRITICAL: Must include status so violation modal can detect DAILY_LOCKED or DISQUALIFIED
+      status: selectedAccount.status || "ACTIVE",
     }));
 
     // Reset trading state on switch
@@ -1806,6 +1875,9 @@ export default function TradingTerminal() {
     setAccountFailed(false);
     setHasTriggeredWarning(false);
     setHasTriggeredViolation(false);
+
+    // Clear dismissed modal state for this account so violation modal shows again when opening
+    dismissedModalAccountsRef.current.delete(selectedAccount.id);
 
     setLastAccountId(selectedAccount.id);
   }, [selectedAccount]);
@@ -2045,7 +2117,6 @@ export default function TradingTerminal() {
   // Handle price updates from chart - now uses unified price context
   // Chart can still trigger updates, but unified context is the source of truth
 
-
   // Helper function to check if symbol is crypto
 
   const pricesRef = useRef({});
@@ -2073,27 +2144,29 @@ export default function TradingTerminal() {
     );
   }, []);
 
-
   // Helper function to calculate P/L for a position (from earliest version)
-  const calculatePositionPnL = useCallback((pos, currentPrice) => {
-    const price = currentPrice || pos.entryPrice;
-    const priceDiff =
-      pos.type === "buy" || pos.type === "BUY"
-        ? price - pos.entryPrice
-        : pos.entryPrice - price;
+  const calculatePositionPnL = useCallback(
+    (pos, currentPrice) => {
+      const price = currentPrice || pos.entryPrice;
+      const priceDiff =
+        pos.type === "buy" || pos.type === "BUY"
+          ? price - pos.entryPrice
+          : pos.entryPrice - price;
 
-    // For crypto - lotSize represents actual units (e.g., 0.5 BTC)
-    // P/L = priceDiff * lotSize
-    if (isCryptoSymbol(pos.symbol)) {
-      return priceDiff * pos.lotSize;
-    }
+      // For crypto - lotSize represents actual units (e.g., 0.5 BTC)
+      // P/L = priceDiff * lotSize
+      if (isCryptoSymbol(pos.symbol)) {
+        return priceDiff * pos.lotSize;
+      }
 
-    // For forex - use standard lot calculation (100,000 units per lot)
-    // IMPORTANT: lotSize represents LOTS (e.g., 10 = 10 lots), NOT units
-    // P/L = priceDiff * lotSize * contractSize
-    const contractSize = 100000;
-    return priceDiff * pos.lotSize * contractSize;
-  }, [isCryptoSymbol]);
+      // For forex - use standard lot calculation (100,000 units per lot)
+      // IMPORTANT: lotSize represents LOTS (e.g., 10 = 10 lots), NOT units
+      // P/L = priceDiff * lotSize * contractSize
+      const contractSize = 100000;
+      return priceDiff * pos.lotSize * contractSize;
+    },
+    [isCryptoSymbol],
+  );
 
   // Use unified price context for positions - prices update every 800ms automatically
   // Send price ticks to backend for violation checking when prices update
@@ -2187,13 +2260,13 @@ export default function TradingTerminal() {
                       : 0,
                     closedCount: Array.isArray(beforeTrades)
                       ? beforeTrades.filter((t) => t.closedAt || t.closePrice)
-                        .length
+                          .length
                       : 0,
                     latestTradeTimestamp:
                       Array.isArray(beforeTrades) && beforeTrades.length > 0
                         ? beforeTrades[0].closedAt ||
-                        beforeTrades[0].closeTime ||
-                        beforeTrades[0].openedAt
+                          beforeTrades[0].closeTime ||
+                          beforeTrades[0].openedAt
                         : null,
                   };
 
@@ -2238,6 +2311,7 @@ export default function TradingTerminal() {
                   setViolationModal({
                     type: response.violationType,
                     shown: true,
+                    accountId: selectedAccountId,
                   });
                 }
 
@@ -2440,7 +2514,7 @@ export default function TradingTerminal() {
               : 0,
             closedCount: Array.isArray(currentTradesData)
               ? currentTradesData.filter((t) => t.closedAt || t.closePrice)
-                .length
+                  .length
               : 0,
             latestTradeTimestamp: Date.now(),
           };
@@ -2867,13 +2941,22 @@ export default function TradingTerminal() {
         }
       }
       // ✅ Update profit fields from earliest version
-      if (pending.realizedProfitPercent !== null && Number.isFinite(pending.realizedProfitPercent)) {
+      if (
+        pending.realizedProfitPercent !== null &&
+        Number.isFinite(pending.realizedProfitPercent)
+      ) {
         updates.realizedProfitPercent = pending.realizedProfitPercent;
       }
-      if (pending.liveProfitPercent !== null && Number.isFinite(pending.liveProfitPercent)) {
+      if (
+        pending.liveProfitPercent !== null &&
+        Number.isFinite(pending.liveProfitPercent)
+      ) {
         updates.liveProfitPercent = pending.liveProfitPercent;
       }
-      if (pending.profitForTarget !== null && Number.isFinite(pending.profitForTarget)) {
+      if (
+        pending.profitForTarget !== null &&
+        Number.isFinite(pending.profitForTarget)
+      ) {
         updates.profitForTarget = pending.profitForTarget;
       }
       // Only update overallDrawdown if change is significant (0.005% threshold for smoother updates)
@@ -2941,13 +3024,17 @@ export default function TradingTerminal() {
         const startingBalance = account.startingBalance || 100000;
 
         // ✅ Profit calculations from earliest version
-        const realized = startingBalance > 0 ? ((account.balance - startingBalance) / startingBalance) * 100 : 0;
+        const realized =
+          startingBalance > 0
+            ? ((account.balance - startingBalance) / startingBalance) * 100
+            : 0;
         const live = 0;
         const profitForTarget = Math.max(0, realized);
 
         // ✅ Drawdown calculations from earliest version (simple formula)
         const totalLoss = Math.max(0, startingBalance - newEquity);
-        const overallDrawdownPercent = startingBalance > 0 ? (totalLoss / startingBalance) * 100 : 0;
+        const overallDrawdownPercent =
+          startingBalance > 0 ? (totalLoss / startingBalance) * 100 : 0;
         const dailyDrawdown = 0; // When no positions, no daily drawdown
 
         // Only update if values actually changed (prevent unnecessary re-renders)
@@ -2955,7 +3042,9 @@ export default function TradingTerminal() {
         if (
           Math.abs((prevMetrics.equity ?? 0) - newEquity) < 0.01 &&
           Math.abs((prevMetrics.floatingPnL ?? 0) - 0) < 0.01 &&
-          Math.abs((prevMetrics.overallDrawdown ?? 0) - overallDrawdownPercent) < 0.01 &&
+          Math.abs(
+            (prevMetrics.overallDrawdown ?? 0) - overallDrawdownPercent,
+          ) < 0.01 &&
           Math.abs((prevMetrics.dailyDrawdown ?? 0) - dailyDrawdown) < 0.01
         ) {
           return; // No significant change, skip update
@@ -3040,7 +3129,10 @@ export default function TradingTerminal() {
       const startingBalance = account.startingBalance || 100000;
 
       // ✅ Profit calculations from earliest version
-      const realized = startingBalance > 0 ? ((account.balance - startingBalance) / startingBalance) * 100 : 0;
+      const realized =
+        startingBalance > 0
+          ? ((account.balance - startingBalance) / startingBalance) * 100
+          : 0;
       const live = totalPnL > 0 ? (totalPnL / startingBalance) * 100 : 0;
       const profitForTarget = Math.max(0, realized + live);
 
@@ -3052,8 +3144,8 @@ export default function TradingTerminal() {
         const drawdownPercent =
           account.startingBalance > 0
             ? ((account.startingBalance - newEquity) /
-              account.startingBalance) *
-            100
+                account.startingBalance) *
+              100
             : 0;
         console.log(
           `[Equity Debug] balance=$${account.balance.toFixed(2)}, totalPnL=$${totalPnL.toFixed(2)}, equity=$${newEquity.toFixed(2)}, drawdown=${drawdownPercent.toFixed(2)}%`,
@@ -3061,9 +3153,13 @@ export default function TradingTerminal() {
       }
 
       // ✅ Drawdown calculations from earliest version (simple formulas)
-      const newHighestBalance = Math.max(account.highestBalance || startingBalance, newEquity);
+      const newHighestBalance = Math.max(
+        account.highestBalance || startingBalance,
+        newEquity,
+      );
       const totalLoss = Math.max(0, startingBalance - newEquity);
-      const overallDrawdownPercent = startingBalance > 0 ? (totalLoss / startingBalance) * 100 : 0;
+      const overallDrawdownPercent =
+        startingBalance > 0 ? (totalLoss / startingBalance) * 100 : 0;
 
       // ✅ Daily drawdown from earliest version
       const today = new Date().toDateString();
@@ -3073,7 +3169,8 @@ export default function TradingTerminal() {
       }
       const dailyStartBalance = dailyStartBalanceRef.current ?? account.balance;
       const dailyLossDollars = Math.max(0, dailyStartBalance - newEquity);
-      const dailyLossPercent = startingBalance > 0 ? (dailyLossDollars / startingBalance) * 100 : 0;
+      const dailyLossPercent =
+        startingBalance > 0 ? (dailyLossDollars / startingBalance) * 100 : 0;
 
       // REMOVED: Frontend limit checking - now handled by event-driven price-tick endpoint
       // The price-tick endpoint (called in fetchPricesForPositions) triggers immediate backend evaluation
@@ -3093,7 +3190,8 @@ export default function TradingTerminal() {
       const dailyDDChanged =
         Math.abs((prevMetrics.dailyDrawdown ?? 0) - dailyLossPercent) >= 0.005; // 0.005% threshold
       const overallDDChanged =
-        Math.abs((prevMetrics.overallDrawdown ?? 0) - overallDrawdownPercent) >= 0.005;
+        Math.abs((prevMetrics.overallDrawdown ?? 0) - overallDrawdownPercent) >=
+        0.005;
 
       // Force update on first run (when equity is 0) to ensure immediate display
       const isFirstUpdate = prevMetrics.equity === 0 && newEquity !== 0;
@@ -3197,13 +3295,35 @@ export default function TradingTerminal() {
   // - Provides immediate response (<100ms)
   // Removing this duplicate check prevents API spam and "insufficient resources" errors
 
+  // Track dismissed modals per account (user explicitly closed)
+  const dismissedModalAccountsRef = useRef(new Set());
+
   // Show status banner and violation modal when account status changes to locked/disqualified
   // Handle all possible failure statuses: DAILY_LOCKED, DISQUALIFIED, FAILED, CHALLENGE_FAILED, ACCOUNT_FAILED, etc.
   useEffect(() => {
+    if (!selectedAccountId) return; // Don't run if no account selected
+
     const statusUpper = String(account.status || "").toUpperCase();
+    const wasDismissed =
+      dismissedModalAccountsRef.current.has(selectedAccountId);
+
+    console.log("[ViolationModal Debug] Full account object:", account);
+    console.log(
+      "[ViolationModal Debug] Status:",
+      account.status,
+      "StatusUpper:",
+      statusUpper,
+      "AccountId:",
+      selectedAccountId,
+      "WasDismissed:",
+      wasDismissed,
+      "violationModal state:",
+      violationModal,
+    );
 
     // Check for daily lock status (includes 'DAILY')
     if (statusUpper.includes("DAILY")) {
+      console.log("[ViolationModal] Daily lock detected!");
       setAccountStatusBanner({
         type: "warning",
         title: t("terminal.dailyLocked") || "Daily Loss Limit Reached",
@@ -3211,16 +3331,19 @@ export default function TradingTerminal() {
           t("terminal.dailyLockedMessage") ||
           "Your account has been locked until tomorrow due to exceeding the daily loss limit.",
       });
-      // Show violation modal if not already shown for this violation
-      setViolationModal((prev) => {
-        if (!prev || prev.type !== "DAILY_LOCKED" || !prev.shown) {
-          return { type: "DAILY_LOCKED", shown: true };
-        }
-        return prev;
-      });
+      // Show modal if not dismissed by user for this account
+      if (!wasDismissed) {
+        console.log("[ViolationModal] Showing DAILY_LOCKED modal");
+        setViolationModal({
+          type: "DAILY_LOCKED",
+          shown: true,
+          accountId: selectedAccountId,
+        });
+      }
     }
     // Check for disqualification/failure status (includes 'FAIL' or 'DISQUAL')
     else if (statusUpper.includes("FAIL") || statusUpper.includes("DISQUAL")) {
+      console.log("[ViolationModal] Disqualification detected!");
       setAccountStatusBanner({
         type: "error",
         title: t("terminal.disqualified") || "Challenge Disqualified",
@@ -3228,18 +3351,31 @@ export default function TradingTerminal() {
           t("terminal.disqualifiedMessage") ||
           "Your account has been disqualified due to exceeding the maximum drawdown limit.",
       });
-      // Show violation modal if not already shown for this violation
-      setViolationModal((prev) => {
-        if (!prev || prev.type !== "DISQUALIFIED" || !prev.shown) {
-          return { type: "DISQUALIFIED", shown: true };
-        }
-        return prev;
-      });
+      // Show modal if not dismissed by user for this account
+      if (!wasDismissed) {
+        console.log("[ViolationModal] Showing DISQUALIFIED modal");
+        setViolationModal({
+          type: "DISQUALIFIED",
+          shown: true,
+          accountId: selectedAccountId,
+        });
+      }
     } else {
       setAccountStatusBanner(null);
-      // Don't reset modal - let user close it manually
+      // Clear modal when switching to active account (no violation)
+      setViolationModal(null);
+      // Clear dismissed state when switching to active account
+      dismissedModalAccountsRef.current.delete(selectedAccountId);
     }
-  }, [account.status, t]);
+  }, [account.status, selectedAccountId, t]);
+
+  // Handler for when user closes the violation modal
+  const handleViolationModalClose = useCallback(() => {
+    if (selectedAccountId) {
+      dismissedModalAccountsRef.current.add(selectedAccountId);
+    }
+    setViolationModal((prev) => (prev ? { ...prev, shown: false } : null));
+  }, [selectedAccountId]);
 
   // Direct function - async to save to backend
   async function handleExecuteTrade(trade) {
@@ -3569,12 +3705,12 @@ export default function TradingTerminal() {
 
       // Wait for backend response
       const response = await createTrade(tradeData);
-      queryClient.invalidateQueries(['trading-account', selectedAccountId]);
+      queryClient.invalidateQueries(["trading-account", selectedAccountId]);
 
       // Update trading days count after successful trade
       try {
         // Wait briefly for backend to persist the trade
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
         // Sync full account data from backend (updates account.tradingDays via metrics.tradingDaysCompleted)
         await syncAccountFromBackend(selectedAccountId, true, false); // Force refresh
@@ -3585,19 +3721,19 @@ export default function TradingTerminal() {
         if (summary?.metrics?.tradingDaysCompleted !== undefined) {
           setTradingDaysCount(summary.metrics.tradingDaysCompleted);
           // Also update the account state directly to ensure ChallengeRulesPanel gets the update
-          setAccount(prev => ({
+          setAccount((prev) => ({
             ...prev,
-            tradingDays: summary.metrics.tradingDaysCompleted
+            tradingDays: summary.metrics.tradingDaysCompleted,
           }));
         }
         if (summary?.metrics?.daysRemaining !== undefined) {
           setDaysRemaining(summary.metrics.daysRemaining);
         }
       } catch (err) {
-        console.error('Failed to update trading days:', err);
+        console.error("Failed to update trading days:", err);
       }
 
-      console.log('✅ Trade saved to backend:', response);
+      console.log("✅ Trade saved to backend:", response);
 
       // Verify we got a trade ID from backend
       if (!response?.trade?.id) {
@@ -3875,12 +4011,13 @@ export default function TradingTerminal() {
                 {/* WebSocket Connection Status */}
                 <Badge
                   className={`text-xs cursor-help transition-colors md:hidden
- ${websocketStatus.connected
-                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                      : websocketStatus.status === "reconnecting"
-                        ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 animate-pulse"
-                        : "bg-red-500/20 text-red-400 border border-red-500/30"
-                    }`}
+ ${
+   websocketStatus.connected
+     ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+     : websocketStatus.status === "reconnecting"
+       ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 animate-pulse"
+       : "bg-red-500/20 text-red-400 border border-red-500/30"
+ }`}
                   title={
                     websocketStatus.connected
                       ? "WebSocket Connected - Real-time updates active"
@@ -3890,12 +4027,13 @@ export default function TradingTerminal() {
                   }
                 >
                   <div
-                    className={`w-2 h-2 rounded-full mr-1.5 ${websocketStatus.connected
-                      ? "bg-emerald-400 animate-pulse"
-                      : websocketStatus.status === "reconnecting"
-                        ? "bg-yellow-400 animate-pulse"
-                        : "bg-red-400"
-                      }`}
+                    className={`w-2 h-2 rounded-full mr-1.5 ${
+                      websocketStatus.connected
+                        ? "bg-emerald-400 animate-pulse"
+                        : websocketStatus.status === "reconnecting"
+                          ? "bg-yellow-400 animate-pulse"
+                          : "bg-red-400"
+                    }`}
                   />
                   <span className="hidden md:inline font-medium">
                     {websocketStatus.connected
@@ -3993,12 +4131,13 @@ export default function TradingTerminal() {
                         <>
                           <span className="text-slate-400">•</span>
                           <Badge
-                            className={`text-xs ${acc.status === "active"
-                              ? "bg-emerald-500/20 text-emerald-400"
-                              : acc.status === "paused"
-                                ? "bg-amber-500/20 text-amber-400"
-                                : "bg-slate-500/20 text-slate-400"
-                              }`}
+                            className={`text-xs ${
+                              acc.status === "active"
+                                ? "bg-emerald-500/20 text-emerald-400"
+                                : acc.status === "paused"
+                                  ? "bg-amber-500/20 text-amber-400"
+                                  : "bg-slate-500/20 text-slate-400"
+                            }`}
                           >
                             {t(`status.${acc.status}`)}
                           </Badge>
@@ -4027,12 +4166,13 @@ export default function TradingTerminal() {
           {/* WebSocket Connection Status */}
           <Badge
             className={`text-xs cursor-help transition-colors hidden md:flex
- ${websocketStatus.connected
-                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                : websocketStatus.status === "reconnecting"
-                  ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 animate-pulse"
-                  : "bg-red-500/20 text-red-400 border border-red-500/30"
-              }`}
+ ${
+   websocketStatus.connected
+     ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+     : websocketStatus.status === "reconnecting"
+       ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 animate-pulse"
+       : "bg-red-500/20 text-red-400 border border-red-500/30"
+ }`}
             title={
               websocketStatus.connected
                 ? "WebSocket Connected - Real-time updates active"
@@ -4042,12 +4182,13 @@ export default function TradingTerminal() {
             }
           >
             <div
-              className={`w-2 h-2 rounded-full mr-1.5 ${websocketStatus.connected
-                ? "bg-emerald-400 animate-pulse"
-                : websocketStatus.status === "reconnecting"
-                  ? "bg-yellow-400 animate-pulse"
-                  : "bg-red-400"
-                }`}
+              className={`w-2 h-2 rounded-full mr-1.5 ${
+                websocketStatus.connected
+                  ? "bg-emerald-400 animate-pulse"
+                  : websocketStatus.status === "reconnecting"
+                    ? "bg-yellow-400 animate-pulse"
+                    : "bg-red-400"
+              }`}
             />
             <span className="hidden md:inline font-medium">
               {websocketStatus.connected
@@ -4094,11 +4235,21 @@ export default function TradingTerminal() {
       {/* Mobile Tabs */}
       {hasValidAccount && (
         <div className="lg:hidden space-y-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
             <TabsList className="grid grid-cols-3 bg-slate-900 border border-slate-800">
-              <TabsTrigger value="chart">{t("terminal.tabs.chart")}</TabsTrigger>
-              <TabsTrigger value="trade">{t("terminal.tabs.trade")}</TabsTrigger>
-              <TabsTrigger value="positions">{t("terminal.tabs.positions")}</TabsTrigger>
+              <TabsTrigger value="chart">
+                {t("terminal.tabs.chart")}
+              </TabsTrigger>
+              <TabsTrigger value="trade">
+                {t("terminal.tabs.trade")}
+              </TabsTrigger>
+              <TabsTrigger value="positions">
+                {t("terminal.tabs.positions")}
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="chart" className="mt-4">
@@ -4118,12 +4269,22 @@ export default function TradingTerminal() {
                 accountBalance={account.freeMargin}
                 onExecuteTrade={handleExecuteTrade}
                 disabled={(() => {
-                  const statusUpper = String(account.status || '').toUpperCase();
-                  return statusUpper.includes('DAILY') || statusUpper.includes('FAIL') || statusUpper.includes('DISQUAL') || statusUpper === 'PAUSED' || statusUpper === 'CLOSED';
+                  const statusUpper = String(
+                    account.status || "",
+                  ).toUpperCase();
+                  return (
+                    statusUpper.includes("DAILY") ||
+                    statusUpper.includes("FAIL") ||
+                    statusUpper.includes("DISQUAL") ||
+                    statusUpper === "PAUSED" ||
+                    statusUpper === "CLOSED"
+                  );
                 })()}
                 chartPrice={(() => {
                   const priceData = unifiedPrices[selectedSymbol?.symbol];
-                  return priceData && typeof priceData === 'object' ? priceData.bid : priceData;
+                  return priceData && typeof priceData === "object"
+                    ? priceData.bid
+                    : priceData;
                 })()}
               />
             </TabsContent>
@@ -4133,7 +4294,7 @@ export default function TradingTerminal() {
                 <MarketWatchlist
                   onSymbolSelect={(symbol) => {
                     setSelectedSymbol(symbol);
-                    setActiveTab('chart');
+                    setActiveTab("chart");
                   }}
                   selectedSymbol={selectedSymbol}
                 />
@@ -4151,13 +4312,23 @@ export default function TradingTerminal() {
               />
               {tradeHistory.length > 0 && (
                 <Card className="bg-slate-900 border-slate-800 p-4 mt-4">
-                  <h4 className="text-white font-medium mb-3">{t('terminal.tradeHistory')}</h4>
+                  <h4 className="text-white font-medium mb-3">
+                    {t("terminal.tradeHistory")}
+                  </h4>
                   <div className="space-y-2 max-h-48 overflow-auto">
                     {tradeHistory.map((trade, i) => (
-                      <div key={i} className="flex items-center justify-between p-2 bg-slate-800/50 rounded-lg text-sm">
+                      <div
+                        key={i}
+                        className="flex items-center justify-between p-2 bg-slate-800/50 rounded-lg text-sm"
+                      >
                         <div className="flex items-center gap-2">
-                          <Badge className={`text-xs ${trade.type === 'buy' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
-                            {(trade.type === 'buy' ? t('terminal.tradingPanel.buyLong') : t('terminal.tradingPanel.sellShort')).toUpperCase()}
+                          <Badge
+                            className={`text-xs ${trade.type === "buy" ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400"}`}
+                          >
+                            {(trade.type === "buy"
+                              ? t("terminal.tradingPanel.buyLong")
+                              : t("terminal.tradingPanel.sellShort")
+                            ).toUpperCase()}
                           </Badge>
                           <span className="text-white">{trade.symbol}</span>
                         </div>
@@ -4165,35 +4336,47 @@ export default function TradingTerminal() {
                         {/* Show breach snapshot if auto-closed due to limit breach */}
                         {(() => {
                           // Check if trade was auto-closed due to risk limit breach
-                          const isAutoClosed = trade.closeReason === 'RISK_AUTO_CLOSE' ||
-                            trade.closeReason === 'risk_auto_close' ||
-                            String(trade.closeReason || '').toUpperCase() === 'RISK_AUTO_CLOSE';
+                          const isAutoClosed =
+                            trade.closeReason === "RISK_AUTO_CLOSE" ||
+                            trade.closeReason === "risk_auto_close" ||
+                            String(trade.closeReason || "").toUpperCase() ===
+                              "RISK_AUTO_CLOSE";
 
                           // Check if breach snapshot exists
-                          const isBreachTriggered = trade.breachTriggered === true ||
+                          const isBreachTriggered =
+                            trade.breachTriggered === true ||
                             trade.breachTriggered === 1 ||
-                            String(trade.breachTriggered) === 'true';
-                          const hasBreachPnL = trade.breachUnrealizedPnl !== null &&
+                            String(trade.breachTriggered) === "true";
+                          const hasBreachPnL =
+                            trade.breachUnrealizedPnl !== null &&
                             trade.breachUnrealizedPnl !== undefined &&
                             Number.isFinite(trade.breachUnrealizedPnl);
 
                           // Show breach snapshot if:
                           // 1. Trade was auto-closed due to risk limit breach, OR
                           // 2. Breach snapshot exists (breachTriggered + breachUnrealizedPnl)
-                          const shouldShow = isAutoClosed || (isBreachTriggered && hasBreachPnL);
+                          const shouldShow =
+                            isAutoClosed || (isBreachTriggered && hasBreachPnL);
 
-                          if (isAutoClosed || isBreachTriggered || hasBreachPnL) {
-                            console.log('🔍 [History Display] Checking breach display:', {
-                              tradeId: trade.id,
-                              isAutoClosed,
-                              isBreachTriggered,
-                              hasBreachPnL,
-                              shouldShow,
-                              breachTriggered: trade.breachTriggered,
-                              breachUnrealizedPnl: trade.breachUnrealizedPnl,
-                              closeReason: trade.closeReason,
-                              fullTrade: trade,
-                            });
+                          if (
+                            isAutoClosed ||
+                            isBreachTriggered ||
+                            hasBreachPnL
+                          ) {
+                            console.log(
+                              "🔍 [History Display] Checking breach display:",
+                              {
+                                tradeId: trade.id,
+                                isAutoClosed,
+                                isBreachTriggered,
+                                hasBreachPnL,
+                                shouldShow,
+                                breachTriggered: trade.breachTriggered,
+                                breachUnrealizedPnl: trade.breachUnrealizedPnl,
+                                closeReason: trade.closeReason,
+                                fullTrade: trade,
+                              },
+                            );
                           }
 
                           return shouldShow;
@@ -4201,23 +4384,32 @@ export default function TradingTerminal() {
                           <div className="text-right">
                             {/* Show breach PnL if available, otherwise show realized PnL */}
                             {trade.breachUnrealizedPnl !== null &&
-                              trade.breachUnrealizedPnl !== undefined &&
-                              Number.isFinite(trade.breachUnrealizedPnl) ? (
-                              <span className={`font-mono font-bold ${trade.breachUnrealizedPnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                                {trade.breachUnrealizedPnl >= 0 ? '+' : ''}{trade.breachUnrealizedPnl.toFixed(2)}
+                            trade.breachUnrealizedPnl !== undefined &&
+                            Number.isFinite(trade.breachUnrealizedPnl) ? (
+                              <span
+                                className={`font-mono font-bold ${trade.breachUnrealizedPnl >= 0 ? "text-emerald-400" : "text-red-400"}`}
+                              >
+                                {trade.breachUnrealizedPnl >= 0 ? "+" : ""}
+                                {trade.breachUnrealizedPnl.toFixed(2)}
                               </span>
                             ) : (
-                              <span className={`font-mono font-bold ${trade.pnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                                {trade.pnl >= 0 ? '+' : ''}{trade.pnl.toFixed(2)}
+                              <span
+                                className={`font-mono font-bold ${trade.pnl >= 0 ? "text-emerald-400" : "text-red-400"}`}
+                              >
+                                {trade.pnl >= 0 ? "+" : ""}
+                                {trade.pnl.toFixed(2)}
                               </span>
                             )}
                             <Badge className="ml-1 text-xs bg-red-500/20 text-red-400">
-                              {t('terminal.history.breach')}
+                              {t("terminal.history.breach")}
                             </Badge>
                           </div>
                         ) : (
-                          <span className={`font-mono font-bold ${trade.pnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                            {trade.pnl >= 0 ? '+' : ''}{trade.pnl.toFixed(2)}
+                          <span
+                            className={`font-mono font-bold ${trade.pnl >= 0 ? "text-emerald-400" : "text-red-400"}`}
+                          >
+                            {trade.pnl >= 0 ? "+" : ""}
+                            {trade.pnl.toFixed(2)}
                           </span>
                         )}
                       </div>
@@ -4240,14 +4432,38 @@ export default function TradingTerminal() {
               className={`${sidebarCollapsed ? "col-span-1" : "col-span-2"} transition-all relative h-[450px]`}
             >
               {sidebarCollapsed ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <div
                   onClick={() => setSidebarCollapsed(false)}
-                  className="w-full h-full bg-slate-900 border border-slate-800 rounded-lg"
+                  className="w-full h-full bg-slate-900 border border-slate-800 rounded-lg flex flex-col items-center justify-between py-3 cursor-pointer hover:bg-slate-800/50 hover:border-slate-700 transition-all group"
                 >
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
+                  {/* Top - Expand indicator */}
+                  <div className="flex flex-col items-center gap-1">
+                    <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-emerald-400 transition-colors" />
+                    <div className="w-6 h-0.5 bg-slate-700 rounded group-hover:bg-emerald-500/50 transition-colors" />
+                  </div>
+
+                  {/* Center - Icon and vertical text */}
+                  <div className="flex-1 flex flex-col items-center justify-center gap-3">
+                    <BarChart2 className="w-5 h-5 text-emerald-500/70" />
+                    <span
+                      className="text-slate-500 text-[10px] font-medium tracking-wider uppercase group-hover:text-slate-300 transition-colors"
+                      style={{
+                        writingMode: "vertical-rl",
+                        textOrientation: "mixed",
+                      }}
+                    >
+                      {t("terminal.watchlist.title") || "Markets"}
+                    </span>
+                  </div>
+
+                  {/* Bottom - Current symbol indicator */}
+                  <div className="text-center px-1">
+                    <div className="text-[8px] text-slate-600 mb-0.5">
+                      {selectedSymbol?.symbol?.split("/")[0] || "EUR"}
+                    </div>
+                    <div className="w-2 h-2 rounded-full bg-emerald-500/50 mx-auto animate-pulse" />
+                  </div>
+                </div>
               ) : (
                 <div className="h-full relative">
                   <MarketWatchlist
@@ -4599,9 +4815,9 @@ export default function TradingTerminal() {
                           const winRate =
                             filteredTrades.length > 0
                               ? (
-                                (winCount / filteredTrades.length) *
-                                100
-                              ).toFixed(1)
+                                  (winCount / filteredTrades.length) *
+                                  100
+                                ).toFixed(1)
                               : 0;
 
                           return (
@@ -4677,11 +4893,11 @@ export default function TradingTerminal() {
                                           >
                                             {(trade.type === "buy"
                                               ? t(
-                                                "terminal.tradingPanel.buyLong",
-                                              )
+                                                  "terminal.tradingPanel.buyLong",
+                                                )
                                               : t(
-                                                "terminal.tradingPanel.sellShort",
-                                              )
+                                                  "terminal.tradingPanel.sellShort",
+                                                )
                                             ).toUpperCase()}
                                           </Badge>
                                           <div className="flex-1 min-w-0">
@@ -4719,25 +4935,25 @@ export default function TradingTerminal() {
                                             // Check if trade was auto-closed due to risk limit breach
                                             const isAutoClosed =
                                               trade.closeReason ===
-                                              "RISK_AUTO_CLOSE" ||
+                                                "RISK_AUTO_CLOSE" ||
                                               trade.closeReason ===
-                                              "risk_auto_close" ||
+                                                "risk_auto_close" ||
                                               String(
                                                 trade.closeReason || "",
                                               ).toUpperCase() ===
-                                              "RISK_AUTO_CLOSE";
+                                                "RISK_AUTO_CLOSE";
 
                                             // Check if breach snapshot exists
                                             const isBreachTriggered =
                                               trade.breachTriggered === true ||
                                               trade.breachTriggered === 1 ||
                                               String(trade.breachTriggered) ===
-                                              "true";
+                                                "true";
                                             const hasBreachPnL =
                                               trade.breachUnrealizedPnl !==
-                                              null &&
+                                                null &&
                                               trade.breachUnrealizedPnl !==
-                                              undefined &&
+                                                undefined &&
                                               Number.isFinite(
                                                 trade.breachUnrealizedPnl,
                                               );
@@ -4762,16 +4978,16 @@ export default function TradingTerminal() {
                                                 {/* Show breach PnL if available, otherwise show realized PnL */}
                                                 {trade.breachUnrealizedPnl !==
                                                   null &&
-                                                  trade.breachUnrealizedPnl !==
+                                                trade.breachUnrealizedPnl !==
                                                   undefined &&
-                                                  Number.isFinite(
-                                                    trade.breachUnrealizedPnl,
-                                                  ) ? (
+                                                Number.isFinite(
+                                                  trade.breachUnrealizedPnl,
+                                                ) ? (
                                                   <span
                                                     className={`font-mono font-bold text-sm ${trade.breachUnrealizedPnl >= 0 ? "text-emerald-400" : "text-red-400"}`}
                                                   >
                                                     {trade.breachUnrealizedPnl >=
-                                                      0
+                                                    0
                                                       ? "+"
                                                       : ""}
                                                     $
@@ -4861,16 +5077,16 @@ export default function TradingTerminal() {
         currentPrice={
           modifyingPosition
             ? (() => {
-              const priceData = unifiedPrices[modifyingPosition.symbol];
-              if (!priceData) return null;
-              // Use the correct price side (ask for BUY, bid for SELL)
-              if (typeof priceData === "object") {
-                return modifyingPosition.type === "buy"
-                  ? priceData.ask
-                  : priceData.bid;
-              }
-              return priceData;
-            })()
+                const priceData = unifiedPrices[modifyingPosition.symbol];
+                if (!priceData) return null;
+                // Use the correct price side (ask for BUY, bid for SELL)
+                if (typeof priceData === "object") {
+                  return modifyingPosition.type === "buy"
+                    ? priceData.ask
+                    : priceData.bid;
+                }
+                return priceData;
+              })()
             : null
         }
       />
@@ -4878,9 +5094,7 @@ export default function TradingTerminal() {
       {/* Violation Modal */}
       <ViolationModal
         isOpen={violationModal?.shown === true}
-        onClose={() =>
-          setViolationModal((prev) => (prev ? { ...prev, shown: false } : null))
-        }
+        onClose={handleViolationModalClose}
         violationType={violationModal?.type}
         account={account}
       />
@@ -4888,10 +5102,11 @@ export default function TradingTerminal() {
       {/* Account Status Banner (for locked/disqualified accounts) */}
       {accountStatusBanner && (
         <div
-          className={`fixed bottom-4 left-4 right-4 lg:left-72 ${accountStatusBanner.type === "error"
-            ? "bg-red-500/90"
-            : "bg-orange-500/90"
-            } text-white px-4 py-3 rounded-lg flex items-center justify-between z-50`}
+          className={`fixed bottom-4 left-4 right-4 lg:left-72 ${
+            accountStatusBanner.type === "error"
+              ? "bg-red-500/90"
+              : "bg-orange-500/90"
+          } text-white px-4 py-3 rounded-lg flex items-center justify-between z-50`}
         >
           <div className="flex items-center gap-2">
             <XCircle className="w-5 h-5" />
