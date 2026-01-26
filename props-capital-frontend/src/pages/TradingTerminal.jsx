@@ -201,7 +201,9 @@ export default function TradingTerminal() {
   const [hasTriggeredWarning, setHasTriggeredWarning] = useState(false);
   const [hasTriggeredViolation, setHasTriggeredViolation] = useState(false);
 
-  const [activeTab, setActiveTab] = useState("chart");
+  // NOTE: Mobile now uses stacked layout (no tabs).
+  // Keep this state only if you re-enable tabs later.
+  // const [activeTab, setActiveTab] = useState("chart");
 
   // Trade history filters
   const [historySymbolFilter, setHistorySymbolFilter] = useState("");
@@ -548,6 +550,7 @@ export default function TradingTerminal() {
     accountNumber: null,
     platform: "MT5",
     status: "ACTIVE", // Initialize with ACTIVE status
+    maxTradingDays: 0,
   });
 
   // Track the last account ID to detect actual account switches
@@ -3995,16 +3998,18 @@ export default function TradingTerminal() {
   return (
     <div className="space-y-4" style={{ pointerEvents: "auto" }}>
       {/* Top Bar */}
-      <div className="flex  items-center  gap-2   ">
-        <div className="flex items-center gap-2  sm:gap-4 w-full  ">
-          <div className="w-full md:w-auto md:flex gap-3">
-            <div className="flex justify-between py-2 md:justify-start  ">
+      <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 sm:gap-4 w-full">
+          {/* Keep the “small screen” topbar layout up to md; switch layout at lg */}
+          <div className="w-96 lg:w-auto lg:flex gap-3">
+            <div className="flex justify-between py-2 sm:justify-start">
               <h1 className="text-base sm:text-lg md:text-xl font-bold text-white">
                 {t("terminal.title")}
               </h1>
-              <div className="flex gap-2 md:hidden">
+              {/* Keep this mobile status group visible up to md (hide only on lg+) */}
+              <div className="flex gap-2 lg:hidden">
                 <Badge
-                  className={`text-xs md:hidden   ${isConnected ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400 "}`}
+                  className={`text-xs ${isConnected ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400 "}`}
                 >
                   {isConnected ? (
                     <Wifi className="w-3 h-3 mr-1" />
@@ -4019,14 +4024,13 @@ export default function TradingTerminal() {
                 </Badge>
                 {/* WebSocket Connection Status */}
                 <Badge
-                  className={`text-xs cursor-help transition-colors md:hidden
- ${
-   websocketStatus.connected
-     ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-     : websocketStatus.status === "reconnecting"
-       ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 animate-pulse"
-       : "bg-red-500/20 text-red-400 border border-red-500/30"
- }`}
+                  className={`text-xs cursor-help transition-colors lg:hidden
+ ${websocketStatus.connected
+                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                      : websocketStatus.status === "reconnecting"
+                        ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 animate-pulse"
+                        : "bg-red-500/20 text-red-400 border border-red-500/30"
+                    }`}
                   title={
                     websocketStatus.connected
                       ? "WebSocket Connected - Real-time updates active"
@@ -4059,107 +4063,108 @@ export default function TradingTerminal() {
             </div>
 
             {/* Account Selector */}
-            <Select
-              value={selectedAccountId || ""}
-              onValueChange={setSelectedAccountId}
-            >
-              <SelectTrigger className="w-full sm:w-[280px] bg-slate-800 border-slate-700 text-white">
-                <div className="flex items-center gap-2 w-full">
-                  <Wallet className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                  {selectedAccount ? (
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      {selectedAccount.isDemo && (
-                        <Badge className="text-xs bg-purple-500/20 text-purple-400">
-                          DEMO
-                        </Badge>
-                      )}
-                      <span className="font-medium text-sm">
-                        ${selectedAccount.initial_balance?.toLocaleString()}
-                      </span>
-                      <span className="text-slate-400">•</span>
-                      <span className="text-slate-400 text-xs">
-                        {selectedAccount.platform}
-                      </span>
-                      <span className="text-slate-400">•</span>
-                      <span className="text-xs text-emerald-400">
-                        {selectedAccount.current_phase === "phase1"
-                          ? t("terminal.phase1")
-                          : selectedAccount.current_phase === "phase2"
-                            ? t("terminal.phase2")
-                            : selectedAccount.current_phase === "funded"
-                              ? t("terminal.funded")
-                              : selectedAccount.current_phase === "failed"
-                                ? t("terminal.failed")
-                                : selectedAccount.current_phase}
-                      </span>
-                    </div>
-                  ) : (
-                    <SelectValue placeholder={t("terminal.selectAccount")} />
-                  )}
-                </div>
-              </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-700 text-white [&>svg]:text-white">
-                {availableAccounts.map((acc) => (
-                  <SelectItem
-                    key={acc.id}
-                    value={acc.id}
-                    className=" text-white
+            <div className="w-full lg:w-[280px]">
+              <Select
+                value={selectedAccountId || ""}
+                onValueChange={setSelectedAccountId}
+              >
+                <SelectTrigger className="w-full   bg-slate-800 border-slate-700 text-white">
+                  <div className="flex items-center gap-2 w-full">
+                    <Wallet className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    {selectedAccount ? (
+                      <div className="flex items-center gap-2 flex-1 min-w-full">
+                        {selectedAccount.isDemo && (
+                          <Badge className="text-xs bg-purple-500/20 text-purple-400">
+                            DEMO
+                          </Badge>
+                        )}
+                        <span className="font-medium text-sm">
+                          ${selectedAccount.initial_balance?.toLocaleString()}
+                        </span>
+                        <span className="text-slate-400">•</span>
+                        <span className="text-slate-400 text-xs">
+                          {selectedAccount.platform}
+                        </span>
+                        <span className="text-slate-400">•</span>
+                        <span className="text-xs text-emerald-400">
+                          {selectedAccount.current_phase === "phase1"
+                            ? t("terminal.phase1")
+                            : selectedAccount.current_phase === "phase2"
+                              ? t("terminal.phase2")
+                              : selectedAccount.current_phase === "funded"
+                                ? t("terminal.funded")
+                                : selectedAccount.current_phase === "failed"
+                                  ? t("terminal.failed")
+                                  : selectedAccount.current_phase}
+                        </span>
+                      </div>
+                    ) : (
+                      <SelectValue placeholder={t("terminal.selectAccount")} />
+                    )}
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="bg-slate-800 border-slate-700 text-white [&>svg]:text-white">
+                  {availableAccounts.map((acc) => (
+                    <SelectItem
+                      key={acc.id}
+                      value={acc.id}
+                      className=" text-white
                           hover:text-white
                           focus:text-white
                           data-[highlighted]:text-white
                           data-[state=checked]:text-white
                           hover:bg-slate-700
                           focus:bg-slate-700"
-                  >
-                    <div className="flex items-center gap-2">
-                      {acc.isDemo && (
-                        <Badge className="text-xs bg-purple-500/20 text-purple-400 mr-1">
-                          DEMO
-                        </Badge>
-                      )}
-                      <span className="font-medium">
-                        ${acc.initial_balance?.toLocaleString()}
-                      </span>
-                      <span className="text-slate-400">•</span>
-                      <span className="text-slate-400 text-xs">
-                        {acc.platform}
-                      </span>
-                      <span className="text-slate-400">•</span>
-                      <span className="text-xs text-emerald-400">
-                        {acc.current_phase === "phase1"
-                          ? t("terminal.phase1")
-                          : acc.current_phase === "phase2"
-                            ? t("terminal.phase2")
-                            : acc.current_phase === "funded"
-                              ? t("terminal.funded")
-                              : acc.current_phase === "failed"
-                                ? t("terminal.failed")
-                                : acc.current_phase}
-                      </span>
-                      {acc.status && (
-                        <>
-                          <span className="text-slate-400">•</span>
-                          <Badge
-                            className={`text-xs ${
-                              acc.status === "active"
+                    >
+                      <div className="flex items-center gap-2">
+                        {acc.isDemo && (
+                          <Badge className="text-xs bg-purple-500/20 text-purple-400 mr-1">
+                            DEMO
+                          </Badge>
+                        )}
+                        <span className="font-medium">
+                          ${acc.initial_balance?.toLocaleString()}
+                        </span>
+                        <span className="text-slate-400">•</span>
+                        <span className="text-slate-400 text-xs">
+                          {acc.platform}
+                        </span>
+                        <span className="text-slate-400">•</span>
+                        <span className="text-xs text-emerald-400">
+                          {acc.current_phase === "phase1"
+                            ? t("terminal.phase1")
+                            : acc.current_phase === "phase2"
+                              ? t("terminal.phase2")
+                              : acc.current_phase === "funded"
+                                ? t("terminal.funded")
+                                : acc.current_phase === "failed"
+                                  ? t("terminal.failed")
+                                  : acc.current_phase}
+                        </span>
+                        {acc.status && (
+                          <>
+                            <span className="text-slate-400">•</span>
+                            <Badge
+                              className={`text-xs ${acc.status === "active"
                                 ? "bg-emerald-500/20 text-emerald-400"
                                 : acc.status === "paused"
                                   ? "bg-amber-500/20 text-amber-400"
                                   : "bg-slate-500/20 text-slate-400"
-                            }`}
-                          >
-                            {t(`status.${acc.status}`)}
-                          </Badge>
-                        </>
-                      )}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                                }`}
+                            >
+                              {t(`status.${acc.status}`)}
+                            </Badge>
+                          </>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <Badge
-            className={`text-xs hidden md:flex   ${isConnected ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400 "}`}
+            className={`text-xs hidden lg:flex ${isConnected ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400 "}`}
           >
             {isConnected ? (
               <Wifi className="w-3 h-3 mr-1" />
@@ -4174,14 +4179,13 @@ export default function TradingTerminal() {
           </Badge>
           {/* WebSocket Connection Status */}
           <Badge
-            className={`text-xs cursor-help transition-colors hidden md:flex
- ${
-   websocketStatus.connected
-     ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-     : websocketStatus.status === "reconnecting"
-       ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 animate-pulse"
-       : "bg-red-500/20 text-red-400 border border-red-500/30"
- }`}
+            className={`text-xs cursor-help transition-colors hidden lg:flex
+ ${websocketStatus.connected
+                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                : websocketStatus.status === "reconnecting"
+                  ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 animate-pulse"
+                  : "bg-red-500/20 text-red-400 border border-red-500/30"
+              }`}
             title={
               websocketStatus.connected
                 ? "WebSocket Connected - Real-time updates active"
@@ -4241,74 +4245,80 @@ export default function TradingTerminal() {
         </Card>
       )}
 
-      {/* Mobile Tabs */}
+      {/* Mobile (small screens): show everything in sequence (no tabs) */}
       {hasValidAccount && (
         <div className="lg:hidden space-y-6">
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="w-full"
-          >
+          {/* 1) Prices / Symbols */}
+          <Card className="bg-slate-900 border-slate-800 p-3">
+            <h4 className="text-white font-medium mb-3">
+              Market Watch
+            </h4>
+            <div className="h-[320px]">
+              <MarketWatchlist
+                onSymbolSelect={(symbol) => {
+                  setSelectedSymbol(symbol);
+                }}
+                selectedSymbol={selectedSymbol}
+              />
+            </div>
+          </Card>
+
+          {/* 2) Chart - min-w-0 so chart fits viewport on mobile */}
+          <Card className="bg-slate-900 border-slate-800 p-3 min-w-0 overflow-hidden">
+            <h4 className="text-white font-medium mb-3">
+              {t("terminal.tabs.chart")}
+            </h4>
+            <div className="h-[380px] min-w-0">
+              <TradingChart
+                key={`chart-mobile-${selectedSymbol?.symbol}`}
+                symbol={selectedSymbol}
+                openPositions={positions}
+                onPriceUpdate={handlePriceUpdate}
+              />
+            </div>
+          </Card>
+
+          {/* 3) New Order / Trade */}
+          <Card className="bg-slate-900 border-slate-800 p-3">
+            <h4 className="text-white font-medium mb-3">
+              {t("terminal.tabs.trade")}
+            </h4>
+            <TradingPanel
+              selectedSymbol={enrichedSelectedSymbol}
+              accountBalance={account.freeMargin}
+              onExecuteTrade={handleExecuteTrade}
+              disabled={(() => {
+                const statusUpper = String(account.status || "").toUpperCase();
+                return (
+                  statusUpper.includes("DAILY") ||
+                  statusUpper.includes("FAIL") ||
+                  statusUpper.includes("DISQUAL") ||
+                  statusUpper === "PAUSED" ||
+                  statusUpper === "CLOSED"
+                );
+              })()}
+              chartPrice={(() => {
+                const priceData = unifiedPrices[selectedSymbol?.symbol];
+                return priceData && typeof priceData === "object"
+                  ? priceData.bid
+                  : priceData;
+              })()}
+            />
+          </Card>
+
+          {/* 4) Positions / Pending / History (tabs like before) */}
+          <Tabs defaultValue="positions" className="w-full">
             <TabsList className="grid grid-cols-3 bg-slate-900 border border-slate-800">
-              <TabsTrigger value="chart">
-                {t("terminal.tabs.chart")}
-              </TabsTrigger>
-              <TabsTrigger value="trade">
-                {t("terminal.tabs.trade")}
-              </TabsTrigger>
               <TabsTrigger value="positions">
-                {t("terminal.tabs.positions")}
+                {t("terminal.tabs.positions")} ({positions.length})
+              </TabsTrigger>
+              <TabsTrigger value="pending">
+                {t("terminal.tabs.pending")} ({pendingOrders.length})
+              </TabsTrigger>
+              <TabsTrigger value="history">
+                {t("terminal.tabs.history")} ({tradeHistory.length})
               </TabsTrigger>
             </TabsList>
-
-            <TabsContent value="chart" className="mt-4">
-              <div className="h-[400px]">
-                <TradingChart
-                  key={`chart-mobile-${selectedSymbol?.symbol}`}
-                  symbol={selectedSymbol}
-                  openPositions={positions}
-                  onPriceUpdate={handlePriceUpdate}
-                />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="trade" className="mt-4">
-              <TradingPanel
-                selectedSymbol={enrichedSelectedSymbol}
-                accountBalance={account.freeMargin}
-                onExecuteTrade={handleExecuteTrade}
-                disabled={(() => {
-                  const statusUpper = String(
-                    account.status || "",
-                  ).toUpperCase();
-                  return (
-                    statusUpper.includes("DAILY") ||
-                    statusUpper.includes("FAIL") ||
-                    statusUpper.includes("DISQUAL") ||
-                    statusUpper === "PAUSED" ||
-                    statusUpper === "CLOSED"
-                  );
-                })()}
-                chartPrice={(() => {
-                  const priceData = unifiedPrices[selectedSymbol?.symbol];
-                  return priceData && typeof priceData === "object"
-                    ? priceData.bid
-                    : priceData;
-                })()}
-              />
-            </TabsContent>
-
-            <TabsContent value="watchlist" className="mt-4">
-              <div className="h-[400px]">
-                <MarketWatchlist
-                  onSymbolSelect={(symbol) => {
-                    setSelectedSymbol(symbol);
-                    setActiveTab("chart");
-                  }}
-                  selectedSymbol={selectedSymbol}
-                />
-              </div>
-            </TabsContent>
 
             <TabsContent value="positions" className="mt-4">
               <OpenPositions
@@ -4319,20 +4329,126 @@ export default function TradingTerminal() {
                 onModifyPosition={handleModifyPosition}
                 accountStatus={account.status}
               />
-              {tradeHistory.length > 0 && (
-                <Card className="bg-slate-900 border-slate-800 p-4 mt-4">
-                  <h4 className="text-white font-medium mb-3">
-                    {t("terminal.tradeHistory")}
-                  </h4>
-                  <div className="space-y-2 max-h-48 overflow-auto">
-                    {tradeHistory.map((trade, i) => (
+            </TabsContent>
+
+            <TabsContent value="pending" className="mt-4">
+              <Card className="bg-slate-900 border-slate-800 p-4">
+                {pendingOrders.length === 0 ? (
+                  <p className="text-slate-400 text-center py-6">
+                    {t("terminal.noPendingOrders")}
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {pendingOrders.map((order) => (
                       <div
-                        key={i}
+                        key={order.id}
+                        className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Badge
+                            className={
+                              order.type === "buy"
+                                ? "bg-emerald-500/20 text-emerald-400"
+                                : "bg-red-500/20 text-red-400"
+                            }
+                          >
+                            {(order.type === "buy"
+                              ? t("terminal.tradingPanel.buyLong")
+                              : t("terminal.tradingPanel.sellShort")
+                            ).toUpperCase()}{" "}
+                            {t("terminal.tradingPanel.limit").toUpperCase()}
+                          </Badge>
+                          <span className="text-white">{order.symbol}</span>
+                          <span className="text-slate-400 text-sm">
+                            {order.lotSize} {t("terminal.lots")}
+                          </span>
+                          <span className="text-amber-400 text-sm font-mono">
+                            @ {order.limitPrice}
+                          </span>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                          onClick={async () => {
+                            try {
+                              if (order.isDemo || selectedAccount?.isDemo) {
+                                const newOrders = demoPendingOrders.filter(
+                                  (o) => o.id !== order.id,
+                                );
+                                setDemoPendingOrders(newOrders);
+                                saveDemoAccountTrades(
+                                  positions,
+                                  demoClosedTrades,
+                                  newOrders,
+                                  account.balance,
+                                  account.equity,
+                                );
+                                toast({
+                                  title: t("terminal.orderCancelled"),
+                                  description: t(
+                                    "terminal.orderCancelledSuccess",
+                                  ),
+                                });
+                                return;
+                              }
+                              await cancelPendingOrder(order.id);
+                              setPendingOrders((prev) =>
+                                prev.filter((o) => o.id !== order.id),
+                              );
+                              queryClient.invalidateQueries({
+                                queryKey: ["pending-orders", selectedAccountId],
+                              });
+                              toast({
+                                title: t("terminal.orderCancelled"),
+                                description: t(
+                                  "terminal.orderCancelledSuccess",
+                                ),
+                              });
+                            } catch (error) {
+                              console.error(
+                                "Failed to cancel pending order:",
+                                error,
+                              );
+                              toast({
+                                title: t("terminal.cancelFailed"),
+                                description:
+                                  error.message || "Failed to cancel order",
+                                variant: "destructive",
+                              });
+                            }
+                          }}
+                        >
+                          <X className="w-4 h-4 mr-1" />
+                          {t("terminal.cancel")}
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="history" className="mt-4">
+              <Card className="bg-slate-900 border-slate-800 p-4">
+                {tradeHistory.length === 0 ? (
+                  <p className="text-slate-400 text-center py-6">
+                    {t("terminal.noClosedTrades")}
+                  </p>
+                ) : (
+                  <div className="space-y-2 max-h-80 overflow-auto">
+                    {tradeHistory.slice(0, 200).map((trade, i) => (
+                      <div
+                        key={trade.id ?? i}
                         className="flex items-center justify-between p-2 bg-slate-800/50 rounded-lg text-sm"
                       >
                         <div className="flex items-center gap-2">
                           <Badge
-                            className={`text-xs ${trade.type === "buy" ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400"}`}
+                            className={`text-xs ${
+                              trade.type === "buy"
+                                ? "bg-emerald-500/20 text-emerald-400"
+                                : "bg-red-500/20 text-red-400"
+                            }`}
                           >
                             {(trade.type === "buy"
                               ? t("terminal.tradingPanel.buyLong")
@@ -4341,91 +4457,21 @@ export default function TradingTerminal() {
                           </Badge>
                           <span className="text-white">{trade.symbol}</span>
                         </div>
-                        {/* Show breach PnL if auto-closed due to limit breach, otherwise show realized PnL */}
-                        {/* Show breach snapshot if auto-closed due to limit breach */}
-                        {(() => {
-                          // Check if trade was auto-closed due to risk limit breach
-                          const isAutoClosed =
-                            trade.closeReason === "RISK_AUTO_CLOSE" ||
-                            trade.closeReason === "risk_auto_close" ||
-                            String(trade.closeReason || "").toUpperCase() ===
-                              "RISK_AUTO_CLOSE";
-
-                          // Check if breach snapshot exists
-                          const isBreachTriggered =
-                            trade.breachTriggered === true ||
-                            trade.breachTriggered === 1 ||
-                            String(trade.breachTriggered) === "true";
-                          const hasBreachPnL =
-                            trade.breachUnrealizedPnl !== null &&
-                            trade.breachUnrealizedPnl !== undefined &&
-                            Number.isFinite(trade.breachUnrealizedPnl);
-
-                          // Show breach snapshot if:
-                          // 1. Trade was auto-closed due to risk limit breach, OR
-                          // 2. Breach snapshot exists (breachTriggered + breachUnrealizedPnl)
-                          const shouldShow =
-                            isAutoClosed || (isBreachTriggered && hasBreachPnL);
-
-                          if (
-                            isAutoClosed ||
-                            isBreachTriggered ||
-                            hasBreachPnL
-                          ) {
-                            console.log(
-                              "🔍 [History Display] Checking breach display:",
-                              {
-                                tradeId: trade.id,
-                                isAutoClosed,
-                                isBreachTriggered,
-                                hasBreachPnL,
-                                shouldShow,
-                                breachTriggered: trade.breachTriggered,
-                                breachUnrealizedPnl: trade.breachUnrealizedPnl,
-                                closeReason: trade.closeReason,
-                                fullTrade: trade,
-                              },
-                            );
-                          }
-
-                          return shouldShow;
-                        })() ? (
-                          <div className="text-right">
-                            {/* Show breach PnL if available, otherwise show realized PnL */}
-                            {trade.breachUnrealizedPnl !== null &&
-                            trade.breachUnrealizedPnl !== undefined &&
-                            Number.isFinite(trade.breachUnrealizedPnl) ? (
-                              <span
-                                className={`font-mono font-bold ${trade.breachUnrealizedPnl >= 0 ? "text-emerald-400" : "text-red-400"}`}
-                              >
-                                {trade.breachUnrealizedPnl >= 0 ? "+" : ""}
-                                {trade.breachUnrealizedPnl.toFixed(2)}
-                              </span>
-                            ) : (
-                              <span
-                                className={`font-mono font-bold ${trade.pnl >= 0 ? "text-emerald-400" : "text-red-400"}`}
-                              >
-                                {trade.pnl >= 0 ? "+" : ""}
-                                {trade.pnl.toFixed(2)}
-                              </span>
-                            )}
-                            <Badge className="ml-1 text-xs bg-red-500/20 text-red-400">
-                              {t("terminal.history.breach")}
-                            </Badge>
-                          </div>
-                        ) : (
-                          <span
-                            className={`font-mono font-bold ${trade.pnl >= 0 ? "text-emerald-400" : "text-red-400"}`}
-                          >
-                            {trade.pnl >= 0 ? "+" : ""}
-                            {trade.pnl.toFixed(2)}
-                          </span>
-                        )}
+                        <span
+                          className={`font-mono font-bold ${
+                            (trade.pnl ?? 0) >= 0
+                              ? "text-emerald-400"
+                              : "text-red-400"
+                          }`}
+                        >
+                          {(trade.pnl ?? 0) >= 0 ? "+" : ""}
+                          {(trade.pnl ?? 0).toFixed(2)}
+                        </span>
                       </div>
                     ))}
                   </div>
-                </Card>
-              )}
+                )}
+              </Card>
             </TabsContent>
           </Tabs>
         </div>
@@ -4493,7 +4539,7 @@ export default function TradingTerminal() {
 
             {/* Center - Chart */}
             <div
-              className={`${sidebarCollapsed ? "col-span-8" : "col-span-7"} transition-all h-[450px]`}
+              className={`${sidebarCollapsed ? "col-span-8" : "col-span-7"} transition-all h-[450px] min-w-0`}
             >
               <TradingChart
                 key={`chart-desktop-${selectedSymbol?.symbol}`}

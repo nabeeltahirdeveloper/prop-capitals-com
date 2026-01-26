@@ -30,6 +30,18 @@ export default function ChallengeRulesPanel({ account, challenge }) {
     overallDrawdownProgress: 0,
   });
 
+  // ✅ Use props (source of truth) instead of calling getChallenge() without id
+  // getChallenge(id) requires an id; calling without id fails and results in default 0.
+  const maxTradingDays = parseInt(
+    challenge?.max_trading_days ??
+    challenge?.maxTradingDays ??
+    account?.maxTradingDays ??
+    0,
+    10,
+  ) || 0;
+
+
+
   // Update metrics whenever account changes
   useEffect(() => {
     if (!account) return;
