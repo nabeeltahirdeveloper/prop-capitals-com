@@ -137,17 +137,11 @@ export default function ChallengeRulesPanel({ account, challenge }) {
 
       <div className="space-y-4 mb-6">
         {/* Profit Target */}
-        <div
-          className={`p-4 rounded-lg border ${
-            profitPercent >= profitTarget
-              ? "bg-emerald-500/10 border-emerald-500/30"
-              : profitPercent >= profitTarget * 0.7
-                ? "bg-amber-500/10 border-amber-500/30"
-                : profitPercent < 0
-                  ? "bg-red-500/10 border-red-500/30"
-                  : "bg-slate-800/50 border-slate-700"
-          }`}
-        >
+        <div className={`p-4 rounded-lg border ${profitPercent >= profitTarget ? 'bg-emerald-500/10 border-emerald-500/30' :
+          profitPercent >= profitTarget * 0.7 ? 'bg-amber-500/10 border-amber-500/30' :
+            profitPercent < 0 ? 'bg-red-500/10 border-red-500/30' :
+              'bg-slate-800/50 border-slate-700'
+          }`}>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               {profitPercent >= profitTarget ? (
@@ -163,22 +157,14 @@ export default function ChallengeRulesPanel({ account, challenge }) {
                 {t("dashboard.rulesPanel.profitTarget")}
               </span>
             </div>
-            <Badge
-              className={
-                profitPercent >= profitTarget
-                  ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30 pointer-events-none"
-                  : profitPercent >= profitTarget * 0.7
-                    ? "bg-amber-500/20 text-amber-400 border-amber-500/30 pointer-events-none"
-                    : profitPercent < 0
-                      ? "bg-red-500/20 text-red-400 border-red-500/30 pointer-events-none"
-                      : "bg-slate-500/20 text-slate-400 border-slate-500/30 pointer-events-none"
-              }
-            >
-              {profitPercent >= profitTarget
-                ? t("dashboard.rulesPanel.status.reached")
-                : profitPercent < 0
-                  ? t("dashboard.rulesPanel.status.loss")
-                  : `${profitProgress.toFixed(0)}%`}
+            <Badge className={
+              profitPercent >= profitTarget ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 pointer-events-none' :
+                profitPercent >= profitTarget * 0.7 ? 'bg-amber-500/20 text-amber-400 border-amber-500/30 pointer-events-none' :
+                  profitPercent < 0 ? 'bg-red-500/20 text-red-400 border-red-500/30 pointer-events-none' :
+                    'bg-slate-500/20 text-slate-400 border-slate-500/30 pointer-events-none'
+
+            }>
+              {profitPercent >= profitTarget ? t('dashboard.rulesPanel.status.reached') : profitPercent < 0 ? t('dashboard.rulesPanel.status.loss') : `${profitProgress.toFixed(0)}%`}
             </Badge>
           </div>
           <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
@@ -220,17 +206,11 @@ export default function ChallengeRulesPanel({ account, challenge }) {
         </div>
 
         {/* Daily Loss Limit */}
-        <div
-          className={`p-4 rounded-lg border ${
-            dailyLoss >= maxDailyLoss
-              ? "bg-red-500/10 border-red-500/30"
-              : dailyLossProgress >= 80
-                ? "bg-red-500/10 border-red-500/30"
-                : dailyLossProgress >= 50
-                  ? "bg-amber-500/10 border-amber-500/30"
-                  : "bg-emerald-500/10 border-emerald-500/30"
-          }`}
-        >
+        <div className={`p-4 rounded-lg border ${dailyLoss >= maxDailyLoss ? 'bg-red-500/10 border-red-500/30' :
+          dailyLossProgress >= 80 ? 'bg-red-500/10 border-red-500/30' :
+            dailyLossProgress >= 50 ? 'bg-amber-500/10 border-amber-500/30' :
+              'bg-emerald-500/10 border-emerald-500/30'
+          }`}>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               {dailyLoss >= maxDailyLoss ? (
@@ -300,17 +280,12 @@ export default function ChallengeRulesPanel({ account, challenge }) {
         </div>
 
         {/* Overall Drawdown */}
-        <div
-          className={`p-4 rounded-lg border ${
-            overallDrawdown >= maxOverallDrawdown
-              ? "bg-red-500/10 border-red-500/30"
-              : overallDrawdownProgress >= 80
-                ? "bg-red-500/10 border-red-500/30"
-                : overallDrawdownProgress >= 50
-                  ? "bg-amber-500/10 border-amber-500/30"
-                  : "bg-emerald-500/10 border-emerald-500/30"
-          }`}
-        >
+        <div className={`p-4 rounded-lg border ${overallDrawdown >= maxOverallDrawdown ? 'bg-red-500/10 border-red-500/30' :
+          overallDrawdownProgress >= 80 ? 'bg-red-500/10 border-red-500/30' :
+            overallDrawdownProgress >= 50 ? 'bg-amber-500/10 border-amber-500/30' :
+              'bg-emerald-500/10 border-emerald-500/30'
+          }`}>
+
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               {overallDrawdown >= maxOverallDrawdown ? (
@@ -326,24 +301,16 @@ export default function ChallengeRulesPanel({ account, challenge }) {
                 {t("dashboard.rulesPanel.overallDrawdown")}
               </span>
             </div>
-            <Badge
-              className={
-                overallDrawdown >= maxOverallDrawdown
-                  ? "bg-red-500/20 text-red-400 border-red-500/30 border-none pointer-events-none "
-                  : overallDrawdownProgress >= 80
-                    ? "bg-red-500/20 text-red-400 border-red-500/30 border-none pointer-events-none "
-                    : overallDrawdownProgress >= 50
-                      ? "bg-amber-500/20 text-amber-400 border-amber-500/30 border-none pointer-events-none"
-                      : "bg-emerald-500/20 text-emerald-400 border-emerald-500/30 pointer-events-none"
-              }
-            >
-              {overallDrawdown >= maxOverallDrawdown
-                ? t("dashboard.rulesPanel.status.violated")
-                : overallDrawdownProgress >= 80
-                  ? t("dashboard.rulesPanel.status.danger")
-                  : overallDrawdownProgress >= 50
-                    ? t("dashboard.rulesPanel.status.warning")
-                    : t("dashboard.rulesPanel.status.safe")}
+            <Badge className={
+
+              overallDrawdown >= maxOverallDrawdown ? 'bg-red-500/20 text-red-400 border-red-500/30 border-none pointer-events-none ' :
+                overallDrawdownProgress >= 80 ? 'bg-red-500/20 text-red-400 border-red-500/30 border-none pointer-events-none ' :
+                  overallDrawdownProgress >= 50 ? 'bg-amber-500/20 text-amber-400 border-amber-500/30 border-none pointer-events-none' :
+                    'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 pointer-events-none'
+            }>
+              {overallDrawdown >= maxOverallDrawdown ? t('dashboard.rulesPanel.status.violated') :
+                overallDrawdownProgress >= 80 ? t('dashboard.rulesPanel.status.danger') :
+                  overallDrawdownProgress >= 50 ? t('dashboard.rulesPanel.status.warning') : t('dashboard.rulesPanel.status.safe')}
             </Badge>
           </div>
           <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
@@ -405,37 +372,21 @@ export default function ChallengeRulesPanel({ account, challenge }) {
             </p>
           </div>
 
-          <div
-            className={`p-4 rounded-lg border ${
-              daysRemaining === 0
-                ? "bg-red-500/10 border-red-500/30"
-                : daysRemaining <= 5
-                  ? "bg-amber-500/10 border-amber-500/30"
-                  : "bg-slate-800/50 border-slate-700"
-            }`}
-          >
+          <div className={`p-4 rounded-lg border  border-slate-700
+            `}>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-slate-300 text-sm">
-                {t("dashboard.rulesPanel.daysRemaining")}
-              </span>
-              {daysRemaining === 0 ? (
-                <XCircle className="w-4 h-4 text-red-400" />
-              ) : daysRemaining <= 5 ? (
-                <AlertTriangle className="w-4 h-4 text-amber-400" />
-              ) : (
-                <CheckCircle className="w-4 h-4 text-emerald-400" />
-              )}
+              <span className="text-slate-300 text-sm">{t('dashboard.rulesPanel.daysRemaining')}</span>
+              {/* {daysRemaining === 0 ? <XCircle className="w-4 h-4 text-red-400" /> :
+                daysRemaining <= 5 ? <AlertTriangle className="w-4 h-4 text-amber-400" /> : 
+              <CheckCircle className="w-4 h-4 text-emerald-400" />} */}
             </div>
-            <p
-              className={`text-2xl font-bold ${
-                daysRemaining === 0
-                  ? "text-red-400"
-                  : daysRemaining <= 5
-                    ? "text-amber-400"
-                    : "text-emerald-400"
-              }`}
-            >
-              {daysRemaining}
+            {/* <p className={`text-2xl font-bold ${daysRemaining === 0 ? 'text-red-400' :
+              daysRemaining <= 5 ? 'text-amber-400' :
+                'text-emerald-400'
+              }`}> */}
+              <p className='text-2xl text-white'>
+              {maxTradingDays}
+              {/* {daysRemaining} */}
             </p>
           </div>
         </div>
@@ -476,11 +427,10 @@ export default function ChallengeRulesPanel({ account, challenge }) {
           ].map((rule, i) => (
             <div
               key={i}
-              className={`p-3 rounded-lg flex items-center gap-2 ${
-                rule.allowed
-                  ? "bg-emerald-500/10 border border-emerald-500/30"
-                  : "bg-red-500/10 border border-red-500/30"
-              }`}
+              className={`p-3 rounded-lg flex items-center gap-2 ${rule.allowed
+                ? 'bg-emerald-500/10 border border-emerald-500/30'
+                : 'bg-red-500/10 border border-red-500/30'
+                }`}
             >
               <rule.icon
                 className={`w-4 h-4 ${rule.allowed ? "text-emerald-400" : "text-red-400"}`}

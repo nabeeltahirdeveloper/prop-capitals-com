@@ -433,8 +433,8 @@ export default function Support() {
                   <div>
                     <p className="text-white font-medium">{ticket.subject}</p>
                     <div className="flex items-center gap-3 mt-2">
-                      <span className="text-xs text-slate-400 capitalize">
-                        {ticket.category}
+                      <span className="text-xs text-slate-400">
+                        {t(`support.${ticket.category}`) || ticket.category}
                       </span>
                       <span className="text-slate-600">•</span>
                       <span className="text-xs text-slate-400">
