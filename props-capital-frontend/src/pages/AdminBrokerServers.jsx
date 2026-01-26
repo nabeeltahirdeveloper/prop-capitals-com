@@ -1,7 +1,12 @@
 import React, { useState } from "react";
-// TODO: Replace with broker servers API when available
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "../contexts/LanguageContext";
+import {
+  adminGetAllBrokerServers,
+  adminCreateBrokerServer,
+  adminDeleteBrokerServer,
+  adminTestBrokerServerConnection,
+} from "../api/admin";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -32,6 +38,7 @@ import {
   Trash2,
   TestTube,
 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function AdminBrokerServers() {
   const { t } = useTranslation();
@@ -48,36 +55,55 @@ export default function AdminBrokerServers() {
     api_secret: "",
     is_demo: true,
     timezone: "UTC",
-    leverage_options: [100, 200, 500],
   });
 
   const queryClient = useQueryClient();
 
-  const { data: servers = [], isLoading } = useQuery({
+  const {
+    data: servers = [],
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["broker-servers"],
-    queryFn: () => Promise.resolve([]), // TODO: Replace with broker servers API
+    queryFn: adminGetAllBrokerServers,
   });
 
   const createServerMutation = useMutation({
-    mutationFn: (data) => Promise.resolve({ id: "1", ...data }), // TODO: Replace with broker servers API
+    mutationFn: adminCreateBrokerServer,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["broker-servers"] });
       setShowAddDialog(false);
       resetForm();
+      toast.success(t("admin.brokerServers.toast.createSuccess"));
+    },
+    onError: (error) => {
+      toast.error(error.message || t("admin.brokerServers.toast.createError"));
     },
   });
 
   const deleteServerMutation = useMutation({
-    mutationFn: (id) => Promise.resolve(), // TODO: Replace with broker servers API
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["broker-servers"] }),
+    mutationFn: adminDeleteBrokerServer,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["broker-servers"] });
+      toast.success(t("admin.brokerServers.toast.deleteSuccess"));
+    },
+    onError: (error) => {
+      toast.error(error.message || t("admin.brokerServers.toast.deleteError"));
+    },
   });
 
   const testConnectionMutation = useMutation({
-    mutationFn: async (server) => {
-      // TODO: Replace with broker integration API
-      const response = { success: false, message: "Not implemented" };
-      return response.data;
+    mutationFn: adminTestBrokerServerConnection,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["broker-servers"] });
+      if (data.success) {
+        toast.success(t("admin.brokerServers.toast.connectionSuccess"));
+      } else {
+        toast.warning(data.message || t("admin.brokerServers.toast.connectionFailed"));
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message || t("admin.brokerServers.toast.connectionError"));
     },
   });
 
@@ -93,20 +119,23 @@ export default function AdminBrokerServers() {
       api_secret: "",
       is_demo: true,
       timezone: "UTC",
-      leverage_options: [100, 200, 500],
     });
   };
 
   const handleTestConnection = async (server) => {
     setTestingServer(server.id);
     try {
-      const result = await testConnectionMutation.mutateAsync(server);
-      // TODO: Update server connection status via API
-      queryClient.invalidateQueries({ queryKey: ["broker-servers"] });
+      await testConnectionMutation.mutateAsync(server.id);
     } catch (e) {
-      // TODO: Update server connection status via API
+      // Error handled by mutation
     }
     setTestingServer(null);
+  };
+
+  const handleDeleteServer = (server) => {
+    if (window.confirm(t("admin.brokerServers.confirmDelete"))) {
+      deleteServerMutation.mutate(server.id);
+    }
   };
 
   const getStatusBadge = (status) => {
@@ -141,14 +170,52 @@ export default function AdminBrokerServers() {
         return "from-blue-500 to-blue-600";
       case "MT5":
         return "from-purple-500 to-purple-600";
-      case "cTrader":
+      case "CTRADER":
         return "from-cyan-500 to-cyan-600";
-      case "DXTrade":
+      case "DXTRADE":
         return "from-amber-500 to-amber-600";
       default:
         return "from-slate-500 to-slate-600";
     }
   };
+
+  const getPlatformLabel = (platform) => {
+    switch (platform) {
+      case "MT4":
+        return t("admin.brokerServers.platforms.mt4");
+      case "MT5":
+        return t("admin.brokerServers.platforms.mt5");
+      case "CTRADER":
+        return t("admin.brokerServers.platforms.ctrader");
+      case "DXTRADE":
+        return t("admin.brokerServers.platforms.dxtrade");
+      default:
+        return platform;
+    }
+  };
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <Card className="bg-slate-900 border-slate-800 p-8 text-center">
+          <XCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-white mb-2">
+            {t("admin.brokerServers.error.title")}
+          </h3>
+          <p className="text-slate-400 mb-4">
+            {error.message || t("admin.brokerServers.error.description")}
+          </p>
+          <Button
+            onClick={() => queryClient.invalidateQueries({ queryKey: ["broker-servers"] })}
+            className="bg-gradient-to-r from-emerald-500 to-cyan-500"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            {t("admin.brokerServers.error.retry")}
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -182,6 +249,9 @@ export default function AdminBrokerServers() {
               <DialogTitle className="text-white text-base sm:text-lg md:text-xl">
                 {t("admin.brokerServers.dialog.title")}
               </DialogTitle>
+              <DialogDescription className="text-slate-400 text-sm">
+                {t("admin.brokerServers.dialog.description")}
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
               <div className="grid grid-cols-2 gap-4">
@@ -220,10 +290,10 @@ export default function AdminBrokerServers() {
                       <SelectItem value="MT5" className="text-white">
                         {t("admin.brokerServers.platforms.mt5")}
                       </SelectItem>
-                      <SelectItem value="cTrader" className="text-white">
+                      <SelectItem value="CTRADER" className="text-white">
                         {t("admin.brokerServers.platforms.ctrader")}
                       </SelectItem>
-                      <SelectItem value="DXTrade" className="text-white">
+                      <SelectItem value="DXTRADE" className="text-white">
                         {t("admin.brokerServers.platforms.dxtrade")}
                       </SelectItem>
                     </SelectContent>
@@ -260,7 +330,7 @@ export default function AdminBrokerServers() {
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        server_port: parseInt(e.target.value),
+                        server_port: parseInt(e.target.value) || 443,
                       })
                     }
                     className="bg-slate-800 border-slate-700 text-white text-sm"
@@ -304,8 +374,8 @@ export default function AdminBrokerServers() {
                 </div>
               )}
 
-              {(formData.platform === "cTrader" ||
-                formData.platform === "DXTrade") && (
+              {(formData.platform === "CTRADER" ||
+                formData.platform === "DXTRADE") && (
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5 sm:space-y-2">
                     <Label className="text-slate-400 text-xs sm:text-sm">
@@ -352,7 +422,7 @@ export default function AdminBrokerServers() {
               <Button
                 onClick={() => createServerMutation.mutate(formData)}
                 className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500"
-                disabled={createServerMutation.isPending}
+                disabled={createServerMutation.isPending || !formData.name || !formData.server_address}
               >
                 {createServerMutation.isPending
                   ? t("admin.brokerServers.adding")
@@ -363,117 +433,145 @@ export default function AdminBrokerServers() {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {servers.map((server) => (
-          <Card
-            key={server.id}
-            className="bg-slate-900 border-slate-800 p-4 sm:p-6"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div
-                className={`w-12 h-12 rounded-xl bg-gradient-to-br ${getPlatformColor(
-                  server.platform
-                )} flex items-center justify-center`}
-              >
-                <Server className="w-6 h-6 text-white" />
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="bg-slate-900 border-slate-800 p-4 sm:p-6 animate-pulse">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-12 h-12 rounded-xl bg-slate-800"></div>
+                <div className="w-20 h-6 rounded bg-slate-800"></div>
               </div>
-              <div className="flex items-center gap-2">
-                {server.is_demo && (
-                  <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">
-                    {t("admin.brokerServers.badges.demo")}
-                  </Badge>
-                )}
-                {getStatusBadge(server.connection_status)}
+              <div className="h-6 w-32 bg-slate-800 rounded mb-2"></div>
+              <div className="h-4 w-48 bg-slate-800 rounded mb-4"></div>
+              <div className="space-y-2">
+                <div className="h-4 bg-slate-800 rounded"></div>
+                <div className="h-4 bg-slate-800 rounded"></div>
               </div>
-            </div>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {servers.map((server) => (
+            <Card
+              key={server.id}
+              className="bg-slate-900 border-slate-800 p-4 sm:p-6"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div
+                  className={`w-12 h-12 rounded-xl bg-gradient-to-br ${getPlatformColor(
+                    server.platform
+                  )} flex items-center justify-center`}
+                >
+                  <Server className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex items-center gap-2">
+                  {server.is_demo && (
+                    <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">
+                      {t("admin.brokerServers.badges.demo")}
+                    </Badge>
+                  )}
+                  {getStatusBadge(server.connection_status)}
+                </div>
+              </div>
 
-            <h3 className="text-lg font-semibold text-white mb-1">
-              {server.name}
-            </h3>
-            <p className="text-slate-400 text-sm mb-4">
-              {server.server_address}:{server.server_port}
-            </p>
+              <h3 className="text-lg font-semibold text-white mb-1">
+                {server.name}
+              </h3>
+              <p className="text-slate-400 text-sm mb-4">
+                {server.server_address}:{server.server_port}
+              </p>
 
-            <div className="space-y-2 text-sm mb-4">
-              <div className="flex justify-between">
-                <span className="text-slate-400">
-                  {t("admin.brokerServers.card.platform")}
-                </span>
-                <span className="text-white font-medium">
-                  {server.platform}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">
-                  {t("admin.brokerServers.card.timezone")}
-                </span>
-                <span className="text-white">{server.timezone}</span>
-              </div>
-              {server.last_sync && (
+              <div className="space-y-2 text-sm mb-4">
                 <div className="flex justify-between">
                   <span className="text-slate-400">
-                    {t("admin.brokerServers.card.lastSync")}
+                    {t("admin.brokerServers.card.platform")}
                   </span>
-                  <span className="text-white">
-                    {new Date(server.last_sync).toLocaleString()}
+                  <span className="text-white font-medium">
+                    {getPlatformLabel(server.platform)}
                   </span>
                 </div>
-              )}
-            </div>
-
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1 border-slate-700 text-slate-300"
-                onClick={() => handleTestConnection(server)}
-                disabled={testingServer === server.id}
-              >
-                {testingServer === server.id ? (
-                  <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
-                ) : (
-                  <TestTube className="w-4 h-4 mr-1" />
+                <div className="flex justify-between">
+                  <span className="text-slate-400">
+                    {t("admin.brokerServers.card.timezone")}
+                  </span>
+                  <span className="text-white">{server.timezone}</span>
+                </div>
+                {server.accounts_count > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">
+                      {t("admin.brokerServers.card.accounts")}
+                    </span>
+                    <span className="text-white">{server.accounts_count}</span>
+                  </div>
                 )}
-                {t("admin.brokerServers.actions.test")}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-slate-700 text-slate-300"
-              >
-                <Settings className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-red-800 text-red-400 hover:bg-red-500/10"
-                onClick={() => deleteServerMutation.mutate(server.id)}
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            </div>
-          </Card>
-        ))}
+                {server.last_sync && (
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">
+                      {t("admin.brokerServers.card.lastSync")}
+                    </span>
+                    <span className="text-white">
+                      {new Date(server.last_sync).toLocaleString()}
+                    </span>
+                  </div>
+                )}
+              </div>
 
-        {servers.length === 0 && !isLoading && (
-          <Card className="bg-slate-900 border-slate-800 p-8 sm:p-12 col-span-full text-center">
-            <Server className="w-10 h-10 sm:w-12 sm:h-12 text-slate-600 mx-auto mb-3 sm:mb-4" />
-            <h3 className="text-base sm:text-lg font-semibold text-white mb-1.5 sm:mb-2">
-              {t("admin.brokerServers.empty.title")}
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-400 mb-4 sm:mb-6">
-              {t("admin.brokerServers.empty.description")}
-            </p>
-            <Button
-              onClick={() => setShowAddDialog(true)}
-              className="bg-gradient-to-r from-emerald-500 to-cyan-500 w-full sm:w-auto"
-            >
-              <Plus className="w-4 h-4 mr-2" />{" "}
-              {t("admin.brokerServers.addServer")}
-            </Button>
-          </Card>
-        )}
-      </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 border-slate-700 text-slate-300"
+                  onClick={() => handleTestConnection(server)}
+                  disabled={testingServer === server.id}
+                >
+                  {testingServer === server.id ? (
+                    <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
+                  ) : (
+                    <TestTube className="w-4 h-4 mr-1" />
+                  )}
+                  {t("admin.brokerServers.actions.test")}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-slate-700 text-slate-300"
+                >
+                  <Settings className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-red-800 text-red-400 hover:bg-red-500/10"
+                  onClick={() => handleDeleteServer(server)}
+                  disabled={deleteServerMutation.isPending}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </Card>
+          ))}
+
+          {servers.length === 0 && !isLoading && (
+            <Card className="bg-slate-900 border-slate-800 p-8 sm:p-12 col-span-full text-center">
+              <Server className="w-10 h-10 sm:w-12 sm:h-12 text-slate-600 mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-base sm:text-lg font-semibold text-white mb-1.5 sm:mb-2">
+                {t("admin.brokerServers.empty.title")}
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-400 mb-4 sm:mb-6">
+                {t("admin.brokerServers.empty.description")}
+              </p>
+              <Button
+                onClick={() => setShowAddDialog(true)}
+                className="bg-gradient-to-r from-emerald-500 to-cyan-500 w-full sm:w-auto"
+              >
+                <Plus className="w-4 h-4 mr-2" />{" "}
+                {t("admin.brokerServers.addServer")}
+              </Button>
+            </Card>
+          )}
+        </div>
+      )}
     </div>
   );
 }

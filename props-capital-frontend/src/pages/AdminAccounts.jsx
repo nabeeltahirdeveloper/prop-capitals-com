@@ -110,7 +110,8 @@ export default function AdminAccounts() {
       active: "ACTIVE",
       paused: "PAUSED",
       closed: "CLOSED",
-      failed: "CLOSED", // Failed accounts are closed
+      daily_locked: "DAILY_LOCKED",
+      disqualified: "DISQUALIFIED",
     };
     const backendStatus = statusMap[newStatus] || newStatus.toUpperCase();
     updateStatusMutation.mutate({
@@ -152,15 +153,39 @@ export default function AdminAccounts() {
     });
   };
 
+  const handleForceFail = (account) => {
+    // Force fail changes the phase to FAILED, not the status
+    updatePhaseMutation.mutate({
+      id: account.id,
+      phase: "FAILED",
+    });
+  };
+
+  const handleResetAccount = (account) => {
+    // Reset failed account back to PHASE1 and set status to ACTIVE
+    updatePhaseMutation.mutate({
+      id: account.id,
+      phase: "PHASE1",
+    });
+    updateStatusMutation.mutate({
+      id: account.id,
+      status: "ACTIVE",
+    });
+  };
+
   // Map backend accounts to frontend format
   const mappedAccounts = accountsData.map((account) => {
     const challenge = account.challenge || {};
     const user = account.user || {};
+    // Map all backend TradingAccountStatus enum values
     const statusMap = {
       ACTIVE: "active",
       PAUSED: "paused",
       CLOSED: "closed",
+      DAILY_LOCKED: "daily_locked",
+      DISQUALIFIED: "disqualified",
     };
+    // Map all backend TradingPhase enum values
     const phaseMap = {
       PHASE1: "phase1",
       PHASE2: "phase2",
@@ -288,37 +313,73 @@ export default function AdminAccounts() {
 
             <DropdownMenuSeparator className="bg-slate-800" />
 
-            {row.status === "active" && (
-              <>
-                <DropdownMenuItem
-                  className="
+            {/* Actions for active accounts - can force pass or force fail */}
+            {row.status === "active" &&
+              row.current_phase !== "funded" &&
+              row.current_phase !== "failed" && (
+                <>
+                  <DropdownMenuItem
+                    className="
             cursor-pointer
             text-emerald-400
             data-[highlighted]:bg-slate-800
             data-[highlighted]:text-emerald-300
           "
-                  onClick={() => handleForcePass(row)}
-                >
-                  <CheckCircle className="w-4 h-4 mr-2 data-[highlighted]:text-emerald-300" />
-                  {t("admin.accounts.actions.forcePass")}
-                </DropdownMenuItem>
+                    onClick={() => handleForcePass(row)}
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2 data-[highlighted]:text-emerald-300" />
+                    {t("admin.accounts.actions.forcePass")}
+                  </DropdownMenuItem>
 
-                <DropdownMenuItem
-                  className="
+                  <DropdownMenuItem
+                    className="
             cursor-pointer
             text-red-400
             data-[highlighted]:bg-slate-800
             data-[highlighted]:text-red-300
           "
-                  onClick={() => handleUpdateStatus(row, "failed")}
-                >
-                  <XCircle className="w-4 h-4 mr-2 data-[highlighted]:text-red-300" />
-                  {t("admin.accounts.actions.forceFail")}
-                </DropdownMenuItem>
-              </>
+                    onClick={() => handleForceFail(row)}
+                  >
+                    <XCircle className="w-4 h-4 mr-2 data-[highlighted]:text-red-300" />
+                    {t("admin.accounts.actions.forceFail")}
+                  </DropdownMenuItem>
+                </>
+              )}
+
+            {/* Actions for paused accounts - can resume */}
+            {row.status === "paused" && (
+              <DropdownMenuItem
+                className="
+          cursor-pointer
+          text-emerald-400
+          data-[highlighted]:bg-slate-800
+          data-[highlighted]:text-emerald-300
+        "
+                onClick={() => handleResume(row)}
+              >
+                <RefreshCw className="w-4 h-4 mr-2 data-[highlighted]:text-emerald-300" />
+                {t("admin.accounts.actions.resume")}
+              </DropdownMenuItem>
             )}
 
-            {row.status === "failed" && (
+            {/* Actions for active accounts - can pause */}
+            {row.status === "active" && (
+              <DropdownMenuItem
+                className="
+          cursor-pointer
+          text-yellow-400
+          data-[highlighted]:bg-slate-800
+          data-[highlighted]:text-yellow-300
+        "
+                onClick={() => handlePause(row)}
+              >
+                <XCircle className="w-4 h-4 mr-2 data-[highlighted]:text-yellow-300" />
+                {t("admin.accounts.actions.pause")}
+              </DropdownMenuItem>
+            )}
+
+            {/* Actions for failed phase accounts - can reset */}
+            {row.current_phase === "failed" && (
               <DropdownMenuItem
                 className="
           cursor-pointer
@@ -326,14 +387,15 @@ export default function AdminAccounts() {
           data-[highlighted]:bg-slate-800
           data-[highlighted]:text-cyan-300
         "
-                onClick={() => handleUpdateStatus(row, "active")}
+                onClick={() => handleResetAccount(row)}
               >
                 <RefreshCw className="w-4 h-4 mr-2 data-[highlighted]:text-cyan-300" />
                 {t("admin.accounts.actions.resetAccount")}
               </DropdownMenuItem>
             )}
 
-            {row.status === "passed" && (
+            {/* Actions for phase2 accounts - can move to funded */}
+            {row.current_phase === "phase2" && row.status === "active" && (
               <DropdownMenuItem
                 className="
           cursor-pointer
@@ -395,13 +457,16 @@ export default function AdminAccounts() {
         </Card>
         <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
           <p className="text-xs sm:text-sm text-slate-400">
-            {t("admin.accounts.stats.passed")}
+            {t("admin.accounts.stats.phase2")}
           </p>
           {isLoading ? (
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
             <p className="text-xl sm:text-2xl font-bold text-blue-400">
-              {displayAccounts.filter((a) => a.status === "passed").length}
+              {
+                displayAccounts.filter((a) => a.current_phase === "phase2")
+                  .length
+              }
             </p>
           )}
         </Card>
@@ -413,7 +478,10 @@ export default function AdminAccounts() {
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
             <p className="text-xl sm:text-2xl font-bold text-purple-400">
-              {displayAccounts.filter((a) => a.status === "funded").length}
+              {
+                displayAccounts.filter((a) => a.current_phase === "funded")
+                  .length
+              }
             </p>
           )}
         </Card>
@@ -425,7 +493,10 @@ export default function AdminAccounts() {
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
             <p className="text-xl sm:text-2xl font-bold text-red-400">
-              {displayAccounts.filter((a) => a.status === "failed").length}
+              {
+                displayAccounts.filter((a) => a.current_phase === "failed")
+                  .length
+              }
             </p>
           )}
         </Card>
@@ -455,17 +526,17 @@ export default function AdminAccounts() {
                 <SelectItem value="active" className="text-white">
                   {t("admin.accounts.filter.active")}
                 </SelectItem>
-                <SelectItem value="passed" className="text-white">
-                  {t("admin.accounts.filter.passed")}
+                <SelectItem value="paused" className="text-white">
+                  {t("admin.accounts.filter.paused")}
                 </SelectItem>
-                <SelectItem value="funded" className="text-white">
-                  {t("admin.accounts.filter.funded")}
+                <SelectItem value="closed" className="text-white">
+                  {t("admin.accounts.filter.closed")}
                 </SelectItem>
-                <SelectItem value="failed" className="text-white">
-                  {t("admin.accounts.filter.failed")}
+                <SelectItem value="daily_locked" className="text-white">
+                  {t("admin.accounts.filter.dailyLocked")}
                 </SelectItem>
-                <SelectItem value="suspended" className="text-white">
-                  {t("admin.accounts.filter.suspended")}
+                <SelectItem value="disqualified" className="text-white">
+                  {t("admin.accounts.filter.disqualified")}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -651,7 +722,7 @@ export default function AdminAccounts() {
                     {accountDetails.createdAt
                       ? format(
                           new Date(accountDetails.createdAt),
-                          "MMM d, yyyy"
+                          "MMM d, yyyy",
                         )
                       : "N/A"}
                   </p>
@@ -779,7 +850,7 @@ export default function AdminAccounts() {
                             <p className="text-slate-500 text-xs mt-1">
                               {format(
                                 new Date(violation.createdAt),
-                                "MMM d, yyyy HH:mm"
+                                "MMM d, yyyy HH:mm",
                               )}
                             </p>
                           </div>
