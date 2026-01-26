@@ -52,6 +52,15 @@ export default function AccountMetrics({
   //   account?.balance || 100000,
   // );
 
+
+
+  
+
+
+
+
+
+
   // console.log(account?.balance)
   // Calculate real-time margin and "used" balance: baseBalance - totalMarginUsed
   // This updates in real-time as positions open/close.
