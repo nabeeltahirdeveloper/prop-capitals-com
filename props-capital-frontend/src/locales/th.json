@@ -1055,10 +1055,13 @@
       "candles": "เทียน",
       "tf": "TF",
       "loadingData": "กำลังโหลดข้อมูลกราฟ...",
-      "updating": "กำลังอัปเดต..."
+      "updating": "กำลังอัปเดต...",
+      "switchToLineChart": "เปลี่ยนเป็นกราฟเส้น",
+      "switchToCandlestickChart": "เปลี่ยนเป็นกราฟแท่งเทียน"
     },
     "loadingAccounts": "กำลังโหลดบัญชี...",
     "watchlist": {
+      "title": "ดูราคา",
       "live": "สด",
       "offline": "ออฟไลน์",
       "search": "ค้นหา...",

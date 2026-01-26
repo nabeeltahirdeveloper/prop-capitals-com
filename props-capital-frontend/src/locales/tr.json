@@ -1052,10 +1052,13 @@
       "candles": "Mumlar",
       "tf": "TF",
       "loadingData": "Grafik verisi yükleniyor...",
-      "updating": "Güncelleniyor..."
+      "updating": "Güncelleniyor...",
+      "switchToLineChart": "Çizgi grafiğe geç",
+      "switchToCandlestickChart": "Mum grafiğe geç"
     },
     "loadingAccounts": "Hesaplar yükleniyor...",
     "watchlist": {
+      "title": "Fiyatları Görüntüle",
       "live": "Canlı",
       "offline": "Çevrimdışı",
       "search": "Ara...",

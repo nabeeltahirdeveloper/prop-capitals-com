@@ -1514,8 +1514,8 @@ export default function TradingChart({
             }`}
             title={
               chartType === "candle"
-                ? "Switch to Line Chart"
-                : "Switch to Candlestick Chart"
+                ? t("terminal.chart.switchToLineChart")
+                : t("terminal.chart.switchToCandlestickChart")
             }
           >
             <div className="group cursor-pointer">
