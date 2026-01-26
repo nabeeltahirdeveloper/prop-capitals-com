@@ -104,7 +104,7 @@ export class TpSlMonitorService {
       }
 
       // 2. Get unique symbols from all positions
-      const symbols = [...new Set(openPositions.map(pos => pos.symbol))];
+      const symbols: string[] = [...new Set<string>(openPositions.map((pos) => pos.symbol))];
 
       // 3. Fetch current prices for all symbols (WebSocket-backed) with timeout
       let pricesData;

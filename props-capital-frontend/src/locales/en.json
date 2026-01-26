@@ -1791,8 +1791,10 @@
       "subtitle": "Manage trading platform connections",
       "addServer": "Add Server",
       "adding": "Adding...",
+      "confirmDelete": "Are you sure you want to delete this broker server?",
       "dialog": {
         "title": "Add Broker Server",
+        "description": "Configure a new broker server connection for trading accounts.",
         "serverName": "Server Name",
         "serverNamePlaceholder": "e.g., Prop Capitals MT5 Demo",
         "platform": "Platform",
@@ -1822,7 +1824,8 @@
       "card": {
         "platform": "Platform",
         "timezone": "Timezone",
-        "lastSync": "Last Sync"
+        "lastSync": "Last Sync",
+        "accounts": "Linked Accounts"
       },
       "actions": {
         "test": "Test"
@@ -1830,6 +1833,20 @@
       "empty": {
         "title": "No Broker Servers",
         "description": "Add your first broker server to start creating trading accounts"
+      },
+      "error": {
+        "title": "Failed to Load Broker Servers",
+        "description": "An error occurred while loading broker servers",
+        "retry": "Retry"
+      },
+      "toast": {
+        "createSuccess": "Broker server added successfully",
+        "createError": "Failed to add broker server",
+        "deleteSuccess": "Broker server deleted successfully",
+        "deleteError": "Failed to delete broker server",
+        "connectionSuccess": "Connection test successful",
+        "connectionFailed": "Connection test failed",
+        "connectionError": "Failed to test connection"
       }
     },
     "scaling": {

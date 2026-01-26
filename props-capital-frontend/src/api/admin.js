@@ -273,3 +273,34 @@ export const adminGetTradesByAccount = async (accountId) => {
 export const adminGetTradeById = async (tradeId) => {
   return apiGet(`/admin/trades/${tradeId}`);
 };
+
+// ============================================================================
+// Admin Broker Servers
+// ============================================================================
+export const adminGetAllBrokerServers = async () => {
+  return apiGet("/admin/broker-servers");
+};
+
+export const adminGetBrokerServer = async (id) => {
+  return apiGet(`/admin/broker-servers/${id}`);
+};
+
+export const adminCreateBrokerServer = async (data) => {
+  return apiPost("/admin/broker-servers", data);
+};
+
+export const adminUpdateBrokerServer = async (id, data) => {
+  return apiPatch(`/admin/broker-servers/${id}`, data);
+};
+
+export const adminDeleteBrokerServer = async (id) => {
+  return apiDelete(`/admin/broker-servers/${id}`);
+};
+
+export const adminTestBrokerServerConnection = async (id) => {
+  return apiPost(`/admin/broker-servers/${id}/test-connection`);
+};
+
+export const adminUpdateBrokerServerConnectionStatus = async (id, status) => {
+  return apiPatch(`/admin/broker-servers/${id}/connection-status`, { status });
+};
