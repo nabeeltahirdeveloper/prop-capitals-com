@@ -1335,7 +1335,7 @@
       "stats": {
         "totalAccounts": "Total Accounts",
         "active": "Active",
-        "passed": "Passed",
+        "phase2": "Phase 2",
         "funded": "Funded",
         "failed": "Failed"
       },
@@ -1346,12 +1346,14 @@
         "allStatus": "All Status",
         "allPhases": "All Phases",
         "active": "Active",
-        "passed": "Passed",
-        "funded": "Funded",
-        "failed": "Failed",
-        "suspended": "Suspended",
+        "paused": "Paused",
+        "closed": "Closed",
+        "dailyLocked": "Daily Locked",
+        "disqualified": "Disqualified",
         "phase1": "Phase 1",
-        "phase2": "Phase 2"
+        "phase2": "Phase 2",
+        "funded": "Funded",
+        "failed": "Failed"
       },
       "table": {
         "account": "Account",
@@ -1367,7 +1369,9 @@
         "forcePass": "Force Pass",
         "forceFail": "Force Fail",
         "resetAccount": "Reset Account",
-        "moveToFunded": "Move to Funded"
+        "moveToFunded": "Move to Funded",
+        "pause": "Pause Account",
+        "resume": "Resume Account"
       },
       "dialog": {
         "title": "Account Details",
@@ -1391,6 +1395,46 @@
         "noDetails": "No account details available"
       },
       "emptyMessage": "No accounts found"
+    },
+    "riskMonitor": {
+      "title": "Risk Monitor",
+      "subtitle": "Real-time monitoring of trading account risk levels",
+      "refresh": "Refresh",
+      "searchPlaceholder": "Search by account number or trader ID...",
+      "riskLevels": {
+        "critical": "Critical Risk",
+        "high": "High Risk",
+        "medium": "Medium Risk",
+        "low": "Low Risk"
+      },
+      "riskBadges": {
+        "critical": "Critical",
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      },
+      "table": {
+        "account": "Account",
+        "balance": "Balance",
+        "equity": "Equity",
+        "dailyDD": "Daily DD",
+        "maxDD": "Max DD",
+        "riskLevel": "Risk Level",
+        "actions": "Actions"
+      },
+      "recentViolations": {
+        "title": "Recent Violations",
+        "account": "Account",
+        "noViolations": "No recent violations"
+      },
+      "severity": {
+        "fatal": "Fatal",
+        "warning": "Warning"
+      },
+      "confirmations": {
+        "emergencyClose": "Are you sure you want to pause this account? This will prevent further trading.",
+        "lockAccount": "Are you sure you want to lock this account? This will pause all trading activity."
+      }
     },
     "payouts": {
       "title": "Payout Management",
@@ -1739,6 +1783,10 @@
         "title": "Recent Violations",
         "noViolations": "No recent violations",
         "account": "Account"
+      },
+      "severity": {
+        "fatal": "Fatal",
+        "warning": "Warning"
       }
     },
     "brokerServers": {
@@ -1746,8 +1794,10 @@
       "subtitle": "Manage trading platform connections",
       "addServer": "Add Server",
       "adding": "Adding...",
+      "confirmDelete": "Are you sure you want to delete this broker server?",
       "dialog": {
         "title": "Add Broker Server",
+        "description": "Configure a new broker server connection for trading accounts.",
         "serverName": "Server Name",
         "serverNamePlaceholder": "e.g., Prop Capitals MT5 Demo",
         "platform": "Platform",
@@ -1777,7 +1827,8 @@
       "card": {
         "platform": "Platform",
         "timezone": "Timezone",
-        "lastSync": "Last Sync"
+        "lastSync": "Last Sync",
+        "accounts": "Linked Accounts"
       },
       "actions": {
         "test": "Test"
@@ -1785,6 +1836,20 @@
       "empty": {
         "title": "No Broker Servers",
         "description": "Add your first broker server to start creating trading accounts"
+      },
+      "error": {
+        "title": "Failed to Load Broker Servers",
+        "description": "An error occurred while loading broker servers",
+        "retry": "Retry"
+      },
+      "toast": {
+        "createSuccess": "Broker server added successfully",
+        "createError": "Failed to add broker server",
+        "deleteSuccess": "Broker server deleted successfully",
+        "deleteError": "Failed to delete broker server",
+        "connectionSuccess": "Connection test successful",
+        "connectionFailed": "Connection test failed",
+        "connectionError": "Failed to test connection"
       }
     },
     "scaling": {

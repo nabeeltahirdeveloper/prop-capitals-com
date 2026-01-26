@@ -29,9 +29,6 @@ import { PnlDisplay } from "../PnlDisplay";
 import { getChallenge } from "@/api/challenges";
 import { useQuery } from "@tanstack/react-query";
 
-
-
-
 export default function AccountMetrics({
   account,
   positions = [],
