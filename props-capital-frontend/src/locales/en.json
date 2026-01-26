@@ -1332,7 +1332,7 @@
       "stats": {
         "totalAccounts": "Total Accounts",
         "active": "Active",
-        "passed": "Passed",
+        "phase2": "Phase 2",
         "funded": "Funded",
         "failed": "Failed"
       },
@@ -1343,12 +1343,14 @@
         "allStatus": "All Status",
         "allPhases": "All Phases",
         "active": "Active",
-        "passed": "Passed",
-        "funded": "Funded",
-        "failed": "Failed",
-        "suspended": "Suspended",
+        "paused": "Paused",
+        "closed": "Closed",
+        "dailyLocked": "Daily Locked",
+        "disqualified": "Disqualified",
         "phase1": "Phase 1",
-        "phase2": "Phase 2"
+        "phase2": "Phase 2",
+        "funded": "Funded",
+        "failed": "Failed"
       },
       "table": {
         "account": "Account",
@@ -1364,7 +1366,9 @@
         "forcePass": "Force Pass",
         "forceFail": "Force Fail",
         "resetAccount": "Reset Account",
-        "moveToFunded": "Move to Funded"
+        "moveToFunded": "Move to Funded",
+        "pause": "Pause Account",
+        "resume": "Resume Account"
       },
       "dialog": {
         "title": "Account Details",

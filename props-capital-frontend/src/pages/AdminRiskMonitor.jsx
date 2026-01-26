@@ -43,7 +43,7 @@ export default function AdminRiskMonitor() {
     queryKey: ["active-accounts"],
     queryFn: () =>
       adminGetAllAccounts().then((accounts) =>
-        accounts.filter((a) => a.status === "ACTIVE")
+        accounts.filter((a) => a.status === "ACTIVE"),
       ), // TODO: Add status filter to API
     refetchInterval: 30000, // Refresh every 30 seconds
   });
