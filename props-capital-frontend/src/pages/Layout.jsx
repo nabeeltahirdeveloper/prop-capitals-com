@@ -966,6 +966,19 @@ export default function Layout({ children, currentPageName }) {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
+  // Escape key closes mobile sidebar; body scroll lock when drawer is open
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const handleEscape = (e) => e.key === "Escape" && setSidebarOpen(false);
+    document.addEventListener("keydown", handleEscape);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = prev;
+    };
+  }, [sidebarOpen]);
+
   // Full-screen pages with no layout
   const noLayoutPages = ["SignIn", "SignUp"];
   const isNoLayoutPage = noLayoutPages.includes(currentPageName);
@@ -1306,54 +1319,52 @@ export default function Layout({ children, currentPageName }) {
         }
       `}</style>
 
-      {/* Sidebar */}
+      {/* Sidebar — group for hover-to-show toggle */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 bg-slate-900 border-r border-slate-800 transform transition-[width,transform] duration-300 ease-in-out
+        className={`group fixed inset-y-0 left-0 z-50 bg-slate-900 border-r border-slate-800 transform transition-[width,transform] duration-300 ease-in-out
         ${sidebarCollapsed ? "w-20" : "w-64"}
         lg:translate-x-0
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+        ${sidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"}
         `}
       >
         <div className="flex flex-col h-full relative">
-          {/* Desktop-only: border toggle near first nav link */}
+          {/* Desktop: collapse toggle — no bg/border, visible only on sidebar hover; vertically centered */}
           <button
             type="button"
             onClick={() => setSidebarCollapsed((v) => !v)}
-            className="hidden lg:flex absolute -right-4 top-[5.5rem] z-50 h-10 w-8 items-center justify-center rounded-full  text-slate-300 shadow-md transition-all hover:bg-slate-800 hover:text-white hover:border-slate-600"
+            className="hidden lg:flex absolute -right-2.5 top-1/2 -translate-y-1/2 z-[60] h-7 w-5 items-center justify-center rounded-md text-slate-500 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-slate-800/90 hover:text-white focus:opacity-100 focus:outline-none  focus:ring-offset-0 focus:ring-offset-slate-900"
             aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {sidebarCollapsed ? (
-              <ChevronRight className="w-12 h-12" />
+              <ChevronRight className="w-6 h-6" />
             ) : (
-              <ChevronLeft className="w-12 h-12" />
+              <ChevronLeft className="w-6 h-6" />
             )}
           </button>
 
           {/* Logo + controls */}
-          <div className="flex items-center justify-between h-16 px-4 border-b border-slate-800">
+          <div className="flex items-center justify-between h-16 shrink-0 px-4 border-b border-slate-800">
             <Link
               to={createPageUrl("Home")}
               onClick={() => setSidebarOpen(false)}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 min-w-0"
               title="Home"
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 shrink-0 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
-              {!sidebarCollapsed && <span className="text-xl font-bold text-white">Prop Capitals</span>}
+              {!sidebarCollapsed && <span className="text-xl font-bold text-white truncate">Prop Capitals</span>}
             </Link>
 
-            <div className="flex items-center gap-1">
-              {/* Mobile close */}
-              <button
-                onClick={() => setSidebarOpen(false)}
-                className="lg:hidden text-slate-400 hover:text-white p-2"
-                aria-label="Close sidebar"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
+            {/* Mobile: close button */}
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+              aria-label="Close menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Navigation */}
@@ -1491,7 +1502,11 @@ export default function Layout({ children, currentPageName }) {
       >
         {/* Top Bar */}
         <header className="sticky top-0 z-40 h-16 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800 flex items-center justify-between px-4 lg:px-8">
-          <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-slate-400 hover:text-white">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="lg:hidden flex items-center justify-center w-10 h-10 -ml-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+            aria-label="Open menu"
+          >
             <Menu className="w-6 h-6" />
           </button>
 
@@ -1624,9 +1639,14 @@ export default function Layout({ children, currentPageName }) {
         <main className="p-4 lg:p-8 bg-slate-950 min-h-screen">{children}</main>
       </div>
 
-      {/* Mobile Overlay */}
+      {/* Mobile overlay: backdrop with blur */}
       {sidebarOpen && (
-        <div className="fixed hidden inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div
+          role="presentation"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
       )}
     </div>
   );
