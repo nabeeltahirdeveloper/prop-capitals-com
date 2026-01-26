@@ -299,7 +299,7 @@ export default function Home() {
 
           {/* Stats */}
           <motion.div
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 mt-12 sm:mt-16 md:mt-24"
+            className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 mt-12 sm:mt-16 md:mt-24"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
@@ -400,7 +400,7 @@ export default function Home() {
       {/* How It Works Section */}
       <section className="py-24 bg-slate-900/50 relative overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-emerald-500/30 to-transparent" />
+          {/* <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-emerald-500/30 to-transparent" /> */}
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -703,7 +703,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-slate-900 border-t border-slate-800 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-12">
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
@@ -811,7 +811,7 @@ export default function Home() {
           </div>
           <div className="border-t border-slate-800 mt-12 pt-8">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
-              <p className="text-slate-500">{t("home.footer.copyright")}</p>
+              <p className="text-slate-500 text-sm md:text-md">{t("home.footer.copyright")}</p>
               <div className="flex items-center gap-4">
                 <Shield className="w-5 h-5 text-slate-600" />
                 <span className="text-sm text-slate-500">

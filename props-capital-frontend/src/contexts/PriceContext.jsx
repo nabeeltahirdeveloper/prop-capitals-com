@@ -111,11 +111,11 @@ export function PriceProvider({ children, currentPathname = null }) {
       const bidChangePercent = Math.abs((bid - oldBid) / oldBid) * 100;
 
       if (bidChangePercent > 5) {
-        console.warn(
-          `⚠️ Price jump detected for ${symbol}: ${oldBid} → ${bid} (${bidChangePercent.toFixed(
-            2
-          )}% change). Rejecting update.`
-        );
+        // console.warn(
+        //   `⚠️ Price jump detected for ${symbol}: ${oldBid} → ${bid} (${bidChangePercent.toFixed(
+        //     2
+        //   )}% change). Rejecting update.`
+        // );
         return false;
       }
     }
@@ -149,13 +149,13 @@ export function PriceProvider({ children, currentPathname = null }) {
         const fetchTime = Date.now() - startTime;
 
         if (process.env.NODE_ENV !== "production") {
-          console.log(
-            `[PriceContext] Fetched ${
-              response?.prices?.length || 0
-            } prices in ${fetchTime}ms (source: ${
-              response?.source || "unknown"
-            })`
-          );
+          // console.log(
+          //   `[PriceContext] Fetched ${
+          //     response?.prices?.length || 0
+          //   } prices in ${fetchTime}ms (source: ${
+          //     response?.source || "unknown"
+          //   })`
+          // );
         }
 
         if (response && response.prices && Array.isArray(response.prices)) {
@@ -186,16 +186,16 @@ export function PriceProvider({ children, currentPathname = null }) {
             }
           });
 
-          if (updateCount > 0) {
-            setLastUpdate(Date.now());
-            if (process.env.NODE_ENV !== "production") {
-              console.log(`[PriceContext] Updated ${updateCount} prices`);
-            }
-          } else if (process.env.NODE_ENV !== "production") {
-            console.warn(
-              `[PriceContext] No price updates (${response.prices.length} prices received, but none passed validation)`
-            );
-          }
+          // if (updateCount > 0) {
+          //   setLastUpdate(Date.now());
+          //   if (process.env.NODE_ENV !== "production") {
+          //     console.log(`[PriceContext] Updated ${updateCount} prices`);
+          //   }
+          // } else if (process.env.NODE_ENV !== "production") {
+          //   console.warn(
+          //     `[PriceContext] No price updates (${response.prices.length} prices received, but none passed validation)`
+          //   );
+          // }
 
           return true; // Success
         } else {
@@ -414,9 +414,9 @@ export function PriceProvider({ children, currentPathname = null }) {
             "[PriceContext] User not authenticated, skipping price polling"
           );
         } else if (!isPriceRequiredPage(pathname)) {
-          console.log(
-            `[PriceContext] Not on a price-required page (${pathname}), skipping price polling`
-          );
+          // console.log(
+          //   `[PriceContext] Not on a price-required page (${pathname}), skipping price polling`
+          // );
         }
       }
       return;
@@ -465,8 +465,7 @@ export function PriceProvider({ children, currentPathname = null }) {
           nextPollDelay = getBackoffDelay(currentAttempts);
           if (process.env.NODE_ENV !== "production") {
             console.log(
-              `[PriceContext] Retry ${
-                currentAttempts + 1
+              `[PriceContext] Retry ${currentAttempts + 1
               }/${MAX_RECONNECT_ATTEMPTS} in ${nextPollDelay}ms`
             );
           }
@@ -489,13 +488,13 @@ export function PriceProvider({ children, currentPathname = null }) {
     poll();
 
     // Debug: Log polling status
-    if (process.env.NODE_ENV !== "production") {
-      console.log(
-        `[PriceContext] Started polling with base interval ${
-          POLL_INTERVAL * 2
-        }ms (forex handled by WebSocket)`
-      );
-    }
+    // if (process.env.NODE_ENV !== "production") {
+    //   console.log(
+    //     `[PriceContext] Started polling with base interval ${
+    //       POLL_INTERVAL * 2
+    //     }ms (forex handled by WebSocket)`
+    //   );
+    // }
 
     return () => {
       isMounted = false;

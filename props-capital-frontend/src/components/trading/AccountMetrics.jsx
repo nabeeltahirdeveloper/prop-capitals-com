@@ -26,6 +26,11 @@ import {
 } from "lucide-react";
 import { useTranslation } from "../../contexts/LanguageContext";
 import { PnlDisplay } from "../PnlDisplay";
+import { getChallenge } from "@/api/challenges";
+import { useQuery } from "@tanstack/react-query";
+
+
+
 
 export default function AccountMetrics({
   account,
@@ -49,6 +54,15 @@ export default function AccountMetrics({
   // layBalance, setDisplayBalance] = React.useState(
   //   account?.balance || 100000,
   // );
+
+
+
+  
+
+
+
+
+
 
   // console.log(account?.balance)
   // Calculate real-time margin and "used" balance: baseBalance - totalMarginUsed
