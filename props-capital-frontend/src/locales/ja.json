@@ -1051,10 +1051,13 @@
       "candles": "ローソク足",
       "tf": "TF",
       "loadingData": "チャートデータを読み込み中...",
-      "updating": "更新中..."
+      "updating": "更新中...",
+      "switchToLineChart": "折れ線グラフに切り替え",
+      "switchToCandlestickChart": "ローソク足チャートに切り替え"
     },
     "loadingAccounts": "アカウントを読み込み中...",
     "watchlist": {
+      "title": "価格を表示",
       "live": "ライブ",
       "offline": "オフライン",
       "search": "検索...",

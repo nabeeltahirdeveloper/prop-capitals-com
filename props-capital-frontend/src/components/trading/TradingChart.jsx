@@ -935,6 +935,17 @@ export default function TradingChart({
           // Try immediately, then retry if needed
           updateChart();
 
+          // Professional standard: fit all data in view (no zoomed-in view on load/symbol change)
+          requestAnimationFrame(() => {
+            try {
+              if (chartRef.current && typeof chartRef.current.timeScale === "function") {
+                chartRef.current.timeScale().fitContent();
+              }
+            } catch (e) {
+              // ignore if API not available
+            }
+          });
+
           // Update current price reference and reset volume tracking
           if (finalCandles.length > 0) {
             const lastCandle = finalCandles[finalCandles.length - 1];
@@ -1503,8 +1514,8 @@ export default function TradingChart({
             }`}
             title={
               chartType === "candle"
-                ? "Switch to Line Chart"
-                : "Switch to Candlestick Chart"
+                ? t("terminal.chart.switchToLineChart")
+                : t("terminal.chart.switchToCandlestickChart")
             }
           >
             <div className="group cursor-pointer">
