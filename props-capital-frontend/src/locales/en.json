@@ -1393,6 +1393,46 @@
       },
       "emptyMessage": "No accounts found"
     },
+    "riskMonitor": {
+      "title": "Risk Monitor",
+      "subtitle": "Real-time monitoring of trading account risk levels",
+      "refresh": "Refresh",
+      "searchPlaceholder": "Search by account number or trader ID...",
+      "riskLevels": {
+        "critical": "Critical Risk",
+        "high": "High Risk",
+        "medium": "Medium Risk",
+        "low": "Low Risk"
+      },
+      "riskBadges": {
+        "critical": "Critical",
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      },
+      "table": {
+        "account": "Account",
+        "balance": "Balance",
+        "equity": "Equity",
+        "dailyDD": "Daily DD",
+        "maxDD": "Max DD",
+        "riskLevel": "Risk Level",
+        "actions": "Actions"
+      },
+      "recentViolations": {
+        "title": "Recent Violations",
+        "account": "Account",
+        "noViolations": "No recent violations"
+      },
+      "severity": {
+        "fatal": "Fatal",
+        "warning": "Warning"
+      },
+      "confirmations": {
+        "emergencyClose": "Are you sure you want to pause this account? This will prevent further trading.",
+        "lockAccount": "Are you sure you want to lock this account? This will pause all trading activity."
+      }
+    },
     "payouts": {
       "title": "Payout Management",
       "subtitle": "Review and process trader payout requests",
@@ -1740,6 +1780,10 @@
         "title": "Recent Violations",
         "noViolations": "No recent violations",
         "account": "Account"
+      },
+      "severity": {
+        "fatal": "Fatal",
+        "warning": "Warning"
       }
     },
     "brokerServers": {

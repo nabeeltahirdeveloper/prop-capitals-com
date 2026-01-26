@@ -1,10 +1,10 @@
-import { apiGet, apiPost, apiPatch, apiDelete } from '@/lib/api';
+import { apiGet, apiPost, apiPatch, apiDelete } from "@/lib/api";
 
 // ============================================================================
 // Admin Users
 // ============================================================================
 export const adminGetAllUsers = async () => {
-  return apiGet('/admin/users');
+  return apiGet("/admin/users");
 };
 
 export const adminGetUser = async (userId) => {
@@ -23,7 +23,7 @@ export const adminUpdateUserRole = async (id, role) => {
 // Admin Challenges
 // ============================================================================
 export const adminGetAllChallenges = async () => {
-  return apiGet('/admin/challenges');
+  return apiGet("/admin/challenges");
 };
 
 export const adminGetChallenge = async (id) => {
@@ -31,7 +31,7 @@ export const adminGetChallenge = async (id) => {
 };
 
 export const adminCreateChallenge = async (data) => {
-  return apiPost('/admin/challenges', data);
+  return apiPost("/admin/challenges", data);
 };
 
 export const adminUpdateChallenge = async (id, data) => {
@@ -46,7 +46,7 @@ export const adminDeleteChallenge = async (id) => {
 // Admin Accounts
 // ============================================================================
 export const adminGetAllAccounts = async () => {
-  return apiGet('/admin/accounts');
+  return apiGet("/admin/accounts");
 };
 
 export const adminGetAccount = async (id) => {
@@ -65,11 +65,11 @@ export const adminUpdateAccountPhase = async (id, phase) => {
 // Admin Payouts
 // ============================================================================
 export const adminGetAllPayouts = async () => {
-  return apiGet('/admin/payouts');
+  return apiGet("/admin/payouts");
 };
 
 export const adminGetPayoutStatistics = async () => {
-  return apiGet('/admin/payouts/statistics');
+  return apiGet("/admin/payouts/statistics");
 };
 
 export const adminApprovePayout = async (id) => {
@@ -88,11 +88,11 @@ export const adminMarkPayoutAsPaid = async (id) => {
 // Admin Payments
 // ============================================================================
 export const adminGetAllPayments = async () => {
-  return apiGet('/admin/payments');
+  return apiGet("/admin/payments");
 };
 
 export const adminGetPaymentStatistics = async () => {
-  return apiGet('/admin/payments/statistics');
+  return apiGet("/admin/payments/statistics");
 };
 
 export const adminRefundPayment = async (id, reason) => {
@@ -130,12 +130,12 @@ const handleApiError = (error, context) => {
  */
 export const adminGetDashboardOverview = async () => {
   try {
-    const response = await apiGet('/admin/dashboard/overview', {
+    const response = await apiGet("/admin/dashboard/overview", {
       timeout: TIMEOUT_MS,
     });
     return response;
   } catch (error) {
-    handleApiError(error, 'fetch dashboard overview');
+    handleApiError(error, "fetch dashboard overview");
   }
 };
 
@@ -145,16 +145,16 @@ export const adminGetDashboardOverview = async () => {
  */
 export const adminGetRecentAccounts = async (page = 1, limit = 5) => {
   try {
-    const response = await apiGet('/admin/dashboard/recent-accounts', {
+    const response = await apiGet("/admin/dashboard/recent-accounts", {
       params: { page, limit },
       timeout: TIMEOUT_MS,
     });
-    
+
     // Return just the data array for backward compatibility
     // If backend returns paginated response, extract data array
     return response.data || response;
   } catch (error) {
-    handleApiError(error, 'fetch recent accounts');
+    handleApiError(error, "fetch recent accounts");
   }
 };
 
@@ -164,15 +164,15 @@ export const adminGetRecentAccounts = async (page = 1, limit = 5) => {
  */
 export const adminGetRecentViolations = async (page = 1, limit = 10) => {
   try {
-    const response = await apiGet('/admin/dashboard/recent-violations', {
+    const response = await apiGet("/admin/dashboard/recent-violations", {
       params: { page, limit },
       timeout: TIMEOUT_MS,
     });
-    
+
     // Return just the data array for backward compatibility
     return response.data || response;
   } catch (error) {
-    handleApiError(error, 'fetch recent violations');
+    handleApiError(error, "fetch recent violations");
   }
 };
 
@@ -182,12 +182,12 @@ export const adminGetRecentViolations = async (page = 1, limit = 10) => {
  */
 export const adminGetRevenueChart = async () => {
   try {
-    const response = await apiGet('/admin/dashboard/revenue-chart', {
+    const response = await apiGet("/admin/dashboard/revenue-chart", {
       timeout: TIMEOUT_MS,
     });
     return response;
   } catch (error) {
-    handleApiError(error, 'fetch revenue chart');
+    handleApiError(error, "fetch revenue chart");
   }
 };
 
@@ -197,31 +197,43 @@ export const adminGetRevenueChart = async () => {
  */
 export const adminGetRegistrationsChart = async () => {
   try {
-    const response = await apiGet('/admin/dashboard/registrations-chart', {
+    const response = await apiGet("/admin/dashboard/registrations-chart", {
       timeout: TIMEOUT_MS,
     });
     return response;
   } catch (error) {
-    handleApiError(error, 'fetch registrations chart');
+    handleApiError(error, "fetch registrations chart");
   }
 };
 
 // ============================================================================
-// Admin Violations
+// Admin Risk Monitoring
 // ============================================================================
+export const adminGetRiskOverview = async () => {
+  return apiGet("/admin/risk/overview");
+};
+
+export const adminGetAccountRisk = async (accountId) => {
+  return apiGet(`/admin/risk/account/${accountId}`);
+};
+
 export const adminGetAllViolations = async () => {
-  return apiGet('/admin/risk/violations');
+  return apiGet("/admin/risk/violations");
+};
+
+export const adminGetViolation = async (id) => {
+  return apiGet(`/admin/risk/violations/${id}`);
 };
 
 // ============================================================================
 // Admin Support
 // ============================================================================
 export const adminGetAllSupportTickets = async () => {
-  return apiGet('/admin/support/tickets');
+  return apiGet("/admin/support/tickets");
 };
 
 export const adminGetSupportStatistics = async () => {
-  return apiGet('/admin/support/tickets/statistics');
+  return apiGet("/admin/support/tickets/statistics");
 };
 
 export const adminUpdateTicketStatus = async (id, status) => {
@@ -232,7 +244,7 @@ export const adminUpdateTicketStatus = async (id, status) => {
 // Admin Settings
 // ============================================================================
 export const adminGetAllSettings = async () => {
-  return apiGet('/admin/settings/all/groups');
+  return apiGet("/admin/settings/all/groups");
 };
 
 export const adminGetSettingsByGroup = async (group) => {
@@ -247,7 +259,7 @@ export const adminUpdateSettingsGroup = async (group, settings) => {
 // Admin Trades
 // ============================================================================
 export const adminGetAllTrades = async () => {
-  return apiGet('/admin/trades');
+  return apiGet("/admin/trades");
 };
 
 export const adminGetTradesByUser = async (userId) => {

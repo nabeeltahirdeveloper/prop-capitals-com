@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { adminGetAllAccounts } from "@/api/admin";
-// TODO: Replace with risk monitoring API when available
-import { useQuery } from "@tanstack/react-query";
+import React, { useState } from "react";
+import {
+  adminGetRiskOverview,
+  adminGetAllViolations,
+  adminUpdateAccountStatus,
+} from "@/api/admin";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,45 +37,56 @@ export default function AdminRiskMonitor() {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [riskFilter, setRiskFilter] = useState("all");
+  const queryClient = useQueryClient();
 
   const {
     data: accounts = [],
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["active-accounts"],
-    queryFn: () =>
-      adminGetAllAccounts().then((accounts) =>
-        accounts.filter((a) => a.status === "ACTIVE"),
-      ), // TODO: Add status filter to API
+    queryKey: ["risk-overview"],
+    queryFn: adminGetRiskOverview,
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
   const { data: violations = [] } = useQuery({
-    queryKey: ["recent-violations"],
-    queryFn: () => Promise.resolve([]), // TODO: Replace with violations API
+    queryKey: ["risk-violations"],
+    queryFn: adminGetAllViolations,
+    refetchInterval: 60000, // Refresh every minute
   });
 
-  const { data: riskProfiles = [] } = useQuery({
-    queryKey: ["risk-profiles"],
-    queryFn: () => Promise.resolve([]), // TODO: Replace with risk profiles API
+  const lockAccountMutation = useMutation({
+    mutationFn: (accountId) => adminUpdateAccountStatus(accountId, "PAUSED"),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["risk-overview"]);
+    },
   });
 
-  // Calculate risk metrics
+  // Calculate risk metrics based on dynamic limits
   const getRiskLevel = (account) => {
     const ddPercent = account.overall_drawdown_percent || 0;
     const dailyDD = account.daily_drawdown_percent || 0;
+    const dailyLimit = account.daily_drawdown_limit || 5;
+    const overallLimit = account.overall_drawdown_limit || 10;
 
-    if (ddPercent >= 8 || dailyDD >= 4) return "critical";
-    if (ddPercent >= 6 || dailyDD >= 3) return "high";
-    if (ddPercent >= 4 || dailyDD >= 2) return "medium";
+    // Critical: >= 80% of either limit
+    if (ddPercent >= overallLimit * 0.8 || dailyDD >= dailyLimit * 0.8)
+      return "critical";
+    // High: >= 60% of either limit
+    if (ddPercent >= overallLimit * 0.6 || dailyDD >= dailyLimit * 0.6)
+      return "high";
+    // Medium: >= 40% of either limit
+    if (ddPercent >= overallLimit * 0.4 || dailyDD >= dailyLimit * 0.4)
+      return "medium";
     return "low";
   };
 
   const filteredAccounts = accounts.filter((account) => {
+    const searchLower = searchTerm.toLowerCase();
     const matchesSearch =
-      account.account_number?.includes(searchTerm) ||
-      account.trader_id?.includes(searchTerm);
+      account.account_number?.toLowerCase().includes(searchLower) ||
+      account.trader_id?.toLowerCase().includes(searchLower) ||
+      account.trader_email?.toLowerCase().includes(searchLower);
     const riskLevel = getRiskLevel(account);
     const matchesRisk = riskFilter === "all" || riskLevel === riskFilter;
     return matchesSearch && matchesRisk;
@@ -117,17 +131,22 @@ export default function AdminRiskMonitor() {
   const handleEmergencyClose = async (accountId) => {
     if (!confirm(t("admin.riskMonitor.confirmations.emergencyClose"))) return;
 
-    // TODO: Replace with risk engine API
-    await Promise.resolve();
-    refetch();
+    // Pause the account - in a real implementation this would also close positions via broker API
+    try {
+      await lockAccountMutation.mutateAsync(accountId);
+    } catch (error) {
+      console.error("Failed to pause account:", error);
+    }
   };
 
   const handleLockAccount = async (accountId) => {
     if (!confirm(t("admin.riskMonitor.confirmations.lockAccount"))) return;
 
-    // TODO: Replace with broker integration API
-    await Promise.resolve();
-    refetch();
+    try {
+      await lockAccountMutation.mutateAsync(accountId);
+    } catch (error) {
+      console.error("Failed to lock account:", error);
+    }
   };
 
   return (
@@ -314,45 +333,57 @@ export default function AdminRiskMonitor() {
                         <div className="flex justify-between text-xs mb-1">
                           <span
                             className={
-                              dailyDD >= 4 ? "text-red-400" : "text-slate-400"
+                              dailyDD >=
+                              (account.daily_drawdown_limit || 5) * 0.8
+                                ? "text-red-400"
+                                : "text-slate-400"
                             }
                           >
                             {dailyDD.toFixed(1)}%
                           </span>
                           <span className="text-slate-500 hidden sm:inline">
-                            / 5%
+                            / {account.daily_drawdown_limit || 5}%
                           </span>
                         </div>
                         <Progress
-                          value={(dailyDD / 5) * 100}
+                          value={
+                            (dailyDD / (account.daily_drawdown_limit || 5)) *
+                            100
+                          }
                           className="h-1 sm:h-1.5 bg-slate-800"
                         />
                       </div>
                     </TableCell>
-                    <TableCell className="py-2 sm:py-8 px-2 sm:px-8">
+                    <TableCell className="py-2 sm:py-4 px-2 sm:px-4">
                       <div className="w-16 sm:w-24">
                         <div className="flex justify-between text-xs mb-1">
                           <span
                             className={
-                              maxDD >= 8 ? "text-red-400" : "text-slate-400"
+                              maxDD >=
+                              (account.overall_drawdown_limit || 10) * 0.8
+                                ? "text-red-400"
+                                : "text-slate-400"
                             }
                           >
                             {maxDD.toFixed(1)}%
                           </span>
                           <span className="text-slate-500 hidden sm:inline">
-                            / 10%
+                            / {account.overall_drawdown_limit || 10}%
                           </span>
                         </div>
                         <Progress
-                          value={(maxDD / 10) * 100}
+                          value={
+                            (maxDD / (account.overall_drawdown_limit || 10)) *
+                            100
+                          }
                           className="h-1 sm:h-1.5 bg-slate-800"
                         />
                       </div>
                     </TableCell>
-                    <TableCell className="py-2 sm:py-8 px-2 sm:px-8">
+                    <TableCell className="py-2 sm:py-4 px-2 sm:px-4">
                       {getRiskBadge(riskLevel)}
                     </TableCell>
-                    <TableCell className="py-2 sm:py-8 px-2 sm:px-8">
+                    <TableCell className="py-2 sm:py-4 px-2 sm:px-4">
                       <div className="flex gap-1 sm:gap-2">
                         <Link
                           to={createPageUrl(`AccountDetails?id=${account.id}`)}
@@ -402,40 +433,49 @@ export default function AdminRiskMonitor() {
           {t("admin.riskMonitor.recentViolations.title")}
         </h2>
         <div className="space-y-2 sm:space-y-3">
-          {violations.slice(0, 10).map((violation) => (
-            <div
-              key={violation.id}
-              className="flex items-center justify-between gap-2 p-2.5 sm:p-3 bg-slate-800/50 rounded-lg"
-            >
-              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                <div
-                  className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                    violation.is_fatal ? "bg-red-500" : "bg-amber-500"
-                  }`}
-                />
-                <div className="min-w-0">
-                  <p className="text-white text-xs sm:text-sm font-medium truncate">
-                    {violation.violation_type?.replace(/_/g, " ")}
-                  </p>
-                  <p className="text-xs text-slate-400 truncate">
-                    <span className="hidden sm:inline">
-                      {t("admin.riskMonitor.recentViolations.account")}:{" "}
-                    </span>
-                    {violation.account_id?.slice(0, 8)}...
-                  </p>
-                </div>
-              </div>
-              <Badge
-                className={`flex-shrink-0 text-xs ${
-                  violation.is_fatal
-                    ? "bg-red-500/20 text-red-400"
-                    : "bg-amber-500/20 text-amber-400"
-                }`}
+          {violations.slice(0, 10).map((violation) => {
+            const isFatal = violation.type === "OVERALL_DRAWDOWN";
+            const accountNumber =
+              violation.tradingAccount?.brokerLogin ||
+              violation.tradingAccountId?.slice(0, 8);
+
+            return (
+              <div
+                key={violation.id}
+                className="flex items-center justify-between gap-2 p-2.5 sm:p-3 bg-slate-800/50 rounded-lg"
               >
-                {violation.severity}
-              </Badge>
-            </div>
-          ))}
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                  <div
+                    className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                      isFatal ? "bg-red-500" : "bg-amber-500"
+                    }`}
+                  />
+                  <div className="min-w-0">
+                    <p className="text-white text-xs sm:text-sm font-medium truncate">
+                      {violation.type?.replace(/_/g, " ")}
+                    </p>
+                    <p className="text-xs text-slate-400 truncate">
+                      <span className="hidden sm:inline">
+                        {t("admin.riskMonitor.recentViolations.account")}:{" "}
+                      </span>
+                      {accountNumber}...
+                    </p>
+                  </div>
+                </div>
+                <Badge
+                  className={`flex-shrink-0 text-xs ${
+                    isFatal
+                      ? "bg-red-500/20 text-red-400"
+                      : "bg-amber-500/20 text-amber-400"
+                  }`}
+                >
+                  {isFatal
+                    ? t("admin.riskMonitor.severity.fatal")
+                    : t("admin.riskMonitor.severity.warning")}
+                </Badge>
+              </div>
+            );
+          })}
           {violations.length === 0 && (
             <p className="text-center text-slate-400 py-4 text-sm">
               {t("admin.riskMonitor.recentViolations.noViolations")}
