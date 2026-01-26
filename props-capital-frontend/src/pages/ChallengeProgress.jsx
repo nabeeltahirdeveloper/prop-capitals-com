@@ -272,7 +272,7 @@ export default function ChallengeProgress() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-xl flex items-center justify-center">
             <Target className="w-6 h-6 text-emerald-400" />
@@ -283,6 +283,14 @@ export default function ChallengeProgress() {
           </div>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+            {account?.id && (
+            <Link to={`${createPageUrl('AccountDetails')}?id=${account.id}`} className="w-full sm:w-auto">
+              <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500 w-full">
+                {t('challengeProgress.viewTradingDashboard')}
+                <ChevronRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
+          )}
           <Select value={accountId || ''} onValueChange={(value) => {
             setAccountId(value);
             window.history.replaceState({}, '', `${window.location.pathname}?id=${value}`);
@@ -325,14 +333,7 @@ export default function ChallengeProgress() {
               })}
             </SelectContent>
           </Select>
-          {account?.id && (
-            <Link to={`${createPageUrl('AccountDetails')}?id=${account.id}`} className="w-full sm:w-auto">
-              <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500 w-full">
-                {t('challengeProgress.viewTradingDashboard')}
-                <ChevronRight className="w-4 h-4 ml-2" />
-              </Button>
-            </Link>
-          )}
+        
         </div>
       </div>
 

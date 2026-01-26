@@ -281,8 +281,7 @@ export default function TraderDashboard() {
     };
   });
 
-  // Map notifications to display format
-  // Show ALL notifications (both read and unread), sorted by date (newest first)
+  // Map notifications to display format; sort unread first, then by date (newest first)
   const allNotifications = (notifications || [])
     .map((notif) => {
       const translated = translateNotification(notif.title, notif.body, t);
@@ -320,12 +319,14 @@ export default function TraderDashboard() {
         is_read: notif.read || false,
       };
     })
-    .sort(
-      (a, b) =>
-        new Date(b.created_date).getTime() - new Date(a.created_date).getTime(),
-    );
+    .sort((a, b) => {
+      if (a.is_read !== b.is_read) return a.is_read ? 1 : -1; // unread first
+      return (
+        new Date(b.created_date).getTime() - new Date(a.created_date).getTime()
+      );
+    });
 
-  // Show only 2 latest notifications in dashboard
+  // Dashboard: show 2 items — unread on top, or latest 2 when no unread
   const displayNotifications = allNotifications.slice(0, 2);
   const hasMoreNotifications = allNotifications.length > 2;
 
@@ -343,69 +344,69 @@ export default function TraderDashboard() {
   const aggregatedMetrics =
     activeAccounts.length > 0
       ? (() => {
-          // Sum all balances and equity
-          const totalBalance = activeAccounts.reduce(
-            (sum, acc) => sum + (acc.current_balance || 0),
-            0,
-          );
-          const totalEquity = activeAccounts.reduce(
-            (sum, acc) => sum + (acc.current_equity || 0),
-            0,
-          );
-          const totalInitialBalance = activeAccounts.reduce(
-            (sum, acc) => sum + (acc.initial_balance || 0),
-            0,
-          );
+        // Sum all balances and equity
+        const totalBalance = activeAccounts.reduce(
+          (sum, acc) => sum + (acc.current_balance || 0),
+          0,
+        );
+        const totalEquity = activeAccounts.reduce(
+          (sum, acc) => sum + (acc.current_equity || 0),
+          0,
+        );
+        const totalInitialBalance = activeAccounts.reduce(
+          (sum, acc) => sum + (acc.initial_balance || 0),
+          0,
+        );
 
-          // Calculate weighted average profit percentage
-          const totalProfit = totalEquity - totalInitialBalance;
-          const overallProfitPercent =
-            totalInitialBalance > 0
-              ? (totalProfit / totalInitialBalance) * 100
-              : 0;
+        // Calculate weighted average profit percentage
+        const totalProfit = totalEquity - totalInitialBalance;
+        const overallProfitPercent =
+          totalInitialBalance > 0
+            ? (totalProfit / totalInitialBalance) * 100
+            : 0;
 
-          // Calculate average daily drawdown (weighted by balance)
-          const weightedDailyDD =
-            activeAccounts.reduce((sum, acc) => {
-              const weight = acc.current_balance || acc.initial_balance || 0;
-              return sum + (acc.daily_drawdown_percent || 0) * weight;
-            }, 0) / (totalBalance || 1);
+        // Calculate average daily drawdown (weighted by balance)
+        const weightedDailyDD =
+          activeAccounts.reduce((sum, acc) => {
+            const weight = acc.current_balance || acc.initial_balance || 0;
+            return sum + (acc.daily_drawdown_percent || 0) * weight;
+          }, 0) / (totalBalance || 1);
 
-          // Get max daily drawdown limit (use the most restrictive one)
-          const maxDailyDrawdown = Math.min(
-            ...activeAccounts.map(
-              (acc) => acc.challenge?.dailyDrawdownPercent || 5,
-            ),
-          );
+        // Get max daily drawdown limit (use the most restrictive one)
+        const maxDailyDrawdown = Math.min(
+          ...activeAccounts.map(
+            (acc) => acc.challenge?.dailyDrawdownPercent || 5,
+          ),
+        );
 
-          // Calculate DD remaining
-          const ddRemaining = Math.max(0, maxDailyDrawdown - weightedDailyDD);
+        // Calculate DD remaining
+        const ddRemaining = Math.max(0, maxDailyDrawdown - weightedDailyDD);
 
-          // Get average trading days and min trading days
-          const avgTradingDays =
-            activeAccounts.length > 0
-              ? Math.round(
-                  activeAccounts.reduce(
-                    (sum, acc) => sum + (acc.trading_days_count || 0),
-                    0,
-                  ) / activeAccounts.length,
-                )
-              : 0;
-          const minTradingDays = Math.max(
-            ...activeAccounts.map((acc) => acc.challenge?.minTradingDays || 4),
-          );
+        // Get average trading days and min trading days
+        const avgTradingDays =
+          activeAccounts.length > 0
+            ? Math.round(
+              activeAccounts.reduce(
+                (sum, acc) => sum + (acc.trading_days_count || 0),
+                0,
+              ) / activeAccounts.length,
+            )
+            : 0;
+        const minTradingDays = Math.max(
+          ...activeAccounts.map((acc) => acc.challenge?.minTradingDays || 4),
+        );
 
-          return {
-            balance: totalBalance,
-            equity: totalEquity,
-            profitPercent: overallProfitPercent,
-            dailyDrawdown: weightedDailyDD,
-            ddRemaining: ddRemaining,
-            tradingDays: avgTradingDays,
-            minTradingDays: minTradingDays,
-            accountCount: activeAccounts.length,
-          };
-        })()
+        return {
+          balance: totalBalance,
+          equity: totalEquity,
+          profitPercent: overallProfitPercent,
+          dailyDrawdown: weightedDailyDD,
+          ddRemaining: ddRemaining,
+          tradingDays: avgTradingDays,
+          minTradingDays: minTradingDays,
+          accountCount: activeAccounts.length,
+        };
+      })()
       : null;
 
   // Set default selected account for rules panel
@@ -671,7 +672,7 @@ export default function TraderDashboard() {
                   : t("dashboard.metrics.accounts")}
               </Badge>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
               <div className="bg-slate-800/50 rounded-xl p-4 text-center flex flex-col justify-between min-h-[120px]">
                 <DollarSign className="w-6 h-6 text-emerald-400 mx-auto" />
                 <div>
@@ -783,13 +784,12 @@ export default function TraderDashboard() {
               displayNotifications.map((notif) => (
                 <div
                   key={notif.id}
-                  className={`p-3 rounded-lg border ${
-                    notif.type === "warning"
-                      ? "bg-amber-500/10 border-amber-500/30"
-                      : notif.type === "success"
-                        ? "bg-emerald-500/10 border-emerald-500/30"
-                        : "bg-slate-800/50 border-slate-700"
-                  } ${!notif.is_read ? "ring-1 ring-emerald-500/30" : ""}`}
+                  className={`p-3 rounded-lg border ${notif.type === "warning"
+                    ? "bg-amber-500/10 border-amber-500/30"
+                    : notif.type === "success"
+                      ? "bg-emerald-500/10 border-emerald-500/30"
+                      : "bg-slate-800/50 border-slate-700"
+                    } ${!notif.is_read ? "ring-1 ring-emerald-500/30" : ""}`}
                 >
                   <div className="flex items-start gap-2">
                     {notif.type === "warning" ? (
@@ -980,7 +980,7 @@ export default function TraderDashboard() {
       )}
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-3 md:gap-4">
         {[
           {
             icon: Activity,

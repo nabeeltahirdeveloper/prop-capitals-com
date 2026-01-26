@@ -1036,8 +1036,13 @@ export default function Layout({ children, currentPageName }) {
     },
   });
 
-  const notifications = (allNotificationsData || [])
-    .filter((n) => !n.read)
+  // Header dropdown: unread on top, then by date (newest first). If no unread, show latest.
+  const notificationsForDropdown = (allNotificationsData || [])
+    .slice()
+    .sort((a, b) => {
+      if (a.read !== b.read) return a.read ? 1 : -1; // unread first
+      return (new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+    })
     .slice(0, 5)
     .map((n) => {
       const translated = translateNotification(n.title, n.body, t);
@@ -1045,8 +1050,11 @@ export default function Layout({ children, currentPageName }) {
         id: n.id,
         title: translated.title,
         message: translated.message,
+        read: !!n.read,
       };
     });
+  const notifications = notificationsForDropdown;
+  const unreadNotificationCount = (allNotificationsData || []).filter((n) => !n.read).length;
 
   // Admin pages detection
   const adminPages = [
@@ -1154,7 +1162,7 @@ export default function Layout({ children, currentPageName }) {
               </Link>
 
               {/* Desktop nav should start from lg+, so md shows hamburger */}
-              <div className="hidden lg:flex items-center gap-6 lg:gap-8">
+              <div className="hidden xl:flex items-center gap-6 lg:gap-8">
                 <Link to={createPageUrl("Home")} className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors">
                   {t("nav.home")}
                 </Link>
@@ -1218,7 +1226,7 @@ export default function Layout({ children, currentPageName }) {
 
                 <button
                   onClick={() => setSidebarOpen(true)}
-                  className="lg:hidden text-slate-400 hover:text-white p-2"
+                  className="xl:hidden text-slate-400 hover:text-white p-2"
                   aria-label="Open menu"
                 >
                   <Menu className="w-6 h-6" />
@@ -1386,9 +1394,8 @@ export default function Layout({ children, currentPageName }) {
                         }
                         setOpenSubmenu(isSubmenuOpen ? null : item.name);
                       }}
-                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
-                        isAnyChildActive ? "bg-slate-800 text-white" : "text-slate-400 hover:text-white hover:bg-slate-800"
-                      }`}
+                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${isAnyChildActive ? "bg-slate-800 text-white" : "text-slate-400 hover:text-white hover:bg-slate-800"
+                        }`}
                       title={sidebarCollapsed ? item.name : undefined}
                     >
                       <div className="flex items-center gap-3">
@@ -1411,11 +1418,10 @@ export default function Layout({ children, currentPageName }) {
                             <Link
                               key={child.page}
                               to={createPageUrl(child.page)}
-                              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${
-                                isChildActive
+                              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${isChildActive
                                   ? "bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-white"
                                   : "text-slate-400 hover:text-white hover:bg-slate-800"
-                              }`}
+                                }`}
                             >
                               <child.icon className={`w-4 h-4 ${isChildActive ? "text-emerald-400" : ""}`} />
                               <span className="text-sm font-medium">{child.name}</span>
@@ -1446,11 +1452,10 @@ export default function Layout({ children, currentPageName }) {
                   onClick={handleClick}
                   to={createPageUrl(item.page)}
                   title={sidebarCollapsed ? item.name : undefined}
-                  className={`flex items-center ${sidebarCollapsed ? "justify-center px-2" : "gap-3 px-3"} py-2.5 rounded-xl transition-colors ${
-                    isActive
+                  className={`flex items-center ${sidebarCollapsed ? "justify-center px-2" : "gap-3 px-3"} py-2.5 rounded-xl transition-colors ${isActive
                       ? "bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-white border border-emerald-500/30"
                       : "text-slate-400 hover:text-white hover:bg-slate-800"
-                  }`}
+                    }`}
                 >
                   <item.icon className={`w-5 h-5 ${isActive ? "text-emerald-400" : ""}`} />
                   {!sidebarCollapsed && <span className="font-medium">{item.name}</span>}
@@ -1481,9 +1486,8 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Main Content */}
       <div
-        className={`flex-1 min-w-0 transition-all duration-300 ${
-          sidebarCollapsed ? "lg:pl-20" : "lg:pl-64"
-        }`}
+        className={`flex-1 min-w-0 transition-all duration-300 ${sidebarCollapsed ? "lg:pl-20" : "lg:pl-64"
+          }`}
       >
         {/* Top Bar */}
         <header className="sticky top-0 z-40 h-16 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800 flex items-center justify-between px-4 lg:px-8">
@@ -1499,11 +1503,11 @@ export default function Layout({ children, currentPageName }) {
             {/* Notifications */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative text-slate-400">
+                  <Button variant="ghost" size="icon" className="relative text-slate-400">
                   <Bell className="w-5 h-5" />
-                  {notifications.length > 0 && (
+                  {unreadNotificationCount > 0 && (
                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
-                      {notifications.length}
+                      {unreadNotificationCount > 99 ? "99+" : unreadNotificationCount}
                     </span>
                   )}
                 </Button>
