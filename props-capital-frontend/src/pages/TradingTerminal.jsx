@@ -4253,12 +4253,12 @@ export default function TradingTerminal() {
             </div>
           </Card>
 
-          {/* 2) Chart */}
-          <Card className="bg-slate-900 border-slate-800 p-3">
+          {/* 2) Chart - min-w-0 so chart fits viewport on mobile */}
+          <Card className="bg-slate-900 border-slate-800 p-3 min-w-0 overflow-hidden">
             <h4 className="text-white font-medium mb-3">
               {t("terminal.tabs.chart")}
             </h4>
-            <div className="h-[380px]">
+            <div className="h-[380px] min-w-0">
               <TradingChart
                 key={`chart-mobile-${selectedSymbol?.symbol}`}
                 symbol={selectedSymbol}
@@ -4529,7 +4529,7 @@ export default function TradingTerminal() {
 
             {/* Center - Chart */}
             <div
-              className={`${sidebarCollapsed ? "col-span-8" : "col-span-7"} transition-all h-[450px]`}
+              className={`${sidebarCollapsed ? "col-span-8" : "col-span-7"} transition-all h-[450px] min-w-0`}
             >
               <TradingChart
                 key={`chart-desktop-${selectedSymbol?.symbol}`}
