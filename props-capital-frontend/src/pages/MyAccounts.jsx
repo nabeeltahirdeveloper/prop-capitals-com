@@ -302,31 +302,31 @@ export default function MyAccounts() {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-2">
-        <Filter className="w-4 h-4 text-slate-400" />
-        <Tabs value={filter} onValueChange={setFilter}>
-          <TabsList className="bg-slate-900 border border-slate-800">
+      <div className="flex w-full items-center gap-2">
+        <Filter className="w-4 h-4 text-slate-400 flex-shrink-0" />
+        <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto">
+          <TabsList className="flex h-9 w-full flex-1 flex-row gap-0 rounded-lg bg-slate-900 p-0 sm:w-96 border border-slate-800 [&>button]:flex-1 [&>button]:rounded-md [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs sm:[&>button]:text-sm">
             <TabsTrigger
               value="all"
-              className="data-[state=active]:bg-slate-800 data-[state=active]:text-white "
+              className="data-[state=active]:bg-slate-800 data-[state=active]:text-white"
             >
               {t("myAccounts.all")} ({accountCounts.all})
             </TabsTrigger>
             <TabsTrigger
               value="challenges"
-              className="data-[state=active]:bg-slate-800 data-[state=active]:text-white "
+              className="data-[state=active]:bg-slate-800 data-[state=active]:text-white"
             >
               {t("myAccounts.active")}
             </TabsTrigger>
             <TabsTrigger
               value="funded"
-              className="data-[state=active]:bg-slate-800 data-[state=active]:text-white "
+              className="data-[state=active]:bg-slate-800 data-[state=active]:text-white"
             >
               {t("myAccounts.funded")}
             </TabsTrigger>
             <TabsTrigger
               value="failed"
-              className="data-[state=active]:bg-slate-800 data-[state=active]:text-white "
+              className="data-[state=active]:bg-slate-800 data-[state=active]:text-white"
             >
               {t("myAccounts.failed")}
             </TabsTrigger>
