@@ -2375,7 +2375,8 @@
         "a": "Çekimler onaydan sonra 24–48 saat içinde işlenir ve seçtiğiniz yöntemle gönderilir."
       }
     },
-    "compareTableTitle": "Tüm meydan okumaları karşılaştır"
+    "compareTableTitle": "Tüm meydan okumaları karşılaştır",
+    "noChallenges": "Zorluk yok"
   },
   "scalingPlan": {
     "badge": "Sınırsız büyüme potansiyeli",

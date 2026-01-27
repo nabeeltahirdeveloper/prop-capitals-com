@@ -2374,7 +2374,8 @@
         "a": "出金は承認後24〜48時間以内に処理され、選択した方法で受け取れます。"
       }
     },
-    "compareTableTitle": "すべてのチャレンジを比較"
+    "compareTableTitle": "すべてのチャレンジを比較",
+    "noChallenges": "チャレンジなし"
   },
   "scalingPlan": {
     "badge": "無制限の成長ポテンシャル",
