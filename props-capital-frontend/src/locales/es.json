@@ -2374,7 +2374,8 @@
         "a": "Los retiros se procesan dentro de 24–48 horas después de la aprobación y se pagan mediante el método seleccionado."
       }
     },
-    "compareTableTitle": "Comparar todos los desafíos"
+    "compareTableTitle": "Comparar todos los desafíos",
+    "noChallenges": "Sin desafíos"
   },
   "scalingPlan": {
     "badge": "Potencial de crecimiento ilimitado",
