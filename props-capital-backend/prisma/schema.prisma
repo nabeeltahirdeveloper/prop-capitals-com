@@ -286,9 +286,13 @@ model ScalingRequest {
   tradingAccountId String
   oldBalance       Float
   newBalance       Float
+  oldProfitSplit   Float          @default(80.0)
+  newProfitSplit   Float          @default(85.0)
   status           String         @default("PENDING")
+  reason           String?
   requestedAt      DateTime       @default(now())
   approvedAt       DateTime?
+  processedAt      DateTime?
   tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
 }
 
