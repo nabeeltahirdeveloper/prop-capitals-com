@@ -136,7 +136,9 @@ export default function AdminPayments() {
       header: t("admin.payments.table.trader"),
       accessorKey: "trader_id",
       cell: (row) => (
-        <span className="text-white font-medium">{row.trader_id}</span>
+        <span className="text-white font-medium block max-w-[180px] truncate" title={row.trader_id}>
+          {row.trader_id}
+        </span>
       ),
     },
     {
@@ -181,7 +183,10 @@ export default function AdminPayments() {
       header: t("admin.payments.table.transactionId"),
       accessorKey: "transaction_id",
       cell: (row) => (
-        <span className="text-xs font-mono text-slate-400">
+        <span
+          className="text-xs font-mono text-slate-400 block max-w-[120px] truncate"
+          title={row.transaction_id || "-"}
+        >
           {row.transaction_id || "-"}
         </span>
       ),
@@ -223,21 +228,14 @@ export default function AdminPayments() {
               <DialogTrigger asChild>
                 <Button
                   size="sm"
-                  variant="outline"
-                  className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10"
+                  className="bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:border-amber-500/50 gap-1.5"
                   onClick={() => handleRefund(row)}
                 >
-                  <RefreshCw className="w-4 h-4 mr-1" />
+                  <RefreshCw className="w-3.5 h-3.5" />
                   {t("admin.payments.actions.refund")}
                 </Button>
               </DialogTrigger>
-              <DialogContent
-                className="
-    bg-slate-900 border-slate-800 w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6
-    [&>button]:text-white
-    [&>button]:hover:text-white
-  "
-              >
+              <DialogContent className="bg-slate-900 border-slate-800 w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6 [&>button]:text-white [&>button]:hover:text-white">
                 <DialogHeader>
                   <DialogTitle className="text-white text-base sm:text-lg md:text-xl">
                     {t("admin.payments.refundTitle") || "Refund Payment"}
@@ -273,7 +271,7 @@ export default function AdminPayments() {
                         setSelectedPayment(null);
                         setRefundReason("");
                       }}
-                      className="border-slate-600 text-amber-600 w-full sm:w-auto order-2 sm:order-1"
+                      className="border-slate-600 text-slate-300 hover:text-white hover:bg-slate-800 w-full sm:w-auto order-2 sm:order-1"
                     >
                       {t("admin.payments.cancel") || "Cancel"}
                     </Button>
@@ -292,12 +290,15 @@ export default function AdminPayments() {
             </Dialog>
           )}
           {row.status === "refunded" && (
-            <div className="flex flex-col">
+            <div className="flex flex-col max-w-[150px]">
               <span className="text-xs text-slate-400">
                 {t("admin.payments.actions.refunded")}
               </span>
               {row.refund_reason && (
-                <span className="text-xs text-slate-500 mt-1">
+                <span
+                  className="text-xs text-slate-500 mt-1 truncate"
+                  title={row.refund_reason}
+                >
                   {row.refund_reason}
                 </span>
               )}
