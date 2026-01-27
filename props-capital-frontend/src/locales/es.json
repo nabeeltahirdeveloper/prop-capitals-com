@@ -1051,10 +1051,13 @@
       "candles": "Velas",
       "tf": "TF",
       "loadingData": "Cargando datos del gráfico...",
-      "updating": "Actualizando..."
+      "updating": "Actualizando...",
+      "switchToLineChart": "Cambiar a gráfico de líneas",
+      "switchToCandlestickChart": "Cambiar a gráfico de velas"
     },
     "loadingAccounts": "Cargando cuentas...",
     "watchlist": {
+      "title": "Ver precios",
       "live": "En vivo",
       "offline": "Sin conexión",
       "search": "Buscar...",

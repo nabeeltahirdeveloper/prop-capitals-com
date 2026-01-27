@@ -1051,10 +1051,13 @@
       "candles": "Свечи",
       "tf": "TF",
       "loadingData": "Загрузка данных графика...",
-      "updating": "Обновление..."
+      "updating": "Обновление...",
+      "switchToLineChart": "Переключить на линейный график",
+      "switchToCandlestickChart": "Переключить на свечной график"
     },
     "loadingAccounts": "Загрузка аккаунтов...",
     "watchlist": {
+      "title": "Просмотр цен",
       "live": "В сети",
       "offline": "Не в сети",
       "search": "Поиск...",

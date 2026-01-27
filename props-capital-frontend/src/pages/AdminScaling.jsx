@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-// TODO: Replace with scaling API when available
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiGet, apiPost } from "@/lib/api";
 import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,13 +22,61 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Zap,
   CheckCircle,
   XCircle,
   Clock,
   ArrowUpRight,
   TrendingUp,
+  Loader2,
 } from "lucide-react";
+
+// Transform backend response to frontend expected format
+const transformRequest = (request) => {
+  const tradingAccount = request.tradingAccount || {};
+  const user = tradingAccount.user || {};
+  const challenge = tradingAccount.challenge || {};
+  const payouts = tradingAccount.payouts || [];
+
+  // Calculate profit achieved as percentage
+  const initialBalance = tradingAccount.initialBalance || request.oldBalance;
+  const currentBalance = tradingAccount.balance || 0;
+  const profitAchieved =
+    initialBalance > 0
+      ? ((currentBalance - initialBalance) / initialBalance) * 100
+      : 0;
+
+  // Count completed payouts
+  const completedPayouts = payouts.filter(
+    (p) => p.status === "COMPLETED" || p.status === "PAID",
+  ).length;
+
+  return {
+    id: request.id,
+    trader_id: user.id || tradingAccount.userId,
+    trader_email: user.email,
+    trader_name: user.firstName
+      ? `${user.firstName} ${user.lastName || ""}`.trim()
+      : user.email,
+    current_account_size: request.oldBalance,
+    new_account_size: request.newBalance,
+    current_profit_split: request.oldProfitSplit || challenge.profitSplit || 80,
+    new_profit_split: request.newProfitSplit || 85,
+    current_level: Math.floor(request.oldBalance / 50000) || 1,
+    requested_level: Math.floor(request.newBalance / 50000) || 2,
+    profit_achieved: profitAchieved,
+    payout_cycles_completed: completedPayouts,
+    eligibility_check: {
+      profit_requirement_met: profitAchieved >= 10,
+      payout_cycles_met: completedPayouts >= 2,
+    },
+    status: request.status?.toLowerCase() || "pending",
+    reason: request.reason,
+    requestedAt: request.requestedAt,
+    approvedAt: request.approvedAt,
+    processedAt: request.processedAt,
+    brokerLogin: tradingAccount.brokerLogin,
+  };
+};
 
 export default function AdminScaling() {
   const { t } = useTranslation();
@@ -38,14 +86,15 @@ export default function AdminScaling() {
 
   const { data: requests = [], isLoading } = useQuery({
     queryKey: ["scaling-requests"],
-    queryFn: () => Promise.resolve([]), // TODO: Replace with scaling requests API
+    queryFn: async () => {
+      const data = await apiGet("/admin/scaling/requests");
+      return data.map(transformRequest);
+    },
   });
 
   const approveMutation = useMutation({
     mutationFn: async (requestId) => {
-      // TODO: Replace with scaling engine API
-      const response = { success: false };
-      return response.data;
+      return await apiPost(`/admin/scaling/approve/${requestId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["scaling-requests"] });
@@ -56,9 +105,7 @@ export default function AdminScaling() {
 
   const processMutation = useMutation({
     mutationFn: async (requestId) => {
-      // TODO: Replace with scaling engine API
-      const response = { success: false };
-      return response.data;
+      return await apiPost(`/admin/scaling/process/${requestId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["scaling-requests"] });
@@ -67,8 +114,7 @@ export default function AdminScaling() {
 
   const rejectMutation = useMutation({
     mutationFn: async ({ requestId, reason }) => {
-      // TODO: Replace with scaling requests API
-      await Promise.resolve();
+      return await apiPost(`/admin/scaling/reject/${requestId}`, { reason });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["scaling-requests"] });
@@ -159,7 +205,7 @@ export default function AdminScaling() {
               <TableCell className="px-2 sm:px-4 py-3">
                 <div>
                   <p className="text-white font-medium text-xs sm:text-sm">
-                    {request.trader_id?.slice(0, 8)}...
+                    {request.brokerLogin || request.trader_id?.slice(0, 8)}...
                   </p>
                   <p className="text-[10px] sm:text-xs text-slate-400">
                     {t("admin.scaling.table.level", {
@@ -268,7 +314,14 @@ export default function AdminScaling() {
                 colSpan={showActions ? 7 : 6}
                 className="text-center text-slate-200 py-8 text-sm"
               >
-                {t("admin.scaling.emptyMessage")}
+                {isLoading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Loading...
+                  </div>
+                ) : (
+                  t("admin.scaling.emptyMessage")
+                )}
               </TableCell>
             </TableRow>
           )}
@@ -347,46 +400,26 @@ export default function AdminScaling() {
           <TabsList className="bg-slate-800 w-full sm:w-auto flex min-w-max">
             <TabsTrigger
               value="pending"
-              className="
-    text-slate-400
-    text-xs sm:text-sm px-3 sm:px-6
-    data-[state=active]:bg-slate-700
-    data-[state=active]:text-white
-  "
+              className="text-slate-400 text-xs sm:text-sm px-3 sm:px-6 data-[state=active]:bg-slate-700 data-[state=active]:text-white"
             >
               {t("admin.scaling.tabs.pending")} ({pendingRequests.length})
             </TabsTrigger>
 
             <TabsTrigger
               value="approved"
-              className="
-    text-slate-400
-    text-xs sm:text-sm px-3 sm:px-6
-    data-[state=active]:bg-slate-700
-    data-[state=active]:text-white
-  "
+              className="text-slate-400 text-xs sm:text-sm px-3 sm:px-6 data-[state=active]:bg-slate-700 data-[state=active]:text-white"
             >
               {t("admin.scaling.tabs.approved")} ({approvedRequests.length})
             </TabsTrigger>
             <TabsTrigger
               value="completed"
-              className="
-    text-slate-400
-    text-xs sm:text-sm px-3 sm:px-6
-    data-[state=active]:bg-slate-700
-    data-[state=active]:text-white
-  "
+              className="text-slate-400 text-xs sm:text-sm px-3 sm:px-6 data-[state=active]:bg-slate-700 data-[state=active]:text-white"
             >
               {t("admin.scaling.tabs.completed")} ({completedRequests.length})
             </TabsTrigger>
             <TabsTrigger
               value="all"
-              className="
-    text-slate-400
-    text-xs sm:text-sm px-3 sm:px-6
-    data-[state=active]:bg-slate-700
-    data-[state=active]:text-white
-  "
+              className="text-slate-400 text-xs sm:text-sm px-3 sm:px-6 data-[state=active]:bg-slate-700 data-[state=active]:text-white"
             >
               {t("admin.scaling.tabs.all")}
             </TabsTrigger>

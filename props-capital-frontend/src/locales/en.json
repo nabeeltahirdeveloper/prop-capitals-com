@@ -1055,10 +1055,13 @@
       "candles": "Candles",
       "tf": "TF",
       "loadingData": "Loading chart data...",
-      "updating": "Updating..."
+      "updating": "Updating...",
+      "switchToLineChart": "Switch to Line Chart",
+      "switchToCandlestickChart": "Switch to Candlestick Chart"
     },
     "loadingAccounts": "Loading accounts...",
     "watchlist": {
+      "title": "View Prices",
       "live": "Live",
       "reconnecting": "Reconnecting",
       "offline": "Offline",

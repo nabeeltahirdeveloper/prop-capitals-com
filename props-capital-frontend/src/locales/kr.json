@@ -1051,10 +1051,13 @@
       "candles": "캔들",
       "tf": "TF",
       "loadingData": "차트 데이터를 불러오는 중...",
-      "updating": "업데이트 중..."
+      "updating": "업데이트 중...",
+      "switchToLineChart": "라인 차트로 전환",
+      "switchToCandlestickChart": "캔들스틱 차트로 전환"
     },
     "loadingAccounts": "계정을 불러오는 중...",
     "watchlist": {
+      "title": "가격 보기",
       "live": "라이브",
       "offline": "오프라인",
       "search": "검색...",

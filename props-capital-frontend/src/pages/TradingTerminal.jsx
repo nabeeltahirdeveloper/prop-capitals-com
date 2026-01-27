@@ -4507,7 +4507,7 @@ export default function TradingTerminal() {
                         textOrientation: "mixed",
                       }}
                     >
-                      {t("terminal.watchlist.title") || "Markets"}
+                      {t("terminal.watchlist.title") || "View Prices"}
                     </span>
                   </div>
 

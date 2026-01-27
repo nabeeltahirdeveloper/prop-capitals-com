@@ -1051,10 +1051,13 @@
       "candles": "Bougies",
       "tf": "TF",
       "loadingData": "Chargement des données du graphique...",
-      "updating": "Mise à jour..."
+      "updating": "Mise à jour...",
+      "switchToLineChart": "Passer au graphique en courbe",
+      "switchToCandlestickChart": "Passer au graphique en chandelier"
     },
     "loadingAccounts": "Chargement des comptes...",
     "watchlist": {
+      "title": "Voir les prix",
       "live": "En direct",
       "offline": "Hors ligne",
       "search": "Rechercher...",
