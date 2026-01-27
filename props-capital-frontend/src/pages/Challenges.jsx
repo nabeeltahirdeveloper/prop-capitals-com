@@ -239,8 +239,8 @@ export default function Challenges() {
                     key={type.value}
                     onClick={() => setChallengeType(type.value)}
                     className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl font-medium transition-all text-sm sm:text-base ${challengeType === type.value
-                        ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-white'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                      ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-white'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
                       }`}
                   >
                     <type.icon className="w-4 h-4" />

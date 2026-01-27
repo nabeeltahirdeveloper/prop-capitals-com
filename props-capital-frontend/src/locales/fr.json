@@ -170,6 +170,7 @@
       "title": "Respect des règles",
       "selectAccount": "Sélectionner un compte",
       "phase": "Phase",
+      
       "phase1": "Phase 1",
       "phase2": "Phase 2",
       "funded": "Financé",
@@ -1146,12 +1147,12 @@
   },
   "nav": {
     "home": "Accueil",
-    "challenges": "Challenges",
+    "challenges": "Défis",
     "howItWorks": "Comment ça marche",
-    "scaling": "Scaling",
+    "scaling": "Plan de croissance",
     "rules": "Règles",
-    "faq": "FAQ",
-    "contact": "Contact",
+    "faq": "Questions fréquentes",
+    "contact": "Nous contacter",
     "login": "Connexion",
     "getStarted": "Commencer",
     "dashboard": "Tableau de bord",
@@ -2374,7 +2375,8 @@
         "a": "Les retraits sont traités sous 24 à 48 heures après approbation et envoyés via la méthode choisie."
       }
     },
-    "compareTableTitle": "Comparer tous les challenges"
+    "compareTableTitle": "Comparer tous les challenges",
+    "noChallenges": "Aucun défi"
   },
   "scalingPlan": {
     "badge": "Potentiel de croissance illimité",
@@ -2723,7 +2725,7 @@
       "subtitle": "Une fois les règles comprises, choisissez un challenge et démarrez votre parcours vers le financement.",
       "viewChallenges": "Voir les challenges"
     },
-    "important": "Important",
+    "important": "Importante",
     "phase1": "Phase 1",
     "phase2": "Phase 2",
     "funded": "Financé"

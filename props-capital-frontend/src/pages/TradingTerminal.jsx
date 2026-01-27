@@ -339,10 +339,10 @@ export default function TradingTerminal() {
       overall_drawdown_percent: overallDD,
       trading_days_count: account.trades
         ? new Set(
-            account.trades.map((t) =>
-              new Date(t.openedAt).toISOString().substring(0, 10),
-            ),
-          ).size
+          account.trades.map((t) =>
+            new Date(t.openedAt).toISOString().substring(0, 10),
+          ),
+        ).size
         : 0,
       min_trading_days:
         challenge.minTradingDays || challenge.min_trading_days || 5,
@@ -353,7 +353,7 @@ export default function TradingTerminal() {
         Math.max(
           0,
           (challenge.maxTradingDays || challenge.max_trading_days || 30) -
-            (account.daysElapsed || 0),
+          (account.daysElapsed || 0),
         ),
       margin_used: 0, // Will be updated from backend getAccountById
       free_margin: equity, // Will be updated from backend getAccountById
@@ -645,7 +645,7 @@ export default function TradingTerminal() {
             if (
               latestCloseTime &&
               new Date(latestCloseTime) >
-                new Date(beforeMarker.latestTradeTimestamp)
+              new Date(beforeMarker.latestTradeTimestamp)
             ) {
               devLog(
                 "✅ New closed trades detected! Latest close:",
@@ -1058,8 +1058,8 @@ export default function TradingTerminal() {
 
           let finalBalance =
             acc.balance !== null &&
-            acc.balance !== undefined &&
-            Number.isFinite(acc.balance)
+              acc.balance !== undefined &&
+              Number.isFinite(acc.balance)
               ? acc.balance
               : prev.balance;
 
@@ -1084,8 +1084,8 @@ export default function TradingTerminal() {
             balance: finalBalance,
             equity:
               acc.equity !== null &&
-              acc.equity !== undefined &&
-              Number.isFinite(acc.equity)
+                acc.equity !== undefined &&
+                Number.isFinite(acc.equity)
                 ? acc.equity
                 : prev.equity,
             profitPercent: Math.max(
@@ -1117,20 +1117,20 @@ export default function TradingTerminal() {
               challengeRules.minTradingDays ?? prev.minTradingDays,
             daysRemaining:
               metrics.daysRemaining !== null &&
-              metrics.daysRemaining !== undefined &&
-              Number.isFinite(metrics.daysRemaining)
+                metrics.daysRemaining !== undefined &&
+                Number.isFinite(metrics.daysRemaining)
                 ? metrics.daysRemaining
                 : prev.daysRemaining,
             margin:
               acc.marginUsed !== null &&
-              acc.marginUsed !== undefined &&
-              Number.isFinite(acc.marginUsed)
+                acc.marginUsed !== undefined &&
+                Number.isFinite(acc.marginUsed)
                 ? acc.marginUsed
                 : prev.margin,
             freeMargin:
               acc.freeMargin !== null &&
-              acc.freeMargin !== undefined &&
-              Number.isFinite(acc.freeMargin)
+                acc.freeMargin !== undefined &&
+                Number.isFinite(acc.freeMargin)
                 ? acc.freeMargin
                 : prev.freeMargin,
             startingBalance: initialBalance,
@@ -1271,7 +1271,7 @@ export default function TradingTerminal() {
           breachType: trade.breachType || null,
           breachUnrealizedPnl:
             trade.breachUnrealizedPnl !== null &&
-            trade.breachUnrealizedPnl !== undefined
+              trade.breachUnrealizedPnl !== undefined
               ? trade.breachUnrealizedPnl
               : null,
           breachDrawdownPercentDaily: trade.breachDrawdownPercentDaily ?? null,
@@ -2262,13 +2262,13 @@ export default function TradingTerminal() {
                       : 0,
                     closedCount: Array.isArray(beforeTrades)
                       ? beforeTrades.filter((t) => t.closedAt || t.closePrice)
-                          .length
+                        .length
                       : 0,
                     latestTradeTimestamp:
                       Array.isArray(beforeTrades) && beforeTrades.length > 0
                         ? beforeTrades[0].closedAt ||
-                          beforeTrades[0].closeTime ||
-                          beforeTrades[0].openedAt
+                        beforeTrades[0].closeTime ||
+                        beforeTrades[0].openedAt
                         : null,
                   };
 
@@ -2516,7 +2516,7 @@ export default function TradingTerminal() {
               : 0,
             closedCount: Array.isArray(currentTradesData)
               ? currentTradesData.filter((t) => t.closedAt || t.closePrice)
-                  .length
+                .length
               : 0,
             latestTradeTimestamp: Date.now(),
           };
@@ -3146,8 +3146,8 @@ export default function TradingTerminal() {
         const drawdownPercent =
           account.startingBalance > 0
             ? ((account.startingBalance - newEquity) /
-                account.startingBalance) *
-              100
+              account.startingBalance) *
+            100
             : 0;
         console.log(
           `[Equity Debug] balance=$${account.balance.toFixed(2)}, totalPnL=$${totalPnL.toFixed(2)}, equity=$${newEquity.toFixed(2)}, drawdown=${drawdownPercent.toFixed(2)}%`,
@@ -4003,7 +4003,7 @@ export default function TradingTerminal() {
           {/* Keep the “small screen” topbar layout up to md; switch layout at lg */}
           <div className="w-96 lg:w-auto lg:flex gap-3">
             <div className="flex justify-between py-2 sm:justify-start">
-              <h1 className="text-base sm:text-lg md:text-xl font-bold text-white">
+              <h1 className="text-base sm:text-lg md:text-xl font-bold text-white me-3">
                 {t("terminal.title")}
               </h1>
               {/* Keep this mobile status group visible up to md (hide only on lg+) */}
@@ -4040,13 +4040,12 @@ export default function TradingTerminal() {
                   }
                 >
                   <div
-                    className={`w-2 h-2 rounded-full mr-1.5 ${
-                      websocketStatus.connected
-                        ? "bg-emerald-400 animate-pulse"
-                        : websocketStatus.status === "reconnecting"
-                          ? "bg-yellow-400 animate-pulse"
-                          : "bg-red-400"
-                    }`}
+                    className={`w-2 h-2 rounded-full mr-1.5 ${websocketStatus.connected
+                      ? "bg-emerald-400 animate-pulse"
+                      : websocketStatus.status === "reconnecting"
+                        ? "bg-yellow-400 animate-pulse"
+                        : "bg-red-400"
+                      }`}
                   />
                   <span className="hidden md:inline font-medium">
                     {websocketStatus.connected
@@ -4195,13 +4194,12 @@ export default function TradingTerminal() {
             }
           >
             <div
-              className={`w-2 h-2 rounded-full mr-1.5 ${
-                websocketStatus.connected
-                  ? "bg-emerald-400 animate-pulse"
-                  : websocketStatus.status === "reconnecting"
-                    ? "bg-yellow-400 animate-pulse"
-                    : "bg-red-400"
-              }`}
+              className={`w-2 h-2 rounded-full mr-1.5 ${websocketStatus.connected
+                ? "bg-emerald-400 animate-pulse"
+                : websocketStatus.status === "reconnecting"
+                  ? "bg-yellow-400 animate-pulse"
+                  : "bg-red-400"
+                }`}
             />
             <span className="hidden md:inline font-medium">
               {websocketStatus.connected
@@ -4444,11 +4442,10 @@ export default function TradingTerminal() {
                       >
                         <div className="flex items-center gap-2">
                           <Badge
-                            className={`text-xs ${
-                              trade.type === "buy"
-                                ? "bg-emerald-500/20 text-emerald-400"
-                                : "bg-red-500/20 text-red-400"
-                            }`}
+                            className={`text-xs ${trade.type === "buy"
+                              ? "bg-emerald-500/20 text-emerald-400"
+                              : "bg-red-500/20 text-red-400"
+                              }`}
                           >
                             {(trade.type === "buy"
                               ? t("terminal.tradingPanel.buyLong")
@@ -4458,11 +4455,10 @@ export default function TradingTerminal() {
                           <span className="text-white">{trade.symbol}</span>
                         </div>
                         <span
-                          className={`font-mono font-bold ${
-                            (trade.pnl ?? 0) >= 0
-                              ? "text-emerald-400"
-                              : "text-red-400"
-                          }`}
+                          className={`font-mono font-bold ${(trade.pnl ?? 0) >= 0
+                            ? "text-emerald-400"
+                            : "text-red-400"
+                            }`}
                         >
                           {(trade.pnl ?? 0) >= 0 ? "+" : ""}
                           {(trade.pnl ?? 0).toFixed(2)}
@@ -4870,9 +4866,9 @@ export default function TradingTerminal() {
                           const winRate =
                             filteredTrades.length > 0
                               ? (
-                                  (winCount / filteredTrades.length) *
-                                  100
-                                ).toFixed(1)
+                                (winCount / filteredTrades.length) *
+                                100
+                              ).toFixed(1)
                               : 0;
 
                           return (
@@ -4948,11 +4944,11 @@ export default function TradingTerminal() {
                                           >
                                             {(trade.type === "buy"
                                               ? t(
-                                                  "terminal.tradingPanel.buyLong",
-                                                )
+                                                "terminal.tradingPanel.buyLong",
+                                              )
                                               : t(
-                                                  "terminal.tradingPanel.sellShort",
-                                                )
+                                                "terminal.tradingPanel.sellShort",
+                                              )
                                             ).toUpperCase()}
                                           </Badge>
                                           <div className="flex-1 min-w-0">
@@ -4990,25 +4986,25 @@ export default function TradingTerminal() {
                                             // Check if trade was auto-closed due to risk limit breach
                                             const isAutoClosed =
                                               trade.closeReason ===
-                                                "RISK_AUTO_CLOSE" ||
+                                              "RISK_AUTO_CLOSE" ||
                                               trade.closeReason ===
-                                                "risk_auto_close" ||
+                                              "risk_auto_close" ||
                                               String(
                                                 trade.closeReason || "",
                                               ).toUpperCase() ===
-                                                "RISK_AUTO_CLOSE";
+                                              "RISK_AUTO_CLOSE";
 
                                             // Check if breach snapshot exists
                                             const isBreachTriggered =
                                               trade.breachTriggered === true ||
                                               trade.breachTriggered === 1 ||
                                               String(trade.breachTriggered) ===
-                                                "true";
+                                              "true";
                                             const hasBreachPnL =
                                               trade.breachUnrealizedPnl !==
-                                                null &&
+                                              null &&
                                               trade.breachUnrealizedPnl !==
-                                                undefined &&
+                                              undefined &&
                                               Number.isFinite(
                                                 trade.breachUnrealizedPnl,
                                               );
@@ -5033,16 +5029,16 @@ export default function TradingTerminal() {
                                                 {/* Show breach PnL if available, otherwise show realized PnL */}
                                                 {trade.breachUnrealizedPnl !==
                                                   null &&
-                                                trade.breachUnrealizedPnl !==
+                                                  trade.breachUnrealizedPnl !==
                                                   undefined &&
-                                                Number.isFinite(
-                                                  trade.breachUnrealizedPnl,
-                                                ) ? (
+                                                  Number.isFinite(
+                                                    trade.breachUnrealizedPnl,
+                                                  ) ? (
                                                   <span
                                                     className={`font-mono font-bold text-sm ${trade.breachUnrealizedPnl >= 0 ? "text-emerald-400" : "text-red-400"}`}
                                                   >
                                                     {trade.breachUnrealizedPnl >=
-                                                    0
+                                                      0
                                                       ? "+"
                                                       : ""}
                                                     $
@@ -5132,16 +5128,16 @@ export default function TradingTerminal() {
         currentPrice={
           modifyingPosition
             ? (() => {
-                const priceData = unifiedPrices[modifyingPosition.symbol];
-                if (!priceData) return null;
-                // Use the correct price side (ask for BUY, bid for SELL)
-                if (typeof priceData === "object") {
-                  return modifyingPosition.type === "buy"
-                    ? priceData.ask
-                    : priceData.bid;
-                }
-                return priceData;
-              })()
+              const priceData = unifiedPrices[modifyingPosition.symbol];
+              if (!priceData) return null;
+              // Use the correct price side (ask for BUY, bid for SELL)
+              if (typeof priceData === "object") {
+                return modifyingPosition.type === "buy"
+                  ? priceData.ask
+                  : priceData.bid;
+              }
+              return priceData;
+            })()
             : null
         }
       />
@@ -5157,11 +5153,10 @@ export default function TradingTerminal() {
       {/* Account Status Banner (for locked/disqualified accounts) */}
       {accountStatusBanner && (
         <div
-          className={`fixed bottom-4 left-4 right-4 lg:left-72 ${
-            accountStatusBanner.type === "error"
-              ? "bg-red-500/90"
-              : "bg-orange-500/90"
-          } text-white px-4 py-3 rounded-lg flex items-center justify-between z-50`}
+          className={`fixed bottom-4 left-4 right-4 lg:left-72 ${accountStatusBanner.type === "error"
+            ? "bg-red-500/90"
+            : "bg-orange-500/90"
+            } text-white px-4 py-3 rounded-lg flex items-center justify-between z-50`}
         >
           <div className="flex items-center gap-2">
             <XCircle className="w-5 h-5" />

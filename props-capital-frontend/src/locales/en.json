@@ -2447,7 +2447,8 @@
         "a": "Payouts are processed within 24-48 hours after approval. The funds arrive via your chosen payment method."
       }
     },
-    "compareTableTitle": "Compare All Challenges"
+    "compareTableTitle": "Compare All Challenges",
+    "noChallenges": "No Challenges Available"
   },
   "scalingPlan": {
     "badge": "Unlimited Growth Potential",

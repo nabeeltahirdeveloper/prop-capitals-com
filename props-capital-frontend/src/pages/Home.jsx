@@ -174,7 +174,7 @@ export default function Home() {
             <motion.div initial="initial" animate="animate" variants={stagger}>
               <motion.div
                 variants={fadeIn}
-                className="flex  md:inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-8 mx-auto text-center sm:mx-0 sm:text-left"
+                className="flex  lg:inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-8 mx-auto text-center sm:mx-0 sm:text-left"
               >
                 <Star className="w-4 h-4 text-emerald-400" />
                 <span className="text-sm text-emerald-400">
@@ -184,29 +184,29 @@ export default function Home() {
 
               <motion.h1
                 variants={fadeIn}
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 md:mb-6 leading-tight text-center  sm:text-left"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 md:mb-6 leading-tight text-center  lg:text-left "
               >
                 {t("home.hero.title")}
-                <span className="md;block bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent w-full">
+                <span className="md;block bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent w-full ">
                   {t("home.hero.titleHighlight")}
                 </span>
               </motion.h1>
 
               <motion.p
                 variants={fadeIn}
-                className="text-base sm:text-lg md:text-xl text-slate-400 mb-6 md:mb-10"
+                className="text-base sm:text-lg md:text-xl text-slate-400 mb-6 md:mb-10 text-center"
               >
                 {t("home.hero.subtitle")}
               </motion.p>
 
               <motion.div
                 variants={fadeIn}
-                className="flex flex-col sm:flex-row gap-3 sm:gap-4"
+                className="flex flex-col lg:flex-row gap-3 lg:gap-4"
               >
                 <a href="#challenges">
                   <Button
                     size="lg"
-                    className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg h-auto group w-full sm:w-auto"
+                    className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg h-auto group w-full lg:w-auto"
                   >
                     {t("home.hero.cta")}
                     <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -216,7 +216,7 @@ export default function Home() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-slate-600 bg-slate-800/50 text-white hover:bg-slate-700 hover:text-white px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg h-auto group w-full sm:w-auto"
+                    className="border-slate-600 bg-slate-800/50 text-white hover:bg-slate-700 hover:text-white px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg h-auto group w-full lg:w-auto"
                   >
                     <Play className="mr-2 w-5 h-5" />
                     {t("home.hero.howItWorks")}
@@ -227,7 +227,7 @@ export default function Home() {
               {/* Trust Badges */}
               <motion.div
                 variants={fadeIn}
-                className="flex items-center gap-6 mt-10"
+                className="flex items-center sm:justify-center lg:justify-start  gap-6 mt-10"
               >
                 <div className="flex items-center gap-2">
                   <BadgeCheck className="w-5 h-5 text-emerald-400" />

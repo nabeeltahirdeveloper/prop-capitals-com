@@ -1174,8 +1174,8 @@ export default function Layout({ children, currentPageName }) {
                 <span className="text-lg sm:text-xl font-bold text-white">Prop Capitals</span>
               </Link>
 
-              {/* Desktop nav should start from lg+, so md shows hamburger */}
-              <div className="hidden xl:flex items-center gap-6 lg:gap-8">
+              {/* Desktop nav should start from lg+, but hide on XL screens */}
+              <div className="hidden lg:flex xl:hidden items-center gap-6 lg:gap-8">
                 <Link to={createPageUrl("Home")} className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors">
                   {t("nav.home")}
                 </Link>
@@ -1239,7 +1239,7 @@ export default function Layout({ children, currentPageName }) {
 
                 <button
                   onClick={() => setSidebarOpen(true)}
-                  className="xl:hidden text-slate-400 hover:text-white p-2"
+                  className=" text-slate-400 hover:text-white p-2"
                   aria-label="Open menu"
                 >
                   <Menu className="w-6 h-6" />
@@ -1251,8 +1251,8 @@ export default function Layout({ children, currentPageName }) {
 
         {sidebarOpen && (
           <>
-            <div className="fixed inset-0 bg-black/50 z-50 lg:hidden" onClick={() => setSidebarOpen(false)} />
-            <div className="fixed top-0 right-0 bottom-0 w-72 bg-slate-900 z-50 lg:hidden overflow-y-auto">
+            <div className="fixed inset-0 bg-black/50 z-50 " onClick={() => setSidebarOpen(false)} />
+            <div className="fixed top-0 right-0 bottom-0 w-72 bg-slate-900 z-50  overflow-y-auto">
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-between p-4 border-b border-slate-800">
                   <Link to={createPageUrl("Home")} className="flex items-center gap-2" onClick={() => setSidebarOpen(false)}>
@@ -1328,11 +1328,11 @@ export default function Layout({ children, currentPageName }) {
         `}
       >
         <div className="flex flex-col h-full relative">
-          {/* Desktop: collapse toggle — no bg/border, visible only on sidebar hover; vertically centered */}
+          {/* Desktop: collapse toggle — always visible; vertically centered */}
           <button
             type="button"
             onClick={() => setSidebarCollapsed((v) => !v)}
-            className="hidden lg:flex absolute -right-2.5 top-1/2 -translate-y-1/2 z-[60] h-7 w-5 items-center justify-center rounded-md text-slate-500 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-slate-800/90 hover:text-white focus:opacity-100 focus:outline-none  focus:ring-offset-0 focus:ring-offset-slate-900"
+            className="hidden lg:flex absolute -right-2.5 top-1/2 -translate-y-1/2 z-[60] h-7 w-5 items-center justify-center rounded-md text-slate-500 hover:bg-slate-800/90 hover:text-white transition-all duration-200 focus:outline-none "
             aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
@@ -1344,11 +1344,11 @@ export default function Layout({ children, currentPageName }) {
           </button>
 
           {/* Logo + controls */}
-          <div className="flex items-center justify-between h-16 shrink-0 px-4 border-b border-slate-800">
+          <div className={`flex items-center justify-between h-16 shrink-0 border-b border-slate-800 transition-all ${sidebarCollapsed ? "px-2" : "px-4"}`}>
             <Link
               to={createPageUrl("Home")}
               onClick={() => setSidebarOpen(false)}
-              className="flex items-center gap-2 min-w-0"
+              className={`flex items-center min-w-0 transition-all ${sidebarCollapsed ? "justify-center" : "gap-2"}`}
               title="Home"
             >
               <div className="w-10 h-10 shrink-0 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
@@ -1368,7 +1368,7 @@ export default function Layout({ children, currentPageName }) {
           </div>
 
           {/* Navigation */}
-          <nav className={`flex-1 py-6 space-y-1 overflow-y-auto ${sidebarCollapsed ? "px-2" : "px-4"}`}>
+          <nav className={`flex-1 py-6 space-y-1 overflow-y-auto overflow-x-hidden transition-all ${sidebarCollapsed ? "px-2" : "px-4"}`}>
             {showAdminMenu && !sidebarCollapsed && (
               <div className="mb-4 px-2">
                 <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">
@@ -1405,18 +1405,18 @@ export default function Layout({ children, currentPageName }) {
                         }
                         setOpenSubmenu(isSubmenuOpen ? null : item.name);
                       }}
-                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${isAnyChildActive ? "bg-slate-800 text-white" : "text-slate-400 hover:text-white hover:bg-slate-800"
+                      className={`w-full flex items-center justify-between transition-all ${sidebarCollapsed ? "px-2 justify-center" : "px-3"} py-2.5 rounded-xl ${isAnyChildActive ? "bg-slate-800 text-white" : "text-slate-400 hover:text-white hover:bg-slate-800"
                         }`}
                       title={sidebarCollapsed ? item.name : undefined}
                     >
-                      <div className="flex items-center gap-3">
-                        <item.icon className={`w-5 h-5 ${isAnyChildActive ? "text-emerald-400" : ""}`} />
-                        {!sidebarCollapsed && <span className="font-medium">{item.name}</span>}
+                      <div className={`flex items-center transition-all ${sidebarCollapsed ? "justify-center" : "gap-3"}`}>
+                        <item.icon className={`w-5 h-5 shrink-0 ${isAnyChildActive ? "text-emerald-400" : ""}`} />
+                        {!sidebarCollapsed && <span className="font-medium truncate">{item.name}</span>}
                       </div>
 
                       {!sidebarCollapsed && (
                         <ChevronDown
-                          className={`w-4 h-4 transition-transform ${isSubmenuOpen ? "rotate-180" : ""}`}
+                          className={`w-4 h-4 shrink-0 transition-transform ${isSubmenuOpen ? "rotate-180" : ""}`}
                         />
                       )}
                     </button>
@@ -1430,8 +1430,8 @@ export default function Layout({ children, currentPageName }) {
                               key={child.page}
                               to={createPageUrl(child.page)}
                               className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${isChildActive
-                                  ? "bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-white"
-                                  : "text-slate-400 hover:text-white hover:bg-slate-800"
+                                ? "bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-white"
+                                : "text-slate-400 hover:text-white hover:bg-slate-800"
                                 }`}
                             >
                               <child.icon className={`w-4 h-4 ${isChildActive ? "text-emerald-400" : ""}`} />
@@ -1463,22 +1463,22 @@ export default function Layout({ children, currentPageName }) {
                   onClick={handleClick}
                   to={createPageUrl(item.page)}
                   title={sidebarCollapsed ? item.name : undefined}
-                  className={`flex items-center ${sidebarCollapsed ? "justify-center px-2" : "gap-3 px-3"} py-2.5 rounded-xl transition-colors ${isActive
-                      ? "bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-white border border-emerald-500/30"
-                      : "text-slate-400 hover:text-white hover:bg-slate-800"
+                  className={`flex items-center transition-all ${sidebarCollapsed ? "justify-center px-2" : "gap-3 px-3"} py-2.5 rounded-xl transition-colors ${isActive
+                    ? "bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-white border border-emerald-500/30"
+                    : "text-slate-400 hover:text-white hover:bg-slate-800"
                     }`}
                 >
-                  <item.icon className={`w-5 h-5 ${isActive ? "text-emerald-400" : ""}`} />
-                  {!sidebarCollapsed && <span className="font-medium">{item.name}</span>}
+                  <item.icon className={`w-5 h-5 shrink-0 ${isActive ? "text-emerald-400" : ""}`} />
+                  {!sidebarCollapsed && <span className="font-medium truncate min-w-0">{item.name}</span>}
                 </Link>
               );
             })}
           </nav>
 
           {/* User Section */}
-          <div className="p-4 border-t border-slate-800">
-            <div className={`flex items-center gap-3 ${sidebarCollapsed ? "justify-center" : "px-3"} py-2`}>
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-white font-bold">
+          <div className={`border-t border-slate-800 transition-all ${sidebarCollapsed ? "p-2" : "p-4"}`}>
+            <div className={`flex items-center transition-all ${sidebarCollapsed ? "justify-center" : "gap-3 px-3"} py-2`}>
+              <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-white font-bold">
                 {currentUser?.profile?.firstName?.[0] || currentUser?.email?.[0] || "U"}
               </div>
 
@@ -1518,7 +1518,7 @@ export default function Layout({ children, currentPageName }) {
             {/* Notifications */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="relative text-slate-400">
+                <Button variant="ghost" size="icon" className="relative text-slate-400">
                   <Bell className="w-5 h-5" />
                   {unreadNotificationCount > 0 && (
                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
