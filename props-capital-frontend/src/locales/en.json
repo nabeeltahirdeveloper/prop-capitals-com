@@ -1466,7 +1466,8 @@
         "markAsPaid": "Mark as Paid",
         "paid": "Paid",
         "rejected": "Rejected",
-        "rejecting": "Rejecting..."
+        "rejecting": "Rejecting...",
+        "processing": "Processing..."
       },
       "emptyMessage": "No payout requests found",
       "dialog": {

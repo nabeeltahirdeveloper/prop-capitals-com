@@ -1415,7 +1415,8 @@
         "markAsPaid": "Ödendi işaretle",
         "paid": "Ödendi",
         "rejected": "Reddedildi",
-        "rejecting": "Reddediliyor..."
+        "rejecting": "Reddediliyor...",
+        "processing": "İşleniyor..."
       },
       "emptyMessage": "Çekim talebi bulunamadı",
       "dialog": {

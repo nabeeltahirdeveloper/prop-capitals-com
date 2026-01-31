@@ -1414,7 +1414,8 @@
         "markAsPaid": "支払い済みにする",
         "paid": "支払い済み",
         "rejected": "却下",
-        "rejecting": "却下中..."
+        "rejecting": "却下中...",
+        "processing": "処理中..."
       },
       "emptyMessage": "出金申請が見つかりません",
       "dialog": {

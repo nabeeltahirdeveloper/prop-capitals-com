@@ -76,8 +76,8 @@ export const adminApprovePayout = async (id) => {
   return apiPatch(`/admin/payouts/${id}/approve`);
 };
 
-export const adminRejectPayout = async (id) => {
-  return apiPatch(`/admin/payouts/${id}/reject`);
+export const adminRejectPayout = async (id, reason) => {
+  return apiPatch(`/admin/payouts/${id}/reject`, { reason });
 };
 
 export const adminMarkPayoutAsPaid = async (id) => {

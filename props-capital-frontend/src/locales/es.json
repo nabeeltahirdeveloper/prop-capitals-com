@@ -1414,7 +1414,8 @@
         "markAsPaid": "Marcar como pagado",
         "paid": "Pagado",
         "rejected": "Rechazado",
-        "rejecting": "Rechazando..."
+        "rejecting": "Rechazando...",
+        "processing": "Procesando..."
       },
       "emptyMessage": "No se encontraron solicitudes de retiro",
       "dialog": {

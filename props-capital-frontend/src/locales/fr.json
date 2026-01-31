@@ -1415,7 +1415,8 @@
         "markAsPaid": "Marquer comme payé",
         "paid": "Payé",
         "rejected": "Rejeté",
-        "rejecting": "Rejet en cours..."
+        "rejecting": "Rejet en cours...",
+        "processing": "Traitement..."
       },
       "emptyMessage": "Aucune demande de retrait trouvée",
       "dialog": {
