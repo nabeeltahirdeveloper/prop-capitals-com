@@ -1414,7 +1414,8 @@
         "markAsPaid": "Отметить как оплачено",
         "paid": "Оплачено",
         "rejected": "Отклонено",
-        "rejecting": "Отклонение..."
+        "rejecting": "Отклонение...",
+        "processing": "Обработка..."
       },
       "emptyMessage": "Запросы на вывод не найдены",
       "dialog": {
@@ -1486,12 +1487,7 @@
         "allTypes": "Все типы",
         "dailyDrawdown": "Дневной убыток",
         "overallDrawdown": "Общий убыток",
-        "maxTradingDays": "Максимальные торговые дни",
         "newsTrading": "Торговля на новостях",
-        "weekendHolding": "Удержание на выходных",
-        "restrictedInstrument": "Ограниченный инструмент",
-        "lotSize": "Размер лота",
-        "eaDetected": "Обнаружен EA",
         "consistency": "Последовательность",
         "ruleBreak": "Нарушение правил"
       },
@@ -1506,12 +1502,9 @@
       "types": {
         "dailyDrawdown": "Дневной убыток",
         "overallDrawdown": "Общий убыток",
-        "maxTradingDays": "Максимальные торговые дни",
         "newsTrading": "Торговля на новостях",
-        "weekendHolding": "Удержание на выходных",
-        "restrictedInstrument": "Ограниченный инструмент",
-        "lotSize": "Размер лота",
-        "eaDetected": "Обнаружен EA"
+        "consistency": "Последовательность",
+        "ruleBreak": "Нарушение правил"
       },
       "severity": {
         "fatal": "Критическое",
@@ -1520,12 +1513,12 @@
       "descriptions": {
         "daily_drawdown": "Дневной убыток превысил {{threshold}}%",
         "overall_drawdown": "Общий убыток превысил {{threshold}}%",
-        "max_trading_days": "Максимальный период торговли завершён",
-        "news_trading": "Торговля в запрещённое время новостей",
-        "weekend_holding": "Удержание позиций на выходных",
-        "restricted_instrument": "Торговля по ограниченному инструменту",
-        "lot_size": "Превышен лимит размера лота",
-        "ea_detected": "Обнаружен Expert Advisor"
+        "news": "Торговля в запрещённое время новостей",
+        "consistency": "Нарушено правило последовательности",
+        "rule_break": "Обнаружено нарушение торговых правил"
+      },
+      "pagination": {
+        "showing": "Страница {{page}} из {{totalPages}} (всего {{total}})"
       },
       "emptyMessage": "Нарушения не найдены"
     },

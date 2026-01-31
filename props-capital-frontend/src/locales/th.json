@@ -1419,7 +1419,8 @@
         "markAsPaid": "ทำเครื่องหมายว่าจ่ายแล้ว",
         "paid": "จ่ายแล้ว",
         "rejected": "ปฏิเสธ",
-        "rejecting": "กำลังปฏิเสธ..."
+        "rejecting": "กำลังปฏิเสธ...",
+        "processing": "กำลังดำเนินการ..."
       },
       "emptyMessage": "ไม่พบคำขอจ่ายเงิน",
       "dialog": {
@@ -1491,12 +1492,7 @@
         "allTypes": "ประเภททั้งหมด",
         "dailyDrawdown": "การขาดทุนรายวัน",
         "overallDrawdown": "การขาดทุนรวม",
-        "maxTradingDays": "วันเทรดสูงสุด",
         "newsTrading": "การเทรดข่าว",
-        "weekendHolding": "ถือครองสุดสัปดาห์",
-        "restrictedInstrument": "เครื่องมือที่ถูกจำกัด",
-        "lotSize": "ขนาดล็อต",
-        "eaDetected": "ตรวจพบ EA",
         "consistency": "ความสม่ำเสมอ",
         "ruleBreak": "การละเมิดกฎ"
       },
@@ -1511,12 +1507,9 @@
       "types": {
         "dailyDrawdown": "การขาดทุนรายวัน",
         "overallDrawdown": "การขาดทุนรวม",
-        "maxTradingDays": "วันเทรดสูงสุด",
         "newsTrading": "การเทรดข่าว",
-        "weekendHolding": "ถือครองสุดสัปดาห์",
-        "restrictedInstrument": "เครื่องมือที่ถูกจำกัด",
-        "lotSize": "ขนาดล็อต",
-        "eaDetected": "ตรวจพบ EA"
+        "consistency": "ความสม่ำเสมอ",
+        "ruleBreak": "การละเมิดกฎ"
       },
       "severity": {
         "fatal": "ร้ายแรง",
@@ -1525,12 +1518,12 @@
       "descriptions": {
         "daily_drawdown": "การขาดทุนรายวันเกิน {{threshold}}%",
         "overall_drawdown": "การขาดทุนรวมเกิน {{threshold}}%",
-        "max_trading_days": "ระยะเวลาการเทรดสูงสุดหมดอายุ",
-        "news_trading": "เทรดในช่วงข่าวที่ถูกจำกัด",
-        "weekend_holding": "ถือครองตำแหน่งในช่วงสุดสัปดาห์",
-        "restricted_instrument": "เทรดเครื่องมือที่ถูกจำกัด",
-        "lot_size": "เกินขีดจำกัดขนาดล็อต",
-        "ea_detected": "ตรวจพบ Expert Advisor"
+        "news": "เทรดในช่วงข่าวที่ถูกจำกัด",
+        "consistency": "ละเมิดกฎความสม่ำเสมอ",
+        "rule_break": "ตรวจพบการละเมิดกฎการเทรด"
+      },
+      "pagination": {
+        "showing": "หน้า {{page}} จาก {{totalPages}} (ทั้งหมด {{total}} รายการ)"
       },
       "emptyMessage": "ไม่พบการละเมิด"
     },

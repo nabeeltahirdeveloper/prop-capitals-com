@@ -1415,7 +1415,8 @@
         "markAsPaid": "Marquer comme payé",
         "paid": "Payé",
         "rejected": "Rejeté",
-        "rejecting": "Rejet en cours..."
+        "rejecting": "Rejet en cours...",
+        "processing": "Traitement..."
       },
       "emptyMessage": "Aucune demande de retrait trouvée",
       "dialog": {
@@ -1483,16 +1484,11 @@
       },
       "searchPlaceholder": "Rechercher par compte ou e-mail...",
       "filter": {
-        "violationType": "Type d’infraction",
+        "violationType": "Type d'infraction",
         "allTypes": "Tous les types",
         "dailyDrawdown": "Perte journalière",
         "overallDrawdown": "Perte totale",
-        "maxTradingDays": "Jours de trading max",
         "newsTrading": "Trading sur les actualités",
-        "weekendHolding": "Maintien le week-end",
-        "restrictedInstrument": "Instrument restreint",
-        "lotSize": "Taille de lot",
-        "eaDetected": "EA détecté",
         "consistency": "Cohérence",
         "ruleBreak": "Infraction aux règles"
       },
@@ -1507,12 +1503,9 @@
       "types": {
         "dailyDrawdown": "Perte journalière",
         "overallDrawdown": "Perte totale",
-        "maxTradingDays": "Jours de trading max",
         "newsTrading": "Trading sur les actualités",
-        "weekendHolding": "Maintien le week-end",
-        "restrictedInstrument": "Instrument restreint",
-        "lotSize": "Taille de lot",
-        "eaDetected": "EA détecté"
+        "consistency": "Cohérence",
+        "ruleBreak": "Infraction aux règles"
       },
       "severity": {
         "fatal": "Grave",
@@ -1521,12 +1514,12 @@
       "descriptions": {
         "daily_drawdown": "La perte journalière a dépassé {{threshold}}%",
         "overall_drawdown": "La perte totale a dépassé {{threshold}}%",
-        "max_trading_days": "La période maximale de trading est terminée",
-        "news_trading": "Trading pendant une période d’actualités restreinte",
-        "weekend_holding": "Position maintenue pendant le week-end",
-        "restricted_instrument": "Trading sur un instrument restreint",
-        "lot_size": "La limite de taille de lot a été dépassée",
-        "ea_detected": "Expert Advisor détecté"
+        "news": "Trading pendant une période d'actualités restreinte",
+        "consistency": "Règle de cohérence violée",
+        "rule_break": "Infraction aux règles de trading détectée"
+      },
+      "pagination": {
+        "showing": "Page {{page}} sur {{totalPages}} ({{total}} au total)"
       },
       "emptyMessage": "Aucune infraction trouvée"
     },

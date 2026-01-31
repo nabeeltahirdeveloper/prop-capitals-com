@@ -1466,7 +1466,8 @@
         "markAsPaid": "Mark as Paid",
         "paid": "Paid",
         "rejected": "Rejected",
-        "rejecting": "Rejecting..."
+        "rejecting": "Rejecting...",
+        "processing": "Processing..."
       },
       "emptyMessage": "No payout requests found",
       "dialog": {
@@ -1538,12 +1539,7 @@
         "allTypes": "All Types",
         "dailyDrawdown": "Daily Drawdown",
         "overallDrawdown": "Overall Drawdown",
-        "maxTradingDays": "Max Trading Days",
         "newsTrading": "News Trading",
-        "weekendHolding": "Weekend Holding",
-        "restrictedInstrument": "Restricted Instrument",
-        "lotSize": "Lot Size",
-        "eaDetected": "EA Detected",
         "consistency": "Consistency",
         "ruleBreak": "Rule Break"
       },
@@ -1558,12 +1554,9 @@
       "types": {
         "dailyDrawdown": "Daily Drawdown",
         "overallDrawdown": "Overall Drawdown",
-        "maxTradingDays": "Max Trading Days",
         "newsTrading": "News Trading",
-        "weekendHolding": "Weekend Holding",
-        "restrictedInstrument": "Restricted Instrument",
-        "lotSize": "Lot Size",
-        "eaDetected": "EA Detected"
+        "consistency": "Consistency",
+        "ruleBreak": "Rule Break"
       },
       "severity": {
         "fatal": "Fatal",
@@ -1572,12 +1565,12 @@
       "descriptions": {
         "daily_drawdown": "Daily drawdown exceeded {{threshold}}%",
         "overall_drawdown": "Overall drawdown exceeded {{threshold}}%",
-        "max_trading_days": "Maximum trading period expired",
-        "news_trading": "Traded during restricted news event",
-        "weekend_holding": "Position held over weekend",
-        "restricted_instrument": "Traded restricted instrument",
-        "lot_size": "Lot size limit exceeded",
-        "ea_detected": "Expert Advisor detected"
+        "news": "Traded during restricted news event",
+        "consistency": "Consistency rule violated",
+        "rule_break": "Trading rule violation detected"
+      },
+      "pagination": {
+        "showing": "Page {{page}} of {{totalPages}} ({{total}} total)"
       },
       "emptyMessage": "No violations found"
     },
