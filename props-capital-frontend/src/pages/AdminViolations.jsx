@@ -4,6 +4,7 @@ import { adminGetAllViolations } from "@/api/admin";
 import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -19,6 +20,8 @@ import {
   Shield,
   Clock,
   TrendingDown,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -26,13 +29,19 @@ export default function AdminViolations() {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const limit = 50;
 
-  // Fetch violations from backend
-  const { data: violationsData = [], isLoading } = useQuery({
-    queryKey: ["admin-violations"],
-    queryFn: adminGetAllViolations,
-    refetchInterval: 30000, // Real-time updates every 30 seconds
+  // Fetch violations from backend with pagination
+  const { data: response, isLoading } = useQuery({
+    queryKey: ["admin-violations", page, limit],
+    queryFn: () => adminGetAllViolations(page, limit),
+    refetchInterval: 30000,
   });
+
+  const violationsData = response?.data || [];
+  const totalPages = response?.totalPages || 1;
+  const totalCount = response?.total || 0;
 
   // Helper function to determine if violation is fatal
   const isFatalViolation = (type) => {
@@ -88,9 +97,10 @@ export default function AdminViolations() {
   }, [violationsData]);
 
   const filteredViolations = displayViolations.filter((violation) => {
+    const query = searchQuery.toLowerCase();
     const matchesSearch =
-      violation.trader_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      violation.account_id?.includes(searchQuery);
+      violation.trader_id?.toLowerCase().includes(query) ||
+      violation.account_id?.toString().toLowerCase().includes(query);
     const matchesType = typeFilter === "all" || violation.type === typeFilter;
     return matchesSearch && matchesType;
   });
@@ -121,26 +131,6 @@ export default function AdminViolations() {
         defaultValue: "Rule Break",
       }),
       color: "text-orange-400",
-    },
-    max_trading_days: {
-      label: t("admin.violations.types.maxTradingDays"),
-      color: "text-amber-400",
-    },
-    weekend_holding: {
-      label: t("admin.violations.types.weekendHolding"),
-      color: "text-amber-400",
-    },
-    restricted_instrument: {
-      label: t("admin.violations.types.restrictedInstrument"),
-      color: "text-orange-400",
-    },
-    lot_size: {
-      label: t("admin.violations.types.lotSize"),
-      color: "text-orange-400",
-    },
-    ea_detected: {
-      label: t("admin.violations.types.eaDetected"),
-      color: "text-purple-400",
     },
   };
 
@@ -185,9 +175,10 @@ export default function AdminViolations() {
       header: t("admin.violations.table.value"),
       accessorKey: "value_at_violation",
       cell: (row) =>
-        row.value_at_violation ? (
+        row.value_at_violation != null ? (
           <span className="text-red-400">
-            {row.value_at_violation}% / {row.threshold}%
+            {row.value_at_violation}%
+            {row.threshold != null ? ` / ${row.threshold}%` : ""}
           </span>
         ) : (
           "-"
@@ -226,18 +217,9 @@ export default function AdminViolations() {
     },
   ];
 
-  const fatalCount = displayViolations.filter((v) => v.is_fatal).length;
-  const warningCount = displayViolations.filter((v) => !v.is_fatal).length;
-  const todayCount = displayViolations.filter((v) => {
-    try {
-      if (!v.created_date) return false;
-      const date = new Date(v.created_date);
-      if (isNaN(date.getTime())) return false;
-      return date.toDateString() === new Date().toDateString();
-    } catch (error) {
-      return false;
-    }
-  }).length;
+  const fatalCount = response?.stats?.fatal ?? 0;
+  const warningCount = response?.stats?.warnings ?? 0;
+  const todayCount = response?.stats?.today ?? 0;
 
   return (
     <div className="space-y-6">
@@ -257,7 +239,7 @@ export default function AdminViolations() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatsCard
           title={t("admin.violations.stats.totalViolations")}
-          value={displayViolations.length}
+          value={totalCount}
           icon={AlertTriangle}
           gradient="from-red-500 to-pink-500"
         />
@@ -335,6 +317,43 @@ export default function AdminViolations() {
           isLoading={isLoading}
           emptyMessage={t("admin.violations.emptyMessage")}
         />
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-800">
+            <p className="text-xs sm:text-sm text-slate-400">
+              {t("admin.violations.pagination.showing", {
+                page,
+                totalPages,
+                total: totalCount,
+                defaultValue: `Page ${page} of ${totalPages} (${totalCount} total)`,
+              })}
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1}
+                className="bg-slate-800 border-slate-700 text-white hover:bg-slate-700 disabled:opacity-50"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <span className="text-sm text-slate-300 min-w-[3rem] text-center">
+                {page}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page >= totalPages}
+                className="bg-slate-800 border-slate-700 text-white hover:bg-slate-700 disabled:opacity-50"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </Card>
     </div>
   );

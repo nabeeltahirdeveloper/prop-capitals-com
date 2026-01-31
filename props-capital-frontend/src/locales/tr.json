@@ -1488,12 +1488,7 @@
         "allTypes": "Tüm türler",
         "dailyDrawdown": "Günlük zarar",
         "overallDrawdown": "Toplam zarar",
-        "maxTradingDays": "Maksimum işlem günleri",
         "newsTrading": "Haber işlemleri",
-        "weekendHolding": "Hafta sonu taşıma",
-        "restrictedInstrument": "Kısıtlı enstrüman",
-        "lotSize": "Lot boyutu",
-        "eaDetected": "EA tespit edildi",
         "consistency": "Tutarlılık",
         "ruleBreak": "Kural ihlali"
       },
@@ -1508,12 +1503,9 @@
       "types": {
         "dailyDrawdown": "Günlük zarar",
         "overallDrawdown": "Toplam zarar",
-        "maxTradingDays": "Maksimum işlem günleri",
         "newsTrading": "Haber işlemleri",
-        "weekendHolding": "Hafta sonu taşıma",
-        "restrictedInstrument": "Kısıtlı enstrüman",
-        "lotSize": "Lot boyutu",
-        "eaDetected": "EA tespit edildi"
+        "consistency": "Tutarlılık",
+        "ruleBreak": "Kural ihlali"
       },
       "severity": {
         "fatal": "Kritik",
@@ -1522,12 +1514,12 @@
       "descriptions": {
         "daily_drawdown": "Günlük zarar {{threshold}}% eşiğini aştı",
         "overall_drawdown": "Toplam zarar {{threshold}}% eşiğini aştı",
-        "max_trading_days": "Maksimum işlem süresi sona erdi",
-        "news_trading": "Kısıtlı haber saatlerinde işlem",
-        "weekend_holding": "Hafta sonu pozisyon taşıma",
-        "restricted_instrument": "Kısıtlı enstrümanda işlem",
-        "lot_size": "Lot boyutu limitini aştı",
-        "ea_detected": "Expert Advisor tespit edildi"
+        "news": "Kısıtlı haber saatlerinde işlem",
+        "consistency": "Tutarlılık kuralı ihlal edildi",
+        "rule_break": "İşlem kuralı ihlali tespit edildi"
+      },
+      "pagination": {
+        "showing": "Sayfa {{page}} / {{totalPages}} (toplam {{total}})"
       },
       "emptyMessage": "İhlal bulunamadı"
     },

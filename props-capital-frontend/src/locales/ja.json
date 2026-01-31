@@ -1487,12 +1487,7 @@
         "allTypes": "すべてのタイプ",
         "dailyDrawdown": "日次損失",
         "overallDrawdown": "全体損失",
-        "maxTradingDays": "最大取引日数",
         "newsTrading": "ニュース取引",
-        "weekendHolding": "週末保有",
-        "restrictedInstrument": "制限銘柄",
-        "lotSize": "ロットサイズ",
-        "eaDetected": "EA検出",
         "consistency": "一貫性",
         "ruleBreak": "ルール違反"
       },
@@ -1507,12 +1502,9 @@
       "types": {
         "dailyDrawdown": "日次損失",
         "overallDrawdown": "全体損失",
-        "maxTradingDays": "最大取引日数",
         "newsTrading": "ニュース取引",
-        "weekendHolding": "週末保有",
-        "restrictedInstrument": "制限銘柄",
-        "lotSize": "ロットサイズ",
-        "eaDetected": "EA検出"
+        "consistency": "一貫性",
+        "ruleBreak": "ルール違反"
       },
       "severity": {
         "fatal": "重大",
@@ -1521,12 +1513,12 @@
       "descriptions": {
         "daily_drawdown": "日次損失が {{threshold}}% を超過",
         "overall_drawdown": "全体損失が {{threshold}}% を超過",
-        "max_trading_days": "最大取引期間が終了",
-        "news_trading": "制限されたニュース時間帯で取引",
-        "weekend_holding": "週末にポジションを保有",
-        "restricted_instrument": "制限銘柄で取引",
-        "lot_size": "ロットサイズ上限を超過",
-        "ea_detected": "Expert Advisor を検出"
+        "news": "制限されたニュース時間帯で取引",
+        "consistency": "一貫性ルールに違反",
+        "rule_break": "取引ルール違反を検出"
+      },
+      "pagination": {
+        "showing": "ページ {{page}} / {{totalPages}} (合計 {{total}} 件)"
       },
       "emptyMessage": "違反が見つかりません"
     },

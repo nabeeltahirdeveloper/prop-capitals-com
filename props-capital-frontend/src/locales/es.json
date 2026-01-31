@@ -1487,12 +1487,7 @@
         "allTypes": "Todos los tipos",
         "dailyDrawdown": "Pérdida diaria",
         "overallDrawdown": "Pérdida total",
-        "maxTradingDays": "Máximo de días de trading",
         "newsTrading": "Trading de noticias",
-        "weekendHolding": "Mantener durante el fin de semana",
-        "restrictedInstrument": "Instrumento restringido",
-        "lotSize": "Tamaño de lote",
-        "eaDetected": "EA detectado",
         "consistency": "Consistencia",
         "ruleBreak": "Incumplimiento de reglas"
       },
@@ -1507,12 +1502,9 @@
       "types": {
         "dailyDrawdown": "Pérdida diaria",
         "overallDrawdown": "Pérdida total",
-        "maxTradingDays": "Máximo de días de trading",
         "newsTrading": "Trading de noticias",
-        "weekendHolding": "Mantener durante el fin de semana",
-        "restrictedInstrument": "Instrumento restringido",
-        "lotSize": "Tamaño de lote",
-        "eaDetected": "EA detectado"
+        "consistency": "Consistencia",
+        "ruleBreak": "Incumplimiento de reglas"
       },
       "severity": {
         "fatal": "Grave",
@@ -1521,12 +1513,12 @@
       "descriptions": {
         "daily_drawdown": "La pérdida diaria superó {{threshold}}%",
         "overall_drawdown": "La pérdida total superó {{threshold}}%",
-        "max_trading_days": "Finalizó el período máximo de trading",
-        "news_trading": "Operación durante un período restringido de noticias",
-        "weekend_holding": "Posiciones mantenidas durante el fin de semana",
-        "restricted_instrument": "Operación en un instrumento restringido",
-        "lot_size": "Se excedió el límite de tamaño de lote",
-        "ea_detected": "Se detectó un Expert Advisor"
+        "news": "Operación durante un período restringido de noticias",
+        "consistency": "Se violó la regla de consistencia",
+        "rule_break": "Se detectó una infracción de reglas de trading"
+      },
+      "pagination": {
+        "showing": "Página {{page}} de {{totalPages}} ({{total}} en total)"
       },
       "emptyMessage": "No se encontraron infracciones"
     },

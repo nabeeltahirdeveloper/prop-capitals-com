@@ -1487,12 +1487,7 @@
         "allTypes": "모든 유형",
         "dailyDrawdown": "일일 손실",
         "overallDrawdown": "전체 손실",
-        "maxTradingDays": "최대 거래 일수",
         "newsTrading": "뉴스 거래",
-        "weekendHolding": "주말 보유",
-        "restrictedInstrument": "제한 종목",
-        "lotSize": "로트 크기",
-        "eaDetected": "EA 감지",
         "consistency": "일관성",
         "ruleBreak": "규칙 위반"
       },
@@ -1507,12 +1502,9 @@
       "types": {
         "dailyDrawdown": "일일 손실",
         "overallDrawdown": "전체 손실",
-        "maxTradingDays": "최대 거래 일수",
         "newsTrading": "뉴스 거래",
-        "weekendHolding": "주말 보유",
-        "restrictedInstrument": "제한 종목",
-        "lotSize": "로트 크기",
-        "eaDetected": "EA 감지"
+        "consistency": "일관성",
+        "ruleBreak": "규칙 위반"
       },
       "severity": {
         "fatal": "중대",
@@ -1521,12 +1513,12 @@
       "descriptions": {
         "daily_drawdown": "일일 손실이 {{threshold}}%를 초과",
         "overall_drawdown": "전체 손실이 {{threshold}}%를 초과",
-        "max_trading_days": "최대 거래 기간 종료",
-        "news_trading": "제한된 뉴스 시간대에 거래",
-        "weekend_holding": "주말에 포지션 보유",
-        "restricted_instrument": "제한 종목으로 거래",
-        "lot_size": "로트 크기 한도 초과",
-        "ea_detected": "Expert Advisor 감지"
+        "news": "제한된 뉴스 시간대에 거래",
+        "consistency": "일관성 규칙 위반",
+        "rule_break": "거래 규칙 위반 감지"
+      },
+      "pagination": {
+        "showing": "페이지 {{page}} / {{totalPages}} (총 {{total}}건)"
       },
       "emptyMessage": "위반을 찾을 수 없습니다"
     },
