@@ -33,16 +33,13 @@ import { AdminDashboardModule } from './admin/dashboard/admin-dashboard.module';
 import { AdminSupportModule } from './admin/support/admin-support.module';
 import { WebsocketModule } from './websocket/websocket.module';
 import { CrmModule } from './crm/crm.module';
+import { ExternalApiModule } from './external-api/external-api.module';
 import { CommonModule } from './common/common.module';
 
 @Module({
-
   imports: [
-
     ConfigModule.forRoot({
-
       isGlobal: true,
-
     }),
 
     ScheduleModule.forRoot(),
@@ -107,10 +104,9 @@ import { CommonModule } from './common/common.module';
 
     WebsocketModule,
 
-    CrmModule
+    CrmModule,
 
+    ExternalApiModule,
   ],
-
 })
-
-export class AppModule { }
+export class AppModule {}
