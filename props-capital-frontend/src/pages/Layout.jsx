@@ -930,6 +930,9 @@ import {
   Activity,
   Target,
   Check,
+  Calendar,
+  UserPlus,
+  DollarSign,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -1085,6 +1088,10 @@ export default function Layout({ children, currentPageName }) {
     "AdminRiskMonitor",
     "AdminScaling",
     "AdminProfile",
+    "CRMLeads",
+    "CRMPipeline",
+    "CRMFTDReport",
+    "CRMCalendar",
   ];
   const isAdminPage = adminPages.includes(currentPageName);
   const showAdminMenu = isAdmin && isAdminPage;
@@ -1124,6 +1131,11 @@ export default function Layout({ children, currentPageName }) {
       { name: t("nav.support"), icon: HelpCircle, page: "AdminSupport" },
       { name: t("nav.settings"), icon: Settings, page: "AdminSettings" },
       { name: t("nav.profile"), icon: User, page: "AdminProfile" },
+      { type: "divider", label: "CRM" },
+      { name: "CRM Leads", icon: UserPlus, page: "CRMLeads" },
+      { name: "Pipeline", icon: Target, page: "CRMPipeline" },
+      { name: "FTD Report", icon: DollarSign, page: "CRMFTDReport" },
+      { name: "Calendar", icon: Calendar, page: "CRMCalendar" },
     ],
     [t],
   );
