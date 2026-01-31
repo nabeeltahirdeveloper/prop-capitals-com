@@ -1,6 +1,11 @@
 import React, { useState } from "react";
-// TODO: Replace with coupons API when available
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  adminGetAllCoupons,
+  adminCreateCoupon,
+  adminUpdateCoupon,
+  adminDeleteCoupon,
+} from "../api/admin";
 import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,7 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import DataTable from "../components/shared/DataTable";
-import { Plus, Pencil, Trash2, Zap, Copy, Check } from "lucide-react";
+import { Plus, Pencil, Trash2, Copy, Check } from "lucide-react";
 import { format } from "date-fns";
 
 export default function AdminCoupons() {
@@ -32,21 +37,21 @@ export default function AdminCoupons() {
   const [copiedCode, setCopiedCode] = useState(null);
   const [formData, setFormData] = useState({
     code: "",
-    discount_type: "percentage",
-    discount_value: "",
-    max_uses: "",
-    valid_until: "",
-    is_active: true,
+    discountType: "percentage",
+    discountPct: "",
+    maxUses: "",
+    expiresAt: "",
+    isActive: true,
   });
   const queryClient = useQueryClient();
 
   const { data: coupons = [], isLoading } = useQuery({
     queryKey: ["admin-coupons"],
-    queryFn: () => Promise.resolve([]), // TODO: Replace with coupons API
+    queryFn: adminGetAllCoupons,
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => Promise.resolve({ id: "1", ...data }), // TODO: Replace with coupons API
+    mutationFn: (data) => adminCreateCoupon(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-coupons"] });
       setIsOpen(false);
@@ -55,7 +60,7 @@ export default function AdminCoupons() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => Promise.resolve({ id, ...data }), // TODO: Replace with coupons API
+    mutationFn: ({ id, data }) => adminUpdateCoupon(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-coupons"] });
       setIsOpen(false);
@@ -64,7 +69,7 @@ export default function AdminCoupons() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => Promise.resolve(), // TODO: Replace with coupons API
+    mutationFn: (id) => adminDeleteCoupon(id),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["admin-coupons"] }),
   });
@@ -73,11 +78,11 @@ export default function AdminCoupons() {
     setEditingCoupon(null);
     setFormData({
       code: "",
-      discount_type: "percentage",
-      discount_value: "",
-      max_uses: "",
-      valid_until: "",
-      is_active: true,
+      discountType: "percentage",
+      discountPct: "",
+      maxUses: "",
+      expiresAt: "",
+      isActive: true,
     });
   };
 
@@ -85,21 +90,25 @@ export default function AdminCoupons() {
     setEditingCoupon(coupon);
     setFormData({
       code: coupon.code,
-      discount_type: coupon.discount_type,
-      discount_value: coupon.discount_value?.toString(),
-      max_uses: coupon.max_uses?.toString() || "",
-      valid_until: coupon.valid_until || "",
-      is_active: coupon.is_active,
+      discountType: coupon.discountType || "percentage",
+      discountPct: coupon.discountPct?.toString(),
+      maxUses: coupon.maxUses?.toString() || "",
+      expiresAt: coupon.expiresAt
+        ? new Date(coupon.expiresAt).toISOString().split("T")[0]
+        : "",
+      isActive: coupon.isActive,
     });
     setIsOpen(true);
   };
 
   const handleSubmit = () => {
     const data = {
-      ...formData,
-      discount_value: parseFloat(formData.discount_value),
-      max_uses: formData.max_uses ? parseInt(formData.max_uses) : null,
-      used_count: editingCoupon?.used_count || 0,
+      code: formData.code,
+      discountType: formData.discountType,
+      discountPct: parseInt(formData.discountPct),
+      maxUses: formData.maxUses ? parseInt(formData.maxUses) : null,
+      expiresAt: formData.expiresAt || null,
+      isActive: formData.isActive,
     };
 
     if (editingCoupon) {
@@ -123,50 +132,6 @@ export default function AdminCoupons() {
     }
     setFormData({ ...formData, code });
   };
-
-  // Mock coupons for demo
-  const mockCoupons = [
-    {
-      id: "1",
-      code: "WELCOME20",
-      discount_type: "percentage",
-      discount_value: 20,
-      max_uses: 100,
-      used_count: 45,
-      is_active: true,
-      valid_until: "2024-12-31",
-    },
-    {
-      id: "2",
-      code: "TRADER10",
-      discount_type: "percentage",
-      discount_value: 10,
-      max_uses: null,
-      used_count: 128,
-      is_active: true,
-    },
-    {
-      id: "3",
-      code: "FLAT50",
-      discount_type: "fixed",
-      discount_value: 50,
-      max_uses: 50,
-      used_count: 50,
-      is_active: false,
-    },
-    {
-      id: "4",
-      code: "NEWYEAR25",
-      discount_type: "percentage",
-      discount_value: 25,
-      max_uses: 200,
-      used_count: 12,
-      is_active: true,
-      valid_until: "2024-01-31",
-    },
-  ];
-
-  const displayCoupons = coupons.length > 0 ? coupons : mockCoupons;
 
   const columns = [
     {
@@ -192,44 +157,44 @@ export default function AdminCoupons() {
     },
     {
       header: t("admin.coupons.table.discount"),
-      accessorKey: "discount_value",
+      accessorKey: "discountPct",
       cell: (row) => (
         <span className="text-white font-medium">
-          {row.discount_type === "percentage"
-            ? `${row.discount_value}%`
-            : `$${row.discount_value}`}
+          {row.discountType === "fixed"
+            ? `$${row.discountPct}`
+            : `${row.discountPct}%`}
         </span>
       ),
     },
     {
       header: t("admin.coupons.table.usage"),
-      accessorKey: "used_count",
+      accessorKey: "usedCount",
       cell: (row) => (
         <span className="text-slate-300">
-          {row.used_count} / {row.max_uses || "∞"}
+          {row.usedCount || 0} / {row.maxUses || "\u221e"}
         </span>
       ),
     },
     {
       header: t("admin.coupons.table.validUntil"),
-      accessorKey: "valid_until",
+      accessorKey: "expiresAt",
       cell: (row) =>
-        row.valid_until
-          ? format(new Date(row.valid_until), "MMM d, yyyy")
+        row.expiresAt
+          ? format(new Date(row.expiresAt), "MMM d, yyyy")
           : t("admin.coupons.noExpiry"),
     },
     {
       header: t("admin.coupons.table.status"),
-      accessorKey: "is_active",
+      accessorKey: "isActive",
       cell: (row) => (
         <span
           className={`px-2 py-1 rounded text-xs font-medium ${
-            row.is_active
+            row.isActive
               ? "bg-emerald-500/20 text-emerald-400"
               : "bg-slate-700 text-slate-400"
           }`}
         >
-          {row.is_active
+          {row.isActive
             ? t("admin.coupons.status.active")
             : t("admin.coupons.status.inactive")}
         </span>
@@ -243,7 +208,7 @@ export default function AdminCoupons() {
           <Button
             size="sm"
             variant="ghost"
-            className="text-slate-400 "
+            className="text-slate-400"
             onClick={() => handleEdit(row)}
           >
             <Pencil className="w-4 h-4" />
@@ -333,9 +298,9 @@ export default function AdminCoupons() {
                     {t("admin.coupons.form.discountType")}
                   </Label>
                   <Select
-                    value={formData.discount_type}
+                    value={formData.discountType}
                     onValueChange={(v) =>
-                      setFormData({ ...formData, discount_type: v })
+                      setFormData({ ...formData, discountType: v })
                     }
                   >
                     <SelectTrigger className="bg-slate-800 border-slate-700 text-white text-sm h-9 sm:h-10">
@@ -354,19 +319,19 @@ export default function AdminCoupons() {
                 <div className="space-y-1.5 sm:space-y-2">
                   <Label className="text-slate-300 text-xs sm:text-sm">
                     {t("admin.coupons.form.discountValue")}{" "}
-                    {formData.discount_type === "percentage" ? "(%)" : "($)"}
+                    {formData.discountType === "percentage" ? "(%)" : "($)"}
                   </Label>
                   <Input
                     type="number"
-                    value={formData.discount_value}
+                    value={formData.discountPct}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        discount_value: e.target.value,
+                        discountPct: e.target.value,
                       })
                     }
                     placeholder={
-                      formData.discount_type === "percentage" ? "20" : "50"
+                      formData.discountType === "percentage" ? "20" : "50"
                     }
                     className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm h-9 sm:h-10"
                   />
@@ -380,9 +345,9 @@ export default function AdminCoupons() {
                   </Label>
                   <Input
                     type="number"
-                    value={formData.max_uses}
+                    value={formData.maxUses}
                     onChange={(e) =>
-                      setFormData({ ...formData, max_uses: e.target.value })
+                      setFormData({ ...formData, maxUses: e.target.value })
                     }
                     placeholder="100"
                     className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm h-9 sm:h-10"
@@ -394,9 +359,9 @@ export default function AdminCoupons() {
                   </Label>
                   <Input
                     type="date"
-                    value={formData.valid_until}
+                    value={formData.expiresAt}
                     onChange={(e) =>
-                      setFormData({ ...formData, valid_until: e.target.value })
+                      setFormData({ ...formData, expiresAt: e.target.value })
                     }
                     className="
     bg-slate-800 border-slate-700 text-white text-sm h-9 sm:h-10
@@ -413,9 +378,9 @@ export default function AdminCoupons() {
                   {t("admin.coupons.form.active")}
                 </Label>
                 <Switch
-                  checked={formData.is_active}
+                  checked={formData.isActive}
                   onCheckedChange={(v) =>
-                    setFormData({ ...formData, is_active: v })
+                    setFormData({ ...formData, isActive: v })
                   }
                 />
               </div>
@@ -427,14 +392,14 @@ export default function AdminCoupons() {
                   createMutation.isPending ||
                   updateMutation.isPending ||
                   !formData.code ||
-                  !formData.discount_value
+                  !formData.discountPct
                 }
               >
                 {createMutation.isPending || updateMutation.isPending
                   ? t("admin.coupons.form.saving")
                   : editingCoupon
-                  ? t("admin.coupons.form.updateCoupon")
-                  : t("admin.coupons.form.createCoupon")}
+                    ? t("admin.coupons.form.updateCoupon")
+                    : t("admin.coupons.form.createCoupon")}
               </Button>
             </div>
           </DialogContent>
@@ -448,7 +413,7 @@ export default function AdminCoupons() {
             {t("admin.coupons.stats.totalCoupons")}
           </p>
           <p className="text-xl sm:text-2xl font-bold text-white truncate">
-            {displayCoupons.length}
+            {coupons.length}
           </p>
         </Card>
         <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
@@ -456,7 +421,7 @@ export default function AdminCoupons() {
             {t("admin.coupons.stats.active")}
           </p>
           <p className="text-xl sm:text-2xl font-bold text-emerald-400 truncate">
-            {displayCoupons.filter((c) => c.is_active).length}
+            {coupons.filter((c) => c.isActive).length}
           </p>
         </Card>
         <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
@@ -464,7 +429,7 @@ export default function AdminCoupons() {
             {t("admin.coupons.stats.totalUses")}
           </p>
           <p className="text-xl sm:text-2xl font-bold text-cyan-400 truncate">
-            {displayCoupons.reduce((sum, c) => sum + (c.used_count || 0), 0)}
+            {coupons.reduce((sum, c) => sum + (c.usedCount || 0), 0)}
           </p>
         </Card>
         <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
@@ -473,8 +438,8 @@ export default function AdminCoupons() {
           </p>
           <p className="text-xl sm:text-2xl font-bold text-slate-400 truncate">
             {
-              displayCoupons.filter(
-                (c) => c.valid_until && new Date(c.valid_until) < new Date()
+              coupons.filter(
+                (c) => c.expiresAt && new Date(c.expiresAt) < new Date(),
               ).length
             }
           </p>
@@ -485,7 +450,7 @@ export default function AdminCoupons() {
       <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4 md:p-6 overflow-hidden">
         <DataTable
           columns={columns}
-          data={displayCoupons}
+          data={coupons}
           isLoading={isLoading}
           emptyMessage={t("admin.coupons.emptyMessage")}
         />
