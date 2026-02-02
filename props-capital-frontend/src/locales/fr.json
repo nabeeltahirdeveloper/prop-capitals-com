@@ -2079,7 +2079,7 @@
           },
           "contactSupport": {
             "q": "Comment contacter le support ?",
-            "a": "Vous pouvez nous contacter via le chat en direct 24/7, par e-mail à support@the-bluehaven.com ou via les tickets de support dans le tableau de bord."
+            "a": "Vous pouvez nous contacter via le chat en direct 24/7, par e-mail à support@prop-capitals.com ou via les tickets de support dans le tableau de bord."
           }
         }
       }
@@ -2093,7 +2093,7 @@
       "emailSupport": {
         "title": "Support par e-mail",
         "description": "Pour les questions générales et les demandes détaillées",
-        "contact": "support@the-bluehaven.com"
+        "contact": "support@prop-capitals.com"
       },
       "liveChat": {
         "title": "Chat en direct",
@@ -2778,7 +2778,7 @@
     },
     "contact": {
       "title": "12. Contact",
-      "content": "Pour toute question concernant ces conditions, contactez-nous à support@the-bluehaven.com."
+      "content": "Pour toute question concernant ces conditions, contactez-nous à support@prop-capitals.com."
     }
   },
   "privacy": {
@@ -2848,7 +2848,7 @@
     },
     "contactUs": {
       "title": "10. Nous contacter",
-      "content": "Pour toute question relative à la confidentialité, contactez-nous à support@the-bluehaven.com."
+      "content": "Pour toute question relative à la confidentialité, contactez-nous à support@prop-capitals.com."
     }
   }
 }

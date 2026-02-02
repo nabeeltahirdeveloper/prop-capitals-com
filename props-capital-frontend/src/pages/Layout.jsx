@@ -508,6 +508,138 @@ export default function Layout({ children, currentPageName }) {
         )}
 
         <main className="pt-16">{children}</main>
+
+        {/* Footer */}
+        <footer className="bg-slate-900 border-t border-slate-800 py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-12">
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
+                    <TrendingUp className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-xl font-bold text-white">
+                    Prop Capitals
+                  </span>
+                </div>
+                <p className="text-slate-400 mb-6">
+                  {t("home.footer.description")}
+                </p>
+                <div className="flex items-center gap-2">
+                  <Check className="w-5 h-5 text-emerald-400" />
+                  <span className="text-sm text-slate-400">
+                    {t("home.footer.verified")}
+                  </span>
+                </div>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-4">
+                  {t("home.footer.company")}
+                </h4>
+                <ul className="space-y-2">
+                  <li>
+                    <Link
+                      to={createPageUrl("HowItWorks")}
+                      className="text-slate-400 hover:text-white transition-colors"
+                    >
+                      {t("home.footer.howItWorks")}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to={createPageUrl("Challenges")}
+                      className="text-slate-400 hover:text-white transition-colors"
+                    >
+                      {t("home.footer.challenges")}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to={createPageUrl("ScalingPlan")}
+                      className="text-slate-400 hover:text-white transition-colors"
+                    >
+                      {t("home.footer.scalingPlan")}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to={createPageUrl("Payouts")}
+                      className="text-slate-400 hover:text-white transition-colors"
+                    >
+                      {t("home.footer.payouts")}
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-4">
+                  {t("home.footer.support")}
+                </h4>
+                <ul className="space-y-2">
+                  <li>
+                    <Link
+                      to={createPageUrl("FAQ")}
+                      className="text-slate-400 hover:text-white transition-colors"
+                    >
+                      {t("home.footer.faq")}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to={createPageUrl("Contact")}
+                      className="text-slate-400 hover:text-white transition-colors"
+                    >
+                      {t("home.footer.contact")}
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-4">
+                  {t("home.footer.legal")}
+                </h4>
+                <ul className="space-y-2">
+                  <li>
+                    <Link
+                      to={createPageUrl("Terms")}
+                      className="text-slate-400 hover:text-white transition-colors"
+                    >
+                      {t("home.footer.terms")}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to={createPageUrl("Privacy")}
+                      className="text-slate-400 hover:text-white transition-colors"
+                    >
+                      {t("home.footer.privacy")}
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="border-t border-slate-800 mt-12 pt-8">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
+                <p className="text-slate-500 text-sm md:text-md">{t("home.footer.copyright")}</p>
+                <div className="flex items-center gap-4">
+                  <Shield className="w-5 h-5 text-slate-600" />
+                  <span className="text-sm text-slate-500">
+                    {t("home.footer.secure")}
+                  </span>
+                </div>
+              </div>
+              <div className="text-center md:text-left">
+                <p className="text-xs text-slate-600">
+                  BLUEHAVEN MANAGEMENT LTD | 60 TOTTENHAM COURT ROAD, OFFICE 469,
+                  LONDON, ENGLAND W1T 2EW
+                </p>
+                <p className="text-xs text-slate-600 mt-1">
+                  Email: support@prop-capitals.com
+                </p>
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
     );
   }

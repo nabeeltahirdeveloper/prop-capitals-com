@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { apiPost } from '../lib/api';
 import {
   Select,
   SelectContent,
@@ -38,10 +39,31 @@ export default function Contact() {
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    setError('');
+
+    try {
+      await apiPost('/contact', formData);
+      setSubmitted(true);
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        category: '',
+        subject: '',
+        message: ''
+      });
+    } catch (err) {
+      setError(err.message || 'Failed to send message. Please try again.');
+      console.error('Contact form error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const contactMethods = [
@@ -50,7 +72,8 @@ export default function Contact() {
       title: t('contact.contactMethods.emailSupport.title'),
       description: t('contact.contactMethods.emailSupport.description'),
       contact: t('contact.contactMethods.emailSupport.contact'),
-      color: 'emerald',
+      bgColor: 'bg-emerald-500/20',
+      textColor: 'text-emerald-400',
       image: 'https://images.unsplash.com/photo-1596524430615-b46475ddff6e?w=400&h=300&fit=crop'
     },
     {
@@ -58,7 +81,8 @@ export default function Contact() {
       title: t('contact.contactMethods.liveChat.title'),
       description: t('contact.contactMethods.liveChat.description'),
       contact: t('contact.contactMethods.liveChat.contact'),
-      color: 'cyan',
+      bgColor: 'bg-cyan-500/20',
+      textColor: 'text-cyan-400',
       image: 'https://images.unsplash.com/photo-1553775927-a071d5a6a39a?w=400&h=300&fit=crop'
     },
     {
@@ -66,7 +90,8 @@ export default function Contact() {
       title: t('contact.contactMethods.responseTime.title'),
       description: t('contact.contactMethods.responseTime.description'),
       contact: t('contact.contactMethods.responseTime.contact'),
-      color: 'purple',
+      bgColor: 'bg-purple-500/20',
+      textColor: 'text-purple-400',
       image: 'https://images.unsplash.com/photo-1501139083538-0139583c060f?w=400&h=300&fit=crop'
     }
   ];
@@ -161,12 +186,12 @@ export default function Contact() {
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent" />
                 </div>
                 <div className="p-4 md:p-6">
-                  <div className={`w-14 h-14 bg-${method.color}-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                    <method.icon className={`w-7 h-7 text-${method.color}-400`} />
+                  <div className={`w-14 h-14 ${method.bgColor} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                    <method.icon className={`w-7 h-7 ${method.textColor}`} />
                   </div>
                   <h3 className="text-xl font-semibold text-white mb-2">{method.title}</h3>
                   <p className="text-slate-400 text-sm mb-4">{method.description}</p>
-                  <p className={`text-${method.color}-400 font-medium`}>{method.contact}</p>
+                  <p className={`${method.textColor} font-medium`}>{method.contact}</p>
                 </div>
               </Card>
             </motion.div>
@@ -191,8 +216,8 @@ export default function Contact() {
                   </div>
                   <div>
                     <p className="text-white font-medium">{t('contact.email')}</p>
-                    <a href="mailto:support@the-bluehaven.com" className="text-emerald-400 hover:text-emerald-300">
-                      support@the-bluehaven.com
+                    <a href="mailto:support@prop-capitals.com" className="text-emerald-400 hover:text-emerald-300">
+                      support@prop-capitals.com
                     </a>
                   </div>
                 </div>
@@ -266,6 +291,12 @@ export default function Contact() {
               <h2 className="text-2xl font-bold text-white mb-2">{t('contact.sendMessage')}</h2>
               <p className="text-slate-400 mb-8">{t('contact.formDescription')}</p>
 
+              {error && (
+                <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+                  <p className="text-red-400 text-sm">{error}</p>
+                </div>
+              )}
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   <div className="space-y-2">
@@ -296,17 +327,21 @@ export default function Contact() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   <div className="space-y-2">
                     <Label className="text-slate-300">{t('contact.category')}</Label>
-                    <Select onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                    <Select
+                      onValueChange={(value) => setFormData({ ...formData, category: value })}
+                      value={formData.category}
+                      required
+                    >
                       <SelectTrigger className="bg-slate-800 border-slate-700 text-white h-12">
                         <SelectValue placeholder={t('contact.selectCategory')} />
                       </SelectTrigger>
                       <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                        <SelectItem value="general" className="text-white">{t('contact.categories.general')}</SelectItem>
-                        <SelectItem value="account" className="text-white">{t('contact.categories.account')}</SelectItem>
-                        <SelectItem value="payment" className="text-white">{t('contact.categories.payment')}</SelectItem>
-                        <SelectItem value="payout" className="text-white">{t('contact.categories.payout')}</SelectItem>
-                        <SelectItem value="technical" className="text-white">{t('contact.categories.technical')}</SelectItem>
-                        <SelectItem value="other" className="text-white">{t('contact.categories.other')}</SelectItem>
+                        <SelectItem value="GENERAL" className="text-white">{t('contact.categories.general')}</SelectItem>
+                        <SelectItem value="ACCOUNT" className="text-white">{t('contact.categories.account')}</SelectItem>
+                        <SelectItem value="PAYMENT" className="text-white">{t('contact.categories.payment')}</SelectItem>
+                        <SelectItem value="PAYOUT" className="text-white">{t('contact.categories.payout')}</SelectItem>
+                        <SelectItem value="TECHNICAL" className="text-white">{t('contact.categories.technical')}</SelectItem>
+                        <SelectItem value="OTHER" className="text-white">{t('contact.categories.other')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -337,10 +372,11 @@ export default function Contact() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 h-14 text-lg"
+                  className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 h-14 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={loading}
                 >
                   <Send className="w-5 h-5 mr-2" />
-                  {t('contact.sendMessageButton')}
+                  {loading ? t('contact.sending') || 'Sending...' : t('contact.sendMessageButton')}
                 </Button>
               </form>
             </Card>

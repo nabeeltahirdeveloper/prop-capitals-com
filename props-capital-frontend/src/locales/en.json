@@ -201,7 +201,7 @@
     "rulesPanel": {
       "title": "Challenge Rules & Compliance",
       "profitTarget": "Profit Target",
-      "dailyLossLimit": "Daily Loss Limit",
+      "dailyLossLimit": "Daily Drawdown",
       "overallDrawdown": "Overall Drawdown",
       "minTradingDays": "Min Trading Days",
       "daysRemaining": "Maximum Days",
@@ -745,7 +745,7 @@
       "weekendHolding": "Weekend Holding",
       "expertAdvisors": "Expert Advisors",
       "reachProfitTarget": "Reach your profit target to pass",
-      "maxDailyLoss": "Maximum daily loss limit",
+      "maxDailyLoss": "Maximum daily drawdown limit",
       "maxTotalLoss": "Maximum total loss limit",
       "minRequiredDays": "Minimum required trading days",
       "tradingDuringNews": "Trading during news events",
@@ -906,7 +906,7 @@
     }
   },
   "violationModal": {
-    "dailyLossTitle": "Daily Loss Limit Reached",
+    "dailyLossTitle": "Daily Drawdown Limit Reached",
     "drawdownTitle": "Maximum Drawdown Reached",
     "description": "Your account has violated the challenge rules.",
     "ruleLimit": "Rule Limit",
@@ -920,7 +920,7 @@
   "violationAlert": {
     "accountFailed": "Account Failed",
     "dailyDrawdownExceeded": "Daily Drawdown Exceeded",
-    "dailyDrawdownDescription": "Your daily loss exceeded the maximum allowed limit of {{limit}}%.",
+    "dailyDrawdownDescription": "Your daily drawdown exceeded the maximum allowed limit of {{limit}}%.",
     "maximumDrawdownExceeded": "Maximum Drawdown Exceeded",
     "maximumDrawdownDescription": "Your total loss exceeded the maximum allowed limit of {{limit}}%.",
     "maximumTradingDaysExceeded": "Maximum Trading Days Exceeded",
@@ -1014,9 +1014,9 @@
     "invalidCloseData": "Invalid data for closing trade.",
     "tradeAlreadyClosed": "This trade is already closed.",
     "tradeInProgress": "A trade is already being executed. Please wait.",
-    "dailyLossLimitReached": "Daily loss limit reached. Trading is locked until tomorrow.",
-    "dailyLocked": "Daily Loss Limit Reached",
-    "dailyLockedMessage": "Your account has been locked until tomorrow due to exceeding the daily loss limit.",
+    "dailyLossLimitReached": "Daily drawdown limit reached. Trading is locked until tomorrow.",
+    "dailyLocked": "Daily Drawdown Limit Reached",
+    "dailyLockedMessage": "Your account has been locked until tomorrow due to exceeding the daily drawdown limit.",
     "disqualified": "Challenge Disqualified",
     "disqualifiedMessage": "Your account has been disqualified due to exceeding the maximum drawdown limit.",
     "challengeDisqualified": "Challenge disqualified. Trading is no longer allowed.",
@@ -1145,7 +1145,7 @@
       "funded": "Funded",
       "dailyLimitViolated": "Daily Limit Violated (Locked)",
       "challengeFailed": "Challenge Failed / Disqualified",
-      "accountLockedUntilTomorrow": "Account has been locked until tomorrow due to daily loss limit violation",
+      "accountLockedUntilTomorrow": "Account has been locked until tomorrow due to daily drawdown limit violation",
       "accountViolatedRules": "Account has violated challenge rules",
       "daysRemaining_one": "{{count}} day remaining",
       "daysRemaining_other": "{{count}} days remaining"
@@ -2025,70 +2025,74 @@
         "title": "Getting Started",
         "faqs": {
           "whatIsPropCapitals": {
-            "q": "What is Prop Capitals?",
-            "a": "Prop Capitals is a proprietary trading firm that provides traders with funded accounts to trade our capital. Pass our evaluation and keep up to 90% of the profits you generate. You risk nothing of your own money when trading our funded accounts."
+            "q": "What is Prop Capitals and how does it work?",
+            "a": "Prop Capitals is a proprietary trading firm that funds traders with real capital. Here's how it works: 1) You purchase an evaluation challenge (starting from $90). 2) You trade on a demo account and prove you can hit the profit target while staying within the drawdown rules. 3) Once you pass, you receive a funded account with real capital. 4) You trade the funded account and keep up to 90% of the profits you generate. You never risk your own money beyond the initial challenge fee."
           },
           "howToStartChallenge": {
-            "q": "How do I start a challenge?",
-            "a": "Simply choose your preferred account size and evaluation type on our Challenges page, complete the payment, and you'll receive your trading credentials within minutes. You can start trading immediately after receiving your credentials."
+            "q": "How do I start a challenge step by step?",
+            "a": "Step 1: Go to the Challenges page and pick your evaluation type (1-Phase, 2-Phase, or Instant Funding). Step 2: Choose your account size ($10K to $200K). Step 3: Complete payment via credit card, crypto, or other supported methods. Step 4: You'll receive your trading credentials (server, login, password) via email within 5 minutes. Step 5: Log into your trading platform and start trading. Your challenge begins on the day of your first trade — there is no time pressure to start immediately."
           },
           "tradingPlatforms": {
-            "q": "What trading platforms do you support?",
-            "a": "We support MetaTrader 4 (MT4), MetaTrader 5 (MT5), cTrader, and DXTrade. You can choose your preferred platform when setting up your account."
+            "q": "What trading platforms and instruments are available?",
+            "a": "Platforms: We support MetaTrader 4 (MT4), MetaTrader 5 (MT5), cTrader, and DXTrade. You choose your platform at checkout. Instruments available: All major, minor, and exotic forex pairs (e.g. EUR/USD, GBP/JPY, USD/ZAR). Indices: US30, NAS100, S&P500, DAX40, FTSE100, and more. Commodities: Gold (XAUUSD), Silver (XAGUSD), Oil (WTI, Brent). Crypto CFDs: BTC/USD, ETH/USD (availability varies by platform). Leverage ranges from 1:10 to 1:100 depending on the instrument and account type."
           },
-          "credentialsTiming": {
-            "q": "How quickly do I get my credentials?",
-            "a": "Trading credentials are typically delivered within 5 minutes of payment confirmation. You'll receive an email with your login details including server, account number, and password."
+          "howToPass": {
+            "q": "How do I actually pass the challenge?",
+            "a": "To pass, you need to meet ALL of these conditions: 1) Hit the profit target — 8% for Phase 1, 5% for Phase 2 (2-Phase), or 10% for 1-Phase. 2) Do not exceed the 5% daily drawdown on any single day. 3) Do not exceed the 10% maximum overall drawdown from your peak balance. 4) Trade for a minimum of 4 separate trading days (a trading day = at least one trade open for 2+ minutes). There is no time limit, so focus on consistency over speed. Tip: Risk 1-2% per trade, trade during high-volume sessions (London/New York overlap), and avoid revenge trading after losses."
+          },
+          "evaluationTypes": {
+            "q": "What's the difference between 1-Phase, 2-Phase, and Instant Funding?",
+            "a": "2-Phase (Most Popular): Two evaluation stages. Phase 1: hit 8% profit. Phase 2: hit 5% profit. Same drawdown rules in both phases. After passing both, you get funded. This is the most affordable option. 1-Phase: Single evaluation — hit 10% profit in one go. Faster path to funding but requires a slightly higher target. Instant Funding: Skip the evaluation entirely. You get a funded account immediately after purchase. Higher upfront cost, but you start earning profits from day one. All three types have the same drawdown rules (5% daily, 10% max) and the same funded account benefits."
           }
         }
       },
       "tradingRules": {
-        "title": "Trading Rules",
+        "title": "Trading Rules & Drawdown",
         "faqs": {
-          "profitTarget": {
-            "q": "What is the profit target?",
-            "a": "For the 2-Phase evaluation: Phase 1 requires 8% profit, Phase 2 requires 5% profit. For 1-Phase evaluation, the target is 10%. Instant Funding has no profit target for the challenge phase."
+          "drawdownExplained": {
+            "q": "How does the daily drawdown work exactly?",
+            "a": "The daily drawdown limit is 5% of your account balance at the start of each trading day (server time midnight). Example: If your account starts the day at $50,000, your maximum loss for that day is $2,500. Your equity cannot drop below $47,500 at any point during the day — this includes open (floating) trades, not just closed trades. The daily drawdown resets every day at midnight server time. If you close the day with a profit (e.g. balance now $52,000), tomorrow's daily limit is recalculated from $52,000, giving you $2,600 of room. Important: The check is on equity, not just balance. If you have an open trade losing $3,000 even momentarily, that counts as a violation."
           },
-          "drawdownRules": {
-            "q": "What are the drawdown rules?",
-            "a": "Daily drawdown is limited to 5% of the starting balance of the day. Overall drawdown is limited to 10% from your highest achieved balance (trailing). These are the only drawdown rules you need to follow."
+          "maxDrawdownExplained": {
+            "q": "How does the maximum overall drawdown work?",
+            "a": "The maximum drawdown is 10% from your highest achieved account balance (this is trailing). Example: You start with $50,000. Your absolute drawdown floor is $45,000. If your balance grows to $55,000, your new floor moves up to $49,500 ($55,000 - 10%). The floor never moves back down — it only goes up as you make profit. This means: the higher your profits go, the tighter your cushion becomes relative to the peak. Many traders take a payout before their balance gets too high to lock in profits and give themselves more breathing room."
           },
-          "timeLimit": {
-            "q": "Is there a time limit to complete the challenge?",
-            "a": "No, there is no maximum time limit. You can take as long as you need to reach the profit target. However, there is a minimum of 4 trading days required to pass each phase."
+          "profitTargets": {
+            "q": "What are the exact profit targets for each challenge type?",
+            "a": "2-Phase Challenge: Phase 1 = 8% profit target, Phase 2 = 5% profit target. Example on $50K: Phase 1 target is $4,000 profit, Phase 2 target is $2,500. 1-Phase Challenge: 10% profit target in a single phase. Example on $50K: Target is $5,000 profit. Instant Funding: No evaluation profit target — you're funded immediately. Profit is calculated from closed trades only (floating P&L doesn't count toward the target). You can exceed the target — there's no cap. The target is the minimum needed to pass."
           },
-          "newsTrading": {
-            "q": "Can I trade during news events?",
-            "a": "Yes, news trading is allowed on all our challenges. You can trade during high-impact news events without any restrictions or penalties."
+          "tradingDays": {
+            "q": "What counts as a trading day and how many do I need?",
+            "a": "A trading day is any calendar day (server time) where you have at least one position open for more than 2 minutes. You need a minimum of 4 trading days to pass each phase. This means: You cannot pass the challenge in under 4 days, even if you hit the profit target on day 1. The 4 days do not need to be consecutive. Opening and closing a trade within 2 minutes does not count. Holding a trade overnight that spans 2 calendar days counts as 2 trading days."
           },
-          "weekendHolding": {
-            "q": "Can I hold trades over the weekend?",
-            "a": "Yes, you are allowed to hold positions over the weekend. There are no restrictions on overnight or weekend holding on any of our challenge types."
+          "allowedStrategies": {
+            "q": "What trading strategies and styles are allowed?",
+            "a": "Allowed: Scalping, day trading, swing trading, position trading. News trading (including high-impact NFP, FOMC, CPI). Weekend and overnight holding. Hedging (opening opposing positions on the same instrument). Expert Advisors (EAs) and automated trading bots. Any technical or fundamental strategy. Not Allowed: Latency arbitrage or tick scalping exploiting price feed delays. High-frequency trading (HFT) exploiting server infrastructure. Copy trading between your own multiple Prop Capitals accounts. Account management services (someone else trading your account). Grid/martingale strategies are allowed but risky — use at your own discretion."
           },
-          "expertAdvisors": {
-            "q": "Are Expert Advisors (EAs) allowed?",
-            "a": "Yes, you can use Expert Advisors and automated trading systems. However, they must not exploit platform vulnerabilities or engage in practices like latency arbitrage or tick scalping."
+          "leverage": {
+            "q": "What leverage is available?",
+            "a": "Leverage varies by instrument: Forex Majors: up to 1:100. Forex Minors/Exotics: up to 1:50. Indices (US30, NAS100, etc.): up to 1:50. Gold (XAUUSD): up to 1:50. Oil & Commodities: up to 1:20. Crypto CFDs: up to 1:2. These are maximum values — you can use less. Tip: Using high leverage isn't required to pass. Many successful traders use effective leverage of 1:5 to 1:20 and focus on proper position sizing."
           }
         }
       },
       "violations": {
         "title": "Violations & Failures",
         "faqs": {
-          "whatHappensIfViolate": {
-            "q": "What happens if I violate a rule?",
-            "a": "If you violate a hard rule (daily or overall drawdown limit), your account will be automatically disabled. You'll receive a detailed email explaining the violation. You can then purchase a reset or start a new challenge."
+          "whatTriggersViolation": {
+            "q": "What exactly triggers a violation and disqualification?",
+            "a": "Hard violations (instant disqualification): 1) Daily Drawdown Breach: Your equity drops more than 5% below the day's starting balance at any point, even for a second. 2) Max Drawdown Breach: Your equity drops more than 10% below your highest achieved balance at any point. Soft violations (account locked until next day): If your equity gets very close to the daily limit, the system may lock trading for the rest of the day to protect you. Important details: Violations are checked in real-time against your equity (balance + floating P&L). Gaps at market open can cause a violation if your floating loss jumps. The system does not give warnings — once the threshold is touched, it's instant. You can monitor your drawdown in real-time on your dashboard."
           },
           "freeRetry": {
-            "q": "Can I get a free retry?",
-            "a": "Yes! If you achieve 8% profit on your challenge before failing, you qualify for a free retry. This gives you another chance without paying again."
+            "q": "How does the free retry work?",
+            "a": "If your account reaches 8% profit at any point during the challenge BEFORE failing, you qualify for a free retry. How it works: You fail your challenge (drawdown breach). The system checks if your account ever hit 8% profit during the challenge. If yes, you receive a free retry automatically — same account size, fresh start. If no, you can purchase a discounted reset instead. The free retry gives you a completely fresh account with all rules reset. Your previous trades and history do not carry over."
           },
-          "resetAccount": {
-            "q": "Can I reset my account?",
-            "a": "Yes, you can purchase a reset at a discounted price if you fail the challenge. This gives you a fresh start with the same account size. Reset prices vary based on account size."
+          "afterFailing": {
+            "q": "What are my options after failing a challenge?",
+            "a": "You have three options: 1) Free Retry (if eligible): If you hit 8% profit before failing, you get a new account for free automatically. 2) Discounted Reset: Purchase a reset at a reduced price. You keep the same account size and plan, but get a fresh start. Reset prices are typically 20-30% less than the original challenge fee. 3) New Challenge: Start completely fresh — you can choose a different account size or evaluation type if you want. Tip: If you failed due to emotional trading or overleverage, take a break before restarting. Analyze your trades in the analytics dashboard to understand what went wrong."
           },
-          "tradingDay": {
-            "q": "What counts as a trading day?",
-            "a": "A trading day is any day where you have at least one trade open for more than 2 minutes. You need a minimum of 4 trading days to pass each phase."
+          "commonMistakes": {
+            "q": "What are the most common reasons traders fail?",
+            "a": "Based on our data, the top reasons for failure are: 1) Overleveraging: Risking more than 2-3% per trade. One bad trade wipes out the daily drawdown. 2) Revenge Trading: Trying to recover losses immediately after a losing trade, often with bigger position sizes. 3) Ignoring the Daily Drawdown: Forgetting that the 5% daily limit includes floating (unrealized) losses on open trades. 4) Trading without a stop loss: A sudden market move can breach your drawdown before you can react. 5) Not checking the dashboard: Your real-time drawdown is displayed on your dashboard — check it before placing new trades. Tip: Aim for 1-2% risk per trade. If you lose 2-3% in a day, stop trading. Come back tomorrow with a fresh daily drawdown."
           }
         }
       },
@@ -2096,24 +2100,20 @@
         "title": "Payouts & Profits",
         "faqs": {
           "profitSplit": {
-            "q": "What is the profit split?",
-            "a": "The profit split starts at 80% for smaller accounts and can go up to 90% for larger accounts and through our scaling program. As you prove consistency, your profit split percentage increases."
+            "q": "What is the profit split and how is it calculated?",
+            "a": "The profit split determines how much of your trading profits you keep. Default split: 80% to you, 20% to Prop Capitals. With scaling: Up to 90% to you at higher levels. How it's calculated: If your funded account makes $10,000 profit and your split is 80%, you receive $8,000. The split applies to net profit only (after subtracting any losses). Example: You start the cycle with $50,000. After 14 days your balance is $54,000. Net profit = $4,000. Your payout at 80% split = $3,200."
           },
-          "payoutFrequency": {
-            "q": "How often can I request a payout?",
-            "a": "Payouts are processed bi-weekly. You can request a payout every 14 days once you have profits to withdraw. Your first payout is available 14 days after receiving your funded account."
+          "payoutProcess": {
+            "q": "How do I request a payout step by step?",
+            "a": "Step 1: Log into your dashboard and go to the Payouts page. Step 2: Ensure you have been on your funded account for at least 14 days. Step 3: Click 'Request Payout' and enter the amount you want to withdraw (minimum $50). Step 4: Choose your payment method (crypto, bank wire, PayPal, or Wise). Step 5: Submit the request. Step 6: The payout is reviewed and processed within 24-48 business hours. After the payout, your funded account balance is adjusted and you continue trading. Your drawdown levels are recalculated from the new balance."
           },
           "paymentMethods": {
             "q": "What payment methods are available for payouts?",
-            "a": "We support bank wire transfers, cryptocurrency (BTC, ETH, USDT), PayPal, and Wise transfers. All payout methods have zero fees."
+            "a": "Available payout methods: Cryptocurrency: BTC, ETH, USDT (TRC-20 or ERC-20) — fastest option, usually arrives within hours. Bank Wire Transfer: Available worldwide, takes 2-5 business days after processing. PayPal: Fast and convenient, arrives within 1-2 business days. Wise (TransferWise): Low-fee international transfers, arrives within 1-3 business days. All payout methods have zero fees from our side. Your bank or payment provider may charge their own receiving fees. You can change your payout method between withdrawals."
           },
-          "minimumPayout": {
-            "q": "Is there a minimum payout amount?",
-            "a": "The minimum payout amount is $50. There is no maximum limit on withdrawals - you can withdraw all your profits if you wish."
-          },
-          "payoutProcessing": {
-            "q": "How long do payouts take to process?",
-            "a": "Payouts are typically processed within 24-48 business hours after approval. Bank transfers may take an additional 2-5 business days to arrive in your account."
+          "payoutFrequency": {
+            "q": "How often can I withdraw profits?",
+            "a": "Payout schedule: Payouts are bi-weekly (every 14 days). Your first payout is available 14 days after receiving your funded account. After each payout, the 14-day cycle resets. There is no maximum on the number of payouts — you can withdraw every cycle indefinitely. Minimum withdrawal: $50 per payout. Maximum withdrawal: No cap — you can withdraw all your available profits. Tip: You don't have to withdraw everything. You can leave profits in the account to increase your trading capital and drawdown room."
           }
         }
       },
@@ -2121,37 +2121,37 @@
         "title": "Scaling Plan",
         "faqs": {
           "howScalingWorks": {
-            "q": "How does the scaling plan work?",
-            "a": "Every time you achieve 10% profit on your funded account and complete 2 payout cycles, your account size increases by 25%. You can scale up to a maximum of $2,000,000 in trading capital."
+            "q": "How does the scaling plan work step by step?",
+            "a": "The scaling plan increases your funded account size as you prove consistency. Requirements to scale: 1) Achieve at least 10% profit on your funded account. 2) Complete at least 2 payout cycles (minimum 28 days of funded trading). 3) Maintain good risk management (no near-violations). When you qualify: Your account size increases by 25%. Example: $50,000 → $62,500 → $78,125 → $97,656 → and so on. Maximum account size: $2,000,000. Your profit split also increases at each level, up to 90%. Scaling is automatic — once you meet the criteria, you'll be notified and your account is upgraded."
           },
-          "profitSplitScaling": {
-            "q": "What happens to my profit split when I scale?",
-            "a": "Your profit split increases as you scale. Starting at 80%, it can reach up to 90% at higher levels of the scaling plan. Each scale level brings you closer to the maximum profit split."
+          "scalingExample": {
+            "q": "Can you show an example scaling path?",
+            "a": "Starting with a $50,000 funded account: Level 1: $50,000 (80% profit split). Level 2: $62,500 (82% split) — after 10% profit + 2 payouts. Level 3: $78,125 (84% split). Level 4: $97,656 (86% split). Level 5: $122,070 (88% split). Level 6: $152,588 (90% split). And it continues up to $2,000,000. At $100K with 88% split, if you make 5% monthly profit ($5,000), your payout is $4,400/month. At $200K with 90% split at 5% monthly ($10,000), your payout is $9,000/month. Consistency is more important than big gains — steady 3-5% monthly profit will scale you faster than chasing 20% months."
           },
-          "scalingConditions": {
-            "q": "Are there any conditions for scaling?",
-            "a": "To qualify for scaling, you must achieve at least 10% profit, complete at least 2 payout cycles, and maintain good risk management practices throughout the evaluation period."
+          "scalingReset": {
+            "q": "What happens to my scaling progress if I violate a rule?",
+            "a": "If you breach a drawdown rule on your funded account: Your current account is disabled. Scaling progress is NOT lost — your level is preserved. You receive a new funded account at the same scaling level. You keep your profit split percentage. You start with a fresh balance at your current scaled size. Example: You're at Level 3 ($78,125) and breach the daily drawdown. You get a new $78,125 account and continue from where you left off. However, if you repeatedly violate rules, your scaling progress may be reviewed."
           }
         }
       },
       "account": {
         "title": "Account Management",
         "faqs": {
-          "refund": {
-            "q": "Can I get a refund?",
-            "a": "Refunds are available within 14 days of purchase if you haven't placed any trades. Once trading activity begins, refunds are no longer available as the evaluation has started."
-          },
           "multipleAccounts": {
-            "q": "Can I have multiple accounts?",
-            "a": "Yes, you can have multiple challenge or funded accounts simultaneously. However, you cannot use the same trading strategy via copy trades between your different accounts."
+            "q": "Can I run multiple challenges or funded accounts at the same time?",
+            "a": "Yes, you can have multiple accounts simultaneously. Rules for multiple accounts: You can run different account sizes and evaluation types. Each account has independent drawdown tracking. You CAN trade the same instruments across accounts. You CANNOT copy-trade between your own Prop Capitals accounts (running the exact same trades at the same time on multiple accounts). You CAN use the same general strategy with different execution. Example: You could run a $50K 2-Phase challenge for swing trading and a $25K Instant Funding for scalping at the same time."
           },
-          "weekendAccount": {
-            "q": "What happens to my account during weekends?",
-            "a": "Your account remains active during weekends. You can hold positions over weekends and your drawdown calculations continue as normal. The market is closed but your account is still monitored."
+          "inactivity": {
+            "q": "What happens if I stop trading for a while?",
+            "a": "Challenge accounts: There is no time limit, so inactivity does not cause a failure. However, you need 4 trading days minimum to pass, so extended breaks just delay completion. Funded accounts: If you have no trading activity for 30 consecutive days, your account may be flagged for review. We recommend placing at least one trade per month to keep your account active. Your drawdown levels are NOT affected by inactivity — they remain where they were when you last traded."
+          },
+          "refund": {
+            "q": "What is the refund policy?",
+            "a": "Refunds are available within 14 days of purchase, provided: You have NOT placed any trades on the account. The account has not been used in any way. Once you place your first trade, the evaluation has officially started and refunds are no longer available. To request a refund: Contact support@prop-capitals.com with your order number. Refunds are processed within 5-7 business days to the original payment method."
           },
           "contactSupport": {
-            "q": "How do I contact support?",
-            "a": "You can reach our support team 24/7 through live chat on our website, email at support@the-bluehaven.com, or through the support ticket system in your dashboard."
+            "q": "How do I get help if I have a problem?",
+            "a": "Support channels: Email: support@prop-capitals.com (response within 24 hours). Live Chat: Available 24/7 on the website (bottom-right corner). Dashboard Tickets: Submit a support ticket from your dashboard for account-specific issues. For urgent issues (account errors, payment problems): Use live chat for the fastest response. Include your account number and a screenshot of the issue. Common self-service options: Check your dashboard for real-time account status, drawdown levels, and trade history. Use the Analytics page to review your trading performance."
           }
         }
       }
@@ -2165,7 +2165,7 @@
       "emailSupport": {
         "title": "Email Support",
         "description": "For general inquiries and detailed questions",
-        "contact": "support@the-bluehaven.com"
+        "contact": "support@prop-capitals.com"
       },
       "liveChat": {
         "title": "Live Chat",
@@ -2263,7 +2263,7 @@
       },
       "dailyDrawdown": {
         "title": "Daily Drawdown",
-        "description": "Maximum daily loss allowed"
+        "description": "Maximum daily drawdown allowed"
       },
       "overallDrawdown": {
         "title": "Overall Drawdown",
@@ -2424,20 +2424,20 @@
     "faq": {
       "title": "Frequently Asked Questions",
       "timeLimit": {
-        "q": "How long do I have to complete the challenge?",
-        "a": "There is no time limit. Take as long as you need to reach the profit target while respecting the risk rules."
+        "q": "How do I pass the challenge?",
+        "a": "Hit the profit target (8% Phase 1, 5% Phase 2 for 2-Phase; 10% for 1-Phase) while staying within the 5% daily drawdown and 10% max drawdown limits. You need a minimum of 4 trading days, but there is no maximum time limit. Tip: Risk 1-2% per trade and focus on consistency — you don't need to rush."
       },
       "newsTrading": {
-        "q": "Can I trade during news events?",
-        "a": "Yes, news trading is fully allowed on all our challenges. There are no restrictions."
+        "q": "What can I trade and what strategies are allowed?",
+        "a": "You can trade forex pairs (majors, minors, exotics), indices (US30, NAS100, DAX40), commodities (Gold, Silver, Oil), and crypto CFDs. All strategies are allowed: scalping, day trading, swing trading, news trading, EAs/bots, and weekend holding. The only restrictions are latency arbitrage and copy-trading between your own Prop Capitals accounts."
       },
       "ifFail": {
-        "q": "What happens if I fail?",
-        "a": "You can purchase a reset at a discounted price or start a new challenge. We also offer free retakes if you achieved 8% profit before failing."
+        "q": "What happens if I fail the challenge?",
+        "a": "You have three options: 1) Free retry if your account reached 8% profit before failing. 2) Discounted reset at 20-30% off the original price. 3) Start a new challenge with a different size or type. Check your dashboard analytics to review what went wrong before restarting."
       },
       "payoutSpeed": {
-        "q": "How fast are payouts processed?",
-        "a": "Payouts are processed within 24-48 hours after approval. The funds arrive via your chosen payment method."
+        "q": "How do payouts work once I'm funded?",
+        "a": "Payouts are bi-weekly (every 14 days). Request a withdrawal from your dashboard (minimum $50, no maximum). Choose crypto, bank wire, PayPal, or Wise. Processed within 24-48 hours. You keep 80-90% of profits depending on your account level. Your profit split increases as you scale up."
       }
     },
     "compareTableTitle": "Compare All Challenges",
@@ -2670,7 +2670,7 @@
         "title": "Daily Drawdown (5%)",
         "description": "The maximum you can lose in a single day, calculated from the day's starting balance. Resets at midnight server time.",
         "example": "Example:",
-        "exampleText": "With a $50,000 balance, your daily loss limit is $2,500."
+        "exampleText": "With a $50,000 balance, your daily drawdown limit is $2,500."
       },
       "maximumDrawdown": {
         "title": "Maximum Drawdown (10%)",
@@ -2850,7 +2850,7 @@
     },
     "contact": {
       "title": "12. Contact",
-      "content": "For questions about these terms, please contact us at support@the-bluehaven.com"
+      "content": "For questions about these terms, please contact us at support@prop-capitals.com"
     }
   },
   "privacy": {
@@ -2920,7 +2920,7 @@
     },
     "contactUs": {
       "title": "10. Contact Us",
-      "content": "For privacy-related inquiries, please contact our Data Protection Officer at support@the-bluehaven.com"
+      "content": "For privacy-related inquiries, please contact our Data Protection Officer at support@prop-capitals.com"
     }
   }
 }
