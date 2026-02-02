@@ -2,12 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getCurrentUser } from '@/api/auth';
 import {
-  getProfile,
   updateProfile,
   changePassword,
-  getNotificationPreferences,
   updateNotificationPreferences,
-  getVerificationDocuments,
   uploadVerificationDocument,
 } from '@/api/profile';
 import { useTranslation } from '../contexts/LanguageContext';
@@ -45,6 +42,7 @@ export default function Profile() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [saved, setSaved] = useState(false);
+  const [notificationSaved, setNotificationSaved] = useState(false);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState({ govId: false, address: false });
   const [showPassword, setShowPassword] = useState({ current: false, new: false, confirm: false });
@@ -115,6 +113,7 @@ export default function Profile() {
     },
     onError: (error) => {
       console.error('Failed to save profile:', error);
+      alert(error.message || t('profile.saveError') || 'Failed to save profile');
     },
   });
 
@@ -137,6 +136,12 @@ export default function Profile() {
     mutationFn: updateNotificationPreferences,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+      setNotificationSaved(true);
+      setTimeout(() => setNotificationSaved(false), 3000);
+    },
+    onError: (error) => {
+      console.error('Failed to update notification preferences:', error);
+      alert(error.message || t('profile.notificationUpdateFailed') || 'Failed to update notification preferences');
     },
   });
 
@@ -667,6 +672,12 @@ export default function Profile() {
                 </div>
               ))}
             </div>
+            {notificationSaved && (
+              <div className="mt-4 flex items-center gap-2 text-emerald-400">
+                <CheckCircle className="w-4 h-4" />
+                {t('profile.preferencesSaved') || 'Preferences saved'}
+              </div>
+            )}
           </Card>
         </TabsContent>
       </Tabs>

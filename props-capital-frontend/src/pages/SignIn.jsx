@@ -73,6 +73,9 @@ export default function SignIn() {
     loginMutation.mutate({ email, password });
   };
 
+  // const handleForgetPassword =>(){
+
+  // }
   return (
     <div className="min-h-screen bg-slate-950 flex">
       {/* Left Side - Form */}
@@ -135,8 +138,8 @@ export default function SignIn() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
-              <div className="flex items-center gap-2">
+            <div className="flex  sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+              <div className="flex  items-center gap-2">
                 <Checkbox
                   id="remember"
                   checked={rememberMe}
@@ -147,7 +150,7 @@ export default function SignIn() {
                   {t('signIn.rememberMe')}
                 </Label>
               </div>
-              <button type="button" className="text-sm text-emerald-400 hover:text-emerald-300">
+              <button  type="button" className="text-sm  text-emerald-400 hover:text-emerald-300">
                 {t('signIn.forgotPassword')}
               </button>
             </div>

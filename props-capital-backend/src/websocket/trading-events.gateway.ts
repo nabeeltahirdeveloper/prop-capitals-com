@@ -6,7 +6,7 @@ import {
   OnGatewayDisconnect,
   OnGatewayInit,
 } from '@nestjs/websockets';
-import { Logger, UseGuards } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 
@@ -18,6 +18,19 @@ interface PositionClosedEvent {
   profit: number;
   closeReason: 'TP_HIT' | 'SL_HIT' | 'USER_CLOSE' | 'RISK_AUTO_CLOSE';
   timestamp: string;
+}
+
+interface AccountUpdateEvent {
+  tradingDaysCount?: number;
+  tradedToday?: boolean;
+  daysRemaining?: number;
+  balance?: number;
+  equity?: number;
+  profitPercent?: number;
+  dailyDrawdownPercent?: number;
+  overallDrawdownPercent?: number;
+  lastTradeId?: string;
+  timestamp?: string;
 }
 
 @WebSocketGateway({
@@ -168,10 +181,21 @@ export class TradingEventsGateway
 
     this.server.to(roomName).emit('trade:executed', event);
   }
+
+  /**
+   * 🔥 NEW: Emit account metrics update (for real-time trading days, equity, balance, etc.)
+   * This is crucial for updating the trading days counter in real-time
+   */
+  emitAccountUpdate(accountId: string, event: AccountUpdateEvent) {
+    const roomName = `account:${accountId}`;
+    
+    this.logger.log(
+      `📤 Emitting account:update to ${roomName} - Trading Days: ${event.tradingDaysCount ?? 'N/A'}`,
+    );
+
+    this.server.to(roomName).emit('account:update', {
+      ...event,
+      timestamp: event.timestamp || new Date().toISOString(),
+    });
+  }
 }
-
-
-
-
-
-

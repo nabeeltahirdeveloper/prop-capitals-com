@@ -88,7 +88,15 @@ export class AuthService {
       },
     });
 
-    await this.emailService.sendSignupOtpEmail(email, otp);
+    const emailResult = await this.emailService.sendSignupOtpEmail(email, otp);
+
+    if (!emailResult.success) {
+      // Delete the OTP record since email failed
+      await this.prisma.signupOtp.delete({ where: { email } }).catch(() => undefined);
+      throw new BadRequestException(
+        `Failed to send verification email: ${emailResult.error || 'Unknown error'}. Please try again later.`
+      );
+    }
 
     return {
       message: 'OTP sent',

@@ -1,5 +1,5 @@
 {
-    "common": {
+  "common": {
     "loading": "読み込み中...",
     "url": "URL",
     "dismiss": "閉じる",
@@ -608,6 +608,11 @@
     "allRulesCompliant": "すべてのルールに準拠",
     "goodStanding": "あなたのアカウントはすべてのチャレンジルールにおいて良好な状態です",
     "active": "進行中",
+    "accountFailed": "アカウント失敗",
+    "failedDesc": "ルール違反によりアカウントが終了しました",
+    "rulesAtRisk": "ルール警告",
+    "atRiskDesc": "1つ以上のルールが違反しきい値に近づいています",
+    "warning": "警告",
     "phase1": "フェーズ 1",
     "phase2": "フェーズ 2",
     "funded": "資金提供済み",
@@ -841,9 +846,15 @@
     "couponCode": "クーポンコード",
     "enterCode": "コードを入力",
     "apply": "適用",
+    "validating": "検証中...",
     "applied": "適用済み",
     "off": "OFF",
+    "discountApplied": "割引適用: -{{discount}}%",
     "couponApplied": "{{code}} を適用しました - {{discount}}%OFF！",
+    "couponSuccess": "クーポン適用完了",
+    "couponError": "無効なクーポン",
+    "purchaseError": "購入に失敗しました",
+    "purchaseSuccessfulTitle": "購入完了",
     "subtotal": "小計",
     "discount": "割引",
     "total": "合計",
@@ -851,6 +862,12 @@
     "pay": "支払う",
     "payAmount": "${{amount}} を支払う",
     "secureEncryption": "安全な256-bit SSL暗号化",
+    "minTradingDays": "最低取引日数",
+    "maxTradingDays": "最大取引日数",
+    "eaAllowed": "EA許可",
+    "newsTrading": "ニュース取引",
+    "weekendHolding": "週末保有",
+    "scalingEnabled": "スケーリング",
     "platforms": {
       "MT5": {
         "name": "MetaTrader 5",
@@ -1034,10 +1051,13 @@
       "candles": "ローソク足",
       "tf": "TF",
       "loadingData": "チャートデータを読み込み中...",
-      "updating": "更新中..."
+      "updating": "更新中...",
+      "switchToLineChart": "折れ線グラフに切り替え",
+      "switchToCandlestickChart": "ローソク足チャートに切り替え"
     },
     "loadingAccounts": "アカウントを読み込み中...",
     "watchlist": {
+      "title": "価格を表示",
       "live": "ライブ",
       "offline": "オフライン",
       "search": "検索...",
@@ -1615,7 +1635,7 @@
       "saveChanges": "変更を保存",
       "saveChange": "保存中...",
       "settingsSaved": "設定を保存しました",
-      "settingsSaveDescription":"設定が正常に保存されました",
+      "settingsSaveDescription": "設定が正常に保存されました",
       "tabs": {
         "general": "一般",
         "branding": "ブランディング",
@@ -2354,7 +2374,8 @@
         "a": "出金は承認後24〜48時間以内に処理され、選択した方法で受け取れます。"
       }
     },
-    "compareTableTitle": "すべてのチャレンジを比較"
+    "compareTableTitle": "すべてのチャレンジを比較",
+    "noChallenges": "チャレンジなし"
   },
   "scalingPlan": {
     "badge": "無制限の成長ポテンシャル",

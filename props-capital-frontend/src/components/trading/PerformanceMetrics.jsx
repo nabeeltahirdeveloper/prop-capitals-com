@@ -1,4 +1,3 @@
-import React from "react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useTranslation } from "../../contexts/LanguageContext";
@@ -80,7 +79,7 @@ export default function PerformanceMetrics({ metrics }) {
       label: t("analytics.avgLoss"),
       value: `$${Math.abs(avgLoss).toFixed(2)}`,
       icon: TrendingDown,
-      color: avgLoss < 0 ? "text-red-400" : "text-slate-400",
+      color: avgLoss !== 0 ? "text-red-400" : "text-slate-400",
     },
     {
       label: t("analytics.bestTrade"),
@@ -90,7 +89,7 @@ export default function PerformanceMetrics({ metrics }) {
     },
     {
       label: t("analytics.worstTrade"),
-      value: `$${worstTrade.toFixed(2)}`,
+      value: `${worstTrade < 0 ? "-" : ""}$${Math.abs(worstTrade).toFixed(2)}`,
       icon: Award,
       color: worstTrade < 0 ? "text-red-400" : "text-slate-400",
     },
@@ -119,14 +118,16 @@ export default function PerformanceMetrics({ metrics }) {
     },
     {
       label: t("analytics.sharpeRatio"),
-      value: sharpeRatio > 0 ? sharpeRatio.toFixed(2) : "0.00",
+      value: sharpeRatio !== 0 ? sharpeRatio.toFixed(2) : "0.00",
       icon: Percent,
       color:
         sharpeRatio >= 1
           ? "text-emerald-400"
           : sharpeRatio > 0
             ? "text-amber-400"
-            : "text-slate-400",
+            : sharpeRatio < 0
+              ? "text-red-400"
+              : "text-slate-400",
     },
     {
       label: t("analytics.avgPosition"),

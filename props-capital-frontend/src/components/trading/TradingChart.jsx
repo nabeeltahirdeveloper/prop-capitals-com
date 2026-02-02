@@ -196,7 +196,13 @@ export default function TradingChart({
         return;
       }
 
-      console.log("Creating chart with dimensions:", { width, height });
+      // Mobile: use narrower price scale and tighter spacing so chart fits without clipping
+      const isNarrow = width < 420;
+      const rightScaleMinWidth = isNarrow ? 44 : 92;
+      const barSpacing = isNarrow ? 8 : 14;
+      const rightOffset = isNarrow ? 4 : 9;
+
+      console.log("Creating chart with dimensions:", { width, height, isNarrow: isNarrow });
 
       // Create chart with TradingView-like styling
       // Use autoSize if dimensions are invalid, otherwise use explicit dimensions
@@ -229,15 +235,15 @@ export default function TradingChart({
           rightPriceScale: {
             borderColor: "#2a2e39",
             autoScale: true, // important to prevent vertical drag
-            minimumWidth: 92,
+            minimumWidth: rightScaleMinWidth,
             scaleMargins: { top: 0.22, bottom: 0.22 },
           },
           timeScale: {
             borderColor: "#2a2e39",
             timeVisible: true,
             secondsVisible: false,
-            barSpacing: 14,
-            rightOffset: 9,
+            barSpacing: barSpacing,
+            rightOffset: rightOffset,
             fixLeftEdge: true,
             fixRightEdge: true,
           },
@@ -431,9 +437,17 @@ export default function TradingChart({
           for (const entry of entries) {
             const { width, height } = entry.contentRect;
             if (chartRef.current && width > 0 && height > 0) {
+              const isNarrowNow = width < 420;
               chartRef.current.applyOptions({
                 width: width,
                 height: height,
+                rightPriceScale: {
+                  minimumWidth: isNarrowNow ? 44 : 92,
+                },
+                timeScale: {
+                  barSpacing: isNarrowNow ? 8 : 14,
+                  rightOffset: isNarrowNow ? 4 : 9,
+                },
               });
             }
           }
@@ -920,6 +934,17 @@ export default function TradingChart({
 
           // Try immediately, then retry if needed
           updateChart();
+
+          // Professional standard: fit all data in view (no zoomed-in view on load/symbol change)
+          requestAnimationFrame(() => {
+            try {
+              if (chartRef.current && typeof chartRef.current.timeScale === "function") {
+                chartRef.current.timeScale().fitContent();
+              }
+            } catch (e) {
+              // ignore if API not available
+            }
+          });
 
           // Update current price reference and reset volume tracking
           if (finalCandles.length > 0) {
@@ -1435,7 +1460,7 @@ export default function TradingChart({
   const priceInfo = getPriceChange();
 
   return (
-    <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4 h-full flex flex-col">
+    <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4 h-full flex flex-col min-w-0 overflow-hidden">
       {/* Chart Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
         <div>
@@ -1489,8 +1514,8 @@ export default function TradingChart({
             }`}
             title={
               chartType === "candle"
-                ? "Switch to Line Chart"
-                : "Switch to Candlestick Chart"
+                ? t("terminal.chart.switchToLineChart")
+                : t("terminal.chart.switchToCandlestickChart")
             }
           >
             <div className="group cursor-pointer">
@@ -1504,8 +1529,8 @@ export default function TradingChart({
         </div>
       </div>
 
-      {/* Chart Area */}
-      <div className="flex-1 relative bg-[#131722] rounded-lg overflow-hidden min-h-[300px]">
+      {/* Chart Area - min-w-0 so flex doesn't prevent chart from fitting on mobile */}
+      <div className="flex-1 relative bg-[#131722] rounded-lg overflow-hidden min-h-[300px] min-w-0">
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center z-10 bg-[#131722]/80">
             <div className="text-[#d1d4dc] text-sm">
@@ -1520,28 +1545,18 @@ export default function TradingChart({
           </div>
         )}
 
-        <div ref={chartContainerRef} className="w-full h-full" />
+        <div ref={chartContainerRef} className="w-full h-full min-w-0 min-h-0" />
       </div>
 
-      {/* Chart Footer */}
-      <div className="mt-2 flex items-center justify-between text-xs text-slate-500">
-        <div className="flex items-center gap-2">
-          <Clock className="w-3 h-3" />
+      {/* Chart Footer - Minimal */}
+      <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1">
+        <div className="flex items-center gap-1">
+          <Clock className="w-2.5 h-2.5" />
           <span>
-            {t("terminal.chart.lastUpdate")}:{" "}
             {new Date(lastUpdateTimeRef.current).toLocaleTimeString()}
           </span>
         </div>
-        <div className="flex items-center gap-4">
-          <span>
-            {t("terminal.chart.tf")}: {timeframe}
-          </span>
-          {isLoading && (
-            <span className="text-emerald-400">
-              {t("terminal.chart.updating")}
-            </span>
-          )}
-        </div>
+        <span>{timeframe}</span>
       </div>
     </Card>
   );

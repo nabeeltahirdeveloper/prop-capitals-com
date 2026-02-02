@@ -14,6 +14,7 @@ import { PendingOrdersModule } from './pending-orders/pending-orders.module';
 import { PricesModule } from './prices/prices.module';
 import { MarketDataModule } from './market-data/market-data.module';
 import { PaymentsModule } from './payments/payments.module';
+import { CouponsModule } from './coupons/coupons.module';
 import { BrokerServersModule } from './broker-servers/broker-servers.module';
 import { PayoutsModule } from './payouts/payouts.module';
 import { NotificationsModule } from './notifications/notifications.module';
@@ -69,6 +70,8 @@ import { CommonModule } from './common/common.module';
     MarketDataModule,
 
     PaymentsModule,
+
+    CouponsModule,
 
     BrokerServersModule,
 

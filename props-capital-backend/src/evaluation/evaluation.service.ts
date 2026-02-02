@@ -63,7 +63,6 @@ export class EvaluationService {
     }
     const accountPriceCache = this.priceCache.get(accountId)!;
     accountPriceCache.set(symbol, { bid, ask, timestamp });
-
     // Get account with open positions
     const account = await this.prisma.tradingAccount.findUnique({
       where: { id: accountId },
@@ -108,7 +107,7 @@ export class EvaluationService {
     let totalUnrealizedPnL = 0;
     const { challenge } = account;
     const initialBalance = account.initialBalance || challenge.accountSize;
-
+    console.log('Initial balance:', initialBalance);
     for (const trade of account.trades) {
       const tradePrice = accountPriceCache.get(trade.symbol);
       if (!tradePrice) continue; // Skip if we don't have price for this symbol yet
@@ -138,8 +137,20 @@ export class EvaluationService {
       totalUnrealizedPnL += positionPnL;
     }
 
+
+
+
+
+
+
+
+
+
+
+    
     // Calculate equity = balance + unrealized PnL
     const balance = account.balance ?? initialBalance;
+    console.log('Current balance:', balance);
     const equity = balance + totalUnrealizedPnL;
 
     // Use stored tracking values

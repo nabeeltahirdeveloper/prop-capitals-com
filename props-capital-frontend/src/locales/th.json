@@ -612,6 +612,11 @@
     "allRulesCompliant": "ปฏิบัติตามกฎทั้งหมด",
     "goodStanding": "บัญชีของคุณอยู่ในสถานะดีตามกฎความท้าทายทั้งหมด",
     "active": "ใช้งานอยู่",
+    "accountFailed": "บัญชีล้มเหลว",
+    "failedDesc": "บัญชีของคุณถูกยกเลิกเนื่องจากละเมิดกฎ",
+    "rulesAtRisk": "กฎมีความเสี่ยง",
+    "atRiskDesc": "กฎหนึ่งหรือมากกว่ากำลังใกล้ถึงขีดจำกัดการละเมิด",
+    "warning": "คำเตือน",
     "phase1": "เฟส 1",
     "phase2": "เฟส 2",
     "funded": "ได้รับเงินทุน",
@@ -844,9 +849,15 @@
     "couponCode": "รหัสคูปอง",
     "enterCode": "ป้อนรหัส",
     "apply": "ใช้",
+    "validating": "กำลังตรวจสอบ...",
     "applied": "ใช้แล้ว",
     "off": "ลด",
     "couponApplied": "{{code}} ใช้แล้ว - ลด {{discount}}%!",
+    "discountApplied": "ใช้ส่วนลด {{discount}}% แล้ว",
+    "couponSuccess": "ใช้คูปองสำเร็จ",
+    "couponError": "คูปองไม่ถูกต้อง",
+    "purchaseError": "การซื้อล้มเหลว",
+    "purchaseSuccessfulTitle": "ซื้อสำเร็จ",
     "subtotal": "ยอดรวมย่อย",
     "discount": "ส่วนลด",
     "total": "รวม",
@@ -854,7 +865,13 @@
     "pay": "จ่าย",
     "payAmount": "จ่าย ${{amount}}",
     "secureEncryption": "การเข้ารหัส SSL 256-bit ที่ปลอดภัย",
-    "noChallenges": "ไม่มีความท้าทายs",
+    "noChallenges": "ไม่มีความท้าทาย",
+    "minTradingDays": "จำนวนวันเทรดขั้นต่ำ",
+    "maxTradingDays": "จำนวนวันเทรดสูงสุด",
+    "eaAllowed": "อนุญาต EA",
+    "newsTrading": "เทรดข่าว",
+    "weekendHolding": "ถือข้ามสุดสัปดาห์",
+    "scalingEnabled": "ขยายบัญชี",
     "platforms": {
       "MT5": {
         "name": "MetaTrader 5",
@@ -1038,10 +1055,13 @@
       "candles": "เทียน",
       "tf": "TF",
       "loadingData": "กำลังโหลดข้อมูลกราฟ...",
-      "updating": "กำลังอัปเดต..."
+      "updating": "กำลังอัปเดต...",
+      "switchToLineChart": "เปลี่ยนเป็นกราฟเส้น",
+      "switchToCandlestickChart": "เปลี่ยนเป็นกราฟแท่งเทียน"
     },
     "loadingAccounts": "กำลังโหลดบัญชี...",
     "watchlist": {
+      "title": "ดูราคา",
       "live": "สด",
       "offline": "ออฟไลน์",
       "search": "ค้นหา...",
@@ -1618,9 +1638,9 @@
       "title": "การตั้งค่าแพลตฟอร์ม",
       "subtitle": "กำหนดค่าการตั้งค่าและอินทิเกรชันของแพลตฟอร์ม",
       "saveChanges": "บันทึกการเปลี่ยนแปลง",
-"saveChange": "กำลังบันทึก...",
+      "saveChange": "กำลังบันทึก...",
       "settingsSaved": "บันทึกการตั้งค่าแล้ว",
-      "settingsSaveDescription":"การตั้งค่าได้รับการบันทึกเรียบร้อยแล้ว",
+      "settingsSaveDescription": "การตั้งค่าได้รับการบันทึกเรียบร้อยแล้ว",
       "tabs": {
         "general": "ทั่วไป",
         "branding": "แบรนด์",
@@ -2359,7 +2379,8 @@
         "a": "การจ่ายเงินดำเนินการภายใน 24-48 ชั่วโมงหลังได้รับอนุมัติ เงินจะมาถึงผ่านวิธีการชำระเงินที่คุณเลือก"
       }
     },
-    "compareTableTitle": "เปรียบเทียบความท้าทายทั้งหมด"
+    "compareTableTitle": "เปรียบเทียบความท้าทายทั้งหมด",
+    "noChallenges": "ไม่มีความท้าทาย"
   },
   "scalingPlan": {
     "badge": "ศักยภาพการเติบโตไม่จำกัด",

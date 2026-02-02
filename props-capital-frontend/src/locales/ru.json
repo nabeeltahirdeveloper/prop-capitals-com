@@ -1,11 +1,11 @@
 {
-    "common": {
-      "loading": "Загрузка...",
-      "url": "URL",
-      "dismiss": "Закрыть",
-      "allPlatforms": "Все платформы"
-    },
-    "home": {
+  "common": {
+    "loading": "Загрузка...",
+    "url": "URL",
+    "dismiss": "Закрыть",
+    "allPlatforms": "Все платформы"
+  },
+  "home": {
     "hero": {
       "badge": "Нам доверяют более 15 000 трейдеров по всему миру",
       "title": "Торгуйте",
@@ -608,6 +608,11 @@
     "allRulesCompliant": "Все правила соблюдены",
     "goodStanding": "Ваш аккаунт находится в хорошем состоянии и соответствует всем правилам челленджа",
     "active": "Активно",
+    "accountFailed": "Аккаунт не пройден",
+    "failedDesc": "Ваш аккаунт был закрыт из-за нарушения правил",
+    "rulesAtRisk": "Правила под угрозой",
+    "atRiskDesc": "Одно или несколько правил приближаются к порогу нарушения",
+    "warning": "ПРЕДУПРЕЖДЕНИЕ",
     "phase1": "Фаза 1",
     "phase2": "Фаза 2",
     "funded": "Профинансирован",
@@ -841,9 +846,15 @@
     "couponCode": "Промокод",
     "enterCode": "Введите код",
     "apply": "Применить",
+    "validating": "Проверка...",
     "applied": "Применено",
     "off": "OFF",
+    "discountApplied": "Скидка применена: -{{discount}}%",
     "couponApplied": "Промокод {{code}} применён — скидка {{discount}}%!",
+    "couponSuccess": "Промокод применён",
+    "couponError": "Недействительный промокод",
+    "purchaseError": "Ошибка покупки",
+    "purchaseSuccessfulTitle": "Покупка успешна",
     "subtotal": "Промежуточный итог",
     "discount": "Скидка",
     "total": "Итого",
@@ -851,6 +862,12 @@
     "pay": "Оплатить",
     "payAmount": "Оплатить ${{amount}}",
     "secureEncryption": "Безопасное 256-bit SSL шифрование",
+    "minTradingDays": "Мин. торговых дней",
+    "maxTradingDays": "Макс. торговых дней",
+    "eaAllowed": "EA разрешён",
+    "newsTrading": "Торговля на новостях",
+    "weekendHolding": "Удержание на выходных",
+    "scalingEnabled": "Масштабирование",
     "platforms": {
       "MT5": {
         "name": "MetaTrader 5",
@@ -1034,10 +1051,13 @@
       "candles": "Свечи",
       "tf": "TF",
       "loadingData": "Загрузка данных графика...",
-      "updating": "Обновление..."
+      "updating": "Обновление...",
+      "switchToLineChart": "Переключить на линейный график",
+      "switchToCandlestickChart": "Переключить на свечной график"
     },
     "loadingAccounts": "Загрузка аккаунтов...",
     "watchlist": {
+      "title": "Просмотр цен",
       "live": "В сети",
       "offline": "Не в сети",
       "search": "Поиск...",
@@ -1130,7 +1150,7 @@
     "howItWorks": "Как это работает",
     "scaling": "Масштабирование",
     "rules": "Правила",
-    "faq": "FAQ",
+    "faq": "Часто задаваемые вопросы",
     "contact": "Контакты",
     "login": "Войти",
     "getStarted": "Начать",
@@ -1614,9 +1634,9 @@
       "subtitle": "Настройка параметров и интеграций",
       "saveChanges": "Сохранить изменения",
       "saveChange": "Сохранение ...",
-      
+
       "settingsSaved": "Настройки сохранены",
-      "settingsSaveDescription":"Настройки успешно сохранены.",
+      "settingsSaveDescription": "Настройки успешно сохранены.",
       "tabs": {
         "general": "Общие",
         "branding": "Брендинг",
@@ -2355,7 +2375,8 @@
         "a": "Вывод обрабатывается в течение 24–48 часов после одобрения и выплачивается выбранным способом."
       }
     },
-    "compareTableTitle": "Сравнить все челленджи"
+    "compareTableTitle": "Сравнить все челленджи",
+    "noChallenges": "Нет испытаний"
   },
   "scalingPlan": {
     "badge": "Неограниченный потенциал роста",
@@ -2837,4 +2858,4 @@
       "content": "По вопросам конфиденциальности пишите на support@the-bluehaven.com."
     }
   }
-}  
+}

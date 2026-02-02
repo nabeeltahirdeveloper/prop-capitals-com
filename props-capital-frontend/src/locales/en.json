@@ -8,7 +8,7 @@
   "home": {
     "hero": {
       "badge": "Trusted by 15,000+ traders worldwide",
-      "title": "Trade With",
+      "title": "Trade With ",
       "titleHighlight": "Our Capital",
       "subtitle": "Prove your skills, get funded up to $200,000, and keep up to 90% of your profits. No risk to your own capital.",
       "cta": "Start Your Challenge",
@@ -204,7 +204,7 @@
       "dailyLossLimit": "Daily Loss Limit",
       "overallDrawdown": "Overall Drawdown",
       "minTradingDays": "Min Trading Days",
-      "daysRemaining": "Days Remaining",
+      "daysRemaining": "Maximum Days",
       "tradingStyleRules": "Trading Style Rules",
       "newsTrading": "News Trading",
       "weekendHolding": "Weekend Holding",
@@ -612,6 +612,11 @@
     "allRulesCompliant": "All Rules Compliant",
     "goodStanding": "Your account is in good standing with all challenge rules",
     "active": "ACTIVE",
+    "accountFailed": "Account Failed",
+    "failedDesc": "Your account has been terminated due to rule violation",
+    "rulesAtRisk": "Rules At Risk",
+    "atRiskDesc": "One or more rules are approaching violation threshold",
+    "warning": "WARNING",
     "phase1": "Phase 1",
     "phase2": "Phase 2",
     "funded": "Funded",
@@ -844,9 +849,15 @@
     "couponCode": "Coupon Code",
     "enterCode": "Enter code",
     "apply": "Apply",
+    "validating": "Validating...",
     "applied": "applied",
     "off": "off",
     "couponApplied": "{{code}} applied - {{discount}}% off!",
+    "discountApplied": "{{discount}}% discount applied",
+    "couponSuccess": "Coupon Applied",
+    "couponError": "Invalid Coupon",
+    "purchaseError": "Purchase Failed",
+    "purchaseSuccessfulTitle": "Purchase Successful",
     "subtotal": "Subtotal",
     "discount": "Discount",
     "total": "Total",
@@ -855,6 +866,12 @@
     "payAmount": "Pay ${{amount}}",
     "secureEncryption": "Secure 256-bit SSL encryption",
     "noChallenges": "No Challenges",
+    "minTradingDays": "Min Trading Days",
+    "maxTradingDays": "Max Trading Days",
+    "eaAllowed": "EA Allowed",
+    "newsTrading": "News Trading",
+    "weekendHolding": "Weekend Holding",
+    "scalingEnabled": "Scaling",
     "platforms": {
       "MT5": {
         "name": "MetaTrader 5",
@@ -1038,10 +1055,13 @@
       "candles": "Candles",
       "tf": "TF",
       "loadingData": "Loading chart data...",
-      "updating": "Updating..."
+      "updating": "Updating...",
+      "switchToLineChart": "Switch to Line Chart",
+      "switchToCandlestickChart": "Switch to Candlestick Chart"
     },
     "loadingAccounts": "Loading accounts...",
     "watchlist": {
+      "title": "View Prices",
       "live": "Live",
       "reconnecting": "Reconnecting",
       "offline": "Offline",
@@ -1315,7 +1335,7 @@
       "stats": {
         "totalAccounts": "Total Accounts",
         "active": "Active",
-        "passed": "Passed",
+        "phase2": "Phase 2",
         "funded": "Funded",
         "failed": "Failed"
       },
@@ -1326,12 +1346,14 @@
         "allStatus": "All Status",
         "allPhases": "All Phases",
         "active": "Active",
-        "passed": "Passed",
-        "funded": "Funded",
-        "failed": "Failed",
-        "suspended": "Suspended",
+        "paused": "Paused",
+        "closed": "Closed",
+        "dailyLocked": "Daily Locked",
+        "disqualified": "Disqualified",
         "phase1": "Phase 1",
-        "phase2": "Phase 2"
+        "phase2": "Phase 2",
+        "funded": "Funded",
+        "failed": "Failed"
       },
       "table": {
         "account": "Account",
@@ -1347,7 +1369,9 @@
         "forcePass": "Force Pass",
         "forceFail": "Force Fail",
         "resetAccount": "Reset Account",
-        "moveToFunded": "Move to Funded"
+        "moveToFunded": "Move to Funded",
+        "pause": "Pause Account",
+        "resume": "Resume Account"
       },
       "dialog": {
         "title": "Account Details",
@@ -1371,6 +1395,46 @@
         "noDetails": "No account details available"
       },
       "emptyMessage": "No accounts found"
+    },
+    "riskMonitor": {
+      "title": "Risk Monitor",
+      "subtitle": "Real-time monitoring of trading account risk levels",
+      "refresh": "Refresh",
+      "searchPlaceholder": "Search by account number or trader ID...",
+      "riskLevels": {
+        "critical": "Critical Risk",
+        "high": "High Risk",
+        "medium": "Medium Risk",
+        "low": "Low Risk"
+      },
+      "riskBadges": {
+        "critical": "Critical",
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      },
+      "table": {
+        "account": "Account",
+        "balance": "Balance",
+        "equity": "Equity",
+        "dailyDD": "Daily DD",
+        "maxDD": "Max DD",
+        "riskLevel": "Risk Level",
+        "actions": "Actions"
+      },
+      "recentViolations": {
+        "title": "Recent Violations",
+        "account": "Account",
+        "noViolations": "No recent violations"
+      },
+      "severity": {
+        "fatal": "Fatal",
+        "warning": "Warning"
+      },
+      "confirmations": {
+        "emergencyClose": "Are you sure you want to pause this account? This will prevent further trading.",
+        "lockAccount": "Are you sure you want to lock this account? This will pause all trading activity."
+      }
     },
     "payouts": {
       "title": "Payout Management",
@@ -1623,7 +1687,7 @@
       "saveChanges": "Save Changes",
       "saveChange": "Saving ...",
       "settingsSaved": "Settings saved",
-      "settingsSaveDescription":"Settings have been saved successfully",
+      "settingsSaveDescription": "Settings have been saved successfully",
       "tabs": {
         "general": "General",
         "branding": "Branding",
@@ -1719,6 +1783,10 @@
         "title": "Recent Violations",
         "noViolations": "No recent violations",
         "account": "Account"
+      },
+      "severity": {
+        "fatal": "Fatal",
+        "warning": "Warning"
       }
     },
     "brokerServers": {
@@ -1726,8 +1794,10 @@
       "subtitle": "Manage trading platform connections",
       "addServer": "Add Server",
       "adding": "Adding...",
+      "confirmDelete": "Are you sure you want to delete this broker server?",
       "dialog": {
         "title": "Add Broker Server",
+        "description": "Configure a new broker server connection for trading accounts.",
         "serverName": "Server Name",
         "serverNamePlaceholder": "e.g., Prop Capitals MT5 Demo",
         "platform": "Platform",
@@ -1757,7 +1827,8 @@
       "card": {
         "platform": "Platform",
         "timezone": "Timezone",
-        "lastSync": "Last Sync"
+        "lastSync": "Last Sync",
+        "accounts": "Linked Accounts"
       },
       "actions": {
         "test": "Test"
@@ -1765,6 +1836,20 @@
       "empty": {
         "title": "No Broker Servers",
         "description": "Add your first broker server to start creating trading accounts"
+      },
+      "error": {
+        "title": "Failed to Load Broker Servers",
+        "description": "An error occurred while loading broker servers",
+        "retry": "Retry"
+      },
+      "toast": {
+        "createSuccess": "Broker server added successfully",
+        "createError": "Failed to add broker server",
+        "deleteSuccess": "Broker server deleted successfully",
+        "deleteError": "Failed to delete broker server",
+        "connectionSuccess": "Connection test successful",
+        "connectionFailed": "Connection test failed",
+        "connectionError": "Failed to test connection"
       }
     },
     "scaling": {
@@ -2362,7 +2447,8 @@
         "a": "Payouts are processed within 24-48 hours after approval. The funds arrive via your chosen payment method."
       }
     },
-    "compareTableTitle": "Compare All Challenges"
+    "compareTableTitle": "Compare All Challenges",
+    "noChallenges": "No Challenges Available"
   },
   "scalingPlan": {
     "badge": "Unlimited Growth Potential",

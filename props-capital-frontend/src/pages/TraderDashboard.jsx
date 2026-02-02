@@ -111,7 +111,8 @@ export default function TraderDashboard() {
     enabled: !!user?.userId,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-    refetchInterval: 30000, // Poll every 30 seconds to catch closed trades and update metrics
+    refetchInterval: 60000, // Poll every 60 seconds to reduce server load
+    staleTime: 30000, // Consider data fresh for 30 seconds
     retry: false,
   });
 
@@ -129,34 +130,54 @@ export default function TraderDashboard() {
     },
     enabled: !!user?.userId,
     retry: false,
-    refetchInterval: 5000, // Refetch every 5 seconds for real-time updates
-
-    select: (data) =>
-      [...data].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)),
+    refetchInterval: 30000, // Refetch every 30 seconds to reduce server load
+    staleTime: 15000, // Consider data fresh for 15 seconds
   });
 
-  // Mark notification as read mutation
+  // Mark notification as read mutation with proper optimistic update
   const markAsReadMutation = useMutation({
     mutationFn: (id) => markNotificationAsRead(id),
-    onSuccess: (_, id) => {
-      // Optimistically update the cache - mark notification as read
+    // Optimistic update BEFORE the mutation runs
+    onMutate: async (id) => {
+      // Cancel any outgoing refetches to avoid overwriting optimistic update
+      await queryClient.cancelQueries({
+        queryKey: ["notifications", user?.userId],
+      });
+
+      // Snapshot the previous value
+      const previousNotifications = queryClient.getQueryData([
+        "notifications",
+        user?.userId,
+      ]);
+
+      // Optimistically update to the new value
       queryClient.setQueryData(
         ["notifications", user?.userId],
         (oldData = []) => {
           return oldData.map((n) => (n.id === id ? { ...n, read: true } : n));
         },
       );
-      // Invalidate and refetch to ensure consistency with backend
-      queryClient.invalidateQueries({
-        queryKey: ["notifications", user?.userId],
-      });
+
+      // Return context with previous value for rollback
+      return { previousNotifications };
     },
-    onError: (error) => {
+    onError: (error, id, context) => {
       console.error("Failed to mark notification as read:", error);
-      // Revert optimistic update on error by invalidating cache
-      queryClient.invalidateQueries({
-        queryKey: ["notifications", user?.userId],
-      });
+      // Rollback to previous value on error
+      if (context?.previousNotifications) {
+        queryClient.setQueryData(
+          ["notifications", user?.userId],
+          context.previousNotifications,
+        );
+      }
+    },
+    onSettled: () => {
+      // Refetch after error or success to ensure consistency (delayed to avoid flicker)
+      setTimeout(() => {
+        queryClient.invalidateQueries({
+          queryKey: ["notifications", user?.userId],
+        });
+      }, 1000);
     },
   });
 
@@ -174,6 +195,7 @@ export default function TraderDashboard() {
     },
     enabled: !!user?.userId,
     retry: false,
+    staleTime: 60000, // Payouts don't change often, cache for 1 minute
   });
 
   // Get payout statistics for next payout date
@@ -190,6 +212,7 @@ export default function TraderDashboard() {
     },
     enabled: !!user?.userId,
     retry: false,
+    staleTime: 60000, // Statistics don't change often, cache for 1 minute
   });
 
   // Map backend accounts to display format
@@ -206,73 +229,105 @@ export default function TraderDashboard() {
       CLOSED: "closed",
     };
 
-    const challenge = account.challenge || {};
-    const initialBalance = account.initialBalance || challenge.accountSize || 0;
-    const balance = account.balance || initialBalance;
-    const equity = account.equity || balance;
+    const challenge = account?.challenge || {};
+    const initialBalance =
+      Number(account?.initialBalance) || Number(challenge?.accountSize) || 0;
+    const balance = Number(account?.balance) || initialBalance;
+    const equity = Number(account?.equity) || balance;
+    const maxEquityToDate = Number(account?.maxEquityToDate) || initialBalance;
+
+    // Calculate profit percent from initial balance
     const profitPercent =
       initialBalance > 0
         ? ((equity - initialBalance) / initialBalance) * 100
         : 0;
 
-    // Calculate drawdowns (approximations since we don't have full account details)
+    // Calculate overall drawdown from maxEquityToDate (peak equity) - matches backend calculation
+    // This is the industry standard: drawdown from highest equity ever reached
     const overallDrawdownPercent =
-      equity < initialBalance && initialBalance > 0
-        ? ((initialBalance - equity) / initialBalance) * 100
+      maxEquityToDate > 0 && equity < maxEquityToDate
+        ? ((maxEquityToDate - equity) / maxEquityToDate) * 100
         : 0;
+
+    // Calculate daily drawdown from today's start balance
+    // If todayStartEquity is available from backend, use it; otherwise fall back to balance
+    const todayStartEquity = Number(account?.todayStartEquity) || balance;
     const dailyDrawdownPercent =
-      equity < balance && balance > 0
-        ? ((balance - equity) / balance) * 100
+      todayStartEquity > 0 && equity < todayStartEquity
+        ? ((todayStartEquity - equity) / todayStartEquity) * 100
         : 0;
 
     return {
-      id: account.id,
-      account_number: account.brokerLogin || account.id.slice(0, 8),
-      platform: account.platform || challenge.platform || "MT5",
+      id: account?.id,
+      account_number: account?.brokerLogin || account?.id?.slice(0, 8) || "N/A",
+      platform: account?.platform || challenge?.platform || "MT5",
       status:
-        statusMap[account.status] || account.status?.toLowerCase() || "active",
+        statusMap[account?.status] ||
+        account?.status?.toLowerCase() ||
+        "active",
       current_phase:
-        phaseMap[account.phase] || account.phase?.toLowerCase() || "phase1",
+        phaseMap[account?.phase] || account?.phase?.toLowerCase() || "phase1",
       initial_balance: initialBalance,
       current_balance: balance,
       current_equity: equity,
       current_profit_percent: profitPercent,
       daily_drawdown_percent: dailyDrawdownPercent,
       overall_drawdown_percent: overallDrawdownPercent,
-      trading_days_count: account.tradingDaysCount || 0,
-      violation_reason: account.lastViolationMessage,
-      challenge_id: account.challengeId,
+      trading_days_count: Number(account?.tradingDaysCount) || 0,
+      violation_reason: account?.lastViolationMessage,
+      challenge_id: account?.challengeId,
       challenge: challenge,
+      createdAt: account?.createdAt,
     };
   });
 
-  // Map notifications to display format
-  // Show ALL notifications (both read and unread), sorted by date (newest first)
+  // Map notifications to display format; sort unread first, then by date (newest first)
   const allNotifications = (notifications || [])
     .map((notif) => {
       const translated = translateNotification(notif.title, notif.body, t);
+
+      // Determine notification type based on content/category
+      let type = "info";
+      const titleLower = (notif.title || "").toLowerCase();
+      const categoryLower = (notif.category || "").toLowerCase();
+
+      if (
+        titleLower.includes("violation") ||
+        titleLower.includes("failed") ||
+        titleLower.includes("breach") ||
+        categoryLower === "violation"
+      ) {
+        type = "warning";
+      } else if (
+        titleLower.includes("passed") ||
+        titleLower.includes("funded") ||
+        titleLower.includes("approved") ||
+        titleLower.includes("success") ||
+        categoryLower === "success"
+      ) {
+        type = "success";
+      } else if (titleLower.includes("payout") || categoryLower === "payout") {
+        type = "success";
+      }
+
       return {
         id: notif.id,
         title: translated.title,
         message: translated.message,
-        type: "info", // Default type, could be enhanced based on notification content
+        type: type,
         created_date: notif.createdAt,
         is_read: notif.read || false,
       };
     })
-    .sort(
-      (a, b) =>
-        new Date(b.created_date).getTime() - new Date(a.created_date).getTime(),
-    );
-
-  // Show only 2 latest notifications in dashboard
-  // Show only 2 latest notifications in dashboard, unread first
-  const displayNotifications = allNotifications
     .sort((a, b) => {
-      if (a.is_read !== b.is_read) return a.is_read - b.is_read;
-      return new Date(b.created_date) - new Date(a.created_date);
-    })
-    .slice(0, 2);
+      if (a.is_read !== b.is_read) return a.is_read ? 1 : -1; // unread first
+      return (
+        new Date(b.created_date).getTime() - new Date(a.created_date).getTime()
+      );
+    });
+
+  // Dashboard: show 2 items — unread on top, or latest 2 when no unread
+  const displayNotifications = allNotifications.slice(0, 2);
   const hasMoreNotifications = allNotifications.length > 2;
 
   const activeAccounts = displayAccounts.filter(
@@ -289,69 +344,69 @@ export default function TraderDashboard() {
   const aggregatedMetrics =
     activeAccounts.length > 0
       ? (() => {
-          // Sum all balances and equity
-          const totalBalance = activeAccounts.reduce(
-            (sum, acc) => sum + (acc.current_balance || 0),
-            0,
-          );
-          const totalEquity = activeAccounts.reduce(
-            (sum, acc) => sum + (acc.current_equity || 0),
-            0,
-          );
-          const totalInitialBalance = activeAccounts.reduce(
-            (sum, acc) => sum + (acc.initial_balance || 0),
-            0,
-          );
+        // Sum all balances and equity
+        const totalBalance = activeAccounts.reduce(
+          (sum, acc) => sum + (acc.current_balance || 0),
+          0,
+        );
+        const totalEquity = activeAccounts.reduce(
+          (sum, acc) => sum + (acc.current_equity || 0),
+          0,
+        );
+        const totalInitialBalance = activeAccounts.reduce(
+          (sum, acc) => sum + (acc.initial_balance || 0),
+          0,
+        );
 
-          // Calculate weighted average profit percentage
-          const totalProfit = totalEquity - totalInitialBalance;
-          const overallProfitPercent =
-            totalInitialBalance > 0
-              ? (totalProfit / totalInitialBalance) * 100
-              : 0;
+        // Calculate weighted average profit percentage
+        const totalProfit = totalEquity - totalInitialBalance;
+        const overallProfitPercent =
+          totalInitialBalance > 0
+            ? (totalProfit / totalInitialBalance) * 100
+            : 0;
 
-          // Calculate average daily drawdown (weighted by balance)
-          const weightedDailyDD =
-            activeAccounts.reduce((sum, acc) => {
-              const weight = acc.current_balance || acc.initial_balance || 0;
-              return sum + (acc.daily_drawdown_percent || 0) * weight;
-            }, 0) / (totalBalance || 1);
+        // Calculate average daily drawdown (weighted by balance)
+        const weightedDailyDD =
+          activeAccounts.reduce((sum, acc) => {
+            const weight = acc.current_balance || acc.initial_balance || 0;
+            return sum + (acc.daily_drawdown_percent || 0) * weight;
+          }, 0) / (totalBalance || 1);
 
-          // Get max daily drawdown limit (use the most restrictive one)
-          const maxDailyDrawdown = Math.min(
-            ...activeAccounts.map(
-              (acc) => acc.challenge?.dailyDrawdownPercent || 5,
-            ),
-          );
+        // Get max daily drawdown limit (use the most restrictive one)
+        const maxDailyDrawdown = Math.min(
+          ...activeAccounts.map(
+            (acc) => acc.challenge?.dailyDrawdownPercent || 5,
+          ),
+        );
 
-          // Calculate DD remaining
-          const ddRemaining = Math.max(0, maxDailyDrawdown - weightedDailyDD);
+        // Calculate DD remaining
+        const ddRemaining = Math.max(0, maxDailyDrawdown - weightedDailyDD);
 
-          // Get average trading days and min trading days
-          const avgTradingDays =
-            activeAccounts.length > 0
-              ? Math.round(
-                  activeAccounts.reduce(
-                    (sum, acc) => sum + (acc.trading_days_count || 0),
-                    0,
-                  ) / activeAccounts.length,
-                )
-              : 0;
-          const minTradingDays = Math.max(
-            ...activeAccounts.map((acc) => acc.challenge?.minTradingDays || 4),
-          );
+        // Get average trading days and min trading days
+        const avgTradingDays =
+          activeAccounts.length > 0
+            ? Math.round(
+              activeAccounts.reduce(
+                (sum, acc) => sum + (acc.trading_days_count || 0),
+                0,
+              ) / activeAccounts.length,
+            )
+            : 0;
+        const minTradingDays = Math.max(
+          ...activeAccounts.map((acc) => acc.challenge?.minTradingDays || 4),
+        );
 
-          return {
-            balance: totalBalance,
-            equity: totalEquity,
-            profitPercent: overallProfitPercent,
-            dailyDrawdown: weightedDailyDD,
-            ddRemaining: ddRemaining,
-            tradingDays: avgTradingDays,
-            minTradingDays: minTradingDays,
-            accountCount: activeAccounts.length,
-          };
-        })()
+        return {
+          balance: totalBalance,
+          equity: totalEquity,
+          profitPercent: overallProfitPercent,
+          dailyDrawdown: weightedDailyDD,
+          ddRemaining: ddRemaining,
+          tradingDays: avgTradingDays,
+          minTradingDays: minTradingDays,
+          accountCount: activeAccounts.length,
+        };
+      })()
       : null;
 
   // Set default selected account for rules panel
@@ -477,55 +532,51 @@ export default function TraderDashboard() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-4">
           {displayAccounts.slice(0, 3).map((account) => (
             <Card
               key={account.id}
-              className={`bg-slate-900 border-slate-800 p-5 hover:border-slate-700 transition-colors ${account.current_phase === "failed" ? "opacity-70" : ""}`}
+              className={`bg-slate-900 border-slate-800 p-4 sm:p-5 hover:border-slate-700 transition-colors ${account.current_phase === "failed" ? "opacity-70" : ""}`}
             >
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-white font-semibold">
+              <div className="flex items-start justify-between gap-2 mb-3 sm:mb-4">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className="text-white font-semibold text-sm sm:text-base">
                       ${account.initial_balance?.toLocaleString()}
                     </span>
                     <Badge variant="default" className="text-xs">
                       {account.platform}
                     </Badge>
                   </div>
-                  <p className="text-sm text-slate-400">
+                  <p className="text-xs sm:text-sm text-slate-400 truncate">
                     #{account.account_number}
                   </p>
                 </div>
-                <div className="flex flex-col items-end gap-1">
+                <div className="flex flex-col items-end gap-1 flex-shrink-0">
                   <StatusBadge status={account.current_phase} />
                   <StatusBadge status={account.status} />
                 </div>
               </div>
 
               {/* Progress Bar */}
-              <div className="mb-4">
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-slate-400">
+              <div className="mb-3 sm:mb-4">
+                <div className="flex justify-between text-xs sm:text-sm mb-1 gap-2">
+                  <span className="text-slate-400 truncate">
                     {t("dashboard.accounts.profitProgress")}
                   </span>
                   <span
-                    className={
-                      account.current_profit_percent >= 0
-                        ? "text-emerald-400"
-                        : "text-red-400"
-                    }
+                    className={`flex-shrink-0 ${account.current_profit_percent >= 0 ? "text-emerald-400" : "text-red-400"}`}
                   >
                     {account.current_profit_percent >= 0 ? "+" : ""}
                     {account.current_profit_percent?.toFixed(2)}%
                   </span>
                 </div>
                 <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                  {account.challenge && (
+                  {account.challenge && account.current_profit_percent > 0 && (
                     <div
-                      className={`h-full rounded-full ${account.current_profit_percent >= 0 ? "bg-emerald-500" : "bg-red-500"}`}
+                      className="h-full rounded-full bg-emerald-500"
                       style={{
-                        width: `${Math.min((Math.abs(account.current_profit_percent) / (account.challenge.phase1TargetPercent || 8)) * 100, 100)}%`,
+                        width: `${Math.min((account.current_profit_percent / (account.challenge.phase1TargetPercent || 8)) * 100, 100)}%`,
                       }}
                     />
                   )}
@@ -537,24 +588,24 @@ export default function TraderDashboard() {
               </div>
 
               {/* Quick Metrics */}
-              <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-4">
                 <div className="bg-slate-800/50 rounded-lg p-2">
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-400 truncate">
                     {t("dashboard.accounts.dailyDD")}
                   </p>
                   <p
-                    className={`font-medium ${account.daily_drawdown_percent > (account.challenge?.dailyDrawdownPercent || 5) * 0.8 ? "text-amber-400" : "text-white"}`}
+                    className={`text-sm sm:text-base font-medium ${account.daily_drawdown_percent > (account.challenge?.dailyDrawdownPercent || 5) * 0.8 ? "text-amber-400" : "text-white"}`}
                   >
                     {account.daily_drawdown_percent?.toFixed(2)}% /{" "}
                     {account.challenge?.dailyDrawdownPercent || 5}%
                   </p>
                 </div>
                 <div className="bg-slate-800/50 rounded-lg p-2">
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-400 truncate">
                     {t("dashboard.accounts.overallDD")}
                   </p>
                   <p
-                    className={`font-medium ${account.overall_drawdown_percent > (account.challenge?.overallDrawdownPercent || 10) * 0.8 ? "text-red-400" : "text-white"}`}
+                    className={`text-sm sm:text-base font-medium ${account.overall_drawdown_percent > (account.challenge?.overallDrawdownPercent || 10) * 0.8 ? "text-red-400" : "text-white"}`}
                   >
                     {account.overall_drawdown_percent?.toFixed(2)}% /{" "}
                     {account.challenge?.overallDrawdownPercent || 10}%
@@ -564,8 +615,8 @@ export default function TraderDashboard() {
 
               {account.current_phase === "failed" &&
                 account.violation_reason && (
-                  <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-2 mb-4">
-                    <p className="text-xs text-red-400">
+                  <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-2 mb-3 sm:mb-4">
+                    <p className="text-xs text-red-400 line-clamp-2">
                       {translateViolationMessage(account.violation_reason, t)}
                     </p>
                   </div>
@@ -578,9 +629,10 @@ export default function TraderDashboard() {
                 >
                   <Button
                     variant="outline"
-                    className="w-full border-slate-700 hover:bg-slate-800 hover:text-white"
+                    size="sm"
+                    className="w-full border-slate-700 hover:bg-slate-800 hover:text-white text-xs sm:text-sm"
                   >
-                    <Eye className="w-4 h-4 mr-2" />
+                    <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
                     {t("dashboard.accounts.details")}
                   </Button>
                 </Link>
@@ -589,8 +641,11 @@ export default function TraderDashboard() {
                     to={`${createPageUrl("TradingTerminal")}?accountId=${account.id}`}
                     className="flex-1"
                   >
-                    <Button className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600">
-                      <Activity className="w-4 h-4 mr-2" />
+                    <Button
+                      size="sm"
+                      className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-xs sm:text-sm"
+                    >
+                      <Activity className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
                       {t("dashboard.accounts.trade")}
                     </Button>
                   </Link>
@@ -617,50 +672,58 @@ export default function TraderDashboard() {
                   : t("dashboard.metrics.accounts")}
               </Badge>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-              <div className="bg-slate-800/50 rounded-xl p-4 text-center">
-                <DollarSign className="w-6 h-6 text-emerald-400 mx-auto mb-2" />
-                <p className="text-xl sm:text-2xl font-bold text-white">
-                  $
-                  {aggregatedMetrics.balance.toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </p>
-                <p className="text-xs text-slate-400">
-                  {t("dashboard.metrics.currentBalance")}
-                </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
+              <div className="bg-slate-800/50 rounded-xl p-4 text-center flex flex-col justify-between min-h-[120px]">
+                <DollarSign className="w-6 h-6 text-emerald-400 mx-auto" />
+                <div>
+                  <p className="text-lg sm:text-xl font-bold text-white truncate">
+                    $
+                    {aggregatedMetrics.balance.toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    {t("dashboard.metrics.currentBalance")}
+                  </p>
+                </div>
               </div>
-              <div className="bg-slate-800/50 rounded-xl p-4 text-center">
-                <Target className="w-6 h-6 text-cyan-400 mx-auto mb-2" />
-                <p
-                  className={`text-xl sm:text-2xl font-bold ${aggregatedMetrics.profitPercent >= 0 ? "text-emerald-400" : "text-red-400"}`}
-                >
-                  {aggregatedMetrics.profitPercent >= 0 ? "+" : ""}
-                  {aggregatedMetrics.profitPercent.toFixed(2)}%
-                </p>
-                <p className="text-xs text-slate-400">
-                  {t("dashboard.metrics.profitThisCycle")}
-                </p>
+              <div className="bg-slate-800/50 rounded-xl p-4 text-center flex flex-col justify-between min-h-[120px]">
+                <Target className="w-6 h-6 text-cyan-400 mx-auto" />
+                <div>
+                  <p
+                    className={`text-lg sm:text-xl font-bold ${aggregatedMetrics.profitPercent >= 0 ? "text-emerald-400" : "text-red-400"}`}
+                  >
+                    {aggregatedMetrics.profitPercent >= 0 ? "+" : ""}
+                    {aggregatedMetrics.profitPercent.toFixed(2)}%
+                  </p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    {t("dashboard.metrics.profitThisCycle")}
+                  </p>
+                </div>
               </div>
-              <div className="bg-slate-800/50 rounded-xl p-4 text-center">
-                <Shield className="w-6 h-6 text-amber-400 mx-auto mb-2" />
-                <p className="text-xl sm:text-2xl font-bold text-white">
-                  {aggregatedMetrics.ddRemaining.toFixed(2)}%
-                </p>
-                <p className="text-xs text-slate-400">
-                  {t("dashboard.metrics.ddRemaining")}
-                </p>
+              <div className="bg-slate-800/50 rounded-xl p-4 text-center flex flex-col justify-between min-h-[120px]">
+                <Shield className="w-6 h-6 text-amber-400 mx-auto" />
+                <div>
+                  <p className="text-lg sm:text-xl font-bold text-white">
+                    {aggregatedMetrics.ddRemaining.toFixed(2)}%
+                  </p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    {t("dashboard.metrics.ddRemaining")}
+                  </p>
+                </div>
               </div>
-              <div className="bg-slate-800/50 rounded-xl p-4 text-center">
-                <Calendar className="w-6 h-6 text-purple-400 mx-auto mb-2" />
-                <p className="text-xl sm:text-2xl font-bold text-white">
-                  {aggregatedMetrics.tradingDays}/
-                  {aggregatedMetrics.minTradingDays}
-                </p>
-                <p className="text-xs text-slate-400">
-                  {t("dashboard.metrics.tradingDays")}
-                </p>
+              <div className="bg-slate-800/50 rounded-xl p-4 text-center flex flex-col justify-between min-h-[120px]">
+                <Calendar className="w-6 h-6 text-purple-400 mx-auto" />
+                <div>
+                  <p className="text-lg sm:text-xl font-bold text-white">
+                    {aggregatedMetrics.tradingDays}/
+                    {aggregatedMetrics.minTradingDays}
+                  </p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    {t("dashboard.metrics.tradingDays")}
+                  </p>
+                </div>
               </div>
             </div>
             {fundedAccounts.length > 0 &&
@@ -694,28 +757,25 @@ export default function TraderDashboard() {
         )}
 
         {/* Notifications */}
-        <Card className="bg-slate-900 border-slate-800 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="sm:text-lg font-semibold text-white flex items-center gap-2">
-              <Bell className="w-5 h-5 text-emerald-400" />
+        <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <h3 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2">
+              <Bell className="w-5 h-5 text-emerald-400 flex-shrink-0" />
               {t("dashboard.notifications.title")}
             </h3>
-            <div className="flex items-center gap-2">
-              <Badge className="bg-slate-700/50 text-slate-300 border-slate-600 pointer-events-none sm:px-2 px-1">
-                {notifications.length}{" "}
-                {notifications.length === 1
-                  ? t("dashboard.notifications.notification")
-                  : t("dashboard.notifications.notifications")}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <Badge className="bg-slate-700/50 text-slate-300 border-slate-600 pointer-events-none text-xs px-2 py-0.5">
+                {notifications.length}
               </Badge>
               {notifications.filter((n) => !n.read).length > 0 && (
-                <Badge className="bg-emerald-500/20 text-emerald-400 pointer-events-none sm:px-2 px-1">
+                <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 pointer-events-none text-xs px-2 py-0.5">
                   {notifications.filter((n) => !n.read).length}{" "}
                   {t("notifications.unread")}
                 </Badge>
               )}
             </div>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {displayNotifications.length === 0 ? (
               <div className="text-center text-slate-400 py-4 text-sm">
                 {t("dashboard.notifications.noNotifications")}
@@ -724,58 +784,55 @@ export default function TraderDashboard() {
               displayNotifications.map((notif) => (
                 <div
                   key={notif.id}
-                  className={`p-3 rounded-lg border ${
-                    notif.type === "warning"
-                      ? "bg-amber-500/10 border-amber-500/30"
-                      : notif.type === "success"
-                        ? "bg-emerald-500/10 border-emerald-500/30"
-                        : "bg-slate-800/50 border-slate-700"
-                  } ${!notif.is_read ? "ring-1 ring-emerald-500/30" : ""}`}
+                  className={`p-3 rounded-lg border ${notif.type === "warning"
+                    ? "bg-amber-500/10 border-amber-500/30"
+                    : notif.type === "success"
+                      ? "bg-emerald-500/10 border-emerald-500/30"
+                      : "bg-slate-800/50 border-slate-700"
+                    } ${!notif.is_read ? "ring-1 ring-emerald-500/30" : ""}`}
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-start gap-2 flex-1">
-                      {notif.type === "warning" ? (
-                        <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
-                      ) : notif.type === "success" ? (
-                        <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
-                      ) : (
-                        <AlertCircle className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="text-white text-sm font-medium">
+                  <div className="flex items-start gap-2">
+                    {notif.type === "warning" ? (
+                      <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
+                    ) : notif.type === "success" ? (
+                      <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <p className="text-white text-sm font-medium truncate">
                             {notif.title}
                           </p>
                           {!notif.is_read && (
-                            <span className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0" />
+                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full flex-shrink-0" />
                           )}
                         </div>
-                        <p className="text-slate-400 text-xs">
-                          {notif.message}
-                        </p>
+                        {!notif.is_read && (
+                          <button
+                            className="h-5 w-5 rounded-full bg-slate-700/50 hover:bg-emerald-500/20 flex items-center justify-center text-slate-400 hover:text-emerald-400 transition-colors flex-shrink-0"
+                            onClick={() => markAsReadMutation.mutate(notif.id)}
+                            title={t("notifications.markAsRead")}
+                          >
+                            <Check className="w-3 h-3" />
+                          </button>
+                        )}
                       </div>
+                      <p className="text-slate-400 text-xs mt-0.5 line-clamp-2">
+                        {notif.message}
+                      </p>
                     </div>
-                    {!notif.is_read && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 text-slate-400  flex-shrink-0"
-                        onClick={() => markAsReadMutation.mutate(notif.id)}
-                        title={t("notifications.markAsRead")}
-                      >
-                        <Check className="w-4 h-4" />
-                      </Button>
-                    )}
                   </div>
                 </div>
               ))
             )}
             {hasMoreNotifications && (
-              <div className="pt-2 border-t border-slate-800">
+              <div className="pt-2 border-t border-slate-800 mt-3">
                 <Link to={createPageUrl("Notifications")}>
                   <Button
                     variant="outline"
-                    className="w-full border-slate-700 bg-slate-800/50 text-white hover:bg-slate-700 hover:text-white"
+                    className="w-full border-slate-700 bg-slate-800/50 text-white hover:bg-slate-700 hover:text-white text-sm"
                   >
                     {t("dashboard.notifications.seeMore")}
                   </Button>
@@ -789,7 +846,7 @@ export default function TraderDashboard() {
       {/* Rule Compliance Section */}
       {activeAccounts.length > 0 && (
         <div>
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
             <h2 className="text-md sm:text-lg font-semibold text-white">
               {t("dashboard.rules.title")}
             </h2>
@@ -798,7 +855,7 @@ export default function TraderDashboard() {
                 value={selectedAccountForRules}
                 onValueChange={setSelectedAccountForRules}
               >
-                <SelectTrigger className="w-[150px] sm:w-[280px] bg-slate-800 border-slate-700 text-white">
+                <SelectTrigger className="w-full sm:w-[320px] md:w-[380px] bg-slate-800 border-slate-700 text-white">
                   <SelectValue
                     placeholder={t("dashboard.rules.selectAccount")}
                   />
@@ -825,19 +882,14 @@ export default function TraderDashboard() {
                           focus:bg-slate-700
                         "
                       >
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5 sm:gap-2 text-sm">
                           <span className="font-medium text-white">
                             ${acc.initial_balance?.toLocaleString()}
                           </span>
-                          <span className="text-slate-400">•</span>
-                          <span className="text-slate-400 text-xs">
-                            {acc.platform}
-                          </span>
-                          <span className="text-slate-400">•</span>
-                          <span className="text-xs text-slate-400">
-                            {t("dashboard.rules.phase")}:
-                          </span>
-                          <span className="text-xs text-emerald-400 ">
+                          <span className="text-slate-500">•</span>
+                          <span className="text-slate-300">{acc.platform}</span>
+                          <span className="text-slate-500">•</span>
+                          <span className="text-emerald-400">
                             {phaseTranslations[acc.current_phase] ||
                               acc.current_phase}
                           </span>
@@ -852,20 +904,27 @@ export default function TraderDashboard() {
 
           {selectedAccountData &&
             (() => {
-              // Calculate days elapsed from account creation
-              const accountFromBackend = accounts.find(
-                (acc) => acc.id === selectedAccountData.id,
-              );
-              const accountCreatedAt =
-                accountFromBackend?.createdAt ||
-                accountFromBackend?.created_date;
-              const daysElapsed = accountCreatedAt
-                ? Math.floor(
-                    (new Date().getTime() -
-                      new Date(accountCreatedAt).getTime()) /
-                      (1000 * 60 * 60 * 24),
-                  )
-                : 0;
+              // Calculate days elapsed from account creation using UTC dates to avoid timezone issues
+              const accountCreatedAt = selectedAccountData.createdAt;
+              let daysElapsed = 0;
+              if (accountCreatedAt) {
+                const createdDate = new Date(accountCreatedAt);
+                const now = new Date();
+                // Use UTC dates to avoid timezone inconsistencies
+                const createdUTC = Date.UTC(
+                  createdDate.getFullYear(),
+                  createdDate.getMonth(),
+                  createdDate.getDate(),
+                );
+                const nowUTC = Date.UTC(
+                  now.getFullYear(),
+                  now.getMonth(),
+                  now.getDate(),
+                );
+                daysElapsed = Math.floor(
+                  (nowUTC - createdUTC) / (1000 * 60 * 60 * 24),
+                );
+              }
 
               return (
                 <ChallengeRulesPanel
@@ -910,6 +969,9 @@ export default function TraderDashboard() {
                       selectedChallenge?.maxTradingDays ||
                       selectedChallenge?.max_trading_days ||
                       30,
+                    profitSplit: selectedChallenge?.profitSplit || 80,
+                    leverage: selectedChallenge?.leverage || 100,
+                    maxLot: selectedChallenge?.maxLot || 10,
                   }}
                 />
               );
@@ -918,59 +980,71 @@ export default function TraderDashboard() {
       )}
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-3 md:gap-4">
         {[
           {
             icon: Activity,
             title: t("dashboard.quickActions.tradingTerminal"),
             desc: t("dashboard.quickActions.openTrading"),
             page: "TradingTerminal",
-            color: "blue",
+            bgClass: "bg-blue-500/20",
+            textClass: "text-blue-400",
+            hoverClass: "hover:border-blue-500/50",
           },
           {
             icon: TrendingUp,
             title: t("dashboard.quickActions.myAccounts"),
             desc: t("dashboard.quickActions.viewAllAccounts"),
             page: "MyAccounts",
-            color: "emerald",
+            bgClass: "bg-emerald-500/20",
+            textClass: "text-emerald-400",
+            hoverClass: "hover:border-emerald-500/50",
           },
           {
             icon: BarChart3,
             title: t("dashboard.quickActions.analytics"),
             desc: t("dashboard.quickActions.performanceStats"),
             page: "Analytics",
-            color: "cyan",
+            bgClass: "bg-cyan-500/20",
+            textClass: "text-cyan-400",
+            hoverClass: "hover:border-cyan-500/50",
           },
           {
             icon: Wallet,
             title: t("dashboard.quickActions.payouts"),
             desc: t("dashboard.quickActions.requestPayouts"),
             page: "TraderPayouts",
-            color: "purple",
+            bgClass: "bg-purple-500/20",
+            textClass: "text-purple-400",
+            hoverClass: "hover:border-purple-500/50",
           },
           {
             icon: Award,
             title: t("dashboard.quickActions.scalingPlan"),
             desc: t("dashboard.quickActions.growthRoadmap"),
             page: "ScalingPlan",
-            color: "amber",
+            bgClass: "bg-amber-500/20",
+            textClass: "text-amber-400",
+            hoverClass: "hover:border-amber-500/50",
           },
         ].map((action, i) => (
-          <Link key={i} to={createPageUrl(action.page)}>
+          <Link key={i} to={createPageUrl(action.page)} className="h-full">
             <Card
-              className={`bg-slate-900 border-slate-800 p-3 sm:p-4 hover:border-${action.color}-500/50 transition-colors cursor-pointer group`}
+              className={`bg-slate-900 border-slate-800 p-3 sm:p-4 ${action.hoverClass} transition-colors cursor-pointer group h-full`}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 h-full">
                 <div
-                  className={`w-10 h-10 bg-${action.color}-500/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}
+                  className={`w-10 h-10 ${action.bgClass} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0`}
                 >
-                  <action.icon className={`w-5 h-5 text-${action.color}-400`} />
+                  <action.icon className={`w-5 h-5 ${action.textClass}`} />
                 </div>
-                <div>
-                  <p className="text-sm sm:text-base text-white font-medium">
+                <div className="min-w-0">
+                  <p className="text-sm sm:text-base text-white font-medium leading-tight">
                     {action.title}
                   </p>
-                  <p className="text-xs text-slate-400">{action.desc}</p>
+                  <p className="text-xs text-slate-400 leading-tight">
+                    {action.desc}
+                  </p>
                 </div>
               </div>
             </Card>

@@ -1,11 +1,11 @@
 {
-    "common": {
-      "loading": "Chargement...",
-      "url": "URL",
-      "dismiss": "Fermer",
-      "allPlatforms": "Toutes les plateformes"
-    },
-    "home": {
+  "common": {
+    "loading": "Chargement...",
+    "url": "URL",
+    "dismiss": "Fermer",
+    "allPlatforms": "Toutes les plateformes"
+  },
+  "home": {
     "hero": {
       "badge": "Fait confiance par plus de 15 000 traders dans le monde entier",
       "title": "Tradez",
@@ -170,6 +170,7 @@
       "title": "Respect des règles",
       "selectAccount": "Sélectionner un compte",
       "phase": "Phase",
+      
       "phase1": "Phase 1",
       "phase2": "Phase 2",
       "funded": "Financé",
@@ -608,6 +609,11 @@
     "allRulesCompliant": "Toutes les règles sont respectées",
     "goodStanding": "Votre compte est conforme à toutes les règles du challenge",
     "active": "Actif",
+    "accountFailed": "Compte échoué",
+    "failedDesc": "Votre compte a été résilié en raison d'une violation de règle",
+    "rulesAtRisk": "Règles à risque",
+    "atRiskDesc": "Une ou plusieurs règles approchent du seuil de violation",
+    "warning": "AVERTISSEMENT",
     "phase1": "Phase 1",
     "phase2": "Phase 2",
     "funded": "Financé",
@@ -818,7 +824,6 @@
     "orderSummary": "Récapitulatif de commande",
     "challenge": "Challenge",
     "platform": "Plateforme",
-    "noChallenges": "Aucun défi",
     "amountPaid": "Montant payé",
     "goToDashboard": "Aller au tableau de bord",
     "chooseChallenge": "Choisir un challenge",
@@ -841,9 +846,15 @@
     "couponCode": "Code promo",
     "enterCode": "Saisir le code",
     "apply": "Appliquer",
+    "validating": "Validation...",
     "applied": "Appliqué",
     "off": "OFF",
     "couponApplied": "{{code}} appliqué - {{discount}}% de réduction !",
+    "discountApplied": "{{discount}}% de réduction appliquée",
+    "couponSuccess": "Coupon appliqué",
+    "couponError": "Coupon invalide",
+    "purchaseError": "Échec de l'achat",
+    "purchaseSuccessfulTitle": "Achat réussi",
     "subtotal": "Sous-total",
     "discount": "Réduction",
     "total": "Total",
@@ -851,6 +862,13 @@
     "pay": "Payer",
     "payAmount": "Payer ${{amount}}",
     "secureEncryption": "Chiffrement SSL 256-bit sécurisé",
+    "noChallenges": "Aucun défi",
+    "minTradingDays": "Jours de trading minimum",
+    "maxTradingDays": "Jours de trading maximum",
+    "eaAllowed": "EA autorisé",
+    "newsTrading": "Trading de nouvelles",
+    "weekendHolding": "Maintien week-end",
+    "scalingEnabled": "Mise à l'échelle",
     "platforms": {
       "MT5": {
         "name": "MetaTrader 5",
@@ -1034,10 +1052,13 @@
       "candles": "Bougies",
       "tf": "TF",
       "loadingData": "Chargement des données du graphique...",
-      "updating": "Mise à jour..."
+      "updating": "Mise à jour...",
+      "switchToLineChart": "Passer au graphique en courbe",
+      "switchToCandlestickChart": "Passer au graphique en chandelier"
     },
     "loadingAccounts": "Chargement des comptes...",
     "watchlist": {
+      "title": "Voir les prix",
       "live": "En direct",
       "offline": "Hors ligne",
       "search": "Rechercher...",
@@ -1126,12 +1147,12 @@
   },
   "nav": {
     "home": "Accueil",
-    "challenges": "Challenges",
+    "challenges": "Défis",
     "howItWorks": "Comment ça marche",
-    "scaling": "Scaling",
+    "scaling": "Plan de croissance",
     "rules": "Règles",
-    "faq": "FAQ",
-    "contact": "Contact",
+    "faq": "Questions fréquentes",
+    "contact": "Nous contacter",
     "login": "Connexion",
     "getStarted": "Commencer",
     "dashboard": "Tableau de bord",
@@ -1615,7 +1636,7 @@
       "saveChanges": "Enregistrer les modifications",
       "saveChange": "Enregistrement de...",
       "settingsSaved": "Paramètres enregistrés",
-      "settingsSaveDescription":"Les paramètres ont été enregistrés avec succès.",
+      "settingsSaveDescription": "Les paramètres ont été enregistrés avec succès.",
       "tabs": {
         "general": "Général",
         "branding": "Branding",
@@ -2354,7 +2375,8 @@
         "a": "Les retraits sont traités sous 24 à 48 heures après approbation et envoyés via la méthode choisie."
       }
     },
-    "compareTableTitle": "Comparer tous les challenges"
+    "compareTableTitle": "Comparer tous les challenges",
+    "noChallenges": "Aucun défi"
   },
   "scalingPlan": {
     "badge": "Potentiel de croissance illimité",
@@ -2703,7 +2725,7 @@
       "subtitle": "Une fois les règles comprises, choisissez un challenge et démarrez votre parcours vers le financement.",
       "viewChallenges": "Voir les challenges"
     },
-    "important": "Important",
+    "important": "Importante",
     "phase1": "Phase 1",
     "phase2": "Phase 2",
     "funded": "Financé"
@@ -2836,4 +2858,4 @@
       "content": "Pour toute question relative à la confidentialité, contactez-nous à support@the-bluehaven.com."
     }
   }
-  }
+}

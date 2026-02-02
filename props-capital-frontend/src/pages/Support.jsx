@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
 import { getCurrentUser } from "@/api/auth";
 import { getUserTickets, createSupportTicket } from "@/api/support";
 import { useTranslation } from "../contexts/LanguageContext";
+import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +38,7 @@ import { enUS, th, fr, ja, ru, ko, es, tr } from "date-fns/locale";
 
 export default function Support() {
   const { t, language } = useTranslation();
+  const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [ticketForm, setTicketForm] = useState({
@@ -87,6 +88,23 @@ export default function Support() {
         category: "",
         priority: "medium",
         message: "",
+      });
+      toast({
+        title: t("support.ticketCreated") || "Ticket Created",
+        description:
+          t("support.ticketCreatedDesc") ||
+          "Your support ticket has been submitted successfully.",
+        variant: "success",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: t("support.error") || "Error",
+        description:
+          error?.message ||
+          t("support.ticketError") ||
+          "Failed to create support ticket. Please try again.",
+        variant: "destructive",
       });
     },
   });
@@ -415,8 +433,8 @@ export default function Support() {
                   <div>
                     <p className="text-white font-medium">{ticket.subject}</p>
                     <div className="flex items-center gap-3 mt-2">
-                      <span className="text-xs text-slate-400 capitalize">
-                        {ticket.category}
+                      <span className="text-xs text-slate-400">
+                        {t(`support.${ticket.category}`) || ticket.category}
                       </span>
                       <span className="text-slate-600">•</span>
                       <span className="text-xs text-slate-400">

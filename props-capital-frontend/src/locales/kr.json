@@ -1,11 +1,11 @@
 {
-    "common": {
-      "loading": "로딩 중...",
-      "url": "URL",
-      "dismiss": "닫기",
-      "allPlatforms": "모든 플랫폼"
-    },
-    "home": {
+  "common": {
+    "loading": "로딩 중...",
+    "url": "URL",
+    "dismiss": "닫기",
+    "allPlatforms": "모든 플랫폼"
+  },
+  "home": {
     "hero": {
       "badge": "전 세계 15,000명 이상의 트레이더가 신뢰하고 있습니다",
       "title": "거래하세요",
@@ -608,6 +608,11 @@
     "allRulesCompliant": "모든 규칙 준수",
     "goodStanding": "계정이 모든 챌린지 규칙을 정상적으로 준수하고 있습니다",
     "active": "진행 중",
+    "accountFailed": "계정 실패",
+    "failedDesc": "규칙 위반으로 계정이 종료되었습니다",
+    "rulesAtRisk": "규칙 위험",
+    "atRiskDesc": "하나 이상의 규칙이 위반 임계값에 근접하고 있습니다",
+    "warning": "경고",
     "phase1": "1단계",
     "phase2": "2단계",
     "funded": "자금 지원 완료",
@@ -841,9 +846,15 @@
     "couponCode": "쿠폰 코드",
     "enterCode": "코드 입력",
     "apply": "적용",
+    "validating": "확인 중...",
     "applied": "적용됨",
     "off": "할인",
+    "discountApplied": "할인 적용: -{{discount}}%",
     "couponApplied": "{{code}} 적용 - {{discount}}% 할인!",
+    "couponSuccess": "쿠폰 적용 완료",
+    "couponError": "유효하지 않은 쿠폰",
+    "purchaseError": "구매 실패",
+    "purchaseSuccessfulTitle": "구매 완료",
     "subtotal": "소계",
     "discount": "할인",
     "total": "합계",
@@ -851,6 +862,12 @@
     "pay": "결제",
     "payAmount": "${{amount}} 결제",
     "secureEncryption": "안전한 256-bit SSL 암호화",
+    "minTradingDays": "최소 거래일",
+    "maxTradingDays": "최대 거래일",
+    "eaAllowed": "EA 허용",
+    "newsTrading": "뉴스 거래",
+    "weekendHolding": "주말 보유",
+    "scalingEnabled": "스케일링",
     "platforms": {
       "MT5": {
         "name": "MetaTrader 5",
@@ -1034,10 +1051,13 @@
       "candles": "캔들",
       "tf": "TF",
       "loadingData": "차트 데이터를 불러오는 중...",
-      "updating": "업데이트 중..."
+      "updating": "업데이트 중...",
+      "switchToLineChart": "라인 차트로 전환",
+      "switchToCandlestickChart": "캔들스틱 차트로 전환"
     },
     "loadingAccounts": "계정을 불러오는 중...",
     "watchlist": {
+      "title": "가격 보기",
       "live": "라이브",
       "offline": "오프라인",
       "search": "검색...",
@@ -1615,7 +1635,7 @@
       "saveChanges": "변경 사항 저장",
       "settingsSaved": "설정을 저장했습니다",
       "saveChange": "저장 중...",
-      "settingsSaveDescription":"설정이 성공적으로 저장되었습니다.",
+      "settingsSaveDescription": "설정이 성공적으로 저장되었습니다.",
       "tabs": {
         "general": "일반",
         "branding": "브랜딩",
@@ -2354,7 +2374,8 @@
         "a": "출금은 승인 후 24~48시간 내 처리되며, 선택한 방법으로 수령할 수 있습니다."
       }
     },
-    "compareTableTitle": "모든 챌린지 비교"
+    "compareTableTitle": "모든 챌린지 비교",
+    "noChallenges": "도전 과제 없음"
   },
   "scalingPlan": {
     "badge": "무제한 성장 잠재력",
@@ -2836,5 +2857,4 @@
       "content": "개인정보와 관련된 문의는 support@the-bluehaven.com 으로 연락해 주세요."
     }
   }
-  }
-  
+}

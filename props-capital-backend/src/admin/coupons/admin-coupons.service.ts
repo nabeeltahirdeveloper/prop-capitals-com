@@ -14,7 +14,7 @@ export class AdminCouponsService {
 
       data: {
 
-        code: data.code,
+        code: data.code?.toUpperCase(),
 
         discountPct: data.discountPct,
 
@@ -52,7 +52,7 @@ export class AdminCouponsService {
 
       data: {
 
-        code: data.code,
+        code: data.code?.toUpperCase(),
 
         discountPct: data.discountPct,
 
