@@ -447,6 +447,9 @@
     "subjectPlaceholder": "Sorunun kısa açıklaması",
     "category": "Kategori",
     "select": "Seç",
+                "ticketCreated":"biletOluşturuldu",
+                "ticketCreatedDesc":"biletOluşturulmaAçıklaması",
+
     "account": "Hesap",
     "payment": "Ödeme",
     "payout": "Çekim",

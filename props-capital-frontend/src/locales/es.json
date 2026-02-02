@@ -446,6 +446,9 @@
     "subject": "Asunto",
     "subjectPlaceholder": "Breve descripción del problema",
     "category": "Categoría",
+    "ticketCreated":"ticketCreado",
+                "ticketCreatedDesc":"Descripción del ticket creado",
+
     "select": "Seleccionar",
     "account": "Cuenta",
     "payment": "Pago",

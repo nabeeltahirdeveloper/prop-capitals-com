@@ -448,6 +448,9 @@
     "subjectPlaceholder": "Brève description du problème",
     "category": "Catégorie",
     "select": "Sélectionner",
+     "ticketCreated":"ticketCréé",
+                 "ticketCreatedDesc":"ticketCrééDescription",
+
     "account": "Compte",
     "payment": "Paiement",
     "payout": "Retrait",

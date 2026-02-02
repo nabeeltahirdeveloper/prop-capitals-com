@@ -448,6 +448,9 @@
     "newTicket": "ตั๋วใหม่",
     "createTicket": "สร้างตั๋วสนับสนุน",
     "subject": "หัวข้อ",
+            "ticketCreated":"สร้างตั๋วแล้ว",
+            "ticketCreatedDesc":"ตั๋วที่สร้างแล้ว",
+
     "subjectPlaceholder": "คำอธิบายสั้นๆ เกี่ยวกับปัญหาของคุณ",
     "category": "หมวดหมู่",
     "select": "เลือก",
