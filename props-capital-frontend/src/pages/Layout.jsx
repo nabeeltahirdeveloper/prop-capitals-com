@@ -142,18 +142,20 @@ export default function Layout({ children, currentPageName }) {
     },
   });
 
-  // Filter to show only unread notifications in header (limit to 5)
-  const notifications = (allNotificationsData || [])
-    .filter((n) => !n.read)
-    .slice(0, 5)
-    .map((n) => {
-      const translated = translateNotification(n.title, n.body, t);
-      return {
-        id: n.id,
-        title: translated.title,
-        message: translated.message,
-      };
-    });
+  const unreadNotifications = (allNotificationsData || []).filter(
+    (n) => !n.read,
+  );
+
+  const unreadCount = unreadNotifications.length;
+
+  const notifications = unreadNotifications.slice(0, 5).map((n) => {
+    const translated = translateNotification(n.title, n.body, t);
+    return {
+      id: n.id,
+      title: translated.title,
+      message: translated.message,
+    };
+  });
 
   // Determine if current page is an admin page
   const adminPages = [
@@ -730,9 +732,9 @@ export default function Layout({ children, currentPageName }) {
                   className="relative text-slate-400"
                 >
                   <Bell className="w-5 h-5" />
-                  {notifications.length > 0 && (
+                  {unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
-                      {notifications.length}
+                      {unreadCount}
                     </span>
                   )}
                 </Button>
