@@ -2078,7 +2078,7 @@
           },
           "contactSupport": {
             "q": "지원팀에는 어떻게 연락하나요?",
-            "a": "24/7 라이브 채팅, support@the-bluehaven.com 이메일, 또는 대시보드 내 지원 티켓을 통해 연락할 수 있습니다."
+            "a": "24/7 라이브 채팅, support@prop-capitals.com 이메일, 또는 대시보드 내 지원 티켓을 통해 연락할 수 있습니다."
           }
         }
       }
@@ -2092,7 +2092,7 @@
       "emailSupport": {
         "title": "이메일 지원",
         "description": "일반 문의 또는 상세 문의용",
-        "contact": "support@the-bluehaven.com"
+        "contact": "support@prop-capitals.com"
       },
       "liveChat": {
         "title": "라이브 채팅",
@@ -2777,7 +2777,7 @@
     },
     "contact": {
       "title": "12. 연락처",
-      "content": "본 약관에 관한 문의는 support@the-bluehaven.com 으로 연락해 주세요."
+      "content": "본 약관에 관한 문의는 support@prop-capitals.com 으로 연락해 주세요."
     }
   },
   "privacy": {
@@ -2847,7 +2847,7 @@
     },
     "contactUs": {
       "title": "10. 문의하기",
-      "content": "개인정보와 관련된 문의는 support@the-bluehaven.com 으로 연락해 주세요."
+      "content": "개인정보와 관련된 문의는 support@prop-capitals.com 으로 연락해 주세요."
     }
   }
 }

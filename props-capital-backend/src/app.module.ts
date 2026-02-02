@@ -35,6 +35,7 @@ import { WebsocketModule } from './websocket/websocket.module';
 import { CrmModule } from './crm/crm.module';
 import { ExternalApiModule } from './external-api/external-api.module';
 import { CommonModule } from './common/common.module';
+import { ContactModule } from './contact/contact.module';
 
 @Module({
   imports: [
@@ -107,6 +108,8 @@ import { CommonModule } from './common/common.module';
     CrmModule,
 
     ExternalApiModule,
+
+    ContactModule,
   ],
 })
 export class AppModule {}

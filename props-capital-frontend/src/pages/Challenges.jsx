@@ -152,14 +152,24 @@ export default function Challenges() {
   // Only use real challenges from backend, no mock data fallback
   const displayChallenges = normalizedChallenges;
 
-  const rules = [
-    { icon: Target, label: t('challenges.rules.phase1Target'), value: '8%', color: 'text-emerald-400', bg: 'bg-emerald-500/20' },
-    { icon: Target, label: t('challenges.rules.phase2Target'), value: '5%', color: 'text-cyan-400', bg: 'bg-cyan-500/20' },
-    { icon: Shield, label: t('challenges.rules.dailyDrawdown'), value: '5%', color: 'text-amber-400', bg: 'bg-amber-500/20' },
-    { icon: Shield, label: t('challenges.rules.maxDrawdown'), value: '10%', color: 'text-red-400', bg: 'bg-red-500/20' },
-    { icon: Calendar, label: t('challenges.rules.minTradingDays'), value: t('challenges.rules.fourDays'), color: 'text-blue-400', bg: 'bg-blue-500/20' },
-    { icon: Clock, label: t('challenges.rules.timeLimit'), value: t('challenges.rules.unlimited'), color: 'text-purple-400', bg: 'bg-purple-500/20' },
+  const allRules = [
+    { icon: Target, label: t('challenges.rules.phase1Target'), value: '8%', color: 'text-emerald-400', bg: 'bg-emerald-500/20', key: 'phase1' },
+    { icon: Target, label: t('challenges.rules.phase2Target'), value: '5%', color: 'text-cyan-400', bg: 'bg-cyan-500/20', key: 'phase2' },
+    { icon: Shield, label: t('challenges.rules.dailyDrawdown'), value: '5%', color: 'text-amber-400', bg: 'bg-amber-500/20', key: 'dailyDD' },
+    { icon: Shield, label: t('challenges.rules.maxDrawdown'), value: '10%', color: 'text-red-400', bg: 'bg-red-500/20', key: 'maxDD' },
+    { icon: Calendar, label: t('challenges.rules.minTradingDays'), value: t('challenges.rules.fourDays'), color: 'text-blue-400', bg: 'bg-blue-500/20', key: 'minDays' },
+    { icon: Clock, label: t('challenges.rules.timeLimit'), value: t('challenges.rules.unlimited'), color: 'text-purple-400', bg: 'bg-purple-500/20', key: 'timeLimit' },
   ];
+
+  const rules = allRules.filter(rule => {
+    if (challengeType === 'instant_funding') {
+      return rule.key !== 'phase1' && rule.key !== 'phase2';
+    }
+    if (challengeType === 'one_phase') {
+      return rule.key !== 'phase2';
+    }
+    return true;
+  });
 
   const challengeTypeInfo = {
     one_phase: {
@@ -356,13 +366,15 @@ export default function Challenges() {
                   </div>
 
                   <div className="space-y-3 mb-6">
-                    <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                      <span className="text-slate-400 flex items-center gap-1">
-                        <Target className="w-4 h-4" />
-                        {t('challenges.card.phase1')}
-                      </span>
-                      <span className="text-white font-medium">{challenge.phase1_profit_target}%</span>
-                    </div>
+                    {challengeType !== 'instant_funding' && (
+                      <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                        <span className="text-slate-400 flex items-center gap-1">
+                          <Target className="w-4 h-4" />
+                          {t('challenges.card.phase1')}
+                        </span>
+                        <span className="text-white font-medium">{challenge.phase1_profit_target}%</span>
+                      </div>
+                    )}
                     {challengeType === 'two_phase' && (
                       <div className="flex justify-between items-center py-2 border-b border-slate-800">
                         <span className="text-slate-400 flex items-center gap-1">
@@ -441,8 +453,12 @@ export default function Challenges() {
                   <tr className="border-b border-slate-800 bg-slate-800/50">
                     <th className="text-left p-4 text-slate-400 font-medium">{t('challenges.comparison.accountSize')}</th>
                     <th className="text-center p-4 text-slate-400 font-medium">{t('challenges.comparison.price')}</th>
-                    <th className="text-center p-4 text-slate-400 font-medium">{t('challenges.comparison.phase1')}</th>
-                    <th className="text-center p-4 text-slate-400 font-medium">{t('challenges.comparison.phase2')}</th>
+                    {challengeType !== 'instant_funding' && (
+                      <th className="text-center p-4 text-slate-400 font-medium">{t('challenges.comparison.phase1')}</th>
+                    )}
+                    {challengeType === 'two_phase' && (
+                      <th className="text-center p-4 text-slate-400 font-medium">{t('challenges.comparison.phase2')}</th>
+                    )}
                     <th className="text-center p-4 text-slate-400 font-medium">{t('challenges.comparison.dailyDD')}</th>
                     <th className="text-center p-4 text-slate-400 font-medium">{t('challenges.comparison.maxDD')}</th>
                     <th className="text-center p-4 text-slate-400 font-medium">{t('challenges.comparison.profitSplit')}</th>
@@ -462,8 +478,12 @@ export default function Challenges() {
                         </div>
                       </td>
                       <td className="text-center p-4 text-white font-medium">${challenge.price}</td>
-                      <td className="text-center p-4 text-emerald-400">{challenge.phase1_profit_target}%</td>
-                      <td className="text-center p-4 text-cyan-400">{challenge.phase2_profit_target}%</td>
+                      {challengeType !== 'instant_funding' && (
+                        <td className="text-center p-4 text-emerald-400">{challenge.phase1_profit_target}%</td>
+                      )}
+                      {challengeType === 'two_phase' && (
+                        <td className="text-center p-4 text-cyan-400">{challenge.phase2_profit_target}%</td>
+                      )}
                       <td className="text-center p-4 text-amber-400">{challenge.max_daily_drawdown}%</td>
                       <td className="text-center p-4 text-red-400">{challenge.max_overall_drawdown}%</td>
                       <td className="text-center p-4">

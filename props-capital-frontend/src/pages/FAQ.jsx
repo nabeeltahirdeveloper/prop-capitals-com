@@ -53,8 +53,12 @@ export default function FAQ() {
           a: t('faq.categories.gettingStarted.faqs.tradingPlatforms.a')
         },
         {
-          q: t('faq.categories.gettingStarted.faqs.credentialsTiming.q'),
-          a: t('faq.categories.gettingStarted.faqs.credentialsTiming.a')
+          q: t('faq.categories.gettingStarted.faqs.howToPass.q'),
+          a: t('faq.categories.gettingStarted.faqs.howToPass.a')
+        },
+        {
+          q: t('faq.categories.gettingStarted.faqs.evaluationTypes.q'),
+          a: t('faq.categories.gettingStarted.faqs.evaluationTypes.a')
         }
       ]
     },
@@ -66,28 +70,28 @@ export default function FAQ() {
       image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop',
       faqs: [
         {
-          q: t('faq.categories.tradingRules.faqs.profitTarget.q'),
-          a: t('faq.categories.tradingRules.faqs.profitTarget.a')
+          q: t('faq.categories.tradingRules.faqs.drawdownExplained.q'),
+          a: t('faq.categories.tradingRules.faqs.drawdownExplained.a')
         },
         {
-          q: t('faq.categories.tradingRules.faqs.drawdownRules.q'),
-          a: t('faq.categories.tradingRules.faqs.drawdownRules.a')
+          q: t('faq.categories.tradingRules.faqs.maxDrawdownExplained.q'),
+          a: t('faq.categories.tradingRules.faqs.maxDrawdownExplained.a')
         },
         {
-          q: t('faq.categories.tradingRules.faqs.timeLimit.q'),
-          a: t('faq.categories.tradingRules.faqs.timeLimit.a')
+          q: t('faq.categories.tradingRules.faqs.profitTargets.q'),
+          a: t('faq.categories.tradingRules.faqs.profitTargets.a')
         },
         {
-          q: t('faq.categories.tradingRules.faqs.newsTrading.q'),
-          a: t('faq.categories.tradingRules.faqs.newsTrading.a')
+          q: t('faq.categories.tradingRules.faqs.tradingDays.q'),
+          a: t('faq.categories.tradingRules.faqs.tradingDays.a')
         },
         {
-          q: t('faq.categories.tradingRules.faqs.weekendHolding.q'),
-          a: t('faq.categories.tradingRules.faqs.weekendHolding.a')
+          q: t('faq.categories.tradingRules.faqs.allowedStrategies.q'),
+          a: t('faq.categories.tradingRules.faqs.allowedStrategies.a')
         },
         {
-          q: t('faq.categories.tradingRules.faqs.expertAdvisors.q'),
-          a: t('faq.categories.tradingRules.faqs.expertAdvisors.a')
+          q: t('faq.categories.tradingRules.faqs.leverage.q'),
+          a: t('faq.categories.tradingRules.faqs.leverage.a')
         }
       ]
     },
@@ -99,20 +103,20 @@ export default function FAQ() {
       image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop',
       faqs: [
         {
-          q: t('faq.categories.violations.faqs.whatHappensIfViolate.q'),
-          a: t('faq.categories.violations.faqs.whatHappensIfViolate.a')
+          q: t('faq.categories.violations.faqs.whatTriggersViolation.q'),
+          a: t('faq.categories.violations.faqs.whatTriggersViolation.a')
         },
         {
           q: t('faq.categories.violations.faqs.freeRetry.q'),
           a: t('faq.categories.violations.faqs.freeRetry.a')
         },
         {
-          q: t('faq.categories.violations.faqs.resetAccount.q'),
-          a: t('faq.categories.violations.faqs.resetAccount.a')
+          q: t('faq.categories.violations.faqs.afterFailing.q'),
+          a: t('faq.categories.violations.faqs.afterFailing.a')
         },
         {
-          q: t('faq.categories.violations.faqs.tradingDay.q'),
-          a: t('faq.categories.violations.faqs.tradingDay.a')
+          q: t('faq.categories.violations.faqs.commonMistakes.q'),
+          a: t('faq.categories.violations.faqs.commonMistakes.a')
         }
       ]
     },
@@ -128,20 +132,16 @@ export default function FAQ() {
           a: t('faq.categories.payouts.faqs.profitSplit.a')
         },
         {
-          q: t('faq.categories.payouts.faqs.payoutFrequency.q'),
-          a: t('faq.categories.payouts.faqs.payoutFrequency.a')
+          q: t('faq.categories.payouts.faqs.payoutProcess.q'),
+          a: t('faq.categories.payouts.faqs.payoutProcess.a')
         },
         {
           q: t('faq.categories.payouts.faqs.paymentMethods.q'),
           a: t('faq.categories.payouts.faqs.paymentMethods.a')
         },
         {
-          q: t('faq.categories.payouts.faqs.minimumPayout.q'),
-          a: t('faq.categories.payouts.faqs.minimumPayout.a')
-        },
-        {
-          q: t('faq.categories.payouts.faqs.payoutProcessing.q'),
-          a: t('faq.categories.payouts.faqs.payoutProcessing.a')
+          q: t('faq.categories.payouts.faqs.payoutFrequency.q'),
+          a: t('faq.categories.payouts.faqs.payoutFrequency.a')
         }
       ]
     },
@@ -157,12 +157,12 @@ export default function FAQ() {
           a: t('faq.categories.scaling.faqs.howScalingWorks.a')
         },
         {
-          q: t('faq.categories.scaling.faqs.profitSplitScaling.q'),
-          a: t('faq.categories.scaling.faqs.profitSplitScaling.a')
+          q: t('faq.categories.scaling.faqs.scalingExample.q'),
+          a: t('faq.categories.scaling.faqs.scalingExample.a')
         },
         {
-          q: t('faq.categories.scaling.faqs.scalingConditions.q'),
-          a: t('faq.categories.scaling.faqs.scalingConditions.a')
+          q: t('faq.categories.scaling.faqs.scalingReset.q'),
+          a: t('faq.categories.scaling.faqs.scalingReset.a')
         }
       ]
     },
@@ -174,16 +174,16 @@ export default function FAQ() {
       image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&h=300&fit=crop',
       faqs: [
         {
-          q: t('faq.categories.account.faqs.refund.q'),
-          a: t('faq.categories.account.faqs.refund.a')
-        },
-        {
           q: t('faq.categories.account.faqs.multipleAccounts.q'),
           a: t('faq.categories.account.faqs.multipleAccounts.a')
         },
         {
-          q: t('faq.categories.account.faqs.weekendAccount.q'),
-          a: t('faq.categories.account.faqs.weekendAccount.a')
+          q: t('faq.categories.account.faqs.inactivity.q'),
+          a: t('faq.categories.account.faqs.inactivity.a')
+        },
+        {
+          q: t('faq.categories.account.faqs.refund.q'),
+          a: t('faq.categories.account.faqs.refund.a')
         },
         {
           q: t('faq.categories.account.faqs.contactSupport.q'),

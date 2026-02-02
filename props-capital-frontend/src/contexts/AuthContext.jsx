@@ -5,7 +5,6 @@ import { getCurrentUser } from '@/api/auth';
 const AuthContext = createContext({
   status: 'checking',
   user: null,
-  isAdmin: false,
   login: () => { },
   logout: () => { },
 });
@@ -75,22 +74,14 @@ export const AuthProvider = ({ children }) => {
     return 'authenticated';
   }, [token, isLoading, isError, user]);
 
-  // Determine if user is admin
-  const isAdmin = useMemo(() => {
-    if (!user) return false;
-    const role = user.role?.toUpperCase();
-    return role === 'ADMIN';
-  }, [user]);
-
   const value = useMemo(
     () => ({
       status,
       user,
-      isAdmin,
       login,
       logout,
     }),
-    [status, user, isAdmin, login, logout]
+    [status, user, login, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

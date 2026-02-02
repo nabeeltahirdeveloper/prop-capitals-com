@@ -2079,7 +2079,7 @@
           },
           "contactSupport": {
             "q": "Как связаться с поддержкой?",
-            "a": "Вы можете связаться через 24/7 лайв-чат, по email support@the-bluehaven.com или через тикеты поддержки в дашборде."
+            "a": "Вы можете связаться через 24/7 лайв-чат, по email support@prop-capitals.com или через тикеты поддержки в дашборде."
           }
         }
       }
@@ -2093,7 +2093,7 @@
       "emailSupport": {
         "title": "Email-поддержка",
         "description": "Для общих вопросов и подробных обращений",
-        "contact": "support@the-bluehaven.com"
+        "contact": "support@prop-capitals.com"
       },
       "liveChat": {
         "title": "Лайв-чат",
@@ -2778,7 +2778,7 @@
     },
     "contact": {
       "title": "12. Контакты",
-      "content": "Если у вас есть вопросы по этим условиям, свяжитесь с нами по адресу support@the-bluehaven.com."
+      "content": "Если у вас есть вопросы по этим условиям, свяжитесь с нами по адресу support@prop-capitals.com."
     }
   },
   "privacy": {
@@ -2848,7 +2848,7 @@
     },
     "contactUs": {
       "title": "10. Свяжитесь с нами",
-      "content": "По вопросам конфиденциальности пишите на support@the-bluehaven.com."
+      "content": "По вопросам конфиденциальности пишите на support@prop-capitals.com."
     }
   }
 }

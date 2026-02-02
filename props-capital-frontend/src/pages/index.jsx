@@ -30,41 +30,13 @@ import TraderPayouts from "./TraderPayouts";
 
 import Profile from "./Profile";
 
-import AdminProfile from "./AdminProfile";
-
 import Support from "./Support";
-
-import AdminDashboard from "./AdminDashboard";
-
-import AdminUsers from "./AdminUsers";
-
-import AdminChallenges from "./AdminChallenges";
-
-import AdminAccounts from "./AdminAccounts";
-
-import AdminPayouts from "./AdminPayouts";
-
-import AdminPayments from "./AdminPayments";
-
-import AdminViolations from "./AdminViolations";
-
-import AdminCoupons from "./AdminCoupons";
-
-import AdminSupport from "./AdminSupport";
-
-import AdminSettings from "./AdminSettings";
 
 import Rules from "./Rules";
 
 import BuyChallenge from "./BuyChallenge";
 
 import AccountDetails from "./AccountDetails";
-
-import AdminBrokerServers from "./AdminBrokerServers";
-
-import AdminRiskMonitor from "./AdminRiskMonitor";
-
-import AdminScaling from "./AdminScaling";
 
 import Notifications from "./Notifications";
 
@@ -81,12 +53,6 @@ import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 
 import TraderBuyChallenge from "./TraderBuyChallenge";
-
-import CRMLeads from "./CRMLeads";
-import CRMPipeline from "./CRMPipeline";
-import CRMFTDReport from "./CRMFTDReport";
-import CRMCalendar from "./CRMCalendar";
-import CRMApiKeys from "./CRMApiKeys";
 
 import {
   BrowserRouter as Router,
@@ -130,41 +96,13 @@ const PAGES = {
 
   Profile: Profile,
 
-  AdminProfile: AdminProfile,
-
   Support: Support,
-
-  AdminDashboard: AdminDashboard,
-
-  AdminUsers: AdminUsers,
-
-  AdminChallenges: AdminChallenges,
-
-  AdminAccounts: AdminAccounts,
-
-  AdminPayouts: AdminPayouts,
-
-  AdminPayments: AdminPayments,
-
-  AdminViolations: AdminViolations,
-
-  AdminCoupons: AdminCoupons,
-
-  AdminSupport: AdminSupport,
-
-  AdminSettings: AdminSettings,
 
   Rules: Rules,
 
   BuyChallenge: BuyChallenge,
 
   AccountDetails: AccountDetails,
-
-  AdminBrokerServers: AdminBrokerServers,
-
-  AdminRiskMonitor: AdminRiskMonitor,
-
-  AdminScaling: AdminScaling,
 
   Notifications: Notifications,
 
@@ -181,12 +119,6 @@ const PAGES = {
   SignUp: SignUp,
 
   TraderBuyChallenge: TraderBuyChallenge,
-
-  CRMLeads: CRMLeads,
-  CRMPipeline: CRMPipeline,
-  CRMFTDReport: CRMFTDReport,
-  CRMCalendar: CRMCalendar,
-  CRMApiKeys: CRMApiKeys,
 };
 
 function _getCurrentPage(url) {
@@ -271,44 +203,13 @@ function PagesContent() {
                 />
               </Route>
 
-              {/* Admin Routes */}
-              <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
-                <Route path="/AdminDashboard" element={<AdminDashboard />} />
-                <Route path="/AdminUsers" element={<AdminUsers />} />
-                <Route path="/AdminChallenges" element={<AdminChallenges />} />
-                <Route path="/AdminAccounts" element={<AdminAccounts />} />
-                <Route path="/AdminPayouts" element={<AdminPayouts />} />
-                <Route path="/AdminPayments" element={<AdminPayments />} />
-                <Route path="/AdminViolations" element={<AdminViolations />} />
-                <Route path="/AdminCoupons" element={<AdminCoupons />} />
-                <Route path="/AdminSupport" element={<AdminSupport />} />
-                <Route path="/AdminSettings" element={<AdminSettings />} />
-                <Route
-                  path="/AdminBrokerServers"
-                  element={<AdminBrokerServers />}
-                />
-                <Route
-                  path="/AdminRiskMonitor"
-                  element={<AdminRiskMonitor />}
-                />
-                <Route path="/AdminScaling" element={<AdminScaling />} />
-                <Route path="/AdminProfile" element={<AdminProfile />} />
-                <Route path="/CRMLeads" element={<CRMLeads />} />
-                <Route path="/CRMPipeline" element={<CRMPipeline />} />
-                <Route path="/CRMFTDReport" element={<CRMFTDReport />} />
-                <Route path="/CRMCalendar" element={<CRMCalendar />} />
-                <Route path="/CRMApiKeys" element={<CRMApiKeys />} />
-              </Route>
-
               {/* Trader Profile Route */}
               <Route element={<ProtectedRoute allowedRoles={["TRADER"]} />}>
                 <Route path="/Profile" element={<Profile />} />
               </Route>
 
-              {/* Shared Routes (TRADER and ADMIN) */}
-              <Route
-                element={<ProtectedRoute allowedRoles={["TRADER", "ADMIN"]} />}
-              >
+              {/* Notifications Route */}
+              <Route element={<ProtectedRoute allowedRoles={["TRADER"]} />}>
                 <Route path="/Notifications" element={<Notifications />} />
               </Route>
             </Routes>

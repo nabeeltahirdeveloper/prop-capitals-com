@@ -2079,7 +2079,7 @@
           },
           "contactSupport": {
             "q": "Destek ile nasıl iletişime geçebilirim?",
-            "a": "7/24 canlı sohbet, support@the-bluehaven.com adresine e-posta veya panodaki destek talebi üzerinden ulaşabilirsiniz."
+            "a": "7/24 canlı sohbet, support@prop-capitals.com adresine e-posta veya panodaki destek talebi üzerinden ulaşabilirsiniz."
           }
         }
       }
@@ -2093,7 +2093,7 @@
       "emailSupport": {
         "title": "E-posta desteği",
         "description": "Genel sorular ve detaylı talepler için",
-        "contact": "support@the-bluehaven.com"
+        "contact": "support@prop-capitals.com"
       },
       "liveChat": {
         "title": "Canlı sohbet",
@@ -2778,7 +2778,7 @@
     },
     "contact": {
       "title": "12. İletişim",
-      "content": "Bu şartlarla ilgili sorularınız için support@the-bluehaven.com adresine yazabilirsiniz."
+      "content": "Bu şartlarla ilgili sorularınız için support@prop-capitals.com adresine yazabilirsiniz."
     }
   },
   "privacy": {
@@ -2848,7 +2848,7 @@
     },
     "contactUs": {
       "title": "10. Bize ulaşın",
-      "content": "Gizlilikle ilgili sorularınız için support@the-bluehaven.com adresinden bize ulaşabilirsiniz."
+      "content": "Gizlilikle ilgili sorularınız için support@prop-capitals.com adresinden bize ulaşabilirsiniz."
     }
   }
 }

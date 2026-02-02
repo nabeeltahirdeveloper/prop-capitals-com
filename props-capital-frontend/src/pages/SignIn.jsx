@@ -49,13 +49,8 @@ export default function SignIn() {
       // Use the login function from AuthContext to handle token and user data
       login(data.accessToken, data.user);
 
-      // Redirect to appropriate dashboard based on user role
-      const userRole = data.user?.role;
-      if (userRole === 'ADMIN') {
-        navigate(createPageUrl('AdminDashboard'));
-      } else {
-        navigate(createPageUrl('TraderDashboard'));
-      }
+      // Redirect to trader dashboard
+      navigate(createPageUrl('TraderDashboard'));
     },
     onError: (error) => {
       // Extract error message from response
