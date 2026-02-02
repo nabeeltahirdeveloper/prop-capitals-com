@@ -41,19 +41,19 @@ export default function ChallengeProgress() {
 
   // Get current user
   const { data: user } = useQuery({
-    queryKey: ['user', 'me'],
+    queryKey: ["user", "me"],
     queryFn: getCurrentUser,
   });
 
   // Get user's accounts
   const { data: accounts = [], isLoading: accountsLoading } = useQuery({
-    queryKey: ['trader-accounts', user?.userId],
+    queryKey: ["trader-accounts", user?.userId],
     queryFn: async () => {
       if (!user?.userId) return [];
       try {
         return await getUserAccounts(user.userId);
       } catch (error) {
-        console.error('Failed to fetch accounts:', error);
+        console.error("Failed to fetch accounts:", error);
         return [];
       }
     },
@@ -63,7 +63,7 @@ export default function ChallengeProgress() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const idFromUrl = params.get('id');
+    const idFromUrl = params.get("id");
 
     if (idFromUrl) {
       setAccountId(idFromUrl);
@@ -80,7 +80,7 @@ export default function ChallengeProgress() {
       try {
         return await getAccountById(accountId);
       } catch (error) {
-        console.error('Failed to fetch account details:', error);
+        console.error("Failed to fetch account details:", error);
         return null;
       }
     },
@@ -90,13 +90,13 @@ export default function ChallengeProgress() {
 
   // Get payout statistics
   const { data: payoutStats } = useQuery({
-    queryKey: ['payout-statistics', user?.userId, accountId],
+    queryKey: ["payout-statistics", user?.userId, accountId],
     queryFn: async () => {
       if (!user?.userId || !accountId) return null;
       try {
         return await getPayoutStatistics(user.userId, accountId);
       } catch (error) {
-        console.error('Failed to fetch payout statistics:', error);
+        console.error("Failed to fetch payout statistics:", error);
         return null;
       }
     },
@@ -111,7 +111,10 @@ export default function ChallengeProgress() {
         <div className="h-32 w-full bg-slate-800 rounded-lg animate-pulse" />
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-28 bg-slate-800 rounded-lg animate-pulse" />
+            <div
+              key={i}
+              className="h-28 bg-slate-800 rounded-lg animate-pulse"
+            />
           ))}
         </div>
       </div>
@@ -128,8 +131,12 @@ export default function ChallengeProgress() {
               <Target className="w-6 h-6 text-emerald-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">{t('challengeProgress.title')}</h1>
-              <p className="text-slate-400">{t('challengeProgress.subtitle')}</p>
+              <h1 className="text-2xl font-bold text-white">
+                {t("challengeProgress.title")}
+              </h1>
+              <p className="text-slate-400">
+                {t("challengeProgress.subtitle")}
+              </p>
             </div>
           </div>
         </div>
@@ -137,11 +144,16 @@ export default function ChallengeProgress() {
           <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
             <Target className="w-8 h-8 text-slate-600" />
           </div>
-          <h3 className="text-lg font-semibold text-white mb-2">{t('accountDetails.noAccounts')}</h3>
-          <p className="text-slate-400 mb-6">{t('challengeProgress.noAccountsDesc') || 'Purchase a challenge to start tracking your progress.'}</p>
-          <Link to={createPageUrl('TraderBuyChallenge')}>
+          <h3 className="text-lg font-semibold text-white mb-2">
+            {t("accountDetails.noAccounts")}
+          </h3>
+          <p className="text-slate-400 mb-6">
+            {t("challengeProgress.noAccountsDesc") ||
+              "Purchase a challenge to start tracking your progress."}
+          </p>
+          <Link to={createPageUrl("TraderBuyChallenge")}>
             <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500">
-              {t('accountDetails.purchaseChallenge')}
+              {t("accountDetails.purchaseChallenge")}
             </Button>
           </Link>
         </Card>
@@ -156,7 +168,10 @@ export default function ChallengeProgress() {
         <div className="h-32 w-full bg-slate-800 rounded-lg animate-pulse" />
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-28 bg-slate-800 rounded-lg animate-pulse" />
+            <div
+              key={i}
+              className="h-28 bg-slate-800 rounded-lg animate-pulse"
+            />
           ))}
         </div>
       </div>
@@ -165,12 +180,13 @@ export default function ChallengeProgress() {
 
   // Map backend phase enum to frontend format
   const phaseMap = {
-    'PHASE1': 'phase1',
-    'PHASE2': 'phase2',
-    'FUNDED': 'funded',
-    'FAILED': 'failed'
+    PHASE1: "phase1",
+    PHASE2: "phase2",
+    FUNDED: "funded",
+    FAILED: "failed",
   };
-  const currentPhase = phaseMap[account.phase] || account.phase?.toLowerCase() || 'phase1';
+  const currentPhase =
+    phaseMap[account.phase] || account.phase?.toLowerCase() || "phase1";
 
   const challenge = account.challenge || {};
   const challengeName = challenge.name || `$${(account.initialBalance || challenge.accountSize || 0).toLocaleString()} Challenge`;
@@ -184,8 +200,8 @@ export default function ChallengeProgress() {
   const maxDailyDD = challenge.dailyDrawdownPercent || 5;
   const maxOverallDD = challenge.overallDrawdownPercent || 10;
   const minTradingDays = challenge.minTradingDays || 4;
-  const accountNumber = account.brokerLogin || account.id?.slice(0, 8) || 'N/A';
-  const platform = account.platform || challenge.platform || 'MT5';
+  const accountNumber = account.brokerLogin || account.id?.slice(0, 8) || "N/A";
+  const platform = account.platform || challenge.platform || "MT5";
   const startDate = account.createdAt;
   const lastViolationMessage = account.lastViolationMessage;
 
@@ -278,8 +294,10 @@ export default function ChallengeProgress() {
             <Target className="w-6 h-6 text-emerald-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">{t('challengeProgress.title')}</h1>
-            <p className="text-slate-400">{t('challengeProgress.subtitle')}</p>
+            <h1 className="text-2xl font-bold text-white">
+              {t("challengeProgress.title")}
+            </h1>
+            <p className="text-slate-400">{t("challengeProgress.subtitle")}</p>
           </div>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
@@ -296,33 +314,42 @@ export default function ChallengeProgress() {
             window.history.replaceState({}, '', `${window.location.pathname}?id=${value}`);
           }}>
             <SelectTrigger className="w-full sm:w-[280px] bg-slate-900 border-slate-800 text-white">
-              <SelectValue placeholder={t('challengeProgress.selectAccount')} />
+              <SelectValue placeholder={t("challengeProgress.selectAccount")} />
             </SelectTrigger>
             <SelectContent className="bg-slate-800 border-slate-700 text-white [&>svg]:text-white">
               {accounts.map((acc) => {
                 const accChallenge = acc.challenge || {};
-                const accInitialBalance = acc.initialBalance || accChallenge.accountSize || 0;
+                const accInitialBalance =
+                  acc.initialBalance || accChallenge.accountSize || 0;
                 const accPhaseMap = {
-                  'PHASE1': 'phase1',
-                  'PHASE2': 'phase2',
-                  'FUNDED': 'funded',
-                  'FAILED': 'failed'
+                  PHASE1: "phase1",
+                  PHASE2: "phase2",
+                  FUNDED: "funded",
+                  FAILED: "failed",
                 };
-                const accPhase = accPhaseMap[acc.phase] || acc.phase?.toLowerCase() || 'phase1';
-                const accPlatform = acc.platform || accChallenge.platform || 'MT5';
+                const accPhase =
+                  accPhaseMap[acc.phase] ||
+                  acc.phase?.toLowerCase() ||
+                  "phase1";
+                const accPlatform =
+                  acc.platform || accChallenge.platform || "MT5";
                 const phaseTranslations = {
-                  'phase1': t('challengeProgress.phase1'),
-                  'phase2': t('challengeProgress.phase2'),
-                  'funded': t('challengeProgress.funded'),
-                  'failed': t('challengeProgress.failed')
+                  phase1: t("challengeProgress.phase1"),
+                  phase2: t("challengeProgress.phase2"),
+                  funded: t("challengeProgress.funded"),
+                  failed: t("challengeProgress.failed"),
                 };
                 return (
                   <SelectItem key={acc.id} value={acc.id}
                     className="text-white hover:text-white focus:text-white data-[highlighted]:text-white data-[state=checked]:text-white hover:bg-slate-700 focus:bg-slate-700">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium">${accInitialBalance?.toLocaleString()}</span>
+                      <span className="font-medium">
+                        ${accInitialBalance?.toLocaleString()}
+                      </span>
                       <span className="text-slate-400">•</span>
-                      <span className="text-slate-400 text-xs">{accPlatform}</span>
+                      <span className="text-slate-400 text-xs">
+                        {accPlatform}
+                      </span>
                       <span className="text-slate-400">•</span>
                       <span className={`text-xs ${accPhase === 'failed' ? 'text-red-400' : 'text-emerald-400'}`}>
                         {phaseTranslations[accPhase] || accPhase}
@@ -510,11 +537,11 @@ export default function ChallengeProgress() {
       </Card>
 
       {/* Current Phase Requirements */}
-      {phases.find(p => p.status === 'active')?.requirements && (
+      {phases.find((p) => p.status === "active")?.requirements && (
         <Card className="bg-slate-900 border-slate-800 p-6">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <Shield className="w-5 h-5 text-cyan-400" />
-            {t('challengeProgress.currentPhaseRequirements')}
+            {t("challengeProgress.currentPhaseRequirements")}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {phases.find(p => p.status === 'active')?.requirements.map((req, i) => (
@@ -538,14 +565,7 @@ export default function ChallengeProgress() {
                     </div>
                   )}
                 </div>
-                <div className="flex items-baseline justify-between">
-                  <span className={`text-xl font-bold ${req.met ? 'text-emerald-400' : 'text-white'}`}>
-                    {req.current}
-                  </span>
-                  <span className="text-sm text-slate-500">/ {req.value}</span>
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         </Card>
       )}
@@ -558,12 +578,20 @@ export default function ChallengeProgress() {
               <DollarSign className="w-5 h-5 text-emerald-400" />
             </div>
             <div>
-              <h4 className="text-white font-semibold">{t('challengeProgress.profitSplit')}</h4>
-              <p className="text-sm text-slate-400">{t('challengeProgress.whenFunded')}</p>
+              <h4 className="text-white font-semibold">
+                {t("challengeProgress.profitSplit")}
+              </h4>
+              <p className="text-sm text-slate-400">
+                {t("challengeProgress.whenFunded")}
+              </p>
             </div>
           </div>
-          <p className="text-2xl sm:text-3xl font-bold text-emerald-400">{payoutStats?.settings?.profitSplit?.base || 80}%</p>
-          <p className="text-sm text-slate-400 mt-1">{t('challengeProgress.upTo90WithScaling')}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-emerald-400">
+            {payoutStats?.settings?.profitSplit?.base || 80}%
+          </p>
+          <p className="text-sm text-slate-400 mt-1">
+            {t("challengeProgress.upTo90WithScaling")}
+          </p>
         </Card>
 
         <Card className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 border-purple-500/30 p-6">
@@ -572,8 +600,12 @@ export default function ChallengeProgress() {
               <Calendar className="w-5 h-5 text-purple-400" />
             </div>
             <div>
-              <h4 className="text-white font-semibold">{t('challengeProgress.payoutCycle')}</h4>
-              <p className="text-sm text-slate-400">{t('challengeProgress.biWeeklyPayouts')}</p>
+              <h4 className="text-white font-semibold">
+                {t("challengeProgress.payoutCycle")}
+              </h4>
+              <p className="text-sm text-slate-400">
+                {t("challengeProgress.biWeeklyPayouts")}
+              </p>
             </div>
           </div>
           <p className="text-3xl font-bold text-purple-400">
@@ -585,7 +617,6 @@ export default function ChallengeProgress() {
               return '14';
             })()} {t('challengeProgress.days')}
           </p>
-          <p className="text-sm text-slate-400 mt-1">{t('challengeProgress.processedWithin24h')}</p>
         </Card>
 
         <Card className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 border-amber-500/30 p-6">
@@ -594,24 +625,37 @@ export default function ChallengeProgress() {
               <Star className="w-5 h-5 text-amber-400" />
             </div>
             <div>
-              <h4 className="text-white font-semibold">{t('challengeProgress.scaleTo')}</h4>
-              <p className="text-sm text-slate-400">{t('challengeProgress.maximumAccountSize')}</p>
+              <h4 className="text-white font-semibold">
+                {t("challengeProgress.scaleTo")}
+              </h4>
+              <p className="text-sm text-slate-400">
+                {t("challengeProgress.maximumAccountSize")}
+              </p>
             </div>
           </div>
           <p className="text-3xl font-bold text-amber-400">$2M</p>
-          <p className="text-sm text-slate-400 mt-1">{t('challengeProgress.scalingLevels')}</p>
+          <p className="text-sm text-slate-400 mt-1">
+            {t("challengeProgress.scalingLevels")}
+          </p>
         </Card>
       </div>
 
       {/* CTA */}
       <Card className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border-cyan-500/30 p-6 text-center">
-        <h3 className="text-xl font-bold text-white mb-2">{t('challengeProgress.readyToStart')}</h3>
-        <p className="text-slate-400 mb-4">{t('challengeProgress.readyToStartDesc')}</p>
+        <h3 className="text-xl font-bold text-white mb-2">
+          {t("challengeProgress.readyToStart")}
+        </h3>
+        <p className="text-slate-400 mb-4">
+          {t("challengeProgress.readyToStartDesc")}
+        </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
           {account?.id && (
-            <Link to={`${createPageUrl('AccountDetails')}?id=${account.id}`} className="w-full sm:w-auto">
+            <Link
+              to={`${createPageUrl("AccountDetails")}?id=${account.id}`}
+              className="w-full sm:w-auto"
+            >
               <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500 w-full">
-                {t('challengeProgress.viewTradingDashboard')}
+                {t("challengeProgress.viewTradingDashboard")}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
