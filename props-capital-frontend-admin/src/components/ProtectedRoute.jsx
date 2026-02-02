@@ -5,7 +5,7 @@ import { createPageUrl } from '../utils';
 
 export default function ProtectedRoute({ allowedRoles = [] }) {
   const location = useLocation();
-  const { status, user } = useAuth();
+  const { status, user, isAdmin } = useAuth();
   const { t } = useTranslation();
 
   // Block ALL rendering until auth status is resolved
@@ -25,14 +25,15 @@ export default function ProtectedRoute({ allowedRoles = [] }) {
     return <Navigate to={createPageUrl('SignIn')} state={{ from: location }} replace />;
   }
 
-  // Check role-based access
+  // Check role-based access - Only admins allowed
   if (allowedRoles.length > 0) {
     const userRole = user.role?.toUpperCase(); // Normalize to uppercase
     const hasAccess = allowedRoles.some(role => role.toUpperCase() === userRole);
 
     if (!hasAccess) {
-      // Redirect to trader dashboard
-      return <Navigate to={createPageUrl('TraderDashboard')} replace />;
+      // Only admins have access to this panel
+      // Redirect non-admin users back to login
+      return <Navigate to={createPageUrl('SignIn')} replace />;
     }
   }
 
@@ -60,11 +61,16 @@ export function DashboardRedirect() {
     return <Navigate to={createPageUrl('SignIn')} replace />;
   }
 
-  return <Navigate to={createPageUrl('TraderDashboard')} replace />;
+  const userRole = user.role?.toUpperCase();
+  if (userRole === 'ADMIN') {
+    return <Navigate to={createPageUrl('AdminDashboard')} replace />;
+  }
+  // Non-admin users are redirected to login
+  return <Navigate to={createPageUrl('SignIn')} replace />;
 }
 
-// Component to redirect authenticated users away from auth pages (SignIn/SignUp)
-// This prevents logged-in users from accessing authentication pages
+// Component to redirect authenticated users away from auth pages (SignIn)
+// This prevents logged-in admins from accessing authentication pages
 export function PublicOnlyRoute({ children }) {
   const { status, user } = useAuth();
   const { t } = useTranslation();
@@ -81,9 +87,14 @@ export function PublicOnlyRoute({ children }) {
     );
   }
 
-  // If authenticated, redirect to trader dashboard
+  // If authenticated, redirect based on role
   if (status === 'authenticated' && user) {
-    return <Navigate to={createPageUrl('TraderDashboard')} replace />;
+    const userRole = user.role?.toUpperCase();
+    if (userRole === 'ADMIN') {
+      return <Navigate to={createPageUrl('AdminDashboard')} replace />;
+    }
+    // Non-admin users shouldn't be authenticated in this admin panel
+    // They'll be logged out or stay on login page
   }
 
   // User is not authenticated - allow access to auth pages

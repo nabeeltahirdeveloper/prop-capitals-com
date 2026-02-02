@@ -49,8 +49,16 @@ export default function SignIn() {
       // Use the login function from AuthContext to handle token and user data
       login(data.accessToken, data.user);
 
-      // Redirect to trader dashboard
-      navigate(createPageUrl('TraderDashboard'));
+      // Only allow admin users
+      const userRole = data.user?.role;
+      if (userRole === 'ADMIN') {
+        navigate(createPageUrl('AdminDashboard'));
+      } else {
+        // Non-admin users are not allowed
+        setError('Access denied. Admin credentials required.');
+        // Logout the non-admin user
+        localStorage.removeItem('token');
+      }
     },
     onError: (error) => {
       // Extract error message from response
@@ -77,15 +85,15 @@ export default function SignIn() {
       <div className="flex-1 flex items-center justify-center p-4 sm:p-8">
         <div className="w-full max-w-md">
           {/* Logo */}
-          <Link to={createPageUrl('Home')} className="flex items-center gap-2 mb-8">
+          <div className="flex items-center gap-2 mb-8">
             <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
               <TrendingUp className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-white">Prop Capitals</span>
-          </Link>
+            <span className="text-xl font-bold text-white">Prop Capitals Admin</span>
+          </div>
 
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">{t('signIn.title')}</h1>
-          <p className="text-slate-400 mb-8">{t('signIn.subtitle')}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Admin Login</h1>
+          <p className="text-slate-400 mb-8">Sign in to access the admin dashboard</p>
 
           {error && (
             <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg mb-6">
@@ -167,11 +175,8 @@ export default function SignIn() {
           </form>
 
           <div className="mt-8 text-center">
-            <p className="text-slate-400">
-              {t('signIn.noAccount')}{' '}
-              <Link to={createPageUrl('SignUp')} className="text-emerald-400 hover:text-emerald-300 font-medium">
-                {t('signIn.createAccount')}
-              </Link>
+            <p className="text-slate-400 text-sm">
+              Admin access only. Contact your system administrator for credentials.
             </p>
           </div>
         </div>
@@ -195,12 +200,12 @@ export default function SignIn() {
                 <Shield className="w-6 h-6 text-emerald-400" />
               </div>
               <div>
-                <p className="text-white font-semibold">{t('signIn.secureTrading')}</p>
-                <p className="text-sm text-slate-400">{t('signIn.fundsProtected')}</p>
+                <p className="text-white font-semibold">Secure Admin Access</p>
+                <p className="text-sm text-slate-400">Protected Dashboard</p>
               </div>
             </div>
             <p className="text-slate-300">
-              {t('signIn.securityDescription')}
+              Administrative panel with enterprise-grade security. All actions are logged and monitored for compliance.
             </p>
           </Card>
         </div>
