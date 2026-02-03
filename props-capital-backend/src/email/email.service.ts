@@ -42,9 +42,9 @@ export class EmailService {
     try {
       sgMail.setApiKey(apiKey);
       this.isConfigured = true;
-      this.logger.log('✅ SendGrid configured successfully');
+      this.logger.log('SendGrid configured successfully');
     } catch (error) {
-      this.logger.error(`❌ Failed to configure SendGrid: ${error.message}`);
+      this.logger.error(` Failed to configure SendGrid: ${error.message}`);
     }
   }
 
@@ -55,13 +55,13 @@ export class EmailService {
   private async sendWithTimeout(mailOptions: sgMail.MailDataRequired): Promise<EmailResult> {
     // If disabled, log and return success (for dev/test environments)
     if (!this.isEnabled) {
-      this.logger.log(`📧 [DEV MODE] Would send email to: ${mailOptions.to}, subject: "${mailOptions.subject}"`);
+      this.logger.log(` [DEV MODE] Would send email to: ${mailOptions.to}, subject: "${mailOptions.subject}"`);
       return { success: true, messageId: 'dev-mode-disabled' };
     }
 
     // If not configured, fail gracefully
     if (!this.isConfigured) {
-      this.logger.error('❌ Email not sent: SendGrid is not configured');
+      this.logger.error(' Email not sent: SendGrid is not configured');
       return { success: false, error: 'Email service not configured', errorCode: 'NOT_CONFIGURED' };
     }
 
@@ -88,7 +88,7 @@ export class EmailService {
       const response = Array.isArray(result) ? result[0] : result;
       const messageId = response?.headers?.['x-message-id'] || 'unknown';
 
-      this.logger.log(`✅ Email sent successfully to ${mailOptions.to} (messageId: ${messageId})`);
+      this.logger.log(` Email sent successfully to ${mailOptions.to} (messageId: ${messageId})`);
       
       return { success: true, messageId };
     } catch (error) {
@@ -199,6 +199,24 @@ export class EmailService {
             Reset Password
           </a>
           <p style="margin: 12px 0 0; color: #555;">This link expires in 1 hour. If you didn't request this, you can safely ignore this email.</p>
+        </div>
+      `,
+    });
+  }
+    async sendPasswordResetOtp(to: string, otp: string): Promise<EmailResult> {
+    return this.sendWithTimeout({
+      to,
+      from: this.fromEmail,
+      subject: 'Your Password Reset OTP',
+      text: `Your password reset code is: ${otp}. It expires in 10 minutes.`,
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.5;">
+          <h2 style="margin: 0 0 12px;">Password Reset Request</h2>
+          <p style="margin: 0 0 12px;">Use this code to reset your password:</p>
+          <div style="font-size: 28px; font-weight: bold; letter-spacing: 4px; margin: 12px 0; color: #DC2626;">
+            ${otp}
+          </div>
+          <p style="margin: 12px 0 0; color: #555;">This code expires in 10 minutes. If you did not request this code, please ignore this email.</p>
         </div>
       `,
     });

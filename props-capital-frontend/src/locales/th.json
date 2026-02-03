@@ -454,6 +454,8 @@
     "account": "บัญชี",
     "payment": "การชำระเงิน",
     "payout": "การจ่ายเงิน",
+           "ticketCreated":"สร้างตั๋วแล้ว",
+            "ticketCreatedDesc":"ตั๋วที่สร้างแล้ว",
     "technical": "เทคนิค",
     "other": "อื่นๆ",
     "priority": "ความสำคัญ",

@@ -49,6 +49,7 @@ import TradingTerminal from "./TradingTerminal";
 import RuleCompliance from "./RuleCompliance";
 
 import SignIn from "./SignIn";
+import ForgotPassword from "./ForgotPassword.jsx";
 
 import SignUp from "./SignUp";
 
@@ -66,6 +67,7 @@ import ProtectedRoute, {
   PublicOnlyRoute,
 } from "../components/ProtectedRoute";
 import { PriceProviderWithRouter } from "../contexts/PriceContext";
+import ForgotPassword from "./ForgotPassword.jsx";
 
 const PAGES = {
   Home: Home,
@@ -117,6 +119,7 @@ const PAGES = {
   SignIn: SignIn,
 
   SignUp: SignUp,
+  ForgotPassword: ForgotPassword,
 
   TraderBuyChallenge: TraderBuyChallenge,
 };
@@ -167,6 +170,11 @@ function PagesContent() {
                   </PublicOnlyRoute>
                 }
               />
+              <Route
+                path="/forgot-password"
+                element={<ForgotPasswordEmail />}
+              />
+
               <Route
                 path="/login"
                 element={<Navigate to="/SignIn" replace />}

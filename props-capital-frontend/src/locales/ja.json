@@ -370,6 +370,8 @@
     "user": "ユーザー",
     "admin": "管理者",
     "trader": "トレーダー",
+     "ticketCreated":"チケットが作成されました",
+                    "ticketCreatedDesc":"チケット作成説明",
     "personalInfo": "個人情報",
     "security": "セキュリティ",
     "verification": "本人確認",

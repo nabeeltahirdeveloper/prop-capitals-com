@@ -60,5 +60,15 @@ export class AuthController {
     return this.authService.changePassword(req.user.userId, body.currentPassword, body.newPassword);
 
   }
+  @Post('forgot-password')
+async forgotPassword(@Body('email') email: string) {
+  return this.authService.sendResetPasswordOtp(email);
+}
+
+@Post('reset-password')
+async resetPassword(@Body() body: { email: string; otp: string; newPassword: string }) {
+  const { email, otp, newPassword } = body;
+  return this.authService.verifyOtpAndResetPassword(email, otp, newPassword);
+}
 
 }

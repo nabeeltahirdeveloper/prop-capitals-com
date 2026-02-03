@@ -451,6 +451,8 @@
     "payment": "Платёж",
     "payout": "Вывод средств",
     "technical": "Техническая",
+      "ticketCreated":"билетСоздан",
+            "ticketCreatedDesc":"ticketCreatedDesc",
     "other": "Другое",
     "priority": "Приоритет",
     "low": "Низкий",

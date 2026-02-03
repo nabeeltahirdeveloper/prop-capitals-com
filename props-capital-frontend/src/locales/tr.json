@@ -448,6 +448,8 @@
     "category": "Kategori",
     "select": "Seç",
     "account": "Hesap",
+            "ticketCreated":"biletOluşturuldu",
+                "ticketCreatedDesc":"biletOluşturulmaAçıklaması",
     "payment": "Ödeme",
     "payout": "Çekim",
     "technical": "Teknik",

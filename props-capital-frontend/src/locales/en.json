@@ -450,6 +450,8 @@
     "subject": "Subject",
     "subjectPlaceholder": "Brief description of your issue",
     "category": "Category",
+        "ticketCreated":"ticketCreated",
+                     "ticketCreatedDesc":"ticketCreatedDesc",
     "select": "Select",
     "account": "Account",
     "payment": "Payment",
