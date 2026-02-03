@@ -1,16 +1,19 @@
 generator client {
-  provider   = "prisma-client-js"
-  engineType = "binary"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
   id                     String                  @id @default(cuid())
   email                  String                  @unique
-  password               String
+ password               String
+resetPasswordOtp     String?
+resetPasswordExpiry    DateTime?
+
   role                   UserRole                @default(TRADER)
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
@@ -106,7 +109,6 @@ model TradingAccount {
   id                String               @id @default(cuid())
   userId            String
   challengeId       String
-  platform          ChallengePlatform? // User's selected trading platform
   phase             TradingPhase         @default(PHASE1)
   status            TradingAccountStatus @default(ACTIVE)
   balance           Float                @default(0)
@@ -122,6 +124,7 @@ model TradingAccount {
   todayStartEquity  Float?
   dailyLossViolated Boolean              @default(false)
   drawdownViolated  Boolean              @default(false)
+  platform          ChallengePlatform?
   equityShots       EquitySnapshot[]
   payouts           Payout[]
   pendingOrders     PendingOrder[]
@@ -226,11 +229,11 @@ model Payout {
   amount           Int
   currency         String         @default("USD")
   status           PayoutStatus   @default(PENDING)
-  paymentMethod    String?
-  paymentDetails   String?
-  processedAt      DateTime?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
+  paymentDetails   String?
+  paymentMethod    String?
+  processedAt      DateTime?
   tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
   user             User           @relation(fields: [userId], references: [id])
 }
@@ -289,17 +292,109 @@ model ScalingRequest {
   status           String         @default("PENDING")
   requestedAt      DateTime       @default(now())
   approvedAt       DateTime?
+  newProfitSplit   Float          @default(85.0)
+  oldProfitSplit   Float          @default(80.0)
+  processedAt      DateTime?
+  reason           String?
   tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
 }
 
 model Coupon {
-  id          String    @id @default(cuid())
-  code        String    @unique
-  discountPct Int
-  isActive    Boolean   @default(true)
-  expiresAt   DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id           String    @id @default(cuid())
+  code         String    @unique
+  discountPct  Int
+  isActive     Boolean   @default(true)
+  expiresAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  discountType String    @default("percentage")
+  maxUses      Int?
+  usedCount    Int       @default(0)
+}
+
+model Lead {
+  id               String           @id @default(cuid())
+  personName       String
+  onlineStatus     LeadOnlineStatus @default(OFFLINE)
+  leadReceivedDate DateTime         @default(now())
+  email            String
+  phoneNumber      String?
+  country          String?
+  source           String?
+  leadStatus       LeadStatus       @default(NEW)
+  ftdAmount        Float?
+  paymentMethod    PaymentMethod?
+  paymentProvider  PaymentProvider?
+  priority         LeadPriority     @default(MEDIUM)
+  assignedAgent    String?
+  callAttempts     Int              @default(0)
+  age              Int?
+  salary           String?
+  jobIndustry      String?
+  workTitle        String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  affiliateId      String?
+  convertedAt      DateTime?
+  funnelName       String?
+  subParameters    String?
+  activities       LeadActivity[]
+
+  @@index([leadStatus])
+  @@index([assignedAgent])
+  @@index([leadReceivedDate])
+}
+
+model CRMMeeting {
+  id          String   @id @default(cuid())
+  title       String
+  clientName  String
+  startTime   DateTime
+  duration    Int
+  type        String
+  status      String   @default("SCHEDULED")
+  description String?
+  agentName   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([startTime])
+  @@index([status])
+}
+
+model LeadActivity {
+  id           String           @id @default(cuid())
+  leadId       String
+  activityType LeadActivityType
+  notes        String?
+  createdAt    DateTime         @default(now())
+  lead         Lead             @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+  @@index([createdAt])
+}
+
+model ApiKey {
+  id         String    @id
+  name       String
+  key        String    @unique
+  isActive   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+
+  @@index([key])
+}
+
+model ContactMessage {
+  id        String          @id
+  name      String
+  email     String
+  category  ContactCategory @default(GENERAL)
+  subject   String
+  message   String
+  status    TicketStatus    @default(OPEN)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime
 }
 
 enum UserRole {
@@ -410,68 +505,6 @@ enum TicketStatus {
   CLOSED
 }
 
-model Lead {
-  id               String           @id @default(cuid())
-  personName       String
-  onlineStatus     LeadOnlineStatus @default(OFFLINE)
-  leadReceivedDate DateTime         @default(now())
-  email            String
-  phoneNumber      String?
-  country          String?
-  source           String?
-  leadStatus       LeadStatus       @default(NEW)
-  ftdAmount        Float?
-  paymentMethod    PaymentMethod?
-  paymentProvider  PaymentProvider?
-  priority         LeadPriority     @default(MEDIUM)
-  assignedAgent    String?
-  callAttempts     Int              @default(0)
-  age              Int?
-  salary           String?
-  jobIndustry      String?
-  workTitle        String?
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-  affiliateId      String?
-  convertedAt      DateTime?
-  funnelName       String?
-  subParameters    String?
-  activities       LeadActivity[]
-
-  @@index([leadStatus])
-  @@index([assignedAgent])
-  @@index([leadReceivedDate])
-}
-
-model CRMMeeting {
-  id          String   @id @default(cuid())
-  title       String
-  clientName  String
-  startTime   DateTime
-  duration    Int // in minutes
-  type        String // "Call", "Meeting", etc.
-  status      String   @default("SCHEDULED") // "SCHEDULED", "COMPLETED", "CANCELLED"
-  description String?
-  agentName   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([startTime])
-  @@index([status])
-}
-
-model LeadActivity {
-  id           String           @id @default(cuid())
-  leadId       String
-  activityType LeadActivityType
-  notes        String?
-  createdAt    DateTime         @default(now())
-  lead         Lead             @relation(fields: [leadId], references: [id], onDelete: Cascade)
-
-  @@index([leadId])
-  @@index([createdAt])
-}
-
 enum LeadOnlineStatus {
   ONLINE
   OFFLINE
@@ -519,4 +552,13 @@ enum LeadActivityType {
   NOTE
   STATUS_CHANGE
   FIELD_UPDATE
+}
+
+enum ContactCategory {
+  GENERAL
+  ACCOUNT
+  PAYMENT
+  PAYOUT
+  TECHNICAL
+  OTHER
 }

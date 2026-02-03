@@ -79,32 +79,6 @@ export default function SignIn() {
 
   // }
 
-  const forgotPasswordMutation = useMutation({
-    mutationFn: async (email) => {
-      const response = await api.post("/auth/forgot-password", { email });
-      return response.data;
-    },
-    onSuccess: (data) => {
-      setSuccessMessage("Password reset email sent."); // or use translation: t('signIn.forgotPassword.emailSent')
-    },
-    onError: (error) => {
-      const errorMessage =
-        error.response?.data?.message ||
-        error.response?.data?.error ||
-        error.message ||
-        "Something went wrong.";
-      setError(errorMessage);
-    },
-  });
-  const handleForgotPassword = () => {
-    if (!email) {
-      setError("Please enter your email."); // or use translation: t('signIn.errors.enterEmail')
-      return;
-    }
-    setError("");
-    setSuccessMessage("");
-    forgotPasswordMutation.mutate(email);
-  };
   return (
     <div className="min-h-screen bg-slate-950 flex">
       {/* Left Side - Form */}
@@ -195,13 +169,12 @@ export default function SignIn() {
                   {t("signIn.rememberMe")}
                 </Label>
               </div>
-              <button
-                type="button"
-                className="text-sm  text-emerald-400 hover:text-emerald-300"
-                onClick={handleForgotPassword}
+              <Link
+                to={createPageUrl("ForgotPassword")}
+                className="text-sm text-emerald-400 hover:text-emerald-300"
               >
                 {t("signIn.forgotPassword")}
-              </button>
+              </Link>
             </div>
 
             <Button
