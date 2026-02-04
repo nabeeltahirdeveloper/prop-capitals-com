@@ -1,369 +1,306 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '../utils';
-import { useTranslation } from '../contexts/LanguageContext';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import {
-  HelpCircle,
-  Search,
-  BookOpen,
-  Target,
-  Shield,
-  Wallet,
-  TrendingUp,
-  MessageCircle,
-  ArrowRight,
-  Zap,
-  Users,
-  Clock,
-  Settings
-} from 'lucide-react';
+import { ChevronDown, Search, MessageCircle, Mail, Send } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { useTheme } from '@/contexts/ThemeContext';
 
-export default function FAQ() {
-  const { t } = useTranslation();
+const faqCategories = [
+  { id: 'general', name: 'General', count: 8 },
+  { id: 'challenges', name: 'Challenges', count: 6 },
+  { id: 'trading', name: 'Trading Rules', count: 7 },
+  { id: 'payouts', name: 'Payouts', count: 5 },
+  { id: 'platforms', name: 'Platforms', count: 4 }
+];
+
+const faqData = {
+  general: [
+    {
+      question: "What is Prop Capitals?",
+      answer: "Prop Capitals is a proprietary trading firm that provides talented traders with funded accounts to trade with. We handle all the risk while you keep up to 90% of the profits you generate."
+    },
+    {
+      question: "How does the funding work?",
+      answer: "After you pass our evaluation challenge (1-Step or 2-Step), you receive a funded account with our capital. You trade normally and we split the profits - you keep up to 90%, we keep 10%."
+    },
+    {
+      question: "Is Prop Capitals legitimate?",
+      answer: "Yes, Prop Capitals is a legitimate proprietary trading firm with thousands of funded traders worldwide. We have paid out over $15 million to our traders and have a 4.8 rating on Trustpilot."
+    },
+    {
+      question: "What countries do you accept traders from?",
+      answer: "We accept traders from most countries worldwide. However, due to regulatory restrictions, we cannot accept traders from certain jurisdictions. Please check our terms of service for the complete list."
+    },
+    {
+      question: "Do I need trading experience?",
+      answer: "While we don't require specific credentials, prop trading is suited for traders with a solid understanding of the markets and risk management. We provide free education with every challenge purchase to help you succeed."
+    },
+    {
+      question: "What is the minimum age requirement?",
+      answer: "You must be at least 18 years old to participate in our funding programs."
+    },
+    {
+      question: "Can I have multiple accounts?",
+      answer: "Yes, you can have multiple funded accounts with us. Many of our successful traders manage several accounts simultaneously to maximize their earning potential."
+    },
+    {
+      question: "Is there a time limit to pass the challenge?",
+      answer: "No! Unlike many other prop firms, we have no time limit on our challenges. Take as long as you need to hit your profit targets."
+    }
+  ],
+  challenges: [
+    {
+      question: "What's the difference between 1-Step and 2-Step?",
+      answer: "The 1-Step Challenge has one evaluation phase with a 10% profit target and offers an 85% profit split. The 2-Step Challenge has two phases (8% and 5% profit targets) but offers a higher 90% profit split."
+    },
+    {
+      question: "What happens if I fail a challenge?",
+      answer: "If you breach the rules during a challenge, you can retry with a new purchase. We offer discounts of up to 20% on retry accounts. Your trading data is saved for analysis to help you improve."
+    },
+    {
+      question: "Is the challenge fee refundable?",
+      answer: "Yes! We refund 100% of your challenge fee with your first payout once you become a funded trader. This effectively makes your evaluation free."
+    },
+    {
+      question: "Can I upgrade my account size?",
+      answer: "Yes, once funded, you can participate in our scaling program. Hit profit milestones and your account size can grow up to $5,000,000."
+    },
+    {
+      question: "What account sizes are available?",
+      answer: "We offer account sizes ranging from $5,000 to $200,000 for both 1-Step and 2-Step challenges. Choose the size that matches your trading style and risk tolerance."
+    },
+    {
+      question: "Are there any minimum trading days?",
+      answer: "No, there are no minimum trading days required. You can complete the challenge as quickly as your trading allows, though we encourage sustainable trading practices."
+    }
+  ],
+  trading: [
+    {
+      question: "What trading strategies are allowed?",
+      answer: "We allow all legitimate trading strategies including scalping, swing trading, day trading, and position trading. Expert Advisors (EAs) and automated trading are also permitted."
+    },
+    {
+      question: "Can I trade during news events?",
+      answer: "Yes, news trading is fully allowed on our platform. You can trade during high-impact economic events without restrictions."
+    },
+    {
+      question: "Can I hold positions overnight?",
+      answer: "Yes, overnight holding is allowed. You can also hold positions over weekends with no restrictions."
+    },
+    {
+      question: "What is the daily drawdown limit?",
+      answer: "The daily drawdown limit is 4% for 1-Step and 5% for 2-Step challenges. This is calculated based on your previous day's closing balance."
+    },
+    {
+      question: "What is the maximum drawdown?",
+      answer: "The maximum drawdown is 8% for 1-Step and 10% for 2-Step challenges. This is the maximum your account can decline from its highest point."
+    },
+    {
+      question: "Can I use copy trading services?",
+      answer: "Yes, copy trading is allowed. However, you must be the account owner and cannot share your account credentials with others."
+    },
+    {
+      question: "What instruments can I trade?",
+      answer: "You can trade Forex (50+ pairs), Metals (Gold, Silver), Indices (US30, NAS100, SPX500), and Cryptocurrencies (BTC, ETH). Over 100 instruments available."
+    }
+  ],
+  payouts: [
+    {
+      question: "How fast are payouts processed?",
+      answer: "Our average payout processing time is under 90 minutes - one of the fastest in the industry. Most payouts are completed within a few hours of request."
+    },
+    {
+      question: "What is the minimum payout amount?",
+      answer: "The minimum payout amount is $100. You can request payouts as often as you like once you meet this threshold."
+    },
+    {
+      question: "What payout methods are available?",
+      answer: "We support multiple payout methods including bank wire transfer, cryptocurrency (BTC, ETH, USDT), and popular e-wallets like Wise and Payoneer."
+    },
+    {
+      question: "Is there a payout schedule?",
+      answer: "No fixed schedule - you can request payouts anytime once you have profits. Many traders request weekly or bi-weekly payouts."
+    },
+    {
+      question: "What is the profit split?",
+      answer: "The profit split is 85% for 1-Step funded traders and 90% for 2-Step funded traders. You keep the majority of every dollar you make."
+    }
+  ],
+  platforms: [
+    {
+      question: "What trading platforms do you offer?",
+      answer: "We offer MetaTrader 5 (MT5), TradeLocker, MatchTrader, and cTrader. You can choose your preferred platform when starting your challenge."
+    },
+    {
+      question: "Can I use Expert Advisors (EAs)?",
+      answer: "Yes, EAs and automated trading systems are fully allowed on all our platforms. Use any strategy that works for you."
+    },
+    {
+      question: "Is there a mobile trading app?",
+      answer: "Yes, all our platforms have mobile apps available for iOS and Android, allowing you to trade on the go."
+    },
+    {
+      question: "Can I change platforms after starting?",
+      answer: "You can choose your platform when starting a new challenge or funded account. Contact support if you need to discuss platform changes for existing accounts."
+    }
+  ]
+};
+
+const FAQ = () => {
+  const { isDark } = useTheme();
+  const [activeCategory, setActiveCategory] = useState('general');
+  const [openQuestion, setOpenQuestion] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const categories = [
-    {
-      id: 'getting-started',
-      title: t('faq.categories.gettingStarted.title'),
-      icon: Zap,
-      color: 'emerald',
-      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop',
-      faqs: [
-        {
-          q: t('faq.categories.gettingStarted.faqs.whatIsPropCapitals.q'),
-          a: t('faq.categories.gettingStarted.faqs.whatIsPropCapitals.a')
-        },
-        {
-          q: t('faq.categories.gettingStarted.faqs.howToStartChallenge.q'),
-          a: t('faq.categories.gettingStarted.faqs.howToStartChallenge.a')
-        },
-        {
-          q: t('faq.categories.gettingStarted.faqs.tradingPlatforms.q'),
-          a: t('faq.categories.gettingStarted.faqs.tradingPlatforms.a')
-        },
-        {
-          q: t('faq.categories.gettingStarted.faqs.howToPass.q'),
-          a: t('faq.categories.gettingStarted.faqs.howToPass.a')
-        },
-        {
-          q: t('faq.categories.gettingStarted.faqs.evaluationTypes.q'),
-          a: t('faq.categories.gettingStarted.faqs.evaluationTypes.a')
-        }
-      ]
-    },
-    {
-      id: 'trading-rules',
-      title: t('faq.categories.tradingRules.title'),
-      icon: Target,
-      color: 'cyan',
-      image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop',
-      faqs: [
-        {
-          q: t('faq.categories.tradingRules.faqs.drawdownExplained.q'),
-          a: t('faq.categories.tradingRules.faqs.drawdownExplained.a')
-        },
-        {
-          q: t('faq.categories.tradingRules.faqs.maxDrawdownExplained.q'),
-          a: t('faq.categories.tradingRules.faqs.maxDrawdownExplained.a')
-        },
-        {
-          q: t('faq.categories.tradingRules.faqs.profitTargets.q'),
-          a: t('faq.categories.tradingRules.faqs.profitTargets.a')
-        },
-        {
-          q: t('faq.categories.tradingRules.faqs.tradingDays.q'),
-          a: t('faq.categories.tradingRules.faqs.tradingDays.a')
-        },
-        {
-          q: t('faq.categories.tradingRules.faqs.allowedStrategies.q'),
-          a: t('faq.categories.tradingRules.faqs.allowedStrategies.a')
-        },
-        {
-          q: t('faq.categories.tradingRules.faqs.leverage.q'),
-          a: t('faq.categories.tradingRules.faqs.leverage.a')
-        }
-      ]
-    },
-    {
-      id: 'violations',
-      title: t('faq.categories.violations.title'),
-      icon: Shield,
-      color: 'amber',
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop',
-      faqs: [
-        {
-          q: t('faq.categories.violations.faqs.whatTriggersViolation.q'),
-          a: t('faq.categories.violations.faqs.whatTriggersViolation.a')
-        },
-        {
-          q: t('faq.categories.violations.faqs.freeRetry.q'),
-          a: t('faq.categories.violations.faqs.freeRetry.a')
-        },
-        {
-          q: t('faq.categories.violations.faqs.afterFailing.q'),
-          a: t('faq.categories.violations.faqs.afterFailing.a')
-        },
-        {
-          q: t('faq.categories.violations.faqs.commonMistakes.q'),
-          a: t('faq.categories.violations.faqs.commonMistakes.a')
-        }
-      ]
-    },
-    {
-      id: 'payouts',
-      title: t('faq.categories.payouts.title'),
-      icon: Wallet,
-      color: 'purple',
-      image: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=400&h=300&fit=crop',
-      faqs: [
-        {
-          q: t('faq.categories.payouts.faqs.profitSplit.q'),
-          a: t('faq.categories.payouts.faqs.profitSplit.a')
-        },
-        {
-          q: t('faq.categories.payouts.faqs.payoutProcess.q'),
-          a: t('faq.categories.payouts.faqs.payoutProcess.a')
-        },
-        {
-          q: t('faq.categories.payouts.faqs.paymentMethods.q'),
-          a: t('faq.categories.payouts.faqs.paymentMethods.a')
-        },
-        {
-          q: t('faq.categories.payouts.faqs.payoutFrequency.q'),
-          a: t('faq.categories.payouts.faqs.payoutFrequency.a')
-        }
-      ]
-    },
-    {
-      id: 'scaling',
-      title: t('faq.categories.scaling.title'),
-      icon: TrendingUp,
-      color: 'pink',
-      image: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=400&h=300&fit=crop',
-      faqs: [
-        {
-          q: t('faq.categories.scaling.faqs.howScalingWorks.q'),
-          a: t('faq.categories.scaling.faqs.howScalingWorks.a')
-        },
-        {
-          q: t('faq.categories.scaling.faqs.scalingExample.q'),
-          a: t('faq.categories.scaling.faqs.scalingExample.a')
-        },
-        {
-          q: t('faq.categories.scaling.faqs.scalingReset.q'),
-          a: t('faq.categories.scaling.faqs.scalingReset.a')
-        }
-      ]
-    },
-    {
-      id: 'account',
-      title: t('faq.categories.account.title'),
-      icon: Settings,
-      color: 'slate',
-      image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&h=300&fit=crop',
-      faqs: [
-        {
-          q: t('faq.categories.account.faqs.multipleAccounts.q'),
-          a: t('faq.categories.account.faqs.multipleAccounts.a')
-        },
-        {
-          q: t('faq.categories.account.faqs.inactivity.q'),
-          a: t('faq.categories.account.faqs.inactivity.a')
-        },
-        {
-          q: t('faq.categories.account.faqs.refund.q'),
-          a: t('faq.categories.account.faqs.refund.a')
-        },
-        {
-          q: t('faq.categories.account.faqs.contactSupport.q'),
-          a: t('faq.categories.account.faqs.contactSupport.a')
-        }
-      ]
-    }
-  ];
-
-  const filteredCategories = categories.map(category => ({
-    ...category,
-    faqs: category.faqs.filter(faq =>
-      faq.q.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      faq.a.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  })).filter(category => category.faqs.length > 0);
+  const filteredFaqs = searchQuery
+    ? Object.values(faqData).flat().filter(faq => 
+        faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : faqData[activeCategory];
 
   return (
-    <div className="min-h-screen bg-slate-950 pt-16 sm:pt-20 md:pt-24 pb-12 md:pb-16 overflow-x-hidden">
+    <div className={`min-h-screen pt-20 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      <section className="py-12 lg:py-20 relative overflow-hidden">
         <div className="absolute inset-0">
-          <img
-            src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1920&h=600&fit=crop"
-            alt="FAQ"
-            className="w-full h-full object-cover opacity-10"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-950/90 to-slate-950" />
+          <div className={`absolute top-1/4 left-1/4 w-64 lg:w-96 h-64 lg:h-96 rounded-full blur-3xl ${isDark ? 'bg-amber-500/10' : 'bg-amber-500/5'}`}></div>
         </div>
 
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-12">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-6"
-            >
-              <HelpCircle className="w-4 h-4 text-emerald-400" />
-              <span className="text-sm text-emerald-400">{t('faq.helpCenter')}</span>
-            </motion.div>
+            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">Support</span>
+            <h1 className={`text-3xl sm:text-4xl lg:text-5xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              Frequently Asked <span className="text-amber-500">Questions</span>
+            </h1>
+            <p className={`text-base lg:text-lg max-w-2xl mx-auto mb-8 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
+              Find answers to common questions about Prop Capitals funding programs, trading rules, and payouts.
+            </p>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 md:mb-6"
-            >
-              {t('faq.title')}
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-xl text-slate-400 max-w-2xl mx-auto mb-8"
-            >
-              {t('faq.subtitle')}
-            </motion.p>
-
-            {/* Search */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="relative max-w-xl mx-auto"
-            >
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            {/* Search Bar */}
+            <div className="relative max-w-xl mx-auto">
+              <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-400' : 'text-slate-400'}`} />
               <Input
-                placeholder={t('faq.searchPlaceholder')}
+                type="text"
+                placeholder="Search questions..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 h-14 bg-slate-900 border-slate-800 text-white text-lg rounded-xl"
+                className={`w-full pl-12 pr-4 py-4 rounded-xl focus:border-amber-500/50 ${
+                  isDark 
+                    ? 'bg-[#12161d] border-white/10 text-white placeholder:text-gray-500' 
+                    : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400'
+                }`}
               />
-            </motion.div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Category Cards */}
-        {!searchQuery && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-8 md:mb-12">
-            {categories.slice(0, 6).map((category, i) => (
-              <motion.div
-                key={category.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-              >
-                <Card
-                  className="bg-slate-900 border-slate-800 p-3 sm:p-4 cursor-pointer hover:border-emerald-500/50 transition-all group"
+      {/* FAQ Content */}
+      <section className={`py-12 lg:py-16 ${isDark ? 'bg-gradient-to-b from-[#0a0d12] to-[#0d1117]' : 'bg-white'}`}>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Category Tabs */}
+          {!searchQuery && (
+            <div className="flex flex-wrap justify-center gap-2 mb-10 overflow-x-auto pb-2">
+              {faqCategories.map((category) => (
+                <button
+                  key={category.id}
                   onClick={() => {
-                    document.getElementById(category.id)?.scrollIntoView({ behavior: 'smooth' });
+                    setActiveCategory(category.id);
+                    setOpenQuestion(null);
                   }}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
+                    activeCategory === category.id
+                      ? 'bg-amber-400 text-[#0a0d12]'
+                      : isDark 
+                        ? 'bg-[#12161d] text-gray-400 hover:text-white border border-white/10' 
+                        : 'bg-slate-100 text-slate-500 hover:text-slate-900 border border-slate-200'
+                  }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 bg-${category.color}-500/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                      <category.icon className={`w-5 h-5 text-${category.color}-400`} />
-                    </div>
-                    <div>
-                      <p className="text-white font-medium">{category.title}</p>
-                      <p className="text-xs text-slate-400">{category.faqs.length} {t('faq.questions')}</p>
-                    </div>
+                  {category.name}
+                  <span className={`ml-2 text-xs ${activeCategory === category.id ? 'text-[#0a0d12]/70' : isDark ? 'text-gray-500' : 'text-slate-400'}`}>
+                    ({category.count})
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Search Results Label */}
+          {searchQuery && (
+            <div className="mb-6">
+              <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>
+                Found <span className="text-amber-500 font-semibold">{filteredFaqs.length}</span> results for "{searchQuery}"
+              </p>
+            </div>
+          )}
+
+          {/* FAQ Accordion */}
+          <div className="space-y-4">
+            {filteredFaqs.map((faq, index) => (
+              <div
+                key={index}
+                className={`rounded-2xl border transition-all ${
+                  openQuestion === index 
+                    ? 'border-amber-500/30' 
+                    : isDark ? 'border-white/10' : 'border-slate-200'
+                } ${isDark ? 'bg-[#12161d]' : 'bg-white'}`}
+              >
+                <button
+                  onClick={() => setOpenQuestion(openQuestion === index ? null : index)}
+                  className="w-full px-6 py-5 flex items-center justify-between text-left"
+                >
+                  <span className={`font-semibold pr-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{faq.question}</span>
+                  <ChevronDown className={`w-5 h-5 text-amber-500 flex-shrink-0 transition-transform ${
+                    openQuestion === index ? 'rotate-180' : ''
+                  }`} />
+                </button>
+                {openQuestion === index && (
+                  <div className="px-6 pb-5">
+                    <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{faq.answer}</p>
                   </div>
-                </Card>
-              </motion.div>
+                )}
+              </div>
             ))}
           </div>
-        )}
-
-        {/* FAQ Categories */}
-        <div className="space-y-8">
-          {(searchQuery ? filteredCategories : categories).map((category, i) => (
-            <motion.div
-              key={category.id}
-              id={category.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-            >
-              <Card className="bg-slate-900 border-slate-800 overflow-hidden">
-                <div className="relative h-32 overflow-hidden">
-                  <img
-                    src={category.image}
-                    alt={category.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent" />
-                  <div className="absolute inset-0 flex items-center p-6">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-14 h-14 bg-${category.color}-500/20 backdrop-blur rounded-xl flex items-center justify-center`}>
-                        <category.icon className={`w-7 h-7 text-${category.color}-400`} />
-                      </div>
-                      <div>
-                        <h2 className="text-2xl font-bold text-white">{category.title}</h2>
-                        <p className="text-slate-400">{category.faqs.length} {t('faq.questions')}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-4 md:p-6">
-                  <Accordion type="single" collapsible className="space-y-2">
-                    {category.faqs.map((faq, j) => (
-                      <AccordionItem key={j} value={`${i}-${j}`} className="border-slate-800 bg-slate-800/30 rounded-lg px-4">
-                        <AccordionTrigger className="text-left text-slate-200 hover:text-emerald-400">
-                          {faq.q}
-                        </AccordionTrigger>
-                        <AccordionContent className="text-slate-400 leading-relaxed">
-                          {faq.a}
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                </div>
-              </Card>
-            </motion.div>
-          ))}
         </div>
+      </section>
 
-        {/* Contact CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mt-12"
-        >
-          <Card className="bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border-emerald-500/30 p-4 md:p-8 text-center">
-            <div className="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <MessageCircle className="w-8 h-8 text-emerald-400" />
-            </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">{t('faq.stillHaveQuestions')}</h3>
-            <p className="text-slate-400 mb-6">{t('faq.supportDescription')}</p>
-            <Link to={createPageUrl('Contact')}>
-              <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600">
-                {t('faq.contactSupport')}
-                <ArrowRight className="ml-2 w-4 h-4" />
+      {/* Contact Section */}
+      <section className={`py-16 lg:py-20 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className={`rounded-3xl p-8 lg:p-12 border text-center ${
+            isDark 
+              ? 'bg-gradient-to-br from-[#12161d] to-[#0d1117] border-white/10' 
+              : 'bg-white border-slate-200'
+          }`}>
+            <h2 className={`text-2xl lg:text-3xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              Still Have Questions?
+            </h2>
+            <p className={`mb-8 max-w-lg mx-auto ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
+              Our support team is available 24/7 to help you with any questions or concerns.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-8 py-6 h-auto font-bold w-full sm:w-auto">
+                <MessageCircle className="w-5 h-5 mr-2" />
+                Live Chat
               </Button>
-            </Link>
-          </Card>
-        </motion.div>
-      </div>
+              <Button variant="outline" className={`rounded-full px-8 py-6 h-auto font-medium w-full sm:w-auto ${
+                isDark 
+                  ? 'border-white/20 text-white hover:bg-white/5' 
+                  : 'border-slate-300 text-slate-700 hover:bg-slate-100'
+              }`}>
+                <Mail className="w-5 h-5 mr-2" />
+                Email Support
+              </Button>
+            </div>
+            <p className={`text-sm mt-6 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
+              Average response time: <span className="text-emerald-400 font-semibold">Under 60 seconds</span>
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
-}
+};
+
+export default FAQ;
