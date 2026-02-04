@@ -1,12 +1,12 @@
+import React from 'react';
 import { TrendingUp, Users, DollarSign, Star, Clock, Award, ArrowRight } from 'lucide-react';
 import { Button } from './ui/button';
 import { Link } from 'react-router-dom';
-// import { useTheme } from '../context/ThemeContext';
-import { stats } from './data/mockData.js';
+import { useTheme } from '@/contexts/ThemeContext';
+import { stats } from './data/mockData';
 
 const StatsSection = () => {
-  // const { isDark } = useTheme();
-  const isDark = true;
+  const { isDark } = useTheme();
 
   const statItems = [
     { icon: Users, label: 'Active Traders', value: stats.tradersCount, color: 'text-blue-500', bg: isDark ? 'bg-blue-500/10' : 'bg-blue-100' },

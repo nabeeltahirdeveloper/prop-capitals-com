@@ -1,10 +1,11 @@
+import React from 'react';
 import { Check, X } from 'lucide-react';
-// import { useTheme } from '../context/ThemeContext';
 import { comparisonData } from './data/mockData.js';
+import { useTheme } from '@/contexts/ThemeContext';
+
 
 const ComparisonSection = () => {
-  // const { isDark } = useTheme();
-  const isDark = true;
+  const { isDark } = useTheme();
 
   return (
     <section className={`py-20 lg:py-32 transition-colors duration-300 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
@@ -13,7 +14,7 @@ const ComparisonSection = () => {
         <div className="text-center mb-12 lg:mb-16">
           <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">Why Choose Us</span>
           <h2 className={`text-2xl sm:text-3xl lg:text-5xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Prop Capitals vs. <span className={isDark ? 'text-gray-500' : 'text-slate-400'}>Other</span> Firms
+            Prop Capitals vs. <span className={isDark ? 'text-gray-500' : 'text-slate-400'}>"Other"</span> Firms
           </h2>
           <p className={`text-base lg:text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
             See why thousands of traders are switching to Prop Capitals.

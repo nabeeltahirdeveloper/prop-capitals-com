@@ -1,9 +1,10 @@
+import React from 'react';
 import { Monitor, Smartphone, Globe, Zap } from 'lucide-react';
-//import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '@/contexts/ThemeContext';
+
 
 const PlatformsSection = () => {
-  //const { isDark } = useTheme();
-  const isDark = true;
+  const { isDark } = useTheme();
 
   return (
     <section className={`py-20 lg:py-32 transition-colors duration-300 ${isDark ? 'bg-[#0d1117]' : 'bg-white'}`}>

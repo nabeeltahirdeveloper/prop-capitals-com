@@ -1,8 +1,10 @@
+import React from 'react';
 import { Bot, Newspaper, Calendar, Timer, Zap, Copy, ArrowRight } from 'lucide-react';
 import { Button } from './ui/button';
 import { Link } from 'react-router-dom';
-// import { useTheme } from '../context/ThemeContext';
-import { tradingFeatures } from './data/mockData.js';
+import { tradingFeatures } from './data/mockData';
+import { useTheme } from '@/contexts/ThemeContext';
+
 
 const iconMap = {
   'bot': Bot,
@@ -14,8 +16,7 @@ const iconMap = {
 };
 
 const FeaturesSection = () => {
-  // const { isDark } = useTheme();
-  const isDark = true;
+  const { isDark } = useTheme();
 
   return (
     <section className={`py-20 lg:py-32 transition-colors duration-300 ${

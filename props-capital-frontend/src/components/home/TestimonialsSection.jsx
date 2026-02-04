@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Quote, Star } from 'lucide-react';
-// import { useTheme } from '../context/ThemeContext';
 import { testimonials } from './data/mockData.js';
+import { useTheme } from '@/contexts/ThemeContext';
+
 
 const TestimonialsSection = () => {
-  // const { isDark } = useTheme();
-  const isDark = true;
+  const { isDark } = useTheme();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextSlide = () => {

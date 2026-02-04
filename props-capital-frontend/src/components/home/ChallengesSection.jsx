@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Check, ArrowRight, Star } from 'lucide-react';
 import { Button } from './ui/button';
-// import { useTheme } from '../context/ThemeContext';
-import { challengeTypes, accountSizes } from './data/mockData.js';
+import { challengeTypes, accountSizes } from './data/mockData';
+import { useTheme } from '@/contexts/ThemeContext';
+
 
 const ChallengesSection = () => {
-  // const { isDark } = useTheme();
-  const isDark = true;
+  const { isDark } = useTheme();
   const [selectedSize, setSelectedSize] = useState(3);
 
   return (

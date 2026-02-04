@@ -1,17 +1,18 @@
+import React from 'react';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from './ui/accordion.jsx';
-// import { useTheme } from '../context/ThemeContext';
-import { faqData } from './data/mockData.js';
+} from './ui/accordion';
+import { faqData } from './data/mockData';
 import { HelpCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTheme } from '@/contexts/ThemeContext';
+
 
 const FAQSection = () => {
-  // const { isDark } = useTheme();
-  const isDark = true;
+  const { isDark } = useTheme();
 
   return (
     <section className={`py-20 lg:py-32 transition-colors duration-300 ${

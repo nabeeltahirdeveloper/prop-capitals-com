@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { Star, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
-// import { useTheme } from '../context/ThemeContext';
+import React, { useState } from 'react';
+import { Star, ChevronLeft, ChevronRight, ExternalLink, Quote } from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
+
 
 const trustpilotReviews = [
   {
@@ -198,8 +199,7 @@ const ReviewCard = ({ review }) => (
 );
 
 const TrustpilotSection = () => {
-  // const { isDark } = useTheme();
-  const isDark = true;
+  const { isDark } = useTheme();
   const [currentIndex, setCurrentIndex] = useState(0);
   const reviewsPerPage = 3;
   const totalPages = Math.ceil(trustpilotReviews.length / reviewsPerPage);

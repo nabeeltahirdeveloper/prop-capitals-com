@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { CheckCircle2, Wallet } from 'lucide-react';
-// import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '@/contexts/ThemeContext';
+
 
 // Country flag components using SVG
 const flags = {
@@ -102,18 +103,18 @@ const flags = {
 };
 
 const payoutCertificates = [
-  { id: 1, name: "Michael T.", country: "US", amount: 31362.00, date: "Jan 2025" },
-  { id: 2, name: "Sarah K.", country: "UK", amount: 10086.80, date: "Jan 2025" },
-  { id: 3, name: "Ahmed R.", country: "AE", amount: 29260.20, date: "Dec 2024" },
-  { id: 4, name: "Lucas M.", country: "BR", amount: 15554.00, date: "Jan 2025" },
-  { id: 5, name: "Elena V.", country: "RU", amount: 45496.00, date: "Dec 2024" },
-  { id: 6, name: "Carlos P.", country: "ES", amount: 42314.40, date: "Jan 2025" },
-  { id: 7, name: "James W.", country: "AU", amount: 14818.90, date: "Jan 2025" },
-  { id: 8, name: "Marie L.", country: "FR", amount: 33510.40, date: "Dec 2024" },
-  { id: 9, name: "David H.", country: "DE", amount: 33576.25, date: "Jan 2025" },
-  { id: 10, name: "Sofia R.", country: "IT", amount: 48727.10, date: "Dec 2024" },
-  { id: 11, name: "Chen W.", country: "SG", amount: 22450.00, date: "Jan 2025" },
-  { id: 12, name: "Raj P.", country: "IN", amount: 18920.50, date: "Jan 2025" }
+  { id: 1, checkNo: "PC-847291", name: "Michael T.", country: "US", amount: 31362.00, date: "Jan 2025" },
+  { id: 2, checkNo: "PC-523648", name: "Sarah K.", country: "UK", amount: 10086.80, date: "Jan 2025" },
+  { id: 3, checkNo: "PC-391574", name: "Ahmed R.", country: "AE", amount: 29260.20, date: "Dec 2024" },
+  { id: 4, checkNo: "PC-718293", name: "Lucas M.", country: "BR", amount: 15554.00, date: "Jan 2025" },
+  { id: 5, checkNo: "PC-462815", name: "Elena V.", country: "RU", amount: 45496.00, date: "Dec 2024" },
+  { id: 6, checkNo: "PC-936472", name: "Carlos P.", country: "ES", amount: 42314.40, date: "Jan 2025" },
+  { id: 7, checkNo: "PC-159384", name: "James W.", country: "AU", amount: 14818.90, date: "Jan 2025" },
+  { id: 8, checkNo: "PC-274618", name: "Marie L.", country: "FR", amount: 33510.40, date: "Dec 2024" },
+  { id: 9, checkNo: "PC-683159", name: "David H.", country: "DE", amount: 33576.25, date: "Jan 2025" },
+  { id: 10, checkNo: "PC-847265", name: "Sofia R.", country: "IT", amount: 48727.10, date: "Dec 2024" },
+  { id: 11, checkNo: "PC-512947", name: "Chen W.", country: "SG", amount: 22450.00, date: "Jan 2025" },
+  { id: 12, checkNo: "PC-395821", name: "Raj P.", country: "IN", amount: 18920.50, date: "Jan 2025" }
 ];
 
 const FlagIcon = ({ country }) => {
@@ -138,7 +139,7 @@ const PayoutCheck = ({ payout }) => {
           </div>
           <div className="text-right">
             <span className="text-amber-100 text-[10px]">Check No.</span>
-            <p className="text-white font-mono text-xs">#{String(payout.id).padStart(6, '0')}</p>
+            <p className="text-white font-mono text-xs">{payout.checkNo}</p>
           </div>
         </div>
 
@@ -206,11 +207,9 @@ const PayoutCheck = ({ payout }) => {
 };
 
 const PayoutsSection = () => {
-  // const { isDark } = useTheme();
-  const isDark = true;
+  const { isDark } = useTheme();
   const scrollRef1 = useRef(null);
   const scrollRef2 = useRef(null);
-  const [isHovered, setIsHovered] = useState(false);
 
   const row1Payouts = payoutCertificates.slice(0, 6);
   const row2Payouts = payoutCertificates.slice(6, 12);
@@ -223,28 +222,28 @@ const PayoutsSection = () => {
     let position2 = 0;
 
     const animate = () => {
-      if (!isHovered) {
-        position1 -= 0.5;
-        position2 += 0.5;
+      // Always animate - no hover pause
+      position1 -= 0.5;
+      position2 += 0.5;
 
-        if (scroll1) {
-          const maxScroll1 = scroll1.scrollWidth / 2;
-          if (Math.abs(position1) >= maxScroll1) position1 = 0;
-          scroll1.style.transform = `translateX(${position1}px)`;
-        }
-
-        if (scroll2) {
-          const maxScroll2 = scroll2.scrollWidth / 2;
-          if (position2 >= maxScroll2) position2 = 0;
-          scroll2.style.transform = `translateX(${-position2}px)`;
-        }
+      if (scroll1) {
+        const maxScroll1 = scroll1.scrollWidth / 2;
+        if (Math.abs(position1) >= maxScroll1) position1 = 0;
+        scroll1.style.transform = `translateX(${position1}px)`;
       }
+
+      if (scroll2) {
+        const maxScroll2 = scroll2.scrollWidth / 2;
+        if (position2 >= maxScroll2) position2 = 0;
+        scroll2.style.transform = `translateX(${-position2}px)`;
+      }
+      
       animationId = requestAnimationFrame(animate);
     };
 
     animate();
     return () => { if (animationId) cancelAnimationFrame(animationId); };
-  }, [isHovered]);
+  }, []);
 
   const duplicatedRow1 = [...row1Payouts, ...row1Payouts];
   const duplicatedRow2 = [...row2Payouts, ...row2Payouts];
@@ -252,8 +251,6 @@ const PayoutsSection = () => {
   return (
     <section 
       className={`py-20 overflow-hidden transition-colors duration-300 ${isDark ? 'bg-[#0a0d12]' : 'bg-white'}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
         <div className="text-center">
