@@ -695,28 +695,27 @@ export default function AccountDetails() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 w-full">
           <Link to={createPageUrl("MyAccounts")}>
             <Button variant="ghost" size="icon" className="text-slate-400">
               <ArrowLeft className="w-5 h-5 hover:text-black" />
             </Button>
           </Link>
-          <div className="min-w-0 flex-1">
-            {/* Challenge Name */}
-            {challenge.name && (
-              <p className="text-xs sm:text-sm text-cyan-400 font-medium mb-1 truncate">
-                {challenge.name}
-              </p>
-            )}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-              <h1 className="text-base sm:text-2xl font-bold text-white whitespace-nowrap">
+
+          <div className="flex-1 w-full sm:w-auto">
+            <div className="flex w-full justify-between md:justify-start items-center gap-3">
+              <h1 className="text-base sm:text-2xl font-bold text-white">
                 ${account.initial_balance?.toLocaleString()}{" "}
                 {t("accountDetails.account")}
               </h1>
-              <StatusBadge status={account.current_phase} />
-              <StatusBadge status={account.status} />
+
+              <div className="flex flex-col md:flex-row gap-1">
+                <StatusBadge status={account.current_phase} />
+                <StatusBadge status={account.status} />
+              </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-[10px] sm:text-sm text-slate-400 mt-1">
+
+            <div className="flex flex-wrap items-center gap-4 text-[10px] sm:text-sm text-slate-400 mt-1">
               <span>{account.platform}</span>
               <span className="hidden sm:inline">•</span>
               <span className="flex items-center gap-1">
@@ -738,6 +737,7 @@ export default function AccountDetails() {
             </div>
           </div>
         </div>
+
         {/* Account Selector Dropdown */}
         <Select
           value={selectedAccountId}
@@ -753,7 +753,7 @@ export default function AccountDetails() {
             );
           }}
         >
-          <SelectTrigger className="w-[280px] bg-slate-900 border-slate-800 text-white">
+          <SelectTrigger className="w-full md:w-[280px] bg-slate-900 border-slate-800 text-white">
             <div className="flex items-center gap-2">
               <Wallet className="w-4 h-4 text-emerald-400" />
               <SelectValue placeholder={t("accountDetails.selectAccount")} />

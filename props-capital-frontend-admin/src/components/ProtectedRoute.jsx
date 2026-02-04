@@ -32,7 +32,8 @@ export default function ProtectedRoute({ allowedRoles = [] }) {
 
     if (!hasAccess) {
       // Only admins have access to this panel
-      // Redirect non-admin users back to login
+      // Clear token and redirect non-admin users back to login
+      localStorage.removeItem('token');
       return <Navigate to={createPageUrl('SignIn')} replace />;
     }
   }
@@ -65,7 +66,8 @@ export function DashboardRedirect() {
   if (userRole === 'ADMIN') {
     return <Navigate to={createPageUrl('AdminDashboard')} replace />;
   }
-  // Non-admin users are redirected to login
+  // Non-admin users - clear token and redirect to login
+  localStorage.removeItem('token');
   return <Navigate to={createPageUrl('SignIn')} replace />;
 }
 

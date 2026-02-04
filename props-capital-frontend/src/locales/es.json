@@ -3,7 +3,8 @@
     "loading": "Cargando...",
     "url": "URL",
     "dismiss": "Cerrar",
-    "allPlatforms": "Todas las plataformas"
+    "allPlatforms": "Todas las plataformas",
+    "remaining": "restante"
   },
   "home": {
     "hero": {
@@ -205,6 +206,7 @@
       "overallDrawdown": "Drawdown total",
       "minTradingDays": "Días mínimos de trading",
       "daysRemaining": "Días restantes",
+      "days": "días",
       "tradingStyleRules": "Reglas del estilo de trading",
       "newsTrading": "Trading de noticias",
       "weekendHolding": "Mantener durante el fin de semana",
@@ -446,6 +448,9 @@
     "subject": "Asunto",
     "subjectPlaceholder": "Breve descripción del problema",
     "category": "Categoría",
+    "ticketCreated":"ticketCreado",
+                "ticketCreatedDesc":"Descripción del ticket creado",
+
     "select": "Seleccionar",
     "account": "Cuenta",
     "payment": "Pago",

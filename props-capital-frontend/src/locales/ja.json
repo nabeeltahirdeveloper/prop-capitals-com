@@ -3,7 +3,8 @@
     "loading": "読み込み中...",
     "url": "URL",
     "dismiss": "閉じる",
-    "allPlatforms": "すべてのプラットフォーム"
+    "allPlatforms": "すべてのプラットフォーム",
+    "remaining": "残り"
   },
   "home": {
     "hero": {
@@ -445,6 +446,10 @@
     "createTicket": "サポートチケットを作成",
     "subject": "件名",
     "subjectPlaceholder": "問題の簡単な説明",
+    "ticketCreated":"チケットが作成されました",
+                    "ticketCreatedDesc":"チケット作成説明",
+
+
     "category": "カテゴリー",
     "select": "選択",
     "account": "アカウント",

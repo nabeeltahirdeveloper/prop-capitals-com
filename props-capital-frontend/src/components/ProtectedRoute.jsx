@@ -31,8 +31,9 @@ export default function ProtectedRoute({ allowedRoles = [] }) {
     const hasAccess = allowedRoles.some(role => role.toUpperCase() === userRole);
 
     if (!hasAccess) {
-      // Redirect to trader dashboard
-      return <Navigate to={createPageUrl('TraderDashboard')} replace />;
+      // Clear token and redirect to sign in (this shouldn't happen if sign-in validation works)
+      localStorage.removeItem('token');
+      return <Navigate to={createPageUrl('SignIn')} replace />;
     }
   }
 
