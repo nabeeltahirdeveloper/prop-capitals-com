@@ -91,6 +91,8 @@ export class AuthService {
       },
     });
 
+    console.log('OTP sent successfully', email, otp);
+
     const emailResult = await this.emailService.sendSignupOtpEmail(email, otp);
 
     if (!emailResult.success) {

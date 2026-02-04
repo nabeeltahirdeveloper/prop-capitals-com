@@ -55,6 +55,8 @@ import ForgotPassword from "./ForgotPassword.jsx";
 
 import TraderBuyChallenge from "./TraderBuyChallenge";
 
+import About from "./About.jsx";
+
 import {
   BrowserRouter as Router,
   Route,
@@ -160,6 +162,7 @@ function PagesContent() {
               <Route path="/Terms" element={<Terms />} />
               <Route path="/Privacy" element={<Privacy />} />
               <Route path="/Rules" element={<Rules />} />
+              <Route path="/about" element={<About />}/>
               <Route
                 path="/SignIn"
                 element={

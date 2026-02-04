@@ -51,6 +51,8 @@ import { Badge } from "@/components/ui/badge";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useTranslation } from "../contexts/LanguageContext";
 import { translateNotification } from "../utils/notificationTranslations";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 
 export default function Layout({ children, currentPageName }) {
   const { t } = useTranslation();
@@ -253,7 +255,7 @@ export default function Layout({ children, currentPageName }) {
   if (isPublicPage) {
     return (
       <div className="min-h-screen bg-slate-950">
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800">
+        {/* <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <Link
@@ -268,7 +270,6 @@ export default function Layout({ children, currentPageName }) {
                 </span>
               </Link>
 
-              {/* Desktop nav should start from lg+, but hide on XL screens */}
               <div className="hidden lg:flex xl:hidden items-center gap-6 lg:gap-8">
                 <Link
                   to={createPageUrl("Home")}
@@ -363,9 +364,9 @@ export default function Layout({ children, currentPageName }) {
               </div>
             </div>
           </div>
-        </nav>
+        </nav> */}
 
-        {sidebarOpen && (
+        {/* {sidebarOpen && (
           <>
             <div
               className="fixed inset-0 bg-black/50 z-50 "
@@ -436,12 +437,13 @@ export default function Layout({ children, currentPageName }) {
               </div>
             </div>
           </>
-        )}
+        )} */}
 
-        <main className="pt-16">{children}</main>
-
+        <Navbar />
+        <main>{children}</main>
         {/* Footer */}
-        <footer className="bg-slate-900 border-t border-slate-800 py-16">
+        <Footer />
+        {/* <footer className="bg-slate-900 border-t border-slate-800 py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-12">
               <div>
@@ -570,7 +572,7 @@ export default function Layout({ children, currentPageName }) {
               </div>
             </div>
           </div>
-        </footer>
+        </footer> */}
       </div>
     );
   }
