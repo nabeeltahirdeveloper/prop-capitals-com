@@ -23,7 +23,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
 
-  ) {}
+  ) { }
 
   private getOtpSecret() {
     return (
@@ -87,6 +87,8 @@ export class AuthService {
         resendAvailableAt,
       },
     });
+
+    console.log('OTP sent successfully', email, otp);
 
     const emailResult = await this.emailService.sendSignupOtpEmail(email, otp);
 

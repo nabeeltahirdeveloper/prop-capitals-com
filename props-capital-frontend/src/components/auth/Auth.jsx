@@ -1,22 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle, User, CheckCircle2 } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle, User, CheckCircle2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createPageUrl } from '@/utils';
+import { useTranslation } from '@/contexts/LanguageContext';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import api from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
 
 
 const Auth = () => {
+  const { t } = useTranslation();
+  const { login } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const initialTab = searchParams.get('tab') === 'signup' ? 'signup' : 'login';
-  
+
   const { isDark } = useTheme();
   const [activeTab, setActiveTab] = useState(initialTab);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
+  // OTP State
+  const [step, setStep] = useState('details'); // 'details' | 'otp'
+  const [otp, setOtp] = useState('');
+  const [resendAvailableAt, setResendAvailableAt] = useState(null);
+
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [signupData, setSignupData] = useState({
     firstName: '',
@@ -26,6 +40,85 @@ const Auth = () => {
     confirmPassword: '',
     agreeTerms: false
   });
+
+  const formatApiError = (err, fallbackKey) => {
+    const msg = err?.data?.message ?? err?.message;
+    if (Array.isArray(msg)) return msg.join(', ');
+    if (typeof msg === 'string' && msg.trim()) return msg;
+    return t(fallbackKey) || fallbackKey; // Fallback to key if t returns blank or just key
+  };
+
+  const requestOtpMutation = useMutation({
+    mutationFn: async (payload) => {
+      return api.post('/auth/register/request-otp', payload);
+    },
+    onSuccess: (response) => {
+      const raw = response.data?.resendAvailableAt;
+      setResendAvailableAt(raw ? new Date(raw) : null);
+      setOtp('');
+      setStep('otp');
+      setError('');
+    },
+    onError: (err) => {
+      setError(formatApiError(err, 'signUp.errors.registrationFailed'));
+    },
+  });
+
+  const verifyOtpMutation = useMutation({
+    mutationFn: async (payload) => {
+      return api.post('/auth/register/verify-otp', payload);
+    },
+    onSuccess: async (response) => {
+      const accessToken = response.data?.accessToken;
+      const user = response.data?.user;
+
+      if (accessToken) {
+        login(accessToken, user);
+      }
+
+      navigate(createPageUrl('TraderDashboard'));
+    },
+    onError: (err) => {
+      setError(formatApiError(err, 'signUp.errors.registrationFailed'));
+    },
+  });
+
+  const loginMutation = useMutation({
+    mutationFn: async (credentials) => {
+      const response = await api.post('/auth/login', credentials);
+      return response.data;
+    },
+    onSuccess: async (data) => {
+      // Use the login function from AuthContext to handle token and user data
+      login(data.accessToken, data.user);
+
+      // Redirect to trader dashboard
+      navigate(createPageUrl('TraderDashboard'));
+    },
+    onError: (error) => {
+      // Extract error message from response
+      const errorMessage = error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        t('signIn.errors.invalidCredentials');
+      setError(errorMessage);
+    },
+  });
+
+  const cooldownSeconds = useMemo(() => {
+    if (!resendAvailableAt) return 0;
+    const diffMs = resendAvailableAt.getTime() - Date.now();
+    return Math.max(0, Math.ceil(diffMs / 1000));
+  }, [resendAvailableAt]);
+
+  useEffect(() => {
+    if (step !== 'otp') return;
+    if (cooldownSeconds <= 0) return;
+    const id = window.setInterval(() => {
+      setResendAvailableAt((prev) => (prev ? new Date(prev) : prev));
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [step, cooldownSeconds]);
 
 
   const handleLoginChange = (e) => {
@@ -41,35 +134,56 @@ const Auth = () => {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    console.log()
     setError('');
-    setTimeout(() => {
-      setIsLoading(false);
-      setError('Login functionality coming soon. Backend integration in progress.');
-    }, 1500);
+    loginMutation.mutate({
+      email: loginData.email,
+      password: loginData.password
+    });
   };
 
   const handleSignupSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (signupData.password !== signupData.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-    
+
     if (!signupData.agreeTerms) {
       setError('Please agree to the Terms of Service and Privacy Policy');
       return;
     }
 
-    setIsLoading(true);
+    // Call request OTP mutation
+    requestOtpMutation.mutate({
+      email: signupData.email.trim().toLowerCase(),
+      password: signupData.password,
+      firstName: signupData.firstName || undefined,
+      lastName: signupData.lastName || undefined,
+    });
+  };
 
+  const handleVerifyOtp = (e) => {
+    e.preventDefault();
+    if (otp.length !== 6) return;
+
+    verifyOtpMutation.mutate({
+      email: signupData.email.trim().toLowerCase(),
+      otp,
+      password: signupData.password,
+      firstName: signupData.firstName || undefined,
+      lastName: signupData.lastName || undefined,
+    });
+  };
+
+  const handleResend = () => {
     setError('');
-    setTimeout(() => {
-      setIsLoading(false);
-      setError('Sign up functionality coming soon. Backend integration in progress.');
-    }, 1500);
+    requestOtpMutation.mutate({
+      email: signupData.email.trim().toLowerCase(),
+      password: signupData.password,
+      firstName: signupData.firstName || undefined,
+      lastName: signupData.lastName || undefined,
+    });
   };
 
   const passwordRequirements = [
@@ -119,21 +233,19 @@ const Auth = () => {
           <div className={`flex mb-6 p-1 rounded-xl ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-100'}`}>
             <button
               onClick={() => { setActiveTab('login'); setError(''); }}
-              className={`flex-1 py-3 rounded-lg font-semibold transition-all ${
-                activeTab === 'login'
-                  ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-[#0a0d12]'
-                  : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
-              }`}
+              className={`flex-1 py-3 rounded-lg font-semibold transition-all ${activeTab === 'login'
+                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-[#0a0d12]'
+                : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
+                }`}
             >
               Sign In
             </button>
             <button
               onClick={() => { setActiveTab('signup'); setError(''); }}
-              className={`flex-1 py-3 rounded-lg font-semibold transition-all ${
-                activeTab === 'signup'
-                  ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-[#0a0d12]'
-                  : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
-              }`}
+              className={`flex-1 py-3 rounded-lg font-semibold transition-all ${activeTab === 'signup'
+                ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-[#0a0d12]'
+                : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
+                }`}
             >
               Sign Up
             </button>
@@ -160,11 +272,10 @@ const Auth = () => {
                     value={loginData.email}
                     onChange={handleLoginChange}
                     required
-                    className={`w-full rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-amber-500/50 transition-colors ${
-                      isDark 
-                        ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500' 
-                        : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
-                    }`}
+                    className={`w-full rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-amber-500/50 transition-colors ${isDark
+                      ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500'
+                      : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
+                      }`}
                     placeholder="trader@example.com"
                     data-testid="auth-login-email"
                   />
@@ -181,11 +292,10 @@ const Auth = () => {
                     value={loginData.password}
                     onChange={handleLoginChange}
                     required
-                    className={`w-full rounded-xl pl-12 pr-12 py-3.5 focus:outline-none focus:border-amber-500/50 transition-colors ${
-                      isDark 
-                        ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500' 
-                        : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
-                    }`}
+                    className={`w-full rounded-xl pl-12 pr-12 py-3.5 focus:outline-none focus:border-amber-500/50 transition-colors ${isDark
+                      ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500'
+                      : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
+                      }`}
                     placeholder="Enter your password"
                     data-testid="auth-login-password"
                   />
@@ -211,11 +321,11 @@ const Auth = () => {
 
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={loginMutation.isPending}
                 className="w-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-xl py-6 h-auto font-bold text-lg disabled:opacity-50"
                 data-testid="auth-login-submit"
               >
-                {isLoading ? (
+                {loginMutation.isPending ? (
                   <div className="flex items-center gap-2">
                     <div className="w-5 h-5 border-2 border-[#0a0d12]/30 border-t-[#0a0d12] rounded-full animate-spin"></div>
                     Signing in...
@@ -229,156 +339,226 @@ const Auth = () => {
 
           {/* Signup Form */}
           {activeTab === 'signup' && (
-            <form onSubmit={handleSignupSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>First Name</label>
-                  <div className="relative">
-                    <User className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={signupData.firstName}
-                      onChange={handleSignupChange}
-                      required
-                      className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-amber-500/50 transition-colors ${
-                        isDark 
-                          ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500' 
-                          : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
-                      }`}
-                      placeholder="John"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Last Name</label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={signupData.lastName}
-                    onChange={handleSignupChange}
-                    required
-                    className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 transition-colors ${
-                      isDark 
-                        ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500' 
-                        : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
-                    }`}
-                    placeholder="Doe"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Email Address</label>
-                <div className="relative">
-                  <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
-                  <input
-                    type="email"
-                    name="email"
-                    value={signupData.email}
-                    onChange={handleSignupChange}
-                    required
-                    className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-amber-500/50 transition-colors ${
-                      isDark 
-                        ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500' 
-                        : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
-                    }`}
-                    placeholder="trader@example.com"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Password</label>
-                <div className="relative">
-                  <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    name="password"
-                    value={signupData.password}
-                    onChange={handleSignupChange}
-                    required
-                    className={`w-full rounded-xl pl-12 pr-12 py-3 focus:outline-none focus:border-amber-500/50 transition-colors ${
-                      isDark 
-                        ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500' 
-                        : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
-                    }`}
-                    placeholder="Create a strong password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className={`absolute right-4 top-1/2 -translate-y-1/2 transition-colors ${isDark ? 'text-gray-500 hover:text-gray-300' : 'text-slate-400 hover:text-slate-600'}`}
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-                
-                {signupData.password && (
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {passwordRequirements.map((req, i) => (
-                      <div key={i} className={`flex items-center gap-1 text-xs ${req.met ? 'text-emerald-400' : isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                        <CheckCircle2 className="w-3 h-3" />
-                        {req.label}
+            <>
+              {step === 'details' ? (
+                <form onSubmit={handleSignupSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>First Name</label>
+                      <div className="relative">
+                        <User className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
+                        <input
+                          type="text"
+                          name="firstName"
+                          value={signupData.firstName}
+                          onChange={handleSignupChange}
+                          required
+                          className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-amber-500/50 transition-colors ${isDark
+                            ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500'
+                            : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
+                            }`}
+                          placeholder="John"
+                        />
                       </div>
-                    ))}
+                    </div>
+                    <div>
+                      <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Last Name</label>
+                      <input
+                        type="text"
+                        name="lastName"
+                        value={signupData.lastName}
+                        onChange={handleSignupChange}
+                        required
+                        className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 transition-colors ${isDark
+                          ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500'
+                          : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
+                          }`}
+                        placeholder="Doe"
+                      />
+                    </div>
                   </div>
-                )}
-              </div>
 
-              <div>
-                <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Confirm Password</label>
-                <div className="relative">
-                  <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    name="confirmPassword"
-                    value={signupData.confirmPassword}
-                    onChange={handleSignupChange}
-                    required
-                    className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none transition-colors ${
-                      signupData.confirmPassword && signupData.password !== signupData.confirmPassword 
-                        ? 'border-red-500/50' 
-                        : isDark 
-                          ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500 focus:border-amber-500/50' 
-                          : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:border-amber-500/50'
-                    }`}
-                    placeholder="Confirm your password"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <input
-                  type="checkbox"
-                  name="agreeTerms"
-                  checked={signupData.agreeTerms}
-                  onChange={handleSignupChange}
-                  className={`w-4 h-4 mt-1 rounded text-amber-500 focus:ring-amber-500/50 ${isDark ? 'border-white/20 bg-[#0a0d12]' : 'border-slate-300 bg-white'}`}
-                />
-                <label className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                  I agree to the{' '}
-                  <Link to="/terms" className="text-amber-500 hover:text-amber-400">Terms of Service</Link>
-                  {' '}and{' '}
-                  <Link to="/privacy" className="text-amber-500 hover:text-amber-400">Privacy Policy</Link>
-                </label>
-              </div>
-
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-xl py-6 h-auto font-bold text-lg disabled:opacity-50"
-              >
-                {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 border-2 border-[#0a0d12]/30 border-t-[#0a0d12] rounded-full animate-spin"></div>
-                    Creating account...
+                  <div>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Email Address</label>
+                    <div className="relative">
+                      <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
+                      <input
+                        type="email"
+                        name="email"
+                        value={signupData.email}
+                        onChange={handleSignupChange}
+                        required
+                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-amber-500/50 transition-colors ${isDark
+                          ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500'
+                          : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
+                          }`}
+                        placeholder="trader@example.com"
+                      />
+                    </div>
                   </div>
-                ) : (
-                  <>Create Account<ArrowRight className="ml-2 w-5 h-5" /></>
-                )}
-              </Button>
-            </form>
+
+                  <div>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Password</label>
+                    <div className="relative">
+                      <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        name="password"
+                        value={signupData.password}
+                        onChange={handleSignupChange}
+                        required
+                        className={`w-full rounded-xl pl-12 pr-12 py-3 focus:outline-none focus:border-amber-500/50 transition-colors ${isDark
+                          ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500'
+                          : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
+                          }`}
+                        placeholder="Create a strong password"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className={`absolute right-4 top-1/2 -translate-y-1/2 transition-colors ${isDark ? 'text-gray-500 hover:text-gray-300' : 'text-slate-400 hover:text-slate-600'}`}
+                      >
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
+
+                    {signupData.password && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {passwordRequirements.map((req, i) => (
+                          <div key={i} className={`flex items-center gap-1 text-xs ${req.met ? 'text-emerald-400' : isDark ? 'text-gray-500' : 'text-slate-400'}`}>
+                            <CheckCircle2 className="w-3 h-3" />
+                            {req.label}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Confirm Password</label>
+                    <div className="relative">
+                      <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        name="confirmPassword"
+                        value={signupData.confirmPassword}
+                        onChange={handleSignupChange}
+                        required
+                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none transition-colors ${signupData.confirmPassword && signupData.password !== signupData.confirmPassword
+                          ? 'border-red-500/50'
+                          : isDark
+                            ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500 focus:border-amber-500/50'
+                            : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:border-amber-500/50'
+                          }`}
+                        placeholder="Confirm your password"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      name="agreeTerms"
+                      checked={signupData.agreeTerms}
+                      onChange={handleSignupChange}
+                      className={`w-4 h-4 mt-1 rounded text-amber-500 focus:ring-amber-500/50 ${isDark ? 'border-white/20 bg-[#0a0d12]' : 'border-slate-300 bg-white'}`}
+                    />
+                    <label className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
+                      I agree to the{' '}
+                      <Link to="/terms" className="text-amber-500 hover:text-amber-400">Terms of Service</Link>
+                      {' '}and{' '}
+                      <Link to="/privacy" className="text-amber-500 hover:text-amber-400">Privacy Policy</Link>
+                    </label>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    disabled={requestOtpMutation.isPending}
+                    className="w-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-xl py-6 h-auto font-bold text-lg disabled:opacity-50"
+                  >
+                    {requestOtpMutation.isPending ? (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Creating account...
+                      </div>
+                    ) : (
+                      <>Create Account<ArrowRight className="ml-2 w-5 h-5" /></>
+                    )}
+                  </Button>
+                </form>
+              ) : (
+                <form onSubmit={handleVerifyOtp} className="space-y-6">
+                  <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
+                    OTP sent to <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{signupData.email}</span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Enter OTP</label>
+                    <div className="flex justify-center">
+                      <InputOTP
+                        maxLength={6}
+                        value={otp}
+                        onChange={setOtp}
+                        containerClassName="justify-center"
+                      >
+                        <InputOTPGroup>
+                          <InputOTPSlot index={0} className={isDark ? "border-white/10 text-white" : ""} />
+                          <InputOTPSlot index={1} className={isDark ? "border-white/10 text-white" : ""} />
+                          <InputOTPSlot index={2} className={isDark ? "border-white/10 text-white" : ""} />
+                          <InputOTPSlot index={3} className={isDark ? "border-white/10 text-white" : ""} />
+                          <InputOTPSlot index={4} className={isDark ? "border-white/10 text-white" : ""} />
+                          <InputOTPSlot index={5} className={isDark ? "border-white/10 text-white" : ""} />
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    disabled={verifyOtpMutation.isPending || otp.length !== 6}
+                    className="w-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-xl py-6 h-auto font-bold text-lg disabled:opacity-50"
+                  >
+                    {verifyOtpMutation.isPending ? (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Verifying...
+                      </div>
+                    ) : (
+                      <>Verify OTP<ArrowRight className="ml-2 w-5 h-5" /></>
+                    )}
+                  </Button>
+
+                  <div className="flex flex-col sm:flex-row items-center justify-between text-sm gap-3 sm:gap-0">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setError('');
+                        setStep('details');
+                      }}
+                      className={`${isDark ? 'text-gray-500 hover:text-gray-300' : 'text-slate-400 hover:text-slate-200'} transition-colors`}
+                    >
+                      Change Email
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleResend}
+                      disabled={requestOtpMutation.isPending || cooldownSeconds > 0}
+                      className={`
+                        ${cooldownSeconds > 0
+                          ? isDark ? 'text-gray-500' : 'text-slate-400'
+                          : 'text-amber-500 hover:text-amber-400'} 
+                        disabled:opacity-50 transition-colors
+                      `}
+                    >
+                      {cooldownSeconds > 0
+                        ? `Resend in ${cooldownSeconds}s`
+                        : 'Resend Code'}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </>
           )}
 
           {/* Divider */}
