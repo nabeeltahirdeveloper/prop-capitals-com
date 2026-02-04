@@ -3,7 +3,8 @@
     "loading": "Loading...",
     "dismiss": "Dismiss",
     "url": "URL",
-    "allPlatforms": "all platforms"
+    "allPlatforms": "all platforms",
+    "remaining": "remaining"
   },
   "home": {
     "hero": {
@@ -205,6 +206,7 @@
       "overallDrawdown": "Overall Drawdown",
       "minTradingDays": "Min Trading Days",
       "daysRemaining": "Maximum Days",
+      "days": "days",
       "tradingStyleRules": "Trading Style Rules",
       "newsTrading": "News Trading",
       "weekendHolding": "Weekend Holding",

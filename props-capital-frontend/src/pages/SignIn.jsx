@@ -47,6 +47,20 @@ export default function SignIn() {
       return response.data;
     },
     onSuccess: async (data) => {
+      // Check if user is a trader
+      const userRole = data.user?.role?.toUpperCase();
+      if (userRole !== 'TRADER') {
+        // Non-trader users are not allowed
+        if (userRole === 'ADMIN') {
+          setError('This is the Trader portal. Please use the Admin portal to sign in.');
+        } else {
+          setError('Access denied. Trader credentials required.');
+        }
+        // Don't store the token
+        localStorage.removeItem('token');
+        return;
+      }
+
       // Use the login function from AuthContext to handle token and user data
       login(data.accessToken, data.user);
 
@@ -90,10 +104,15 @@ export default function SignIn() {
             <span className="text-xl font-bold text-white">Prop Capitals</span>
           </Link>
 
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-            {t("signIn.title")}
-          </h1>
-          <p className="text-slate-400 mb-8">{t("signIn.subtitle")}</p>
+          <div className="mb-6">
+            <div className="inline-block px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full mb-3">
+              <span className="text-xs font-semibold text-emerald-400">TRADER PORTAL</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+              {t("signIn.title")}
+            </h1>
+            <p className="text-slate-400">{t("signIn.subtitle")}</p>
+          </div>
 
           {error && (
             <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg mb-6">

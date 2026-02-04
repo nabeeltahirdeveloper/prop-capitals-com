@@ -3,7 +3,8 @@
     "loading": "Chargement...",
     "url": "URL",
     "dismiss": "Fermer",
-    "allPlatforms": "Toutes les plateformes"
+    "allPlatforms": "Toutes les plateformes",
+    "remaining": "restant"
   },
   "home": {
     "hero": {
@@ -206,6 +207,7 @@
       "overallDrawdown": "Drawdown global",
       "minTradingDays": "Jours minimum de trading",
       "daysRemaining": "Jours restants",
+      "days": "jours",
       "tradingStyleRules": "Règles de style de trading",
       "newsTrading": "Trading sur les actualités",
       "weekendHolding": "Maintien le week-end",

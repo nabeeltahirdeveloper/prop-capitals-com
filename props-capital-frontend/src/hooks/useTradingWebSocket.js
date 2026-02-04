@@ -72,9 +72,11 @@ export function useTradingWebSocket({
       setConnectionStatus("connected");
 
       // Subscribe to account updates if accountId is set
-      if (accountId && accountId !== subscribedAccountRef.current) {
-        socket.emit("subscribe:account", { accountId });
-        subscribedAccountRef.current = accountId;
+      // Use subscribedAccountRef to get current accountId value
+      const currentAccountId = subscribedAccountRef.current;
+      if (currentAccountId && socket.connected) {
+        socket.emit("subscribe:account", { accountId: currentAccountId });
+        console.log("[WebSocket] Auto-subscribed to account on connect:", currentAccountId);
       }
     });
 
@@ -82,7 +84,7 @@ export function useTradingWebSocket({
       console.log("[WebSocket] Disconnected:", reason);
       setIsConnected(false);
       setConnectionStatus("disconnected");
-      subscribedAccountRef.current = null;
+      // Don't clear subscribedAccountRef here - we want to resubscribe on reconnect
     });
 
     socket.on("connect_error", (error) => {
@@ -100,6 +102,13 @@ export function useTradingWebSocket({
       console.log(`[WebSocket] Reconnected after ${attemptNumber} attempts`);
       setIsConnected(true);
       setConnectionStatus("connected");
+
+      // Resubscribe to account after reconnection
+      const currentAccountId = subscribedAccountRef.current;
+      if (currentAccountId && socketRef.current?.connected) {
+        socketRef.current.emit("subscribe:account", { accountId: currentAccountId });
+        console.log("[WebSocket] Resubscribed to account after reconnect:", currentAccountId);
+      }
     });
 
     socket.on("reconnect_failed", () => {
@@ -138,34 +147,44 @@ export function useTradingWebSocket({
     });
 
     socketRef.current = socket;
-  }, [accountId, getAuthToken, onPositionClosed, onAccountStatusChange, onAccountUpdate]);
+  }, [getAuthToken, onPositionClosed, onAccountStatusChange, onAccountUpdate]);
 
-  // Subscribe to different account when accountId changes
+  // Update subscribedAccountRef when accountId changes and handle subscription
   useEffect(() => {
-    if (!socketRef.current?.connected || !accountId) {
+    if (!accountId) {
+      subscribedAccountRef.current = null;
+      return;
+    }
+
+    // Update ref immediately so connect() can use it
+    const prevAccountId = subscribedAccountRef.current;
+    subscribedAccountRef.current = accountId;
+
+    // Only handle subscription if socket is connected
+    if (!socketRef.current?.connected) {
+      // Socket will auto-subscribe on connect using the ref
       return;
     }
 
     // If already subscribed to this account, skip
-    if (subscribedAccountRef.current === accountId) {
+    if (prevAccountId === accountId) {
       return;
     }
 
     // Unsubscribe from previous account
-    if (subscribedAccountRef.current) {
+    if (prevAccountId) {
       console.log(
         "[WebSocket] Unsubscribing from account:",
-        subscribedAccountRef.current
+        prevAccountId
       );
       socketRef.current.emit("unsubscribe:account", {
-        accountId: subscribedAccountRef.current,
+        accountId: prevAccountId,
       });
     }
 
     // Subscribe to new account
     console.log("[WebSocket] Subscribing to account:", accountId);
     socketRef.current.emit("subscribe:account", { accountId });
-    subscribedAccountRef.current = accountId;
   }, [accountId]);
 
   // Initialize connection on mount
@@ -185,8 +204,10 @@ export function useTradingWebSocket({
       }
 
       subscribedAccountRef.current = null;
+      setIsConnected(false);
+      setConnectionStatus("disconnected");
     };
-  }, []); // Only run once on mount
+  }, [connect]); // Depend on connect to ensure latest version is used
 
   // Manual reconnect function
   const reconnect = useCallback(() => {

@@ -47,88 +47,6 @@ export default function AccountMetrics({
   );
 
   console.log(account);
-  // const [disp
-  // layBalance, setDisplayBalance] = React.useState(
-  //   account?.balance || 100000,
-  // );
-
-
-
-
-
-
-
-
-
-
-  // console.log(account?.balance)
-  // Calculate real-time margin and "used" balance: baseBalance - totalMarginUsed
-  // This updates in real-time as positions open/close.
-  // NOTE: Backend balance is the ledger balance and should only change when trades close.
-  // We use this computed balance only for non-funded/demo-style views; real accounts keep balance static.
-  // const calculateRealTimeMarginAndBalance = React.useCallback(() => {
-  //   const baseBalance = account?.balance || 100000;
-
-  //   // If no positions, balance equals base balance, margin is 0
-  //   if (!positions || positions.length === 0) {
-  //     return { margin: 0, balance: baseBalance };
-  //     // return { margin: 0 };
-  //   }
-
-  //   // Calculate total margin used by all open positions
-  //   // Margin is based on entry price (doesn't change as price moves)
-  //   let totalMargin = 0;
-  //   const leverage = 100;
-
-  //   positions.forEach((pos) => {
-  //     // Get current price for margin calculation
-  //     // For margin calculation, we use the entry price side (ask for BUY, bid for SELL)
-  //     // But we need current market price, so we use getPriceForPosition with the position type
-  //     const currentPrice = getPriceForPosition(
-  //       pos.symbol,
-  //       pos.type,
-  //       pos.entryPrice,
-  //     );
-
-  //     if (!currentPrice || currentPrice <= 0) {
-  //       // Fallback to entry price if current price unavailable
-  //       const fallbackPrice = pos.entryPrice;
-  //       const contractSize = isCryptoSymbol(pos.symbol) ? 1 : 100000;
-  //       const positionMargin =
-  //         (pos.lotSize * contractSize * fallbackPrice) / leverage;
-  //       totalMargin += positionMargin;
-  //     } else {
-  //       // Calculate margin using current price (margin changes as price moves)
-  //       const contractSize = isCryptoSymbol(pos.symbol) ? 1 : 100000;
-  //       const positionMargin =
-  //         (pos.lotSize * contractSize * currentPrice) / leverage;
-  //       totalMargin += positionMargin;
-  //     }
-  //   });
-
-  //   // Real-time "used" balance = base balance - margin used
-  //   return {
-  //     margin: totalMargin,
-  //     balance: Math.max(0, baseBalance - totalMargin),
-  //   };
-  // }, [account?.balance, positions, getPriceForPosition, isCryptoSymbol]);
-
-  // Calculate real-time "used" balance (for backward compatibility)
-  // const calculateRealTimeBalance = React.useCallback(() => {
-  //   return calculateRealTimeMarginAndBalance().balance;
-
-  // }, [calculateRealTimeMarginAndBalance]);
-
-  // Calculate real-time margin for display
-  // const realTimeMargin = React.useMemo(() => {
-  //   return calculateRealTimeMarginAndBalance().margin;
-  // }, [calculateRealTimeMarginAndBalance]);
-
-  // Calculate real-time free margin: equity - margin used
-  // const realTimeFreeMargin = React.useMemo(() => {
-  //   const currentEquity = account?.equity || 100000;
-  //   return Math.max(0, currentEquity - realTimeMargin);
-  // }, [account?.equity, realTimeMargin]);
 
   const [displayProfitPercent, setDisplayProfitPercent] = React.useState(
     account?.profitPercent || 0,
@@ -782,8 +700,8 @@ export default function AccountMetrics({
                       phase1ProfitMet ? "text-emerald-400" : "text-slate-300"
                     }
                   >
-                    {phase1ProfitMet ? "✓" : "✗"} {profitForTarget.toFixed(2)}%
-                    / {profitTarget}%
+                    {profitForTarget.toFixed(2)}% / {profitTarget}%
+                    {phase1ProfitMet && " ✓"}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -797,8 +715,8 @@ export default function AccountMetrics({
                         : "text-slate-300"
                     }
                   >
-                    {phase1TradingDaysMet ? "✓" : "✗"} {tradingDays} /{" "}
-                    {minTradingDays}
+                    {tradingDays} / {minTradingDays}
+                    {phase1TradingDaysMet && " ✓"}
                   </span>
                 </div>
               </div>
@@ -899,6 +817,7 @@ export default function AccountMetrics({
           ) : (
             <>
               <div className="text-sm sm:text-lg font-bold text-white font-mono">
+                {/* Balance is static - only updates when trades close (backend-controlled) */}
                 ${account?.balance?.toFixed(2) || "0.00"}
               </div>
 
@@ -975,8 +894,8 @@ export default function AccountMetrics({
             <p
               className={`text-sm sm:text-lg font-bold font-mono ${equityColor}`}
             >
-              {/* ✅ Use account.equity directly (calculated in TradingTerminal) */}
-              ${Math.round(displayEquity).toLocaleString()}
+              {/* ✅ Use account.equity directly with 2 decimal places for consistency */}
+              ${displayEquity?.toFixed(2) || "0.00"}
             </p>
           )}
         </Card>

@@ -46,19 +46,25 @@ export default function SignIn() {
       return response.data;
     },
     onSuccess: async (data) => {
+      // Only allow admin users
+      const userRole = data.user?.role?.toUpperCase();
+      if (userRole !== 'ADMIN') {
+        // Non-admin users are not allowed
+        if (userRole === 'TRADER') {
+          setError('This is the Admin portal. Please use the Trader portal to sign in.');
+        } else {
+          setError('Access denied. Admin credentials required.');
+        }
+        // Don't store the token
+        localStorage.removeItem('token');
+        return;
+      }
+
       // Use the login function from AuthContext to handle token and user data
       login(data.accessToken, data.user);
 
-      // Only allow admin users
-      const userRole = data.user?.role;
-      if (userRole === 'ADMIN') {
-        navigate(createPageUrl('AdminDashboard'));
-      } else {
-        // Non-admin users are not allowed
-        setError('Access denied. Admin credentials required.');
-        // Logout the non-admin user
-        localStorage.removeItem('token');
-      }
+      // Redirect to admin dashboard
+      navigate(createPageUrl('AdminDashboard'));
     },
     onError: (error) => {
       // Extract error message from response
@@ -92,8 +98,13 @@ export default function SignIn() {
             <span className="text-xl font-bold text-white">Prop Capitals Admin</span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Admin Login</h1>
-          <p className="text-slate-400 mb-8">Sign in to access the admin dashboard</p>
+          <div className="mb-6">
+            <div className="inline-block px-3 py-1 bg-red-500/10 border border-red-500/30 rounded-full mb-3">
+              <span className="text-xs font-semibold text-red-400">ADMIN PORTAL</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Admin Login</h1>
+            <p className="text-slate-400">Sign in to access the admin dashboard</p>
+          </div>
 
           {error && (
             <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg mb-6">

@@ -6,8 +6,6 @@ import { EmailService } from '../email/email.service';
 
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import * as nodemailer from 'nodemailer';
-
 
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
@@ -68,7 +66,10 @@ export class AuthService {
     }
 
     const otp = this.generateOtp();
-    console.log(` GENERATED OTP FOR ${email}: ${otp}`);
+    // Only log OTP in development mode (not recommended for production)
+    if (this.configService.get<string>('NODE_ENV') === 'development') {
+      console.log(`🔐 GENERATED OTP FOR ${email}: ${otp}`);
+    }
     const otpHash = this.hashOtp(email, otp);
     const expiresAt = new Date(now.getTime() + 10 * 60 * 1000); // 10 minutes
     const resendAvailableAt = new Date(now.getTime() + 60 * 1000); // 60 seconds
@@ -317,6 +318,11 @@ export class AuthService {
     // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
     const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
+
+    // Only log OTP in development mode
+    if (this.configService.get<string>('NODE_ENV') === 'development') {
+      console.log(`🔐 GENERATED PASSWORD RESET OTP FOR ${email}: ${otp}`);
+    }
 
     await this.prisma.user.update({
       where: { email },
