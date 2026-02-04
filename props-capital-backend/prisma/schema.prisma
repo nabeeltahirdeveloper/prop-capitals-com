@@ -1,16 +1,19 @@
 generator client {
-  provider   = "prisma-client-js"
-  engineType = "binary"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
   id                     String                  @id @default(cuid())
   email                  String                  @unique
-  password               String
+ password               String
+resetPasswordOtp     String?
+resetPasswordExpiry    DateTime?
+
   role                   UserRole                @default(TRADER)
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
@@ -106,7 +109,6 @@ model TradingAccount {
   id                String               @id @default(cuid())
   userId            String
   challengeId       String
-  platform          ChallengePlatform? // User's selected trading platform
   phase             TradingPhase         @default(PHASE1)
   status            TradingAccountStatus @default(ACTIVE)
   balance           Float                @default(0)
@@ -122,6 +124,7 @@ model TradingAccount {
   todayStartEquity  Float?
   dailyLossViolated Boolean              @default(false)
   drawdownViolated  Boolean              @default(false)
+  platform          ChallengePlatform?
   equityShots       EquitySnapshot[]
   payouts           Payout[]
   pendingOrders     PendingOrder[]
@@ -226,11 +229,11 @@ model Payout {
   amount           Int
   currency         String         @default("USD")
   status           PayoutStatus   @default(PENDING)
-  paymentMethod    String?
-  paymentDetails   String?
-  processedAt      DateTime?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
+  paymentDetails   String?
+  paymentMethod    String?
+  processedAt      DateTime?
   tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
   user             User           @relation(fields: [userId], references: [id])
 }

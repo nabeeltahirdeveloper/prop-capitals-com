@@ -51,6 +51,7 @@ import RuleCompliance from "./RuleCompliance";
 import SignIn from "./SignIn";
 
 import SignUp from "./SignUp";
+import ForgotPassword from "./ForgotPassword.jsx";
 
 import TraderBuyChallenge from "./TraderBuyChallenge";
 
@@ -159,6 +160,7 @@ function PagesContent() {
               <Route path="/Terms" element={<Terms />} />
               <Route path="/Privacy" element={<Privacy />} />
               <Route path="/Rules" element={<Rules />} />
+              <Route path="/forgotpassword" element={<ForgotPassword />} />
               <Route
                 path="/SignIn"
                 element={

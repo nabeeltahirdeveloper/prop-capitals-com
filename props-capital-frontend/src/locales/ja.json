@@ -445,6 +445,10 @@
     "createTicket": "サポートチケットを作成",
     "subject": "件名",
     "subjectPlaceholder": "問題の簡単な説明",
+    "ticketCreated":"チケットが作成されました",
+                    "ticketCreatedDesc":"チケット作成説明",
+
+
     "category": "カテゴリー",
     "select": "選択",
     "account": "アカウント",

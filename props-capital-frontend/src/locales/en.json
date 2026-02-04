@@ -447,8 +447,12 @@
     "subtitle": "Get help with your account and trading",
     "newTicket": "New Ticket",
     "createTicket": "Create Support Ticket",
+    "ticketCreated":"ticketCreated",
+                     "ticketCreatedDesc":"ticketCreatedDesc",
+
     "subject": "Subject",
     "subjectPlaceholder": "Brief description of your issue",
+
     "category": "Category",
     "select": "Select",
     "account": "Account",
@@ -464,6 +468,7 @@
     "messagePlaceholder": "Describe your issue in detail...",
     "submitting": "Submitting...",
     "submitTicket": "Submit Ticket",
+
     "openTickets": "Open Tickets",
     "inProgress": "In Progress",
     "resolved": "Resolved",
