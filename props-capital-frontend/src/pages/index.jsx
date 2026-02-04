@@ -51,6 +51,7 @@ import RuleCompliance from "./RuleCompliance";
 import SignIn from "./SignIn";
 
 import SignUp from "./SignUp";
+import ForgotPassword from "./ForgotPassword.jsx";
 
 import TraderBuyChallenge from "./TraderBuyChallenge";
 

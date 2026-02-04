@@ -172,15 +172,19 @@ export default function Home() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center ">
             <motion.div initial="initial" animate="animate" variants={stagger}>
-              <motion.div
-                variants={fadeIn}
-                className="flex  lg:inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-8 mx-auto text-center sm:mx-0 sm:text-left"
-              >
-                <Star className="w-4 h-4 text-emerald-400" />
-                <span className="text-sm text-emerald-400">
-                  {t("home.hero.badge")}
-                </span>
-              </motion.div>
+              <div className="flex justify-center">
+                <motion.div
+                  variants={fadeIn}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 
+             bg-emerald-500/10 border border-emerald-500/20 
+             rounded-full mb-8 text-center"
+                >
+                  <Star className="w-4 h-4 text-emerald-400" />
+                  <span className="text-sm text-emerald-400">
+                    {t("home.hero.badge")}
+                  </span>
+                </motion.div>
+              </div>
 
               <motion.h1
                 variants={fadeIn}
@@ -201,7 +205,7 @@ export default function Home() {
 
               <motion.div
                 variants={fadeIn}
-                className="flex flex-col lg:flex-row gap-3 lg:gap-4"
+                className="flex flex-col md:flex-row md:items-center md:justify-center gap-3 lg:gap-4"
               >
                 <a href="#challenges">
                   <Button

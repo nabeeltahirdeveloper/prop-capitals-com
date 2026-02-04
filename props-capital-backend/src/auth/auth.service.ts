@@ -6,6 +6,8 @@ import { EmailService } from '../email/email.service';
 
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import * as nodemailer from 'nodemailer';
+
 
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
@@ -23,7 +25,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
 
-  ) {}
+  ) { }
 
   private getOtpSecret() {
     return (
@@ -66,7 +68,7 @@ export class AuthService {
     }
 
     const otp = this.generateOtp();
-    console.log(`🔐 GENERATED OTP FOR ${email}: ${otp}`);
+    console.log(` GENERATED OTP FOR ${email}: ${otp}`);
     const otpHash = this.hashOtp(email, otp);
     const expiresAt = new Date(now.getTime() + 10 * 60 * 1000); // 10 minutes
     const resendAvailableAt = new Date(now.getTime() + 60 * 1000); // 60 seconds
@@ -304,5 +306,72 @@ export class AuthService {
     return { message: 'Password changed successfully' };
 
   }
+
+
+  async sendResetPasswordOtp(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return { message: 'If this email exists, an OTP has been sent.' };
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
+    const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
+
+    await this.prisma.user.update({
+      where: { email },
+      data: {
+        resetPasswordOtp: otp,
+        resetPasswordExpiry: expiry,
+      },
+    });
+
+    // Send OTP email using EmailService (SendGrid)
+    const emailResult = await this.emailService.sendPasswordResetOtp(email, otp);
+
+    if (!emailResult.success) {
+      // Log error but generally return success to user for security, 
+      // UNLESS needed for debugging. Given the user's issue, 
+      // if it fails we might want to throw to let them know config is wrong.
+      console.error(`Failed to send reset OTP: ${emailResult.error}`);
+      throw new BadRequestException('Failed to send email. Please contact support.');
+    }
+
+    return { message: 'If this email exists, an OTP has been sent.' };
+  }
+
+  async verifyOtpAndResetPassword(email: string, otp: string, newPassword: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      throw new BadRequestException('Invalid request');
+    }
+
+    if (!user.resetPasswordOtp || user.resetPasswordOtp !== otp) {
+      throw new BadRequestException('Invalid OTP');
+    }
+
+    if (!user.resetPasswordExpiry || user.resetPasswordExpiry < new Date()) {
+      throw new BadRequestException('OTP has expired');
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password and clear OTP
+    await this.prisma.user.update({
+      where: { email },
+      data: {
+        password: hashedPassword,
+        resetPasswordOtp: null,
+        resetPasswordExpiry: null,
+      },
+    });
+
+    return { message: 'Password reset successfully' };
+  }
+
+
+
+
 
 }
