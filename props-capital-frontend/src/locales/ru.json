@@ -446,6 +446,10 @@
     "subject": "Тема",
     "subjectPlaceholder": "Краткое описание проблемы",
     "category": "Категория",
+        "ticketCreated":"билетСоздан",
+            "ticketCreatedDesc":"ticketCreatedDesc",
+
+
     "select": "Выбрать",
     "account": "Аккаунт",
     "payment": "Платёж",

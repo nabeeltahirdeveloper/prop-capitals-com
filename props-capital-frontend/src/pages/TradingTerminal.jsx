@@ -187,7 +187,8 @@ export default function TradingTerminal() {
   const [demoClosedTrades, setDemoClosedTrades] = useState([]);
   const [demoPendingOrders, setDemoPendingOrders] = useState([]);
   const [optimisticClosedTrades, setOptimisticClosedTrades] = useState([]);
-  const [isConnected, setIsConnected] = useState(true);
+  // Legacy state - now using websocketStatus.connected instead
+  // const [websocketStatus.connected, setIsConnected] = useState(true);
   const [showWarning, setShowWarning] = useState(false);
   const [warningMessage, setWarningMessage] = useState("");
   // Account status banner state (for locked/disqualified messages)
@@ -452,16 +453,8 @@ export default function TradingTerminal() {
     }
   }, []);
 
-  // Initialize WebSocket connection
-  const { isConnected: isSocketConnected } = useTradingWebSocket({
-    accountId: selectedAccountId,
-    onAccountUpdate: handleAccountUpdate,
-  });
-
-  // Update socket connection state
-  useEffect(() => {
-    setSocketConnected(isSocketConnected);
-  }, [isSocketConnected]);
+  // WebSocket connection is initialized below at line 1406 with all callbacks
+  // This was causing duplicate WebSocket connections - removed
 
   // 🔥 Simple polling for trading days updates (fallback)
   useEffect(() => {
@@ -1402,10 +1395,11 @@ export default function TradingTerminal() {
       staleTime: 0,
     });
 
-  // WebSocket integration for real-time position closure notifications
+  // WebSocket integration for real-time updates (consolidated single connection)
   const { isConnected: wsConnected, connectionStatus: wsConnectionStatus } =
     useTradingWebSocket({
       accountId: selectedAccountId,
+      onAccountUpdate: handleAccountUpdate, // Trading days updates
       onPositionClosed: useCallback(
         (event) => {
           devLog("🔔 [WebSocket] Position closed event:", event);
@@ -1510,6 +1504,8 @@ export default function TradingTerminal() {
       connected: wsConnected,
       status: wsConnectionStatus,
     });
+    // Also update legacy socketConnected state for compatibility
+    setSocketConnected(wsConnected);
   }, [wsConnected, wsConnectionStatus]);
 
   // Fallback polling mechanism: Check for closed positions every 5 seconds
@@ -1843,7 +1839,8 @@ export default function TradingTerminal() {
     // Reset daily tracking for this account
     const today = new Date().toDateString();
     currentDayRef.current = today;
-    dailyStartBalanceRef.current = newBalance;
+    // Initialize with equity instead of balance for accurate daily drawdown
+    dailyStartBalanceRef.current = newEquity;
 
     setAccount((prev) => ({
       ...prev,
@@ -2200,8 +2197,9 @@ export default function TradingTerminal() {
         const lastTickTime = priceTickThrottleRef.current[throttleKey] || 0;
         const now = Date.now();
 
-        // Throttle: Only send tick if 1000ms have passed since last tick for this symbol
-        if (now - lastTickTime >= 1000) {
+        // Throttle: Only send tick if 250ms have passed since last tick for this symbol
+        // Reduced from 1000ms to 250ms to catch rapid price movements in volatile markets
+        if (now - lastTickTime >= 250) {
           priceTickThrottleRef.current[throttleKey] = now;
 
           // Send price tick to backend - triggers immediate evaluation and auto-close if needed
@@ -3130,13 +3128,21 @@ export default function TradingTerminal() {
       const newEquity = account.balance + totalPnL;
       const startingBalance = account.startingBalance || 100000;
 
-      // ✅ Profit calculations from earliest version
+      // ✅ Profit calculations - only gains count, losses don't reduce profit
+      // Realized profit: only count gains from closed trades
+      const realizedGain = Math.max(0, account.balance - startingBalance);
       const realized =
         startingBalance > 0
-          ? ((account.balance - startingBalance) / startingBalance) * 100
+          ? (realizedGain / startingBalance) * 100
           : 0;
+      // Live profit: only count positive floating P/L
       const live = totalPnL > 0 ? (totalPnL / startingBalance) * 100 : 0;
-      const profitForTarget = Math.max(0, realized + live);
+      // Total profit for target: sum of realized gains + live gains
+      const profitForTarget = realized + live;
+
+      // Track highest profit achieved (never let it decrease)
+      const prevMaxProfit = prevMetricsRef.current.profitPercent || 0;
+      const maxProfitAchieved = Math.max(prevMaxProfit, profitForTarget);
 
       // Debug logging for equity calculation (dev only)
       if (process.env.NODE_ENV !== "production" && positions.length > 0) {
@@ -3154,7 +3160,9 @@ export default function TradingTerminal() {
         );
       }
 
-      // ✅ Drawdown calculations from earliest version (simple formulas)
+      // ✅ Drawdown calculations - measures LOSS only, does NOT affect profit
+      // Overall drawdown: how much has been lost from starting balance
+      // This is separate from profit calculation above
       const newHighestBalance = Math.max(
         account.highestBalance || startingBalance,
         newEquity,
@@ -3163,16 +3171,30 @@ export default function TradingTerminal() {
       const overallDrawdownPercent =
         startingBalance > 0 ? (totalLoss / startingBalance) * 100 : 0;
 
-      // ✅ Daily drawdown from earliest version
+      // Track maximum drawdown achieved (drawdowns can only increase or stay same)
+      const prevMaxDrawdown = prevMetricsRef.current.overallDrawdown || 0;
+      const maxDrawdownAchieved = Math.max(prevMaxDrawdown, overallDrawdownPercent);
+
+      // ✅ Daily drawdown - measures DAILY LOSS only, does NOT affect profit
+      // Daily drawdown: how much has been lost today from daily start equity
+      // This resets at midnight, but during the day it can only increase or stay same
       const today = new Date().toDateString();
       if (currentDayRef.current !== today) {
         currentDayRef.current = today;
-        dailyStartBalanceRef.current = account.balance;
+        // Reset to current equity at start of day (not balance)
+        dailyStartBalanceRef.current = newEquity;
+        // Reset daily drawdown tracking at start of new day
+        prevMetricsRef.current.dailyDrawdown = 0;
       }
-      const dailyStartBalance = dailyStartBalanceRef.current ?? account.balance;
+      // If not initialized, use current equity
+      const dailyStartBalance = dailyStartBalanceRef.current ?? newEquity;
       const dailyLossDollars = Math.max(0, dailyStartBalance - newEquity);
       const dailyLossPercent =
         startingBalance > 0 ? (dailyLossDollars / startingBalance) * 100 : 0;
+
+      // Track maximum daily drawdown achieved (can only increase during the day)
+      const prevMaxDailyDD = prevMetricsRef.current.dailyDrawdown || 0;
+      const maxDailyDrawdownAchieved = Math.max(prevMaxDailyDD, dailyLossPercent);
 
       // REMOVED: Frontend limit checking - now handled by event-driven price-tick endpoint
       // The price-tick endpoint (called in fetchPricesForPositions) triggers immediate backend evaluation
@@ -3188,11 +3210,11 @@ export default function TradingTerminal() {
       // Always update profit if prevMetrics is 0 (initial state) or if change is significant
       const prevProfit = prevMetrics.profitPercent ?? 0;
       const profitChanged =
-        prevProfit === 0 || Math.abs(prevProfit - profitForTarget) >= 0.01; // 0.01% threshold
+        prevProfit === 0 || Math.abs(prevProfit - maxProfitAchieved) >= 0.01; // 0.01% threshold
       const dailyDDChanged =
-        Math.abs((prevMetrics.dailyDrawdown ?? 0) - dailyLossPercent) >= 0.005; // 0.005% threshold
+        Math.abs((prevMetrics.dailyDrawdown ?? 0) - maxDailyDrawdownAchieved) >= 0.005; // 0.005% threshold
       const overallDDChanged =
-        Math.abs((prevMetrics.overallDrawdown ?? 0) - overallDrawdownPercent) >=
+        Math.abs((prevMetrics.overallDrawdown ?? 0) - maxDrawdownAchieved) >=
         0.005;
 
       // Force update on first run (when equity is 0) to ensure immediate display
@@ -3209,13 +3231,13 @@ export default function TradingTerminal() {
         return; // No change, skip update (unless first update)
       }
 
-      // Update ref with new values (using earliest version calculations)
+      // Update ref with new values (using max achieved values)
       prevMetricsRef.current = {
         equity: newEquity,
         floatingPnL: totalPnL,
-        profitPercent: profitForTarget, // Store profitForTarget
-        overallDrawdown: overallDrawdownPercent,
-        dailyDrawdown: dailyLossPercent,
+        profitPercent: maxProfitAchieved, // Store max profit (never decreases)
+        overallDrawdown: maxDrawdownAchieved, // Store max drawdown (never decreases)
+        dailyDrawdown: maxDailyDrawdownAchieved, // Store max daily DD (never decreases during day)
       };
 
       // Debug logging for equity calculation (dev only)
@@ -3232,8 +3254,8 @@ export default function TradingTerminal() {
         pendingMetricsRef.current.equity = newEquity;
       if (Number.isFinite(totalPnL))
         pendingMetricsRef.current.floatingPnL = totalPnL;
-      if (Number.isFinite(profitForTarget))
-        pendingMetricsRef.current.profitPercent = profitForTarget; // Store profitForTarget
+      if (Number.isFinite(maxProfitAchieved))
+        pendingMetricsRef.current.profitPercent = maxProfitAchieved; // Store max profit
       if (Number.isFinite(realized))
         pendingMetricsRef.current.realizedProfitPercent = realized; // ✅ Store realized
       if (Number.isFinite(live))
@@ -3249,11 +3271,11 @@ export default function TradingTerminal() {
           newEquity - totalMargin,
         );
       }
-      // Use earliest version's simple drawdown calculations
-      if (Number.isFinite(overallDrawdownPercent))
-        pendingMetricsRef.current.overallDrawdown = overallDrawdownPercent;
-      if (Number.isFinite(dailyLossPercent))
-        pendingMetricsRef.current.dailyDrawdown = dailyLossPercent;
+      // Use max achieved drawdown values (never decrease)
+      if (Number.isFinite(maxDrawdownAchieved))
+        pendingMetricsRef.current.overallDrawdown = maxDrawdownAchieved;
+      if (Number.isFinite(maxDailyDrawdownAchieved))
+        pendingMetricsRef.current.dailyDrawdown = maxDailyDrawdownAchieved;
       if (Number.isFinite(newHighestBalance))
         pendingMetricsRef.current.highestBalance = newHighestBalance;
 
@@ -3405,6 +3427,8 @@ export default function TradingTerminal() {
       return;
     }
 
+    // ======== VALIDATION SECTION (all validations before setting flag) ========
+
     // Edge case: Account status validation - check account.status for locked/disqualified
     const statusUpper = String(account.status || "").toUpperCase();
     if (statusUpper.includes("DAILY")) {
@@ -3468,6 +3492,10 @@ export default function TradingTerminal() {
       return;
     }
 
+    // ======== All validations passed - set execution flag ========
+    // Set flag immediately AFTER validations to prevent race conditions from rapid clicks
+    setIsExecutingTrade(true);
+
     // Edge case: Prevent duplicate trades (same symbol, type, price within 1 second)
     // Check both real positions and temporary optimistic positions
     const recentTrade = positions.find(
@@ -3491,6 +3519,7 @@ export default function TradingTerminal() {
           variant: "destructive",
         });
       }
+      setIsExecutingTrade(false);
       return;
     }
 
@@ -3560,6 +3589,7 @@ export default function TradingTerminal() {
             symbol: trade.symbol,
           }),
         });
+        setIsExecutingTrade(false);
         return;
       }
 
@@ -3621,6 +3651,8 @@ export default function TradingTerminal() {
           description: error.message || "Failed to create pending order",
           variant: "destructive",
         });
+      } finally {
+        setIsExecutingTrade(false);
       }
       return;
     }
@@ -3635,11 +3667,12 @@ export default function TradingTerminal() {
         description: "Account changed during trade execution",
         variant: "destructive",
       });
+      setIsExecutingTrade(false);
       return;
     }
 
     // Create temporary ID for optimistic update
-    const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const tempId = `temp_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
 
     // OPTIMISTIC UPDATE: Add position immediately for instant UI feedback
     const optimisticPosition = {
@@ -3684,11 +3717,12 @@ export default function TradingTerminal() {
         title: t("terminal.tradeExecuted"),
         description: `${trade.type.toUpperCase()} ${trade.lotSize} ${trade.symbol} @ ${entryPrice}`,
       });
+      setIsExecutingTrade(false);
       return;
     }
 
     // Save to backend in the background (for real accounts)
-    setIsExecutingTrade(true);
+    // Note: isExecutingTrade flag already set at line 3476
     try {
       console.log("💾 Saving trade to backend...");
 
@@ -4009,15 +4043,15 @@ export default function TradingTerminal() {
               {/* Keep this mobile status group visible up to md (hide only on lg+) */}
               <div className="flex gap-2 lg:hidden">
                 <Badge
-                  className={`text-xs ${isConnected ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400 "}`}
+                  className={`text-xs ${websocketStatus.connected ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400 "}`}
                 >
-                  {isConnected ? (
+                  {websocketStatus.connected ? (
                     <Wifi className="w-3 h-3 mr-1" />
                   ) : (
                     <WifiOff className="w-3 h-3 mr-1" />
                   )}
                   <span className="hidden sm:inline">
-                    {isConnected
+                    {websocketStatus.connected
                       ? t("terminal.connected")
                       : t("terminal.disconnected")}
                   </span>
@@ -4163,15 +4197,15 @@ export default function TradingTerminal() {
             </div>
           </div>
           <Badge
-            className={`text-xs hidden lg:flex ${isConnected ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400 "}`}
+            className={`text-xs hidden lg:flex ${websocketStatus.connected ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400 "}`}
           >
-            {isConnected ? (
+            {websocketStatus.connected ? (
               <Wifi className="w-3 h-3 mr-1" />
             ) : (
               <WifiOff className="w-3 h-3 mr-1" />
             )}
             <span className="hidden sm:inline">
-              {isConnected
+              {websocketStatus.connected
                 ? t("terminal.connected")
                 : t("terminal.disconnected")}
             </span>

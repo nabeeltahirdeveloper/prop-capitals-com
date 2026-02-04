@@ -304,7 +304,11 @@ export default function MyAccounts() {
       {/* Filters */}
       <div className="flex w-full items-center gap-2">
         <Filter className="w-4 h-4 text-slate-400 flex-shrink-0" />
-        <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto">
+        <Tabs
+          value={filter}
+          onValueChange={setFilter}
+          className="w-full sm:w-auto"
+        >
           <TabsList className="flex h-9 w-full flex-1 flex-row gap-0 rounded-lg bg-slate-900 p-0 sm:w-96 border border-slate-800 [&>button]:flex-1 [&>button]:rounded-md [&>button]:px-2 [&>button]:py-1.5 [&>button]:text-xs sm:[&>button]:text-sm">
             <TabsTrigger
               value="all"
@@ -382,22 +386,20 @@ export default function MyAccounts() {
                     </p>
                   )}
                   {/* Row 2: Account size + Platform badge */}
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xl font-bold text-white">
+                  <div className="flex items-center gap-2 mb-2 justify-between">
+                    <span className="text-xl font-bold text-white flex gap-2">
                       ${account.initial_balance?.toLocaleString()}
+                      <Badge variant="default" className="!text-[10px] px-1.5 ">
+                        {account.platform}
+                      </Badge>
                     </span>
-                    <Badge
-                      variant="default"
-                      className="text-[10px] px-1.5 py-0.5"
-                    >
-                      {account.platform}
-                    </Badge>
+
+                    <div className="flex items-center flex-col gap-2 mb-2">
+                      <StatusBadge status={account.current_phase} />
+                      <StatusBadge status={account.status} />
+                    </div>
                   </div>
                   {/* Row 3: Phase badge + Status badge */}
-                  <div className="flex items-center gap-2 mb-2">
-                    <StatusBadge status={account.current_phase} />
-                    <StatusBadge status={account.status} />
-                  </div>
                   {/* Row 4: Account number */}
                   <div className="flex items-center gap-2 text-sm text-slate-400">
                     <span className="truncate">#{account.account_number}</span>

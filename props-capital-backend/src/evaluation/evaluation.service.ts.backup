@@ -262,10 +262,10 @@ export class EvaluationService {
     const ruleOutputs = this.challengeRulesService.calculateRules(ruleInputs);
 
     // Check for drawdown warnings (80% threshold) - only if not already violated
-    // Note: 'today' variable already declared above
+    const today = new Date().toISOString().substring(0, 10);
     const warningCacheKey = accountId;
     let warningCache = this.warningCache.get(warningCacheKey);
-
+    
     // Reset warning cache if it's a new day
     if (!warningCache || warningCache.lastWarningDate !== today) {
       warningCache = { dailyWarningSent: false, overallWarningSent: false, lastWarningDate: today };
@@ -673,58 +673,23 @@ export class EvaluationService {
     const balance = account.balance ?? initialBalance;
     const equity = account.equity ?? balance;
 
-    // Check if we need to reset daily metrics (new day)
-    const today = new Date().toISOString().substring(0, 10);
-    const lastReset = (account as any).lastDailyReset;
-    const lastResetDate = lastReset ? new Date(lastReset).toISOString().substring(0, 10) : null;
-
-    // Update todayStartEquity if this is the first trade of the day or new day
+    // Update todayStartEquity if this is the first trade of the day
     let todayStartEquity = (account as any).todayStartEquity;
-    let minEquityToday = (account as any).minEquityToday ?? equity;
-
-    if (!todayStartEquity || lastResetDate !== today) {
+    if (!todayStartEquity) {
       todayStartEquity = equity;
-      minEquityToday = equity;
       await this.prisma.tradingAccount.update({
         where: { id: accountId },
-        data: {
-          todayStartEquity: equity,
-          minEquityToday: equity,
-          lastDailyReset: new Date(),
-        } as any,
+        data: { todayStartEquity: equity } as any,
       });
-      this.logger.debug(`[evaluateAccountAfterTrade] Reset daily metrics. todayStartEquity=${equity}, minEquityToday=${equity}`);
     }
 
     let maxEquityToDate = (account as any).maxEquityToDate ?? initialBalance;
-    let minEquityOverall = (account as any).minEquityOverall ?? initialBalance;
-
     if (equity > maxEquityToDate) {
       maxEquityToDate = equity;
       await this.prisma.tradingAccount.update({
         where: { id: accountId },
         data: { maxEquityToDate: equity } as any,
       });
-    }
-
-    // Update minEquityToday if current equity is lower
-    if (equity < minEquityToday) {
-      minEquityToday = equity;
-      await this.prisma.tradingAccount.update({
-        where: { id: accountId },
-        data: { minEquityToday: equity } as any,
-      });
-      this.logger.debug(`[evaluateAccountAfterTrade] Updated minEquityToday to ${equity}`);
-    }
-
-    // Update minEquityOverall if current equity is lower
-    if (equity < minEquityOverall) {
-      minEquityOverall = equity;
-      await this.prisma.tradingAccount.update({
-        where: { id: accountId },
-        data: { minEquityOverall: equity } as any,
-      });
-      this.logger.debug(`[evaluateAccountAfterTrade] Updated minEquityOverall to ${equity}`);
     }
 
     //  Snapshot equity for today
@@ -743,8 +708,6 @@ export class EvaluationService {
       currentEquity: equity,
       todayStartEquity: todayStartEquity || equity,
       maxEquityToDate: maxEquityToDate,
-      minEquityToday: minEquityToday,
-      minEquityOverall: minEquityOverall,
       challenge: {
         dailyDrawdownPercent: challenge.dailyDrawdownPercent,
         overallDrawdownPercent: challenge.overallDrawdownPercent,
@@ -1002,8 +965,6 @@ export class EvaluationService {
     // Use stored tracking values or defaults
     const todayStartEquity = (account as any).todayStartEquity ?? equity;
     const maxEquityToDate = (account as any).maxEquityToDate ?? initialBalance;
-    const minEquityToday = (account as any).minEquityToday ?? equity;
-    const minEquityOverall = (account as any).minEquityOverall ?? initialBalance;
 
     // Calculate rules with current equity
     const ruleInputs: RuleInputs = {
@@ -1012,8 +973,6 @@ export class EvaluationService {
       currentEquity: equity,
       todayStartEquity,
       maxEquityToDate,
-      minEquityToday,
-      minEquityOverall,
       challenge: {
         dailyDrawdownPercent: challenge.dailyDrawdownPercent,
         overallDrawdownPercent: challenge.overallDrawdownPercent,

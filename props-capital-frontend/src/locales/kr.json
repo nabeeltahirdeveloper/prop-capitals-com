@@ -444,6 +444,8 @@
     "newTicket": "새 티켓",
     "createTicket": "지원 티켓 생성",
     "subject": "제목",
+    "ticketCreated":"티켓이 생성되었습니다.",
+    "ticketCreatedDesc":"티켓 생성 설명",
     "subjectPlaceholder": "문제에 대한 간단한 설명",
     "category": "카테고리",
     "select": "선택",
