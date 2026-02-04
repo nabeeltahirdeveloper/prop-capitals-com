@@ -194,7 +194,7 @@ export default function Home() {
 
               <motion.p
                 variants={fadeIn}
-                className="text-base sm:text-lg md:text-xl text-slate-400 mb-6 md:mb-10 text-center"
+                className="text-base sm:text-lg md:text-xl text-slate-400 mb-6 md:mb-10 text-center lg:text-left"
               >
                 {t("home.hero.subtitle")}
               </motion.p>
@@ -699,7 +699,6 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
-
     </div>
   );
 }
