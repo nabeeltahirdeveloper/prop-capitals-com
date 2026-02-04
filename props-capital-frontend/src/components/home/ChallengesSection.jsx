@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Check, ArrowRight, Star } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { challengeTypes, accountSizes } from './data/mockData';
 import { useTheme } from '@/contexts/ThemeContext';
 

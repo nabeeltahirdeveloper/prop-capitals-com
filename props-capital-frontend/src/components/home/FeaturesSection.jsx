@@ -1,6 +1,6 @@
 import React from 'react';
 import { Bot, Newspaper, Calendar, Timer, Zap, Copy, ArrowRight } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { tradingFeatures } from './data/mockData';
 import { useTheme } from '@/contexts/ThemeContext';

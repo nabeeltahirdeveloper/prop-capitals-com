@@ -1,6 +1,6 @@
 import React from 'react';
 import { TrendingUp, Users, DollarSign, Star, Clock, Award, ArrowRight } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 import { stats } from './data/mockData';

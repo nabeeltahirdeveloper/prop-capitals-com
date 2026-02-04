@@ -4,7 +4,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from './ui/accordion';
+} from '@/components/ui/accordion';
 import { faqData } from './data/mockData';
 import { HelpCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';

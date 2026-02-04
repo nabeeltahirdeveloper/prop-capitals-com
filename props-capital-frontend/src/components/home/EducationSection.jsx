@@ -1,6 +1,6 @@
 import React from 'react';
 import { Monitor, Target, BookOpen, TrendingUp, ChevronRight, Play } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 
 const educationData = [

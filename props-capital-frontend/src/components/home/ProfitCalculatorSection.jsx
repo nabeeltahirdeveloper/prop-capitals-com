@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Calculator, TrendingUp, DollarSign } from 'lucide-react';
-import { Slider } from './ui/slider';
+import { Slider } from '@/components/ui/slider';
 import { accountSizes } from './data/mockData';
 import { useTheme } from '@/contexts/ThemeContext';
 
