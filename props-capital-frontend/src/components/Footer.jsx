@@ -100,9 +100,9 @@ const Footer = () => {
             <h4 className={`font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Resources</h4>
             <ul className="space-y-3">
               {[
-                { name: 'FAQs', path: '/faqs' },
+                { name: 'FAQs', path: '/faq' },
                 { name: 'Trading Rules', path: '/trading-rules' },
-                { name: 'How It Works', path: '/how-it-works' },
+                { name: 'How It Works', path: '/HowItWorks' },
                 { name: 'Affiliate Program', path: '/affiliate' }
               ].map((item) => (
                 <li key={item.path}>
@@ -155,7 +155,7 @@ const Footer = () => {
           {/* Bottom Bar */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-              © 2025 Prop-Capitals.com. All rights reserved.
+              © 2026 Prop-Capitals.com. All rights reserved.
             </p>
             <div className="flex items-center gap-4 flex-wrap justify-center">
               {[

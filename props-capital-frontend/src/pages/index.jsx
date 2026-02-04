@@ -37,25 +37,24 @@ import Rules from "./Rules";
 import BuyChallenge from "./BuyChallenge";
 
 import AccountDetails from "./AccountDetails";
-
 import Notifications from "./Notifications";
-
 import TradeHistory from "./TradeHistory";
-
 import ChallengeProgress from "./ChallengeProgress";
-
 import TradingTerminal from "./TradingTerminal";
-
 import RuleCompliance from "./RuleCompliance";
-
 import SignIn from "./SignIn";
-
 import SignUp from "./SignUp";
-import ForgotPassword from "./ForgotPassword.jsx";
-
 import TraderBuyChallenge from "./TraderBuyChallenge";
-
 import About from "./About.jsx";
+import WatchDemo from "./WatchDemoPage.jsx"
+import CareersPage from "./CareersPage.jsx"
+import BlogPage from "./BlogPage.jsx";
+import TradingRulesPage from "./TradingRulesPage.jsx"
+import AffiliatePage from "./AffiliatePage.jsx"
+import RiskDisclosurePage from "./RiskDisclosurePage.jsx"
+import RefundPage from "./RefundPage.jsx"
+import CheckoutPage from "./CheckoutPage.jsx";
+import CheckoutSuccessPage from "./CheckoutSuccessPage.jsx";
 
 import {
   BrowserRouter as Router,
@@ -154,15 +153,25 @@ function PagesContent() {
               <Route path="/" element={<Home />} />
               <Route path="/Home" element={<Home />} />
               <Route path="/Challenges" element={<Challenges />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
               <Route path="/HowItWorks" element={<HowItWorks />} />
               <Route path="/FAQ" element={<FAQ />} />
               <Route path="/Contact" element={<Contact />} />
               <Route path="/ScalingPlan" element={<ScalingPlan />} />
               <Route path="/Payouts" element={<Payouts />} />
-              <Route path="/Terms" element={<Terms />} />
-              <Route path="/Privacy" element={<Privacy />} />
               <Route path="/Rules" element={<Rules />} />
               <Route path="/about" element={<About />}/>
+              <Route path="/watch-demo" element={<WatchDemo />} />
+              <Route path="/careers" element={<CareersPage />} />
+              <Route path="/blog" element={<BlogPage />} />
+              <Route path="/trading-rules" element={<TradingRulesPage />} />
+              <Route path="/affiliate" element={<AffiliatePage />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/Privacy" element={<Privacy />} />
+              <Route path="/risk-disclosure" element={<RiskDisclosurePage />} />
+              <Route path="/refund-policy" element={<RefundPage />} />
+
               <Route
                 path="/SignIn"
                 element={
