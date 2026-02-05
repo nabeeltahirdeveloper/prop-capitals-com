@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useMemo, useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getCurrentUser } from '@/api/auth';
+import { reconnectSocketWithToken } from '@/lib/socket';
 
 const AuthContext = createContext({
   status: 'checking',
@@ -43,6 +44,7 @@ export const AuthProvider = ({ children }) => {
       queryClient.setQueryData(['user', 'me'], userData);
     }
     queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+    reconnectSocketWithToken();
   }, [queryClient]);
 
   const logout = useCallback(() => {

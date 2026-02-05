@@ -78,6 +78,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTrading } from "@/contexts/TradingContext";
+import TopBar from "@/components/trading/Topbar";
 
 // Helper function for development-only logging
 const devLog = (...args) => {
@@ -86,12 +88,17 @@ const devLog = (...args) => {
   }
 };
 
+
+
 const devWarn = (...args) => {
   if (process.env.NODE_ENV !== "production") {
     console.warn(...args);
   }
 };
 // const [tradeHistory, setTradeHistory] = useState([]);
+
+
+
 
 // Demo account localStorage helpers
 const DEMO_ACCOUNT_STORAGE_KEY = "demo-account:trades";
@@ -152,14 +159,34 @@ export default function TradingTerminal() {
     getPrice: getUnifiedPrice,
     lastUpdate: pricesLastUpdate,
   } = usePrices();
+  const { setSelectedSymbol: setTradingSelectedSymbol } = useTrading();
   // Initialize with a default symbol so trading works immediately
-  const [selectedSymbol, setSelectedSymbol] = useState({
-    symbol: "EUR/USD",
-    bid: 1.08542,
-    ask: 1.08557,
-    spread: 1.5,
-    change: 0.05,
-  });
+  // const [selectedSymbol, setSelectedSymbol] = useState({
+  //   symbol: "EUR/USD",
+  //   bid: 1.08542,
+  //   ask: 1.08557,
+  //   spread: 1.5,
+  //   change: 0.05,
+  // });
+  
+const {
+        selectedSymbol,
+        setSelectedSymbol,
+        selectedTimeframe,
+        setSelectedTimeframe,
+        symbols,
+        symbolsLoading,
+        accountSummary,
+        orders,
+        currentSymbolData,
+        chartType,
+        setChartType,
+        theme
+    } = useTrading()
+
+
+
+  const chartAreaRef = useRef(null)
 
   // Enrich selectedSymbol with real-time prices from unifiedPrices
   const enrichedSelectedSymbol = useMemo(() => {
@@ -182,6 +209,13 @@ export default function TradingTerminal() {
     }
     return selectedSymbol;
   }, [selectedSymbol, unifiedPrices]);
+
+  // Sync chart (TradingContext) with initial/default symbol so chart and watchlist start in sync
+  useEffect(() => {
+    const sym = selectedSymbol?.symbol ?? selectedSymbol;
+    if (sym) setTradingSelectedSymbol(sym);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [positions, setPositions] = useState([]);
   const [demoClosedTrades, setDemoClosedTrades] = useState([]);
@@ -4289,6 +4323,7 @@ export default function TradingTerminal() {
               <MarketWatchlist
                 onSymbolSelect={(symbol) => {
                   setSelectedSymbol(symbol);
+                  setTradingSelectedSymbol(symbol?.symbol ?? symbol);
                 }}
                 selectedSymbol={selectedSymbol}
               />
@@ -4301,9 +4336,25 @@ export default function TradingTerminal() {
               {t("terminal.tabs.chart")}
             </h4>
             <div className="h-[380px] min-w-0">
+              <TopBar
+                    selectedSymbol={selectedSymbol}
+                    selectedTimeframe={selectedTimeframe}
+                    onTimeframeChange={setSelectedTimeframe}
+                    chartType={chartType}
+                    onChartTypeChange={setChartType}
+                    // onNewOrder={handleNewOrder}
+                    // onZoomIn={handleZoomIn}
+                    // onZoomOut={handleZoomOut}
+                    // onDownloadChartPNG={handleDownloadChartPNG}
+                    // onToggleFullscreen={handleToggleFullscreen}
+                    // marketWatchOpen={showMarketWatch}
+                    // onToggleMarketWatch={() => setShowMarketWatch(prev => !prev)}
+                    // onToggleBuySell={handleToggleBuySell}
+                    // buySellPanelOpen={showBuySellPanel}
+                />
               <TradingChart
                 key={`chart-mobile-${selectedSymbol?.symbol}`}
-                symbol={selectedSymbol}
+                symbol={enrichedSelectedSymbol}
                 openPositions={positions}
                 onPriceUpdate={handlePriceUpdate}
               />
@@ -4552,7 +4603,10 @@ export default function TradingTerminal() {
               ) : (
                 <div className="h-full relative">
                   <MarketWatchlist
-                    onSymbolSelect={setSelectedSymbol}
+                    onSymbolSelect={(symbol) => {
+                      setSelectedSymbol(symbol);
+                      setTradingSelectedSymbol(symbol?.symbol ?? symbol);
+                    }}
                     selectedSymbol={selectedSymbol}
                   />
                   <Button
@@ -4564,18 +4618,35 @@ export default function TradingTerminal() {
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
                 </div>
-              )}
+              )
+              }
             </div>
 
-            {/* Center - Chart */}
+            {/* Center - Chart - flex so chart fills full height */}
             <div
-              className={`${sidebarCollapsed ? "col-span-8" : "col-span-7"} transition-all h-[450px] min-w-0`}
+              className={`${sidebarCollapsed ? "col-span-8" : "col-span-7"} transition-all flex flex-col h-[450px] min-w-0`}
             >
+               <TopBar
+                    selectedSymbol={selectedSymbol}
+                    selectedTimeframe={selectedTimeframe}
+                    onTimeframeChange={setSelectedTimeframe}
+                    chartType={chartType}
+                    onChartTypeChange={setChartType}
+                    // onNewOrder={handleNewOrder}
+                    // onZoomIn={handleZoomIn}
+                    // onZoomOut={handleZoomOut}
+                    // onDownloadChartPNG={handleDownloadChartPNG}
+                    // onToggleFullscreen={handleToggleFullscreen}
+                    // marketWatchOpen={showMarketWatch}
+                    // onToggleMarketWatch={() => setShowMarketWatch(prev => !prev)}
+                    // onToggleBuySell={handleToggleBuySell}
+                    // buySellPanelOpen={showBuySellPanel}
+                />
               <TradingChart
-                key={`chart-desktop-${selectedSymbol?.symbol}`}
-                symbol={selectedSymbol}
-                openPositions={positions}
-                onPriceUpdate={handlePriceUpdate}
+                ref={chartAreaRef}
+                symbol={enrichedSelectedSymbol}
+                bidPrice={enrichedSelectedSymbol?.bid ?? "0"}
+                askPrice={enrichedSelectedSymbol?.ask ?? "0"}
               />
             </div>
 
