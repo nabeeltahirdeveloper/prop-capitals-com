@@ -3,39 +3,22 @@ import ErrorBoundary from "../components/ErrorBoundary.jsx";
 import { LanguageProvider } from "../contexts/LanguageContext";
 
 import Home from "./Home";
-
 import Challenges from "./Challenges";
-
 import HowItWorks from "./HowItWorks";
-
 import FAQ from "./FAQ";
-
 import Contact from "./Contact";
-
 import ScalingPlan from "./ScalingPlan";
-
 import Payouts from "./Payouts";
-
 import Terms from "./Terms";
-
 import Privacy from "./Privacy";
-
 import TraderDashboard from "./TraderDashboard";
-
 import MyAccounts from "./MyAccounts";
-
 import Analytics from "./Analytics";
-
 import TraderPayouts from "./TraderPayouts";
-
 import Profile from "./Profile";
-
 import Support from "./Support";
-
 import Rules from "./Rules";
-
 import BuyChallenge from "./BuyChallenge";
-
 import AccountDetails from "./AccountDetails";
 import Notifications from "./Notifications";
 import TradeHistory from "./TradeHistory";
@@ -55,6 +38,16 @@ import RiskDisclosurePage from "./RiskDisclosurePage.jsx"
 import RefundPage from "./RefundPage.jsx"
 import CheckoutPage from "./CheckoutPage.jsx";
 import CheckoutSuccessPage from "./CheckoutSuccessPage.jsx";
+// Dashboard
+import TraderPanelLayout from "@/components/trader/TraderPanelLayout.jsx";
+import AccountOverview from "@/components/trader/AccountOverview.jsx";
+import Trading from "@/components/trader/TradingTerminal.jsx";
+import OrdersPage from "@/components/trader/OrdersPage.jsx";
+import EconomicCalendar from "@/components/trader/EconomicCalendar.jsx";
+import PayoutHistory from "@/components/trader/PayoutHistory.jsx";
+import AccountSettings from "@/components/trader/AccountSettings.jsx";
+
+
 
 import {
   BrowserRouter as Router,
@@ -71,63 +64,52 @@ import { PriceProviderWithRouter } from "../contexts/PriceContext";
 
 const PAGES = {
   Home: Home,
-
   Challenges: Challenges,
-
   HowItWorks: HowItWorks,
-
   FAQ: FAQ,
-
+  ABOUT: About,
   Contact: Contact,
-
   ScalingPlan: ScalingPlan,
-
   Payouts: Payouts,
-
   Terms: Terms,
-
   Privacy: Privacy,
-
   TraderDashboard: TraderDashboard,
-
   MyAccounts: MyAccounts,
-
   Analytics: Analytics,
-
   TraderPayouts: TraderPayouts,
-
   Profile: Profile,
-
   Support: Support,
-
   Rules: Rules,
-
   BuyChallenge: BuyChallenge,
-
   AccountDetails: AccountDetails,
-
   Notifications: Notifications,
-
   TradeHistory: TradeHistory,
-
   ChallengeProgress: ChallengeProgress,
-
   TradingTerminal: TradingTerminal,
-
   RuleCompliance: RuleCompliance,
-
   SignIn: SignIn,
-
   SignUp: SignUp,
-
   TraderBuyChallenge: TraderBuyChallenge,
+  // New Dashboard
+  TraderDashboard: TraderPanelLayout,
+  TRADING: Trading,
+  AccountOverview: AccountOverview,
+  ORDERS: OrdersPage,
+  CALENDAR: EconomicCalendar,
+  PAYOUTS: PayoutHistory,
+  SETTINGS: AccountSettings,
+  PROFILE: AccountSettings,
+  SUPPORT: AccountSettings,
+  FAQS: AccountSettings,
 };
 
 function _getCurrentPage(url) {
   if (url.endsWith("/")) {
     url = url.slice(0, -1);
   }
+
   let urlLastPart = url.split("/").pop();
+
   if (urlLastPart.includes("?")) {
     urlLastPart = urlLastPart.split("?")[0];
   }
@@ -135,6 +117,9 @@ function _getCurrentPage(url) {
   const pageName = Object.keys(PAGES).find(
     (page) => page.toLowerCase() === urlLastPart.toLowerCase(),
   );
+
+  console.log(pageName);
+
   return pageName || Object.keys(PAGES)[0];
 }
 
@@ -161,7 +146,7 @@ function PagesContent() {
               <Route path="/ScalingPlan" element={<ScalingPlan />} />
               <Route path="/Payouts" element={<Payouts />} />
               <Route path="/Rules" element={<Rules />} />
-              <Route path="/about" element={<About />}/>
+              <Route path="/about" element={<About />} />
               <Route path="/watch-demo" element={<WatchDemo />} />
               <Route path="/careers" element={<CareersPage />} />
               <Route path="/blog" element={<BlogPage />} />
@@ -171,7 +156,6 @@ function PagesContent() {
               <Route path="/Privacy" element={<Privacy />} />
               <Route path="/risk-disclosure" element={<RiskDisclosurePage />} />
               <Route path="/refund-policy" element={<RefundPage />} />
-
               <Route
                 path="/SignIn"
                 element={
@@ -193,7 +177,6 @@ function PagesContent() {
                 }
               />
               <Route path="/dashboard" element={<DashboardRedirect />} />
-
               {/* Trader Routes */}
               <Route element={<ProtectedRoute allowedRoles={["TRADER"]} />}>
                 <Route path="/TraderDashboard" element={<TraderDashboard />} />
@@ -214,6 +197,20 @@ function PagesContent() {
                   path="/TraderBuyChallenge"
                   element={<TraderBuyChallenge />}
                 />
+              </Route>
+
+              <Route element={<ProtectedRoute allowedRoles={["TRADER"]} />}>
+                <Route path="/traderdashboard" element={<TraderPanelLayout />}>
+                  <Route index element={<AccountOverview />} />
+                  <Route path="trading" element={<Trading />} />
+                  <Route path="orders" element={<OrdersPage />} />
+                  <Route path="calendar" element={<EconomicCalendar />} />
+                  <Route path="payouts" element={<PayoutHistory />} />
+                  <Route path="settings" element={<AccountSettings />} />
+                  <Route path="profile" element={<AccountSettings />} />
+                  <Route path="support" element={<AccountSettings />} />
+                  <Route path="faqs" element={<AccountSettings />} />
+                </Route>
               </Route>
 
               {/* Trader Profile Route */}
