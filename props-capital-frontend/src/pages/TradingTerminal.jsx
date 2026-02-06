@@ -2197,9 +2197,9 @@ export default function TradingTerminal() {
         const lastTickTime = priceTickThrottleRef.current[throttleKey] || 0;
         const now = Date.now();
 
-        // Throttle: Only send tick if 250ms have passed since last tick for this symbol
-        // Reduced from 1000ms to 250ms to catch rapid price movements in volatile markets
-        if (now - lastTickTime >= 250) {
+        // Throttle: Only send tick if 50ms have passed since last tick for this symbol
+        // Reduced to 50ms for near-instant violation detection and drawdown updates
+        if (now - lastTickTime >= 50) {
           priceTickThrottleRef.current[throttleKey] = now;
 
           // Send price tick to backend - triggers immediate evaluation and auto-close if needed
@@ -3031,11 +3031,10 @@ export default function TradingTerminal() {
         const live = 0;
         const profitForTarget = Math.max(0, realized);
 
-        // ✅ Drawdown calculations from earliest version (simple formula)
-        const totalLoss = Math.max(0, startingBalance - newEquity);
-        const overallDrawdownPercent =
-          startingBalance > 0 ? (totalLoss / startingBalance) * 100 : 0;
-        const dailyDrawdown = 0; // When no positions, no daily drawdown
+        // ✅ Use backend drawdown values (single source of truth - Option A)
+        // Backend tracks minimum equity for accurate monotonic drawdowns
+        const overallDrawdownPercent = account.overallDrawdown ?? 0;
+        const dailyDrawdown = account.dailyDrawdown ?? 0;
 
         // Only update if values actually changed (prevent unnecessary re-renders)
         const prevMetrics = prevMetricsRef.current;
@@ -3160,41 +3159,21 @@ export default function TradingTerminal() {
         );
       }
 
-      // ✅ Drawdown calculations - measures LOSS only, does NOT affect profit
-      // Overall drawdown: how much has been lost from starting balance
-      // This is separate from profit calculation above
+      // ✅ Use backend drawdown values (single source of truth - Option A)
+      // Backend tracks minimum equity for accurate monotonic drawdowns that never fall back
+      // Backend handles daily reset at midnight automatically
       const newHighestBalance = Math.max(
         account.highestBalance || startingBalance,
         newEquity,
       );
-      const totalLoss = Math.max(0, startingBalance - newEquity);
-      const overallDrawdownPercent =
-        startingBalance > 0 ? (totalLoss / startingBalance) * 100 : 0;
 
-      // Track maximum drawdown achieved (drawdowns can only increase or stay same)
-      const prevMaxDrawdown = prevMetricsRef.current.overallDrawdown || 0;
-      const maxDrawdownAchieved = Math.max(prevMaxDrawdown, overallDrawdownPercent);
+      // Get drawdowns from backend (already calculated with min equity tracking)
+      const overallDrawdownPercent = account.overallDrawdown ?? 0;
+      const dailyLossPercent = account.dailyDrawdown ?? 0;
 
-      // ✅ Daily drawdown - measures DAILY LOSS only, does NOT affect profit
-      // Daily drawdown: how much has been lost today from daily start equity
-      // This resets at midnight, but during the day it can only increase or stay same
-      const today = new Date().toDateString();
-      if (currentDayRef.current !== today) {
-        currentDayRef.current = today;
-        // Reset to current equity at start of day (not balance)
-        dailyStartBalanceRef.current = newEquity;
-        // Reset daily drawdown tracking at start of new day
-        prevMetricsRef.current.dailyDrawdown = 0;
-      }
-      // If not initialized, use current equity
-      const dailyStartBalance = dailyStartBalanceRef.current ?? newEquity;
-      const dailyLossDollars = Math.max(0, dailyStartBalance - newEquity);
-      const dailyLossPercent =
-        startingBalance > 0 ? (dailyLossDollars / startingBalance) * 100 : 0;
-
-      // Track maximum daily drawdown achieved (can only increase during the day)
-      const prevMaxDailyDD = prevMetricsRef.current.dailyDrawdown || 0;
-      const maxDailyDrawdownAchieved = Math.max(prevMaxDailyDD, dailyLossPercent);
+      // Use backend values directly - no need for frontend max tracking
+      const maxDrawdownAchieved = overallDrawdownPercent;
+      const maxDailyDrawdownAchieved = dailyLossPercent;
 
       // REMOVED: Frontend limit checking - now handled by event-driven price-tick endpoint
       // The price-tick endpoint (called in fetchPricesForPositions) triggers immediate backend evaluation
