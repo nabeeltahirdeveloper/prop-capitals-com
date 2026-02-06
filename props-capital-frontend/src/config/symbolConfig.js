@@ -35,7 +35,7 @@ export const SYMBOL_CONFIG = {
   EURJPY: { type: 'forex', sessionTZ: FOREX_TZ, session: FOREX_SESSION, priceMode: 'mid' },
   GBPJPY: { type: 'forex', sessionTZ: FOREX_TZ, session: FOREX_SESSION, priceMode: 'mid' },
   CADJPY: { type: 'forex', sessionTZ: FOREX_TZ, session: FOREX_SESSION, priceMode: 'mid' },
-  EURJPY: { type: 'forex', sessionTZ: FOREX_TZ, session: FOREX_SESSION, priceMode: 'mid' },
+  // EURJPY: { type: 'forex', sessionTZ: FOREX_TZ, session: FOREX_SESSION, priceMode: 'mid' },
   
   // Metals & Commodities (treated as forex for session handling)
   XAUUSD: { type: 'forex', sessionTZ: FOREX_TZ, session: FOREX_SESSION, priceMode: 'mid' },

@@ -4573,10 +4573,10 @@ const {
                   className="w-full h-full bg-slate-900 border border-slate-800 rounded-lg flex flex-col items-center justify-between py-3 cursor-pointer hover:bg-slate-800/50 hover:border-slate-700 transition-all group"
                 >
                   {/* Top - Expand indicator */}
-                  <div className="flex flex-col items-center gap-1">
+                  {/* <div className="flex flex-col items-center gap-1">
                     <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-emerald-400 transition-colors" />
                     <div className="w-6 h-0.5 bg-slate-700 rounded group-hover:bg-emerald-500/50 transition-colors" />
-                  </div>
+                  </div> */}
 
                   {/* Center - Icon and vertical text */}
                   <div className="flex-1 flex flex-col items-center justify-center gap-3">
@@ -4597,7 +4597,7 @@ const {
                     <div className="text-[8px] text-slate-600 mb-0.5">
                       {selectedSymbol?.symbol?.split("/")[0] || "EUR"}
                     </div>
-                    <div className="w-2 h-2 rounded-full bg-emerald-500/50 mx-auto animate-pulse" />
+                    <div className="w-2 h-2 rounded-full  mx-auto animate-pulse" />
                   </div>
                 </div>
               ) : (
@@ -4626,22 +4626,22 @@ const {
             <div
               className={`${sidebarCollapsed ? "col-span-8" : "col-span-7"} transition-all flex flex-col h-[450px] min-w-0`}
             >
-               <TopBar
-                    selectedSymbol={selectedSymbol}
-                    selectedTimeframe={selectedTimeframe}
-                    onTimeframeChange={setSelectedTimeframe}
-                    chartType={chartType}
-                    onChartTypeChange={setChartType}
-                    // onNewOrder={handleNewOrder}
-                    // onZoomIn={handleZoomIn}
-                    // onZoomOut={handleZoomOut}
-                    // onDownloadChartPNG={handleDownloadChartPNG}
-                    // onToggleFullscreen={handleToggleFullscreen}
-                    // marketWatchOpen={showMarketWatch}
-                    // onToggleMarketWatch={() => setShowMarketWatch(prev => !prev)}
-                    // onToggleBuySell={handleToggleBuySell}
-                    // buySellPanelOpen={showBuySellPanel}
-                />
+              <TopBar
+                   selectedSymbol={selectedSymbol}
+                   selectedTimeframe={selectedTimeframe}
+                   onTimeframeChange={setSelectedTimeframe}
+                   chartType={chartType}
+                   onChartTypeChange={setChartType}
+                   // onNewOrder={handleNewOrder}
+                   // onZoomIn={handleZoomIn}
+                   // onZoomOut={handleZoomOut}
+                   // onDownloadChartPNG={handleDownloadChartPNG}
+                   // onToggleFullscreen={handleToggleFullscreen}
+                   // marketWatchOpen={showMarketWatch}
+                   // onToggleMarketWatch={() => setShowMarketWatch(prev => !prev)}
+                   // onToggleBuySell={handleToggleBuySell}
+                   // buySellPanelOpen={showBuySellPanel}
+               />
               <TradingChart
                 ref={chartAreaRef}
                 symbol={enrichedSelectedSymbol}

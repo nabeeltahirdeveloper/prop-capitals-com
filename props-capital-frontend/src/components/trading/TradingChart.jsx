@@ -1695,6 +1695,30 @@ const ensureAscendingTimeOrder = (data) => {
   return Array.from(map.values()).sort((a, b) => a.time - b.time);
 };
 
+
+const prepareCandlesForSetData = (candles, selectedTimeframe) => {
+  const tfSec = timeframeToSeconds(selectedTimeframe);
+
+  const aligned = (Array.isArray(candles) ? candles : [])
+    .map(c => {
+      const t = normalizeTime(c.time); // handles sec/ms + null safety
+      return {
+        ...c,
+        time: t != null ? alignToTimeframe(Number(t), tfSec) : null,
+      };
+    })
+    .filter(c => c.time != null);
+
+  aligned.sort((a, b) => a.time - b.time);
+
+  // last-wins (after alignment)
+  const map = new Map();
+  for (const c of aligned) map.set(c.time, c);
+
+  return Array.from(map.values()).sort((a, b) => a.time - b.time);
+};
+
+
 // Distance from point (px, py) to line segment (x1,y1)-(x2,y2)
 function distanceToSegment(px, py, x1, y1, x2, y2) {
   const dx = x2 - x1, dy = y2 - y1;
@@ -1842,7 +1866,7 @@ const ChartArea = forwardRef(function ChartArea({
   // const [modalOrderType, setModalOrderType] = useState(null);
   const [candles, setCandles] = useState([]);
   const [candlesLoading, setCandlesLoading] = useState(true);
-  const socketRef = useRef(null);
+  // const socketRef = useRef(null);
   const candlesMapRef = useRef(new Map()); // Store candles by time for quick updates
   const candleUpdateTimeoutRef = useRef(null); // (reserved) For debouncing candle updates
   const lastCandleRenderRef = useRef(0); // Throttle visual candle updates (MT5-like smoothness)
@@ -2060,17 +2084,37 @@ const ChartArea = forwardRef(function ChartArea({
       leftPriceScale: {
         visible: false,
       },
+      
       timeScale: {
         borderColor: isLightTheme ? "#e5e7eb" : "#1e293b",
         timeVisible: true,
         secondsVisible: false,
         rightOffset: 10,
-        barSpacing: 3, // Increase spacing between candles for better visibility
-        minBarSpacing: 2,
-        shiftVisibleRangeOnNewBar: false, // We handle auto-scroll manually for better control
-        fixLeftEdge: false, // Allow scrolling to latest
-        fixRightEdge: false, // Allow scrolling to latest
-      },
+        barSpacing: 3,
+        tickMarkFormatter: (time, tickMarkType, locale) => {
+          const d = new Date((typeof time === 'number' ? time : time) * 1000);
+          const pad = (n) => String(n).padStart(2, '0');
+          const h = d.getUTCHours();
+          const m = d.getUTCMinutes();
+          if (tickMarkType === 2) return `${pad(d.getUTCDate())} ${d.toLocaleDateString(locale || 'en', { month: 'short' })}`;
+          if (tickMarkType === 1) return `${pad(h)}:${pad(m)}`;
+          return `${pad(h)}:${pad(m)}`;
+      }},
+
+
+
+      // timeScale: {
+      //   borderColor: isLightTheme ? "#e5e7eb" : "#1e293b",
+      //   timeVisible: true,
+      //   secondsVisible: false,
+      //   rightOffset: 10,
+      //   barSpacing: 3, // Increase spacing between candles for better visibility
+      //   minBarSpacing: 2,
+      //   shiftVisibleRangeOnNewBar: false, // We handle auto-scroll manually for better control
+      //   fixLeftEdge: false, // Allow scrolling to latest
+      //   fixRightEdge: false, // Allow scrolling to latest
+      // },
+      
       crosshair: {
         mode: activeTool === 1 ? 1 : 0, // 0 = Hidden, 1 = Normal (shows on hover), 2 = Magnet
         vertLine: {
@@ -2365,48 +2409,46 @@ const ChartArea = forwardRef(function ChartArea({
     fetchCandles()
   }, [selectedSymbolStr, selectedTimeframe]) // Removed bidPrice - not needed
 
-  // Chart connected to same WebSocket as watchlist (lib/socket → /trading). Real-time via priceUpdate from backend.
-  useEffect(() => {
-    if (!socketRef.current) socketRef.current = socket;
-    const sock = socketRef.current;
-    if (!sock) return;
+  // // Chart connected to same WebSocket as watchlist (lib/socket → /trading). Real-time via priceUpdate from backend.
+  // useEffect(() => {
+  //   if (!socketRef.current) socketRef.current = socket;
+  //   const sock = socketRef.current;
+  //   if (!sock) return;
 
-    let currentSymbol = selectedSymbolStr
-    let currentTimeframe = selectedTimeframe
+  //   let currentSymbol = selectedSymbolStr
+  //   let currentTimeframe = selectedTimeframe
 
-    // Handle connection events (only once)
-    const handleConnect = () => {
-      console.log('✅ Chart WebSocket connected')
-      // Subscribe immediately on connect
-      subscribeToCandles()
-    }
+  //   // Handle connection events (only once)
+  //   const handleConnect = () => {
+  //     console.log('✅ Chart WebSocket connected')
+  //     // Subscribe immediately on connect
+  //     subscribeToCandles()
+  //   }
 
-    const handleDisconnect = () => {
-      console.log('⚠️ Chart WebSocket disconnected - will auto-reconnect')
-    }
+  //   const handleDisconnect = () => {
+  //     console.log('⚠️ Chart WebSocket disconnected - will auto-reconnect')
+  //   }
 
-    const handleError = (error) => {
-      console.error('❌ Chart WebSocket connection error:', error)
-    }
+  //   const handleError = (error) => {
+  //     console.error('❌ Chart WebSocket connection error:', error)
+  //   }
 
-    sock.on('connect', handleConnect)
-    sock.on('disconnect', handleDisconnect)
-    sock.on('connect_error', handleError)
+  //   sock.on('connect', handleConnect)
+  //   sock.on('disconnect', handleDisconnect)
+  //   sock.on('connect_error', handleError)
 
-    // Subscribe function (uses selectedSymbol - always current)
-    // PROFESSIONAL: Use symbol config for crypto detection
-    const subscribeToCandles = () => {
-      const isCrypto = isCryptoSymbol(selectedSymbolStr);
+  //   // Subscribe function (uses selectedSymbol - always current)
+  //   // PROFESSIONAL: Use symbol config for crypto detection
+  //   const subscribeToCandles = () => {
+  //     const isCrypto = isCryptoSymbol(selectedSymbolStr);
 
-      if (isCrypto && selectedSymbolStr && selectedTimeframe && sock.connected) {
-        console.log(`Subscribing to real-time candles: ${selectedSymbolStr}@${selectedTimeframe}`)
-        sock.emit('subscribeCandles', { symbol: selectedSymbolStr, timeframe: selectedTimeframe })
-      } else if (!isCrypto && selectedSymbolStr) {
-        console.log(`⚠️ Symbol ${selectedSymbolStr} is not a crypto symbol, skipping candle subscription`)
-      }
-    }
-
-
+  //     if (isCrypto && selectedSymbolStr && selectedTimeframe && sock.connected) {
+  //       console.log(`Subscribing to real-time candles: ${selectedSymbolStr}@${selectedTimeframe}`)
+  //       sock.emit('subscribeCandles', { symbol: selectedSymbolStr, timeframe: selectedTimeframe })
+  //     } else if (!isCrypto && selectedSymbolStr) {
+  //       console.log(`⚠️ Symbol ${selectedSymbolStr} is not a crypto symbol, skipping candle subscription`)
+  //     }
+  //   }
 
 
 
@@ -2419,123 +2461,124 @@ const ChartArea = forwardRef(function ChartArea({
 
 
 
-    // Listen for real-time candle updates
-    // NOTE: We THROTTLE visual updates so candles don't "shake" too fast (more like MT5)
-    const handleCandleUpdate = (data) => {
-      // Quick validation
-      if (!data || !data.candle || !data.symbol) return
-
-      // Match symbol (case-insensitive) - use selectedSymbol (always current)
-      if (data.symbol.toUpperCase() !== selectedSymbolStr.toUpperCase()) {
-        return // Not for this symbol
-      }
-
-      const { candle } = data
-
-      // PROFESSIONAL: Process single candle through engine (TradingView style)
-      // Pass timeframe to ensure proper alignment
-      const processedCandle = processSingleCandle(candle, selectedSymbolStr, selectedTimeframe);
-      if (!processedCandle) {
-        if (import.meta.env?.DEV) {
-          console.warn(`⚠️ Rejected realtime candle (invalid):`, { symbol: data.symbol, candle });
-        }
-        return; // Invalid candle, skip
-      }
-
-      // Throttle chart updates: at most once every 250ms per tab
-      // This keeps movement smooth but not "hyper-fast" compared to MT5
-      const now = Date.now()
-      if (now - lastCandleRenderRef.current < 200) {
-        return
-      }
-      lastCandleRenderRef.current = now
-
-      const timeScale = chartRef.current?.timeScale()
-      const currentVisibleRange = timeScale?.getVisibleRange()
-      const s = seriesRef.current
-      const c = chartRef.current
-
-      if (!s || !c || !hasInitializedRef.current) {
-        return // Chart not ready
-      }
-
-      // Update candle immediately (NO setData - preserves zoom, avoids React re-render loops)
-      try {
-        // Use processed candle (already normalized and validated)
-        if (chartType === 'line' || chartType === 'area') {
-          s.update({ time: processedCandle.time, value: processedCandle.close })
-        } else {
-          s.update({
-            time: processedCandle.time,
-            open: processedCandle.open,
-            high: processedCandle.high,
-            low: processedCandle.low,
-            close: processedCandle.close
-          })
-        }
-
-        // Update candles map for consistency
-        candlesMapRef.current.set(processedCandle.time, processedCandle);
-
-        // Preserve user's zoom and position
-        if (timeScale && currentVisibleRange) {
-          saveZoomState(currentVisibleRange);
-        }
-      } catch (e) {
-        console.error('❌ Error updating candle:', e)
-      }
-    }
-
-    // Real-time: same WebSocket that updates watchlist bid/ask – update chart last candle
-    const handlePriceUpdate = (updatedSymbol) => {
-      if (!updatedSymbol?.symbol || updatedSymbol.symbol.replace("/", "") !== selectedSymbolStr.replace("/", "")) return;
-      const s = seriesRef.current;
-      const c = chartRef.current;
-      if (!s || !c || !hasInitializedRef.current || candlesMapRef.current.size === 0) return;
-      const now = Date.now();
-      if (now - lastCandleRenderRef.current < 150) return;
-      lastCandleRenderRef.current = now;
-      const price = (parseFloat(updatedSymbol.bid) + parseFloat(updatedSymbol.ask || updatedSymbol.bid)) / 2;
-      if (!Number.isFinite(price)) return;
-      const tfSec = timeframeToSeconds(selectedTimeframe);
-const barTime = alignToTimeframe(Math.floor(Date.now() / 1000), tfSec);
 
 
-      // const barTime = alignToTimeframe(Math.floor(Date.now() / 1000), selectedTimeframe);
-      const existing = candlesMapRef.current.get(barTime);
-      const open = existing ? existing.open : price;
-      const high = existing ? Math.max(existing.high, price) : price;
-      const low = existing ? Math.min(existing.low, price) : price;
-      try {
-        if (chartType === 'line' || chartType === 'area') {
-          s.update({ time: barTime, value: price });
-        } else {
-          s.update({ time: barTime, open, high, low, close: price });
-        }
-        candlesMapRef.current.set(barTime, { time: barTime, open, high, low, close: price });
-      } catch (e) { /* ignore */ }
-    };
+  //   // Listen for real-time candle updates
+  //   // NOTE: We THROTTLE visual updates so candles don't "shake" too fast (more like MT5)
+  //   const handleCandleUpdate = (data) => {
+  //     // Quick validation
+  //     if (!data || !data.candle || !data.symbol) return
 
-    sock.on('candleUpdate', handleCandleUpdate)
-    sock.on('priceUpdate', handlePriceUpdate)
+  //     // Match symbol (case-insensitive) - use selectedSymbol (always current)
+  //     if (data.symbol.toUpperCase() !== selectedSymbolStr.toUpperCase()) {
+  //       return // Not for this symbol
+  //     }
 
-    if (sock.connected) subscribeToCandles();
+  //     const { candle } = data
 
-    return () => {
-      sock.off('candleUpdate', handleCandleUpdate)
-      sock.off('priceUpdate', handlePriceUpdate)
-      sock.off('connect', handleConnect)
-      sock.off('disconnect', handleDisconnect)
-      sock.off('connect_error', handleError)
-      if (selectedSymbolStr && selectedTimeframe && sock.connected) {
-        const isCrypto = isCryptoSymbol(selectedSymbolStr);
-        if (isCrypto) {
-          console.log(`🔌 Unsubscribing from: ${selectedSymbolStr}@${selectedTimeframe}`)
-          sock.emit('unsubscribeCandles', { symbol: selectedSymbolStr, timeframe: selectedTimeframe })
-        }
-      }
-    }
-  }, [selectedSymbolStr, selectedTimeframe, chartType]) // Re-run on symbol/timeframe change
+  //     // PROFESSIONAL: Process single candle through engine (TradingView style)
+  //     // Pass timeframe to ensure proper alignment
+  //     const processedCandle = processSingleCandle(candle, selectedSymbolStr, selectedTimeframe);
+  //     if (!processedCandle) {
+  //       if (import.meta.env?.DEV) {
+  //         console.warn(`⚠️ Rejected realtime candle (invalid):`, { symbol: data.symbol, candle });
+  //       }
+  //       return; // Invalid candle, skip
+  //     }
+
+  //     // Throttle chart updates: at most once every 250ms per tab
+  //     // This keeps movement smooth but not "hyper-fast" compared to MT5
+  //     const now = Date.now()
+  //     if (now - lastCandleRenderRef.current < 200) {
+  //       return
+  //     }
+  //     lastCandleRenderRef.current = now
+
+  //     const timeScale = chartRef.current?.timeScale()
+  //     const currentVisibleRange = timeScale?.getVisibleRange()
+  //     const s = seriesRef.current
+  //     const c = chartRef.current
+
+  //     if (!s || !c || !hasInitializedRef.current) {
+  //       return // Chart not ready
+  //     }
+
+  //     // Update candle immediately (NO setData - preserves zoom, avoids React re-render loops)
+  //     try {
+  //       // Use processed candle (already normalized and validated)
+  //       if (chartType === 'line' || chartType === 'area') {
+  //         s.update({ time: processedCandle.time, value: processedCandle.close })
+  //       } else {
+  //         s.update({
+  //           time: processedCandle.time,
+  //           open: processedCandle.open,
+  //           high: processedCandle.high,
+  //           low: processedCandle.low,
+  //           close: processedCandle.close
+  //         })
+  //       }
+
+  //       // Update candles map for consistency
+  //       candlesMapRef.current.set(processedCandle.time, processedCandle);
+
+  //       // Preserve user's zoom and position
+  //       if (timeScale && currentVisibleRange) {
+  //         saveZoomState(currentVisibleRange);
+  //       }
+  //     } catch (e) {
+  //       console.error('❌ Error updating candle:', e)
+  //     }
+  //   }
+
+  //   // Real-time: same WebSocket that updates watchlist bid/ask – update chart last candle
+  //   const handlePriceUpdate = (updatedSymbol) => {
+  //     if (!updatedSymbol?.symbol || updatedSymbol.symbol.replace("/", "") !== selectedSymbolStr.replace("/", "")) return;
+  //     const s = seriesRef.current;
+  //     const c = chartRef.current;
+  //     if (!s || !c || !hasInitializedRef.current || candlesMapRef.current.size === 0) return;
+  //     const now = Date.now();
+  //     if (now - lastCandleRenderRef.current < 150) return;
+  //     lastCandleRenderRef.current = now;
+  //     const price = (parseFloat(updatedSymbol.bid) + parseFloat(updatedSymbol.ask || updatedSymbol.bid)) / 2;
+  //     if (!Number.isFinite(price)) return;
+  //     const tfSec = timeframeToSeconds(selectedTimeframe);
+  //     const barTime = alignToTimeframe(Math.floor(Date.now() / 1000), tfSec);
+
+
+  //     const existing = candlesMapRef.current.get(barTime);
+  //     const open = existing ? existing.open : price;
+  //     const high = existing ? Math.max(existing.high, price) : price;
+  //     const low = existing ? Math.min(existing.low, price) : price;
+  //     try {
+  //       if (chartType === 'line' || chartType === 'area') {
+  //         s.update({ time: barTime, value: price });
+  //       } else {
+  //         s.update({ time: barTime, open, high, low, close: price });
+  //       }
+  //       candlesMapRef.current.set(barTime, { time: barTime, open, high, low, close: price });
+  //     } catch (e) { /* ignore */ }
+  //   };
+
+  //   sock.on('candleUpdate', handleCandleUpdate)
+  //   sock.on('priceUpdate', handlePriceUpdate)
+
+  //   if (sock.connected) subscribeToCandles();
+
+  //   return () => {
+  //     sock.off('candleUpdate', handleCandleUpdate)
+  //     sock.off('priceUpdate', handlePriceUpdate)
+  //     sock.off('connect', handleConnect)
+  //     sock.off('disconnect', handleDisconnect)
+  //     sock.off('connect_error', handleError)
+  //     if (selectedSymbolStr && selectedTimeframe && sock.connected) {
+  //       const isCrypto = isCryptoSymbol(selectedSymbolStr);
+  //       if (isCrypto) {
+  //         console.log(`🔌 Unsubscribing from: ${selectedSymbolStr}@${selectedTimeframe}`)
+  //         sock.emit('unsubscribeCandles', { symbol: selectedSymbolStr, timeframe: selectedTimeframe })
+  //       }
+  //     }
+  //   }
+  // }, [selectedSymbolStr, selectedTimeframe, chartType]) // Re-run on symbol/timeframe change
 
 
 
@@ -2566,10 +2609,8 @@ const barTime = alignToTimeframe(Math.floor(Date.now() / 1000), tfSec);
       const now = Date.now();
       if (now - lastCandleRenderRef.current < THROTTLE_MS) return;
       lastCandleRenderRef.current = now;
-const tfSec = timeframeToSeconds(selectedTimeframe);
-const barTime = alignToTimeframe(Math.floor(Date.now() / 1000), tfSec);
-      
-      // const barTime = alignToTimeframe(Math.floor(Date.now() / 1000), selectedTimeframe);
+      const tfSec = timeframeToSeconds(selectedTimeframe);
+      const barTime = alignToTimeframe(Math.floor(Date.now() / 1000), tfSec);
       const existing = candlesMapRef.current.get(barTime);
       const open = existing ? existing.open : price;
       const high = existing ? Math.max(existing.high, price) : price;
@@ -2643,14 +2684,23 @@ const barTime = alignToTimeframe(Math.floor(Date.now() / 1000), tfSec);
         // Ensure sorted (should already be sorted, but safety check)
         const sortedData = [...lineAreaData].sort((a, b) => a.time - b.time);
         if (sortedData.length > 0) {
+          
           s.setData(sortedData);
         }
       } else {
-        // For candlestick charts, use processed candles directly
-        // Only ensure sorted (should already be sorted, but safety check)
-        const sortedCandles = [...candles].sort((a, b) => a.time - b.time);
-        if (sortedCandles.length > 0) {
-          s.setData(sortedCandles);
+        // For candlestick charts: align + dedupe via single helper
+        const finalCandles = prepareCandlesForSetData(candles, selectedTimeframe);
+        if (finalCandles.length > 0) {
+          if (import.meta.env?.DEV && finalCandles.length >= 2) {
+            console.log(
+              "SETDATA first/last",
+              finalCandles[0]?.time,
+              finalCandles.at(-1)?.time,
+              "Δ",
+              finalCandles.at(-1)?.time - finalCandles.at(-2)?.time
+            );
+          }
+          s.setData(finalCandles);
         }
       }
 
@@ -2717,12 +2767,8 @@ const barTime = alignToTimeframe(Math.floor(Date.now() / 1000), tfSec);
           bottom: 0.1, // Normal margins when no volume
         },
       });
-      // Candles are already processed (normalized, aligned, deduplicated, gap-filled)
-      // Use them directly to preserve gap-filled structure
-      const sortedCandles = [...candles].sort((a, b) => a.time - b.time);
-      if (sortedCandles.length > 0) {
-        newSeries.setData(sortedCandles);
-      }
+      const sortedCandles = prepareCandlesForSetData(candles, selectedTimeframe);
+      if (sortedCandles.length > 0) newSeries.setData(sortedCandles);
     } else if (chartType === "line") {
       newSeries = chart.addLineSeries({
         color: "#38bdf8",
@@ -2770,7 +2816,7 @@ const barTime = alignToTimeframe(Math.floor(Date.now() / 1000), tfSec);
         priceScaleId: "right", // ✅ FIX: lock candles to right price scale
       });
 
-      const sortedCandles = [...candles].sort((a, b) => a.time - b.time);
+      const sortedCandles = prepareCandlesForSetData(candles, selectedTimeframe);
       if (sortedCandles.length > 0) newSeries.setData(sortedCandles);
 
       // ✅ 2) Create separate scale for volume (so it doesn't crush price candles)
@@ -2839,12 +2885,8 @@ const barTime = alignToTimeframe(Math.floor(Date.now() / 1000), tfSec);
           bottom: 0.1, // Normal margins when no volume
         },
       });
-      // Candles are already processed (normalized, aligned, deduplicated, gap-filled)
-      // Use them directly to preserve gap-filled structure
-      const sortedCandles = [...candles].sort((a, b) => a.time - b.time);
-      if (sortedCandles.length > 0) {
-        newSeries.setData(sortedCandles);
-      }
+      const sortedCandles = prepareCandlesForSetData(candles, selectedTimeframe);
+      if (sortedCandles.length > 0) newSeries.setData(sortedCandles);
     }
     seriesRef.current = newSeries;
 
@@ -2904,9 +2946,7 @@ const barTime = alignToTimeframe(Math.floor(Date.now() / 1000), tfSec);
     if (!chart || !volumeSeries || !hasInitializedRef.current || candles.length === 0) return;
     if (chartType !== "volume" && chartType !== "volume ticks") return;
 
-    // Candles are already processed (normalized, aligned, deduplicated, gap-filled)
-    // Use them directly to preserve gap-filled structure
-    const sortedCandles = [...candles].sort((a, b) => a.time - b.time);
+    const sortedCandles = prepareCandlesForSetData(candles, selectedTimeframe);
 
     const volumeData = sortedCandles.map(candle => ({
       time: candle.time,
@@ -2921,7 +2961,7 @@ const barTime = alignToTimeframe(Math.floor(Date.now() / 1000), tfSec);
     if (volumeData.length > 0) {
       volumeSeries.setData(volumeData);
     }
-  }, [candles, chartType]); // Update when candles or chartType changes
+  }, [candles, chartType, selectedTimeframe]); // Update when candles, chartType or timeframe changes
 
   // Drawing functionality (drag-based: mousedown → mousemove → mouseup)
   useEffect(() => {

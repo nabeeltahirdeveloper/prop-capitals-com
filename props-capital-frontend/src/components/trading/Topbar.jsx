@@ -143,7 +143,7 @@ const TopBar = ({ selectedSymbol, selectedTimeframe, onTimeframeChange, chartTyp
                         className={`p-2 rounded transition-colors ${isLight ? 'text-slate-500 hover:text-slate-800 hover:bg-[#E5F4FF]' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'}`}
                         title="Toggle Buy/Sell Panel"
                     > */}
-                    <button
+                    {/* <button
                         onClick={() => onToggleBuySell?.()}
                         title={buySellPanelOpen ? 'Hide Buy/Sell on Chart' : 'Show Buy/Sell on Chart'}
                         className={`px-2 py-2 flex justify-center items-center rounded transition-colors ${buySellPanelOpen ? (isLight ? 'text-sky-600 bg-sky-50 hover:bg-[#E5F4FF]' : 'text-sky-400 bg-slate-700 hover:bg-[#25303C]') : (isLight ? 'text-slate-600 hover:text-sky-600 hover:bg-[#E5F4FF]' : 'text-slate-200 hover:bg-[#25303C]')}`}
@@ -155,10 +155,10 @@ const TopBar = ({ selectedSymbol, selectedTimeframe, onTimeframeChange, chartTyp
                                 <path fill="#B0BEC5" d="M10 10h4c1.105 0 2 .895 2 2s-.895 2-2 2h-4c-1.105 0-2-.895-2-2s.895-2 2-2z"></path>
                             </g>
                         </svg>
-                    </button>
+                    </button> */}
 
                     {/* Order Button - After last timeframe (MN) - Professional Trading Terminal */}
-                    <button
+                    {/* <button
                         onClick={onNewOrder}
                         className={`px-2 py-2 flex justify-center items-center gap-1 cursor-pointer text-xs font-medium rounded transition-colors ${isLight ? 'text-secondary hover:bg-[#E5F4FF]' : 'text-white hover:bg-[#25303C]'}`}
                     >
@@ -172,27 +172,27 @@ const TopBar = ({ selectedSymbol, selectedTimeframe, onTimeframeChange, chartTyp
                             </g >
                         </svg>
                         <span className="button-text svelte-1iwf8ix">New Order</span>
-                    </button>
+                    </button> */}
 
                     {/* Border line after Order Button */}
-                    <div className={`border-r ${isLight ? "border-slate-200" : "border-slate-700"} h-6 mx-1`}></div>
+                    {/* <div className={`border-r ${isLight ? "border-slate-200" : "border-slate-700"} h-6 mx-1`}></div> */}
 
                     {/* Zoom In/Out Buttons */}
                     <div className='flex items-center gap-1'>
-                        <button
+                        {/* <button
                             onClick={onZoomIn}
                             className={`p-1 ${isLight ? "text-slate-700 hover:bg-[#E5F4FF]" : "text-white hover:bg-slate-800"}   rounded transition-colors`}
                             title="Zoom In"
                         >
                             <MdAdd className='w-5 h-5' />
-                        </button>
-                        <button
+                        </button> */}
+                        {/* <button
                             onClick={onZoomOut}
                             className={`p-2 ${isLight ? "text-slate-700 hover:bg-[#E5F4FF]" : "text-white  hover:bg-slate-800"}   rounded transition-colors`}
                             title="Zoom Out"
                         >
                             <MdRemove className='w-5 h-5' />
-                        </button>
+                        </button> */}
 
 
 
@@ -200,9 +200,9 @@ const TopBar = ({ selectedSymbol, selectedTimeframe, onTimeframeChange, chartTyp
 
 
                         {/* Border line after Order Button */}
-                        <div className={`border-r ${isLight ? "border-slate-200" : "border-slate-700"} h-6 mx-1`}></div>
+                        {/* <div className={`border-r ${isLight ? "border-slate-200" : "border-slate-700"} h-6 mx-1`}></div> */}
                         {/* Add Indicator */}
-                        <button
+                        {/* <button
                             onClick={onNewOrder}
                             className={`px-2 py-2 flex justify-center items-center gap-1 cursor-pointer text-xs font-medium rounded transition-colors ${isLight ? 'text-slate-600 hover:text-sky-600 hover:bg-[#E5F4FF]' : 'text-slate-200 hover:bg-[#25303C]'}`}
                         >
@@ -212,22 +212,22 @@ const TopBar = ({ selectedSymbol, selectedTimeframe, onTimeframeChange, chartTyp
                                 <path fillRule="evenodd" d="m16.845 7.46 2.353-.864.068-.191c.216-.585.422-.99.607-1.232A.784.784 0 0 1 20.038 5 1 1 0 0 0 20 3c-.791 0-1.354.485-1.717.96-.365.478-.653 1.102-.893 1.753-.194.526-.375 1.12-.546 1.746Zm3.211-2.47-.009.004c.006-.004.009-.004.009-.004Z" clipRule="evenodd" />
                                 <path d="M21.942 7.664a1 1 0 0 1-.605 1.278l-7 2.5a1 1 0 0 1-.673-1.884l7-2.5a1 1 0 0 1 1.278.606ZM8.86 13.433a1 1 0 1 0-.719-1.866l-6.5 2.5a1 1 0 0 0 .718 1.866l6.5-2.5Z" />
                             </svg>
-                        </button>
+                        </button> */}
                         {/* Border line after Order Button */}
-                        <div className={`border-r ${isLight ? "border-slate-200" : "border-slate-700"} h-6 mx-1`}></div>
+                        {/* <div className={`border-r ${isLight ? "border-slate-200" : "border-slate-700"} h-6 mx-1`}></div> */}
                         {/* Economic calendar */}
-                        <button
+                        {/* <button
                             onClick={onNewOrder}
                             className={`px-2 py-2 flex justify-center items-center gap-1 cursor-pointer text-xs font-medium rounded transition-colors ${isLight ? 'text-secondary hover:bg-[#E5F4FF]' : 'text-slate-200 hover:bg-[#25303C]'}`}
                         >
                             <svg width={24} height={24} viewBox="0 0 24 24" xmlns='http://www.w3.org/2000/svg' fill="currentColor">
                                 <path fillRule="evenodd" d="M9 4V5H15V4H17V5H19C20.1046 5 21 5.89543 21 7V18C21 19.1046 20.1046 20 19 20H5C3.89543 20 3 19.1046 3 18V7C3 5.89543 3.89543 5 5 5H7V4H9ZM7 7H6C5.44772 7 5 7.44772 5 8V17C5 17.5523 5.44772 18 6 18H18C18.5523 18 19 17.5523 19 17V8C19 7.44772 18.5523 7 18 7H17V8H15V7H9V8H7V7ZM13 14V16H11V14H13ZM9 14V16H7V14H9ZM17 14V16H15V14H17ZM13 10V12H11V10H13ZM17 10V12H15V10H17Z" clipRule="evenodd" />
                             </svg>
-                        </button>
+                        </button> */}
                         {/* Border line after Order Button */}
-                        <div className={`border-r ${isLight ? "border-slate-200" : "border-slate-700"} h-6 mx-1`}></div>
+                        {/* <div className={`border-r ${isLight ? "border-slate-200" : "border-slate-700"} h-6 mx-1`}></div> */}
                         {/* Market Watch: one click = close, one click = open */}
-                        <button
+                        {/* <button
                             type="button"
                             onClick={() => onToggleMarketWatch?.()}
                             title={marketWatchOpen ? 'Close Market Watch' : 'Open Market Watch'}
@@ -237,7 +237,7 @@ const TopBar = ({ selectedSymbol, selectedTimeframe, onTimeframeChange, chartTyp
                                 <path d="M15 7H7v2h8V7ZM7 15h5v2H7v-2ZM17 11H7v2h10v-2Z" />
                                 <path fillRule="evenodd" clipRule="evenodd" d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14Zm-1 2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h12Z" />
                             </svg>
-                        </button>
+                        </button> */}
                     </div>
                 </div>
             </div>
@@ -245,7 +245,7 @@ const TopBar = ({ selectedSymbol, selectedTimeframe, onTimeframeChange, chartTyp
 
 
             {/* Right: Actions */}
-            <div className='flex items-center gap-3'>
+            {/* <div className='flex items-center gap-3'>
 
                 <button
                     type="button"
@@ -267,7 +267,7 @@ const TopBar = ({ selectedSymbol, selectedTimeframe, onTimeframeChange, chartTyp
                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4' />
                     </svg>
                 </button>
-            </div>
+            </div> */}
         </div>
     )
 }
