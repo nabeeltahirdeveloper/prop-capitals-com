@@ -510,36 +510,24 @@ export class TradingAccountsService {
         ? ((equity - initialBalance) / initialBalance) * 100
         : 0;
 
-    // Overall DD % - Calculate from maxEquityToDate (highest equity ever reached)
-    // This matches ChallengeRulesService calculation: (maxEquityToDate - equity) / maxEquityToDate * 100
+    // ✅ Overall DD % - Use minEquityOverall for monotonic drawdown (never falls back)
+    // This matches ChallengeRulesService calculation using minimum equity tracking
     const maxEquityToDate = (account as any).maxEquityToDate ?? initialBalance;
+    const minEquityOverall = (account as any).minEquityOverall ?? initialBalance;
     const overallDrawdownPercent =
-      maxEquityToDate > 0 && equity < maxEquityToDate
-        ? ((maxEquityToDate - equity) / maxEquityToDate) * 100
+      maxEquityToDate > 0 && minEquityOverall < maxEquityToDate
+        ? ((maxEquityToDate - minEquityOverall) / maxEquityToDate) * 100
         : 0;
 
-    // Daily DD % — Calculate from today's highest equity (using equity snapshots)
-    // This is more accurate than the simple balance vs equity comparison
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // ✅ Daily DD % - Use minEquityToday for monotonic drawdown (never falls back during the day)
+    // Backend tracks minimum equity reached today, ensuring drawdown can only increase
+    const todayStartEquity = (account as any).todayStartEquity ?? equity;
+    const minEquityToday = (account as any).minEquityToday ?? equity;
 
-    // Get today's equity snapshots to find the highest equity today
-    const todaySnapshots = account.equityShots.filter(
-      (shot) => new Date(shot.timestamp) >= today,
-    );
-
-    // Find the highest equity today
-    // If no snapshots for today, use the account's balance (start of day) or initial balance
-    // This prevents using a lower equity as the "max" when account loads after a loss
-    const maxEquityToday =
-      todaySnapshots.length > 0
-        ? Math.max(...todaySnapshots.map((s) => s.equity))
-        : Math.max(balance, initialBalance); // Use balance (start of day) or initial balance, not current equity
-
-    // Daily drawdown is from today's highest equity to current equity
+    // Daily drawdown is from today's start equity to minimum equity reached today
     const dailyDrawdownPercent =
-      maxEquityToday > 0 && equity < maxEquityToday
-        ? ((maxEquityToday - equity) / maxEquityToday) * 100
+      todayStartEquity > 0 && minEquityToday < todayStartEquity
+        ? ((todayStartEquity - minEquityToday) / todayStartEquity) * 100
         : 0;
 
     // Trading days based on distinct trade dates
