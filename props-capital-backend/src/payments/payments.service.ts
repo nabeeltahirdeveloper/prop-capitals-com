@@ -143,11 +143,17 @@ export class PaymentsService {
 
         maxEquityToDate: initial, // CRITICAL: Initialize to starting balance (peak equity starts here)
 
+        // ✅ Initialize min equity tracking for monotonic drawdowns
+        minEquityOverall: initial, // Lowest equity ever - starts at initial balance
+        minEquityToday: initial, // Lowest equity today - starts at initial balance
+        todayStartEquity: initial, // Equity at start of trading day
+        lastDailyReset: new Date(), // Track when daily metrics were last reset
+
         brokerLogin: null,
 
         brokerPassword: null,
 
-      },
+      } as any,
 
     });
 

@@ -374,6 +374,15 @@ export default function TradingTerminal() {
         challenge.overallDrawdownPercent ||
         challenge.max_overall_drawdown ||
         10,
+      // ✅ Add camelCase versions for ChallengeRulesPanel compatibility
+      phase1TargetPercent:
+        challenge.phase1TargetPercent || challenge.phase1_profit_target || 8,
+      dailyDrawdownPercent:
+        challenge.dailyDrawdownPercent || challenge.max_daily_drawdown || 5,
+      overallDrawdownPercent:
+        challenge.overallDrawdownPercent ||
+        challenge.max_overall_drawdown ||
+        10,
       news_trading_allowed:
         challenge.newsTradingAllowed ?? challenge.news_trading_allowed ?? true,
       weekend_holding_allowed:
@@ -1081,27 +1090,24 @@ export default function TradingTerminal() {
                 Number.isFinite(acc.equity)
                 ? acc.equity
                 : prev.equity,
-            profitPercent: Math.max(
-              prev.profitPercent ?? 0,
+            // ✅ TRUST BACKEND VALUES (single source of truth)
+            // Backend tracks maxEquityToDate for profit (monotonic - never decreases)
+            // Backend tracks minEquityOverall for overall drawdown (monotonic - never decreases)
+            // Backend tracks minEquityToday for daily drawdown (resets at midnight, monotonic during day)
+            profitPercent:
               metrics.profitPercent !== null &&
-                metrics.profitPercent !== undefined &&
-                Number.isFinite(metrics.profitPercent)
+              metrics.profitPercent !== undefined &&
+              Number.isFinite(metrics.profitPercent)
                 ? metrics.profitPercent
-                : 0,
-            ),
-            // CRITICAL: Drawdowns should only INCREASE - never decrease when profit comes
-            overallDrawdown: Math.max(
-              prev.overallDrawdown ?? 0,
+                : prev.profitPercent ?? 0,
+            overallDrawdown:
               Number.isFinite(finalOverallDrawdown) && finalOverallDrawdown >= 0
                 ? finalOverallDrawdown
-                : 0,
-            ),
-            dailyDrawdown: Math.max(
-              prev.dailyDrawdown ?? 0,
+                : prev.overallDrawdown ?? 0,
+            dailyDrawdown:
               Number.isFinite(finalDailyDrawdown) && finalDailyDrawdown >= 0
                 ? finalDailyDrawdown
-                : 0,
-            ),
+                : prev.dailyDrawdown ?? 0,
             maxDailyDrawdown: maxDailyDD, // Use from challenge rules
             maxOverallDrawdown: maxOverallDD, // Use from challenge rules
             phase: acc.phase?.toLowerCase() || prev.phase,
@@ -2211,6 +2217,36 @@ export default function TradingTerminal() {
             priceData.timestamp || now,
           )
             .then((response) => {
+              // ✅ Update real-time metrics from backend (even when no violation)
+              // This ensures drawdown bars update in real-time during open positions
+              if (
+                response.dailyDrawdownPercent !== undefined ||
+                response.overallDrawdownPercent !== undefined ||
+                response.profitPercent !== undefined ||
+                response.equity !== undefined
+              ) {
+                setAccount((prev) => ({
+                  ...prev,
+                  // Only update if values are provided and valid
+                  ...(response.equity !== undefined &&
+                    Number.isFinite(response.equity) && {
+                      equity: response.equity,
+                    }),
+                  ...(response.dailyDrawdownPercent !== undefined &&
+                    Number.isFinite(response.dailyDrawdownPercent) && {
+                      dailyDrawdown: response.dailyDrawdownPercent,
+                    }),
+                  ...(response.overallDrawdownPercent !== undefined &&
+                    Number.isFinite(response.overallDrawdownPercent) && {
+                      overallDrawdown: response.overallDrawdownPercent,
+                    }),
+                  ...(response.profitPercent !== undefined &&
+                    Number.isFinite(response.profitPercent) && {
+                      profitPercent: response.profitPercent,
+                    }),
+                }));
+              }
+
               if (response.statusChanged) {
                 console.log(
                   `⚠️ [Price-Tick] Limit breached! ${response.positionsClosed} positions auto-closed. Status: ${response.accountStatus}`,

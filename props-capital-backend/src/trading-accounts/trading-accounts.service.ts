@@ -54,6 +54,12 @@ export class TradingAccountsService {
         equity: initialBalance,
 
         maxEquityToDate: initialBalance, // Initialize to starting balance (peak equity starts here)
+
+        // ✅ Initialize min equity tracking for monotonic drawdowns
+        minEquityOverall: initialBalance, // Lowest equity ever - starts at initial balance
+        minEquityToday: initialBalance, // Lowest equity today - starts at initial balance
+        todayStartEquity: initialBalance, // Equity at start of trading day
+        lastDailyReset: new Date(), // Track when daily metrics were last reset
       } as any,
     });
   }
@@ -503,16 +509,17 @@ export class TradingAccountsService {
 
     const balance = account.balance ?? initialBalance;
 
-    // Profit %
-
+    // ✅ Profit % - Use maxEquityToDate for MONOTONIC profit (never decreases)
+    // This ensures profit target shows the PEAK profit achieved, not current equity
+    const maxEquityToDate = (account as any).maxEquityToDate ?? initialBalance;
     const profitPercent =
       initialBalance > 0
-        ? ((equity - initialBalance) / initialBalance) * 100
+        ? ((maxEquityToDate - initialBalance) / initialBalance) * 100
         : 0;
 
     // ✅ Overall DD % - Use minEquityOverall for monotonic drawdown (never falls back)
     // This matches ChallengeRulesService calculation using minimum equity tracking
-    const maxEquityToDate = (account as any).maxEquityToDate ?? initialBalance;
+    // maxEquityToDate already defined above for profit calculation
     const minEquityOverall = (account as any).minEquityOverall ?? initialBalance;
     const overallDrawdownPercent =
       maxEquityToDate > 0 && minEquityOverall < maxEquityToDate

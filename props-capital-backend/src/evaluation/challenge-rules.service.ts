@@ -51,10 +51,12 @@ export class ChallengeRulesService {
     } = inputs;
 
     // 1. Profit Target calculation
-    // Profit % = (equity - startingBalance) / startingBalance * 100
+    // ✅ Use maxEquityToDate for monotonic profit (MAXIMUM profit achieved, never decreases)
+    // This is standard for trading challenges - profit tracks the peak achieved
+    // Profit % = (maxEquity - startingBalance) / startingBalance * 100
     const profitPercent =
       startingBalance > 0
-        ? ((currentEquity - startingBalance) / startingBalance) * 100
+        ? ((maxEquityToDate - startingBalance) / startingBalance) * 100
         : 0;
 
     // Profit progress (0-100) - clamp to prevent >100% display issues

@@ -81,6 +81,11 @@ export class EvaluationService {
     violationType?: string;
     violationDailyDrawdown?: number;
     violationOverallDrawdown?: number;
+    // ✅ Real-time metrics for frontend display
+    equity?: number;
+    dailyDrawdownPercent?: number;
+    overallDrawdownPercent?: number;
+    profitPercent?: number;
   }> {
     // Store price in cache and clean stale prices
     if (!this.priceCache.has(accountId)) {
@@ -448,6 +453,11 @@ export class EvaluationService {
       violationType,
       violationDailyDrawdown,
       violationOverallDrawdown,
+      // ✅ Return real-time metrics for frontend display
+      equity,
+      dailyDrawdownPercent: ruleOutputs.dailyLossPercent,
+      overallDrawdownPercent: ruleOutputs.drawdownPercent,
+      profitPercent: ruleOutputs.profitPercent,
     };
   }
 
@@ -678,11 +688,15 @@ export class EvaluationService {
     const lastReset = (account as any).lastDailyReset;
     const lastResetDate = lastReset ? new Date(lastReset).toISOString().substring(0, 10) : null;
 
-    // Update todayStartEquity if this is the first trade of the day or new day
+    // ✅ Initialize or reset daily metrics
     let todayStartEquity = (account as any).todayStartEquity;
     let minEquityToday = (account as any).minEquityToday ?? equity;
 
-    if (!todayStartEquity || lastResetDate !== today) {
+    // Only reset on NEW DAY, not when todayStartEquity is missing
+    const isNewDay = lastResetDate !== today;
+
+    if (isNewDay) {
+      // New day - reset daily metrics
       todayStartEquity = equity;
       minEquityToday = equity;
       await this.prisma.tradingAccount.update({
@@ -693,7 +707,17 @@ export class EvaluationService {
           lastDailyReset: new Date(),
         } as any,
       });
-      this.logger.debug(`[evaluateAccountAfterTrade] Reset daily metrics. todayStartEquity=${equity}, minEquityToday=${equity}`);
+      this.logger.debug(`[evaluateAccountAfterTrade] New day detected - reset daily metrics. todayStartEquity=${equity}, minEquityToday=${equity}`);
+    } else if (!todayStartEquity) {
+      // First trade of the day - initialize todayStartEquity but preserve minEquityToday
+      todayStartEquity = equity;
+      await this.prisma.tradingAccount.update({
+        where: { id: accountId },
+        data: {
+          todayStartEquity: equity,
+        } as any,
+      });
+      this.logger.debug(`[evaluateAccountAfterTrade] Initialized todayStartEquity=${equity}, preserving minEquityToday=${minEquityToday}`);
     }
 
     let maxEquityToDate = (account as any).maxEquityToDate ?? initialBalance;
@@ -1219,7 +1243,8 @@ export class EvaluationService {
       } as any,
     });
 
-    // Update todayStartEquity to current equity for all active accounts
+    // Update todayStartEquity, minEquityToday, and lastDailyReset for all active accounts
+    // This ensures daily drawdown starts fresh each day
     const activeAccounts = await this.prisma.tradingAccount.findMany({
       where: {
         status: 'ACTIVE' as TradingAccountStatus,
@@ -1230,10 +1255,14 @@ export class EvaluationService {
       const equity = account.equity ?? account.balance ?? account.initialBalance;
       await this.prisma.tradingAccount.update({
         where: { id: account.id },
-        data: { todayStartEquity: equity } as any,
+        data: {
+          todayStartEquity: equity, // Reset daily starting point
+          minEquityToday: equity, // Reset daily minimum equity tracking
+          lastDailyReset: new Date(), // Update timestamp
+        } as any,
       });
     }
 
-    this.logger.log(`[Cron] Reset daily tracking for ${activeAccounts.length} accounts`);
+    this.logger.log(`[Cron] Reset daily tracking for ${activeAccounts.length} accounts (todayStartEquity, minEquityToday, lastDailyReset)`);
   }
 }

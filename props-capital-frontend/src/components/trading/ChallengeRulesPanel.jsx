@@ -65,14 +65,20 @@ export default function ChallengeRulesPanel({ account, challenge }) {
       profitTarget > 0
         ? Math.max(0, Math.min(100, (profitPercent / profitTarget) * 100))
         : 0;
-    const dailyLossProgress = Math.min(100, (dailyLoss / maxDailyLoss) * 100);
 
+    // ✅ Fix: Validate maxDailyLoss to prevent NaN or Infinity
+    const dailyLossProgress =
+      maxDailyLoss > 0
+        ? Math.max(0, Math.min(100, (dailyLoss / maxDailyLoss) * 100))
+        : 0;
+
+    // ✅ Fix: Validate maxOverallDrawdown to prevent NaN or Infinity
     // Overall drawdown bar: 0% if profit, increases with loss
     // If in profit (overallDrawdown is 0 or negative), bar = 0%
     // If in loss, bar = (loss / max loss) * 100
     const overallDrawdownProgress =
-      overallDrawdown > 0
-        ? Math.min(100, (overallDrawdown / maxOverallDrawdown) * 100)
+      overallDrawdown > 0 && maxOverallDrawdown > 0
+        ? Math.max(0, Math.min(100, (overallDrawdown / maxOverallDrawdown) * 100))
         : 0;
 
     setMetrics({
