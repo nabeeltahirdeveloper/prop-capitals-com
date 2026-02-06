@@ -1870,6 +1870,7 @@ const ChartArea = forwardRef(function ChartArea({
   const candlesMapRef = useRef(new Map()); // Store candles by time for quick updates
   const candleUpdateTimeoutRef = useRef(null); // (reserved) For debouncing candle updates
   const lastCandleRenderRef = useRef(0); // Throttle visual candle updates (MT5-like smoothness)
+  const lastHistTimeRef = useRef(0); // Last historical candle time (from API) - block future-jump in polling
 
   // Expose zoom functions to parent component
   useImperativeHandle(ref, () => ({
@@ -2323,6 +2324,7 @@ const ChartArea = forwardRef(function ChartArea({
     const fetchCandles = async () => {
       if (!selectedSymbolStr || !selectedTimeframe) {
         setCandles([])
+        lastHistTimeRef.current = 0
         hasInitializedRef.current = false // Reset on symbol change
         return
       }
@@ -2332,6 +2334,7 @@ const ChartArea = forwardRef(function ChartArea({
         // CRITICAL: Reset candles to empty array FIRST when symbol changes
         // This ensures chart data init effect knows we're waiting for new data
         setCandles([])
+        lastHistTimeRef.current = 0
         hasInitializedRef.current = false // Reset initialization flag for new symbol
 
         // CRITICAL: Clear chart immediately to prevent old/new data mixing (MT5/TradingView style)
@@ -2381,6 +2384,7 @@ const ChartArea = forwardRef(function ChartArea({
 
           if (processedCandles.length > 0) {
             setCandles(processedCandles)
+            lastHistTimeRef.current = processedCandles.at(-1)?.time || 0
 
             // Build candles map for quick updates
             candlesMapRef.current = new Map()
@@ -2390,16 +2394,19 @@ const ChartArea = forwardRef(function ChartArea({
           } else {
             console.warn(`⚠️ No valid candles after processing for ${selectedSymbolStr}`)
             setCandles([])
+            lastHistTimeRef.current = 0
           }
         } else {
           console.warn(`⚠️ No candle data returned for ${selectedSymbolStr}`)
           // CRITICAL: Set empty candles - let chart data init effect handle initialization
           // Don't set hasInitializedRef here - let the effect initialize with empty data
           setCandles([])
+          lastHistTimeRef.current = 0
         }
       } catch (error) {
         console.error(`❌ Error fetching ${selectedSymbolStr}:`, error.message)
         setCandles([]) // No fallback - show empty chart
+        lastHistTimeRef.current = 0
       } finally {
         setCandlesLoading(false)
       }
@@ -2610,7 +2617,10 @@ const ChartArea = forwardRef(function ChartArea({
       if (now - lastCandleRenderRef.current < THROTTLE_MS) return;
       lastCandleRenderRef.current = now;
       const tfSec = timeframeToSeconds(selectedTimeframe);
-      const barTime = alignToTimeframe(Math.floor(Date.now() / 1000), tfSec);
+      const nowAligned = alignToTimeframe(Math.floor(Date.now() / 1000), tfSec);
+      const lastHist = lastHistTimeRef.current || 0;
+      if (lastHist && (nowAligned - lastHist) > tfSec * 5) return;
+      const barTime = nowAligned;
       const existing = candlesMapRef.current.get(barTime);
       const open = existing ? existing.open : price;
       const high = existing ? Math.max(existing.high, price) : price;
