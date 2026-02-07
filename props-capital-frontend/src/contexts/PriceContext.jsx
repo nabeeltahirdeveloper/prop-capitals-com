@@ -24,7 +24,7 @@ const BASE_BACKOFF_MS = 2000; // Base backoff delay
 const MAX_BACKOFF_MS = 30000; // Max backoff delay (30 seconds)
 
 // Pages that require live price updates
-const PRICE_REQUIRED_PAGES = ["/TradingTerminal"];
+const PRICE_REQUIRED_PAGES = ["/traderdashboard/trading"];
 
 /**
  * Check if current route requires price updates

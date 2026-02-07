@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import {
   TrendingUp,
   TrendingDown,
@@ -29,6 +29,13 @@ import {
 } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
 import { useChallenges } from '@/contexts/ChallengesContext';
+import { useTrading } from '@/contexts/TradingContext';
+import TradingChart from "../trading/TradingChart"
+import { usePrices } from '@/contexts/PriceContext';
+import MarketWatch from './MarketWatch';
+import MarketWatchlist from '../trading/MarketWatchlist';
+import TopBar from '../trading/Topbar';
+import MarketExecutionModal from './MarketExecutionModal';
 
 // Demo trading symbols
 const tradingSymbols = [
@@ -58,6 +65,7 @@ const generateCandleData = () => {
 
 const candleData = generateCandleData();
 
+
 // Demo positions
 const demoPositions = [];
 
@@ -74,20 +82,91 @@ const TradingTerminal = () => {
   const { isDark } = useTraderTheme();
   const { challenges, selectedChallenge, selectChallenge, getChallengePhaseLabel, getRuleCompliance, getChallengeStatusColor } = useChallenges();
   const [selectedTab, setSelectedTab] = useState('positions');
-  const [selectedSymbol, setSelectedSymbol] = useState('EUR/USD');
+  // const [selectedSymbol, setSelectedSymbol] = useState('EUR/USD');
   const [orderType, setOrderType] = useState('market');
-  const [lotSize, setLotSize] = useState('0.10');
   const [isConnected, setIsConnected] = useState(true);
   const [isReconnecting, setIsReconnecting] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [showMarketWatch, setShowMarketWatch] = useState(true)
+  const [showBuySellPanel, setShowBuySellPanel] = useState(true)
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
 
-  // Update time every second
+
+  //  --- This portion is specific for chart and symbols 
+
+  //geting Data from Trading Context of Trading Chart 
+  const {
+    selectedSymbol,
+    setSelectedSymbol,
+    selectedTimeframe,
+    setSelectedTimeframe,
+    symbols,
+    symbolsLoading,
+    accountSummary,
+    orders,
+    currentSymbolData,
+    chartType,
+    setChartType,
+    theme
+  } = useTrading()
+
+  const [positions, setPositions] = useState([]);
+  const chartAreaRef = useRef(null)
+  const pricesRef = useRef({});
+
+
+
+
+  const { setSelectedSymbol: setTradingSelectedSymbol } = useTrading();
+
+  const {
+    prices: unifiedPrices,
+    getPrice: getUnifiedPrice,
+    lastUpdate: pricesLastUpdate,
+  } = usePrices();
+
+  const selectedSymbolStr =
+    typeof selectedSymbol === "string"
+      ? selectedSymbol
+      : (selectedSymbol?.symbol ?? "");
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(interval);
+    if (!selectedSymbolStr) return;
+
+    const bid = getUnifiedPrice(selectedSymbolStr, "bid");
+    const ask = getUnifiedPrice(selectedSymbolStr, "ask");
+
+    // console.log("LIVE_TERMINAL", selectedSymbolStr, { bid, ask, ts: Date.now() });
+  }, [selectedSymbolStr, getUnifiedPrice, unifiedPrices]);
+
+
+  // Enrich selectedSymbol with real-time prices from unifiedPrices
+  const enrichedSelectedSymbol = useMemo(() => {
+    if (!selectedSymbol?.symbol) return selectedSymbol;
+
+    const priceData = unifiedPrices[selectedSymbol.symbol];
+    if (
+      priceData &&
+      typeof priceData === "object" &&
+      priceData.bid !== undefined &&
+      priceData.ask !== undefined
+    ) {
+      const spread = ((priceData.ask - priceData.bid) * 10000).toFixed(1); // Calculate spread in pips for forex
+      return {
+        ...selectedSymbol,
+        bid: priceData.bid,
+        ask: priceData.ask,
+        spread: parseFloat(spread),
+      };
+    }
+    return selectedSymbol;
+  }, [selectedSymbol, unifiedPrices]);
+
+  //Update at every second
+  const handlePriceUpdate = useCallback((symbolName, price) => {
+    pricesRef.current[symbolName] = price;
   }, []);
+
 
   // Simulate connection status
   useEffect(() => {
@@ -132,8 +211,49 @@ const TradingTerminal = () => {
   const textClass = isDark ? 'text-white' : 'text-slate-900';
   const mutedClass = isDark ? 'text-gray-400' : 'text-slate-500';
 
+
+  // ========================== Topbar Functions ======================
+  const handleNewOrder = () => {
+    // Open new order modal/dialog (Side panel like Binance)
+    setIsOrderModalOpen(true)
+  }
+
+  const handleZoomIn = () => {
+    chartAreaRef.current?.zoomIn()
+  }
+
+  const handleZoomOut = () => {
+    chartAreaRef.current?.zoomOut()
+  }
+  const handleDownloadChartPNG = () => {
+    chartAreaRef.current?.downloadChartAsPNG?.()
+  }
+
+  const handleToggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen?.()?.catch(() => { })
+    } else {
+      document.exitFullscreen?.()
+    }
+  }
+
+  const handleToggleBuySell = () => {
+    setShowBuySellPanel(prev => !prev)
+  }
+
+  const handleBuyClick = (orderType) => {
+    console.log('🟢 Buy clicked, opening panel...', orderType)
+    setOrderType('BUY')
+    setIsOrderModalOpen(true)
+  }
+
+  const handleSellClick = (orderType) => {
+    console.log('🔴 Sell clicked, opening panel...', orderType)
+    setOrderType('SELL')
+    setIsOrderModalOpen(true)
+  }
   return (
-    <div className="space-y-3 sm:space-y-4">
+    <div className="space-y-3 sm:space-y-4 ">
       {/* ==================== HEADER BAR ==================== */}
       <div className={`${cardClass} p-3 sm:p-4`}>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
@@ -433,12 +553,11 @@ const TradingTerminal = () => {
       </div>
 
       {/* ==================== DEMO WEBTRADER ==================== */}
-      <div className={cardClass + ' overflow-hidden'}>
-        <div className={`p-4 border-b flex items-center justify-between ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-          <div className="flex items-center gap-3">
+      <div className={cardClass + ' overflow-hidden max-h-[85vh] flex flex-col'}>
+        <div className={`p-4 border-b flex items-center justify-between flex-shrink-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+          {/* <div className="flex items-center gap-3">
             <BarChart2 className="w-5 h-5 text-amber-500" />
-            <h3 className={`font-bold ${textClass}`}>WebTrader</h3>
-            <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs font-bold rounded">DEMO</span>
+            <h3 className={`font-bold ${textClass}`}>MT 5 Traders</h3>
           </div>
           <div className="flex items-center gap-2">
             <button className={`p-1.5 rounded ${isDark ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>
@@ -447,42 +566,43 @@ const TradingTerminal = () => {
             <button className={`p-1.5 rounded ${isDark ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>
               <Maximize2 className={`w-4 h-4 ${mutedClass}`} />
             </button>
-          </div>
+          </div> */}
+          <TopBar
+            selectedSymbol={selectedSymbol}
+            selectedTimeframe={selectedTimeframe}
+            onTimeframeChange={setSelectedTimeframe}
+            chartType={chartType}
+            onChartTypeChange={setChartType}
+            onNewOrder={handleNewOrder}
+            onZoomIn={handleZoomIn}
+            onZoomOut={handleZoomOut}
+            onDownloadChartPNG={handleDownloadChartPNG}
+            onToggleFullscreen={handleToggleFullscreen}
+            marketWatchOpen={showMarketWatch}
+            onToggleMarketWatch={() => setShowMarketWatch(prev => !prev)}
+            onToggleBuySell={handleToggleBuySell}
+            buySellPanelOpen={showBuySellPanel}
+          />
         </div>
 
-        <div className="grid grid-cols-12">
+        <div className="grid grid-cols-12 flex-1 min-h-0">
           {/* Symbol List */}
-          <div className={`col-span-12 lg:col-span-2 p-3 border-r ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-            <div className="flex items-center gap-2 mb-3">
-              <Search className={`w-4 h-4 ${mutedClass}`} />
-              <span className={`text-sm font-medium ${textClass}`}>Symbols</span>
+          {/* <div className={`col-span-12 lg:col-span-2 border-r flex flex-col min-h-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+            <div className="flex-1 min-h-[260px] flex flex-col overflow-hidden">
+              <MarketWatchlist
+                onSymbolSelect={(symbol) => {
+                  setSelectedSymbol(symbol);
+                  setTradingSelectedSymbol(symbol?.symbol ?? symbol);
+                }}
+                selectedSymbol={selectedSymbol}
+              />
             </div>
-            <div className="space-y-1">
-              {tradingSymbols.map((sym) => (
-                <button
-                  key={sym.symbol}
-                  onClick={() => setSelectedSymbol(sym.symbol)}
-                  className={`w-full p-2 rounded-lg text-left transition-all ${selectedSymbol === sym.symbol
-                    ? 'bg-amber-500/10 border border-amber-500/30'
-                    : isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'
-                    }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className={`text-sm font-medium ${textClass}`}>{sym.symbol}</span>
-                    <span className={`text-xs ${sym.change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                      {sym.change >= 0 ? '+' : ''}{sym.change}%
-                    </span>
-                  </div>
-                  <div className={`text-xs ${mutedClass}`}>{sym.price.toFixed(sym.symbol.includes('JPY') ? 3 : 5)}</div>
-                </button>
-              ))}
-            </div>
-          </div>
+          </div> */}
 
           {/* Chart Area */}
-          <div className="col-span-12 lg:col-span-7">
+          <div className="col-span-12 lg:col-span-8 flex flex-col min-h-0">
             {/* Chart Header */}
-            <div className={`flex items-center justify-between p-3 border-b ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+            {/* <div className={`flex items-center justify-between p-3 border-b flex-shrink-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
               <div className="flex items-center gap-3">
                 <span className={`text-lg font-bold ${textClass}`}>{selectedSymbol}</span>
                 <span className={`text-2xl font-mono ${selectedSymbolData?.change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
@@ -492,118 +612,29 @@ const TradingTerminal = () => {
                   {selectedSymbolData?.change >= 0 ? '+' : ''}{selectedSymbolData?.change}%
                 </span>
               </div>
+            </div> */}
+
+            {/* Candlestick Chart - flex container so chart fills height */}
+            <div className="flex-1 min-h-[200px] flex flex-col">
+              <TradingChart
+                key={`chart-mobile-${selectedSymbol?.symbol}`}
+                symbol={enrichedSelectedSymbol}
+                openPositions={positions}
+                onPriceUpdate={handlePriceUpdate}
+              />
             </div>
 
-            {/* Candlestick Chart */}
-            <div className={`h-[280px] p-4 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
-              <svg viewBox="0 0 600 200" className="w-full h-full">
-                {/* Grid lines */}
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <line key={`h${i}`} x1="0" y1={i * 50} x2="600" y2={i * 50}
-                    stroke={isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"} strokeWidth="1" />
-                ))}
-                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-                  <line key={`v${i}`} x1={i * 60} y1="0" x2={i * 60} y2="200"
-                    stroke={isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)"} strokeWidth="1" />
-                ))}
-
-                {/* Candlesticks */}
-                {candleData.map((candle, i) => {
-                  const x = i * 12 + 6;
-                  const scaleY = (val) => 200 - ((val - 1.08) / 0.01) * 200;
-                  const bodyTop = scaleY(Math.max(candle.open, candle.close));
-                  const bodyBottom = scaleY(Math.min(candle.open, candle.close));
-                  const bodyHeight = Math.max(bodyBottom - bodyTop, 1);
-                  const color = candle.bullish ? '#10b981' : '#ef4444';
-
-                  return (
-                    <g key={i}>
-                      <line x1={x} y1={scaleY(candle.high)} x2={x} y2={scaleY(candle.low)} stroke={color} strokeWidth="1" />
-                      <rect x={x - 4} y={bodyTop} width="8" height={bodyHeight} fill={color} />
-                    </g>
-                  );
-                })}
-
-                {/* Current price line */}
-                <line x1="0" y1="100" x2="600" y2="100" stroke="#f59e0b" strokeWidth="1" strokeDasharray="4,4" />
-                <rect x="540" y="93" width="55" height="16" fill="#f59e0b" rx="2" />
-                <text x="567" y="104" fontSize="9" fill="#000" textAnchor="middle" fontWeight="bold">
-                  {selectedSymbolData?.price.toFixed(5)}
-                </text>
-              </svg>
-            </div>
-
-            {/* Timeframes */}
-            <div className={`flex items-center gap-1 p-2 border-t ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-              {['M1', 'M5', 'M15', 'H1', 'H4', 'D1', 'W1'].map((tf) => (
-                <button key={tf} className={`px-3 py-1 rounded text-xs font-medium transition-all ${tf === 'H1'
-                  ? 'bg-amber-500 text-black'
-                  : isDark ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
-                  }`}>
-                  {tf}
-                </button>
-              ))}
-            </div>
           </div>
 
           {/* Order Panel */}
-          <div className={`col-span-12 lg:col-span-3 p-3 border-l ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-            <span className={`font-bold text-sm ${textClass}`}>Quick Order</span>
-            <div className="mt-3 space-y-3">
-              {/* Order Type */}
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => setOrderType('market')}
-                  className={`py-2 rounded-lg text-xs font-medium ${orderType === 'market' ? 'bg-amber-500 text-black' : isDark ? 'bg-white/5 text-gray-400' : 'bg-slate-100 text-slate-500'
-                    }`}
-                >
-                  Market
-                </button>
-                <button
-                  onClick={() => setOrderType('pending')}
-                  className={`py-2 rounded-lg text-xs font-medium ${orderType === 'pending' ? 'bg-amber-500 text-black' : isDark ? 'bg-white/5 text-gray-400' : 'bg-slate-100 text-slate-500'
-                    }`}
-                >
-                  Pending
-                </button>
-              </div>
-
-              {/* Lot Size */}
-              <div>
-                <label className={`text-xs ${mutedClass}`}>Lot Size</label>
-                <div className="flex items-center gap-2 mt-1">
-                  <button onClick={() => setLotSize((parseFloat(lotSize) - 0.01).toFixed(2))}
-                    className={`p-2 rounded ${isDark ? 'bg-white/5 hover:bg-white/10' : 'bg-slate-100 hover:bg-slate-200'}`}>
-                    <Minus className="w-3 h-3" />
-                  </button>
-                  <input
-                    type="text"
-                    value={lotSize}
-                    onChange={(e) => setLotSize(e.target.value)}
-                    className={`flex-1 text-center py-2 rounded-lg font-mono text-sm ${isDark ? 'bg-white/5 text-white' : 'bg-slate-100 text-slate-900'}`}
-                  />
-                  <button onClick={() => setLotSize((parseFloat(lotSize) + 0.01).toFixed(2))}
-                    className={`p-2 rounded ${isDark ? 'bg-white/5 hover:bg-white/10' : 'bg-slate-100 hover:bg-slate-200'}`}>
-                    <Plus className="w-3 h-3" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Buy/Sell Buttons */}
-              <div className="grid grid-cols-2 gap-2">
-                <button className="py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg text-sm">
-                  BUY
-                </button>
-                <button className="py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg text-sm">
-                  SELL
-                </button>
-              </div>
-
-              {/* Spread Info */}
-              <div className={`text-center text-xs ${mutedClass}`}>
-                Spread: {selectedSymbolData?.spread} pips
-              </div>
-            </div>
+          <div className={`col-span-12 lg:col-span-4 p-3 border-l flex flex-col min-h-[160px] ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+            <MarketWatchlist
+              onSymbolSelect={(symbol) => {
+                setSelectedSymbol(symbol);
+                setTradingSelectedSymbol(symbol?.symbol ?? symbol);
+              }}
+              selectedSymbol={selectedSymbol}
+            />
           </div>
         </div>
       </div>
@@ -666,6 +697,34 @@ const TradingTerminal = () => {
           </p>
         </div>
       </div>
+
+      {/* Market Execution Side Panel - Slides from behind left sidebar, overlaps chart */}
+      {isOrderModalOpen && (
+        <>
+          {/* Overlay backdrop when panel is open - behind panel but over chart */}
+          <div
+            className='fixed inset-0  z-30'
+            onClick={() => setIsOrderModalOpen(false)}
+          />
+
+          {/* Panel - Fully interactive, not blocked by backdrop */}
+          <div
+            className='fixed left-12 top-0 w-96 max-w-sm z-40 transition-transform duration-300 ease-in-out pointer-events-auto'
+            onClick={(e) => e.stopPropagation()}
+          >
+            <MarketExecutionModal
+              isOpen={isOrderModalOpen}
+              onClose={() => setIsOrderModalOpen(false)}
+              orderType={orderType}
+              bidPrice={currentSymbolData.bid}
+              askPrice={currentSymbolData.ask}
+            />
+          </div>
+        </>
+      )}
+
+
+
     </div>
   );
 };
