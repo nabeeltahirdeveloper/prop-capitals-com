@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   User,
   Mail,
@@ -12,31 +12,88 @@ import {
   Save,
   X,
   Globe,
-  Building
+  Building,
+  Loader2
 } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getCurrentUser } from '@/api/auth';
+import {
+  updateProfile,
+} from '@/api/profile';
+import { formatDate } from '@/utils/dateFormating';
 
 const ProfilePage = () => {
   const { isDark } = useTraderTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
-    phone: '+1 234 567 8900',
-    country: 'United States',
-    city: 'New York',
-    timezone: 'EST (UTC-5)',
-    joinDate: 'February 2025',
-    tradingExperience: '3+ years',
-    preferredPlatform: 'MetaTrader 5'
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    country: '',
+    city: '',
+    timezone: '',
+    joinDate: '',
+    tradingExperience: '',
+    preferredPlatform: ''
+  });
+  const [editedProfile, setEditedProfile] = useState({ ...profile });
+  const queryClient = useQueryClient();
+
+  // Fetch user data from /auth/me (includes profile, verification docs, notification prefs)
+  const { data: user, isLoading, error } = useQuery({
+    queryKey: ['user', 'me'],
+    queryFn: getCurrentUser,
+    retry: false,
+    refetchInterval: 30000, // Refresh every 30 seconds
   });
 
-  const [editedProfile, setEditedProfile] = useState({ ...profile });
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        firstName: user.profile?.firstName || '-',
+        lastName: user.profile?.lastName || '-',
+        email: user.email || '-',
+        phone: user.profile?.phone || '-',
+        city: user.profile?.city || '-',
+        country: user.profile?.country || '-',
+        timezone: user.profile?.timezone || '-',
+        joinDate: user.profile?.joinDate || '-',
+        tradingExperience: user.profile?.tradingExperience || '-',
+        preferredPlatform: user.profile?.preferredPlatform || '-',
+        joinDate: formatDate(user.createdAt) || '-',
+      });
+      // if (user.notificationPreference) {
+      //   setNotificationPrefs(user.notificationPreference);
+      // }
+    }
+  }, [user]);
+
+  useEffect(() => {
+    setEditedProfile({ ...profile });
+  }, [profile]);
+
+  const updateProfileMutation = useMutation({
+    mutationFn: updateProfile,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+      setIsEditing(false);
+    },
+    onError: (error) => {
+      console.error('Failed to save profile:', error);
+      alert(error.message || t('profile.saveError') || 'Failed to save profile');
+    },
+  });
 
   const handleSave = () => {
-    setProfile({ ...editedProfile });
-    setIsEditing(false);
+    updateProfileMutation.mutate({
+      firstName: editedProfile.firstName,
+      lastName: editedProfile.lastName,
+      phone: editedProfile.phone,
+      country: editedProfile.country,
+      city: editedProfile.city
+    });
   };
 
   const handleCancel = () => {
@@ -45,10 +102,10 @@ const ProfilePage = () => {
   };
 
   const stats = [
-    { label: 'Challenges Completed', value: '3', color: 'emerald' },
-    { label: 'Total Payouts', value: '$12,450', color: 'amber' },
-    { label: 'Win Rate', value: '67%', color: 'blue' },
-    { label: 'Member Since', value: 'Feb 2025', color: 'purple' },
+    { label: 'Challenges Completed', value: user?.totalCompletedChallenges || 0, color: 'emerald' },
+    { label: 'Total Payouts', value: user?.totalPayouts ? `$${user.totalPayouts.toLocaleString()}` : '$0', color: 'amber' },
+    { label: 'Win Rate', value: `${user?.winRate || 0}%`, color: 'blue' },
+    { label: 'Member Since', value: user?.createdAt ? formatDate(user.createdAt) : '-', color: 'purple' },
   ];
 
   return (
@@ -276,10 +333,20 @@ const ProfilePage = () => {
           </button>
           <button
             onClick={handleSave}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] font-bold rounded-xl transition-all"
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={updateProfileMutation.isPending}
           >
-            <Save className="w-4 h-4" />
-            Save Changes
+            {updateProfileMutation.isPending ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                Save Changes
+              </>
+            )}
           </button>
         </div>
       )}

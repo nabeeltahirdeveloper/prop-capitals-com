@@ -27,7 +27,7 @@ function App() {
           <Pages />
           <Toaster />
           <ChatSupport />
-          <SocialProofNotification />
+          {/* <SocialProofNotification /> */}
         </AuthProvider>
         </TradingProvider>
       </ThemeProvider>

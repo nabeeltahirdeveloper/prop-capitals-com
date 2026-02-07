@@ -49,6 +49,7 @@ import AccountSettings from "@/components/trader/AccountSettings.jsx";
 import ProfilePage from "@/components/trader/ProfilePage.jsx";
 import SupportPage from "@/components/trader/SupportPage.jsx";
 import FAQPage from "@/components/trader/FAQPage.jsx";
+import TradeCheckoutPanelPage from "@/components/trader/TradeCheckoutPanelPage.jsx";
 
 import {
   BrowserRouter as Router,
@@ -102,6 +103,8 @@ const PAGES = {
   PROFILE: ProfilePage,
   SUPPORT: SupportPage,
   FAQS: FAQPage,
+  checkout: TradeCheckoutPanelPage,
+
 };
 
 function _getCurrentPage(url) {
@@ -211,6 +214,7 @@ function PagesContent() {
                   <Route path="profile" element={<ProfilePage />} />
                   <Route path="support" element={<SupportPage />} />
                   <Route path="faqs" element={<FAQPage />} />
+                  <Route path="checkout" element={<TradeCheckoutPanelPage />} />
                 </Route>
               </Route>
 
