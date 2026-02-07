@@ -65,19 +65,20 @@ export class TradingEventsGateway
         return;
       }
 
-      // Verify JWT token
+      // Verify JWT token (auth module uses sub for user id)
       const payload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET || 'your-secret-key-here',
       });
 
-      if (!payload || !payload.userId) {
+      const userId = payload?.sub || payload?.userId;
+      if (!payload || !userId) {
         this.logger.warn(`❌ Client ${client.id} connection rejected: Invalid token`);
         client.disconnect();
         return;
       }
 
       // Store user info in socket data
-      client.data.userId = payload.userId;
+      client.data.userId = userId;
       client.data.email = payload.email;
 
       this.logger.log(`✅ Client connected: ${client.id} (User: ${payload.email})`);

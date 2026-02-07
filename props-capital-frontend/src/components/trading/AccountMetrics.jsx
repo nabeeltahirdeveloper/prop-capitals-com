@@ -46,7 +46,7 @@ export default function AccountMetrics({
     account?.floatingPnL || 0,
   );
 
-  console.log(account);
+  // console.log(account);
 
   const [displayProfitPercent, setDisplayProfitPercent] = React.useState(
     account?.profitPercent || 0,
