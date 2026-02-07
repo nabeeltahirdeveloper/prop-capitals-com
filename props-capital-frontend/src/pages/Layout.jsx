@@ -108,8 +108,6 @@ export default function Layout({ children, currentPageName }) {
   ];
   const isPublicPage = publicPages.includes(currentPageName);
 
-  console.log("isPublicPage :", isPublicPage);
-
   const { status, user: authUser } = useAuth();
 
   // Map auth user to local user state for compatibility
