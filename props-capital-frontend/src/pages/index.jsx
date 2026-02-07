@@ -75,7 +75,7 @@ const PAGES = {
   Payouts: Payouts,
   Terms: Terms,
   Privacy: Privacy,
-  TraderDashboard: TraderDashboard,
+  // TraderDashboard: TraderDashboard,
   MyAccounts: MyAccounts,
   Analytics: Analytics,
   TraderPayouts: TraderPayouts,

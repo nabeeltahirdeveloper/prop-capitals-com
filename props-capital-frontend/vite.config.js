@@ -6,6 +6,9 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   server: {
+    proxy: {
+      '/economic-calendar': 'http://localhost:5002'
+    },
     allowedHosts: true
   },
   resolve: {
