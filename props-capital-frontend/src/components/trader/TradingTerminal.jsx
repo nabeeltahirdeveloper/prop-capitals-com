@@ -36,6 +36,7 @@ import MarketWatch from './MarketWatch';
 import MarketWatchlist from '../trading/MarketWatchlist';
 import TopBar from '../trading/Topbar';
 import MarketExecutionModal from './MarketExecutionModal';
+import LeftSidebar from '../trading/LeftSidebar';
 
 // Demo trading symbols
 const tradingSymbols = [
@@ -555,18 +556,6 @@ const TradingTerminal = () => {
       {/* ==================== DEMO WEBTRADER ==================== */}
       <div className={cardClass + ' overflow-hidden max-h-[85vh] flex flex-col'}>
         <div className={`p-4 border-b flex items-center justify-between flex-shrink-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-          {/* <div className="flex items-center gap-3">
-            <BarChart2 className="w-5 h-5 text-amber-500" />
-            <h3 className={`font-bold ${textClass}`}>MT 5 Traders</h3>
-          </div>
-          <div className="flex items-center gap-2">
-            <button className={`p-1.5 rounded ${isDark ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>
-              <Settings className={`w-4 h-4 ${mutedClass}`} />
-            </button>
-            <button className={`p-1.5 rounded ${isDark ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>
-              <Maximize2 className={`w-4 h-4 ${mutedClass}`} />
-            </button>
-          </div> */}
           <TopBar
             selectedSymbol={selectedSymbol}
             selectedTimeframe={selectedTimeframe}
@@ -585,34 +574,14 @@ const TradingTerminal = () => {
           />
         </div>
 
-        <div className="grid grid-cols-12 flex-1 min-h-0">
-          {/* Symbol List */}
-          {/* <div className={`col-span-12 lg:col-span-2 border-r flex flex-col min-h-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-            <div className="flex-1 min-h-[260px] flex flex-col overflow-hidden">
-              <MarketWatchlist
-                onSymbolSelect={(symbol) => {
-                  setSelectedSymbol(symbol);
-                  setTradingSelectedSymbol(symbol?.symbol ?? symbol);
-                }}
-                selectedSymbol={selectedSymbol}
-              />
-            </div>
-          </div> */}
+        <div className="flex flex-col lg:flex-row flex-1 min-h-0 w-full">
+          {/* Left sidebar - fixed 48px (w-12) so no gap, chart starts immediately */}
+          <div className="hidden lg:flex lg:w-12 lg:shrink-0 flex-col min-h-0 overflow-hidden">
+            <LeftSidebar />
+          </div>
 
-          {/* Chart Area */}
-          <div className="col-span-12 lg:col-span-8 flex flex-col min-h-0">
-            {/* Chart Header */}
-            {/* <div className={`flex items-center justify-between p-3 border-b flex-shrink-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-              <div className="flex items-center gap-3">
-                <span className={`text-lg font-bold ${textClass}`}>{selectedSymbol}</span>
-                <span className={`text-2xl font-mono ${selectedSymbolData?.change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                  {selectedSymbolData?.price.toFixed(selectedSymbol.includes('JPY') ? 3 : 5)}
-                </span>
-                <span className={`text-sm ${selectedSymbolData?.change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                  {selectedSymbolData?.change >= 0 ? '+' : ''}{selectedSymbolData?.change}%
-                </span>
-              </div>
-            </div> */}
+          {/* Chart Area - takes remaining space, no gap after sidebar */}
+          <div className="flex-1 min-w-0 flex flex-col min-h-0 order-first lg:order-none">
 
             {/* Candlestick Chart - flex container so chart fills height */}
             <div className="flex-1 min-h-[200px] flex flex-col">
@@ -626,8 +595,8 @@ const TradingTerminal = () => {
 
           </div>
 
-          {/* Order Panel */}
-          <div className={`col-span-12 lg:col-span-4 p-3 border-l flex flex-col min-h-[160px] ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+          {/* Market Watch / Symbols - full width on mobile (below chart), fixed 18rem on lg */}
+          <div className={`flex w-full lg:w-72 shrink-0 p-3 border-l flex-col min-h-[160px] min-w-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
             <MarketWatchlist
               onSymbolSelect={(symbol) => {
                 setSelectedSymbol(symbol);
