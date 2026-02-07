@@ -1,10 +1,198 @@
-import React from 'react';
-import { User, Mail, Phone, MapPin, Shield, Bell, Key, Save } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { User, Mail, Phone, MapPin, Shield, Bell, Key, Save, Loader2 } from 'lucide-react';
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from '@/components/ui/button';
 import { useTraderTheme } from './TraderPanelLayout';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getCurrentUser } from '@/api/auth';
+import {
+  updateProfile,
+  changePassword,
+  updateNotificationPreferences,
+  uploadVerificationDocument,
+} from '@/api/profile';
 
 const AccountSettings = () => {
+  const { toast } = useToast();
   const { isDark } = useTraderTheme();
+  const queryClient = useQueryClient();
+  const [profile, setProfile] = useState({
+    isEdit: false,
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    country: '',
+    lotSize: '',
+    leverage: '',
+    theme: '',
+  });
+  const [password, setPassword] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: '',
+  });
+  const [notificationPrefs, setNotificationPrefs] = useState({
+    isEdit: false,
+    tradeNotifications: true,
+    accountAlerts: true,
+    payoutUpdates: true,
+    challengeUpdates: true,
+    marketingEmails: false,
+    emailNotifications: true,
+  });
+
+  const { data: user, isLoading, error } = useQuery({
+    queryKey: ['user', 'me'],
+    queryFn: getCurrentUser,
+    retry: false,
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        ...profile,
+        firstName: user?.profile?.firstName || '-',
+        lastName: user?.profile?.lastName || '-',
+        email: user?.email || '-',
+        phone: user?.profile?.phone || '-',
+        country: user?.profile?.country || '-',
+        lotSize: user?.profile?.lotSize,
+        leverage: user?.profile?.leverage,
+        theme: user?.profile?.theme,
+      });
+
+      if (user.notificationPreference) {
+        setNotificationPrefs(user.notificationPreference);
+      }
+    }
+  }, [user]);
+
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setProfile(prev => ({
+      ...prev,
+      [name]: value,
+      isEdit: true
+    }));
+  };
+
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPassword(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleNotificationPrefChange = (key) => {
+    setNotificationPrefs(prev => ({
+      ...prev,
+      [key]: !prev[key],
+      isEdit: true
+    }));
+  };
+
+  const updateProfileMutation = useMutation({
+    mutationFn: updateProfile,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to save profile",
+        description: error.message || 'Failed to save profile',
+        variant: "destructive",
+      });
+    },
+  });
+
+  const changePasswordMutation = useMutation({
+    mutationFn: ({ currentPassword, newPassword }) => changePassword(currentPassword, newPassword),
+    onSuccess: () => {
+      setPassword({ currentPassword: '', newPassword: '', confirmNewPassword: '' });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to change password",
+        description: error.message || 'Failed to change password',
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateNotificationPrefsMutation = useMutation({
+    mutationFn: updateNotificationPreferences,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to update notification preferences",
+        description: error.message || 'Failed to update notification preferences',
+        variant: "destructive",
+      });
+    },
+  });
+
+
+  const updateProfileMutationHandler = () => {
+    updateProfileMutation.mutate({
+      firstName: profile.firstName,
+      lastName: profile.lastName,
+      phone: profile.phone,
+      country: profile.country,
+      lotSize: profile.lotSize,
+      leverage: profile.leverage,
+      theme: profile.theme,
+    });
+  }
+
+  const changePasswordMutationHandler = () => {
+    if (password.newPassword !== password.confirmNewPassword) {
+      toast({
+        title: "Passwords do not match",
+        description: "Please make sure your new password and confirmation match.",
+        variant: "destructive",
+      });
+      return;
+    }
+    changePasswordMutation.mutate(password);
+  }
+
+  const updateNotificationPrefsMutationHandler = () => {
+    updateNotificationPrefsMutation.mutate({
+      tradeNotifications: notificationPrefs.tradeNotifications,
+      accountAlerts: notificationPrefs.accountAlerts,
+      payoutUpdates: notificationPrefs.payoutUpdates,
+      challengeUpdates: notificationPrefs.challengeUpdates,
+      marketingEmails: notificationPrefs.marketingEmails,
+      emailNotifications: notificationPrefs.emailNotifications,
+    });
+  }
+
+
+
+  const onSaveHandler = () => {
+    if (profile.isEdit) {
+      updateProfileMutationHandler();
+    }
+
+    if (password.currentPassword && password.newPassword && password.confirmNewPassword) {
+      changePasswordMutationHandler();
+    }
+
+    if (notificationPrefs.isEdit) {
+      updateNotificationPrefsMutationHandler();
+    }
+
+  }
+
+
+
+  const isSaving = updateProfileMutation.isPending || changePasswordMutation.isPending || updateNotificationPrefsMutation.isPending;
 
   return (
     <div className="space-y-6">
@@ -22,37 +210,38 @@ const AccountSettings = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>First Name</label>
-                <input type="text" defaultValue="John" className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
+                <input type="text" name="firstName" value={profile.firstName} onChange={handleInputChange} className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
                   }`} />
               </div>
               <div>
                 <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Last Name</label>
-                <input type="text" defaultValue="Doe" className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
+                <input type="text" name="lastName" value={profile.lastName} onChange={handleInputChange} className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
                   }`} />
               </div>
             </div>
 
             <div>
               <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Email</label>
-              <input type="email" defaultValue="john.doe@example.com" className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
-                }`} />
+              <input
+                type="email"
+                name="email"
+                value={profile.email}
+                disabled
+                className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 opacity-50 cursor-not-allowed ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
+                  }`}
+              />
             </div>
 
             <div>
               <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Phone</label>
-              <input type="tel" defaultValue="+1 234 567 8900" className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
+              <input type="tel" name="phone" value={profile.phone} onChange={handleInputChange} className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
                 }`} />
             </div>
 
             <div>
               <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Country</label>
-              <select className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
-                }`}>
-                <option>United States</option>
-                <option>United Kingdom</option>
-                <option>Germany</option>
-                <option>France</option>
-              </select>
+              <input type="text" name="country" value={profile.country} onChange={handleInputChange} className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
+                }`} />
             </div>
           </div>
         </div>
@@ -67,19 +256,19 @@ const AccountSettings = () => {
           <div className="space-y-4">
             <div>
               <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Current Password</label>
-              <input type="password" placeholder="••••••••" className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
+              <input type="password" name="currentPassword" value={password.currentPassword} onChange={handlePasswordChange} placeholder="••••••••" className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
                 }`} />
             </div>
 
             <div>
               <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>New Password</label>
-              <input type="password" placeholder="••••••••" className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
+              <input type="password" name="newPassword" value={password.newPassword} onChange={handlePasswordChange} placeholder="••••••••" className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
                 }`} />
             </div>
 
             <div>
               <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Confirm New Password</label>
-              <input type="password" placeholder="••••••••" className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
+              <input type="password" name="confirmNewPassword" value={password.confirmNewPassword} onChange={handlePasswordChange} placeholder="••••••••" className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
                 }`} />
             </div>
 
@@ -106,18 +295,24 @@ const AccountSettings = () => {
 
           <div className="space-y-4">
             {[
-              { label: 'Email Notifications', desc: 'Receive trading alerts via email' },
-              { label: 'Push Notifications', desc: 'Browser notifications for trades' },
-              { label: 'SMS Alerts', desc: 'Critical alerts via SMS' },
-              { label: 'Weekly Reports', desc: 'Receive weekly performance reports' },
+              { key: 'emailNotifications', label: 'Email Notifications', desc: 'Receive trading alerts via email' },
+              { key: 'tradeNotifications', label: 'Trade Notifications', desc: 'Browser notifications for trades' },
+              { key: 'accountAlerts', label: 'Account Alerts', desc: 'Critical alerts via SMS' },
+              { key: 'payoutUpdates', label: 'Payout Updates', desc: 'Receive weekly performance reports' },
+              { key: 'challengeUpdates', label: 'Challenge Updates', desc: 'Receive updates about your challenges' },
+              { key: "marketingEmails", label: "Marketing Emails", desc: "Receive marketing emails" }
             ].map((item, i) => (
               <div key={i} className="flex items-center justify-between">
                 <div>
                   <p className={`font-medium text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{item.label}</p>
-                  <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{item.desc}</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" defaultChecked={i < 2} className="sr-only peer" />
+                  <input
+                    type="checkbox"
+                    checked={notificationPrefs[item.key] || false}
+                    onChange={() => handleNotificationPrefChange(item.key)}
+                    className="sr-only peer"
+                  />
                   <div className={`w-11 h-6 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500 ${isDark ? 'bg-white/10' : 'bg-slate-200'
                     }`}></div>
                 </label>
@@ -136,26 +331,39 @@ const AccountSettings = () => {
           <div className="space-y-4">
             <div>
               <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Default Lot Size</label>
-              <input type="text" defaultValue="0.01" className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
-                }`} />
+              <input
+                type="text"
+                name="lotSize"
+                value={profile.lotSize}
+                onChange={handleInputChange}
+                className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'}`}
+              />
             </div>
 
             <div>
               <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Default Leverage</label>
-              <select className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
-                }`}>
-                <option>1:100</option>
-                <option>1:50</option>
-                <option>1:30</option>
+              <select
+                name="leverage"
+                value={profile.leverage}
+                onChange={handleInputChange}
+                className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'}`}
+              >
+                <option value="1:100">1:100</option>
+                <option value="1:50">1:50</option>
+                <option value="1:30">1:30</option>
               </select>
             </div>
 
             <div>
               <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Chart Theme</label>
-              <select className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
-                }`}>
-                <option>Dark</option>
-                <option>Light</option>
+              <select
+                name="theme"
+                value={profile.theme}
+                onChange={handleInputChange}
+                className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'}`}
+              >
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
               </select>
             </div>
           </div>
@@ -164,9 +372,22 @@ const AccountSettings = () => {
 
       {/* Save Button */}
       <div className="flex justify-end">
-        <Button className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-xl px-8 py-3 h-auto font-bold">
-          <Save className="w-4 h-4 mr-2" />
-          Save Changes
+        <Button
+          onClick={onSaveHandler}
+          disabled={isSaving}
+          className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-xl px-8 py-3 h-auto font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isSaving ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save className="w-4 h-4 mr-2" />
+              Save Changes
+            </>
+          )}
         </Button>
       </div>
     </div>

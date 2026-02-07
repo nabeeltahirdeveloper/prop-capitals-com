@@ -51,10 +51,12 @@ export class ChallengeRulesService {
     } = inputs;
 
     // 1. Profit Target calculation
-    // Profit % = (equity - startingBalance) / startingBalance * 100
+    // ✅ Use maxEquityToDate for monotonic profit (MAXIMUM profit achieved, never decreases)
+    // This is standard for trading challenges - profit tracks the peak achieved
+    // Profit % = (maxEquity - startingBalance) / startingBalance * 100
     const profitPercent =
       startingBalance > 0
-        ? ((currentEquity - startingBalance) / startingBalance) * 100
+        ? ((maxEquityToDate - startingBalance) / startingBalance) * 100
         : 0;
 
     // Profit progress (0-100) - clamp to prevent >100% display issues
@@ -75,13 +77,14 @@ export class ChallengeRulesService {
     );
     const dailyViolated = dailyLossPercent >= challenge.dailyDrawdownPercent;
 
-    // 3. Overall Drawdown calculation (MAXIMUM drawdown from peak)
+    // 3. Overall Drawdown calculation (MAXIMUM drawdown from INITIAL BALANCE)
     // ✅ Use minEquityOverall to track the worst point ever reached
-    // This ensures overall drawdown NEVER decreases (monotonic)
-    // Drawdown % = (maxEquityToDate - minEquityOverall) / maxEquityToDate * 100
+    // ✅ Use startingBalance as base (industry standard for prop firms)
+    // This ensures overall drawdown NEVER decreases (monotonic) and doesn't increase when making profit
+    // Drawdown % = (startingBalance - minEquityOverall) / startingBalance * 100
     const drawdownPercent =
-      maxEquityToDate > 0 && minEquityOverall < maxEquityToDate
-        ? ((maxEquityToDate - minEquityOverall) / maxEquityToDate) * 100
+      startingBalance > 0 && minEquityOverall < startingBalance
+        ? ((startingBalance - minEquityOverall) / startingBalance) * 100
         : 0;
 
     const drawdownProgress = Math.min(

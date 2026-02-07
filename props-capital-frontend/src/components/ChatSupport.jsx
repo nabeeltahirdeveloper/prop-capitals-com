@@ -21,8 +21,7 @@ const ChatSupport = () => {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  // const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-  const BACKEND_URL = "";
+  const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -65,7 +64,7 @@ const ChatSupport = () => {
     setIsTyping(true);
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/chat`, {
+      const response = await fetch(`${BACKEND_URL}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -112,7 +111,7 @@ const ChatSupport = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/chat/human-support`, {
+      const response = await fetch(`${BACKEND_URL}/chat/human-support`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
