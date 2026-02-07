@@ -23,6 +23,9 @@ const AccountSettings = () => {
     email: '',
     phone: '',
     country: '',
+    lotSize: '',
+    leverage: '',
+    theme: '',
   });
   const [password, setPassword] = useState({
     currentPassword: '',
@@ -55,6 +58,9 @@ const AccountSettings = () => {
         email: user?.email || '-',
         phone: user?.profile?.phone || '-',
         country: user?.profile?.country || '-',
+        lotSize: user?.profile?.lotSize,
+        leverage: user?.profile?.leverage,
+        theme: user?.profile?.theme,
       });
 
       if (user.notificationPreference) {
@@ -132,16 +138,19 @@ const AccountSettings = () => {
   });
 
 
-  const updateProfileMutationHanlder = () => {
+  const updateProfileMutationHandler = () => {
     updateProfileMutation.mutate({
       firstName: profile.firstName,
       lastName: profile.lastName,
       phone: profile.phone,
       country: profile.country,
+      lotSize: profile.lotSize,
+      leverage: profile.leverage,
+      theme: profile.theme,
     });
   }
 
-  const changePasswordMutationHanlder = () => {
+  const changePasswordMutationHandler = () => {
     if (password.newPassword !== password.confirmNewPassword) {
       toast({
         title: "Passwords do not match",
@@ -168,11 +177,11 @@ const AccountSettings = () => {
 
   const onSaveHandler = () => {
     if (profile.isEdit) {
-      updateProfileMutationHanlder();
+      updateProfileMutationHandler();
     }
 
     if (password.currentPassword && password.newPassword && password.confirmNewPassword) {
-      changePasswordMutationHanlder();
+      changePasswordMutationHandler();
     }
 
     if (notificationPrefs.isEdit) {
@@ -322,26 +331,39 @@ const AccountSettings = () => {
           <div className="space-y-4">
             <div>
               <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Default Lot Size</label>
-              <input type="text" defaultValue="0.01" className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
-                }`} />
+              <input
+                type="text"
+                name="lotSize"
+                value={profile.lotSize}
+                onChange={handleInputChange}
+                className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'}`}
+              />
             </div>
 
             <div>
               <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Default Leverage</label>
-              <select className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
-                }`}>
-                <option>1:100</option>
-                <option>1:50</option>
-                <option>1:30</option>
+              <select
+                name="leverage"
+                value={profile.leverage}
+                onChange={handleInputChange}
+                className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'}`}
+              >
+                <option value="1:100">1:100</option>
+                <option value="1:50">1:50</option>
+                <option value="1:30">1:30</option>
               </select>
             </div>
 
             <div>
               <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Chart Theme</label>
-              <select className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
-                }`}>
-                <option>Dark</option>
-                <option>Light</option>
+              <select
+                name="theme"
+                value={profile.theme}
+                onChange={handleInputChange}
+                className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'}`}
+              >
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
               </select>
             </div>
           </div>

@@ -85,15 +85,24 @@ export class UsersService {
     city?: string;
     country?: string;
     timezone?: string;
+    lotSize?: number | string;
+    leverage?: string;
+    theme?: string;
   }) {
+
+    const updateData: any = { ...data };
+
+    if (data.lotSize) {
+      updateData.lotSize = parseFloat(data.lotSize.toString());
+    }
 
     // Upsert profile (create if doesn't exist, update if exists)
     const profile = await this.prisma.userProfile.upsert({
       where: { userId },
-      update: data,
+      update: updateData,
       create: {
         userId,
-        ...data,
+        ...updateData,
       },
     });
     return profile;
