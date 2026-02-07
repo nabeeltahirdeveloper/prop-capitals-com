@@ -65,7 +65,7 @@ export class TradingEventsGateway
         return;
       }
 
-      // Verify JWT token
+      // Verify JWT token (auth module uses sub for user id)
       const payload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET || 'your-secret-key-here',
       });
