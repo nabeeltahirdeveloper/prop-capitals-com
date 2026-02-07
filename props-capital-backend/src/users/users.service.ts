@@ -131,20 +131,14 @@ export class UsersService {
     marketingEmails?: boolean;
     emailNotifications?: boolean;
   }) {
-
     return this.prisma.notificationPreference.upsert({
-
       where: { userId },
-
       update: data,
-
       create: {
         userId,
         ...data,
       },
-
     });
-
   }
 
   // Get verification documents

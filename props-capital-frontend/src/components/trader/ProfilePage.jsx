@@ -64,6 +64,8 @@ const ProfilePage = () => {
         preferredPlatform: user.profile?.preferredPlatform || '-',
         joinDate: formatDate(user.createdAt) || '-',
       });
+
+      console.log("User", user.notificationPreference);
       // if (user.notificationPreference) {
       //   setNotificationPrefs(user.notificationPreference);
       // }

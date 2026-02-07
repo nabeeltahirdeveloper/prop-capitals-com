@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   LayoutDashboard,
   LineChart,
@@ -24,6 +25,7 @@ import {
   X
 } from 'lucide-react';
 import { ChallengesProvider, useChallenges } from '@/contexts/ChallengesContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const TraderThemeContext = React.createContext();
 
@@ -32,6 +34,8 @@ export const useTraderTheme = () => React.useContext(TraderThemeContext);
 const TraderPanelLayoutInner = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { logout } = useAuth();
+  const queryClient = useQueryClient();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isDark, setIsDark] = useState(false); // Default to light theme
@@ -92,6 +96,11 @@ const TraderPanelLayoutInner = () => {
   // Close mobile menu when route changes
   const handleNavClick = () => {
     setMobileMenuOpen(false);
+  };
+
+  const handleSignOut = () => {
+    logout();
+    setShowProfileMenu(false);
   };
 
   return (
@@ -405,10 +414,7 @@ const TraderPanelLayoutInner = () => {
                     </div>
                     <div className={`p-2 border-t ${isDark ? 'border-white/5' : 'border-slate-100'}`}>
                       <button
-                        onClick={() => {
-                          setShowProfileMenu(false);
-                          navigate('/');
-                        }}
+                        onClick={handleSignOut}
                         className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${isDark ? 'hover:bg-red-500/10 text-red-400' : 'hover:bg-red-50 text-red-500'
                           }`}
                       >

@@ -11,11 +11,11 @@ model User {
   id                     String                  @id @default(cuid())
   email                  String                  @unique
   password               String
-  resetPasswordOtp     String?
-  resetPasswordExpiry    DateTime?
   role                   UserRole                @default(TRADER)
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
+  resetPasswordExpiry    DateTime?
+  resetPasswordOtp       String?
   notifications          Notification[]
   notificationPreference NotificationPreference?
   payments               Payment[]
@@ -121,12 +121,12 @@ model TradingAccount {
   dailyLockedUntil  DateTime?
   maxEquityToDate   Float?
   todayStartEquity  Float?
-  minEquityToday    Float?               // Lowest equity reached today (for max daily drawdown)
-  minEquityOverall  Float?               // Lowest equity ever reached (for max overall drawdown)
-  lastDailyReset    DateTime?            // Last time daily metrics were reset
   dailyLossViolated Boolean              @default(false)
   drawdownViolated  Boolean              @default(false)
   platform          ChallengePlatform?
+  minEquityToday    Float?
+  minEquityOverall  Float?
+  lastDailyReset    DateTime?
   equityShots       EquitySnapshot[]
   payouts           Payout[]
   pendingOrders     PendingOrder[]
@@ -291,27 +291,27 @@ model ScalingRequest {
   tradingAccountId String
   oldBalance       Float
   newBalance       Float
-  oldProfitSplit   Float          @default(80.0)
-  newProfitSplit   Float          @default(85.0)
   status           String         @default("PENDING")
-  reason           String?
   requestedAt      DateTime       @default(now())
   approvedAt       DateTime?
+  newProfitSplit   Float          @default(85.0)
+  oldProfitSplit   Float          @default(80.0)
   processedAt      DateTime?
+  reason           String?
   tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
 }
 
 model Coupon {
   id           String    @id @default(cuid())
   code         String    @unique
-  discountType String    @default("percentage")
   discountPct  Int
-  maxUses      Int?
-  usedCount    Int       @default(0)
   isActive     Boolean   @default(true)
   expiresAt    DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+  discountType String    @default("percentage")
+  maxUses      Int?
+  usedCount    Int       @default(0)
 }
 
 model Lead {

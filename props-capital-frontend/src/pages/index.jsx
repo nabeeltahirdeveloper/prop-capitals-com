@@ -122,8 +122,6 @@ function _getCurrentPage(url) {
     (page) => page.toLowerCase() === urlLastPart.toLowerCase(),
   );
 
-  console.log(pageName);
-
   return pageName || Object.keys(PAGES)[0];
 }
 
