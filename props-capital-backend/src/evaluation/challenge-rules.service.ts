@@ -77,13 +77,14 @@ export class ChallengeRulesService {
     );
     const dailyViolated = dailyLossPercent >= challenge.dailyDrawdownPercent;
 
-    // 3. Overall Drawdown calculation (MAXIMUM drawdown from peak)
+    // 3. Overall Drawdown calculation (MAXIMUM drawdown from INITIAL BALANCE)
     // ✅ Use minEquityOverall to track the worst point ever reached
-    // This ensures overall drawdown NEVER decreases (monotonic)
-    // Drawdown % = (maxEquityToDate - minEquityOverall) / maxEquityToDate * 100
+    // ✅ Use startingBalance as base (industry standard for prop firms)
+    // This ensures overall drawdown NEVER decreases (monotonic) and doesn't increase when making profit
+    // Drawdown % = (startingBalance - minEquityOverall) / startingBalance * 100
     const drawdownPercent =
-      maxEquityToDate > 0 && minEquityOverall < maxEquityToDate
-        ? ((maxEquityToDate - minEquityOverall) / maxEquityToDate) * 100
+      startingBalance > 0 && minEquityOverall < startingBalance
+        ? ((startingBalance - minEquityOverall) / startingBalance) * 100
         : 0;
 
     const drawdownProgress = Math.min(

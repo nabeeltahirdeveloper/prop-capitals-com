@@ -140,7 +140,6 @@ export class EvaluationService {
     let totalUnrealizedPnL = 0;
     const { challenge } = account;
     const initialBalance = account.initialBalance || challenge.accountSize;
-    console.log('Initial balance:', initialBalance);
     for (const trade of account.trades) {
       const tradePrice = accountPriceCache.get(trade.symbol);
       if (!tradePrice) continue; // Skip if we don't have price for this symbol yet
@@ -168,81 +167,72 @@ export class EvaluationService {
       }
       
       totalUnrealizedPnL += positionPnL;
-    }
-
-
-
-
-
-
-
-
-
-
-
-    
+    }    
     // Calculate equity = balance + unrealized PnL
     const balance = account.balance ?? initialBalance;
-    console.log('Current balance:', balance);
     const equity = balance + totalUnrealizedPnL;
 
     // Use stored tracking values
-    const todayStartEquity = (account as any).todayStartEquity ?? equity;
+    // CRITICAL: Fallback to initialBalance (not equity) for todayStartEquity and minEquityToday
+    // Using current equity as fallback is WRONG because it already includes losses,
+    // which would make drawdown calculations start from the wrong base
+    const todayStartEquity = (account as any).todayStartEquity ?? initialBalance;
     let maxEquityToDate = (account as any).maxEquityToDate ?? initialBalance;
-    let minEquityToday = (account as any).minEquityToday ?? equity;
+    let minEquityToday = (account as any).minEquityToday ?? initialBalance;
     let minEquityOverall = (account as any).minEquityOverall ?? initialBalance;
 
     // Check if we need to reset daily metrics (new day)
     const today = new Date().toISOString().substring(0, 10);
     const lastReset = (account as any).lastDailyReset;
     const lastResetDate = lastReset ? new Date(lastReset).toISOString().substring(0, 10) : null;
+    let dailyReset = false;
 
     if (lastResetDate !== today) {
       // New day - reset daily metrics
       minEquityToday = equity;
-      await this.prisma.tradingAccount.update({
-        where: { id: accountId },
-        data: {
-          minEquityToday: equity,
-          lastDailyReset: new Date(),
-        } as any,
-      });
+      dailyReset = true;
       this.logger.debug(`[processPriceTick] Reset daily metrics for new day. minEquityToday=${equity}`);
     }
 
+    // Track what changed so we can do a SINGLE atomic DB write
+    let maxEquityChanged = false;
+    let minTodayChanged = false;
+    let minOverallChanged = false;
+
     // CRITICAL: Update maxEquityToDate if current equity is higher (industry standard)
-    // This must be updated on EVERY equity change (price tick, trade close, etc.)
-    // DO NOT reset this on auto-close or daily lock - it's the peak equity ever reached
     if (equity > maxEquityToDate) {
       maxEquityToDate = equity;
-      await this.prisma.tradingAccount.update({
-        where: { id: accountId },
-        data: { maxEquityToDate: equity } as any,
-      });
-      this.logger.debug(`[processPriceTick] Updated maxEquityToDate to ${equity} for account ${accountId}`);
+      maxEquityChanged = true;
     }
 
-    // ✅ CRITICAL: Update minEquityToday if current equity is lower (tracks worst point today)
-    // This ensures daily drawdown NEVER decreases during the day (monotonic)
+    // CRITICAL: Update minEquityToday if current equity is lower (tracks worst point today)
     if (equity < minEquityToday) {
       minEquityToday = equity;
-      await this.prisma.tradingAccount.update({
-        where: { id: accountId },
-        data: { minEquityToday: equity } as any,
-      });
-      this.logger.debug(`[processPriceTick] Updated minEquityToday to ${equity} for account ${accountId}`);
+      minTodayChanged = true;
     }
 
-    // ✅ CRITICAL: Update minEquityOverall if current equity is lower (tracks worst point ever)
-    // This ensures overall drawdown NEVER decreases (monotonic)
+    // CRITICAL: Update minEquityOverall if current equity is lower (tracks worst point ever)
     if (equity < minEquityOverall) {
       minEquityOverall = equity;
-      await this.prisma.tradingAccount.update({
-        where: { id: accountId },
-        data: { minEquityOverall: equity } as any,
-      });
-      this.logger.debug(`[processPriceTick] Updated minEquityOverall to ${equity} for account ${accountId}`);
+      minOverallChanged = true;
     }
+
+    // SINGLE ATOMIC DB WRITE - ALWAYS update equity + any changed tracking fields
+    // Equity must always be written so the DB reflects the latest known equity
+    // This ensures page reloads and account syncs show current values
+    const updateData: any = { equity };
+    if (dailyReset) {
+      updateData.minEquityToday = minEquityToday;
+      updateData.lastDailyReset = new Date();
+    }
+    if (maxEquityChanged) updateData.maxEquityToDate = maxEquityToDate;
+    if (minTodayChanged) updateData.minEquityToday = minEquityToday;
+    if (minOverallChanged) updateData.minEquityOverall = minEquityOverall;
+
+    await this.prisma.tradingAccount.update({
+      where: { id: accountId },
+      data: updateData,
+    });
 
     // Note: account.trades already filtered to only open trades (closePrice: null) in the query above
     const openTrades = account.trades;

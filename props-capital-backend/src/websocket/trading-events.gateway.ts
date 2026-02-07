@@ -70,14 +70,16 @@ export class TradingEventsGateway
         secret: process.env.JWT_SECRET || 'your-secret-key-here',
       });
 
-      if (!payload || !payload.userId) {
+      // JWT payload uses 'sub' for user ID (standard JWT claim)
+      const userId = payload.sub || payload.userId;
+      if (!payload || !userId) {
         this.logger.warn(`❌ Client ${client.id} connection rejected: Invalid token`);
         client.disconnect();
         return;
       }
 
       // Store user info in socket data
-      client.data.userId = payload.userId;
+      client.data.userId = userId;
       client.data.email = payload.email;
 
       this.logger.log(`✅ Client connected: ${client.id} (User: ${payload.email})`);

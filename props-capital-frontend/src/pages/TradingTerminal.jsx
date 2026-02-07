@@ -295,17 +295,26 @@ export default function TradingTerminal() {
     const initialBalance = account.initialBalance || challenge.accountSize || 0;
     const balance = account.balance || initialBalance;
     const equity = account.equity || balance;
+
+    // ✅ Use monotonic tracking fields from backend (single source of truth)
+    // These never reset/decrease, ensuring correct values on page load
+    const maxEquityToDate = account.maxEquityToDate ?? initialBalance;
     const profitPercent =
       initialBalance > 0
-        ? ((equity - initialBalance) / initialBalance) * 100
+        ? ((maxEquityToDate - initialBalance) / initialBalance) * 100
         : 0;
+
+    const minEquityOverall = account.minEquityOverall ?? initialBalance;
     const overallDD =
-      initialBalance > 0 && equity < initialBalance
-        ? ((initialBalance - equity) / initialBalance) * 100
+      initialBalance > 0 && minEquityOverall < initialBalance
+        ? ((initialBalance - minEquityOverall) / initialBalance) * 100
         : 0;
+
+    const todayStartEquity = account.todayStartEquity ?? initialBalance;
+    const minEquityToday = account.minEquityToday ?? initialBalance;
     const dailyDD =
-      balance > 0 && equity < balance
-        ? ((balance - equity) / balance) * 100
+      todayStartEquity > 0 && minEquityToday < todayStartEquity
+        ? ((todayStartEquity - minEquityToday) / todayStartEquity) * 100
         : 0;
 
     const phaseMap = {
@@ -510,10 +519,9 @@ export default function TradingTerminal() {
       }
     };
 
-    // Update immediately
-    updateTradingDays();
-
-    // Then update every 5 seconds
+    // Don't call immediately — the init effect already sets values from allAccounts cache
+    // and invalidates the query to refetch fresh data. Calling here would be a duplicate
+    // API request that causes extra renders. The 5-second interval handles ongoing updates.
     const interval = setInterval(updateTradingDays, 5000);
 
     // Cleanup
@@ -1100,6 +1108,14 @@ export default function TradingTerminal() {
               Number.isFinite(metrics.profitPercent)
                 ? metrics.profitPercent
                 : prev.profitPercent ?? 0,
+            // ✅ profitForTarget MUST come from backend (monotonic, uses maxEquityToDate)
+            // Frontend was calculating this incorrectly from current balance
+            profitForTarget:
+              metrics.profitPercent !== null &&
+              metrics.profitPercent !== undefined &&
+              Number.isFinite(metrics.profitPercent)
+                ? metrics.profitPercent
+                : prev.profitForTarget ?? 0,
             overallDrawdown:
               Number.isFinite(finalOverallDrawdown) && finalOverallDrawdown >= 0
                 ? finalOverallDrawdown
@@ -1839,9 +1855,6 @@ export default function TradingTerminal() {
       selectedAccount.current_balance ||
       newBalance;
 
-    // ✅ realized profit = balance based (closed trades / account progress)
-    const realized = ((newBalance - starting) / starting) * 100;
-
     // Reset daily tracking for this account
     const today = new Date().toDateString();
     currentDayRef.current = today;
@@ -1855,15 +1868,13 @@ export default function TradingTerminal() {
       startingBalance: starting,
       highestBalance: selectedAccount.highest_balance || starting,
 
-      // ✅ NEW fields
-      realizedProfitPercent: realized,
+      // ✅ Use values from selectedAccount (already computed from monotonic tracking fields)
+      realizedProfitPercent: 0,
       liveProfitPercent: 0,
-      profitForTarget: Math.max(0, realized),
+      profitForTarget: selectedAccount.current_profit_percent || 0,
+      profitPercent: selectedAccount.current_profit_percent || 0,
 
-      // ✅ keep old profitPercent but don't use it for UI later
-      profitPercent: 0,
-
-      dailyDrawdown: 0,
+      dailyDrawdown: selectedAccount.daily_drawdown_percent || 0,
       overallDrawdown: selectedAccount.overall_drawdown_percent || 0,
       tradingDays: selectedAccount.trading_days_count || 0,
       phase: selectedAccount.current_phase || "phase1",
@@ -1872,6 +1883,14 @@ export default function TradingTerminal() {
       // ✅ CRITICAL: Must include status so violation modal can detect DAILY_LOCKED or DISQUALIFIED
       status: selectedAccount.status || "ACTIVE",
     }));
+
+    // ✅ Pre-seed prevMetricsRef so the metric effect doesn't trigger a redundant update
+    // Without this, metric effect sees prevMetrics.equity=0 vs newEquity=100000+ → fires → extra render
+    prevMetricsRef.current = {
+      ...prevMetricsRef.current,
+      equity: newEquity,
+      floatingPnL: 0,
+    };
 
     // Reset trading state on switch
     setPositions([]);
@@ -1885,6 +1904,17 @@ export default function TradingTerminal() {
     dismissedModalAccountsRef.current.delete(selectedAccount.id);
 
     setLastAccountId(selectedAccount.id);
+
+    // ✅ Invalidate allAccounts query to refetch fresh data from DB
+    // This ensures the allAccounts mapping gets fresh monotonic tracking fields
+    // (maxEquityToDate, minEquityOverall, etc.) which recompute metrics through
+    // the SAME pipeline as the init effect — preventing two different values from
+    // two different computation paths (allAccounts mapping vs syncAccountFromBackend)
+    if (!selectedAccount.isDemo && selectedAccount.id) {
+      queryClient.invalidateQueries({
+        queryKey: ["trading-accounts"],
+      });
+    }
   }, [selectedAccount]);
 
   // Reset loading flag and refetch trades when account changes
@@ -2243,6 +2273,8 @@ export default function TradingTerminal() {
                   ...(response.profitPercent !== undefined &&
                     Number.isFinite(response.profitPercent) && {
                       profitPercent: response.profitPercent,
+                      // ✅ profitForTarget = backend profitPercent (monotonic, from maxEquityToDate)
+                      profitForTarget: response.profitPercent,
                     }),
                 }));
               }
@@ -3054,64 +3086,34 @@ export default function TradingTerminal() {
 
   useEffect(() => {
     const updateMetrics = () => {
-      // ✅ When no positions -> equity = balance, floating = 0 (from earliest version)
+      // ✅ When no positions -> equity = balance, floating = 0
       if (positions.length === 0) {
         const newEquity = account.balance;
-        const startingBalance = account.startingBalance || 100000;
 
-        // ✅ Profit calculations from earliest version
-        const realized =
-          startingBalance > 0
-            ? ((account.balance - startingBalance) / startingBalance) * 100
-            : 0;
-        const live = 0;
-        const profitForTarget = Math.max(0, realized);
+        // No positions: equity = balance, floating P/L = 0
+        // Profit and drawdown are already set by init effect and syncAccountFromBackend
+        // Do NOT re-write them here — it creates circular updates causing UI flicker
 
-        // ✅ Use backend drawdown values (single source of truth - Option A)
-        // Backend tracks minimum equity for accurate monotonic drawdowns
-        const overallDrawdownPercent = account.overallDrawdown ?? 0;
-        const dailyDrawdown = account.dailyDrawdown ?? 0;
-
-        // Only update if values actually changed (prevent unnecessary re-renders)
+        // Only update if equity actually changed
         const prevMetrics = prevMetricsRef.current;
-        if (
-          Math.abs((prevMetrics.equity ?? 0) - newEquity) < 0.01 &&
-          Math.abs((prevMetrics.floatingPnL ?? 0) - 0) < 0.01 &&
-          Math.abs(
-            (prevMetrics.overallDrawdown ?? 0) - overallDrawdownPercent,
-          ) < 0.01 &&
-          Math.abs((prevMetrics.dailyDrawdown ?? 0) - dailyDrawdown) < 0.01
-        ) {
-          return; // No significant change, skip update
+        if (Math.abs((prevMetrics.equity ?? 0) - newEquity) < 0.01) {
+          return; // No change, skip update
         }
 
         prevMetricsRef.current = {
+          ...prevMetrics,
           equity: newEquity,
           floatingPnL: 0,
-          profitPercent: profitForTarget, // Store profitForTarget
-          overallDrawdown: overallDrawdownPercent,
-          dailyDrawdown: dailyDrawdown,
         };
 
-        // Use requestAnimationFrame throttling for smooth UI updates (keep advanced infrastructure)
+        // Only set equity-related fields (not profit/drawdown — those come from backend)
         if (Number.isFinite(newEquity))
           pendingMetricsRef.current.equity = newEquity;
         pendingMetricsRef.current.floatingPnL = 0;
         pendingMetricsRef.current.margin = 0;
         if (Number.isFinite(newEquity))
           pendingMetricsRef.current.freeMargin = newEquity;
-        if (Number.isFinite(profitForTarget))
-          pendingMetricsRef.current.profitPercent = profitForTarget; // Store profitForTarget
-        if (Number.isFinite(realized))
-          pendingMetricsRef.current.realizedProfitPercent = realized; // ✅ Store realized
-        if (Number.isFinite(live))
-          pendingMetricsRef.current.liveProfitPercent = live; // ✅ Store live
-        if (Number.isFinite(profitForTarget))
-          pendingMetricsRef.current.profitForTarget = profitForTarget; // ✅ Store profitForTarget
-        if (Number.isFinite(overallDrawdownPercent))
-          pendingMetricsRef.current.overallDrawdown = overallDrawdownPercent;
-        if (Number.isFinite(dailyDrawdown))
-          pendingMetricsRef.current.dailyDrawdown = dailyDrawdown;
+        pendingMetricsRef.current.liveProfitPercent = 0;
         scheduleAccountUpdate();
         return;
       }
@@ -3161,136 +3163,46 @@ export default function TradingTerminal() {
       });
 
       const newEquity = account.balance + totalPnL;
-      const startingBalance = account.startingBalance || 100000;
 
-      // ✅ Profit calculations - only gains count, losses don't reduce profit
-      // Realized profit: only count gains from closed trades
-      const realizedGain = Math.max(0, account.balance - startingBalance);
-      const realized =
-        startingBalance > 0
-          ? (realizedGain / startingBalance) * 100
-          : 0;
-      // Live profit: only count positive floating P/L
-      const live = totalPnL > 0 ? (totalPnL / startingBalance) * 100 : 0;
-      // Total profit for target: sum of realized gains + live gains
-      const profitForTarget = realized + live;
+      // Profit and drawdown are updated by the price tick handler (processPriceTick response)
+      // This effect only calculates equity, floatingPnL, margin, and freeMargin from positions
 
-      // Track highest profit achieved (never let it decrease)
-      const prevMaxProfit = prevMetricsRef.current.profitPercent || 0;
-      const maxProfitAchieved = Math.max(prevMaxProfit, profitForTarget);
-
-      // Debug logging for equity calculation (dev only)
-      if (process.env.NODE_ENV !== "production" && positions.length > 0) {
-        console.log(
-          `[Equity Debug] Balance: $${account.balance.toFixed(2)}, Total P/L: $${totalPnL.toFixed(2)}, Calculated Equity: $${newEquity.toFixed(2)}`,
-        );
-        const drawdownPercent =
-          account.startingBalance > 0
-            ? ((account.startingBalance - newEquity) /
-              account.startingBalance) *
-            100
-            : 0;
-        console.log(
-          `[Equity Debug] balance=$${account.balance.toFixed(2)}, totalPnL=$${totalPnL.toFixed(2)}, equity=$${newEquity.toFixed(2)}, drawdown=${drawdownPercent.toFixed(2)}%`,
-        );
-      }
-
-      // ✅ Use backend drawdown values (single source of truth - Option A)
-      // Backend tracks minimum equity for accurate monotonic drawdowns that never fall back
-      // Backend handles daily reset at midnight automatically
       const newHighestBalance = Math.max(
-        account.highestBalance || startingBalance,
+        account.highestBalance || account.startingBalance || 100000,
         newEquity,
       );
 
-      // Get drawdowns from backend (already calculated with min equity tracking)
-      const overallDrawdownPercent = account.overallDrawdown ?? 0;
-      const dailyLossPercent = account.dailyDrawdown ?? 0;
-
-      // Use backend values directly - no need for frontend max tracking
-      const maxDrawdownAchieved = overallDrawdownPercent;
-      const maxDailyDrawdownAchieved = dailyLossPercent;
-
-      // REMOVED: Frontend limit checking - now handled by event-driven price-tick endpoint
-      // The price-tick endpoint (called in fetchPricesForPositions) triggers immediate backend evaluation
-      // This ensures positions are closed within 0.1 seconds when limit is breached, even briefly
-
-      // Only update if values actually changed (prevent unnecessary re-renders and jumping)
-      // Use $1 threshold to reduce flickering from small price movements
+      // Only update if equity or pnl actually changed (prevent unnecessary re-renders)
       const prevMetrics = prevMetricsRef.current;
       const equityChanged =
-        Math.abs((prevMetrics.equity ?? 0) - newEquity) >= 1.0; // $1 threshold for stability
+        Math.abs((prevMetrics.equity ?? 0) - newEquity) >= 1.0;
       const pnlChanged =
-        Math.abs((prevMetrics.floatingPnL ?? 0) - totalPnL) >= 1.0; // $1 threshold for stability
-      // Always update profit if prevMetrics is 0 (initial state) or if change is significant
-      const prevProfit = prevMetrics.profitPercent ?? 0;
-      const profitChanged =
-        prevProfit === 0 || Math.abs(prevProfit - maxProfitAchieved) >= 0.01; // 0.01% threshold
-      const dailyDDChanged =
-        Math.abs((prevMetrics.dailyDrawdown ?? 0) - maxDailyDrawdownAchieved) >= 0.005; // 0.005% threshold
-      const overallDDChanged =
-        Math.abs((prevMetrics.overallDrawdown ?? 0) - maxDrawdownAchieved) >=
-        0.005;
-
-      // Force update on first run (when equity is 0) to ensure immediate display
+        Math.abs((prevMetrics.floatingPnL ?? 0) - totalPnL) >= 1.0;
       const isFirstUpdate = prevMetrics.equity === 0 && newEquity !== 0;
 
-      if (
-        !equityChanged &&
-        !pnlChanged &&
-        !profitChanged &&
-        !dailyDDChanged &&
-        !overallDDChanged &&
-        !isFirstUpdate
-      ) {
-        return; // No change, skip update (unless first update)
+      if (!equityChanged && !pnlChanged && !isFirstUpdate) {
+        return; // No change, skip update
       }
 
-      // Update ref with new values (using max achieved values)
       prevMetricsRef.current = {
+        ...prevMetrics,
         equity: newEquity,
         floatingPnL: totalPnL,
-        profitPercent: maxProfitAchieved, // Store max profit (never decreases)
-        overallDrawdown: maxDrawdownAchieved, // Store max drawdown (never decreases)
-        dailyDrawdown: maxDailyDrawdownAchieved, // Store max daily DD (never decreases during day)
       };
 
-      // Debug logging for equity calculation (dev only)
-      if (process.env.NODE_ENV !== "production") {
-        devLog(
-          `💰 [Equity Update] balance=$${account.balance.toFixed(2)}, totalPnL=$${totalPnL.toFixed(2)}, newEquity=$${newEquity.toFixed(2)}, positions=${positions.length}`,
-        );
-      }
-
-      // Use requestAnimationFrame throttling for smooth UI updates (keep advanced infrastructure)
-      // Batch all updates into a single frame to prevent flickering
-      // Real-time equity = balance + floating P/L
+      // Only set equity-related fields (profit/drawdown come from price tick handler)
       if (Number.isFinite(newEquity))
         pendingMetricsRef.current.equity = newEquity;
       if (Number.isFinite(totalPnL))
         pendingMetricsRef.current.floatingPnL = totalPnL;
-      if (Number.isFinite(maxProfitAchieved))
-        pendingMetricsRef.current.profitPercent = maxProfitAchieved; // Store max profit
-      if (Number.isFinite(realized))
-        pendingMetricsRef.current.realizedProfitPercent = realized; // ✅ Store realized
-      if (Number.isFinite(live))
-        pendingMetricsRef.current.liveProfitPercent = live; // ✅ Store live
-      if (Number.isFinite(profitForTarget))
-        pendingMetricsRef.current.profitForTarget = profitForTarget; // ✅ Store profitForTarget
       if (Number.isFinite(totalMargin))
         pendingMetricsRef.current.margin = totalMargin;
-      // Free margin = real-time equity - margin used
       if (Number.isFinite(newEquity) && Number.isFinite(totalMargin)) {
         pendingMetricsRef.current.freeMargin = Math.max(
           0,
           newEquity - totalMargin,
         );
       }
-      // Use max achieved drawdown values (never decrease)
-      if (Number.isFinite(maxDrawdownAchieved))
-        pendingMetricsRef.current.overallDrawdown = maxDrawdownAchieved;
-      if (Number.isFinite(maxDailyDrawdownAchieved))
-        pendingMetricsRef.current.dailyDrawdown = maxDailyDrawdownAchieved;
       if (Number.isFinite(newHighestBalance))
         pendingMetricsRef.current.highestBalance = newHighestBalance;
 
@@ -3320,6 +3232,9 @@ export default function TradingTerminal() {
     account.maxDailyDrawdown,
     account.maxOverallDrawdown,
     account.profitTarget,
+    // NOTE: account.profitPercent, account.overallDrawdown, account.dailyDrawdown
+    // intentionally NOT in deps — they are OUTPUT values set by price tick handler
+    // and syncAccountFromBackend. Having them here creates circular updates causing UI flicker.
     calculatePositionPnL,
     isCryptoSymbol,
     getPriceForPosition,
@@ -4274,9 +4189,6 @@ export default function TradingTerminal() {
       {hasValidAccount && (
         <AccountMetrics
           account={account}
-          positions={positions}
-          getPriceForPosition={getPriceForPosition}
-          isCryptoSymbol={isCryptoSymbol}
           isLoading={isAccountLoading}
         />
       )}
