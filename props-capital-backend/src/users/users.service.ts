@@ -8,12 +8,10 @@ import { Prisma } from '@prisma/client';
 
 export class UsersService {
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async createUser(data: Prisma.UserCreateInput) {
-
     return this.prisma.user.create({ data });
-
   }
 
   async findByEmail(email: string) {
@@ -22,7 +20,7 @@ export class UsersService {
 
       where: { email },
 
-      include: { 
+      include: {
         profile: true,
         notificationPreference: true,
         verificationDocuments: {
@@ -35,30 +33,36 @@ export class UsersService {
   }
 
   async findById(id: string) {
-
     return this.prisma.user.findUnique({
-
       where: { id },
-
-      include: { 
+      include: {
         profile: true,
         notificationPreference: true,
         verificationDocuments: {
           orderBy: { uploadedAt: 'desc' },
         },
       },
-
     });
-
   }
+
+
+  //  async findById(id: string) {
+  //   return this.prisma.user.findUnique({
+  //     where: { id },
+  //     include: {
+  //       profile: true,
+  //       notificationPreference: true,
+  //       verificationDocuments: {
+  //         orderBy: { uploadedAt: 'desc' },
+  //       },
+  //     },
+  //   });
+  // }
 
   // Get user profile with full details
   async getUserProfile(userId: string) {
-
-    const user = await this.findById(userId);
-
+    const user = await this.findById(userId)
     if (!user) throw new NotFoundException('User not found');
-
     return {
       id: user.id,
       email: user.email,
@@ -66,6 +70,8 @@ export class UsersService {
       profile: user.profile,
       notificationPreference: user.notificationPreference,
       verificationDocuments: user.verificationDocuments,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     };
 
   }
@@ -83,20 +89,14 @@ export class UsersService {
 
     // Upsert profile (create if doesn't exist, update if exists)
     const profile = await this.prisma.userProfile.upsert({
-
       where: { userId },
-
       update: data,
-
       create: {
         userId,
         ...data,
       },
-
     });
-
     return profile;
-
   }
 
   // Get notification preferences

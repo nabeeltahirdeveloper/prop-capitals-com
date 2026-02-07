@@ -263,27 +263,84 @@ export class AuthService {
 
   }
 
+  async getUserStats(userId: string) {
+    // 1. Get total completed challenges (phase="FUNDED")
+    const totalCompletedChallenges = await this.prisma.tradingAccount.count({
+      where: {
+        userId,
+        phase: 'FUNDED',
+      },
+    });
+
+    // 2. Total Payouts
+    const payouts = await this.prisma.payout.aggregate({
+      where: {
+        userId,
+        status: 'PAID',
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+    const totalPayouts = payouts._sum.amount || 0;
+
+    // 3. WinRate
+    // Get all trading accounts for the user
+    const tradingAccounts = await this.prisma.tradingAccount.findMany({
+      where: { userId },
+      select: { id: true },
+    });
+
+    const accountIds = tradingAccounts.map((account) => account.id);
+
+    let winRate = 0;
+
+    if (accountIds.length > 0) {
+      // Get total trades and winning trades
+      const [totalTrades, winningTrades] = await Promise.all([
+        this.prisma.trade.count({
+          where: {
+            tradingAccountId: { in: accountIds },
+          },
+        }),
+        this.prisma.trade.count({
+          where: {
+            tradingAccountId: { in: accountIds },
+            profit: { gt: 0 },
+          },
+        }),
+      ]);
+
+      if (totalTrades > 0) {
+        winRate = (winningTrades / totalTrades) * 100;
+      }
+    }
+
+    return {
+      totalCompletedChallenges,
+      totalPayouts,
+      winRate: parseFloat(winRate.toFixed(2)),
+    };
+  }
+
   // Get current user with full profile data
   async getCurrentUser(userId: string) {
 
     const user = await this.usersService.findById(userId);
-
     if (!user) throw new BadRequestException('User not found');
 
+    const stats = await this.getUserStats(user.id);
+
     return {
-
       userId: user.id,
-
       email: user.email,
-
       role: user.role,
-
       profile: user.profile || null,
-
       notificationPreference: user.notificationPreference || null,
-
       verificationDocuments: user.verificationDocuments || [],
-
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      ...stats,
     };
 
   }
