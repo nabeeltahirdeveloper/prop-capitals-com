@@ -11,6 +11,7 @@ import {
   TrendingUp
 } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
+import { useChallenges } from '@/contexts/ChallengesContext';
 
 const accountSizes = [
   { label: '$5K', key: '5K', value: 5000 },
@@ -63,6 +64,7 @@ const platforms = [
 
 const TradeCheckoutPanelPage = () => {
   const { isDark } = useTraderTheme();
+  const { selectedChallenge: activeChallenge, updateChallengePlatform } = useChallenges();
   const [step, setStep] = useState(1);
   const [selectedType, setSelectedType] = useState('1-step');
   const [selectedSizeIndex, setSelectedSizeIndex] = useState(3); // $50K default
@@ -73,7 +75,12 @@ const TradeCheckoutPanelPage = () => {
   const selectedSizeKey = accountSizes[selectedSizeIndex].key;
   const finalPrice = selectedChallenge?.prices[selectedSizeKey] || 299;
 
-  const handlePurchase = () => setStep(3);
+  const handlePurchase = () => {
+    if (activeChallenge) {
+      updateChallengePlatform(activeChallenge.id, selectedPlatform);
+    }
+    setStep(3);
+  };
 
   const cardClass = `rounded-2xl border ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`;
   const textClass = isDark ? 'text-white' : 'text-slate-900';

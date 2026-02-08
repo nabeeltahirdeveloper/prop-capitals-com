@@ -37,6 +37,9 @@ import MarketWatchlist from '../trading/MarketWatchlist';
 import TopBar from '../trading/Topbar';
 import MarketExecutionModal from './MarketExecutionModal';
 import LeftSidebar from '../trading/LeftSidebar';
+import BybitTerminal from './BybitTerminal';
+import TradeLockerComingSoon from './TradeLockerComingSoon';
+import PT5Terminal from '@/pages/TradingTerminal';
 
 // Demo trading symbols
 const tradingSymbols = [
@@ -79,7 +82,7 @@ const tradingStyleRules = [
   { id: 'copy', label: 'Copy Trading', icon: Copy, allowed: false },
 ];
 
-const TradingTerminal = () => {
+const MT5Terminal = () => {
   const { isDark } = useTraderTheme();
   const { challenges, selectedChallenge, selectChallenge, getChallengePhaseLabel, getRuleCompliance, getChallengeStatusColor } = useChallenges();
   const [selectedTab, setSelectedTab] = useState('positions');
@@ -696,6 +699,24 @@ const TradingTerminal = () => {
 
     </div>
   );
+};
+
+const TradingTerminal = () => {
+  const { selectedChallenge } = useChallenges();
+
+  const platform = (selectedChallenge?.platform || 'mt5').toLowerCase();
+
+  switch (platform) {
+    case 'tradelocker':
+      return <TradeLockerComingSoon />;
+    case 'bybit':
+      return <BybitTerminal />;
+    case 'pt5':
+      return <PT5Terminal />;
+    case 'mt5':
+    default:
+      return <MT5Terminal />;
+  }
 };
 
 export default TradingTerminal;
