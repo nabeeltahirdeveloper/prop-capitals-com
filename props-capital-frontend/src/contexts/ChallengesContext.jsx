@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { getUserAccounts } from '@/api/accounts';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ChallengesContext = createContext();
 
@@ -131,6 +133,93 @@ const mockChallenges = [
     },
     profitSplit: null,
   },
+  {
+    id: 'ch-005',
+    accountId: '#5401',
+    type: '1-step',
+    accountSize: 50000,
+    currentBalance: 51200.00,
+    equity: 51200.00,
+    phase: 1,
+    status: 'active',
+    platform: 'bybit',
+    server: 'Bybit-Live',
+    createdAt: '2025-02-01',
+    tradingDays: { current: 2, required: 5 },
+    rules: {
+      profitTarget: 10,
+      maxDailyLoss: 5,
+      maxTotalDrawdown: 10,
+      minTradingDays: 5,
+    },
+    stats: {
+      currentProfit: 2.4,
+      currentDailyLoss: 0,
+      currentDrawdown: 0.5,
+      totalTrades: 12,
+      winRate: 66.7,
+      avgRR: 1.5,
+    },
+    profitSplit: null,
+  },
+  {
+    id: 'ch-006',
+    accountId: '#5402',
+    type: '2-step',
+    accountSize: 100000,
+    currentBalance: 103500.00,
+    equity: 103500.00,
+    phase: 1,
+    status: 'active',
+    platform: 'pt5',
+    server: 'PT5-Demo',
+    createdAt: '2025-02-05',
+    tradingDays: { current: 1, required: 5 },
+    rules: {
+      profitTarget: 8,
+      maxDailyLoss: 5,
+      maxTotalDrawdown: 10,
+      minTradingDays: 5,
+    },
+    stats: {
+      currentProfit: 3.5,
+      currentDailyLoss: 0,
+      currentDrawdown: 0,
+      totalTrades: 8,
+      winRate: 75.0,
+      avgRR: 2.0,
+    },
+    profitSplit: null,
+  },
+  {
+    id: 'ch-007',
+    accountId: '#5403',
+    type: '1-step',
+    accountSize: 25000,
+    currentBalance: 25000.00,
+    equity: 25000.00,
+    phase: 1,
+    status: 'active',
+    platform: 'tradelocker',
+    server: 'TradeLocker-Demo',
+    createdAt: '2025-02-08',
+    tradingDays: { current: 0, required: 5 },
+    rules: {
+      profitTarget: 10,
+      maxDailyLoss: 5,
+      maxTotalDrawdown: 10,
+      minTradingDays: 5,
+    },
+    stats: {
+      currentProfit: 0,
+      currentDailyLoss: 0,
+      currentDrawdown: 0,
+      totalTrades: 0,
+      winRate: 0,
+      avgRR: 0,
+    },
+    profitSplit: null,
+  },
 ];
 
 // Challenge type configurations
@@ -170,8 +259,94 @@ export const challengeTypes = {
 };
 
 export const ChallengesProvider = ({ children }) => {
-  const [challenges, setChallenges] = useState(mockChallenges);
-  const [selectedChallengeId, setSelectedChallengeId] = useState(mockChallenges[0]?.id);
+  const { user, status } = useAuth();
+  const [challenges, setChallenges] = useState([]);
+  const [selectedChallengeId, setSelectedChallengeId] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch real user accounts from backend
+  useEffect(() => {
+    const fetchUserChallenges = async () => {
+      if (status !== 'authenticated' || !user?.userId) {
+        setChallenges([]);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const accounts = await getUserAccounts(user.userId);
+        
+        if (Array.isArray(accounts) && accounts.length > 0) {
+          // Transform backend accounts to challenge format
+          const transformedChallenges = accounts.map(account => {
+            const challenge = account.challenge || {};
+            const phaseLabel = account.phase === 'PHASE1' ? 1 : account.phase === 'PHASE2' ? 2 : 'funded';
+            const challengeType = challenge.challengeType === 'one_phase' ? '1-step' : '2-step';
+            
+            // Calculate stats
+            const currentProfit = ((account.balance - account.initialBalance) / account.initialBalance) * 100;
+            const currentDrawdown = account.maxEquityToDate 
+              ? ((account.maxEquityToDate - account.equity) / account.maxEquityToDate) * 100 
+              : 0;
+            
+            // Get today's loss
+            const todayStartEquity = account.todayStartEquity || account.initialBalance;
+            const currentDailyLoss = ((todayStartEquity - account.equity) / todayStartEquity) * 100;
+
+            return {
+              id: account.id,
+              accountId: `#${account.id.slice(0, 4)}`,
+              type: challengeType,
+              accountSize: challenge.accountSize || account.initialBalance,
+              currentBalance: account.balance || 0,
+              equity: account.equity || 0,
+              phase: phaseLabel,
+              status: account.status === 'ACTIVE' ? 'active' : account.status === 'FAILED' ? 'failed' : 'inactive',
+              platform: (account.platform || challenge.platform || 'MT5').toLowerCase(),
+              server: 'PropCapitals-Live',
+              createdAt: account.createdAt,
+              tradingDays: { 
+                current: 0, // Would need to calculate from trades
+                required: challenge.minTradingDays || 5 
+              },
+              rules: {
+                profitTarget: phaseLabel === 1 ? challenge.phase1TargetPercent : challenge.phase2TargetPercent || challenge.phase1TargetPercent,
+                maxDailyLoss: challenge.dailyDrawdownPercent || 5,
+                maxTotalDrawdown: challenge.overallDrawdownPercent || 10,
+                minTradingDays: challenge.minTradingDays || 5,
+              },
+              stats: {
+                currentProfit: Math.max(currentProfit, 0),
+                currentDailyLoss: Math.max(currentDailyLoss, 0),
+                currentDrawdown: Math.max(currentDrawdown, 0),
+                totalTrades: 0, // Would need to get from trades API
+                winRate: 0,
+                avgRR: 0,
+              },
+              profitSplit: phaseLabel === 'funded' ? challenge.profitSplit : null,
+              payoutEligible: phaseLabel === 'funded' && account.status === 'ACTIVE',
+              totalPaidOut: 0,
+            };
+          });
+
+          setChallenges(transformedChallenges);
+          if (!selectedChallengeId && transformedChallenges.length > 0) {
+            setSelectedChallengeId(transformedChallenges[0].id);
+          }
+        } else {
+          setChallenges([]);
+        }
+      } catch (error) {
+        console.error('Error fetching user challenges:', error);
+        setChallenges([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserChallenges();
+  }, [user?.userId, status, selectedChallengeId]);
 
   const selectedChallenge = challenges.find(c => c.id === selectedChallengeId) || challenges[0];
 
@@ -270,6 +445,7 @@ export const ChallengesProvider = ({ children }) => {
       getChallengePhaseLabel,
       getRuleCompliance,
       challengeTypes,
+      loading,
     }}>
       {children}
     </ChallengesContext.Provider>

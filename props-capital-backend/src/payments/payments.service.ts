@@ -124,6 +124,9 @@ export class PaymentsService {
       'DXTrade': 'DXTRADE',
       'CTRADER': 'CTRADER',
       'DXTRADE': 'DXTRADE',
+      'BYBIT': 'BYBIT',
+      'PT5': 'PT5',
+      'TRADELOCKER': 'TRADELOCKER',
     };
 
     const normalizedPlatform = platformMap[selectedPlatform] || selectedPlatform;

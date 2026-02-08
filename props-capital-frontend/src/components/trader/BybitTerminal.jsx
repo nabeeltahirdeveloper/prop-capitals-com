@@ -1,20 +1,19 @@
 import React, { useState, useRef, useMemo, useCallback } from 'react';
-import {
-  TrendingUp,
-  ChevronDown,
-  Star,
-  AlertTriangle,
-  Shield,
-  Target
-} from 'lucide-react';
-import { useChallenges } from '@/contexts/ChallengesContext';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Star, Loader2, TrendingUp } from 'lucide-react';
 import { useTrading } from '@/contexts/TradingContext';
-import TradingChart from '../trading/TradingChart';
 import { usePrices } from '@/contexts/PriceContext';
+import { useTradingWebSocket } from '@/hooks/useTradingWebSocket';
+import { getAccountTrades, createTrade } from '@/api/trades';
+import { getPendingOrders, createPendingOrder, cancelPendingOrder } from '@/api/pending-orders';
+import { getAccountSummary } from '@/api/accounts';
+import { useToast } from '@/components/ui/use-toast';
+import TradingChart from '../trading/TradingChart';
 
-const BybitTerminal = () => {
-  const { challenges, selectedChallenge, selectChallenge, getChallengePhaseLabel, getRuleCompliance } = useChallenges();
-  const [selectedTab, setSelectedTab] = useState('positions');
+const BybitTradingArea = ({ selectedChallenge }) => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
   const [orderType, setOrderType] = useState('limit');
   const [orderSide, setOrderSide] = useState('buy');
   const [limitPrice, setLimitPrice] = useState('');
@@ -23,6 +22,7 @@ const BybitTerminal = () => {
   const [tpPrice, setTpPrice] = useState('');
   const [slPrice, setSlPrice] = useState('');
   const [showTpSl, setShowTpSl] = useState(false);
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const {
     selectedSymbol,
@@ -34,8 +34,29 @@ const BybitTerminal = () => {
 
   const chartAreaRef = useRef(null);
   const pricesRef = useRef({});
-
   const { prices: unifiedPrices } = usePrices();
+  
+  const accountId = selectedChallenge?.accountId;
+
+  // Fetch data
+  const { data: tradesData } = useQuery({
+    queryKey: ['trades', accountId],
+    queryFn: () => getAccountTrades(accountId),
+    enabled: !!accountId,
+    refetchInterval: 3000,
+  });
+
+  const { data: pendingOrdersData } = useQuery({
+    queryKey: ['pendingOrders', accountId],
+    queryFn: () => getPendingOrders(accountId),
+    enabled: !!accountId,
+    refetchInterval: 3000,
+  });
+
+  useTradingWebSocket(accountId);
+
+  const openPositions = tradesData?.trades?.filter(t => t.status === 'OPEN') || [];
+  const pendingOrders = pendingOrdersData?.orders || [];
 
   const enrichedSelectedSymbol = useMemo(() => {
     if (!selectedSymbol?.symbol) return selectedSymbol;
@@ -76,15 +97,85 @@ const BybitTerminal = () => {
   const maxAskQty = useMemo(() => Math.max(...askOrders.map(o => parseFloat(o.qty))), [askOrders]);
   const maxBidQty = useMemo(() => Math.max(...bidOrders.map(o => parseFloat(o.qty))), [bidOrders]);
 
-  if (!selectedChallenge) {
-    return <div className="text-center py-12 text-[#71757a]">No challenge selected</div>;
-  }
+  // Mutations
+  const createTradeMutation = useMutation({
+    mutationFn: createTrade,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['trades', accountId]);
+      queryClient.invalidateQueries(['accountSummary', accountId]);
+      toast({ title: 'Order Placed', description: 'Your order has been successfully placed.' });
+      setQuantity('');
+      setLimitPrice('');
+      setTpPrice('');
+      setSlPrice('');
+    },
+    onError: (error) => {
+      toast({ title: 'Order Failed', description: error.message || 'Failed to place order', variant: 'destructive' });
+    },
+  });
 
-  const compliance = getRuleCompliance(selectedChallenge);
-  const balance = selectedChallenge.currentBalance;
-  const equity = selectedChallenge.equity || selectedChallenge.currentBalance;
-  const profitPercent = ((selectedChallenge.currentBalance - selectedChallenge.accountSize) / selectedChallenge.accountSize * 100);
+  const createPendingOrderMutation = useMutation({
+    mutationFn: createPendingOrder,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['pendingOrders', accountId]);
+      toast({ title: 'Pending Order Created', description: 'Your pending order has been created.' });
+      setQuantity('');
+      setLimitPrice('');
+      setTpPrice('');
+      setSlPrice('');
+    },
+    onError: (error) => {
+      toast({ title: 'Order Failed', description: error.message || 'Failed to create pending order', variant: 'destructive' });
+    },
+  });
 
+  const handlePlaceOrder = async () => {
+    if (!accountId || !selectedSymbol?.symbol) {
+      toast({ title: 'Error', description: 'Please select a symbol', variant: 'destructive' });
+      return;
+    }
+
+    if (!quantity || parseFloat(quantity) <= 0) {
+      toast({ title: 'Error', description: 'Please enter a valid quantity', variant: 'destructive' });
+      return;
+    }
+
+    setIsPlacingOrder(true);
+
+    try {
+      const currentPrice = enrichedSelectedSymbol?.bid || enrichedSelectedSymbol?.ask || 0;
+      const orderPrice = orderType === 'limit' && limitPrice ? parseFloat(limitPrice) : currentPrice;
+
+      if (orderType === 'market') {
+        await createTradeMutation.mutateAsync({
+          accountId,
+          symbol: selectedSymbol.symbol,
+          type: orderSide.toUpperCase(),
+          volume: parseFloat(quantity),
+          openPrice: currentPrice,
+          stopLoss: slPrice ? parseFloat(slPrice) : null,
+          takeProfit: tpPrice ? parseFloat(tpPrice) : null,
+          leverage: leverage,
+        });
+      } else {
+        await createPendingOrderMutation.mutateAsync({
+          accountId,
+          symbol: selectedSymbol.symbol,
+          type: orderSide.toUpperCase(),
+          volume: parseFloat(quantity),
+          triggerPrice: orderPrice,
+          stopLoss: slPrice ? parseFloat(slPrice) : null,
+          takeProfit: tpPrice ? parseFloat(tpPrice) : null,
+        });
+      }
+    } catch (error) {
+      console.error('Order placement error:', error);
+    } finally {
+      setIsPlacingOrder(false);
+    }
+  };
+
+  const balance = selectedChallenge?.currentBalance || 0;
   const timeframes = ['1', '3', '5', '15', '30', '1H', '4H', '1D', '1W'];
 
   return (
@@ -118,28 +209,6 @@ const BybitTerminal = () => {
             <span className="text-white ml-1.5 font-mono">2.31B</span>
           </div>
         </div>
-
-        {challenges.length > 1 && (
-          <div className="relative ml-auto shrink-0">
-            <select
-              value={selectedChallenge.id}
-              onChange={(e) => selectChallenge(e.target.value)}
-              className="appearance-none bg-[#2b2f36] border border-[#363a45] text-white text-xs px-3 py-1.5 pr-7 rounded cursor-pointer focus:outline-none focus:border-[#f7a600]"
-              style={{ colorScheme: 'dark' }}
-            >
-              {challenges.map((challenge) => {
-                const label = getChallengePhaseLabel(challenge);
-                const type = challenge.type === '1-step' ? '1S' : '2S';
-                return (
-                  <option key={challenge.id} value={challenge.id} className="bg-[#2b2f36]">
-                    {type} ${challenge.accountSize.toLocaleString()} - {label}
-                  </option>
-                );
-              })}
-            </select>
-            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-[#71757a] pointer-events-none" />
-          </div>
-        )}
       </div>
 
       {/* TIMEFRAME BAR */}
@@ -171,7 +240,7 @@ const BybitTerminal = () => {
           <TradingChart
             key={`chart-bybit-${selectedSymbol?.symbol}`}
             symbol={enrichedSelectedSymbol}
-            openPositions={[]}
+            openPositions={openPositions}
             onPriceUpdate={handlePriceUpdate}
           />
         </div>
@@ -367,138 +436,28 @@ const BybitTerminal = () => {
               </div>
             </div>
 
-            <button className={`w-full py-2.5 rounded font-bold text-xs transition-colors ${
+            <button 
+              onClick={handlePlaceOrder}
+              disabled={isPlacingOrder || !accountId}
+              className={`w-full py-2.5 rounded font-bold text-xs transition-colors ${
               orderSide === 'buy'
-                ? 'bg-[#20b26c] hover:bg-[#1a9e5c] text-white'
-                : 'bg-[#ef4545] hover:bg-[#d93b3b] text-white'
+                ? 'bg-[#20b26c] hover:bg-[#1a9e5c] text-white disabled:opacity-50 disabled:cursor-not-allowed'
+                : 'bg-[#ef4545] hover:bg-[#d93b3b] text-white disabled:opacity-50 disabled:cursor-not-allowed'
             }`}>
-              {orderSide === 'buy' ? 'Buy/Long' : 'Sell/Short'}
+              {isPlacingOrder ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Placing...
+                </span>
+              ) : (
+                orderSide === 'buy' ? 'Buy/Long' : 'Sell/Short'
+              )}
             </button>
           </div>
-        </div>
-      </div>
-
-      {/* ACCOUNT INFO BAR */}
-      <div className="bg-[#1b1d29] px-3 py-2 flex items-center gap-6 overflow-x-auto border-t border-[#2b2f36]">
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[10px] text-[#71757a]">Balance</span>
-          <span className="text-xs text-white font-mono font-medium">{balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT</span>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[10px] text-[#71757a]">Equity</span>
-          <span className="text-xs text-[#20b26c] font-mono font-medium">{equity.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[10px] text-[#71757a]">Unrealized PnL</span>
-          <span className="text-xs text-[#20b26c] font-mono">+0.00</span>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[10px] text-[#71757a]">ROI</span>
-          <span className={`text-xs font-mono ${profitPercent >= 0 ? 'text-[#20b26c]' : 'text-[#ef4545]'}`}>
-            {profitPercent >= 0 ? '+' : ''}{profitPercent.toFixed(2)}%
-          </span>
-        </div>
-      </div>
-
-      {/* COMPLIANCE SECTION */}
-      <div className="bg-[#1b1d29] px-3 py-3">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div className="bg-[#16191e] rounded-lg p-3">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-1.5">
-                <Target className="w-3 h-3 text-[#71757a]" />
-                <span className="text-[11px] text-[#c8cad0] font-medium">Profit Target</span>
-              </div>
-              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
-                selectedChallenge.stats.currentProfit >= selectedChallenge.rules.profitTarget
-                  ? 'bg-[#20b26c]/20 text-[#20b26c]' : 'bg-[#f7a600]/20 text-[#f7a600]'
-              }`}>
-                {selectedChallenge.stats.currentProfit >= selectedChallenge.rules.profitTarget ? 'PASSED' : 'IN PROGRESS'}
-              </span>
-            </div>
-            <div className="h-1 rounded-full overflow-hidden bg-[#2b2f36] mb-1.5">
-              <div className="h-full rounded-full bg-[#f7a600]"
-                style={{ width: `${Math.min((selectedChallenge.stats.currentProfit / selectedChallenge.rules.profitTarget) * 100, 100)}%` }} />
-            </div>
-            <div className="flex justify-between text-[10px]">
-              <span className="text-[#c8cad0] font-mono">{selectedChallenge.stats.currentProfit.toFixed(2)}%</span>
-              <span className="text-[#71757a]">{selectedChallenge.rules.profitTarget}%</span>
-            </div>
-          </div>
-
-          <div className="bg-[#16191e] rounded-lg p-3">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-1.5">
-                <AlertTriangle className="w-3 h-3 text-[#71757a]" />
-                <span className="text-[11px] text-[#c8cad0] font-medium">Daily Loss</span>
-              </div>
-              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#20b26c]/20 text-[#20b26c]">SAFE</span>
-            </div>
-            <div className="h-1 rounded-full overflow-hidden bg-[#2b2f36] mb-1.5">
-              <div className="h-full rounded-full bg-[#20b26c]" style={{ width: `${compliance.dailyLoss.percentage}%` }} />
-            </div>
-            <div className="flex justify-between text-[10px]">
-              <span className="text-[#c8cad0] font-mono">{compliance.dailyLoss.current.toFixed(2)}%</span>
-              <span className="text-[#71757a]">{compliance.dailyLoss.limit}%</span>
-            </div>
-          </div>
-
-          <div className="bg-[#16191e] rounded-lg p-3">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-1.5">
-                <Shield className="w-3 h-3 text-[#71757a]" />
-                <span className="text-[11px] text-[#c8cad0] font-medium">Max Drawdown</span>
-              </div>
-              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#20b26c]/20 text-[#20b26c]">SAFE</span>
-            </div>
-            <div className="h-1 rounded-full overflow-hidden bg-[#2b2f36] mb-1.5">
-              <div className="h-full rounded-full bg-[#20b26c]" style={{ width: `${compliance.totalDrawdown.percentage}%` }} />
-            </div>
-            <div className="flex justify-between text-[10px]">
-              <span className="text-[#c8cad0] font-mono">{compliance.totalDrawdown.current.toFixed(2)}%</span>
-              <span className="text-[#71757a]">{compliance.totalDrawdown.limit}%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* POSITIONS / ORDERS SECTION */}
-      <div className="bg-[#1b1d29]">
-        <div className="flex border-b border-[#2b2f36]">
-          {[
-            { id: 'positions', label: 'Positions', count: 0 },
-            { id: 'orders', label: 'Active Orders', count: 0 },
-            { id: 'conditional', label: 'Conditional', count: 0 },
-            { id: 'history', label: 'Order History', count: 0 },
-            { id: 'tradeHistory', label: 'Trade History', count: 0 },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setSelectedTab(tab.id)}
-              className={`px-4 py-2.5 text-[11px] font-medium transition-colors ${
-                selectedTab === tab.id
-                  ? 'text-white border-b-2 border-[#f7a600]'
-                  : 'text-[#71757a] hover:text-white'
-              }`}
-            >
-              {tab.label}({tab.count})
-            </button>
-          ))}
-        </div>
-        <div className="py-10 text-center">
-          <div className="w-12 h-12 rounded-full bg-[#2b2f36] mx-auto mb-3 flex items-center justify-center">
-            <TrendingUp className="w-5 h-5 text-[#71757a]" />
-          </div>
-          <p className="text-[#71757a] text-xs">
-            {selectedTab === 'positions' ? 'You have no positions' :
-              selectedTab === 'orders' ? 'You have no active orders' :
-              selectedTab === 'conditional' ? 'You have no conditional orders' :
-              selectedTab === 'history' ? 'No order history' : 'No trade history'}
-          </p>
         </div>
       </div>
     </div>
   );
 };
 
-export default BybitTerminal;
+export default BybitTradingArea;

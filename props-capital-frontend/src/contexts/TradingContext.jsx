@@ -94,11 +94,11 @@ export const TradingProvider = ({ children }) => {
 
       setOrdersLoading(true);
       const user = await getCurrentUser();
-      if (!user?.id) {
+      if (!user?.userId) {
         setOrders([]);
         return;
       }
-      const accounts = await getUserAccounts(user.id);
+      const accounts = await getUserAccounts(user.userId);
       const account = Array.isArray(accounts) && accounts.length > 0 ? accounts[0] : null;
       if (!account?.id) {
         setOrders([]);
@@ -156,8 +156,8 @@ export const TradingProvider = ({ children }) => {
       if (!token) return;
 
       const user = await getCurrentUser();
-      if (!user?.id) return;
-      const accounts = await getUserAccounts(user.id);
+      if (!user?.userId) return;
+      const accounts = await getUserAccounts(user.userId);
       const account = Array.isArray(accounts) && accounts.length > 0 ? accounts[0] : null;
       if (!account?.id) return;
       const summary = await getAccountSummary(account.id);

@@ -136,12 +136,12 @@ const TradeCheckoutPanelPage = () => {
     setPurchaseError(null);
 
     try {
-      if (!user?.id) {
+      if (!user?.userId) {
         throw new Error('You must be logged in to purchase a challenge.');
       }
 
       const payload = {
-        userId: user.id,
+        userId: user.userId,
         challengeId: matchingBackendChallenge?.id || undefined,
         accountSize: accountSizes[selectedSizeIndex].value,
         challengeType: selectedType,
