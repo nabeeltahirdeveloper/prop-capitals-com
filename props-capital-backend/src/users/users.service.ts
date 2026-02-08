@@ -38,29 +38,12 @@ export class UsersService {
       include: {
         profile: true,
         notificationPreference: true,
-        lotSize: true,
-        leverage: true,
-        theme: true,
         verificationDocuments: {
           orderBy: { uploadedAt: 'desc' },
         },
       },
     });
   }
-
-
-  //  async findById(id: string) {
-  //   return this.prisma.user.findUnique({
-  //     where: { id },
-  //     include: {
-  //       profile: true,
-  //       notificationPreference: true,
-  //       verificationDocuments: {
-  //         orderBy: { uploadedAt: 'desc' },
-  //       },
-  //     },
-  //   });
-  // }
 
   // Get user profile with full details
   async getUserProfile(userId: string) {
