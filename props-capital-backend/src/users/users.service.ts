@@ -23,6 +23,9 @@ export class UsersService {
       include: {
         profile: true,
         notificationPreference: true,
+        lotSize: true,
+        leverage: true,
+        theme: true,
         verificationDocuments: {
           orderBy: { uploadedAt: 'desc' },
         },
@@ -38,6 +41,9 @@ export class UsersService {
       include: {
         profile: true,
         notificationPreference: true,
+        lotSize: true,
+        leverage: true,
+        theme: true,
         verificationDocuments: {
           orderBy: { uploadedAt: 'desc' },
         },
