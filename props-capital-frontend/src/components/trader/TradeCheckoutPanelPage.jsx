@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ShoppingCart,
   Check,
@@ -8,10 +8,16 @@ import {
   Shield,
   Star,
   Clock,
-  TrendingUp
+  TrendingUp,
+  AlertTriangle,
+  Loader2,
+  Lock
 } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
 import { useChallenges } from '@/contexts/ChallengesContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { getChallenges } from '@/api/challenges';
+import { purchaseChallenge } from '@/api/payments';
 
 const accountSizes = [
   { label: '$5K', key: '5K', value: 5000 },
@@ -57,7 +63,7 @@ const challengeTypes = [
 
 const platforms = [
   { id: 'mt5', name: 'MetaTrader 5', desc: 'Most popular platform' },
-  { id: 'tradelocker', name: 'TradeLocker', desc: 'Modern web-based' },
+  { id: 'tradelocker', name: 'TradeLocker', desc: 'Coming soon', comingSoon: true },
   { id: 'bybit', name: 'Bybit', desc: 'Crypto trading' },
   { id: 'pt5', name: 'PT5', desc: 'Advanced trading' },
 ];
@@ -65,21 +71,102 @@ const platforms = [
 const TradeCheckoutPanelPage = () => {
   const { isDark } = useTraderTheme();
   const { selectedChallenge: activeChallenge, updateChallengePlatform } = useChallenges();
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [selectedType, setSelectedType] = useState('1-step');
-  const [selectedSizeIndex, setSelectedSizeIndex] = useState(3); // $50K default
+  const [selectedSizeIndex, setSelectedSizeIndex] = useState(3);
   const [selectedPlatform, setSelectedPlatform] = useState('mt5');
   const [selectedPayment, setSelectedPayment] = useState('card');
+  const [isLoading, setIsLoading] = useState(false);
+  const [purchaseError, setPurchaseError] = useState(null);
+  const [purchaseResult, setPurchaseResult] = useState(null);
+  const [backendChallenges, setBackendChallenges] = useState([]);
+  const [loadingChallenges, setLoadingChallenges] = useState(true);
+  const [tradeLockerAlert, setTradeLockerAlert] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
+
+  useEffect(() => {
+    const fetchChallenges = async () => {
+      try {
+        setLoadingChallenges(true);
+        const data = await getChallenges();
+        if (Array.isArray(data)) {
+          setBackendChallenges(data);
+        }
+      } catch (err) {
+        console.warn('Could not fetch challenges from backend, using defaults:', err);
+      } finally {
+        setLoadingChallenges(false);
+      }
+    };
+    fetchChallenges();
+  }, []);
 
   const selectedChallenge = challengeTypes.find(c => c.id === selectedType);
   const selectedSizeKey = accountSizes[selectedSizeIndex].key;
   const finalPrice = selectedChallenge?.prices[selectedSizeKey] || 299;
 
-  const handlePurchase = () => {
-    if (activeChallenge) {
-      updateChallengePlatform(activeChallenge.id, selectedPlatform);
+  const matchingBackendChallenge = backendChallenges.find(bc => {
+    const sizeMatch = bc.accountSize === accountSizes[selectedSizeIndex].value;
+    const typeMatch = selectedType === '1-step'
+      ? bc.challengeType === 'one_phase' || bc.challengeType === '1-step'
+      : bc.challengeType === 'two_phase' || bc.challengeType === '2-step';
+    return sizeMatch && typeMatch;
+  });
+
+  const handlePlatformSelect = (platformId) => {
+    if (platformId === 'tradelocker') {
+      setTradeLockerAlert(true);
+      return;
     }
-    setStep(3);
+    setTradeLockerAlert(false);
+    setSelectedPlatform(platformId);
+  };
+
+  const handleProceedToPayment = () => {
+    if (selectedPlatform === 'tradelocker') {
+      setTradeLockerAlert(true);
+      return;
+    }
+    setStep(2);
+  };
+
+  const handlePurchase = async () => {
+    setIsLoading(true);
+    setPurchaseError(null);
+
+    try {
+      const challengeId = matchingBackendChallenge?.id;
+
+      if (!challengeId) {
+        throw new Error('No matching challenge found. Please try a different configuration.');
+      }
+
+      if (!user?.id) {
+        throw new Error('You must be logged in to purchase a challenge.');
+      }
+
+      const payload = {
+        userId: user.id,
+        challengeId,
+        platform: selectedPlatform.toUpperCase(),
+        paymentMethod: selectedPayment,
+        couponCode: couponCode || undefined,
+      };
+
+      const result = await purchaseChallenge(payload);
+      setPurchaseResult(result);
+
+      if (activeChallenge) {
+        updateChallengePlatform(activeChallenge.id, selectedPlatform);
+      }
+
+      setStep(3);
+    } catch (err) {
+      setPurchaseError(err.message || 'Purchase failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const cardClass = `rounded-2xl border ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`;
@@ -225,18 +312,46 @@ const TradeCheckoutPanelPage = () => {
               {platforms.map((platform) => (
                 <button
                   key={platform.id}
-                  onClick={() => setSelectedPlatform(platform.id)}
-                  className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all ${selectedPlatform === platform.id
-                    ? 'border-amber-500 bg-amber-500/10'
-                    : isDark ? 'border-white/10 hover:border-white/20' : 'border-slate-200 hover:border-slate-300'
+                  onClick={() => handlePlatformSelect(platform.id)}
+                  className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border transition-all ${
+                    platform.comingSoon
+                      ? isDark ? 'border-white/5 opacity-60' : 'border-slate-100 opacity-60'
+                      : selectedPlatform === platform.id
+                        ? 'border-amber-500 bg-amber-500/10'
+                        : isDark ? 'border-white/10 hover:border-white/20' : 'border-slate-200 hover:border-slate-300'
                     }`}
                 >
-                  <Zap className={`w-6 h-6 ${selectedPlatform === platform.id ? 'text-amber-500' : mutedClass}`} />
+                  {platform.comingSoon ? (
+                    <Lock className={`w-6 h-6 ${mutedClass}`} />
+                  ) : (
+                    <Zap className={`w-6 h-6 ${selectedPlatform === platform.id ? 'text-amber-500' : mutedClass}`} />
+                  )}
                   <span className={`font-semibold text-sm ${textClass}`}>{platform.name}</span>
-                  <span className={`text-xs ${mutedClass}`}>{platform.desc}</span>
+                  <span className={`text-xs ${platform.comingSoon ? 'text-amber-500 font-medium' : mutedClass}`}>{platform.desc}</span>
+                  {platform.comingSoon && (
+                    <span className="absolute -top-2 -right-2 px-2 py-0.5 bg-amber-500 text-black text-[10px] font-bold rounded-full">SOON</span>
+                  )}
                 </button>
               ))}
             </div>
+
+            {tradeLockerAlert && (
+              <div className={`mt-4 p-4 rounded-xl border flex items-start gap-3 ${isDark ? 'bg-amber-500/10 border-amber-500/30' : 'bg-amber-50 border-amber-200'}`}>
+                <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className={`font-semibold text-sm ${textClass}`}>TradeLocker is Coming Soon</p>
+                  <p className={`text-sm mt-1 ${mutedClass}`}>
+                    We're currently working on integrating TradeLocker into our platform. This feature will be available soon. Please choose another trading platform.
+                  </p>
+                  <button
+                    onClick={() => { setTradeLockerAlert(false); setSelectedPlatform('mt5'); }}
+                    className="mt-2 text-sm text-amber-500 font-semibold hover:underline"
+                  >
+                    Select MetaTrader 5 instead
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </>
       )}
@@ -286,6 +401,16 @@ const TradeCheckoutPanelPage = () => {
               </div>
             </div>
 
+            {purchaseError && (
+              <div className={`mt-4 p-4 rounded-xl border flex items-start gap-3 ${isDark ? 'bg-red-500/10 border-red-500/30' : 'bg-red-50 border-red-200'}`}>
+                <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-sm text-red-500">Purchase Failed</p>
+                  <p className={`text-sm mt-1 ${mutedClass}`}>{purchaseError}</p>
+                </div>
+              </div>
+            )}
+
             <div className={`mt-6 pt-6 border-t flex justify-between items-center ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
               <p className={`text-lg font-bold ${textClass}`}>Total</p>
               <p className="text-3xl font-bold text-amber-500">${finalPrice}</p>
@@ -324,10 +449,20 @@ const TradeCheckoutPanelPage = () => {
 
             <button
               onClick={handlePurchase}
-              className="w-full mt-6 py-4 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-black font-bold rounded-xl flex items-center justify-center gap-2"
+              disabled={isLoading}
+              className={`w-full mt-6 py-4 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-black font-bold rounded-xl flex items-center justify-center gap-2 transition-all ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              <Shield className="w-5 h-5" />
-              Complete Purchase
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <Shield className="w-5 h-5" />
+                  Complete Purchase
+                </>
+              )}
             </button>
 
             <p className={`text-xs text-center mt-4 ${mutedClass}`}>
@@ -378,7 +513,7 @@ const TradeCheckoutPanelPage = () => {
       {step < 3 && (
         <div className="flex justify-between">
           <button
-            onClick={() => setStep(Math.max(1, step - 1))}
+            onClick={() => { setStep(Math.max(1, step - 1)); setPurchaseError(null); }}
             disabled={step === 1}
             className={`px-6 py-3 rounded-xl font-medium ${step === 1 ? 'opacity-50 cursor-not-allowed' : ''
               } ${isDark ? 'bg-white/5 text-white' : 'bg-slate-100 text-slate-900'}`}
@@ -386,11 +521,21 @@ const TradeCheckoutPanelPage = () => {
             Back
           </button>
           <button
-            onClick={() => setStep(step + 1)}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold rounded-xl"
+            onClick={() => step === 1 ? handleProceedToPayment() : handlePurchase()}
+            disabled={isLoading}
+            className={`flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold rounded-xl ${isLoading ? 'opacity-50' : ''}`}
           >
-            {step === 1 ? 'Continue to Payment' : 'Complete Purchase'}
-            <ChevronRight className="w-4 h-4" />
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                {step === 1 ? 'Continue to Payment' : 'Complete Purchase'}
+                <ChevronRight className="w-4 h-4" />
+              </>
+            )}
           </button>
         </div>
       )}
