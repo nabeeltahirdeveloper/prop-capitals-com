@@ -1,70 +1,33 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useCallback } from 'react';
 import {
   TrendingUp,
-  TrendingDown,
-  Clock,
-  Target,
-  Shield,
-  AlertTriangle,
-  CheckCircle,
-  DollarSign,
-  Activity,
-  Wifi,
-  WifiOff,
-  Layers,
-  Search,
   ChevronDown,
-  ArrowUpDown,
   Star,
-  BarChart2
+  AlertTriangle,
+  Shield,
+  Target
 } from 'lucide-react';
-import { useTraderTheme } from './TraderPanelLayout';
 import { useChallenges } from '@/contexts/ChallengesContext';
 import { useTrading } from '@/contexts/TradingContext';
 import TradingChart from '../trading/TradingChart';
 import { usePrices } from '@/contexts/PriceContext';
-import MarketWatchlist from '../trading/MarketWatchlist';
-import TopBar from '../trading/Topbar';
-import LeftSidebar from '../trading/LeftSidebar';
-
-const cryptoSymbols = [
-  { symbol: 'BTC/USDT', price: 43567.89, change: +1.23, volume: '2.1B' },
-  { symbol: 'ETH/USDT', price: 2456.78, change: -0.45, volume: '890M' },
-  { symbol: 'SOL/USDT', price: 98.45, change: +3.21, volume: '456M' },
-  { symbol: 'XRP/USDT', price: 0.6234, change: +0.89, volume: '312M' },
-  { symbol: 'DOGE/USDT', price: 0.0823, change: -1.56, volume: '234M' },
-  { symbol: 'ADA/USDT', price: 0.4567, change: +2.15, volume: '178M' },
-  { symbol: 'AVAX/USDT', price: 35.67, change: +1.89, volume: '145M' },
-  { symbol: 'MATIC/USDT', price: 0.8912, change: -0.67, volume: '123M' },
-];
 
 const BybitTerminal = () => {
-  const { isDark } = useTraderTheme();
-  const { challenges, selectedChallenge, selectChallenge, getChallengePhaseLabel, getRuleCompliance, getChallengeStatusColor } = useChallenges();
+  const { challenges, selectedChallenge, selectChallenge, getChallengePhaseLabel, getRuleCompliance } = useChallenges();
   const [selectedTab, setSelectedTab] = useState('positions');
   const [orderType, setOrderType] = useState('limit');
   const [orderSide, setOrderSide] = useState('buy');
-  const [isConnected, setIsConnected] = useState(true);
-  const [isReconnecting, setIsReconnecting] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [showMarketWatch, setShowMarketWatch] = useState(true);
   const [limitPrice, setLimitPrice] = useState('');
   const [quantity, setQuantity] = useState('');
   const [leverage, setLeverage] = useState(10);
   const [tpPrice, setTpPrice] = useState('');
   const [slPrice, setSlPrice] = useState('');
-  const [selectedCryptoSymbol, setSelectedCryptoSymbol] = useState(cryptoSymbols[0]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showOrderbook, setShowOrderbook] = useState(true);
+  const [showTpSl, setShowTpSl] = useState(false);
 
   const {
     selectedSymbol,
-    setSelectedSymbol,
     selectedTimeframe,
     setSelectedTimeframe,
-    symbols,
-    symbolsLoading,
-    currentSymbolData,
     chartType,
     setChartType,
   } = useTrading();
@@ -72,13 +35,7 @@ const BybitTerminal = () => {
   const chartAreaRef = useRef(null);
   const pricesRef = useRef({});
 
-  const { setSelectedSymbol: setTradingSelectedSymbol } = useTrading();
-
-  const {
-    prices: unifiedPrices,
-    getPrice: getUnifiedPrice,
-    lastUpdate: pricesLastUpdate,
-  } = usePrices();
+  const { prices: unifiedPrices } = usePrices();
 
   const enrichedSelectedSymbol = useMemo(() => {
     if (!selectedSymbol?.symbol) return selectedSymbol;
@@ -94,525 +51,449 @@ const BybitTerminal = () => {
     pricesRef.current[symbolName] = price;
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(interval);
+  const askOrders = useMemo(() => {
+    const base = 97150.50;
+    const rows = [];
+    for (let i = 0; i < 12; i++) {
+      const price = base + (12 - i) * 0.50;
+      const qty = (Math.random() * 5 + 0.1).toFixed(3);
+      rows.push({ price: price.toFixed(2), qty, total: (price * parseFloat(qty)).toFixed(2) });
+    }
+    return rows;
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (Math.random() > 0.95) {
-        setIsReconnecting(true);
-        setTimeout(() => setIsReconnecting(false), 2000);
-      }
-    }, 5000);
-    return () => clearInterval(interval);
+  const bidOrders = useMemo(() => {
+    const base = 97150.50;
+    const rows = [];
+    for (let i = 0; i < 12; i++) {
+      const price = base - (i + 1) * 0.50;
+      const qty = (Math.random() * 5 + 0.1).toFixed(3);
+      rows.push({ price: price.toFixed(2), qty, total: (price * parseFloat(qty)).toFixed(2) });
+    }
+    return rows;
   }, []);
+
+  const maxAskQty = useMemo(() => Math.max(...askOrders.map(o => parseFloat(o.qty))), [askOrders]);
+  const maxBidQty = useMemo(() => Math.max(...bidOrders.map(o => parseFloat(o.qty))), [bidOrders]);
 
   if (!selectedChallenge) {
-    return <div className={`text-center py-12 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>No challenge selected</div>;
+    return <div className="text-center py-12 text-[#71757a]">No challenge selected</div>;
   }
 
   const compliance = getRuleCompliance(selectedChallenge);
-  const phaseLabel = getChallengePhaseLabel(selectedChallenge);
   const balance = selectedChallenge.currentBalance;
   const equity = selectedChallenge.equity || selectedChallenge.currentBalance;
   const profitPercent = ((selectedChallenge.currentBalance - selectedChallenge.accountSize) / selectedChallenge.accountSize * 100);
 
-  const cardClass = `rounded-2xl border ${isDark ? 'bg-[#0d1117] border-white/10' : 'bg-white border-slate-200'}`;
-  const textClass = isDark ? 'text-white' : 'text-slate-900';
-  const mutedClass = isDark ? 'text-gray-400' : 'text-slate-500';
-
-  const generateOrderbookData = (side, count = 8) => {
-    const base = selectedCryptoSymbol.price;
-    const rows = [];
-    for (let i = 0; i < count; i++) {
-      const offset = (i + 1) * (base * 0.0005);
-      const price = side === 'ask' ? base + offset : base - offset;
-      const amount = (Math.random() * 2 + 0.01).toFixed(4);
-      const total = (price * parseFloat(amount)).toFixed(2);
-      rows.push({ price: price.toFixed(2), amount, total });
-    }
-    return side === 'ask' ? rows.reverse() : rows;
-  };
-
-  const askOrders = generateOrderbookData('ask');
-  const bidOrders = generateOrderbookData('bid');
-
-  const handleZoomIn = () => { chartAreaRef.current?.zoomIn(); };
-  const handleZoomOut = () => { chartAreaRef.current?.zoomOut(); };
-  const handleDownloadChartPNG = () => { chartAreaRef.current?.downloadChartAsPNG?.(); };
-  const handleToggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen?.()?.catch(() => {});
-    } else {
-      document.exitFullscreen?.();
-    }
-  };
-
-  const filteredCryptoSymbols = cryptoSymbols.filter(s =>
-    s.symbol.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const timeframes = ['1', '3', '5', '15', '30', '1H', '4H', '1D', '1W'];
 
   return (
-    <div className="space-y-3 sm:space-y-4">
-      {/* ==================== BYBIT HEADER BAR ==================== */}
-      <div className={`${cardClass} p-3 sm:p-4`}>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-[#f7a600] rounded-lg flex items-center justify-center">
-                <span className="text-black font-black text-xs">B</span>
-              </div>
-              <h2 className={`text-lg sm:text-xl font-bold ${textClass}`}>Bybit Terminal</h2>
-            </div>
-            <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-[#f7a600]/20 text-[#f7a600] text-xs font-bold rounded-lg">CRYPTO</span>
-
-            {challenges.length > 1 && (
-              <div className="relative">
-                <select
-                  value={selectedChallenge.id}
-                  onChange={(e) => selectChallenge(e.target.value)}
-                  className={`appearance-none px-3 py-1.5 pr-8 rounded-lg font-medium cursor-pointer text-sm transition-all ${isDark
-                    ? 'bg-[#1a1f2e] border border-white/10 text-white hover:border-[#f7a600]/50'
-                    : 'bg-slate-50 border border-slate-200 text-slate-900 hover:border-[#f7a600]'
-                  } focus:outline-none focus:ring-2 focus:ring-[#f7a600]/50`}
-                  style={isDark ? { colorScheme: 'dark' } : {}}
-                >
-                  {challenges.map((challenge) => {
-                    const label = getChallengePhaseLabel(challenge);
-                    const type = challenge.type === '1-step' ? '1-Step' : '2-Step';
-                    return (
-                      <option key={challenge.id} value={challenge.id} className={isDark ? 'bg-[#1a1f2e] text-white' : ''}>
-                        {type} ${challenge.accountSize.toLocaleString()} - {label}
-                      </option>
-                    );
-                  })}
-                </select>
-                <ChevronDown className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${isDark ? 'text-gray-400' : 'text-slate-500'}`} />
-              </div>
-            )}
-
-            {isConnected && !isReconnecting && (
-              <span className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-emerald-500/20 text-emerald-500 rounded-lg text-xs sm:text-sm font-medium">
-                <Wifi className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="hidden xs:inline">Connected</span>
-              </span>
-            )}
-            {isReconnecting && (
-              <span className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-amber-500/20 text-amber-500 rounded-lg text-xs sm:text-sm font-medium">
-                <WifiOff className="w-3 h-3 sm:w-4 sm:h-4 animate-pulse" />
-                <span className="hidden xs:inline">Reconnecting...</span>
-              </span>
-            )}
+    <div className="flex flex-col gap-[1px] bg-[#16191e]" style={{ fontFamily: "'IBM Plex Sans', -apple-system, sans-serif" }}>
+      {/* TOP SYMBOL BAR */}
+      <div className="bg-[#1b1d29] px-3 py-2 flex items-center gap-4 overflow-x-auto">
+        <div className="flex items-center gap-2 shrink-0">
+          <Star className="w-4 h-4 text-[#f7a600]" />
+          <span className="text-white font-semibold text-sm">{selectedSymbol?.symbol || 'BTCUSDT'}</span>
+          <span className="text-[#f7a600] text-[10px] font-medium px-1.5 py-0.5 bg-[#f7a600]/10 rounded">Perpetual</span>
+        </div>
+        <div className="flex items-center gap-5 text-xs shrink-0">
+          <div>
+            <span className="text-[#20b26c] text-base font-semibold font-mono">97,150.50</span>
+            <span className="text-[#71757a] ml-1.5">$97,150.50</span>
           </div>
-          <div className={`flex items-center gap-2 ${mutedClass}`}>
-            <Clock className="w-4 h-4" />
-            <span className="font-mono text-xs sm:text-sm">
-              {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-            </span>
+          <div>
+            <span className="text-[#71757a]">24h Change</span>
+            <span className="text-[#20b26c] ml-1.5 font-mono">+1.23%</span>
+          </div>
+          <div className="hidden md:block">
+            <span className="text-[#71757a]">24h High</span>
+            <span className="text-white ml-1.5 font-mono">97,845.00</span>
+          </div>
+          <div className="hidden md:block">
+            <span className="text-[#71757a]">24h Low</span>
+            <span className="text-white ml-1.5 font-mono">95,320.10</span>
+          </div>
+          <div className="hidden lg:block">
+            <span className="text-[#71757a]">24h Vol(USDT)</span>
+            <span className="text-white ml-1.5 font-mono">2.31B</span>
           </div>
         </div>
+
+        {challenges.length > 1 && (
+          <div className="relative ml-auto shrink-0">
+            <select
+              value={selectedChallenge.id}
+              onChange={(e) => selectChallenge(e.target.value)}
+              className="appearance-none bg-[#2b2f36] border border-[#363a45] text-white text-xs px-3 py-1.5 pr-7 rounded cursor-pointer focus:outline-none focus:border-[#f7a600]"
+              style={{ colorScheme: 'dark' }}
+            >
+              {challenges.map((challenge) => {
+                const label = getChallengePhaseLabel(challenge);
+                const type = challenge.type === '1-step' ? '1S' : '2S';
+                return (
+                  <option key={challenge.id} value={challenge.id} className="bg-[#2b2f36]">
+                    {type} ${challenge.accountSize.toLocaleString()} - {label}
+                  </option>
+                );
+              })}
+            </select>
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-[#71757a] pointer-events-none" />
+          </div>
+        )}
       </div>
 
-      {/* ==================== BALANCE STATS ROW ==================== */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
-        <div className={cardClass + ' p-3 sm:p-4'}>
-          <div className="flex items-center gap-2 mb-1 sm:mb-2">
-            <DollarSign className={`w-3 h-3 sm:w-4 sm:h-4 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
-            <span className={`text-xs sm:text-sm ${mutedClass}`}>Balance (USDT)</span>
-          </div>
-          <p className={`text-base sm:text-xl font-bold font-mono ${textClass}`}>
-            {balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-          </p>
-        </div>
-        <div className={cardClass + ' p-3 sm:p-4'}>
-          <div className="flex items-center gap-2 mb-1 sm:mb-2">
-            <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-500" />
-            <span className={`text-xs sm:text-sm ${mutedClass}`}>Equity</span>
-          </div>
-          <p className="text-base sm:text-xl font-bold font-mono text-emerald-500">
-            {equity.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-          </p>
-        </div>
-        <div className={cardClass + ' p-3 sm:p-4'}>
-          <div className="flex items-center gap-2 mb-1 sm:mb-2">
-            <Activity className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-500" />
-            <span className={`text-xs sm:text-sm ${mutedClass}`}>Unrealized PnL</span>
-          </div>
-          <p className="text-base sm:text-xl font-bold font-mono text-emerald-500">+0.00</p>
-        </div>
-        <div className={cardClass + ' p-3 sm:p-4'}>
-          <div className="flex items-center gap-2 mb-1 sm:mb-2">
-            <TrendingUp className={`w-3 h-3 sm:w-4 sm:h-4 ${profitPercent >= 0 ? 'text-emerald-500' : 'text-red-500'}`} />
-            <span className={`text-xs sm:text-sm ${mutedClass}`}>ROI</span>
-          </div>
-          <p className={`text-base sm:text-xl font-bold font-mono ${profitPercent >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-            {profitPercent >= 0 ? '+' : ''}{profitPercent.toFixed(2)}%
-          </p>
-        </div>
+      {/* TIMEFRAME BAR */}
+      <div className="bg-[#1b1d29] px-3 py-1.5 flex items-center gap-1 border-b border-[#2b2f36]">
+        {timeframes.map((tf) => (
+          <button
+            key={tf}
+            onClick={() => setSelectedTimeframe(tf)}
+            className={`px-2 py-1 text-[11px] font-medium rounded transition-colors ${
+              selectedTimeframe === tf
+                ? 'text-[#f7a600] bg-[#f7a600]/10'
+                : 'text-[#71757a] hover:text-white'
+            }`}
+          >
+            {tf}
+          </button>
+        ))}
+        <div className="mx-2 w-px h-4 bg-[#2b2f36]" />
+        <button className={`px-2 py-1 text-[11px] font-medium rounded ${chartType === 'candlestick' ? 'text-[#f7a600]' : 'text-[#71757a]'}`}
+          onClick={() => setChartType('candlestick')}>Candles</button>
+        <button className={`px-2 py-1 text-[11px] font-medium rounded ${chartType === 'line' ? 'text-[#f7a600]' : 'text-[#71757a]'}`}
+          onClick={() => setChartType('line')}>Line</button>
       </div>
 
-      {/* ==================== COMPLIANCE ROW ==================== */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
-        <div className={cardClass + ' p-3 sm:p-4'}>
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <div className="flex items-center gap-2">
-              <Target className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500" />
-              <span className={`font-medium text-sm sm:text-base ${textClass}`}>Profit Target</span>
-            </div>
-            <span className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-xs font-bold ${
-              selectedChallenge.stats.currentProfit >= selectedChallenge.rules.profitTarget
-                ? 'bg-emerald-500/20 text-emerald-500' : 'bg-red-500/20 text-red-500'
-            }`}>
-              {selectedChallenge.stats.currentProfit >= selectedChallenge.rules.profitTarget ? 'PASSED' : 'IN PROGRESS'}
-            </span>
-          </div>
-          <div className={`h-1.5 sm:h-2 rounded-full overflow-hidden mb-2 ${isDark ? 'bg-white/10' : 'bg-slate-200'}`}>
-            <div className="h-full rounded-full bg-[#f7a600]"
-              style={{ width: `${Math.min((selectedChallenge.stats.currentProfit / selectedChallenge.rules.profitTarget) * 100, 100)}%` }} />
-          </div>
-          <div className="flex justify-between text-xs sm:text-sm">
-            <span className={mutedClass}>{selectedChallenge.stats.currentProfit.toFixed(2)}%</span>
-            <span className={isDark ? 'text-gray-500' : 'text-slate-400'}>Target: {selectedChallenge.rules.profitTarget}%</span>
-          </div>
-        </div>
-
-        <div className={cardClass + ' p-3 sm:p-4'}>
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500" />
-              <span className={`font-medium text-sm sm:text-base ${textClass}`}>Daily Loss Limit</span>
-            </div>
-            <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-500">SAFE</span>
-          </div>
-          <div className={`h-1.5 sm:h-2 rounded-full overflow-hidden mb-2 ${isDark ? 'bg-white/10' : 'bg-slate-200'}`}>
-            <div className="h-full rounded-full bg-emerald-500" style={{ width: `${compliance.dailyLoss.percentage}%` }} />
-          </div>
-          <div className="flex justify-between text-xs sm:text-sm">
-            <span className={mutedClass}>Loss: {compliance.dailyLoss.current.toFixed(2)}%</span>
-            <span className={isDark ? 'text-gray-500' : 'text-slate-400'}>Limit: {compliance.dailyLoss.limit}%</span>
-          </div>
-        </div>
-
-        <div className={cardClass + ' p-3 sm:p-4'}>
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <div className="flex items-center gap-2">
-              <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500" />
-              <span className={`font-medium text-sm sm:text-base ${textClass}`}>Overall Drawdown</span>
-            </div>
-            <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-500">SAFE</span>
-          </div>
-          <div className={`h-1.5 sm:h-2 rounded-full overflow-hidden mb-2 ${isDark ? 'bg-white/10' : 'bg-slate-200'}`}>
-            <div className="h-full rounded-full bg-emerald-500" style={{ width: `${compliance.totalDrawdown.percentage}%` }} />
-          </div>
-          <div className="flex justify-between text-xs sm:text-sm">
-            <span className={mutedClass}>{compliance.totalDrawdown.current.toFixed(2)}%</span>
-            <span className={isDark ? 'text-gray-500' : 'text-slate-400'}>Max: {compliance.totalDrawdown.limit}%</span>
-          </div>
-        </div>
-      </div>
-
-      {/* ==================== MAIN TRADING AREA ==================== */}
-      <div className={cardClass + ' overflow-hidden'}>
-        {/* Top toolbar */}
-        <div className={`p-3 border-b flex items-center justify-between flex-shrink-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-          <TopBar
-            selectedSymbol={selectedSymbol}
-            selectedTimeframe={selectedTimeframe}
-            onTimeframeChange={setSelectedTimeframe}
-            chartType={chartType}
-            onChartTypeChange={setChartType}
-            onNewOrder={() => {}}
-            onZoomIn={handleZoomIn}
-            onZoomOut={handleZoomOut}
-            onDownloadChartPNG={handleDownloadChartPNG}
-            onToggleFullscreen={handleToggleFullscreen}
-            marketWatchOpen={showMarketWatch}
-            onToggleMarketWatch={() => setShowMarketWatch(prev => !prev)}
-            onToggleBuySell={() => {}}
-            buySellPanelOpen={false}
+      {/* MAIN TRADING AREA */}
+      <div className="flex flex-col lg:flex-row gap-[1px]">
+        {/* LEFT: CHART */}
+        <div className="flex-1 min-w-0 bg-[#1b1d29] flex flex-col" style={{ minHeight: '480px' }}>
+          <TradingChart
+            key={`chart-bybit-${selectedSymbol?.symbol}`}
+            symbol={enrichedSelectedSymbol}
+            openPositions={[]}
+            onPriceUpdate={handlePriceUpdate}
           />
         </div>
 
-        <div className="flex flex-col lg:flex-row w-full" style={{ minHeight: '500px' }}>
-          {/* Left sidebar */}
-          <div className="hidden lg:flex lg:w-12 lg:shrink-0 flex-col min-h-0 overflow-hidden">
-            <LeftSidebar />
+        {/* MIDDLE: ORDER BOOK */}
+        <div className="w-full lg:w-[220px] shrink-0 bg-[#1b1d29] flex flex-col">
+          <div className="px-3 py-2 border-b border-[#2b2f36] flex items-center justify-between">
+            <span className="text-white text-xs font-medium">Order Book</span>
+            <span className="text-[11px] text-[#71757a]">0.01</span>
           </div>
 
-          {/* Chart Area */}
-          <div className="flex-1 min-w-0 flex flex-col min-h-0 order-first lg:order-none">
-            <div className="flex-1 min-h-[300px] flex flex-col">
-              <TradingChart
-                key={`chart-bybit-${selectedSymbol?.symbol}`}
-                symbol={enrichedSelectedSymbol}
-                openPositions={[]}
-                onPriceUpdate={handlePriceUpdate}
-              />
+          <div className="px-3 py-1">
+            <div className="grid grid-cols-3 text-[10px] text-[#71757a] py-1 mb-0.5">
+              <span>Price(USDT)</span>
+              <span className="text-right">Qty(BTC)</span>
+              <span className="text-right">Total</span>
             </div>
-          </div>
 
-          {/* Right Panel - Order Entry (Bybit-style) */}
-          <div className={`w-full lg:w-80 shrink-0 border-l ${isDark ? 'border-white/10 bg-[#0d1117]' : 'border-slate-200 bg-white'}`}>
-            {/* Order Type Tabs */}
-            <div className={`flex border-b ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-              {['limit', 'market', 'conditional'].map((type) => (
-                <button
-                  key={type}
-                  onClick={() => setOrderType(type)}
-                  className={`flex-1 px-3 py-2.5 text-xs font-medium capitalize transition-all ${
-                    orderType === type
-                      ? `${textClass} border-b-2 border-[#f7a600]`
-                      : `${mutedClass} hover:${textClass}`
-                  }`}
-                >
-                  {type}
-                </button>
+            <div className="space-y-0">
+              {askOrders.map((order, i) => (
+                <div key={`ask-${i}`} className="relative grid grid-cols-3 text-[10px] py-[2px] cursor-pointer hover:bg-[#ef454526]">
+                  <div className="absolute right-0 top-0 bottom-0 bg-[#ef4545]/10"
+                    style={{ width: `${(parseFloat(order.qty) / maxAskQty) * 100}%` }} />
+                  <span className="text-[#ef4545] font-mono relative z-10">{order.price}</span>
+                  <span className="text-[#c8cad0] text-right font-mono relative z-10">{order.qty}</span>
+                  <span className="text-[#71757a] text-right font-mono relative z-10">{order.total}</span>
+                </div>
               ))}
             </div>
 
-            <div className="p-3 space-y-3">
-              {/* Buy/Sell Toggle */}
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => setOrderSide('buy')}
-                  className={`py-2.5 rounded-lg font-bold text-sm transition-all ${
-                    orderSide === 'buy'
-                      ? 'bg-emerald-500 text-white'
-                      : isDark ? 'bg-white/5 text-gray-400' : 'bg-slate-100 text-slate-500'
-                  }`}
-                >
-                  Buy / Long
-                </button>
-                <button
-                  onClick={() => setOrderSide('sell')}
-                  className={`py-2.5 rounded-lg font-bold text-sm transition-all ${
-                    orderSide === 'sell'
-                      ? 'bg-red-500 text-white'
-                      : isDark ? 'bg-white/5 text-gray-400' : 'bg-slate-100 text-slate-500'
-                  }`}
-                >
-                  Sell / Short
-                </button>
-              </div>
+            <div className="py-2 border-y border-[#2b2f36] my-1 text-center">
+              <span className="text-[#20b26c] text-sm font-bold font-mono">97,150.50</span>
+              <span className="text-[#71757a] text-[10px] ml-1.5">= $97,150.50</span>
+            </div>
 
-              {/* Leverage */}
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className={`text-xs ${mutedClass}`}>Leverage</span>
-                  <span className={`text-xs font-bold ${textClass}`}>{leverage}x</span>
+            <div className="space-y-0">
+              {bidOrders.map((order, i) => (
+                <div key={`bid-${i}`} className="relative grid grid-cols-3 text-[10px] py-[2px] cursor-pointer hover:bg-[#20b26c26]">
+                  <div className="absolute right-0 top-0 bottom-0 bg-[#20b26c]/10"
+                    style={{ width: `${(parseFloat(order.qty) / maxBidQty) * 100}%` }} />
+                  <span className="text-[#20b26c] font-mono relative z-10">{order.price}</span>
+                  <span className="text-[#c8cad0] text-right font-mono relative z-10">{order.qty}</span>
+                  <span className="text-[#71757a] text-right font-mono relative z-10">{order.total}</span>
                 </div>
-                <input
-                  type="range"
-                  min="1"
-                  max="100"
-                  value={leverage}
-                  onChange={(e) => setLeverage(parseInt(e.target.value))}
-                  className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-[#f7a600]"
-                  style={{ background: `linear-gradient(to right, #f7a600 ${leverage}%, ${isDark ? '#1a1f2e' : '#e2e8f0'} ${leverage}%)` }}
-                />
-                <div className="flex justify-between mt-1">
-                  {[1, 5, 10, 25, 50, 100].map((val) => (
-                    <button
-                      key={val}
-                      onClick={() => setLeverage(val)}
-                      className={`text-[10px] px-1.5 py-0.5 rounded ${
-                        leverage === val
-                          ? 'bg-[#f7a600]/20 text-[#f7a600] font-bold'
-                          : mutedClass
-                      }`}
-                    >
-                      {val}x
-                    </button>
-                  ))}
-                </div>
-              </div>
+              ))}
+            </div>
+          </div>
+        </div>
 
-              {/* Price Input (for limit orders) */}
-              {orderType === 'limit' && (
-                <div>
-                  <label className={`text-xs ${mutedClass} mb-1 block`}>Price (USDT)</label>
-                  <div className={`flex items-center rounded-lg border px-3 py-2 ${isDark ? 'bg-[#1a1f2e] border-white/10' : 'bg-slate-50 border-slate-200'}`}>
-                    <input
-                      type="number"
-                      value={limitPrice}
-                      onChange={(e) => setLimitPrice(e.target.value)}
-                      placeholder={selectedCryptoSymbol.price.toFixed(2)}
-                      className={`flex-1 bg-transparent text-sm font-mono outline-none ${textClass}`}
-                    />
-                    <span className={`text-xs ${mutedClass}`}>USDT</span>
-                  </div>
-                </div>
-              )}
+        {/* RIGHT: TRADE PANEL */}
+        <div className="w-full lg:w-[280px] shrink-0 bg-[#1b1d29] flex flex-col">
+          <div className="flex border-b border-[#2b2f36]">
+            {['limit', 'market', 'conditional'].map((type) => (
+              <button
+                key={type}
+                onClick={() => setOrderType(type)}
+                className={`flex-1 py-2.5 text-[11px] font-medium capitalize transition-colors ${
+                  orderType === type
+                    ? 'text-white border-b-2 border-[#f7a600]'
+                    : 'text-[#71757a] hover:text-white'
+                }`}
+              >
+                {type}
+              </button>
+            ))}
+          </div>
 
-              {/* Quantity Input */}
-              <div>
-                <label className={`text-xs ${mutedClass} mb-1 block`}>Quantity</label>
-                <div className={`flex items-center rounded-lg border px-3 py-2 ${isDark ? 'bg-[#1a1f2e] border-white/10' : 'bg-slate-50 border-slate-200'}`}>
-                  <input
-                    type="number"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    placeholder="0.000"
-                    className={`flex-1 bg-transparent text-sm font-mono outline-none ${textClass}`}
-                  />
-                  <span className={`text-xs ${mutedClass}`}>BTC</span>
-                </div>
-                <div className="flex gap-1.5 mt-1.5">
-                  {['25%', '50%', '75%', '100%'].map((pct) => (
-                    <button
-                      key={pct}
-                      className={`flex-1 text-[10px] py-1 rounded font-medium ${isDark ? 'bg-white/5 text-gray-400 hover:bg-white/10' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
-                    >
-                      {pct}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* TP/SL */}
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className={`text-xs ${mutedClass} mb-1 block`}>Take Profit</label>
-                  <input
-                    type="number"
-                    value={tpPrice}
-                    onChange={(e) => setTpPrice(e.target.value)}
-                    placeholder="TP Price"
-                    className={`w-full rounded-lg border px-3 py-2 text-sm font-mono outline-none ${isDark ? 'bg-[#1a1f2e] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}`}
-                  />
-                </div>
-                <div>
-                  <label className={`text-xs ${mutedClass} mb-1 block`}>Stop Loss</label>
-                  <input
-                    type="number"
-                    value={slPrice}
-                    onChange={(e) => setSlPrice(e.target.value)}
-                    placeholder="SL Price"
-                    className={`w-full rounded-lg border px-3 py-2 text-sm font-mono outline-none ${isDark ? 'bg-[#1a1f2e] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}`}
-                  />
-                </div>
-              </div>
-
-              {/* Order Cost Summary */}
-              <div className={`rounded-lg p-2.5 space-y-1.5 ${isDark ? 'bg-white/5' : 'bg-slate-50'}`}>
-                <div className="flex justify-between text-xs">
-                  <span className={mutedClass}>Order Cost</span>
-                  <span className={textClass}>0.00 USDT</span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className={mutedClass}>Available</span>
-                  <span className={textClass}>{balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT</span>
-                </div>
-              </div>
-
-              {/* Place Order Button */}
-              <button className={`w-full py-3 rounded-xl font-bold text-sm transition-all ${
-                orderSide === 'buy'
-                  ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
-                  : 'bg-red-500 hover:bg-red-600 text-white'
-              }`}>
-                {orderSide === 'buy' ? 'Buy / Long' : 'Sell / Short'} {selectedSymbol?.symbol || 'BTC/USDT'}
+          <div className="p-3 space-y-3 flex-1 overflow-y-auto">
+            <div className="flex gap-2">
+              <button className="flex-1 text-[11px] font-medium text-white bg-[#2b2f36] rounded py-1.5 hover:bg-[#363a45] transition-colors">
+                Cross
+              </button>
+              <button className="flex-1 text-[11px] font-medium text-[#f7a600] bg-[#f7a600]/10 border border-[#f7a600]/30 rounded py-1.5">
+                {leverage}x
               </button>
             </div>
-          </div>
 
-          {/* Market Watch on far right */}
-          {showMarketWatch && (
-            <div className={`flex w-full lg:w-64 shrink-0 p-3 border-l flex-col min-h-[160px] min-w-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-              <MarketWatchlist
-                onSymbolSelect={(symbol) => {
-                  setSelectedSymbol(symbol);
-                  setTradingSelectedSymbol(symbol?.symbol ?? symbol);
+            <div>
+              <input
+                type="range" min="1" max="100" value={leverage}
+                onChange={(e) => setLeverage(parseInt(e.target.value))}
+                className="w-full h-1 rounded-full appearance-none cursor-pointer"
+                style={{
+                  background: `linear-gradient(to right, #f7a600 ${leverage}%, #2b2f36 ${leverage}%)`,
+                  accentColor: '#f7a600'
                 }}
-                selectedSymbol={selectedSymbol}
               />
+              <div className="flex justify-between mt-1">
+                {[1, 5, 10, 25, 50, 100].map((v) => (
+                  <button key={v} onClick={() => setLeverage(v)}
+                    className={`text-[9px] px-1 py-0.5 rounded ${leverage === v ? 'text-[#f7a600] bg-[#f7a600]/10' : 'text-[#71757a]'}`}
+                  >{v}x</button>
+                ))}
+              </div>
             </div>
-          )}
+
+            <div className="grid grid-cols-2 gap-0 rounded-md overflow-hidden">
+              <button
+                onClick={() => setOrderSide('buy')}
+                className={`py-2 text-xs font-bold transition-colors ${
+                  orderSide === 'buy'
+                    ? 'bg-[#20b26c] text-white'
+                    : 'bg-[#2b2f36] text-[#71757a] hover:text-white'
+                }`}
+              >Buy/Long</button>
+              <button
+                onClick={() => setOrderSide('sell')}
+                className={`py-2 text-xs font-bold transition-colors ${
+                  orderSide === 'sell'
+                    ? 'bg-[#ef4545] text-white'
+                    : 'bg-[#2b2f36] text-[#71757a] hover:text-white'
+                }`}
+              >Sell/Short</button>
+            </div>
+
+            {orderType === 'limit' && (
+              <div>
+                <label className="text-[10px] text-[#71757a] mb-1 block">Order Price</label>
+                <div className="flex items-center bg-[#2b2f36] rounded border border-[#363a45] focus-within:border-[#f7a600] transition-colors">
+                  <button className="px-2 py-2 text-[#71757a] hover:text-white text-sm font-mono">-</button>
+                  <input
+                    type="text" value={limitPrice}
+                    onChange={(e) => setLimitPrice(e.target.value)}
+                    placeholder="97,150.50"
+                    className="flex-1 bg-transparent text-center text-white text-xs font-mono outline-none py-2"
+                  />
+                  <button className="px-2 py-2 text-[#71757a] hover:text-white text-sm font-mono">+</button>
+                </div>
+              </div>
+            )}
+
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-[10px] text-[#71757a]">Qty (BTC)</label>
+                <span className="text-[10px] text-[#71757a]">Avbl: {balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT</span>
+              </div>
+              <div className="flex items-center bg-[#2b2f36] rounded border border-[#363a45] focus-within:border-[#f7a600] transition-colors">
+                <button className="px-2 py-2 text-[#71757a] hover:text-white text-sm font-mono">-</button>
+                <input
+                  type="text" value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  placeholder="0.000"
+                  className="flex-1 bg-transparent text-center text-white text-xs font-mono outline-none py-2"
+                />
+                <button className="px-2 py-2 text-[#71757a] hover:text-white text-sm font-mono">+</button>
+              </div>
+              <div className="flex gap-1 mt-1.5">
+                {['25%', '50%', '75%', '100%'].map((pct) => (
+                  <button key={pct}
+                    className="flex-1 text-[9px] py-1 rounded bg-[#2b2f36] text-[#71757a] hover:text-white hover:bg-[#363a45] font-medium transition-colors"
+                  >{pct}</button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-[#71757a]">TP/SL</span>
+              <button
+                onClick={() => setShowTpSl(!showTpSl)}
+                className={`w-8 h-4 rounded-full transition-colors relative ${showTpSl ? 'bg-[#f7a600]' : 'bg-[#2b2f36]'}`}
+              >
+                <span className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${showTpSl ? 'left-[18px]' : 'left-0.5'}`} />
+              </button>
+            </div>
+
+            {showTpSl && (
+              <div className="space-y-2">
+                <div className="flex items-center bg-[#2b2f36] rounded border border-[#363a45] px-3 py-1.5">
+                  <span className="text-[10px] text-[#20b26c] w-8">TP</span>
+                  <input type="text" value={tpPrice} onChange={(e) => setTpPrice(e.target.value)}
+                    placeholder="Take Profit Price" className="flex-1 bg-transparent text-white text-xs font-mono outline-none" />
+                </div>
+                <div className="flex items-center bg-[#2b2f36] rounded border border-[#363a45] px-3 py-1.5">
+                  <span className="text-[10px] text-[#ef4545] w-8">SL</span>
+                  <input type="text" value={slPrice} onChange={(e) => setSlPrice(e.target.value)}
+                    placeholder="Stop Loss Price" className="flex-1 bg-transparent text-white text-xs font-mono outline-none" />
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-1.5 py-2 border-t border-[#2b2f36]">
+              <div className="flex justify-between text-[10px]">
+                <span className="text-[#71757a]">Order Value</span>
+                <span className="text-[#c8cad0] font-mono">0.00 USDT</span>
+              </div>
+              <div className="flex justify-between text-[10px]">
+                <span className="text-[#71757a]">Order Cost</span>
+                <span className="text-[#c8cad0] font-mono">0.00 USDT</span>
+              </div>
+              <div className="flex justify-between text-[10px]">
+                <span className="text-[#71757a]">Available Balance</span>
+                <span className="text-[#c8cad0] font-mono">{balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT</span>
+              </div>
+            </div>
+
+            <button className={`w-full py-2.5 rounded font-bold text-xs transition-colors ${
+              orderSide === 'buy'
+                ? 'bg-[#20b26c] hover:bg-[#1a9e5c] text-white'
+                : 'bg-[#ef4545] hover:bg-[#d93b3b] text-white'
+            }`}>
+              {orderSide === 'buy' ? 'Buy/Long' : 'Sell/Short'}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* ==================== ORDERBOOK ==================== */}
-      <div className={cardClass + ' p-4'}>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <BarChart2 className="w-4 h-4 text-[#f7a600]" />
-            <h3 className={`font-bold ${textClass}`}>Order Book</h3>
-          </div>
-          <span className={`text-xs ${mutedClass}`}>Last Price: ${selectedCryptoSymbol.price.toLocaleString()}</span>
+      {/* ACCOUNT INFO BAR */}
+      <div className="bg-[#1b1d29] px-3 py-2 flex items-center gap-6 overflow-x-auto border-t border-[#2b2f36]">
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-[10px] text-[#71757a]">Balance</span>
+          <span className="text-xs text-white font-mono font-medium">{balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT</span>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Asks (Sell orders) */}
-          <div>
-            <div className={`grid grid-cols-3 text-xs font-medium mb-2 pb-2 border-b ${isDark ? 'border-white/10 text-gray-500' : 'border-slate-200 text-slate-400'}`}>
-              <span>Price (USDT)</span>
-              <span className="text-right">Amount</span>
-              <span className="text-right">Total</span>
-            </div>
-            {askOrders.map((order, i) => (
-              <div key={`ask-${i}`} className="grid grid-cols-3 text-xs py-1 hover:bg-red-500/5 cursor-pointer">
-                <span className="text-red-500 font-mono">{order.price}</span>
-                <span className={`text-right font-mono ${textClass}`}>{order.amount}</span>
-                <span className={`text-right font-mono ${mutedClass}`}>{order.total}</span>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-[10px] text-[#71757a]">Equity</span>
+          <span className="text-xs text-[#20b26c] font-mono font-medium">{equity.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-[10px] text-[#71757a]">Unrealized PnL</span>
+          <span className="text-xs text-[#20b26c] font-mono">+0.00</span>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-[10px] text-[#71757a]">ROI</span>
+          <span className={`text-xs font-mono ${profitPercent >= 0 ? 'text-[#20b26c]' : 'text-[#ef4545]'}`}>
+            {profitPercent >= 0 ? '+' : ''}{profitPercent.toFixed(2)}%
+          </span>
+        </div>
+      </div>
+
+      {/* COMPLIANCE SECTION */}
+      <div className="bg-[#1b1d29] px-3 py-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="bg-[#16191e] rounded-lg p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1.5">
+                <Target className="w-3 h-3 text-[#71757a]" />
+                <span className="text-[11px] text-[#c8cad0] font-medium">Profit Target</span>
               </div>
-            ))}
+              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                selectedChallenge.stats.currentProfit >= selectedChallenge.rules.profitTarget
+                  ? 'bg-[#20b26c]/20 text-[#20b26c]' : 'bg-[#f7a600]/20 text-[#f7a600]'
+              }`}>
+                {selectedChallenge.stats.currentProfit >= selectedChallenge.rules.profitTarget ? 'PASSED' : 'IN PROGRESS'}
+              </span>
+            </div>
+            <div className="h-1 rounded-full overflow-hidden bg-[#2b2f36] mb-1.5">
+              <div className="h-full rounded-full bg-[#f7a600]"
+                style={{ width: `${Math.min((selectedChallenge.stats.currentProfit / selectedChallenge.rules.profitTarget) * 100, 100)}%` }} />
+            </div>
+            <div className="flex justify-between text-[10px]">
+              <span className="text-[#c8cad0] font-mono">{selectedChallenge.stats.currentProfit.toFixed(2)}%</span>
+              <span className="text-[#71757a]">{selectedChallenge.rules.profitTarget}%</span>
+            </div>
           </div>
-          {/* Bids (Buy orders) */}
-          <div>
-            <div className={`grid grid-cols-3 text-xs font-medium mb-2 pb-2 border-b ${isDark ? 'border-white/10 text-gray-500' : 'border-slate-200 text-slate-400'}`}>
-              <span>Price (USDT)</span>
-              <span className="text-right">Amount</span>
-              <span className="text-right">Total</span>
-            </div>
-            {bidOrders.map((order, i) => (
-              <div key={`bid-${i}`} className="grid grid-cols-3 text-xs py-1 hover:bg-emerald-500/5 cursor-pointer">
-                <span className="text-emerald-500 font-mono">{order.price}</span>
-                <span className={`text-right font-mono ${textClass}`}>{order.amount}</span>
-                <span className={`text-right font-mono ${mutedClass}`}>{order.total}</span>
+
+          <div className="bg-[#16191e] rounded-lg p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1.5">
+                <AlertTriangle className="w-3 h-3 text-[#71757a]" />
+                <span className="text-[11px] text-[#c8cad0] font-medium">Daily Loss</span>
               </div>
-            ))}
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#20b26c]/20 text-[#20b26c]">SAFE</span>
+            </div>
+            <div className="h-1 rounded-full overflow-hidden bg-[#2b2f36] mb-1.5">
+              <div className="h-full rounded-full bg-[#20b26c]" style={{ width: `${compliance.dailyLoss.percentage}%` }} />
+            </div>
+            <div className="flex justify-between text-[10px]">
+              <span className="text-[#c8cad0] font-mono">{compliance.dailyLoss.current.toFixed(2)}%</span>
+              <span className="text-[#71757a]">{compliance.dailyLoss.limit}%</span>
+            </div>
+          </div>
+
+          <div className="bg-[#16191e] rounded-lg p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1.5">
+                <Shield className="w-3 h-3 text-[#71757a]" />
+                <span className="text-[11px] text-[#c8cad0] font-medium">Max Drawdown</span>
+              </div>
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#20b26c]/20 text-[#20b26c]">SAFE</span>
+            </div>
+            <div className="h-1 rounded-full overflow-hidden bg-[#2b2f36] mb-1.5">
+              <div className="h-full rounded-full bg-[#20b26c]" style={{ width: `${compliance.totalDrawdown.percentage}%` }} />
+            </div>
+            <div className="flex justify-between text-[10px]">
+              <span className="text-[#c8cad0] font-mono">{compliance.totalDrawdown.current.toFixed(2)}%</span>
+              <span className="text-[#71757a]">{compliance.totalDrawdown.limit}%</span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ==================== POSITIONS / ORDERS / HISTORY ==================== */}
-      <div className={cardClass}>
-        <div className={`flex border-b ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+      {/* POSITIONS / ORDERS SECTION */}
+      <div className="bg-[#1b1d29]">
+        <div className="flex border-b border-[#2b2f36]">
           {[
             { id: 'positions', label: 'Positions', count: 0 },
             { id: 'orders', label: 'Active Orders', count: 0 },
             { id: 'conditional', label: 'Conditional', count: 0 },
-            { id: 'history', label: 'Trade History', count: 0 },
+            { id: 'history', label: 'Order History', count: 0 },
+            { id: 'tradeHistory', label: 'Trade History', count: 0 },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setSelectedTab(tab.id)}
-              className={`px-4 sm:px-6 py-3 font-medium text-xs sm:text-sm transition-all ${
+              className={`px-4 py-2.5 text-[11px] font-medium transition-colors ${
                 selectedTab === tab.id
-                  ? `${textClass} border-b-2 border-[#f7a600]`
-                  : `${mutedClass} hover:${textClass}`
+                  ? 'text-white border-b-2 border-[#f7a600]'
+                  : 'text-[#71757a] hover:text-white'
               }`}
             >
-              {tab.label} ({tab.count})
+              {tab.label}({tab.count})
             </button>
           ))}
         </div>
-        <div className={`p-8 text-center ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
-          <div className={`w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center ${isDark ? 'bg-white/5' : 'bg-slate-200'}`}>
-            <TrendingUp className={`w-8 h-8 ${mutedClass}`} />
+        <div className="py-10 text-center">
+          <div className="w-12 h-12 rounded-full bg-[#2b2f36] mx-auto mb-3 flex items-center justify-center">
+            <TrendingUp className="w-5 h-5 text-[#71757a]" />
           </div>
-          <p className={`font-medium ${textClass}`}>
-            {selectedTab === 'positions' ? 'No Open Positions' :
-              selectedTab === 'orders' ? 'No Active Orders' :
-              selectedTab === 'conditional' ? 'No Conditional Orders' : 'No Trade History'}
-          </p>
-          <p className={`text-sm ${mutedClass}`}>
-            {selectedTab === 'positions' ? 'Open a position to see it here' :
-              selectedTab === 'orders' ? 'Place a limit order to see it here' :
-              selectedTab === 'conditional' ? 'Set up conditional orders to see them here' : 'Your completed trades will appear here'}
+          <p className="text-[#71757a] text-xs">
+            {selectedTab === 'positions' ? 'You have no positions' :
+              selectedTab === 'orders' ? 'You have no active orders' :
+              selectedTab === 'conditional' ? 'You have no conditional orders' :
+              selectedTab === 'history' ? 'No order history' : 'No trade history'}
           </p>
         </div>
       </div>
