@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, Star, RefreshCw, Wifi, WifiOff, Loader2 } from "lucide-react";
 import { useTranslation } from "../../contexts/LanguageContext";
 import { usePrices } from "@/contexts/PriceContext";
+import { useTraderTheme } from "../trader/TraderPanelLayout";
 
 // Fallback prices in case API fails
 const fallbackPrices = {
@@ -181,6 +182,12 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
 
+  const { isDark } = useTraderTheme()
+
+
+
+
+
   // Handle manual retry
   const handleRetry = () => {
     setIsRetrying(true);
@@ -286,8 +293,8 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol }) {
   };
 
   return (
-    <Card className="bg-slate-900 border-slate-800 h-full flex flex-col">
-      <div className="p-3 border-b border-slate-800">
+    <Card className={`min-h-0 flex flex-col ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+      <div className={`p-3 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
         {/* Connection Status */}
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-1.5">
@@ -326,6 +333,7 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol }) {
                   )}
                   <span className="ml-1">
                     {t("terminal.watchlist.retry", "Retry")}
+                    
                   </span>
                 </Button>
               </>
@@ -334,12 +342,12 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol }) {
         </div>
 
         <div className="relative mb-2">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
+          <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
           <Input
             placeholder={t("terminal.watchlist.search")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8 bg-slate-800 border-slate-700 text-white text-xs h-8"
+            className={`pl-8 text-xs h-8 ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'}`}
           />
         </div>
         <div className="flex gap-1 overflow-x-auto ">
@@ -349,11 +357,10 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol }) {
               size="sm"
               variant={activeCategory === cat.id ? "default" : "ghost"}
               onClick={() => setActiveCategory(cat.id)}
-              className={`h-6 px-2 text-[10px] whitespace-nowrap ${
-                activeCategory === cat.id
+              className={`h-6 px-2 text-[10px] whitespace-nowrap ${activeCategory === cat.id
                   ? "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800"
-              }`}
+                  : isDark ? "text-slate-400 hover:text-white hover:bg-slate-800" : "text-slate-500 hover:text-slate-900 hover:bg-slate-200"
+                }`}
             >
               {cat.label}
             </Button>
@@ -364,8 +371,8 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol }) {
       {/* Table with horizontal scroll */}
       <div className="flex-1 overflow-x-auto overflow-y-auto">
         {/* Table Header */}
-        <div className="px-3 py-2 border-b border-slate-800 min-w-[320px]">
-          <div className="flex items-center text-[10px] text-slate-500 uppercase tracking-wider">
+        <div className={`px-3 py-2 border-b min-w-[320px] ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+          <div className={`flex items-center text-[10px] uppercase tracking-wider ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
             <div className="w-[120px] min-w-[120px] flex-shrink-0">
               {t("terminal.watchlist.symbol")}
             </div>
@@ -378,16 +385,15 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol }) {
           </div>
         </div>
 
-        <div className="divide-y divide-slate-800/50">
+        <div className={`divide-y ${isDark ? 'divide-slate-800/50' : 'divide-slate-200'}`}>
           {filteredSymbols.map((item) => (
             <div
               key={item.symbol}
               onClick={() => onSymbolSelect?.(item)}
-              className={`px-3 py-2.5 flex items-center min-w-[320px] cursor-pointer transition-all hover:bg-slate-800/50 ${
-                selectedSymbol?.symbol === item.symbol
+              className={`px-3 py-2.5 flex items-center min-w-[320px] cursor-pointer transition-all ${isDark ? 'hover:bg-slate-800/50' : 'hover:bg-slate-100'} ${selectedSymbol?.symbol === item.symbol
                   ? "bg-emerald-500/10 border-l-2 border-emerald-500"
                   : ""
-              }`}
+                }`}
             >
               {/* Symbol Info */}
               <div className="w-[120px] min-w-[120px] flex-shrink-0 flex items-center gap-2">
@@ -399,18 +405,17 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol }) {
                   className="flex-shrink-0"
                 >
                   <Star
-                    className={`w-3 h-3 ${
-                      favorites.includes(item.symbol)
+                    className={`w-3 h-3 ${favorites.includes(item.symbol)
                         ? "text-amber-400 fill-amber-400"
-                        : "text-slate-600 hover:text-slate-400"
-                    }`}
+                        : isDark ? "text-slate-600 hover:text-slate-400" : "text-slate-400 hover:text-slate-600"
+                      }`}
                   />
                 </button>
                 <div className="min-w-0">
-                  <p className="text-white text-xs font-medium truncate">
+                  <p className={`text-xs font-medium truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
                     {item.symbol}
                   </p>
-                  <p className="text-[10px] text-slate-500 truncate">
+                  <p className={`text-[10px] truncate ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
                     {item.category}
                   </p>
                 </div>
@@ -418,26 +423,24 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol }) {
 
               {/* Bid */}
               <div
-                className={`w-[90px] min-w-[90px] text-right font-mono text-xs tabular-nums flex-shrink-0 ${
-                  item.direction === "up"
+                className={`w-[90px] min-w-[90px] text-right font-mono text-xs tabular-nums flex-shrink-0 ${item.direction === "up"
                     ? "text-emerald-400"
                     : item.direction === "down"
                       ? "text-red-400"
-                      : "text-white"
-                }`}
+                      : isDark ? "text-white" : "text-slate-900"
+                  }`}
               >
                 {formatPrice(item.bid, item.symbol)}
               </div>
 
               {/* Ask */}
               <div
-                className={`w-[90px] min-w-[90px] text-right font-mono text-xs tabular-nums flex-shrink-0 ${
-                  item.direction === "up"
+                className={`w-[90px] min-w-[90px] text-right font-mono text-xs tabular-nums flex-shrink-0 ${item.direction === "up"
                     ? "text-emerald-400"
                     : item.direction === "down"
                       ? "text-red-400"
-                      : "text-white"
-                }`}
+                      : isDark ? "text-white" : "text-slate-900"
+                  }`}
               >
                 {formatPrice(item.ask, item.symbol)}
               </div>
@@ -447,7 +450,7 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol }) {
       </div>
 
       {lastUpdate && (
-        <div className="px-3 py-1.5 border-t border-slate-800 text-[9px] text-slate-500 text-center">
+        <div className={`px-3 py-1.5 border-t text-[9px] text-center ${isDark ? 'border-slate-800 text-slate-500' : 'border-slate-200 text-slate-500'}`}>
           {t("terminal.watchlist.updated")}:{" "}
           {new Date(lastUpdate).toLocaleTimeString()}
         </div>
