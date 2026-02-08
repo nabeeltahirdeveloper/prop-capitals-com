@@ -21,7 +21,7 @@ const mockChallenges = [
     equity: 102847.53,
     phase: 1,
     status: 'active',
-    platform: 'MT5',
+    platform: 'mt5',
     server: 'PropCapitals-Live',
     createdAt: '2025-01-15',
     tradingDays: { current: 3, required: 5 },
@@ -50,7 +50,7 @@ const mockChallenges = [
     equity: 54125.00,
     phase: 'funded',
     status: 'active',
-    platform: 'MT5',
+    platform: 'mt5',
     server: 'PropCapitals-Live',
     createdAt: '2024-12-01',
     tradingDays: { current: 12, required: 5 },
@@ -81,7 +81,7 @@ const mockChallenges = [
     equity: 198500.00,
     phase: 1,
     status: 'failed',
-    platform: 'MT5',
+    platform: 'mt5',
     server: 'PropCapitals-Live',
     createdAt: '2025-01-10',
     tradingDays: { current: 4, required: 5 },
@@ -111,7 +111,7 @@ const mockChallenges = [
     equity: 108500.00,
     phase: 2,
     status: 'active',
-    platform: 'MT5',
+    platform: 'mt5',
     server: 'PropCapitals-Live',
     createdAt: '2024-11-20',
     tradingDays: { current: 8, required: 5 },
@@ -180,6 +180,14 @@ export const ChallengesProvider = ({ children }) => {
   };
 
   // Update challenge balance (for demo payout flow)
+  const updateChallengePlatform = (challengeId, platform) => {
+    setChallenges(prev => prev.map(challenge =>
+      challenge.id === challengeId
+        ? { ...challenge, platform }
+        : challenge
+    ));
+  };
+
   const updateChallengeBalance = (challengeId, newBalance) => {
     setChallenges(prev => prev.map(challenge =>
       challenge.id === challengeId
@@ -253,6 +261,7 @@ export const ChallengesProvider = ({ children }) => {
       selectedChallenge,
       selectedChallengeId,
       selectChallenge,
+      updateChallengePlatform,
       updateChallengeBalance,
       getActiveChallenges,
       getFailedChallenges,
