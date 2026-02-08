@@ -136,19 +136,15 @@ const TradeCheckoutPanelPage = () => {
     setPurchaseError(null);
 
     try {
-      const challengeId = matchingBackendChallenge?.id;
-
-      if (!challengeId) {
-        throw new Error('No matching challenge found. Please try a different configuration.');
-      }
-
       if (!user?.id) {
         throw new Error('You must be logged in to purchase a challenge.');
       }
 
       const payload = {
         userId: user.id,
-        challengeId,
+        challengeId: matchingBackendChallenge?.id || undefined,
+        accountSize: accountSizes[selectedSizeIndex].value,
+        challengeType: selectedType,
         platform: selectedPlatform.toUpperCase(),
         paymentMethod: selectedPayment,
         couponCode: couponCode || undefined,

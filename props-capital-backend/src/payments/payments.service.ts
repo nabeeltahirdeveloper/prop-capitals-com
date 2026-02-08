@@ -20,25 +20,44 @@ export class PaymentsService {
 
     console.log("PURCHASE DATA:", data);
 
-    const { userId, challengeId, platform, tradingPlatform, trading_platform, brokerPlatform, couponCode, paymentMethod } = data;
+    const { userId, challengeId, platform, tradingPlatform, trading_platform, brokerPlatform, couponCode, paymentMethod, accountSize, challengeType } = data;
 
-    if (!userId || !challengeId) {
+    if (!userId) {
 
-      throw new BadRequestException("Missing required fields: userId, challengeId");
+      throw new BadRequestException("Missing required field: userId");
 
     }
 
-    // 1. Validate challenge
+    // 1. Validate challenge - find by ID or by accountSize + challengeType
 
-    const challenge = await this.prisma.challenge.findUnique({
+    let challenge;
 
-      where: { id: challengeId },
+    if (challengeId) {
+      challenge = await this.prisma.challenge.findUnique({
+        where: { id: challengeId },
+      });
+    }
 
-    });
+    if (!challenge && accountSize) {
+      const typeMap = {
+        '1-step': 'one_phase',
+        '2-step': 'two_phase',
+        'one_phase': 'one_phase',
+        'two_phase': 'two_phase',
+      };
+      const mappedType = typeMap[challengeType] || challengeType || 'two_phase';
+      challenge = await this.prisma.challenge.findFirst({
+        where: {
+          accountSize: typeof accountSize === 'string' ? parseInt(accountSize) : accountSize,
+          challengeType: mappedType,
+          isActive: true,
+        },
+      });
+    }
 
     if (!challenge) {
 
-      throw new NotFoundException("Challenge not found");
+      throw new NotFoundException("No matching challenge found for the selected configuration");
 
     }
 
