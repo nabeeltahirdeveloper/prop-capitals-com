@@ -18,6 +18,11 @@ export class BinanceMarketService {
     'SOL/USD': 'SOLUSDT',
     'ADA/USD': 'ADAUSDT',
     'DOGE/USD': 'DOGEUSDT',
+    'BNB/USD': 'BNBUSDT',
+    'AVAX/USD': 'AVAXUSDT',
+    'DOT/USD': 'DOTUSDT',
+    'MATIC/USD': 'MATICUSDT',
+    'LINK/USD': 'LINKUSDT',
   };
 
   // Timeframe mapping: our format -> Binance format
