@@ -42,8 +42,8 @@ export const payoutCertificates = [
 export const testimonials = [
   {
     id: 1,
-    name: "Timothy",
-    country: "NG",
+    name: "Derex",
+    country: "US",
     quote:
       "I just want to express my gratitude to Prop Capitals for being such an outstanding firm!",
     highlight: "outstanding firm",
@@ -52,11 +52,11 @@ export const testimonials = [
     avatar: "/assets/images/img2.png",
     promoVideo: "/assets/videos/video1.mp4",
     rating: "4.9/5.0 Rating",
-    payout: "$12,450.00",
+    payout: "$1,450.00",
   },
   {
     id: 2,
-    name: "Marcus",
+    name: "Chad Johnson",
     country: "US",
     quote:
       "The fastest payout I've ever received! Prop Capitals truly cares about their traders.",
@@ -67,12 +67,12 @@ export const testimonials = [
     avatar: "/assets/images/img4.png",
     promoVideo: "/assets/videos/video2.mp4",
     rating: "5.0/5.0 Rating",
-    payout: "$24,800.00",
+    payout: "$3,500.00",
   },
   {
     id: 3,
-    name: "Emma",
-    country: "UK",
+    name: "Josh",
+    country: "Canada",
     quote:
       "Incredible support team and amazing trading conditions. Best prop firm hands down!",
     highlight: "Best prop firm",
@@ -82,12 +82,12 @@ export const testimonials = [
     avatarVideo: "/assets/videos/video3.mp4",
     promoVideo: "/assets/videos/video3.mp4",
     rating: "4.8/5.0 Rating",
-    payout: "$8,200.00",
+    payout: "$1,944.00",
   },
   {
     id: 4,
-    name: "Kenji",
-    country: "JP",
+    name: "Nova",
+    country: "US",
     quote:
       "From $25K to $200K funded account. Prop Capitals changed my trading career completely!",
     highlight: "changed my trading career",
@@ -97,7 +97,7 @@ export const testimonials = [
     avatarVideo: "/assets/videos/video4.mp4",
     promoVideo: "/assets/videos/video4.mp4",
     rating: "4.9/5.0 Rating",
-    payout: "$42,300.00",
+    payout: "$933.00",
   },
 ];
 
