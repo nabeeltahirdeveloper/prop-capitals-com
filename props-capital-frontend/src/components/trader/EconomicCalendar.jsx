@@ -1,68 +1,148 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
 
-// Demo calendar events
-const generateCalendarEvents = () => {
-  const events = [];
-  const eventTypes = [
-    { name: 'Non-Farm Payrolls', impact: 'high', currency: 'USD' },
-    { name: 'Interest Rate Decision', impact: 'high', currency: 'EUR' },
-    { name: 'GDP Growth Rate', impact: 'medium', currency: 'GBP' },
-    { name: 'CPI Monthly', impact: 'high', currency: 'USD' },
-    { name: 'Unemployment Rate', impact: 'medium', currency: 'EUR' },
-    { name: 'Retail Sales', impact: 'medium', currency: 'GBP' },
-    { name: 'PMI Manufacturing', impact: 'low', currency: 'USD' },
-    { name: 'Trade Balance', impact: 'low', currency: 'JPY' },
-  ];
 
-  for (let day = 1; day <= 28; day++) {
-    if (Math.random() > 0.6) {
-      const eventCount = Math.floor(Math.random() * 3) + 1;
-      for (let i = 0; i < eventCount; i++) {
-        const event = eventTypes[Math.floor(Math.random() * eventTypes.length)];
-        events.push({
-          day,
-          ...event,
-          time: `${Math.floor(Math.random() * 12 + 8)}:${Math.random() > 0.5 ? '00' : '30'}`,
-          actual: Math.random() > 0.5 ? (Math.random() * 5 - 2).toFixed(1) + '%' : null,
-          forecast: (Math.random() * 5 - 2).toFixed(1) + '%',
-          previous: (Math.random() * 5 - 2).toFixed(1) + '%',
-        });
-      }
-    }
-  }
-  return events;
-};
+async function fetchCalendarMonth(monthYYYYMM) {
+  const res = await fetch(`/economic-calendar?month=${encodeURIComponent(monthYYYYMM)}`);
+  if (!res.ok) throw new Error(`Calendar fetch failed: ${res.status}`);
+  return res.json(); // { month, events: [...] }
+}
 
-const calendarEvents = generateCalendarEvents();
+function monthKeyUTC(dateObj) {
+  const y = dateObj.getUTCFullYear();
+  const m = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+  return `${y}-${m}`;
+}
+
+function utcDayKeyFromParts(y, m1to12, d1to31) {
+  const mm = String(m1to12).padStart(2, '0');
+  const dd = String(d1to31).padStart(2, '0');
+  return `${y}-${mm}-${dd}`;
+}
+
+function utcDayKeyFromMs(ms) {
+  const d = new Date(ms);
+  const y = d.getUTCFullYear();
+  const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(d.getUTCDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function formatUTCTime(ms) {
+  const d = new Date(ms);
+  const hh = String(d.getUTCHours()).padStart(2, '0');
+  const mm = String(d.getUTCMinutes()).padStart(2, '0');
+  return `${hh}:${mm}`;
+}
+
+function impactToKey(importance) {
+  if (importance === 'high') return 'high';
+  if (importance === 'medium') return 'medium';
+  if (importance === 'low') return 'low';
+  return null; // "none"
+}
+
+
 
 const EconomicCalendar = () => {
   const { isDark } = useTraderTheme();
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    const now = new Date();
+    return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+  });
   const [selectedDay, setSelectedDay] = useState(null);
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+
+  const month = monthKeyUTC(currentMonth);
+
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+
+    fetchCalendarMonth(month)
+      .then((data) => {
+        if (!alive) return;
+        setEvents(Array.isArray(data?.events) ? data.events : []);
+        setSelectedDay(null); // reset selection when month changes
+      })
+      .catch(() => {
+        if (!alive) return;
+        setEvents([]);
+      })
+      .finally(() => {
+        if (!alive) return;
+        setLoading(false);
+      });
+
+    return () => { alive = false; };
+  }, [month]);
+
+
+  // ✅ Step 5: group events by UTC day
+  const eventsByDay = useMemo(() => {
+    const map = new Map();
+
+    for (const e of events) {
+      const key = utcDayKeyFromMs(e.releaseAt); // "YYYY-MM-DD"
+      const arr = map.get(key) ?? [];
+      arr.push(e);
+      map.set(key, arr);
+    }
+
+    // sort events within each day by time
+    for (const [k, arr] of map.entries()) {
+      arr.sort((a, b) => a.releaseAt - b.releaseAt);
+      map.set(k, arr);
+    }
+
+    return map;
+  }, [events]);
+
+
 
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'];
 
-  const getDaysInMonth = (date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-  const getFirstDayOfMonth = (date) => new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+  // ✅ Step 6A: UTC-safe month calculations
+  const getDaysInMonth = (date) =>
+    new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0)).getUTCDate();
 
-  const prevMonth = () => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
-  const nextMonth = () => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
+  const getFirstDayOfMonth = (date) =>
+    new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1)).getUTCDay(); // 0=Sun
+
+
+  const prevMonth = () =>
+    setCurrentMonth(new Date(Date.UTC(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() - 1, 1)));
+
+  const nextMonth = () =>
+    setCurrentMonth(new Date(Date.UTC(currentMonth.getUTCFullYear(), currentMonth.getUTCMonth() + 1, 1)));
+
 
   const daysInMonth = getDaysInMonth(currentMonth);
   const firstDay = getFirstDayOfMonth(currentMonth);
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-  const emptyDays = Array.from({ length: firstDay === 0 ? 6 : firstDay - 1 }, (_, i) => i);
+  const blanks = (firstDay + 6) % 7; // Sun->6, Mon->0, Tue->1...
+  const emptyDays = Array.from({ length: blanks }, (_, i) => i);
+  // ✅ Step 5.1: read events from the grouped map
+  const getEventsForDay = (day) => {
+    const y = currentMonth.getUTCFullYear();
+    const m = currentMonth.getUTCMonth() + 1; // 1-12
+    const key = utcDayKeyFromParts(y, m, day); // "YYYY-MM-DD"
+    return eventsByDay.get(key) ?? [];
+  };
 
-  const getEventsForDay = (day) => calendarEvents.filter(e => e.day === day);
 
   const impactColors = {
     high: 'bg-red-500',
     medium: 'bg-amber-500',
     low: 'bg-emerald-500',
   };
+
+  const sidebarEvents = selectedDay ? getEventsForDay(selectedDay) : [];
+
 
   return (
     <div className="space-y-6">
@@ -91,7 +171,7 @@ const EconomicCalendar = () => {
               <ChevronLeft className="w-5 h-5" />
             </button>
             <h3 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+              {monthNames[currentMonth.getUTCMonth()]} {currentMonth.getUTCFullYear()}
             </h3>
             <button onClick={nextMonth} className={`p-2 rounded-lg transition-all ${isDark ? 'hover:bg-white/10 text-gray-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-slate-900'}`}>
               <ChevronRight className="w-5 h-5" />
@@ -136,9 +216,25 @@ const EconomicCalendar = () => {
                   </span>
                   {hasEvents && (
                     <div className="flex gap-1 mt-1 flex-wrap justify-center">
-                      {dayEvents.slice(0, 3).map((event, i) => (
-                        <span key={i} className={`w-1.5 h-1.5 rounded-full ${impactColors[event.impact]}`}></span>
-                      ))}
+                      {(() => {
+                        const counts = { high: 0, medium: 0, low: 0 };
+
+                        for (const e of dayEvents) {
+                          const k = impactToKey(e.importance); // importance -> high/medium/low
+                          if (k) counts[k]++;
+                        }
+
+                        // show max 3 dots, prioritize high > medium > low
+                        const dots = [];
+                        for (let i = 0; i < Math.min(3, counts.high); i++) dots.push('high');
+                        for (let i = 0; i < Math.min(3 - dots.length, counts.medium); i++) dots.push('medium');
+                        for (let i = 0; i < Math.min(3 - dots.length, counts.low); i++) dots.push('low');
+
+                        return dots.map((k, i) => (
+                          <span key={i} className={`w-1.5 h-1.5 rounded-full ${impactColors[k]}`} />
+                        ));
+                      })()}
+
                     </div>
                   )}
                 </button>
@@ -150,33 +246,60 @@ const EconomicCalendar = () => {
         {/* Events List */}
         <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           <h3 className={`font-bold text-lg mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            {selectedDay ? `Events - Day ${selectedDay}` : 'Upcoming Events'}
+            {selectedDay ? `Events - Day ${selectedDay}` : 'Select a day'}
           </h3>
 
           <div className="space-y-3 max-h-[500px] overflow-y-auto">
-            {(selectedDay ? getEventsForDay(selectedDay) : calendarEvents.slice(0, 10)).map((event, i) => (
-              <div key={i} className={`rounded-xl p-4 ${isDark ? 'bg-white/5' : 'bg-slate-50'}`}>
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${impactColors[event.impact]}`}></span>
-                    <span className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{event.name}</span>
-                  </div>
-                  <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{event.time}</span>
-                </div>
-                <div className="flex items-center gap-4 text-xs">
-                  <span className={`px-2 py-1 rounded ${isDark ? 'bg-white/10 text-white' : 'bg-slate-200 text-slate-700'}`}>{event.currency}</span>
-                  <div className="flex gap-3">
-                    <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>Forecast: <span className={isDark ? 'text-white' : 'text-slate-900'}>{event.forecast}</span></span>
-                    <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>Previous: <span className={isDark ? 'text-white' : 'text-slate-900'}>{event.previous}</span></span>
-                    {event.actual && <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>Actual: <span className="text-emerald-500">{event.actual}</span></span>}
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            {selectedDay && getEventsForDay(selectedDay).length === 0 && (
-              <p className={`text-center py-8 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>No events on this day</p>
+            {loading && (
+              <p className={`text-center py-8 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
+                Loading...
+              </p>
             )}
+
+            {!loading && selectedDay && sidebarEvents.length === 0 && (
+              <p className={`text-center py-8 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
+                No events on this day
+              </p>
+            )}
+
+            {!loading && sidebarEvents.map((event) => {
+              const impact = impactToKey(event.importance);
+
+              return (
+                <div key={event.id} className={`rounded-xl p-4 ${isDark ? 'bg-white/5' : 'bg-slate-50'}`}>
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      {impact && <span className={`w-2 h-2 rounded-full ${impactColors[impact]}`}></span>}
+                      <span className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        {event.name}
+                      </span>
+                    </div>
+                    <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
+                      {formatUTCTime(event.releaseAt)}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-4 text-xs">
+                    <span className={`px-2 py-1 rounded ${isDark ? 'bg-white/10 text-white' : 'bg-slate-200 text-slate-700'}`}>
+                      {event.currency}
+                    </span>
+                    <div className="flex gap-3 flex-wrap">
+                      <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>
+                        Forecast: <span className={isDark ? 'text-white' : 'text-slate-900'}>{event.forecast || '-'}</span>
+                      </span>
+                      <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>
+                        Previous: <span className={isDark ? 'text-white' : 'text-slate-900'}>{event.previous || '-'}</span>
+                      </span>
+                      {!!event.actual && (
+                        <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>
+                          Actual: <span className="text-emerald-500">{event.actual}</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

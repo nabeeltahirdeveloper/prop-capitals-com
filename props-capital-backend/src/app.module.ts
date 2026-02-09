@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-
+import { EconomicCalendarModule } from './economic-calendar/economic-calendar.module';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 
@@ -51,6 +51,8 @@ import { ChatModule } from './chat/chat.module';
     PrismaModule,
 
     UsersModule,
+
+    EconomicCalendarModule,
 
     AuthModule,
 
