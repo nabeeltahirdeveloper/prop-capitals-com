@@ -53,6 +53,9 @@ model UserProfile {
   leverage  String  @default("1:100")
   theme     String  @default("dark")
   user      User    @relation(fields: [userId], references: [id])
+  lotSize   Float?              @default(0.01)
+  leverage  String              @default("1:100") 
+  theme     String              @default("dark")
 }
 
 model VerificationDocument {
