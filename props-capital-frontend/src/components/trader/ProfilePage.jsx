@@ -22,6 +22,8 @@ import {
   updateProfile,
 } from '@/api/profile';
 import { formatDate } from '@/utils/dateFormating';
+import { useToast } from "@/components/ui/use-toast";
+
 
 const ProfilePage = () => {
   const { isDark } = useTraderTheme();
@@ -40,13 +42,13 @@ const ProfilePage = () => {
   });
   const [editedProfile, setEditedProfile] = useState({ ...profile });
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
-  // Fetch user data from /auth/me (includes profile, verification docs, notification prefs)
   const { data: user, isLoading, error } = useQuery({
     queryKey: ['user', 'me'],
     queryFn: getCurrentUser,
     retry: false,
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: 30000,
   });
 
   useEffect(() => {
@@ -64,11 +66,6 @@ const ProfilePage = () => {
         preferredPlatform: user.profile?.preferredPlatform || '-',
         joinDate: formatDate(user.createdAt) || '-',
       });
-
-      console.log("User", user.notificationPreference);
-      // if (user.notificationPreference) {
-      //   setNotificationPrefs(user.notificationPreference);
-      // }
     }
   }, [user]);
 
@@ -83,8 +80,11 @@ const ProfilePage = () => {
       setIsEditing(false);
     },
     onError: (error) => {
-      console.error('Failed to save profile:', error);
-      alert(error.message || t('profile.saveError') || 'Failed to save profile');
+      toast({
+        title: "Failed to save profile",
+        description: error.message || "Failed to save profile",
+        variant: "destructive",
+      });
     },
   });
 
