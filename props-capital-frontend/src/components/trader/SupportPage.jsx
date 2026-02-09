@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   MessageSquare,
   Mail,
@@ -8,39 +8,142 @@ import {
   FileText,
   AlertCircle,
   CheckCircle,
-  ExternalLink
+  ExternalLink,
+  Loader2
 } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getCurrentUser } from "@/api/auth";
+import { getUserTickets, createSupportTicket } from "@/api/support";
+import { useToast } from "@/components/ui/use-toast";
+import { formatDate } from "@/utils/dateFormating";
+
 
 const SupportPage = () => {
   const { isDark } = useTraderTheme();
+  const { toast } = useToast();
   const [ticketForm, setTicketForm] = useState({
     subject: '',
-    category: 'general',
+    category: 'ACCOUNT',
     message: ''
   });
+  const queryClient = useQueryClient();
+  const [isTicketSubmitting, setIsTicketSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  const { data: user } = useQuery({
+    queryKey: ["user", "me"],
+    queryFn: getCurrentUser,
+    retry: false,
+  });
+
+  const { data: tickets = [], isLoading } = useQuery({
+    queryKey: ["support-tickets", user?.userId],
+    queryFn: async () => {
+      if (!user?.userId) return [];
+      try {
+        return await getUserTickets(user.userId);
+      } catch (error) {
+        console.error("Failed to fetch tickets:", error);
+        return [];
+      }
+    },
+    enabled: !!user?.userId,
+    retry: false,
+    refetchInterval: 10000,
+  });
+
+  const createTicketMutation = useMutation({
+    mutationFn: async (data) => {
+      return createSupportTicket(data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["support-tickets", user?.userId],
+      });
+      setTicketForm({
+        subject: "",
+        category: "",
+        message: "",
+      });
+      toast({
+        title: "Ticket Created",
+        description: "Your support ticket has been submitted successfully.",
+        variant: "success",
+      });
+      setIsTicketSubmitting(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to create ticket",
+        description: error.message || 'Failed to create ticket',
+        variant: "destructive",
+      });
+      setIsTicketSubmitting(false);
+    },
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setTicketForm({ subject: '', category: 'general', message: '' });
-    }, 3000);
+    setIsTicketSubmitting(true);
+    createTicketMutation.mutate({
+      userId: user.userId,
+      subject: ticketForm.subject,
+      message: ticketForm.message,
+      category: ticketForm.category?.toUpperCase(),
+    });
   };
 
-  const supportCategories = [
-    { value: 'general', label: 'General Inquiry' },
-    { value: 'trading', label: 'Trading Issue' },
-    { value: 'payout', label: 'Payout Request' },
-    { value: 'technical', label: 'Technical Support' },
-    { value: 'billing', label: 'Billing Question' },
-  ];
 
-  const recentTickets = [
-    { id: 'TKT-001', subject: 'Payout Processing Time', status: 'resolved', date: '2025-02-10' },
-    { id: 'TKT-002', subject: 'MT5 Connection Issue', status: 'open', date: '2025-02-12' },
+  // Map backend tickets to frontend format
+  const mappedTickets = (tickets || []).map((ticket) => {
+    const statusMap = {
+      OPEN: "open",
+      IN_PROGRESS: "in_progress",
+      RESOLVED: "resolved",
+      CLOSED: "closed",
+    };
+
+    const categoryMap = {
+      ACCOUNT: "account",
+      PAYMENT: "payment",
+      PAYOUT: "payout",
+      TECHNICAL: "technical",
+      OTHER: "other",
+    };
+
+    const priorityMap = {
+      LOW: "low",
+      MEDIUM: "medium",
+      HIGH: "high",
+    };
+
+    return {
+      id: ticket.id,
+      subject: ticket.subject || "",
+      category:
+        categoryMap[ticket.category] ||
+        ticket.category?.toLowerCase() ||
+        "other",
+      priority:
+        priorityMap[ticket.priority] ||
+        ticket.priority?.toLowerCase() ||
+        "medium",
+      status:
+        statusMap[ticket.status] || ticket.status?.toLowerCase() || "open",
+      created_date: ticket.createdAt,
+    };
+  });
+
+  const displayTickets = mappedTickets;
+
+
+  const supportCategories = [
+    { value: 'ACCOUNT', label: 'Account' },
+    { value: 'PAYMENT', label: 'Payment' },
+    { value: 'PAYOUT', label: 'Payout' },
+    { value: 'TECHNICAL', label: 'Technical' },
+    { value: 'OTHER', label: 'Other' },
   ];
 
   return (
@@ -193,20 +296,31 @@ const SupportPage = () => {
 
               <button
                 type="submit"
-                className="w-full py-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+                disabled={isTicketSubmitting}
+                className={`w-full py-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] font-bold rounded-xl transition-all flex items-center justify-center gap-2 ${isTicketSubmitting ? "opacity-70 cursor-not-allowed" : ""
+                  }`}
               >
-                <Send className="w-4 h-4" />
-                Submit Ticket
+                {isTicketSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    Submit Ticket
+                  </>
+                )}
               </button>
             </form>
           )}
 
           {/* Recent Tickets */}
-          {recentTickets.length > 0 && !submitted && (
+          {displayTickets.length > 0 && !submitted && (
             <div className="mt-8">
               <h3 className={`text-sm font-semibold mb-3 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Recent Tickets</h3>
               <div className="space-y-2">
-                {recentTickets.map((ticket) => (
+                {displayTickets.map((ticket) => (
                   <div
                     key={ticket.id}
                     className={`flex items-center justify-between p-3 rounded-xl ${isDark ? 'bg-white/5' : 'bg-slate-50'}`}
@@ -216,7 +330,7 @@ const SupportPage = () => {
                       <span className={`text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{ticket.subject}</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{ticket.date}</span>
+                      <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{formatDate(ticket.created_date)}</span>
                       <span className={`px-2 py-0.5 rounded text-xs font-medium ${ticket.status === 'resolved'
                         ? 'bg-emerald-500/10 text-emerald-500'
                         : 'bg-amber-500/10 text-amber-500'
