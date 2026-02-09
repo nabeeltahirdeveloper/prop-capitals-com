@@ -99,6 +99,11 @@ const AccountSettings = () => {
     mutationFn: updateProfile,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+      toast({
+        title: "Profile updated successfully",
+        description: "Your profile has been updated successfully.",
+        variant: "default",
+      });
     },
     onError: (error) => {
       toast({
@@ -113,6 +118,11 @@ const AccountSettings = () => {
     mutationFn: ({ currentPassword, newPassword }) => changePassword(currentPassword, newPassword),
     onSuccess: () => {
       setPassword({ currentPassword: '', newPassword: '', confirmNewPassword: '' });
+      toast({
+        title: "Password changed successfully",
+        description: "Your password has been changed successfully.",
+        variant: "default",
+      });
     },
     onError: (error) => {
       toast({
@@ -127,6 +137,11 @@ const AccountSettings = () => {
     mutationFn: updateNotificationPreferences,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+      toast({
+        title: "Notification preferences updated successfully",
+        description: "Your notification preferences have been updated successfully.",
+        variant: "default",
+      });
     },
     onError: (error) => {
       toast({
