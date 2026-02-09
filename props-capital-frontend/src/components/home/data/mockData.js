@@ -23,7 +23,11 @@ export const testimonials = [
     quote: "I just want to express my gratitude to Prop Capitals for being such an outstanding firm!",
     highlight: "outstanding firm",
     tag: "Outstanding Firm",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop"
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
+    avatarVideo: "/assets/videos/video1.mp4",
+    promoVideo: "/assets/videos/video1.mp4",
+    rating: "4.9/5.0 Rating",
+    payout: "$12,450.00"
   },
   {
     id: 2,
@@ -32,7 +36,11 @@ export const testimonials = [
     quote: "The fastest payout I've ever received! Prop Capitals truly cares about their traders.",
     highlight: "fastest payout",
     tag: "Fastest Payout",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop"
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop",
+    avatarVideo: "/assets/videos/video2.mp4",
+    promoVideo: "/assets/videos/video2.mp4",
+    rating: "5.0/5.0 Rating",
+    payout: "$24,800.00"
   },
   {
     id: 3,
@@ -41,7 +49,11 @@ export const testimonials = [
     quote: "Incredible support team and amazing trading conditions. Best prop firm hands down!",
     highlight: "Best prop firm",
     tag: "Best Conditions",
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop"
+    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
+    avatarVideo: "/assets/videos/video3.mp4",
+    promoVideo: "/assets/videos/video3.mp4",
+    rating: "4.8/5.0 Rating",
+    payout: "$8,200.00"
   },
   {
     id: 4,
@@ -50,7 +62,11 @@ export const testimonials = [
     quote: "From $25K to $200K funded account. Prop Capitals changed my trading career completely!",
     highlight: "changed my trading career",
     tag: "Career Changer",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop"
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop",
+    avatarVideo: "/assets/videos/video4.mp4",
+    promoVideo: "/assets/videos/video4.mp4",
+    rating: "4.9/5.0 Rating",
+    payout: "$42,300.00"
   }
 ];
 
@@ -107,29 +123,29 @@ export const accountSizes = [
 ];
 
 export const tradingPlatforms = [
-  { 
-    name: "MetaTrader 5", 
+  {
+    name: "MetaTrader 5",
     logo: "MT5",
     description: "Industry-standard platform with powerful charting and automated trading capabilities.",
     features: ["Expert Advisors", "Advanced Charts", "Mobile App"],
     color: "#6366f1"
   },
-  { 
-    name: "TradeLocker", 
+  {
+    name: "TradeLocker",
     logo: "TL",
     description: "Modern platform with TradingView integration for seamless chart analysis.",
     features: ["TradingView Charts", "Web-Based", "One-Click Trading"],
     color: "#f59e0b"
   },
-  { 
-    name: "MatchTrader", 
+  {
+    name: "MatchTrader",
     logo: "MT",
     description: "Modern trading platform available on the web and in our mobile apps.",
     features: ["Web & Mobile", "Social Trading", "Copy Trading"],
     color: "#10b981"
   },
-  { 
-    name: "cTrader", 
+  {
+    name: "cTrader",
     logo: "cT",
     description: "Combines a user-friendly interface with professional trading features.",
     features: ["cAlgo Bots", "Level II Pricing", "cTrader Copy"],
