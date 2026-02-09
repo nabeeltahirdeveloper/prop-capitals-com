@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
 import {
   LayoutDashboard,
   LineChart,
@@ -26,9 +25,16 @@ import {
 } from 'lucide-react';
 import { ChallengesProvider, useChallenges } from '@/contexts/ChallengesContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { getCurrentUser } from "@/api/auth";
+import { getUserAccounts } from "@/api/accounts";
+import {
+  getUserNotifications,
+  markNotificationAsRead,
+} from "@/api/notifications";
+import { getUserPayouts, getPayoutStatistics } from "@/api/payouts";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const TraderThemeContext = React.createContext();
-
 export const useTraderTheme = () => React.useContext(TraderThemeContext);
 
 const TraderPanelLayoutInner = () => {
@@ -38,12 +44,83 @@ const TraderPanelLayoutInner = () => {
   const queryClient = useQueryClient();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isDark, setIsDark] = useState(false); // Default to light theme
+  const [isDark, setIsDark] = useState(true);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [lastRefresh, setLastRefresh] = useState(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { selectedChallenge, getChallengePhaseLabel, challenges } = useChallenges();
+
+  const { data: user } = useQuery({
+    queryKey: ["user", "me"],
+    queryFn: getCurrentUser,
+  });
+
+  const [userState, setUserState] = useState({
+    fullname: "",
+    email: "",
+    theme: "dark",
+  });
+
+  console.log("User : ", user)
+
+  useEffect(() => {
+    if (user) {
+      const firstName = user.profile?.firstName || "";
+      const lastName = user.profile?.lastName || "";
+      const fullname = `${firstName} ${lastName}`.trim();
+      const email = user.email || "";
+      const theme = user.profile?.theme || "dark";
+
+      setUserState({
+        fullname,
+        email,
+        theme,
+      });
+
+      if (theme === "light") {
+        setIsDark(false);
+      } else {
+        setIsDark(true);
+      }
+    }
+  }, [user]);
+
+  // const { data: accounts = [], isLoading: accountsLoading } = useQuery({
+  //   queryKey: ["trader-accounts", user?.userId],
+  //   queryFn: async () => {
+  //     if (!user?.userId) return [];
+  //     try {
+  //       return await getUserAccounts(user.userId);
+  //     } catch (error) {
+  //       console.error("Failed to fetch accounts:", error);
+  //       return [];
+  //     }
+  //   },
+  //   enabled: !!user?.userId,
+  //   refetchOnMount: true,
+  //   refetchOnWindowFocus: true,
+  //   refetchInterval: 60000,
+  //   staleTime: 30000,
+  //   retry: false,
+  // });
+
+  // const { data: notifications = [] } = useQuery({
+  //   queryKey: ["notifications", user?.userId],
+  //   queryFn: async () => {
+  //     if (!user?.userId) return [];
+  //     try {
+  //       return await getUserNotifications(user.userId);
+  //     } catch (error) {
+  //       console.error("Failed to fetch notifications:", error);
+  //       return [];
+  //     }
+  //   },
+  //   enabled: !!user?.userId,
+  //   retry: false,
+  //   refetchInterval: 30000,
+  //   staleTime: 15000,
+  // });
 
   const toggleTheme = () => setIsDark(!isDark);
 
@@ -366,10 +443,10 @@ const TraderPanelLayoutInner = () => {
                   className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-all"
                 >
                   <div className="w-9 h-9 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center text-[#0a0d12] font-bold text-sm">
-                    J
+                    {userState.fullname.charAt(0) || "U"}
                   </div>
                   <div className="hidden sm:block text-left">
-                    <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>John Doe</p>
+                    <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{userState.fullname || "User"}</p>
                     <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Demo Account</p>
                   </div>
                   <ChevronDown className={`w-4 h-4 transition-transform ${showProfileMenu ? 'rotate-180' : ''} ${isDark ? 'text-gray-400' : 'text-slate-400'}`} />
@@ -380,8 +457,8 @@ const TraderPanelLayoutInner = () => {
                   <div className={`absolute right-0 top-12 w-56 rounded-xl shadow-2xl border z-50 ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'
                     }`}>
                     <div className={`p-3 border-b ${isDark ? 'border-white/5' : 'border-slate-100'}`}>
-                      <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>John Doe</p>
-                      <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>john.doe@example.com</p>
+                      <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{userState.fullname || "User"}</p>
+                      <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{userState.email || "user@example.com"}</p>
                     </div>
                     <div className="p-2">
                       <Link
