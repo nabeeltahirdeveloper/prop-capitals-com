@@ -1,20 +1,140 @@
-import React, { useState, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Star, Loader2, TrendingUp } from 'lucide-react';
+import { Loader2, ChevronDown, ArrowDown, ArrowUp, Search } from 'lucide-react';
 import { useTrading } from '@/contexts/TradingContext';
 import { usePrices } from '@/contexts/PriceContext';
 import { useTradingWebSocket } from '@/hooks/useTradingWebSocket';
-import { getAccountTrades, createTrade } from '@/api/trades';
+import { useBinanceStream } from '@/hooks/useBinanceStream';
+import { getAccountTrades, createTrade, updateTrade } from '@/api/trades';
 import { getPendingOrders, createPendingOrder, cancelPendingOrder } from '@/api/pending-orders';
-import { getAccountSummary } from '@/api/accounts';
+import { getCurrentPrice } from '@/api/market-data';
 import { useToast } from '@/components/ui/use-toast';
+import { useTraderTheme } from './TraderPanelLayout';
 import TradingChart from '../trading/TradingChart';
+
+/* ───────────────────────── Symbol List (Crypto + Forex) ───────────────────────── */
+const ALL_SYMBOLS = [
+  // Crypto
+  { symbol: 'BTCUSDT', base: 'BTC', quote: 'USDT', label: 'BTC/USDT', type: 'crypto' },
+  { symbol: 'ETHUSDT', base: 'ETH', quote: 'USDT', label: 'ETH/USDT', type: 'crypto' },
+  { symbol: 'SOLUSDT', base: 'SOL', quote: 'USDT', label: 'SOL/USDT', type: 'crypto' },
+  { symbol: 'XRPUSDT', base: 'XRP', quote: 'USDT', label: 'XRP/USDT', type: 'crypto' },
+  { symbol: 'DOGEUSDT', base: 'DOGE', quote: 'USDT', label: 'DOGE/USDT', type: 'crypto' },
+  { symbol: 'BNBUSDT', base: 'BNB', quote: 'USDT', label: 'BNB/USDT', type: 'crypto' },
+  { symbol: 'ADAUSDT', base: 'ADA', quote: 'USDT', label: 'ADA/USDT', type: 'crypto' },
+  { symbol: 'AVAXUSDT', base: 'AVAX', quote: 'USDT', label: 'AVAX/USDT', type: 'crypto' },
+  { symbol: 'DOTUSDT', base: 'DOT', quote: 'USDT', label: 'DOT/USDT', type: 'crypto' },
+  { symbol: 'MATICUSDT', base: 'MATIC', quote: 'USDT', label: 'MATIC/USDT', type: 'crypto' },
+  { symbol: 'LINKUSDT', base: 'LINK', quote: 'USDT', label: 'LINK/USDT', type: 'crypto' },
+  // Forex Major Pairs
+  { symbol: 'EURUSD', base: 'EUR', quote: 'USD', label: 'EUR/USD', type: 'forex' },
+  { symbol: 'GBPUSD', base: 'GBP', quote: 'USD', label: 'GBP/USD', type: 'forex' },
+  { symbol: 'USDJPY', base: 'USD', quote: 'JPY', label: 'USD/JPY', type: 'forex' },
+  { symbol: 'USDCHF', base: 'USD', quote: 'CHF', label: 'USD/CHF', type: 'forex' },
+  { symbol: 'AUDUSD', base: 'AUD', quote: 'USD', label: 'AUD/USD', type: 'forex' },
+  { symbol: 'USDCAD', base: 'USD', quote: 'CAD', label: 'USD/CAD', type: 'forex' },
+  { symbol: 'NZDUSD', base: 'NZD', quote: 'USD', label: 'NZD/USD', type: 'forex' },
+  // Forex Cross Pairs
+  { symbol: 'EURGBP', base: 'EUR', quote: 'GBP', label: 'EUR/GBP', type: 'forex' },
+  { symbol: 'EURJPY', base: 'EUR', quote: 'JPY', label: 'EUR/JPY', type: 'forex' },
+  { symbol: 'GBPJPY', base: 'GBP', quote: 'JPY', label: 'GBP/JPY', type: 'forex' },
+  { symbol: 'CADJPY', base: 'CAD', quote: 'JPY', label: 'CAD/JPY', type: 'forex' },
+  // Metals
+  { symbol: 'XAUUSD', base: 'XAU', quote: 'USD', label: 'XAU/USD', type: 'forex' },
+  { symbol: 'XAGUSD', base: 'XAG', quote: 'USD', label: 'XAG/USD', type: 'forex' },
+];
+
+/* ───────────────────────── Theme Color Tokens ───────────────────────── */
+const DARK_COLORS = {
+  bg: '#0b0e11',
+  panel: '#161a1e',
+  card: '#1e2329',
+  border: '#2b3139',
+  borderL: '#363c46',
+  textP: '#eaecef',
+  textS: '#848e9c',
+  textT: '#5e6673',
+  green: '#0ecb81',
+  greenBg: '#0ecb81',
+  greenDim: 'rgba(14,203,129,0.12)',
+  red: '#f6465d',
+  redDim: 'rgba(246,70,93,0.12)',
+  yellow: '#fcd535',
+  yellowDim: 'rgba(252,213,53,0.12)',
+  orange: '#f0b90b',
+  inputBg: '#1e2329',
+  hoverBg: 'rgba(255,255,255,0.04)',
+};
+
+const LIGHT_COLORS = {
+  bg: '#f8f9fb',
+  panel: '#ffffff',
+  card: '#f1f3f5',
+  border: '#e2e5e9',
+  borderL: '#d1d5db',
+  textP: '#1e2329',
+  textS: '#5e6673',
+  textT: '#848e9c',
+  green: '#0ecb81',
+  greenBg: '#0ecb81',
+  greenDim: 'rgba(14,203,129,0.10)',
+  red: '#f6465d',
+  redDim: 'rgba(246,70,93,0.10)',
+  yellow: '#f0b90b',
+  yellowDim: 'rgba(240,185,11,0.12)',
+  orange: '#f0b90b',
+  inputBg: '#f1f3f5',
+  hoverBg: 'rgba(0,0,0,0.03)',
+};
+
+/* ───────────────────────── Helpers ───────────────────────── */
+// Convert BybitTerminal symbol format to backend API format
+// e.g. 'EURUSD' → 'EUR/USD', 'BTCUSDT' → 'BTC/USD'
+const toBackendSymbol = (sym, type) => {
+  if (!sym) return sym;
+  if (type === 'crypto') {
+    // BTCUSDT → BTC/USD (strip trailing T, add slash)
+    const base = sym.replace(/USDT$/, '');
+    return `${base}/USD`;
+  }
+  // Forex/Metals: EURUSD → EUR/USD, XAUUSD → XAU/USD, OILUSD → OIL/USD
+  // Insert slash after first 3 chars
+  if (sym.length >= 6) return `${sym.slice(0, 3)}/${sym.slice(3)}`;
+  return sym;
+};
+
+const formatPrice = (price) => {
+  if (!price || price === 0) return '--';
+  if (price >= 1000) return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (price >= 1) return price.toFixed(4);
+  return price.toFixed(6);
+};
+
+const formatNum = (n, d = 2) => {
+  if (n === null || n === undefined) return '--';
+  return n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+};
+
+const formatVolume = (v) => {
+  if (!v || v === 0) return '--';
+  if (v >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+  if (v >= 1e6) return (v / 1e6).toFixed(2) + 'M';
+  if (v >= 1e3) return (v / 1e3).toFixed(2) + 'K';
+  return v.toFixed(2);
+};
+
+const getSymbolInfo = (sym) => ALL_SYMBOLS.find(s => s.symbol === sym) || ALL_SYMBOLS[0];
+
+/* ═══════════════════════════════════════════════════════════════════════ */
 
 const BybitTradingArea = ({ selectedChallenge }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
-  const [orderType, setOrderType] = useState('limit');
+  const { isDark } = useTraderTheme();
+  const C = isDark ? DARK_COLORS : LIGHT_COLORS;
+
+  /* ── State ── */
+  const [orderType, setOrderType] = useState('market');
   const [orderSide, setOrderSide] = useState('buy');
   const [limitPrice, setLimitPrice] = useState('');
   const [quantity, setQuantity] = useState('');
@@ -23,29 +143,74 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   const [slPrice, setSlPrice] = useState('');
   const [showTpSl, setShowTpSl] = useState(false);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [bottomTab, setBottomTab] = useState('positions');
+  const [obTab, setObTab] = useState('book');
+  const [sliderPct, setSliderPct] = useState(0);
+  const [symbolDropdownOpen, setSymbolDropdownOpen] = useState(false);
+  const [symbolSearch, setSymbolSearch] = useState('');
+  const dropdownRef = useRef(null);
 
-  const {
-    selectedSymbol,
-    selectedTimeframe,
-    setSelectedTimeframe,
-    chartType,
-    setChartType,
-  } = useTrading();
-
-  const chartAreaRef = useRef(null);
+  const { selectedSymbol, setSelectedSymbol, selectedTimeframe, setSelectedTimeframe, chartType, setChartType } = useTrading();
   const pricesRef = useRef({});
   const { prices: unifiedPrices } = usePrices();
-  
-  const accountId = selectedChallenge?.accountId;
 
-  // Fetch data
+  /* ── Symbol resolution ── */
+  // Ensure selected symbol is one we support; default to BTCUSDT otherwise
+  const rawSymbolStr = typeof selectedSymbol === 'string' ? selectedSymbol : (selectedSymbol?.symbol ?? 'BTCUSDT');
+  const isKnownSymbol = ALL_SYMBOLS.some(s => s.symbol === rawSymbolStr);
+  const currentSymbolStr = isKnownSymbol ? rawSymbolStr : 'BTCUSDT';
+  const symbolInfo = getSymbolInfo(currentSymbolStr);
+
+  // Set to BTCUSDT on mount if current symbol is unsupported
+  useEffect(() => {
+    if (!isKnownSymbol) setSelectedSymbol('BTCUSDT');
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* ── Binance live streams (crypto only — forex has no Binance data) ── */
+  const isCrypto = symbolInfo.type === 'crypto';
+  const { orderBook, ticker, connected: binanceConnected } = useBinanceStream(isCrypto ? currentSymbolStr : null);
+
+  // Backend API symbol format (EUR/USD, BTC/USD) vs terminal format (EURUSD, BTCUSDT)
+  const backendSymbol = toBackendSymbol(currentSymbolStr, symbolInfo.type);
+
+  /* ── Backend price polling (Massive WS for forex, Binance WS for crypto via backend) ── */
+  const [backendPrice, setBackendPrice] = useState(null);
+  useEffect(() => {
+    // For crypto, direct Binance stream is primary; backend is fallback
+    // For forex, backend (Massive WS) is the ONLY source
+    let cancelled = false;
+    const fetchPrice = async () => {
+      try {
+        // getCurrentPrice auto-normalizes symbol format (BTCUSDT → BTC/USD, EURUSD → EUR/USD)
+        const data = await getCurrentPrice(currentSymbolStr);
+        if (cancelled) return;
+        if (data && (data.bid || data.ask || data.price)) {
+          setBackendPrice({
+            bid: data.bid || data.price || 0,
+            ask: data.ask || data.price || 0,
+          });
+        }
+      } catch { /* silent */ }
+    };
+    fetchPrice();
+    // Poll forex every 1s (Massive WS data), crypto every 3s (Binance direct is primary)
+    const interval = setInterval(fetchPrice, isCrypto ? 3000 : 1000);
+    return () => { cancelled = true; clearInterval(interval); };
+  }, [currentSymbolStr, isCrypto]);
+
+  /* ── Account ── */
+  const accountId = selectedChallenge?.id;
+  const accountStatus = selectedChallenge?.status;
+  const isAccountLocked = accountStatus === 'failed' || accountStatus === 'inactive';
+  const balance = selectedChallenge?.currentBalance || 0;
+
+  /* ── Queries ── */
   const { data: tradesData } = useQuery({
     queryKey: ['trades', accountId],
     queryFn: () => getAccountTrades(accountId),
     enabled: !!accountId,
     refetchInterval: 3000,
   });
-
   const { data: pendingOrdersData } = useQuery({
     queryKey: ['pendingOrders', accountId],
     queryFn: () => getPendingOrders(accountId),
@@ -53,407 +218,811 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     refetchInterval: 3000,
   });
 
-  useTradingWebSocket(accountId);
+  /* ── WebSocket ── */
+  const handlePositionClosed = useCallback(() => {
+    queryClient.invalidateQueries(['trades', accountId]);
+  }, [queryClient, accountId]);
+  const handleAccountStatusChange = useCallback((event) => {
+    queryClient.invalidateQueries(['trades', accountId]);
+    queryClient.invalidateQueries(['pendingOrders', accountId]);
+    if (event?.status === 'DISQUALIFIED' || event?.status === 'DAILY_LOCKED') {
+      toast({ title: 'Account Status Changed', description: `Account is now ${event.status}`, variant: 'destructive' });
+    }
+  }, [queryClient, accountId, toast]);
+  const handleAccountUpdate = useCallback(() => {
+    queryClient.invalidateQueries(['trades', accountId]);
+  }, [queryClient, accountId]);
+  useTradingWebSocket({ accountId, onPositionClosed: handlePositionClosed, onAccountStatusChange: handleAccountStatusChange, onAccountUpdate: handleAccountUpdate });
 
-  const openPositions = tradesData?.trades?.filter(t => t.status === 'OPEN') || [];
-  const pendingOrders = pendingOrdersData?.orders || [];
+  /* ── Derived data ── */
+  const openPositions = useMemo(() => { const t = Array.isArray(tradesData) ? tradesData : []; return t.filter(x => !x.closedAt); }, [tradesData]);
+  const closedTrades = useMemo(() => { const t = Array.isArray(tradesData) ? tradesData : []; return t.filter(x => x.closedAt); }, [tradesData]);
+  const activePendingOrders = useMemo(() => { const o = Array.isArray(pendingOrdersData) ? pendingOrdersData : []; return o.filter(x => x.status === 'PENDING'); }, [pendingOrdersData]);
 
   const enrichedSelectedSymbol = useMemo(() => {
     if (!selectedSymbol?.symbol) return selectedSymbol;
-    const priceData = unifiedPrices[selectedSymbol.symbol];
-    if (priceData && typeof priceData === 'object' && priceData.bid !== undefined && priceData.ask !== undefined) {
-      const spread = ((priceData.ask - priceData.bid) * 10000).toFixed(1);
-      return { ...selectedSymbol, bid: priceData.bid, ask: priceData.ask, spread: parseFloat(spread) };
+    // Try both terminal format (EURUSD) and backend format (EUR/USD) as price keys
+    const p = unifiedPrices[selectedSymbol.symbol] || unifiedPrices[backendSymbol];
+    if (p && typeof p === 'object' && p.bid !== undefined && p.ask !== undefined) {
+      return { ...selectedSymbol, bid: p.bid, ask: p.ask, spread: Math.abs(p.ask - p.bid) };
     }
     return selectedSymbol;
-  }, [selectedSymbol, unifiedPrices]);
+  }, [selectedSymbol, unifiedPrices, backendSymbol]);
 
-  const handlePriceUpdate = useCallback((symbolName, price) => {
-    pricesRef.current[symbolName] = price;
-  }, []);
+  /* ── Prices: Binance ticker for crypto, Massive WS (via backend) for forex ── */
+  const currentBid = isCrypto
+    ? (ticker?.lastPrice || backendPrice?.bid || enrichedSelectedSymbol?.bid || 0)
+    : (backendPrice?.bid || enrichedSelectedSymbol?.bid || 0);
+  const currentAsk = isCrypto
+    ? (ticker?.lastPrice || backendPrice?.ask || enrichedSelectedSymbol?.ask || 0)
+    : (backendPrice?.ask || enrichedSelectedSymbol?.ask || 0);
+  const currentMid = (currentBid && currentAsk) ? (currentBid + currentAsk) / 2 : 0;
 
+  const handlePriceUpdate = useCallback((s, p) => { pricesRef.current[s] = p; }, []);
+
+  /* ── Order Book: live Binance for crypto, simulated for forex ── */
   const askOrders = useMemo(() => {
-    const base = 97150.50;
+    if (orderBook.asks.length > 0) {
+      let cumTotal = 0;
+      return orderBook.asks.slice(0, 12).map(([price, qty]) => {
+        const p = parseFloat(price);
+        const q = parseFloat(qty);
+        cumTotal += q;
+        return { price: formatPrice(p), qty: q.toFixed(5), total: cumTotal.toFixed(5), rawTotal: cumTotal, rawPrice: p };
+      }).reverse();
+    }
+    // Simulated depth for forex or when Binance disconnected
+    const base = currentAsk || currentMid || 100;
+    const step = base > 1000 ? 0.10 : base > 100 ? 0.01 : 0.0001;
     const rows = [];
-    for (let i = 0; i < 12; i++) {
-      const price = base + (12 - i) * 0.50;
-      const qty = (Math.random() * 5 + 0.1).toFixed(3);
-      rows.push({ price: price.toFixed(2), qty, total: (price * parseFloat(qty)).toFixed(2) });
+    for (let i = 0; i < 10; i++) {
+      const price = base + (10 - i) * step;
+      const qty = (Math.random() * 3 + 0.001).toFixed(5);
+      const cumTotal = rows.length > 0 ? parseFloat(rows[rows.length - 1].rawTotal) + parseFloat(qty) : parseFloat(qty);
+      rows.push({ price: formatPrice(price), qty, total: cumTotal.toFixed(5), rawTotal: cumTotal, rawPrice: price });
     }
     return rows;
-  }, []);
+  }, [orderBook.asks, currentAsk, currentMid]);
 
   const bidOrders = useMemo(() => {
-    const base = 97150.50;
+    if (orderBook.bids.length > 0) {
+      let cumTotal = 0;
+      return orderBook.bids.slice(0, 12).map(([price, qty]) => {
+        const p = parseFloat(price);
+        const q = parseFloat(qty);
+        cumTotal += q;
+        return { price: formatPrice(p), qty: q.toFixed(5), total: cumTotal.toFixed(5), rawTotal: cumTotal, rawPrice: p };
+      });
+    }
+    // Simulated depth for forex
+    const base = currentBid || currentMid || 100;
+    const step = base > 1000 ? 0.10 : base > 100 ? 0.01 : 0.0001;
     const rows = [];
-    for (let i = 0; i < 12; i++) {
-      const price = base - (i + 1) * 0.50;
-      const qty = (Math.random() * 5 + 0.1).toFixed(3);
-      rows.push({ price: price.toFixed(2), qty, total: (price * parseFloat(qty)).toFixed(2) });
+    for (let i = 0; i < 10; i++) {
+      const price = base - (i + 1) * step;
+      const qty = (Math.random() * 3 + 0.001).toFixed(5);
+      const cumTotal = rows.length > 0 ? parseFloat(rows[rows.length - 1].rawTotal) + parseFloat(qty) : parseFloat(qty);
+      rows.push({ price: formatPrice(price), qty, total: cumTotal.toFixed(5), rawTotal: cumTotal, rawPrice: price });
     }
     return rows;
-  }, []);
+  }, [orderBook.bids, currentBid, currentMid]);
 
-  const maxAskQty = useMemo(() => Math.max(...askOrders.map(o => parseFloat(o.qty))), [askOrders]);
-  const maxBidQty = useMemo(() => Math.max(...bidOrders.map(o => parseFloat(o.qty))), [bidOrders]);
+  const maxAskTotal = useMemo(() => Math.max(...askOrders.map(o => o.rawTotal || 0), 1), [askOrders]);
+  const maxBidTotal = useMemo(() => Math.max(...bidOrders.map(o => o.rawTotal || 0), 1), [bidOrders]);
 
-  // Mutations
+  /* ── Spread ── */
+  const spread = useMemo(() => {
+    if (orderBook.asks.length > 0 && orderBook.bids.length > 0) {
+      return parseFloat(orderBook.asks[0][0]) - parseFloat(orderBook.bids[0][0]);
+    }
+    // For forex, calculate from bid/ask
+    if (currentAsk > 0 && currentBid > 0) {
+      return currentAsk - currentBid;
+    }
+    return 0;
+  }, [orderBook, currentAsk, currentBid]);
+
+  /* ── Computed values ── */
+  const effectivePrice = orderType === 'limit' && limitPrice ? parseFloat(limitPrice) || 0 : (orderSide === 'buy' ? currentAsk : currentBid);
+  const qty = parseFloat(quantity) || 0;
+  const orderValue = qty * effectivePrice;
+
+  /* ── Slider → qty ── */
+  const handleSlider = useCallback((pct) => {
+    setSliderPct(pct);
+    if (!balance || !effectivePrice || effectivePrice === 0 || leverage === 0) return;
+    const maxQty = (balance * leverage) / effectivePrice;
+    setQuantity((maxQty * pct / 100).toFixed(6));
+  }, [balance, effectivePrice, leverage]);
+
+  /* ── Symbol switching ── */
+  const handleSymbolSelect = useCallback((sym) => {
+    setSelectedSymbol(sym);
+    setSymbolDropdownOpen(false);
+    setSymbolSearch('');
+    setLimitPrice('');
+    setQuantity('');
+    setSliderPct(0);
+  }, [setSelectedSymbol]);
+
+  const filteredSymbols = useMemo(() => {
+    if (!symbolSearch) return ALL_SYMBOLS;
+    const q = symbolSearch.toLowerCase();
+    return ALL_SYMBOLS.filter(s => s.symbol.toLowerCase().includes(q) || s.base.toLowerCase().includes(q));
+  }, [symbolSearch]);
+
+  /* ── Close dropdown on outside click ── */
+  React.useEffect(() => {
+    const handler = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setSymbolDropdownOpen(false);
+      }
+    };
+    if (symbolDropdownOpen) document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [symbolDropdownOpen]);
+
+  /* ── Mutations ── */
   const createTradeMutation = useMutation({
     mutationFn: createTrade,
-    onSuccess: () => {
-      queryClient.invalidateQueries(['trades', accountId]);
-      queryClient.invalidateQueries(['accountSummary', accountId]);
-      toast({ title: 'Order Placed', description: 'Your order has been successfully placed.' });
-      setQuantity('');
-      setLimitPrice('');
-      setTpPrice('');
-      setSlPrice('');
-    },
-    onError: (error) => {
-      toast({ title: 'Order Failed', description: error.message || 'Failed to place order', variant: 'destructive' });
-    },
+    onSuccess: () => { queryClient.invalidateQueries(['trades', accountId]); toast({ title: 'Order Placed' }); setQuantity(''); setLimitPrice(''); setTpPrice(''); setSlPrice(''); setSliderPct(0); },
+    onError: (e) => { toast({ title: 'Order Failed', description: e?.response?.data?.message || e.message || 'Failed', variant: 'destructive' }); },
   });
-
   const createPendingOrderMutation = useMutation({
     mutationFn: createPendingOrder,
-    onSuccess: () => {
-      queryClient.invalidateQueries(['pendingOrders', accountId]);
-      toast({ title: 'Pending Order Created', description: 'Your pending order has been created.' });
-      setQuantity('');
-      setLimitPrice('');
-      setTpPrice('');
-      setSlPrice('');
-    },
-    onError: (error) => {
-      toast({ title: 'Order Failed', description: error.message || 'Failed to create pending order', variant: 'destructive' });
-    },
+    onSuccess: () => { queryClient.invalidateQueries(['pendingOrders', accountId]); toast({ title: 'Pending Order Created' }); setQuantity(''); setLimitPrice(''); setTpPrice(''); setSlPrice(''); setSliderPct(0); },
+    onError: (e) => { toast({ title: 'Order Failed', description: e?.response?.data?.message || e.message || 'Failed', variant: 'destructive' }); },
+  });
+  const cancelOrderMutation = useMutation({
+    mutationFn: cancelPendingOrder,
+    onSuccess: () => { queryClient.invalidateQueries(['pendingOrders', accountId]); toast({ title: 'Order Cancelled' }); },
+    onError: (e) => { toast({ title: 'Cancel Failed', description: e?.response?.data?.message || e.message, variant: 'destructive' }); },
+  });
+  const closePositionMutation = useMutation({
+    mutationFn: ({ tradeId, closePrice }) => updateTrade(tradeId, { closePrice, closedAt: new Date().toISOString(), closeReason: 'USER_CLOSE' }),
+    onSuccess: () => { queryClient.invalidateQueries(['trades', accountId]); toast({ title: 'Position Closed' }); },
+    onError: (e) => { toast({ title: 'Close Failed', description: e?.response?.data?.message || e.message, variant: 'destructive' }); },
   });
 
+  /* ── Handlers ── */
   const handlePlaceOrder = async () => {
-    if (!accountId || !selectedSymbol?.symbol) {
-      toast({ title: 'Error', description: 'Please select a symbol', variant: 'destructive' });
-      return;
-    }
-
-    if (!quantity || parseFloat(quantity) <= 0) {
-      toast({ title: 'Error', description: 'Please enter a valid quantity', variant: 'destructive' });
-      return;
-    }
-
+    if (isAccountLocked) { toast({ title: 'Account Locked', variant: 'destructive' }); return; }
+    if (!accountId || !currentSymbolStr) { toast({ title: 'Select a symbol', variant: 'destructive' }); return; }
+    if (!quantity || parseFloat(quantity) <= 0) { toast({ title: 'Enter valid quantity', variant: 'destructive' }); return; }
+    if ((orderType === 'limit' || orderType === 'tp/sl') && (!limitPrice || parseFloat(limitPrice) <= 0)) { toast({ title: 'Enter valid price', variant: 'destructive' }); return; }
     setIsPlacingOrder(true);
-
     try {
-      const currentPrice = enrichedSelectedSymbol?.bid || enrichedSelectedSymbol?.ask || 0;
-      const orderPrice = orderType === 'limit' && limitPrice ? parseFloat(limitPrice) : currentPrice;
-
       if (orderType === 'market') {
-        await createTradeMutation.mutateAsync({
-          accountId,
-          symbol: selectedSymbol.symbol,
-          type: orderSide.toUpperCase(),
-          volume: parseFloat(quantity),
-          openPrice: currentPrice,
-          stopLoss: slPrice ? parseFloat(slPrice) : null,
-          takeProfit: tpPrice ? parseFloat(tpPrice) : null,
-          leverage: leverage,
-        });
+        const openPrice = orderSide === 'buy' ? currentAsk : currentBid;
+        if (!openPrice) { toast({ title: 'No price available', variant: 'destructive' }); return; }
+        await createTradeMutation.mutateAsync({ accountId, symbol: currentSymbolStr, type: orderSide.toUpperCase(), volume: parseFloat(quantity), openPrice, stopLoss: slPrice ? parseFloat(slPrice) : null, takeProfit: tpPrice ? parseFloat(tpPrice) : null });
       } else {
-        await createPendingOrderMutation.mutateAsync({
-          accountId,
-          symbol: selectedSymbol.symbol,
-          type: orderSide.toUpperCase(),
-          volume: parseFloat(quantity),
-          triggerPrice: orderPrice,
-          stopLoss: slPrice ? parseFloat(slPrice) : null,
-          takeProfit: tpPrice ? parseFloat(tpPrice) : null,
-        });
+        await createPendingOrderMutation.mutateAsync({ tradingAccountId: accountId, symbol: currentSymbolStr, type: orderSide.toUpperCase(), orderType: orderType === 'tp/sl' ? 'STOP' : 'LIMIT', volume: parseFloat(quantity), price: parseFloat(limitPrice), stopLoss: slPrice ? parseFloat(slPrice) : null, takeProfit: tpPrice ? parseFloat(tpPrice) : null });
       }
-    } catch (error) {
-      console.error('Order placement error:', error);
-    } finally {
-      setIsPlacingOrder(false);
-    }
+    } catch (_) {} finally { setIsPlacingOrder(false); }
   };
 
-  const balance = selectedChallenge?.currentBalance || 0;
-  const timeframes = ['1', '3', '5', '15', '30', '1H', '4H', '1D', '1W'];
+  const handleClosePosition = (trade) => {
+    const cp = trade.type === 'BUY' ? currentBid : currentAsk;
+    if (!cp) { toast({ title: 'No price', variant: 'destructive' }); return; }
+    closePositionMutation.mutate({ tradeId: trade.id, closePrice: cp });
+  };
 
+  const calcPnL = useCallback((trade) => {
+    const p = trade.type === 'BUY' ? currentBid : currentAsk;
+    if (!p || !trade.openPrice) return 0;
+    return (trade.type === 'BUY' ? p - trade.openPrice : trade.openPrice - p) * (trade.volume || 0);
+  }, [currentBid, currentAsk]);
+
+  /* ── P&L summary ── */
+  const pnlSummary = useMemo(() => {
+    if (closedTrades.length === 0) return null;
+    const totalPnL = closedTrades.reduce((sum, t) => sum + (t.profit || 0), 0);
+    const wins = closedTrades.filter(t => (t.profit || 0) > 0).length;
+    const losses = closedTrades.filter(t => (t.profit || 0) < 0).length;
+    const winRate = closedTrades.length > 0 ? (wins / closedTrades.length * 100) : 0;
+    const avgWin = wins > 0 ? closedTrades.filter(t => (t.profit || 0) > 0).reduce((s, t) => s + t.profit, 0) / wins : 0;
+    const avgLoss = losses > 0 ? closedTrades.filter(t => (t.profit || 0) < 0).reduce((s, t) => s + t.profit, 0) / losses : 0;
+    return { totalPnL, wins, losses, total: closedTrades.length, winRate, avgWin, avgLoss };
+  }, [closedTrades]);
+
+  const timeframes = [
+    { key: 'M1', label: '1m' },
+    { key: 'M5', label: '5m' },
+    { key: 'M15', label: '15m' },
+    { key: 'M30', label: '30m' },
+    { key: 'H1', label: '1h' },
+    { key: 'H4', label: '4h' },
+    { key: 'D1', label: '1d' },
+    { key: 'W1', label: '1w' },
+  ];
+
+  /* ════════════════════════ RENDER ════════════════════════ */
   return (
-    <div className="flex flex-col gap-[1px] bg-[#16191e]" style={{ fontFamily: "'IBM Plex Sans', -apple-system, sans-serif" }}>
-      {/* TOP SYMBOL BAR */}
-      <div className="bg-[#1b1d29] px-3 py-2 flex items-center gap-4 overflow-x-auto">
-        <div className="flex items-center gap-2 shrink-0">
-          <Star className="w-4 h-4 text-[#f7a600]" />
-          <span className="text-white font-semibold text-sm">{selectedSymbol?.symbol || 'BTCUSDT'}</span>
-          <span className="text-[#f7a600] text-[10px] font-medium px-1.5 py-0.5 bg-[#f7a600]/10 rounded">Perpetual</span>
+    <div className="flex flex-col h-full" style={{ background: C.bg, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", color: C.textP, fontSize: 12 }}>
+
+      {/* ═══ LOCKED BANNER ═══ */}
+      {isAccountLocked && (
+        <div style={{ background: C.redDim, borderBottom: `1px solid ${C.red}` }} className="px-4 py-1.5 text-center">
+          <span style={{ color: C.red, fontSize: 12 }}>Account {accountStatus === 'failed' ? 'Failed — Trading Disabled' : 'Inactive'}</span>
         </div>
-        <div className="flex items-center gap-5 text-xs shrink-0">
-          <div>
-            <span className="text-[#20b26c] text-base font-semibold font-mono">97,150.50</span>
-            <span className="text-[#71757a] ml-1.5">$97,150.50</span>
+      )}
+
+      {/* ═══ TOP HEADER BAR ═══ */}
+      <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, position: 'relative', zIndex: 100 }} className="flex items-center px-4 py-2 gap-6 flex-wrap">
+        {/* Symbol selector */}
+        <div className="relative shrink-0" ref={dropdownRef}>
+          <button
+            onClick={() => setSymbolDropdownOpen(!symbolDropdownOpen)}
+            className="flex items-center gap-2 px-2 py-1 rounded transition-colors"
+            style={{ background: symbolDropdownOpen ? C.card : 'transparent' }}
+          >
+            <span style={{ fontSize: 16, fontWeight: 700, color: C.textP }}>{symbolInfo.label}</span>
+            <span style={{ fontSize: 11, color: C.textS, background: C.card, padding: '2px 6px', borderRadius: 3 }}>{isCrypto ? 'Perpetual' : 'Spot'}</span>
+            <ChevronDown size={14} style={{ color: C.textS, transform: symbolDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+          </button>
+
+          {/* Dropdown */}
+          {symbolDropdownOpen && (
+            <div
+              className="absolute top-full left-0 mt-1 rounded-lg overflow-hidden shadow-xl"
+              style={{ background: C.panel, border: `1px solid ${C.border}`, width: 260, zIndex: 9999 }}
+            >
+              <div className="p-2" style={{ borderBottom: `1px solid ${C.border}` }}>
+                <div className="flex items-center gap-2 px-2 py-1.5 rounded" style={{ background: C.card }}>
+                  <Search size={14} style={{ color: C.textT }} />
+                  <input
+                    type="text"
+                    value={symbolSearch}
+                    onChange={(e) => setSymbolSearch(e.target.value)}
+                    placeholder="Search..."
+                    autoFocus
+                    style={{ flex: 1, background: 'transparent', color: C.textP, fontSize: 12, outline: 'none', border: 'none' }}
+                  />
+                </div>
+              </div>
+              <div style={{ maxHeight: 320, overflowY: 'auto' }}>
+                {(() => {
+                  let lastType = '';
+                  return filteredSymbols.map((s) => {
+                    const showHeader = s.type !== lastType;
+                    lastType = s.type;
+                    return (
+                      <React.Fragment key={s.symbol}>
+                        {showHeader && (
+                          <div className="px-3 py-1.5 sticky top-0" style={{ fontSize: 10, fontWeight: 700, color: C.textT, background: C.panel, textTransform: 'uppercase', letterSpacing: 1 }}>
+                            {s.type === 'crypto' ? 'Crypto' : 'Forex & Metals'}
+                          </div>
+                        )}
+                        <button
+                          onClick={() => handleSymbolSelect(s.symbol)}
+                          className="flex items-center justify-between w-full px-3 py-2 transition-colors"
+                          style={{
+                            background: currentSymbolStr === s.symbol ? C.yellowDim : 'transparent',
+                            color: currentSymbolStr === s.symbol ? C.yellow : C.textP,
+                          }}
+                          onMouseEnter={(e) => { if (currentSymbolStr !== s.symbol) e.currentTarget.style.background = C.hoverBg; }}
+                          onMouseLeave={(e) => { if (currentSymbolStr !== s.symbol) e.currentTarget.style.background = 'transparent'; }}
+                        >
+                          <span style={{ fontSize: 13, fontWeight: 500 }}>{s.label}</span>
+                          <span style={{ fontSize: 11, color: C.textT }}>{s.base}</span>
+                        </button>
+                      </React.Fragment>
+                    );
+                  });
+                })()}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Current price */}
+        <div className="shrink-0">
+          <span style={{ fontSize: 18, fontWeight: 700, color: isCrypto ? (ticker?.priceChangePercent >= 0 ? C.green : C.red) : C.textP, fontFamily: 'monospace' }}>
+            {currentMid > 0 ? formatPrice(currentMid) : '--'}
+          </span>
+          <div style={{ fontSize: 11, color: C.textS }}>
+            {currentMid > 0 ? `≈${formatNum(currentMid)} USD` : ''}
           </div>
-          <div>
-            <span className="text-[#71757a]">24h Change</span>
-            <span className="text-[#20b26c] ml-1.5 font-mono">+1.23%</span>
+        </div>
+
+        {/* 24h Stats from Binance ticker */}
+        {[
+          {
+            label: '24h Change',
+            value: ticker ? `${ticker.priceChangePercent >= 0 ? '+' : ''}${ticker.priceChangePercent.toFixed(2)}%` : '--',
+            color: ticker ? (ticker.priceChangePercent >= 0 ? C.green : C.red) : C.textS,
+          },
+          { label: '24h High', value: ticker ? formatPrice(ticker.highPrice) : '--', color: C.textP },
+          { label: '24h Low', value: ticker ? formatPrice(ticker.lowPrice) : '--', color: C.textP },
+          { label: '24H Turnover(USDT)', value: ticker ? formatVolume(ticker.quoteVolume) : '--', color: C.textP },
+        ].map((item, i) => (
+          <div key={i} className="shrink-0 hidden md:block">
+            <div style={{ fontSize: 10, color: C.textT, marginBottom: 1 }}>{item.label}</div>
+            <div style={{ fontSize: 12, color: item.color, fontFamily: 'monospace' }}>{item.value}</div>
           </div>
-          <div className="hidden md:block">
-            <span className="text-[#71757a]">24h High</span>
-            <span className="text-white ml-1.5 font-mono">97,845.00</span>
-          </div>
-          <div className="hidden md:block">
-            <span className="text-[#71757a]">24h Low</span>
-            <span className="text-white ml-1.5 font-mono">95,320.10</span>
-          </div>
-          <div className="hidden lg:block">
-            <span className="text-[#71757a]">24h Vol(USDT)</span>
-            <span className="text-white ml-1.5 font-mono">2.31B</span>
-          </div>
+        ))}
+
+        {/* Connection indicator */}
+        <div className="shrink-0 hidden lg:flex items-center gap-1 ml-auto">
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: isCrypto ? (binanceConnected ? C.green : C.red) : C.yellow }} />
+          <span style={{ fontSize: 10, color: C.textT }}>{isCrypto ? (binanceConnected ? 'Live' : 'Offline') : 'Polling'}</span>
         </div>
       </div>
 
-      {/* TIMEFRAME BAR */}
-      <div className="bg-[#1b1d29] px-3 py-1.5 flex items-center gap-1 border-b border-[#2b2f36]">
-        {timeframes.map((tf) => (
-          <button
-            key={tf}
-            onClick={() => setSelectedTimeframe(tf)}
-            className={`px-2 py-1 text-[11px] font-medium rounded transition-colors ${
-              selectedTimeframe === tf
-                ? 'text-[#f7a600] bg-[#f7a600]/10'
-                : 'text-[#71757a] hover:text-white'
-            }`}
-          >
-            {tf}
+      {/* ═══ CHART NAV TABS ═══ */}
+      <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, position: 'relative', zIndex: 2 }} className="flex items-center px-4 gap-1">
+        {['Chart', 'Overview', 'Data', 'Trade Analysis'].map((tab, i) => (
+          <button key={tab} className="px-3 py-2" style={{ fontSize: 12, color: i === 0 ? C.textP : C.textS, fontWeight: i === 0 ? 600 : 400, borderBottom: i === 0 ? `2px solid ${C.yellow}` : '2px solid transparent' }}>
+            {tab}
           </button>
         ))}
-        <div className="mx-2 w-px h-4 bg-[#2b2f36]" />
-        <button className={`px-2 py-1 text-[11px] font-medium rounded ${chartType === 'candlestick' ? 'text-[#f7a600]' : 'text-[#71757a]'}`}
-          onClick={() => setChartType('candlestick')}>Candles</button>
-        <button className={`px-2 py-1 text-[11px] font-medium rounded ${chartType === 'line' ? 'text-[#f7a600]' : 'text-[#71757a]'}`}
-          onClick={() => setChartType('line')}>Line</button>
+        <div className="flex-1" />
+        <div className="flex items-center gap-1 shrink-0">
+          {['TradingView', 'Depth'].map((v, i) => (
+            <button key={v} className="px-2 py-1.5" style={{ fontSize: 11, color: i === 0 ? C.textP : C.textS }}>{v}</button>
+          ))}
+        </div>
       </div>
 
-      {/* MAIN TRADING AREA */}
-      <div className="flex flex-col lg:flex-row gap-[1px]">
-        {/* LEFT: CHART */}
-        <div className="flex-1 min-w-0 bg-[#1b1d29] flex flex-col" style={{ minHeight: '480px' }}>
-          <TradingChart
-            key={`chart-bybit-${selectedSymbol?.symbol}`}
-            symbol={enrichedSelectedSymbol}
-            openPositions={openPositions}
-            onPriceUpdate={handlePriceUpdate}
-          />
-        </div>
+      {/* ═══ MAIN 3-COLUMN AREA ═══ */}
+      <div className="flex flex-col lg:flex-row flex-1 min-h-0" style={{ position: 'relative', zIndex: 1 }}>
 
-        {/* MIDDLE: ORDER BOOK */}
-        <div className="w-full lg:w-[220px] shrink-0 bg-[#1b1d29] flex flex-col">
-          <div className="px-3 py-2 border-b border-[#2b2f36] flex items-center justify-between">
-            <span className="text-white text-xs font-medium">Order Book</span>
-            <span className="text-[11px] text-[#71757a]">0.01</span>
+        {/* ── LEFT: CHART ── */}
+        <div className="flex-1 min-w-0 flex flex-col" style={{ background: C.panel }}>
+          {/* Timeframe bar */}
+          <div className="flex items-center px-2 py-1 gap-0.5 overflow-x-auto" style={{ borderBottom: `1px solid ${C.border}` }}>
+            {timeframes.map((tf) => (
+              <button key={tf.key} onClick={() => setSelectedTimeframe(tf.key)}
+                className="px-2 py-1 shrink-0" style={{
+                  fontSize: 11,
+                  fontWeight: selectedTimeframe === tf.key ? 600 : 400,
+                  color: selectedTimeframe === tf.key ? C.yellow : C.textS,
+                  background: selectedTimeframe === tf.key ? C.yellowDim : 'transparent',
+                  borderRadius: 3,
+                }}>{tf.label}</button>
+            ))}
+            <div style={{ width: 1, height: 14, background: C.border, margin: '0 6px' }} className="shrink-0" />
+            <button onClick={() => setChartType('candlestick')} className="px-2 py-1 shrink-0"
+              style={{ fontSize: 11, color: chartType === 'candlestick' ? C.textP : C.textS }}>Candles</button>
+            <button onClick={() => setChartType('line')} className="px-2 py-1 shrink-0"
+              style={{ fontSize: 11, color: chartType === 'line' ? C.textP : C.textS }}>Line</button>
           </div>
-
-          <div className="px-3 py-1">
-            <div className="grid grid-cols-3 text-[10px] text-[#71757a] py-1 mb-0.5">
-              <span>Price(USDT)</span>
-              <span className="text-right">Qty(BTC)</span>
-              <span className="text-right">Total</span>
-            </div>
-
-            <div className="space-y-0">
-              {askOrders.map((order, i) => (
-                <div key={`ask-${i}`} className="relative grid grid-cols-3 text-[10px] py-[2px] cursor-pointer hover:bg-[#ef454526]">
-                  <div className="absolute right-0 top-0 bottom-0 bg-[#ef4545]/10"
-                    style={{ width: `${(parseFloat(order.qty) / maxAskQty) * 100}%` }} />
-                  <span className="text-[#ef4545] font-mono relative z-10">{order.price}</span>
-                  <span className="text-[#c8cad0] text-right font-mono relative z-10">{order.qty}</span>
-                  <span className="text-[#71757a] text-right font-mono relative z-10">{order.total}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="py-2 border-y border-[#2b2f36] my-1 text-center">
-              <span className="text-[#20b26c] text-sm font-bold font-mono">97,150.50</span>
-              <span className="text-[#71757a] text-[10px] ml-1.5">= $97,150.50</span>
-            </div>
-
-            <div className="space-y-0">
-              {bidOrders.map((order, i) => (
-                <div key={`bid-${i}`} className="relative grid grid-cols-3 text-[10px] py-[2px] cursor-pointer hover:bg-[#20b26c26]">
-                  <div className="absolute right-0 top-0 bottom-0 bg-[#20b26c]/10"
-                    style={{ width: `${(parseFloat(order.qty) / maxBidQty) * 100}%` }} />
-                  <span className="text-[#20b26c] font-mono relative z-10">{order.price}</span>
-                  <span className="text-[#c8cad0] text-right font-mono relative z-10">{order.qty}</span>
-                  <span className="text-[#71757a] text-right font-mono relative z-10">{order.total}</span>
-                </div>
-              ))}
-            </div>
+          <div className="flex-1 min-h-0" style={{ minHeight: 340 }}>
+            <TradingChart key={`chart-bybit-${currentSymbolStr}`} symbol={enrichedSelectedSymbol} openPositions={openPositions} onPriceUpdate={handlePriceUpdate} showBuySellPanel={false} />
           </div>
         </div>
 
-        {/* RIGHT: TRADE PANEL */}
-        <div className="w-full lg:w-[280px] shrink-0 bg-[#1b1d29] flex flex-col">
-          <div className="flex border-b border-[#2b2f36]">
-            {['limit', 'market', 'conditional'].map((type) => (
-              <button
-                key={type}
-                onClick={() => setOrderType(type)}
-                className={`flex-1 py-2.5 text-[11px] font-medium capitalize transition-colors ${
-                  orderType === type
-                    ? 'text-white border-b-2 border-[#f7a600]'
-                    : 'text-[#71757a] hover:text-white'
-                }`}
-              >
-                {type}
+        {/* ── MIDDLE: ORDER BOOK ── */}
+        <div className="shrink-0 flex flex-col overflow-hidden" style={{ width: 280, background: C.panel, borderLeft: `1px solid ${C.border}`, borderRight: `1px solid ${C.border}` }}>
+          {/* OB Header */}
+          <div className="flex items-center justify-between px-3 shrink-0" style={{ borderBottom: `1px solid ${C.border}` }}>
+            <div className="flex">
+              <button onClick={() => setObTab('book')} className="py-2 mr-4"
+                style={{ fontSize: 12, fontWeight: 600, color: obTab === 'book' ? C.textP : C.textS, borderBottom: obTab === 'book' ? `2px solid ${C.yellow}` : '2px solid transparent' }}>Order Book</button>
+              <button onClick={() => setObTab('trades')} className="py-2"
+                style={{ fontSize: 12, fontWeight: 600, color: obTab === 'trades' ? C.textP : C.textS, borderBottom: obTab === 'trades' ? `2px solid ${C.yellow}` : '2px solid transparent' }}>Recent Trades</button>
+            </div>
+            <div className="flex items-center gap-1">
+              {['both', 'asks', 'bids'].map((mode) => (
+                <button key={mode} className="p-1 rounded" style={{ background: mode === 'both' ? C.card : 'transparent' }}>
+                  <div style={{ width: 14, height: 14, display: 'flex', flexDirection: 'column', gap: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <div style={{ width: 10, height: 2, background: mode === 'asks' || mode === 'both' ? C.red : C.textT, borderRadius: 1 }} />
+                    <div style={{ width: 10, height: 2, background: mode === 'bids' || mode === 'both' ? C.green : C.textT, borderRadius: 1 }} />
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* OB Column Headers */}
+          <div className="grid grid-cols-3 px-3 py-1.5 shrink-0" style={{ fontSize: 10, color: C.textT }}>
+            <span>Price(USDT)</span>
+            <span className="text-right">Qty</span>
+            <span className="text-right">Total</span>
+          </div>
+
+          {/* OB Content */}
+          <div className="flex-1 flex flex-col px-3 overflow-hidden">
+            {/* Ask side */}
+            <div className="flex-1 flex flex-col justify-end overflow-hidden">
+              {askOrders.map((o, i) => {
+                const pct = o.rawTotal ? (o.rawTotal / maxAskTotal) * 100 : 0;
+                return (
+                  <div key={`a-${i}`} onClick={() => o.rawPrice && setLimitPrice(o.rawPrice.toString())}
+                    className="relative grid grid-cols-3 py-[1.5px] cursor-pointer hover:brightness-125" style={{ fontSize: 11 }}>
+                    <div className="absolute right-0 top-0 bottom-0" style={{ width: `${pct}%`, background: C.redDim }} />
+                    <span style={{ color: C.red, fontFamily: 'monospace' }} className="relative z-10">{o.price}</span>
+                    <span style={{ color: C.textP, fontFamily: 'monospace' }} className="text-right relative z-10">{o.qty}</span>
+                    <span style={{ color: C.textS, fontFamily: 'monospace' }} className="text-right relative z-10">{o.total}</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Spread / current price */}
+            <div className="py-2 flex items-center gap-2 shrink-0" style={{ borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}` }}>
+              {currentMid > 0 ? (
+                <>
+                  {isCrypto ? (
+                    ticker?.priceChangePercent >= 0 ? (
+                      <ArrowUp size={14} style={{ color: C.green }} />
+                    ) : (
+                      <ArrowDown size={14} style={{ color: C.red }} />
+                    )
+                  ) : null}
+                  <span style={{ fontSize: 16, fontWeight: 700, color: isCrypto ? (ticker?.priceChangePercent >= 0 ? C.green : C.red) : C.textP, fontFamily: 'monospace' }}>{formatPrice(currentMid)}</span>
+                  <span style={{ fontSize: 11, color: C.textS }}>≈{formatNum(currentMid)} USD</span>
+                  {spread > 0 && <span style={{ fontSize: 10, color: C.textT, marginLeft: 'auto' }}>Spread: {formatPrice(spread)}</span>}
+                </>
+              ) : (
+                <span style={{ color: C.textS }}>--</span>
+              )}
+            </div>
+
+            {/* Bid side */}
+            <div className="flex-1 overflow-hidden">
+              {bidOrders.map((o, i) => {
+                const pct = o.rawTotal ? (o.rawTotal / maxBidTotal) * 100 : 0;
+                return (
+                  <div key={`b-${i}`} onClick={() => o.rawPrice && setLimitPrice(o.rawPrice.toString())}
+                    className="relative grid grid-cols-3 py-[1.5px] cursor-pointer hover:brightness-125" style={{ fontSize: 11 }}>
+                    <div className="absolute right-0 top-0 bottom-0" style={{ width: `${pct}%`, background: C.greenDim }} />
+                    <span style={{ color: C.green, fontFamily: 'monospace' }} className="relative z-10">{o.price}</span>
+                    <span style={{ color: C.textP, fontFamily: 'monospace' }} className="text-right relative z-10">{o.qty}</span>
+                    <span style={{ color: C.textS, fontFamily: 'monospace' }} className="text-right relative z-10">{o.total}</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Buy/Sell ratio bar */}
+            <div className="flex items-center gap-0 shrink-0 py-2" style={{ borderTop: `1px solid ${C.border}` }}>
+              <span style={{ fontSize: 10, color: C.green, marginRight: 4 }}>B</span>
+              <div className="flex-1 flex h-1 rounded overflow-hidden">
+                <div style={{ width: '45%', background: C.green }} />
+                <div style={{ width: '55%', background: C.red }} />
+              </div>
+              <span style={{ fontSize: 10, color: C.red, marginLeft: 4 }}>S</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ── RIGHT: TRADE PANEL ── */}
+        <div className="shrink-0 flex flex-col overflow-hidden" style={{ width: 280, background: C.panel }}>
+          {/* Trade header */}
+          <div className="px-4 py-2.5 flex items-center justify-between shrink-0" style={{ borderBottom: `1px solid ${C.border}` }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: C.textP }}>Trade</span>
+          </div>
+
+          {/* Spot / Convert / Margin tabs */}
+          <div className="flex px-4 shrink-0" style={{ borderBottom: `1px solid ${C.border}` }}>
+            {['Spot', 'Convert', 'Margin'].map((t, i) => (
+              <button key={t} className="py-2 mr-4"
+                style={{ fontSize: 12, fontWeight: i === 0 ? 600 : 400, color: i === 0 ? C.textP : C.textS, borderBottom: i === 0 ? `2px solid ${C.yellow}` : '2px solid transparent' }}>
+                {t === 'Margin' ? <><span className="inline-flex items-center gap-0.5"><span style={{ width: 6, height: 6, borderRadius: '50%', background: C.green, display: 'inline-block' }} /><span style={{ width: 6, height: 6, borderRadius: '50%', background: C.red, display: 'inline-block', marginLeft: -2 }} /></span> {t}</> : t}
               </button>
             ))}
           </div>
 
-          <div className="p-3 space-y-3 flex-1 overflow-y-auto">
-            <div className="flex gap-2">
-              <button className="flex-1 text-[11px] font-medium text-white bg-[#2b2f36] rounded py-1.5 hover:bg-[#363a45] transition-colors">
-                Cross
-              </button>
-              <button className="flex-1 text-[11px] font-medium text-[#f7a600] bg-[#f7a600]/10 border border-[#f7a600]/30 rounded py-1.5">
-                {leverage}x
-              </button>
-            </div>
+          <div className="flex-1 overflow-y-auto">
+            <div className="p-4 space-y-3">
+              {/* Buy / Sell toggle */}
+              <div className="grid grid-cols-2 gap-0 rounded overflow-hidden">
+                <button onClick={() => setOrderSide('buy')}
+                  style={{ padding: '10px 0', fontSize: 13, fontWeight: 700, color: orderSide === 'buy' ? '#fff' : C.textS, background: orderSide === 'buy' ? C.green : C.card, transition: 'all .15s' }}>Buy</button>
+                <button onClick={() => setOrderSide('sell')}
+                  style={{ padding: '10px 0', fontSize: 13, fontWeight: 700, color: orderSide === 'sell' ? '#fff' : C.textS, background: orderSide === 'sell' ? C.red : C.card, transition: 'all .15s' }}>Sell</button>
+              </div>
 
-            <div>
-              <input
-                type="range" min="1" max="100" value={leverage}
-                onChange={(e) => setLeverage(parseInt(e.target.value))}
-                className="w-full h-1 rounded-full appearance-none cursor-pointer"
-                style={{
-                  background: `linear-gradient(to right, #f7a600 ${leverage}%, #2b2f36 ${leverage}%)`,
-                  accentColor: '#f7a600'
-                }}
-              />
-              <div className="flex justify-between mt-1">
-                {[1, 5, 10, 25, 50, 100].map((v) => (
-                  <button key={v} onClick={() => setLeverage(v)}
-                    className={`text-[9px] px-1 py-0.5 rounded ${leverage === v ? 'text-[#f7a600] bg-[#f7a600]/10' : 'text-[#71757a]'}`}
-                  >{v}x</button>
+              {/* Limit / Market / TP/SL tabs */}
+              <div className="flex gap-0">
+                {['limit', 'market', 'tp/sl'].map((t) => (
+                  <button key={t} onClick={() => setOrderType(t)}
+                    className="py-1.5 mr-4" style={{
+                      fontSize: 12, fontWeight: orderType === t ? 600 : 400,
+                      color: orderType === t ? C.textP : C.textS,
+                      borderBottom: orderType === t ? `2px solid ${C.yellow}` : '2px solid transparent',
+                      textTransform: 'capitalize',
+                    }}>{t === 'tp/sl' ? 'TP/SL' : t.charAt(0).toUpperCase() + t.slice(1)}</button>
                 ))}
               </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-0 rounded-md overflow-hidden">
-              <button
-                onClick={() => setOrderSide('buy')}
-                className={`py-2 text-xs font-bold transition-colors ${
-                  orderSide === 'buy'
-                    ? 'bg-[#20b26c] text-white'
-                    : 'bg-[#2b2f36] text-[#71757a] hover:text-white'
-                }`}
-              >Buy/Long</button>
-              <button
-                onClick={() => setOrderSide('sell')}
-                className={`py-2 text-xs font-bold transition-colors ${
-                  orderSide === 'sell'
-                    ? 'bg-[#ef4545] text-white'
-                    : 'bg-[#2b2f36] text-[#71757a] hover:text-white'
-                }`}
-              >Sell/Short</button>
-            </div>
-
-            {orderType === 'limit' && (
-              <div>
-                <label className="text-[10px] text-[#71757a] mb-1 block">Order Price</label>
-                <div className="flex items-center bg-[#2b2f36] rounded border border-[#363a45] focus-within:border-[#f7a600] transition-colors">
-                  <button className="px-2 py-2 text-[#71757a] hover:text-white text-sm font-mono">-</button>
-                  <input
-                    type="text" value={limitPrice}
-                    onChange={(e) => setLimitPrice(e.target.value)}
-                    placeholder="97,150.50"
-                    className="flex-1 bg-transparent text-center text-white text-xs font-mono outline-none py-2"
-                  />
-                  <button className="px-2 py-2 text-[#71757a] hover:text-white text-sm font-mono">+</button>
-                </div>
-              </div>
-            )}
-
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-[10px] text-[#71757a]">Qty (BTC)</label>
-                <span className="text-[10px] text-[#71757a]">Avbl: {balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT</span>
-              </div>
-              <div className="flex items-center bg-[#2b2f36] rounded border border-[#363a45] focus-within:border-[#f7a600] transition-colors">
-                <button className="px-2 py-2 text-[#71757a] hover:text-white text-sm font-mono">-</button>
-                <input
-                  type="text" value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                  placeholder="0.000"
-                  className="flex-1 bg-transparent text-center text-white text-xs font-mono outline-none py-2"
-                />
-                <button className="px-2 py-2 text-[#71757a] hover:text-white text-sm font-mono">+</button>
-              </div>
-              <div className="flex gap-1 mt-1.5">
-                {['25%', '50%', '75%', '100%'].map((pct) => (
-                  <button key={pct}
-                    className="flex-1 text-[9px] py-1 rounded bg-[#2b2f36] text-[#71757a] hover:text-white hover:bg-[#363a45] font-medium transition-colors"
-                  >{pct}</button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] text-[#71757a]">TP/SL</span>
-              <button
-                onClick={() => setShowTpSl(!showTpSl)}
-                className={`w-8 h-4 rounded-full transition-colors relative ${showTpSl ? 'bg-[#f7a600]' : 'bg-[#2b2f36]'}`}
-              >
-                <span className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${showTpSl ? 'left-[18px]' : 'left-0.5'}`} />
-              </button>
-            </div>
-
-            {showTpSl && (
-              <div className="space-y-2">
-                <div className="flex items-center bg-[#2b2f36] rounded border border-[#363a45] px-3 py-1.5">
-                  <span className="text-[10px] text-[#20b26c] w-8">TP</span>
-                  <input type="text" value={tpPrice} onChange={(e) => setTpPrice(e.target.value)}
-                    placeholder="Take Profit Price" className="flex-1 bg-transparent text-white text-xs font-mono outline-none" />
-                </div>
-                <div className="flex items-center bg-[#2b2f36] rounded border border-[#363a45] px-3 py-1.5">
-                  <span className="text-[10px] text-[#ef4545] w-8">SL</span>
-                  <input type="text" value={slPrice} onChange={(e) => setSlPrice(e.target.value)}
-                    placeholder="Stop Loss Price" className="flex-1 bg-transparent text-white text-xs font-mono outline-none" />
-                </div>
-              </div>
-            )}
-
-            <div className="space-y-1.5 py-2 border-t border-[#2b2f36]">
-              <div className="flex justify-between text-[10px]">
-                <span className="text-[#71757a]">Order Value</span>
-                <span className="text-[#c8cad0] font-mono">0.00 USDT</span>
-              </div>
-              <div className="flex justify-between text-[10px]">
-                <span className="text-[#71757a]">Order Cost</span>
-                <span className="text-[#c8cad0] font-mono">0.00 USDT</span>
-              </div>
-              <div className="flex justify-between text-[10px]">
-                <span className="text-[#71757a]">Available Balance</span>
-                <span className="text-[#c8cad0] font-mono">{balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT</span>
-              </div>
-            </div>
-
-            <button 
-              onClick={handlePlaceOrder}
-              disabled={isPlacingOrder || !accountId}
-              className={`w-full py-2.5 rounded font-bold text-xs transition-colors ${
-              orderSide === 'buy'
-                ? 'bg-[#20b26c] hover:bg-[#1a9e5c] text-white disabled:opacity-50 disabled:cursor-not-allowed'
-                : 'bg-[#ef4545] hover:bg-[#d93b3b] text-white disabled:opacity-50 disabled:cursor-not-allowed'
-            }`}>
-              {isPlacingOrder ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                  Placing...
+              {/* Available Balance */}
+              <div className="flex items-center justify-between">
+                <span style={{ fontSize: 12, color: C.textS }}>Available Balance</span>
+                <span style={{ fontSize: 12, color: C.textP, fontFamily: 'monospace' }}>
+                  {balance > 0 ? formatNum(balance) : '--'} USDT
                 </span>
-              ) : (
-                orderSide === 'buy' ? 'Buy/Long' : 'Sell/Short'
+              </div>
+
+              {/* Price input (for limit / tp/sl) */}
+              {orderType !== 'market' && (
+                <div style={{ background: C.inputBg, borderRadius: 4, border: `1px solid ${C.border}` }} className="flex items-center px-3 py-2">
+                  <span style={{ fontSize: 12, color: C.textS, width: 40, shrink: 0 }}>Price</span>
+                  <input type="text" value={limitPrice} onChange={(e) => setLimitPrice(e.target.value)}
+                    placeholder={currentMid > 0 ? formatPrice(currentMid) : '--'}
+                    style={{ flex: 1, background: 'transparent', color: C.textP, fontSize: 13, fontFamily: 'monospace', textAlign: 'center', outline: 'none', border: 'none', minWidth: 0 }} />
+                  <span style={{ fontSize: 12, color: C.textS }}>USDT</span>
+                </div>
               )}
-            </button>
+
+              {/* Quantity input */}
+              <div style={{ background: C.inputBg, borderRadius: 4, border: `1px solid ${C.border}` }} className="flex items-center px-3 py-2">
+                <span style={{ fontSize: 12, color: C.textS, width: 58, shrink: 0 }}>Quantity</span>
+                <input type="text" value={quantity} onChange={(e) => setQuantity(e.target.value)}
+                  placeholder="--"
+                  style={{ flex: 1, background: 'transparent', color: C.textP, fontSize: 13, fontFamily: 'monospace', textAlign: 'center', outline: 'none', border: 'none', minWidth: 0 }} />
+                <span style={{ fontSize: 12, color: C.textS }}>{isCrypto ? symbolInfo.base : 'Lots'}</span>
+              </div>
+
+              {/* Slider with dots */}
+              <div className="relative py-2">
+                <input type="range" min="0" max="100" value={sliderPct}
+                  onChange={(e) => handleSlider(parseInt(e.target.value))}
+                  className="w-full"
+                  style={{
+                    height: 4, appearance: 'none', background: `linear-gradient(to right, ${orderSide === 'buy' ? C.green : C.red} ${sliderPct}%, ${C.border} ${sliderPct}%)`,
+                    borderRadius: 2, outline: 'none', cursor: 'pointer',
+                    accentColor: orderSide === 'buy' ? C.green : C.red,
+                  }} />
+                <div className="flex justify-between mt-1 px-0.5">
+                  {[0, 25, 50, 75, 100].map((p) => (
+                    <button key={p} onClick={() => handleSlider(p)}
+                      style={{ width: 8, height: 8, borderRadius: '50%', background: sliderPct >= p ? (orderSide === 'buy' ? C.green : C.red) : C.border, border: `1.5px solid ${sliderPct >= p ? (orderSide === 'buy' ? C.green : C.red) : C.textT}`, cursor: 'pointer', transition: 'all .15s' }} />
+                  ))}
+                </div>
+                <div className="flex justify-between mt-0.5 px-0">
+                  {[0, 25, 50, 75, 100].map((p) => (
+                    <span key={p} style={{ fontSize: 9, color: C.textT, width: 24, textAlign: 'center' }}>{p}%</span>
+                  ))}
+                </div>
+              </div>
+
+              {/* TP/SL toggle */}
+              {orderType !== 'tp/sl' && (
+                <div className="flex items-center justify-between">
+                  <span style={{ fontSize: 12, color: C.textS }}>TP/SL</span>
+                  <button onClick={() => setShowTpSl(!showTpSl)}
+                    style={{ width: 32, height: 18, borderRadius: 9, background: showTpSl ? C.green : C.border, position: 'relative', transition: 'background .2s', cursor: 'pointer', border: 'none' }}>
+                    <span style={{ position: 'absolute', top: 2, width: 14, height: 14, borderRadius: '50%', background: '#fff', transition: 'left .2s', left: showTpSl ? 16 : 2 }} />
+                  </button>
+                </div>
+              )}
+
+              {/* TP/SL inputs */}
+              {(showTpSl || orderType === 'tp/sl') && (
+                <div className="space-y-2">
+                  <div style={{ background: C.inputBg, borderRadius: 4, border: `1px solid ${C.border}` }} className="flex items-center px-3 py-1.5">
+                    <span style={{ fontSize: 11, color: C.green, width: 24 }}>TP</span>
+                    <input type="text" value={tpPrice} onChange={(e) => setTpPrice(e.target.value)} placeholder="Take Profit"
+                      style={{ flex: 1, background: 'transparent', color: C.textP, fontSize: 12, fontFamily: 'monospace', outline: 'none', border: 'none', minWidth: 0 }} />
+                  </div>
+                  <div style={{ background: C.inputBg, borderRadius: 4, border: `1px solid ${C.border}` }} className="flex items-center px-3 py-1.5">
+                    <span style={{ fontSize: 11, color: C.red, width: 24 }}>SL</span>
+                    <input type="text" value={slPrice} onChange={(e) => setSlPrice(e.target.value)} placeholder="Stop Loss"
+                      style={{ flex: 1, background: 'transparent', color: C.textP, fontSize: 12, fontFamily: 'monospace', outline: 'none', border: 'none', minWidth: 0 }} />
+                  </div>
+                </div>
+              )}
+
+              {/* Leverage row */}
+              <div className="flex items-center justify-between">
+                <span style={{ fontSize: 12, color: C.textS }}>Leverage</span>
+                <div className="flex items-center gap-1">
+                  {[1, 5, 10, 25, 50, 100].map((v) => (
+                    <button key={v} onClick={() => setLeverage(v)}
+                      style={{ fontSize: 10, padding: '2px 6px', borderRadius: 3, fontWeight: leverage === v ? 600 : 400, color: leverage === v ? C.yellow : C.textS, background: leverage === v ? C.yellowDim : 'transparent' }}>{v}x</button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Order summary */}
+              <div className="space-y-1 pt-1" style={{ borderTop: `1px solid ${C.border}` }}>
+                <div className="flex justify-between" style={{ fontSize: 12 }}>
+                  <span style={{ color: C.textS }}>Order Value</span>
+                  <span style={{ color: C.textP, fontFamily: 'monospace' }}>{orderValue > 0 ? formatNum(orderValue) : '--'} USDT</span>
+                </div>
+                <div className="flex justify-between" style={{ fontSize: 12 }}>
+                  <span style={{ color: C.textS }}>Max. buying amount</span>
+                  <span style={{ color: C.textP, fontFamily: 'monospace' }}>
+                    {balance > 0 && effectivePrice > 0 ? (balance * leverage / effectivePrice).toFixed(isCrypto ? 6 : 2) : '--'} {isCrypto ? symbolInfo.base : 'Lots'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Place order button */}
+              <button onClick={handlePlaceOrder} disabled={isPlacingOrder || !accountId || isAccountLocked}
+                style={{
+                  width: '100%', padding: '12px 0', borderRadius: 4, fontSize: 14, fontWeight: 700, cursor: 'pointer', border: 'none', transition: 'opacity .15s',
+                  background: isAccountLocked ? C.border : (orderSide === 'buy' ? C.green : C.red),
+                  color: isAccountLocked ? C.textS : '#fff',
+                  opacity: (isPlacingOrder || !accountId) ? 0.5 : 1,
+                }}>
+                {isPlacingOrder ? (
+                  <span className="flex items-center justify-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Placing...</span>
+                ) : isAccountLocked ? 'Account Locked' : (
+                  `${orderSide === 'buy' ? 'Buy' : 'Sell'} ${symbolInfo.label}`
+                )}
+              </button>
+            </div>
           </div>
+        </div>
+      </div>
+
+      {/* ═══ BOTTOM PANEL ═══ */}
+      <div style={{ background: C.panel, borderTop: `1px solid ${C.border}`, minHeight: 160, maxHeight: 260, position: 'relative', zIndex: 1 }} className="flex flex-col shrink-0">
+        {/* Tabs */}
+        <div className="flex items-center px-4 overflow-x-auto shrink-0" style={{ borderBottom: `1px solid ${C.border}` }}>
+          {[
+            { key: 'positions', label: 'Positions', count: openPositions.length },
+            { key: 'open', label: 'Open Orders', count: activePendingOrders.length },
+            { key: 'history', label: 'Trade History', count: closedTrades.length },
+            { key: 'assets', label: 'Assets', count: 0 },
+            { key: 'pnl', label: 'P&L', count: 0 },
+          ].map(({ key, label, count }) => (
+            <button key={key} onClick={() => setBottomTab(key)} className="py-2 mr-5 shrink-0 relative"
+              style={{ fontSize: 12, color: bottomTab === key ? C.textP : C.textS, fontWeight: bottomTab === key ? 600 : 400 }}>
+              {label}
+              {count > 0 && <span style={{ fontSize: 9, marginLeft: 3, padding: '1px 4px', borderRadius: 3, background: C.yellowDim, color: C.yellow }}>{count}</span>}
+              {bottomTab === key && <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, background: C.yellow }} />}
+            </button>
+          ))}
+        </div>
+
+        {/* Table content */}
+        <div className="flex-1 overflow-auto">
+          {/* POSITIONS */}
+          {bottomTab === 'positions' && (
+            openPositions.length === 0
+              ? <div className="flex items-center justify-center h-full" style={{ color: C.textT, fontSize: 12 }}>No open positions</div>
+              : <table style={{ width: '100%', fontSize: 11, borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ color: C.textT, borderBottom: `1px solid ${C.border}` }}>
+                      {['Symbol', 'Side', 'Qty', 'Entry', 'Mark', 'PnL', 'SL', 'TP', ''].map((h, i) => (
+                        <th key={i} style={{ padding: '6px 10px', fontWeight: 500, textAlign: i < 2 ? 'left' : i === 8 ? 'center' : 'right' }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {openPositions.map((trade) => {
+                      const pnl = calcPnL(trade);
+                      const mark = trade.type === 'BUY' ? currentBid : currentAsk;
+                      return (
+                        <tr key={trade.id} style={{ borderBottom: `1px solid ${C.border}22` }} className="hover:brightness-110">
+                          <td style={{ padding: '5px 10px', color: C.textP, fontFamily: 'monospace' }}>{trade.symbol}</td>
+                          <td style={{ padding: '5px 10px', color: trade.type === 'BUY' ? C.green : C.red, fontWeight: 600 }}>{trade.type === 'BUY' ? 'Long' : 'Short'}</td>
+                          <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textP, fontFamily: 'monospace' }}>{trade.volume?.toFixed(3)}</td>
+                          <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textP, fontFamily: 'monospace' }}>{formatPrice(trade.openPrice)}</td>
+                          <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textP, fontFamily: 'monospace' }}>{mark > 0 ? formatPrice(mark) : '--'}</td>
+                          <td style={{ padding: '5px 10px', textAlign: 'right', fontFamily: 'monospace', fontWeight: 600, color: pnl >= 0 ? C.green : C.red }}>{pnl >= 0 ? '+' : ''}{pnl.toFixed(2)}</td>
+                          <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textT, fontFamily: 'monospace' }}>{trade.stopLoss ? formatPrice(trade.stopLoss) : '--'}</td>
+                          <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textT, fontFamily: 'monospace' }}>{trade.takeProfit ? formatPrice(trade.takeProfit) : '--'}</td>
+                          <td style={{ padding: '5px 10px', textAlign: 'center' }}>
+                            <button onClick={() => handleClosePosition(trade)} disabled={closePositionMutation.isLoading || isAccountLocked}
+                              style={{ fontSize: 10, padding: '3px 10px', borderRadius: 3, border: `1px solid ${C.border}`, background: 'transparent', color: C.textS, cursor: 'pointer' }}
+                              className="hover:brightness-150 disabled:opacity-50">Close</button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+          )}
+
+          {/* OPEN ORDERS (pending) */}
+          {bottomTab === 'open' && (
+            activePendingOrders.length === 0
+              ? <div className="flex items-center justify-center h-full" style={{ color: C.textT, fontSize: 12 }}>No open orders</div>
+              : <table style={{ width: '100%', fontSize: 11, borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ color: C.textT, borderBottom: `1px solid ${C.border}` }}>
+                      {['Symbol', 'Type', 'Side', 'Qty', 'Price', 'SL', 'TP', ''].map((h, i) => (
+                        <th key={i} style={{ padding: '6px 10px', fontWeight: 500, textAlign: i < 3 ? 'left' : i === 7 ? 'center' : 'right' }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {activePendingOrders.map((order) => (
+                      <tr key={order.id} style={{ borderBottom: `1px solid ${C.border}22` }}>
+                        <td style={{ padding: '5px 10px', color: C.textP, fontFamily: 'monospace' }}>{order.symbol}</td>
+                        <td style={{ padding: '5px 10px', color: C.textS }}>{order.orderType}</td>
+                        <td style={{ padding: '5px 10px', color: order.type === 'BUY' ? C.green : C.red, fontWeight: 600 }}>{order.type === 'BUY' ? 'Long' : 'Short'}</td>
+                        <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textP, fontFamily: 'monospace' }}>{order.volume?.toFixed(3)}</td>
+                        <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textP, fontFamily: 'monospace' }}>{formatPrice(order.price)}</td>
+                        <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textT, fontFamily: 'monospace' }}>{order.stopLoss ? formatPrice(order.stopLoss) : '--'}</td>
+                        <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textT, fontFamily: 'monospace' }}>{order.takeProfit ? formatPrice(order.takeProfit) : '--'}</td>
+                        <td style={{ padding: '5px 10px', textAlign: 'center' }}>
+                          <button onClick={() => cancelOrderMutation.mutate(order.id)} disabled={cancelOrderMutation.isLoading}
+                            style={{ fontSize: 10, padding: '3px 10px', borderRadius: 3, border: `1px solid ${C.red}33`, background: 'transparent', color: C.red, cursor: 'pointer' }}
+                            className="hover:brightness-150 disabled:opacity-50">Cancel</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+          )}
+
+          {/* TRADE HISTORY */}
+          {bottomTab === 'history' && (
+            closedTrades.length === 0
+              ? <div className="flex items-center justify-center h-full" style={{ color: C.textT, fontSize: 12 }}>No trade history</div>
+              : <table style={{ width: '100%', fontSize: 11, borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ color: C.textT, borderBottom: `1px solid ${C.border}` }}>
+                      {['Symbol', 'Side', 'Qty', 'Entry', 'Close', 'PnL', 'Reason'].map((h, i) => (
+                        <th key={i} style={{ padding: '6px 10px', fontWeight: 500, textAlign: i < 2 ? 'left' : 'right' }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {closedTrades.slice(0, 50).map((trade) => (
+                      <tr key={trade.id} style={{ borderBottom: `1px solid ${C.border}22` }}>
+                        <td style={{ padding: '5px 10px', color: C.textP, fontFamily: 'monospace' }}>{trade.symbol}</td>
+                        <td style={{ padding: '5px 10px', color: trade.type === 'BUY' ? C.green : C.red, fontWeight: 600 }}>{trade.type === 'BUY' ? 'Long' : 'Short'}</td>
+                        <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textP, fontFamily: 'monospace' }}>{trade.volume?.toFixed(3)}</td>
+                        <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textP, fontFamily: 'monospace' }}>{formatPrice(trade.openPrice)}</td>
+                        <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textP, fontFamily: 'monospace' }}>{formatPrice(trade.closePrice)}</td>
+                        <td style={{ padding: '5px 10px', textAlign: 'right', fontFamily: 'monospace', fontWeight: 600, color: (trade.profit || 0) >= 0 ? C.green : C.red }}>{(trade.profit || 0) >= 0 ? '+' : ''}{(trade.profit || 0).toFixed(2)}</td>
+                        <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textT }}>{trade.closeReason || '--'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+          )}
+
+          {/* ASSETS */}
+          {bottomTab === 'assets' && (
+            <div className="p-4">
+              <div className="grid grid-cols-2 gap-4" style={{ maxWidth: 500 }}>
+                <div className="p-3 rounded" style={{ background: C.card }}>
+                  <div style={{ fontSize: 11, color: C.textT, marginBottom: 4 }}>Total Balance</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: C.textP, fontFamily: 'monospace' }}>{formatNum(balance)} USDT</div>
+                </div>
+                <div className="p-3 rounded" style={{ background: C.card }}>
+                  <div style={{ fontSize: 11, color: C.textT, marginBottom: 4 }}>Equity</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: C.textP, fontFamily: 'monospace' }}>{formatNum(selectedChallenge?.equity || balance)} USDT</div>
+                </div>
+                <div className="p-3 rounded" style={{ background: C.card }}>
+                  <div style={{ fontSize: 11, color: C.textT, marginBottom: 4 }}>Open Positions</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: C.textP }}>{openPositions.length}</div>
+                </div>
+                <div className="p-3 rounded" style={{ background: C.card }}>
+                  <div style={{ fontSize: 11, color: C.textT, marginBottom: 4 }}>Pending Orders</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: C.textP }}>{activePendingOrders.length}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* P&L */}
+          {bottomTab === 'pnl' && (
+            !pnlSummary
+              ? <div className="flex items-center justify-center h-full" style={{ color: C.textT, fontSize: 12 }}>No trading data available</div>
+              : <div className="p-4">
+                  <div className="grid grid-cols-4 gap-3" style={{ maxWidth: 700 }}>
+                    <div className="p-3 rounded" style={{ background: C.card }}>
+                      <div style={{ fontSize: 11, color: C.textT, marginBottom: 4 }}>Total P&L</div>
+                      <div style={{ fontSize: 16, fontWeight: 700, fontFamily: 'monospace', color: pnlSummary.totalPnL >= 0 ? C.green : C.red }}>
+                        {pnlSummary.totalPnL >= 0 ? '+' : ''}{pnlSummary.totalPnL.toFixed(2)}
+                      </div>
+                    </div>
+                    <div className="p-3 rounded" style={{ background: C.card }}>
+                      <div style={{ fontSize: 11, color: C.textT, marginBottom: 4 }}>Win Rate</div>
+                      <div style={{ fontSize: 16, fontWeight: 700, color: C.textP }}>{pnlSummary.winRate.toFixed(1)}%</div>
+                      <div style={{ fontSize: 10, color: C.textT }}>{pnlSummary.wins}W / {pnlSummary.losses}L / {pnlSummary.total} Total</div>
+                    </div>
+                    <div className="p-3 rounded" style={{ background: C.card }}>
+                      <div style={{ fontSize: 11, color: C.textT, marginBottom: 4 }}>Avg Win</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, fontFamily: 'monospace', color: C.green }}>+{pnlSummary.avgWin.toFixed(2)}</div>
+                    </div>
+                    <div className="p-3 rounded" style={{ background: C.card }}>
+                      <div style={{ fontSize: 11, color: C.textT, marginBottom: 4 }}>Avg Loss</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, fontFamily: 'monospace', color: C.red }}>{pnlSummary.avgLoss.toFixed(2)}</div>
+                    </div>
+                  </div>
+                </div>
+          )}
         </div>
       </div>
     </div>

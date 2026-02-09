@@ -35,7 +35,9 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
   // Forex pairs (API actually uses slash format)
   private readonly massivePairs = [
     'EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD',
-    'USD/CAD', 'USD/CHF', 'NZD/USD', 'EUR/GBP'
+    'USD/CAD', 'USD/CHF', 'NZD/USD', 'EUR/GBP',
+    'EUR/JPY', 'GBP/JPY', 'CAD/JPY',
+    'XAU/USD', 'XAG/USD',
   ];
 
   // Real-time cache
@@ -246,12 +248,17 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
       'USD/CHF': 0.8025,
       'NZD/USD': 0.5748,
       'EUR/GBP': 0.8666,
+      'EUR/JPY': 163.35,
+      'GBP/JPY': 191.20,
+      'CAD/JPY': 113.60,
+      'XAU/USD': 2870.00,
+      'XAG/USD': 32.50,
     };
 
     // Initialize with base prices
     this.massivePairs.forEach(symbol => {
       const basePrice = basePrices[symbol] || 1.0;
-      const spread = symbol === 'USD/JPY' ? 0.02 : 0.0002;
+      const spread = symbol.includes('JPY') ? 0.02 : symbol.includes('XAU') ? 0.50 : symbol.includes('XAG') ? 0.03 : 0.0002;
       this.priceCache.set(symbol, {
         bid: basePrice,
         ask: basePrice + spread,
@@ -267,7 +274,7 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
           // Random walk: +/- 0.05% movement
           const changePercent = (Math.random() - 0.5) * 0.001;
           const newBid = current.bid * (1 + changePercent);
-          const spread = symbol === 'USD/JPY' ? 0.02 : 0.0002;
+          const spread = symbol.includes('JPY') ? 0.02 : symbol.includes('XAU') ? 0.50 : symbol.includes('XAG') ? 0.03 : 0.0002;
 
           this.priceCache.set(symbol, {
             bid: newBid,
