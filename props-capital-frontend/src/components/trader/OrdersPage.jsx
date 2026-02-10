@@ -6,38 +6,55 @@ import {
   Filter,
   Download,
   Search,
-  ChevronDown
+  ChevronDown,
+  Loader2
 } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
+import { useTrading } from '@/contexts/TradingContext';
 
-// Demo orders data
-const demoOrders = [
-  { id: 1, symbol: 'EUR/USD', type: 'buy', lots: 0.5, openPrice: 1.08234, closePrice: 1.08567, profit: 166.50, openTime: '2025-01-15 09:30:00', closeTime: '2025-01-15 14:45:00', status: 'closed' },
-  { id: 2, symbol: 'GBP/USD', type: 'sell', lots: 0.3, openPrice: 1.26789, closePrice: 1.26234, profit: 166.50, openTime: '2025-01-15 10:15:00', closeTime: '2025-01-15 16:30:00', status: 'closed' },
-  { id: 3, symbol: 'USD/JPY', type: 'buy', lots: 0.2, openPrice: 149.234, closePrice: 149.876, profit: 85.60, openTime: '2025-01-14 08:00:00', closeTime: '2025-01-14 13:20:00', status: 'closed' },
-  { id: 4, symbol: 'EUR/USD', type: 'buy', lots: 0.1, openPrice: 1.08456, closePrice: null, profit: 23.40, openTime: '2025-01-16 09:00:00', closeTime: null, status: 'open' },
-  { id: 5, symbol: 'AUD/USD', type: 'sell', lots: 0.4, openPrice: 0.65678, closePrice: 0.65234, profit: 177.60, openTime: '2025-01-13 11:30:00', closeTime: '2025-01-13 17:45:00', status: 'closed' },
-  { id: 6, symbol: 'USD/CAD', type: 'buy', lots: 0.25, openPrice: 1.35234, closePrice: 1.35678, profit: -111.00, openTime: '2025-01-12 14:00:00', closeTime: '2025-01-12 18:30:00', status: 'closed' },
-  { id: 7, symbol: 'GBP/USD', type: 'buy', lots: 0.15, openPrice: 1.26123, closePrice: null, profit: 45.30, openTime: '2025-01-16 10:30:00', closeTime: null, status: 'open' },
-  { id: 8, symbol: 'NZD/USD', type: 'sell', lots: 0.35, openPrice: 0.59456, closePrice: 0.59123, profit: 116.55, openTime: '2025-01-11 08:45:00', closeTime: '2025-01-11 15:20:00', status: 'closed' },
-];
+const formatDateTime = (dateStr) => {
+  if (!dateStr) return '-';
+  const d = new Date(dateStr);
+  return d.toLocaleString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
+};
 
 const OrdersPage = () => {
   const { isDark } = useTraderTheme();
+  const { orders, ordersLoading } = useTrading();
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredOrders = demoOrders.filter(order => {
-    if (activeTab === 'open') return order.status === 'open';
-    if (activeTab === 'closed') return order.status === 'closed';
+  const filteredOrders = orders.filter(order => {
+    if (activeTab === 'open') return order.status === 'OPEN';
+    if (activeTab === 'closed') return order.status === 'CLOSED';
     return true;
   }).filter(order =>
     order.symbol.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const totalProfit = demoOrders.filter(o => o.status === 'closed').reduce((acc, o) => acc + o.profit, 0);
-  const openProfit = demoOrders.filter(o => o.status === 'open').reduce((acc, o) => acc + o.profit, 0);
-  const winRate = (demoOrders.filter(o => o.profit > 0).length / demoOrders.length * 100).toFixed(1);
+  const closedOrders = orders.filter(o => o.status === 'CLOSED');
+  const openOrders = orders.filter(o => o.status === 'OPEN');
+  const totalProfit = closedOrders.reduce((acc, o) => acc + (o.profit || 0), 0);
+  const openProfit = openOrders.reduce((acc, o) => acc + (o.profit || 0), 0);
+  const winRate = closedOrders.length > 0
+    ? (closedOrders.filter(o => o.profit > 0).length / closedOrders.length * 100).toFixed(1)
+    : '0.0';
+
+  if (ordersLoading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className={`w-8 h-8 animate-spin ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -55,7 +72,7 @@ const OrdersPage = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className={`rounded-2xl border p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           <p className={`text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Total Trades</p>
-          <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{demoOrders.length}</p>
+          <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{orders.length}</p>
         </div>
         <div className={`rounded-2xl border p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           <p className={`text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Closed P/L</p>
@@ -81,9 +98,9 @@ const OrdersPage = () => {
           {/* Tabs - Highlighted */}
           <div className={`flex items-center gap-2 rounded-xl p-1.5 ${isDark ? 'bg-white/5' : 'bg-slate-100'}`}>
             {[
-              { key: 'all', label: 'All Orders', count: demoOrders.length },
-              { key: 'open', label: 'Open', count: demoOrders.filter(o => o.status === 'open').length },
-              { key: 'closed', label: 'Closed', count: demoOrders.filter(o => o.status === 'closed').length },
+              { key: 'all', label: 'All Orders', count: orders.length },
+              { key: 'open', label: 'Open', count: openOrders.length },
+              { key: 'closed', label: 'Closed', count: closedOrders.length },
             ].map((tab) => (
               <button
                 key={tab.key}
@@ -145,30 +162,30 @@ const OrdersPage = () => {
                     <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{order.symbol}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${order.type === 'buy'
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${order.type === 'BUY'
                       ? 'bg-emerald-500/10 text-emerald-500'
                       : 'bg-red-500/10 text-red-500'
                       }`}>
-                      {order.type === 'buy' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                      {order.type.toUpperCase()}
+                      {order.type === 'BUY' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                      {order.type}
                     </span>
                   </td>
-                  <td className={`px-6 py-4 font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{order.lots}</td>
-                  <td className={`px-6 py-4 font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{order.openPrice}</td>
+                  <td className={`px-6 py-4 font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{order.volume}</td>
+                  <td className={`px-6 py-4 font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{order.price}</td>
                   <td className={`px-6 py-4 font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{order.closePrice || '-'}</td>
-                  <td className={`px-6 py-4 text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{order.openTime}</td>
+                  <td className={`px-6 py-4 text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{formatDateTime(order.openAt)}</td>
                   <td className="px-6 py-4">
                     <span className={`font-semibold ${order.profit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                      {order.profit >= 0 ? '+' : ''}${order.profit.toFixed(2)}
+                      {order.profit >= 0 ? '+' : ''}${(order.profit || 0).toFixed(2)}
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${order.status === 'open'
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${order.status === 'OPEN'
                       ? 'bg-amber-500/10 text-amber-500'
                       : isDark ? 'bg-white/10 text-gray-400' : 'bg-slate-100 text-slate-500'
                       }`}>
-                      {order.status === 'open' && <Clock className="w-3 h-3" />}
-                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                      {order.status === 'OPEN' && <Clock className="w-3 h-3" />}
+                      {order.status === 'OPEN' ? 'Open' : 'Closed'}
                     </span>
                   </td>
                 </tr>
