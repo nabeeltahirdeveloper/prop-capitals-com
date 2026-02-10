@@ -8,3 +8,7 @@ props-capital-frontend/package-lock.json
 .AppleDouble
 .LSOverride
 ._*
+
+# Editor Configuration  Files
+.zed
+.vscode
