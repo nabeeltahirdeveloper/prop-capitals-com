@@ -24,6 +24,7 @@ import {
   X
 } from 'lucide-react';
 import { ChallengesProvider, useChallenges } from '@/contexts/ChallengesContext';
+import { useTrading } from '@/contexts/TradingContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { getCurrentUser } from "@/api/auth";
 import { getUserAccounts } from "@/api/accounts";
@@ -51,6 +52,15 @@ const TraderPanelLayoutInner = () => {
   const [lastRefresh, setLastRefresh] = useState(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { selectedChallenge, getChallengePhaseLabel, challenges, selectChallenge } = useChallenges();
+  const { fetchOrders, fetchUserBalance } = useTrading();
+
+  // Refetch orders & balance when the selected account changes
+  useEffect(() => {
+    if (selectedChallenge?.id) {
+      fetchOrders(selectedChallenge.id);
+      fetchUserBalance(selectedChallenge.id);
+    }
+  }, [selectedChallenge?.id, fetchOrders, fetchUserBalance]);
 
   const { data: user } = useQuery({
     queryKey: ["user", "me"],
