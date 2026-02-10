@@ -284,15 +284,16 @@ export const ChallengesProvider = ({ children }) => {
             const phaseLabel = account.phase === 'PHASE1' ? 1 : account.phase === 'PHASE2' ? 2 : 'funded';
             const challengeType = challenge.challengeType === 'one_phase' ? '1-step' : '2-step';
             
-            // Calculate stats
-            const currentProfit = ((account.balance - account.initialBalance) / account.initialBalance) * 100;
-            const currentDrawdown = account.maxEquityToDate 
-              ? ((account.maxEquityToDate - account.equity) / account.maxEquityToDate) * 100 
-              : 0;
-            
-            // Get today's loss
-            const todayStartEquity = account.todayStartEquity || account.initialBalance;
-            const currentDailyLoss = ((todayStartEquity - account.equity) / todayStartEquity) * 100;
+            // Use backend values (single source of truth — monotonic metrics)
+            const initialBalance = account.initialBalance || 1;
+            const maxEquity = account.maxEquityToDate || initialBalance;
+            const minEquityOverall = account.minEquityOverall || initialBalance;
+            const minEquityToday = account.minEquityToday || initialBalance;
+            const todayStart = account.todayStartEquity || initialBalance;
+
+            const currentProfit = ((maxEquity - initialBalance) / initialBalance) * 100;
+            const currentDrawdown = ((initialBalance - minEquityOverall) / initialBalance) * 100;
+            const currentDailyLoss = ((todayStart - minEquityToday) / todayStart) * 100;
 
             return {
               id: account.id,
@@ -306,9 +307,9 @@ export const ChallengesProvider = ({ children }) => {
               platform: (account.platform || challenge.platform || 'MT5').toLowerCase(),
               server: 'PropCapitals-Live',
               createdAt: account.createdAt,
-              tradingDays: { 
-                current: 0, // Would need to calculate from trades
-                required: challenge.minTradingDays || 5 
+              tradingDays: {
+                current: account.tradingDaysCount || 0,
+                required: challenge.minTradingDays || 5
               },
               rules: {
                 profitTarget: phaseLabel === 1 ? challenge.phase1TargetPercent : challenge.phase2TargetPercent || challenge.phase1TargetPercent,
@@ -317,12 +318,12 @@ export const ChallengesProvider = ({ children }) => {
                 minTradingDays: challenge.minTradingDays || 5,
               },
               stats: {
-                currentProfit: Math.max(currentProfit, 0),
-                currentDailyLoss: Math.max(currentDailyLoss, 0),
-                currentDrawdown: Math.max(currentDrawdown, 0),
-                totalTrades: 0, // Would need to get from trades API
-                winRate: 0,
-                avgRR: 0,
+                currentProfit: Math.max(0, currentProfit),
+                currentDailyLoss: Math.max(0, currentDailyLoss),
+                currentDrawdown: Math.max(0, currentDrawdown),
+                totalTrades: account.totalTrades || 0,
+                winRate: account.winRate || 0,
+                avgRR: account.avgRR || 0,
               },
               profitSplit: phaseLabel === 'funded' ? challenge.profitSplit : null,
               payoutEligible: phaseLabel === 'funded' && account.status === 'ACTIVE',
