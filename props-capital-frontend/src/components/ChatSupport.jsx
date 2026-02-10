@@ -152,7 +152,7 @@ const ChatSupport = () => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-24 right-4 sm:right-6 w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 transition-all hover:scale-110 z-50"
+          className="fixed bottom-28 right-4 sm:right-6 w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 transition-all hover:scale-110 z-[9999]"
           data-testid="chat-toggle-button"
         >
           <MessageCircle className="w-7 h-7 text-[#0a0d12]" />
@@ -163,10 +163,10 @@ const ChatSupport = () => {
       {/* Chat Window - Fully Responsive */}
       {isOpen && (
         <div
-          className={`fixed z-50 shadow-2xl overflow-hidden transition-all duration-300 flex flex-col
+          className={`fixed z-[9999] shadow-2xl overflow-hidden transition-all duration-300 flex flex-col
             ${isMinimized
-              ? 'bottom-24 right-4 sm:right-6 w-[calc(100%-2rem)] sm:w-[380px] h-[56px] rounded-2xl'
-              : 'inset-4 sm:inset-auto sm:bottom-24 sm:right-6 sm:w-[400px] sm:h-[580px] sm:max-h-[calc(100vh-140px)] rounded-2xl'
+              ? 'bottom-28 right-4 sm:right-6 w-[calc(100%-2rem)] sm:w-[380px] h-[56px] rounded-2xl'
+              : 'inset-4 sm:inset-auto sm:bottom-28 sm:right-6 sm:w-[400px] sm:h-[580px] sm:max-h-[calc(100vh-140px)] rounded-2xl'
             }
             ${isDark ? 'bg-[#0d1117] border border-white/10' : 'bg-white border border-slate-200'}
           `}
