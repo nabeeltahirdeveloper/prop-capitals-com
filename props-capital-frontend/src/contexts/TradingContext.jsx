@@ -123,6 +123,7 @@ export const TradingProvider = ({ children }) => {
         time: new Date(trade.openedAt).toLocaleTimeString(),
         openAt: trade.openedAt,
         closeAt: trade.closedAt ?? null,
+        closePrice: trade.closePrice ?? null,
       }));
       setOrders(fetchedOrders);
     } catch (error) {
