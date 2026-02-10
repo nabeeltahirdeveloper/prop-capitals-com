@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useMemo, useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getCurrentUser } from '@/api/auth';
+import { reconnectSocketWithToken } from '@/lib/socket';
 
 const AuthContext = createContext({
   status: 'checking',
   user: null,
-  isAdmin: false,
   login: () => { },
   logout: () => { },
 });
@@ -44,6 +44,7 @@ export const AuthProvider = ({ children }) => {
       queryClient.setQueryData(['user', 'me'], userData);
     }
     queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+    reconnectSocketWithToken();
   }, [queryClient]);
 
   const logout = useCallback(() => {
@@ -75,22 +76,14 @@ export const AuthProvider = ({ children }) => {
     return 'authenticated';
   }, [token, isLoading, isError, user]);
 
-  // Determine if user is admin
-  const isAdmin = useMemo(() => {
-    if (!user) return false;
-    const role = user.role?.toUpperCase();
-    return role === 'ADMIN';
-  }, [user]);
-
   const value = useMemo(
     () => ({
       status,
       user,
-      isAdmin,
       login,
       logout,
     }),
-    [status, user, isAdmin, login, logout]
+    [status, user, login, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

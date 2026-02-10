@@ -34,10 +34,18 @@ export class CouponsService {
       return { valid: false, message: 'This coupon has expired' };
     }
 
+    if (coupon.maxUses && coupon.usedCount >= coupon.maxUses) {
+      return {
+        valid: false,
+        message: 'This coupon has reached its usage limit',
+      };
+    }
+
     return {
       valid: true,
       coupon: {
         code: coupon.code,
+        discountType: coupon.discountType,
         discountPct: coupon.discountPct,
       },
     };

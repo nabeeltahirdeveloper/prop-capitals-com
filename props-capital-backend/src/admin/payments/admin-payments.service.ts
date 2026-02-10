@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 
 import { PrismaService } from '../../prisma/prisma.service';
 
@@ -39,7 +39,6 @@ export class AdminPaymentsService {
     const now = new Date();
     const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
 
     // Get all payments for statistics
     const allPayments = await this.prisma.payment.findMany({
@@ -134,7 +133,7 @@ export class AdminPaymentsService {
 
     if (payment.status !== 'succeeded') {
 
-      throw new Error('Only succeeded payments can be refunded');
+      throw new BadRequestException('Only succeeded payments can be refunded');
 
     }
 

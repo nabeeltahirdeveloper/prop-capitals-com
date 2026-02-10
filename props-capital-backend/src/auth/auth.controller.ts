@@ -10,14 +10,11 @@ import type { Request } from 'express';
 
 export class AuthController {
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post('register')
-
   register(@Body() body: any) {
-
     return this.authService.register(body);
-
   }
 
   @Post('register/request-otp')
@@ -31,11 +28,8 @@ export class AuthController {
   }
 
   @Post('login')
-
   login(@Body() body: any) {
-
     return this.authService.login(body);
-
   }
 
 
@@ -61,16 +55,16 @@ export class AuthController {
     return this.authService.changePassword(req.user.userId, body.currentPassword, body.newPassword);
 
   }
-@Post('forgot-password')
-async forgotPassword(@Body('email') email: string) {
-  return this.authService.sendResetPasswordOtp(email);
-}
+  @Post('forgot-password')
+  async forgotPassword(@Body('email') email: string) {
+    return this.authService.sendResetPasswordOtp(email);
+  }
 
-@Post('reset-password')
-async resetPassword(@Body() body: { email: string; otp: string; newPassword: string }) {
-  const { email, otp, newPassword } = body;
-  return this.authService.verifyOtpAndResetPassword(email, otp, newPassword);
-}
+  @Post('reset-password')
+  async resetPassword(@Body() body: { email: string; otp: string; newPassword: string }) {
+    const { email, otp, newPassword } = body;
+    return this.authService.verifyOtpAndResetPassword(email, otp, newPassword);
+  }
 
 
 

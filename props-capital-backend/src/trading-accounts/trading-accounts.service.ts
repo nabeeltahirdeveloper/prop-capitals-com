@@ -54,6 +54,12 @@ export class TradingAccountsService {
         equity: initialBalance,
 
         maxEquityToDate: initialBalance, // Initialize to starting balance (peak equity starts here)
+
+        // ✅ Initialize min equity tracking for monotonic drawdowns
+        minEquityOverall: initialBalance, // Lowest equity ever - starts at initial balance
+        minEquityToday: initialBalance, // Lowest equity today - starts at initial balance
+        todayStartEquity: initialBalance, // Equity at start of trading day
+        lastDailyReset: new Date(), // Track when daily metrics were last reset
       } as any,
     });
   }
@@ -189,44 +195,29 @@ export class TradingAccountsService {
 
     const balance = account.balance ?? initialBalance;
 
-    // Calculate profit percent
+    // ✅ Calculate profit percent - MONOTONIC using maxEquityToDate (matches ChallengeRulesService)
+    const maxEquityToDate = (account as any).maxEquityToDate ?? initialBalance;
     const profitPercent =
       initialBalance > 0
-        ? ((equity - initialBalance) / initialBalance) * 100
+        ? ((maxEquityToDate - initialBalance) / initialBalance) * 100
         : 0;
 
-    // Calculate overall drawdown percent
-    // Overall DD is calculated from maxEquityToDate (highest equity ever reached), not initialBalance
-    // This matches ChallengeRulesService calculation: (maxEquityToDate - equity) / maxEquityToDate * 100
-    const maxEquityToDate = (account as any).maxEquityToDate ?? initialBalance;
+    // ✅ Calculate overall drawdown percent - MONOTONIC using minEquityOverall (matches ChallengeRulesService)
+    // Uses initialBalance as base (industry standard for prop firms)
+    const minEquityOverall = (account as any).minEquityOverall ?? initialBalance;
     const overallDrawdownPercent =
-      maxEquityToDate > 0 && equity < maxEquityToDate
-        ? ((maxEquityToDate - equity) / maxEquityToDate) * 100
+      initialBalance > 0 && minEquityOverall < initialBalance
+        ? ((initialBalance - minEquityOverall) / initialBalance) * 100
         : 0;
 
-    // Calculate daily drawdown percent
-    // Daily DD is calculated from today's highest equity (using equity snapshots)
-    // This is more accurate than the simple balance vs equity comparison
-    const today = new Date();
-
-    today.setHours(0, 0, 0, 0);
-
-    const todaySnapshots = account.equityShots.filter(
-      (shot) => new Date(shot.timestamp) >= today,
-    );
-
-    // Find the highest equity today
-    // If no snapshots for today, use the account's balance (start of day) or initial balance
-    // This prevents using a lower equity as the "max" when account loads after a loss
-    const maxEquityToday =
-      todaySnapshots.length > 0
-        ? Math.max(...todaySnapshots.map((s) => s.equity))
-        : Math.max(balance, initialBalance); // Use balance (start of day) or initial balance, not current equity
-
-    // Daily drawdown is from today's highest equity to current equity
+    // ✅ Calculate daily drawdown percent - MONOTONIC using minEquityToday (matches ChallengeRulesService)
+    // Uses todayStartEquity as base (resets at midnight)
+    // CRITICAL: Fall back to initialBalance (not equity) - equity already includes losses
+    const todayStartEquity = (account as any).todayStartEquity ?? initialBalance;
+    const minEquityToday = (account as any).minEquityToday ?? initialBalance;
     const dailyDrawdownPercent =
-      maxEquityToday > 0 && equity < maxEquityToday
-        ? ((maxEquityToday - equity) / maxEquityToday) * 100
+      todayStartEquity > 0 && minEquityToday < todayStartEquity
+        ? ((todayStartEquity - minEquityToday) / todayStartEquity) * 100
         : 0;
 
     // Calculate remaining drawdown allowances
@@ -503,43 +494,33 @@ export class TradingAccountsService {
 
     const balance = account.balance ?? initialBalance;
 
-    // Profit %
-
+    // ✅ Profit % - Use maxEquityToDate for MONOTONIC profit (never decreases)
+    // This ensures profit target shows the PEAK profit achieved, not current equity
+    const maxEquityToDate = (account as any).maxEquityToDate ?? initialBalance;
     const profitPercent =
       initialBalance > 0
-        ? ((equity - initialBalance) / initialBalance) * 100
+        ? ((maxEquityToDate - initialBalance) / initialBalance) * 100
         : 0;
 
-    // Overall DD % - Calculate from maxEquityToDate (highest equity ever reached)
-    // This matches ChallengeRulesService calculation: (maxEquityToDate - equity) / maxEquityToDate * 100
-    const maxEquityToDate = (account as any).maxEquityToDate ?? initialBalance;
+    // ✅ Overall DD % - Use minEquityOverall for monotonic drawdown (never falls back)
+    // ✅ Use initialBalance as base (industry standard for prop firms)
+    // This matches ChallengeRulesService calculation
+    const minEquityOverall = (account as any).minEquityOverall ?? initialBalance;
     const overallDrawdownPercent =
-      maxEquityToDate > 0 && equity < maxEquityToDate
-        ? ((maxEquityToDate - equity) / maxEquityToDate) * 100
+      initialBalance > 0 && minEquityOverall < initialBalance
+        ? ((initialBalance - minEquityOverall) / initialBalance) * 100
         : 0;
 
-    // Daily DD % — Calculate from today's highest equity (using equity snapshots)
-    // This is more accurate than the simple balance vs equity comparison
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // ✅ Daily DD % - Use minEquityToday for monotonic drawdown (never falls back during the day)
+    // Backend tracks minimum equity reached today, ensuring drawdown can only increase
+    // CRITICAL: Fall back to initialBalance (not equity) - equity already includes losses
+    const todayStartEquity = (account as any).todayStartEquity ?? initialBalance;
+    const minEquityToday = (account as any).minEquityToday ?? initialBalance;
 
-    // Get today's equity snapshots to find the highest equity today
-    const todaySnapshots = account.equityShots.filter(
-      (shot) => new Date(shot.timestamp) >= today,
-    );
-
-    // Find the highest equity today
-    // If no snapshots for today, use the account's balance (start of day) or initial balance
-    // This prevents using a lower equity as the "max" when account loads after a loss
-    const maxEquityToday =
-      todaySnapshots.length > 0
-        ? Math.max(...todaySnapshots.map((s) => s.equity))
-        : Math.max(balance, initialBalance); // Use balance (start of day) or initial balance, not current equity
-
-    // Daily drawdown is from today's highest equity to current equity
+    // Daily drawdown is from today's start equity to minimum equity reached today
     const dailyDrawdownPercent =
-      maxEquityToday > 0 && equity < maxEquityToday
-        ? ((maxEquityToday - equity) / maxEquityToday) * 100
+      todayStartEquity > 0 && minEquityToday < todayStartEquity
+        ? ((todayStartEquity - minEquityToday) / todayStartEquity) * 100
         : 0;
 
     // Trading days based on distinct trade dates
@@ -905,11 +886,34 @@ export class TradingAccountsService {
 
     const rules = await this.getRuleCompliance(id);
 
+    // ✅ CRITICAL: Enforce violations on account load
+    // If drawdown exceeds limit but account is still ACTIVE, the violation was missed
+    // (e.g., price gapped between ticks). Detect and enforce it now.
+    let accountStatus = account.status;
+    if (account.status === 'ACTIVE') {
+      const overallDD = rules.metrics.overallDrawdownPercent ?? 0;
+      const dailyDD = rules.metrics.dailyDrawdownPercent ?? 0;
+
+      if (overallDD >= challenge.overallDrawdownPercent) {
+        this.logger.warn(
+          `[getAccountSummary] Missed violation detected! Overall DD ${overallDD.toFixed(2)}% >= ${challenge.overallDrawdownPercent}%. Triggering evaluation.`,
+        );
+        await this.evaluationService.evaluateAccountAfterTrade(id);
+        accountStatus = 'DISQUALIFIED';
+      } else if (dailyDD >= challenge.dailyDrawdownPercent) {
+        this.logger.warn(
+          `[getAccountSummary] Missed violation detected! Daily DD ${dailyDD.toFixed(2)}% >= ${challenge.dailyDrawdownPercent}%. Triggering evaluation.`,
+        );
+        await this.evaluationService.evaluateAccountAfterTrade(id);
+        accountStatus = 'DAILY_LOCKED';
+      }
+    }
+
     return {
       account: {
         id: account.id,
 
-        status: account.status,
+        status: accountStatus,
 
         phase: account.phase,
 

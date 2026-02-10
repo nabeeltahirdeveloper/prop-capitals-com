@@ -84,20 +84,56 @@ export class AdminRiskService {
     });
   }
 
-  async getAllViolations() {
-    return this.prisma.violation.findMany({
-      orderBy: { createdAt: 'desc' },
+  async getAllViolations(page = 1, limit = 50) {
+    const skip = (page - 1) * limit;
 
-      include: {
-        tradingAccount: {
-          include: {
-            user: true,
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
 
-            challenge: true,
+    const [violations, total, fatalCount, todayCount] = await Promise.all([
+      this.prisma.violation.findMany({
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+        include: {
+          tradingAccount: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  email: true,
+                },
+              },
+              challenge: true,
+            },
           },
         },
+      }),
+      this.prisma.violation.count(),
+      this.prisma.violation.count({
+        where: {
+          type: { in: ['DAILY_DRAWDOWN', 'OVERALL_DRAWDOWN', 'CONSISTENCY'] },
+        },
+      }),
+      this.prisma.violation.count({
+        where: {
+          createdAt: { gte: todayStart },
+        },
+      }),
+    ]);
+
+    return {
+      data: violations,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      stats: {
+        fatal: fatalCount,
+        warnings: total - fatalCount,
+        today: todayCount,
       },
-    });
+    };
   }
 
   async getViolation(id: string) {
@@ -107,8 +143,12 @@ export class AdminRiskService {
       include: {
         tradingAccount: {
           include: {
-            user: true,
-
+            user: {
+              select: {
+                id: true,
+                email: true,
+              },
+            },
             challenge: true,
           },
         },

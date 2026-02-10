@@ -31,16 +31,18 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
   private ws: WebSocket | null = null;
   private readonly apiKey: string;
   private readonly wsUrl = 'wss://socket.massive.com/forex'; // Real-time forex endpoint
-  
+
   // Forex pairs (API actually uses slash format)
   private readonly massivePairs = [
     'EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD',
-    'USD/CAD', 'USD/CHF', 'NZD/USD', 'EUR/GBP'
+    'USD/CAD', 'USD/CHF', 'NZD/USD', 'EUR/GBP',
+    'EUR/JPY', 'GBP/JPY', 'CAD/JPY',
+    'XAU/USD', 'XAG/USD',
   ];
-  
+
   // Real-time cache
   private priceCache = new Map<string, { bid: number; ask: number; timestamp: number }>();
-  
+
   private reconnectTimeout: NodeJS.Timeout | null = null;
   private isConnected = false;
   private authenticated = false;
@@ -75,7 +77,7 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
   private connect() {
     try {
       this.logger.log(`🔌 Connecting to Massive.com WebSocket (Forex)... Attempt ${this.reconnectAttempts + 1}`);
-      
+
       this.ws = new WebSocket(this.wsUrl);
 
       this.ws.on('open', () => {
@@ -88,26 +90,26 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
       this.ws.on('message', (data) => {
         try {
           const messages = JSON.parse(data.toString());
-          
+
           // Massive sends array of messages
           const msgArray = Array.isArray(messages) ? messages : [messages];
-          
+
           msgArray.forEach((msg) => {
             // Handle status messages
             if (msg.ev === 'status') {
               this.logger.log(`📡 Massive.com Status: ${msg.status} - ${msg.message || ''}`);
-              
+
               if (msg.status === 'connected') {
                 return;
               }
-              
+
               if (msg.status === 'auth_success') {
                 this.logger.log('🔑 Massive.com: Authenticated successfully');
                 this.authenticated = true;
                 this.subscribe();
                 return;
               }
-              
+
               if (msg.status === 'auth_failed') {
                 this.logger.error('❌ Massive.com: Authentication failed - Check your API key');
                 this.authenticated = false;
@@ -115,17 +117,17 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
                 this.startMockPrices();
                 return;
               }
-              
+
               return;
             }
-            
+
             // Handle quote messages (ev: "C")
             // Note: API sends "EUR/USD" format directly (not "EUR-USD")
             if (msg.ev === 'C' && msg.p && msg.a !== undefined && msg.b !== undefined) {
               this.updatePriceCache(msg.p, msg.b, msg.a, msg.t);
             }
           });
-          
+
         } catch (e) {
           // Only log occasionally to prevent spam
           if (Math.random() < 0.01) {
@@ -137,10 +139,10 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
       this.ws.on('close', (code) => {
         this.isConnected = false;
         this.authenticated = false;
-        
+
         // Calculate exponential backoff delay
         const delay = this.calculateReconnectDelay();
-        
+
         if (this.reconnectAttempts < this.MAX_RECONNECT_ATTEMPTS) {
           this.logger.warn(`⚠️ Massive.com WS Closed (Code: ${code}). Reconnecting in ${delay / 1000}s...`);
           this.reconnectAttempts++;
@@ -157,7 +159,7 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
 
     } catch (error) {
       this.logger.error(`Failed to connect to Massive.com: ${error.message}`);
-      
+
       const delay = this.calculateReconnectDelay();
       if (this.reconnectAttempts < this.MAX_RECONNECT_ATTEMPTS) {
         this.reconnectAttempts++;
@@ -179,28 +181,28 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
 
   private authenticate() {
     if (this.ws?.readyState !== WebSocket.OPEN) return;
-    
+
     const authMsg = {
       action: 'auth',
       params: this.apiKey
     };
-    
+
     this.ws.send(JSON.stringify(authMsg));
     this.logger.log('🔒 Sent authentication...');
   }
 
   private subscribe() {
     if (!this.authenticated || this.ws?.readyState !== WebSocket.OPEN) return;
-    
+
     // Subscribe to Quote feed (C) for each forex pair
     // Format matches what API expects
     const subscriptions = this.massivePairs.map(pair => `C.${pair.replace('/', '-')}`);
-    
+
     const subscribeMsg = {
       action: 'subscribe',
       params: subscriptions.join(',')
     };
-    
+
     this.ws.send(JSON.stringify(subscribeMsg));
     this.logger.log(`📊 Subscribed to ${this.massivePairs.length} forex quote feeds`);
   }
@@ -246,12 +248,17 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
       'USD/CHF': 0.8025,
       'NZD/USD': 0.5748,
       'EUR/GBP': 0.8666,
+      'EUR/JPY': 163.35,
+      'GBP/JPY': 191.20,
+      'CAD/JPY': 113.60,
+      'XAU/USD': 2870.00,
+      'XAG/USD': 32.50,
     };
 
     // Initialize with base prices
     this.massivePairs.forEach(symbol => {
       const basePrice = basePrices[symbol] || 1.0;
-      const spread = symbol === 'USD/JPY' ? 0.02 : 0.0002;
+      const spread = symbol.includes('JPY') ? 0.02 : symbol.includes('XAU') ? 0.50 : symbol.includes('XAG') ? 0.03 : 0.0002;
       this.priceCache.set(symbol, {
         bid: basePrice,
         ask: basePrice + spread,
@@ -267,8 +274,8 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
           // Random walk: +/- 0.05% movement
           const changePercent = (Math.random() - 0.5) * 0.001;
           const newBid = current.bid * (1 + changePercent);
-          const spread = symbol === 'USD/JPY' ? 0.02 : 0.0002;
-          
+          const spread = symbol.includes('JPY') ? 0.02 : symbol.includes('XAU') ? 0.50 : symbol.includes('XAG') ? 0.03 : 0.0002;
+
           this.priceCache.set(symbol, {
             bid: newBid,
             ask: newBid + spread,
@@ -282,7 +289,7 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
   }
 
   // ============ PUBLIC API ============
-  
+
   getPrice(symbol: string) {
     return this.priceCache.get(symbol);
   }
@@ -316,7 +323,7 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
         return [];
       } catch (error) {
         lastError = error;
-        
+
         if (attempt < this.HISTORY_MAX_RETRIES) {
           const delay = this.HISTORY_RETRY_DELAY_MS * Math.pow(2, attempt);
           this.logger.debug(
@@ -343,20 +350,20 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
   ): Promise<Candlestick[]> {
     // Convert symbol format: "EUR/USD" -> "C:EURUSD"
     const massiveTicker = this.convertToMassiveTicker(symbol);
-    
+
     // Convert timeframe: "M5" -> multiplier=5, timespan="minute"
     const { multiplier, timespan } = this.convertTimeframe(timeframe);
-    
+
     // Calculate date range based on limit
     const { from, to } = this.calculateDateRange(limit, multiplier, timespan);
-    
+
     // Build API URL
     const url = `https://api.massive.com/v2/aggs/ticker/${massiveTicker}/range/${multiplier}/${timespan}/${from}/${to}?adjusted=true&sort=asc&limit=${limit}`;
-    
+
     // Make request with timeout
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.HISTORY_TIMEOUT_MS);
-    
+
     try {
       const response = await fetch(url, {
         headers: {
@@ -364,37 +371,46 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
         },
         signal: controller.signal,
       });
-      
+
       clearTimeout(timeoutId);
-      
+
       if (!response.ok) {
         const errorText = await response.text().catch(() => 'Unknown error');
         throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 100)}`);
       }
-      
+
       const data = await response.json();
-      
+
       if (data.status !== 'OK' || !data.results || data.results.length === 0) {
         // This is a normal "no data" response, not an error
         return [];
       }
-      
+
       // Convert to Candlestick format
+      // const candles: Candlestick[] = data.results.map((bar: any) => ({
+      //   time: bar.t,
+      //   open: bar.o,
+      //   high: bar.h,
+      //   low: bar.l,
+      //   close: bar.c,
+      //   volume: bar.v || 0,
+      // }));
       const candles: Candlestick[] = data.results.map((bar: any) => ({
-        time: bar.t,
+        time: Math.floor(bar.t / 1000),   // ✅ seconds (lightweight-charts standard)
         open: bar.o,
         high: bar.h,
         low: bar.l,
         close: bar.c,
         volume: bar.v || 0,
       }));
-      
+
+
       this.logger.debug(`[Massive REST] Fetched ${candles.length} candles for ${symbol} ${timeframe}`);
       return candles;
-      
+
     } catch (error) {
       clearTimeout(timeoutId);
-      
+
       if (error.name === 'AbortError') {
         throw new Error(`Request timeout for ${symbol}`);
       }
@@ -436,9 +452,9 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
   ): { from: string; to: string } {
     const now = new Date();
     const to = now.toISOString().split('T')[0];
-    
+
     let daysBack: number;
-    
+
     switch (timespan) {
       case 'minute':
         daysBack = Math.ceil((limit * multiplier) / 1440) + 2;
@@ -452,14 +468,14 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
       default:
         daysBack = 7;
     }
-    
+
     // Cap at reasonable limits
     if (daysBack > 365) daysBack = 365;
-    
+
     const fromDate = new Date(now);
     fromDate.setDate(fromDate.getDate() - daysBack);
     const from = fromDate.toISOString().split('T')[0];
-    
+
     return { from, to };
   }
 

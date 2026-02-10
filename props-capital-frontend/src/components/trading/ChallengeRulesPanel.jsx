@@ -65,14 +65,20 @@ export default function ChallengeRulesPanel({ account, challenge }) {
       profitTarget > 0
         ? Math.max(0, Math.min(100, (profitPercent / profitTarget) * 100))
         : 0;
-    const dailyLossProgress = Math.min(100, (dailyLoss / maxDailyLoss) * 100);
 
+    // ✅ Fix: Validate maxDailyLoss to prevent NaN or Infinity
+    const dailyLossProgress =
+      maxDailyLoss > 0
+        ? Math.max(0, Math.min(100, (dailyLoss / maxDailyLoss) * 100))
+        : 0;
+
+    // ✅ Fix: Validate maxOverallDrawdown to prevent NaN or Infinity
     // Overall drawdown bar: 0% if profit, increases with loss
     // If in profit (overallDrawdown is 0 or negative), bar = 0%
     // If in loss, bar = (loss / max loss) * 100
     const overallDrawdownProgress =
-      overallDrawdown > 0
-        ? Math.min(100, (overallDrawdown / maxOverallDrawdown) * 100)
+      overallDrawdown > 0 && maxOverallDrawdown > 0
+        ? Math.max(0, Math.min(100, (overallDrawdown / maxOverallDrawdown) * 100))
         : 0;
 
     setMetrics({
@@ -372,21 +378,28 @@ export default function ChallengeRulesPanel({ account, challenge }) {
             </p>
           </div>
 
-          <div className={`p-4 rounded-lg border  border-slate-700
-            `}>
+          <div className={`p-4 rounded-lg border ${
+            daysRemaining === 0 ? 'bg-red-500/10 border-red-500/30' :
+            daysRemaining <= 5 ? 'bg-amber-500/10 border-amber-500/30' :
+            'bg-slate-800/50 border-slate-700'
+          }`}>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-slate-300 text-sm">{t('dashboard.rulesPanel.daysRemaining')}</span>
-              {/* {daysRemaining === 0 ? <XCircle className="w-4 h-4 text-red-400" /> :
-                daysRemaining <= 5 ? <AlertTriangle className="w-4 h-4 text-amber-400" /> : 
-              <CheckCircle className="w-4 h-4 text-emerald-400" />} */}
+              <span className="text-slate-300 text-sm">
+                {t('dashboard.rulesPanel.daysRemaining')}
+              </span>
+              {daysRemaining === 0 ? <XCircle className="w-4 h-4 text-red-400" /> :
+                daysRemaining <= 5 ? <AlertTriangle className="w-4 h-4 text-amber-400" /> :
+              <Calendar className="w-4 h-4 text-slate-400" />}
             </div>
-            {/* <p className={`text-2xl font-bold ${daysRemaining === 0 ? 'text-red-400' :
+            <p className={`text-2xl font-bold ${
+              daysRemaining === 0 ? 'text-red-400' :
               daysRemaining <= 5 ? 'text-amber-400' :
-                'text-emerald-400'
-              }`}> */}
-              <p className='text-2xl text-white'>
+              'text-white'
+            }`}>
               {maxTradingDays}
-              {/* {daysRemaining} */}
+            </p>
+            <p className="text-xs text-slate-400 mt-1">
+              {daysRemaining} {t('dashboard.rulesPanel.days')} {t('common.remaining')}
             </p>
           </div>
         </div>
@@ -416,12 +429,12 @@ export default function ChallengeRulesPanel({ account, challenge }) {
             },
             {
               name: t("dashboard.rulesPanel.hedging"),
-              allowed: true,
+              allowed: challenge?.hedgingAllowed !== false,
               icon: Scale,
             },
             {
               name: t("dashboard.rulesPanel.copyTrading"),
-              allowed: false,
+              allowed: challenge?.copyTradingAllowed === true,
               icon: Layers,
             },
           ].map((rule, i) => (

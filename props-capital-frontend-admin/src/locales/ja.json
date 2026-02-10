@@ -1,0 +1,2860 @@
+{
+  "common": {
+    "loading": "読み込み中...",
+    "url": "URL",
+    "dismiss": "閉じる",
+    "allPlatforms": "すべてのプラットフォーム"
+  },
+  "home": {
+    "hero": {
+      "badge": "世界中の15,000人以上のトレーダーから信頼されています",
+      "title": "取引する",
+      "titleHighlight": "私たちの資金で",
+      "subtitle": "あなたのスキルを証明し、最大$200,000の資金を獲得。自己資金のリスクなしで、最大90%の利益を保持できます",
+      "cta": "チャレンジを開始",
+      "howItWorks": "仕組み",
+      "verified": "認証済み企業",
+      "secure": "安全な支払い",
+      "support": "24時間365日サポート",
+      "profitToday": "本日の利益",
+      "winRate": "勝率"
+    },
+    "stats": {
+      "fundedCapital": "提供された資金",
+      "activeTraders": "アクティブなトレーダー",
+      "paidToTraders": "トレーダーへの支払い額",
+      "trustScore": "信頼スコア"
+    },
+    "features": {
+      "title": "私たちが選ばれる理由",
+      "subtitle": "プロトレーダーのために設計",
+      "description": "透明なルール、有利な条件、そして本物のサポートを備えた、トレーダーに最も優しいプロップファームを構築しました",
+      "clearObjectives": {
+        "title": "明確な取引目標",
+        "description": "透明なルールに基づいた、シンプルで達成可能な目標。隠れた条件や予期しない失敗はありません"
+      },
+      "generousDrawdown": {
+        "title": "寛大なドローダウン制限",
+        "description": "1日の損失5%、最大10%まで。ストレスなく快適に取引できます",
+        "drawdown": "ドローダウン"
+      },
+      "profitSplit": {
+        "title": "最大90%の利益分配",
+        "description": "利益の大部分を保持。遅延や隠れた手数料なしで、隔週支払い"
+      },
+      "instantSetup": {
+        "title": "即時アカウント設定",
+        "description": "購入後数分以内に取引ログイン情報を受け取り、すぐに取引を開始できます"
+      },
+      "tradeAnywhere": {
+        "title": "どこでも取引可能",
+        "description": "MT4、MT5、cTrader、DXTradeに対応。世界中どこからでも、あらゆるデバイスで取引できます"
+      },
+      "noTimeLimits": {
+        "title": "時間制限なし",
+        "description": "目標達成まで自分のペースで。最大取引期間や急かされることはありません"
+      }
+    },
+    "howItWorks": {
+      "label": "始め方",
+      "title": "資金獲得までの3ステップ",
+      "step1": {
+        "title": "チャレンジを選択",
+        "description": "希望するアカウントサイズを選び、安全に購入します"
+      },
+      "step2": {
+        "title": "評価を通過",
+        "description": "リスク管理ルールを守りながら利益目標を達成します"
+      },
+      "step3": {
+        "title": "資金を獲得",
+        "description": "当社の資金で取引し、最大90%の利益を保持"
+      },
+      "learnMore": "プロセスについて詳しく見る"
+    },
+    "challenges": {
+      "label": "価格",
+      "title": "チャレンジを選択",
+      "subtitle": "取引スタイルと予算に合ったアカウントサイズを選択",
+      "accountSize": "アカウントサイズ",
+      "price": "価格",
+      "profitTarget": "利益目標",
+      "profitSplit": "利益分配",
+      "getStarted": "開始",
+      "viewAll": "すべてのチャレンジを見る",
+      "popular": "人気"
+    },
+    "testimonials": {
+      "label": "お客様の声",
+      "title": "トレーダーに愛されています",
+      "subtitle": "Prop Capitalsで収益を上げている何千人もの成功したトレーダーに参加しましょう",
+      "totalEarned": "総獲得額"
+    },
+    "cta": {
+      "title": "始める準備はできましたか？",
+      "titleHighlight": "あなたのトレーディングキャリアを",
+      "subtitle": "資金提供を受けた何千人ものトレーダーに参加し、今日から収益を開始しましょう。自己資金のリスクはありません",
+      "button": "今すぐ資金を獲得",
+      "footer": "開始はわずか$99 • 即時アカウント設定 • 24時間365日サポート"
+    },
+    "footer": {
+      "description": "最もトレーダーフレンドリーなプロップトレーディング会社。私たちの資金で取引し、資金を獲得しましょう",
+      "propFirm": "プロップトレーディング会社",
+      "verified": "認証済み・信頼性",
+      "company": "会社",
+      "support": "サポート",
+      "legal": "法的情報",
+      "copyright": "© 2026 BLUEHAVEN MANAGEMENT LTD 無断転載禁止",
+      "secure": "安全・暗号化",
+      "howItWorks": "仕組み",
+      "challenges": "チャレンジ",
+      "scalingPlan": "スケーリングプラン",
+      "payouts": "支払い",
+      "faq": "よくある質問",
+      "contact": "お問い合わせ",
+      "terms": "利用規約",
+      "privacy": "プライバシーポリシー"
+    },
+    "partners": {
+      "title": "以下のプラットフォームを利用するトレーダーから信頼されています:"
+    }
+  },
+  "dashboard": {
+    "welcome": "おかえりなさい、{{name}}",
+    "overview": "こちらはあなたの取引概要です",
+    "newChallenge": "新しいチャレンジ",
+    "stats": {
+      "totalChallenges": "すべてのチャレンジ",
+      "activeChallenges": "進行中のチャレンジ",
+      "fundedAccounts": "資金提供アカウント",
+      "totalPayouts": "総支払い額"
+    },
+    "accounts": {
+      "title": "アクティブな取引アカウント",
+      "viewAll": "すべて表示",
+      "profitProgress": "利益の進捗",
+      "target": "目標",
+      "dailyDD": "日次DD",
+      "overallDD": "全体DD",
+      "details": "詳細",
+      "trade": "取引",
+      "violation": {
+        "dailyDrawdown": "日次DD超過: {{actual}}% > {{threshold}}%",
+        "overallDrawdown": "全体DD超過: {{actual}}% > {{threshold}}%",
+        "maximumDrawdown": "最大DD超過: {{actual}}% > {{threshold}}%",
+        "maxTradingDays": "最大取引日数を超過",
+        "default": "{{message}}"
+      }
+    },
+    "metrics": {
+      "title": "クイック指標",
+      "currentBalance": "現在の残高",
+      "profitThisCycle": "今サイクルの利益",
+      "ddRemaining": "残りDD",
+      "tradingDays": "取引日数",
+      "nextPayoutDate": "次回の支払日",
+      "requestPayout": "支払いを申請",
+      "account": "アカウント",
+      "accounts": "アカウント"
+    },
+    "notifications": {
+      "title": "通知",
+      "noNewNotifications": "新しい通知はありません",
+      "markAsRead": "既読にする",
+      "notification": "通知",
+      "notifications": "通知",
+      "noNotifications": "通知はありません",
+      "seeMore": "さらに表示"
+    },
+    "rules": {
+      "title": "ルール遵守",
+      "selectAccount": "アカウントを選択",
+      "phase": "フェーズ",
+      "phase1": "フェーズ1",
+      "phase2": "フェーズ2",
+      "funded": "資金提供済み",
+      "failed": "失敗"
+    },
+    "quickActions": {
+      "tradingTerminal": "取引ターミナル",
+      "openTrading": "取引を開始",
+      "myAccounts": "自分のアカウント",
+      "viewAllAccounts": "すべてのアカウントを見る",
+      "analytics": "分析",
+      "performanceStats": "パフォーマンス統計",
+      "payouts": "支払い",
+      "requestPayouts": "支払いを申請",
+      "scalingPlan": "スケーリングプラン",
+      "growthRoadmap": "成長ロードマップ"
+    },
+    "links": {
+      "challengeProgress": "チャレンジの進捗",
+      "trackJourney": "資金獲得までの道のりを追跡",
+      "tradeHistory": "取引履歴",
+      "viewAllTrades": "すべての取引を見る"
+    },
+    "empty": {
+      "welcome": "ようこそ、{{name}}！",
+      "description": "資金提供トレーダーへの旅を始めましょう。チャレンジを選び、スキルを証明し、私たちの資金で取引してください",
+      "startChallenge": "最初のチャレンジを開始"
+    },
+    "rulesPanel": {
+      "title": "チャレンジのルールと条件",
+      "profitTarget": "利益目標",
+      "dailyLossLimit": "日次損失制限",
+      "overallDrawdown": "全体ドローダウン",
+      "minTradingDays": "最小取引日数",
+      "daysRemaining": "残り日数",
+      "tradingStyleRules": "取引スタイルのルール",
+      "newsTrading": "ニュース取引",
+      "weekendHolding": "週末保有",
+      "expertAdvisors": "エキスパートアドバイザー",
+      "hedging": "ヘッジ",
+      "copyTrading": "コピートレード",
+      "leverage": "レバレッジ",
+      "maxLot": "{{max}} {{lot}}",
+      "lot": "ロット",
+      "max": "最大",
+      "profitSplit": "利益分配",
+      "target": "目標",
+      "limit": "制限",
+      "status": {
+        "reached": "達成",
+        "loss": "損失",
+        "violated": "違反",
+        "danger": "危険",
+        "warning": "警告",
+        "safe": "安全"
+      }
+    }
+  },
+  "myAccounts": {
+    "title": "マイアカウント",
+    "subtitle": "すべての取引チャレンジおよび資金提供アカウントを管理します",
+    "newChallenge": "新しいチャレンジ",
+    "activeChallenges": "進行中のチャレンジ",
+    "phase1": "フェーズ 1",
+    "phase2": "フェーズ 2",
+    "funded": "資金提供済み",
+    "failed": "失敗",
+    "all": "すべて",
+    "active": "有効",
+    "noAccounts": "アカウントが見つかりません",
+    "noAccountsDesc": "新しいチャレンジを開始して、取引の旅を始めましょう",
+    "startChallenge": "チャレンジを開始",
+    "balance": "残高",
+    "profit": "利益",
+    "days": "日",
+    "dailyDD": "日次損失",
+    "overallDD": "全体損失",
+    "openDashboard": "取引ダッシュボードを開く",
+    "progress": "進捗",
+    "trades": "取引",
+    "needChallenge": "新しいチャレンジが必要ですか？",
+    "needChallengeDesc": "新しい取引チャレンジで再スタートし、スキルを証明しましょう",
+    "buyChallenge": "チャレンジを購入"
+  },
+  "analytics": {
+    "title": "分析",
+    "subtitle": "詳細なパフォーマンス分析と統計",
+    "selectAccount": "アカウントを選択",
+    "allAccounts": "すべてのアカウント",
+    "totalTrades": "総取引数",
+    "winRate": "勝率",
+    "totalProfit": "総利益",
+    "profitFactor": "プロフィットファクター",
+    "winningTrades": "勝ちトレード",
+    "losingTrades": "負けトレード",
+    "bestTrade": "最高のトレード",
+    "worstTrade": "最悪のトレード",
+    "symbolDistribution": "シンボル分布",
+    "tradeHistory": "取引履歴",
+    "noTrades": "取引が見つかりません",
+    "symbol": "シンボル",
+    "type": "タイプ",
+    "lotSize": "ロットサイズ",
+    "open": "オープン",
+    "close": "クローズ",
+    "profit": "利益",
+    "buy": "買い",
+    "sell": "売り",
+    "performanceMetrics": "パフォーマンス指標",
+    "wins": "勝ち",
+    "losses": "負け",
+    "maxWinStreak": "最大連勝",
+    "maxLossStreak": "最大連敗",
+    "avgWin": "平均勝ち",
+    "avgLoss": "平均負け",
+    "avgRR": "平均R:R",
+    "avgHolding": "平均保有時間",
+    "maxPosition": "最大ポジション",
+    "avgPosition": "平均ポジション",
+    "sharpeRatio": "シャープレシオ",
+    "lots": "ロット",
+    "equityCurve": "エクイティカーブ",
+    "accountPerformance": "期間別アカウントパフォーマンス",
+    "equity": "エクイティ",
+    "balance": "残高",
+    "startingBalance": "開始残高",
+    "dailyPL": "日次P/L",
+    "winningDays": "勝ち日数",
+    "losingDays": "負け日数",
+    "totalLoss": "総損失",
+    "netPL": "純P/L",
+    "pl": "P/L",
+    "bestDay": "最高の日",
+    "worstDay": "最悪の日",
+    "noData": "シンボル分布のデータがありません",
+    "loading": "読み込み中..."
+  },
+  "payouts": {
+    "title": "支払い",
+    "subtitle": "利益の出金申請と追跡",
+    "requestPayout": "出金を申請",
+    "selectAccount": "アカウントを選択",
+    "allAccounts": "すべてのアカウント",
+    "selectFundedAccount": "資金提供アカウントを選択",
+    "amount": "金額（USD）",
+    "enterAmount": "金額を入力",
+    "minimum": "最低額",
+    "paymentMethod": "支払い方法",
+    "selectPaymentMethod": "支払い方法を選択",
+    "paymentDetails": "支払い詳細",
+    "paymentDetailsPlaceholder": "支払い情報を入力してください（ウォレットアドレス、銀行情報など）",
+    "submitting": "送信中...",
+    "submitRequest": "申請を送信",
+    "totalEarnings": "総収益",
+    "pendingPayouts": "保留中の支払い",
+    "totalPayouts": "総支払い額",
+    "nextPayout": "次回の支払い",
+    "payoutSchedule": "支払いスケジュール",
+    "payoutFrequency": "支払い頻度",
+    "biWeekly": "隔週（14日）",
+    "biWeeklyValue": "隔週",
+    "processingTime": "処理時間",
+    "processingTimeValue": "24〜48時間",
+    "businessDays": "2〜5営業日",
+    "businessDaysOnly": "営業日のみ",
+    "minimumAmount": "最低金額",
+    "payoutFee": "出金手数料",
+    "free": "$0（無料）",
+    "freeValue": "無料",
+    "availablePaymentMethods": "利用可能な支払い方法",
+    "bankTransfer": "銀行振込",
+    "bankTransferTime": "2〜5日",
+    "cryptocurrency": "暗号通貨",
+    "cryptoTime": "24時間",
+    "paypal": "PayPal",
+    "paypalTime": "24時間",
+    "wise": "Wise",
+    "wiseTime": "1〜2日",
+    "yourProfitSplit": "あなたの利益分配",
+    "profitSplitDesc": "スケーリングにより最大90%の利益を保持",
+    "currentSplit": "現在の分配率",
+    "withScaling": "スケーリング後",
+    "viewScalingPlan": "スケーリングプランを見る",
+    "payoutHistory": "支払い履歴",
+    "noPayouts": "まだ支払いはありません。取引を始めて利益を獲得しましょう！",
+    "needHelp": "支払いについてサポートが必要ですか？",
+    "needHelpDesc": "支払いに関するご質問はサポートチームまでお問い合わせください",
+    "contactSupport": "サポートに連絡",
+    "date": "日付",
+    "method": "方法",
+    "status": "ステータス",
+    "processed": "処理済み"
+  },
+  "profile": {
+    "title": "プロフィール",
+    "subtitle": "アカウント設定および各種設定を管理",
+    "loadError": "プロフィールの読み込みに失敗しました。もう一度お試しください",
+    "user": "ユーザー",
+    "admin": "管理者",
+    "trader": "トレーダー",
+    "personalInfo": "個人情報",
+    "security": "セキュリティ",
+    "verification": "本人確認",
+    "notifications": "通知",
+    "personalInformation": "個人情報",
+    "firstName": "名",
+    "firstNamePlaceholder": "ジョン",
+    "lastName": "姓",
+    "lastNamePlaceholder": "ドウ",
+    "email": "メールアドレス",
+    "phoneNumber": "電話番号",
+    "phonePlaceholder": "+66 123 456 789",
+    "country": "国",
+    "countryPlaceholder": "タイ",
+    "city": "市区町村",
+    "cityPlaceholder": "バンコク",
+    "address": "住所",
+    "addressPlaceholder": "メインストリート123",
+    "saving": "保存中...",
+    "saveChanges": "変更を保存",
+    "changesSaved": "変更が保存されました",
+    "securitySettings": "セキュリティ設定",
+    "password": "パスワード",
+    "lastChanged": "最終変更",
+    "never": "未変更",
+    "changePassword": "パスワードを変更",
+    "twoFactorAuth": "二要素認証",
+    "twoFactorDesc": "追加のセキュリティ層を有効化",
+    "enable2FA": "2FAを有効にする",
+    "emailNotifications": "メール通知",
+    "emailNotificationsDesc": "アカウント活動に関する通知を受け取る",
+    "enabled": "有効",
+    "identityVerification": "本人確認",
+    "verificationDesc": "すべての機能（支払いを含む）を解除するために本人確認を完了してください。初回出金には必須です",
+    "governmentID": "身分証明書",
+    "governmentIDDesc": "パスポート、運転免許証、または身分証明書",
+    "pending": "審査中",
+    "uploadDocument": "書類をアップロード",
+    "proofOfAddress": "住所確認書類",
+    "proofOfAddressDesc": "公共料金の請求書または銀行明細（過去3か月以内）",
+    "changePasswordDesc": "アカウントの安全性を保つためにパスワードを更新",
+    "currentPassword": "現在のパスワード",
+    "newPassword": "新しいパスワード",
+    "confirmPassword": "パスワードを確認",
+    "passwordChanged": "パスワードが変更されました",
+    "passwordsDoNotMatch": "パスワードが一致しません",
+    "passwordTooShort": "パスワードは8文字以上である必要があります",
+    "changing": "変更中...",
+    "uploading": "アップロード中...",
+    "uploadGovernmentID": "身分証明書をアップロード",
+    "uploadProofOfAddress": "住所確認書類をアップロード",
+    "documentUploaded": "書類のアップロードが完了しました",
+    "approved": "承認済み",
+    "rejected": "却下",
+    "comingSoon": "近日公開",
+    "notUploaded": "未アップロード",
+    "notificationPreferences": "通知設定",
+    "tradeNotifications": "取引通知",
+    "tradeNotificationsDesc": "取引の開始・終了時に通知を受信",
+    "accountAlerts": "アカウントアラート",
+    "accountAlertsDesc": "損失警告およびアカウント状態の更新",
+    "payoutUpdates": "支払い更新",
+    "payoutUpdatesDesc": "出金申請および処理状況に関する通知",
+    "challengeUpdates": "チャレンジ更新",
+    "challengeUpdatesDesc": "進捗およびフェーズ変更の更新",
+    "marketingEmails": "マーケティングメール",
+    "marketingEmailsDesc": "ニュース、プロモーション、特別オファー"
+  },
+  "support": {
+    "title": "サポート",
+    "subtitle": "アカウントおよび取引に関するサポートを受ける",
+    "newTicket": "新しいチケット",
+    "createTicket": "サポートチケットを作成",
+    "subject": "件名",
+    "subjectPlaceholder": "問題の簡単な説明",
+    "category": "カテゴリー",
+    "select": "選択",
+    "account": "アカウント",
+    "payment": "支払い",
+    "payout": "出金",
+    "technical": "技術",
+    "other": "その他",
+    "priority": "優先度",
+    "low": "低",
+    "medium": "中",
+    "high": "高",
+    "message": "メッセージ",
+    "messagePlaceholder": "問題を詳しく説明してください...",
+    "submitting": "送信中...",
+    "submitTicket": "チケットを送信",
+    "openTickets": "対応中のチケット",
+    "inProgress": "進行中",
+    "resolved": "解決済み",
+    "avgResponse": "平均応答時間",
+    "totalTickets": "総チケット数",
+    "faq": "よくある質問",
+    "searchFAQs": "FAQを検索...",
+    "viewAllFAQs": "すべてのFAQを見る",
+    "yourTickets": "あなたのチケット",
+    "noTickets": "サポートチケットはまだありません。必要な場合は新しいチケットを作成してください",
+    "needImmediateHelp": "今すぐサポートが必要ですか？",
+    "liveChatDesc": "サポートチームは24時間365日ライブチャットで対応しています",
+    "startLiveChat": "ライブチャットを開始",
+    "faq1Q": "出金はどのように申請しますか？",
+    "faq1A": "支払いセクションに移動し、「出金を申請」をクリックしてください。必要な情報を入力して送信します",
+    "faq2Q": "取引ルールは何ですか？",
+    "faq2A": "当社の標準ルールには、日次損失5%、全体損失10%、最小取引日数4日が含まれます",
+    "faq3Q": "出金にはどれくらい時間がかかりますか？",
+    "faq3A": "出金は承認後24〜48時間以内に処理されます。銀行振込は2〜5営業日かかる場合があります",
+    "faq4Q": "ニュース時に取引できますか？",
+    "faq4A": "はい。ニュース取引はすべてのチャレンジで許可されており、高影響ニュースに対する制限はありません"
+  },
+  "tradeHistory": {
+    "title": "取引履歴",
+    "subtitle": "あなたのすべての取引履歴",
+    "selectAccount": "アカウントを選択",
+    "allAccounts": "すべてのアカウント",
+    "phase1": "フェーズ 1",
+    "phase2": "フェーズ 2",
+    "funded": "資金提供済み",
+    "failed": "失敗",
+    "export": "エクスポート",
+    "totalTrades": "総取引数",
+    "winRate": "勝率",
+    "totalProfit": "総利益",
+    "avgWin": "平均利益",
+    "avgLoss": "平均損失",
+    "searchPlaceholder": "シンボルまたはチケットで検索...",
+    "all": "すべて",
+    "buy": "買い",
+    "sell": "売り",
+    "open": "オープン",
+    "closed": "クローズ",
+    "openPositions": "未決済ポジション",
+    "active": "進行中",
+    "closedTrades": "決済済み取引",
+    "showing": "表示",
+    "trades": "取引",
+    "noTradesFound": "フィルターに一致する取引が見つかりません",
+    "ticket": "チケット",
+    "time": "時間",
+    "symbol": "シンボル",
+    "type": "タイプ",
+    "lots": "ロット",
+    "openPrice": "建値",
+    "closePrice": "決済価格",
+    "priceChange": "価格変動",
+    "commSwap": "手数料/スワップ",
+    "profit": "利益",
+    "status": "ステータス",
+    "noAccounts": "取引アカウントがありません",
+    "noAccountsDesc": "取引履歴を表示するには、先に取引アカウントを作成する必要があります"
+  },
+  "challengeProgress": {
+    "title": "チャレンジ進捗",
+    "subtitle": "資金提供トレーダーへの道のりを追跡",
+    "selectAccount": "アカウントを選択",
+    "viewTradingDashboard": "取引ダッシュボードを見る",
+    "account": "アカウント",
+    "profit": "利益",
+    "tradingDays": "取引日数",
+    "dailyDDUsed": "使用した日次DD",
+    "yourJourney": "あなたの道のり",
+    "purchase": "購入",
+    "purchaseDesc": "チャレンジの購入が完了しました",
+    "challenge": "チャレンジ",
+    "phase1": "フェーズ 1",
+    "phase2": "フェーズ 2",
+    "funded": "資金提供済み",
+    "scaling": "スケーリング",
+    "reachTarget": "利益目標 {{target}} を達成",
+    "profitTarget": "利益目標",
+    "minTradingDays": "最小取引日数",
+    "maxDailyDD": "最大日次DD",
+    "maxOverallDD": "最大全体DD",
+    "fundedDesc": "当社資金で取引",
+    "profitSplit80": "利益分配 80%",
+    "scalingDesc": "$2,000,000 まで成長",
+    "profitSplit90": "最大 90% の利益分配",
+    "currentPhaseRequirements": "現在フェーズの要件",
+    "profitSplit": "利益分配",
+    "whenFunded": "資金提供後",
+    "upTo90WithScaling": "スケーリングで最大 90%",
+    "payoutCycle": "支払いサイクル",
+    "biWeeklyPayouts": "隔週支払い",
+    "days": "日",
+    "processedWithin24h": "24時間以内に処理",
+    "scaleTo": "拡大先",
+    "maximumAccountSize": "最大アカウントサイズ",
+    "scalingLevels": "スケーリング10段階",
+    "readyToStart": "取引を始める準備はできましたか？",
+    "readyToStartDesc": "取引プラットフォームを開いて、利益目標の達成を目指しましょう",
+    "viewTradingRules": "取引ルールを見る",
+    "failed": "失敗",
+    "noAccountsDesc": "チャレンジを購入して進捗の追跡を開始しましょう"
+  },
+  "phaseTimeline": {
+    "challengeJourney": "チャレンジの道のり",
+    "trackProgress": "各フェーズの進捗を追跡",
+    "proceedToNextPhase": "次のフェーズへ進む",
+    "phase1": "フェーズ 1",
+    "phase2": "フェーズ 2",
+    "funded": "資金提供済み",
+    "scaling": "スケーリング",
+    "evaluation": "評価",
+    "verification": "確認",
+    "liveAccount": "ライブ口座",
+    "growth": "成長",
+    "profitTarget": "利益目標 {{target}}",
+    "minTradingDays": "最小取引日数 {{days}} 日",
+    "maxDailyDD": "最大日次DD {{dd}}",
+    "profitSplit80": "利益分配 80%",
+    "biWeeklyPayouts": "隔週支払い",
+    "scalingEligible": "スケーリング対象",
+    "profitSplit90": "最大 90% の利益分配",
+    "accountSizeIncrease": "アカウントサイズ増加",
+    "vipBenefits": "VIP特典",
+    "completed": "完了",
+    "active": "進行中",
+    "unlocked": "解放済み",
+    "locked": "ロック",
+    "phaseCompleted": "フェーズ完了！",
+    "phaseCompletedDesc": "おめでとうございます！すべての要件を達成しました。上のボタンをクリックして続行してください"
+  },
+  "ruleCompliance": {
+    "title": "ルール遵守",
+    "subtitle": "取引ルールとチャレンジ要件を確認",
+    "selectAccount": "アカウントを選択",
+    "loading": "読み込み中...",
+    "noAccounts": "取引アカウントがありません",
+    "noAccountsDesc": "チャレンジを購入して、ルール遵守状況と取引ルールを確認しましょう",
+    "purchaseChallenge": "チャレンジを購入",
+    "loadingCompliance": "ルール遵守を読み込み中...",
+    "loadError": "アカウント詳細の読み込みに失敗しました",
+    "goToMyAccounts": "マイアカウントへ",
+    "allRulesCompliant": "すべてのルールに準拠",
+    "goodStanding": "あなたのアカウントはすべてのチャレンジルールにおいて良好な状態です",
+    "active": "進行中",
+    "accountFailed": "アカウント失敗",
+    "failedDesc": "ルール違反によりアカウントが終了しました",
+    "rulesAtRisk": "ルール警告",
+    "atRiskDesc": "1つ以上のルールが違反しきい値に近づいています",
+    "warning": "警告",
+    "phase1": "フェーズ 1",
+    "phase2": "フェーズ 2",
+    "funded": "資金提供済み",
+    "failed": "失敗",
+    "tradingStyleRules": "取引スタイルのルール",
+    "newsTrading": "ニュース取引",
+    "newsTradingDesc": "高影響ニュース時の取引が許可されています",
+    "newsTradingDetails": "NFP、FOMCなどの高影響ニュース時に取引できます",
+    "weekendHolding": "週末保有",
+    "weekendHoldingDesc": "週末にポジションを保有できます",
+    "weekendHoldingDetails": "金曜クローズから月曜オープンまで、ペナルティなしで保有できます",
+    "expertAdvisors": "エキスパートアドバイザー（EA）",
+    "expertAdvisorsDesc": "EAによる自動売買が許可されています",
+    "expertAdvisorsDetails": "EAは使用可能ですが、マーチンゲールおよびグリッド戦略はチェックされます",
+    "hedging": "ヘッジ",
+    "hedgingDesc": "同一商品で反対ポジションを建てることが可能です",
+    "hedgingDetails": "すべての商品で完全なヘッジが許可されています",
+    "copyTrading": "コピートレード",
+    "copyTradingDesc": "他トレーダーの取引をコピーすることは許可されていません",
+    "copyTradingDetails": "各トレーダーは自身の取引戦略を独立して実行する必要があります",
+    "latencyArbitrage": "レイテンシー・アービトラージ",
+    "latencyArbitrageDesc": "ブローカー間の価格遅延を利用することは禁止です",
+    "latencyArbitrageDetails": "価格フィードの遅延を利用した裁定取引は、アカウントの無効化につながります",
+    "complianceHistory": "遵守履歴",
+    "last7Days": "過去7日間",
+    "dailyDrawdown": "日次ドローダウン",
+    "overallDrawdown": "全体ドローダウン",
+    "limit": "上限",
+    "loadingHistory": "遵守履歴を読み込み中...",
+    "noComplianceHistory": "遵守履歴がありません",
+    "noComplianceHistoryDesc": "取引を開始すると、ここに遵守履歴が表示されます",
+    "importantInformation": "重要情報",
+    "info1": "日次損失は前日の終値残高に基づいて計算されます",
+    "info2": "全体損失は、アカウントの最大残高（エクイティのピーク）に基づいて計算されます",
+    "info3": "いずれかのルール違反は、即時失格となります",
+    "info4": "軽微な違反（警告）は監視されますが、直ちに失格にはなりません",
+    "info5": "すべてのルール計算は市場時間中にリアルタイムで実行されます"
+  },
+  "accountDetails": {
+    "title": "アカウント詳細",
+    "subtitle": "取引アカウントの詳細情報を表示",
+    "selectAccountDesc": "詳細を表示するアカウントを選択",
+    "selectAccount": "アカウントを選択",
+    "loading": "アカウント詳細を読み込み中...",
+    "noAccounts": "取引アカウントがありません",
+    "noAccountsDesc": "チャレンジを購入して、アカウント詳細と取引ダッシュボードを確認しましょう",
+    "purchaseChallenge": "チャレンジを購入",
+    "account": "アカウント",
+    "started": "開始日",
+    "phase1": "フェーズ 1",
+    "phase2": "フェーズ 2",
+    "funded": "資金提供済み",
+    "failed": "失敗",
+    "phase1Completed": "フェーズ1が完了しました！",
+    "phase1CompletedDesc": "おめでとうございます！すべての要件を達成しました。フェーズ2へ進みましょう",
+    "proceedToPhase2": "フェーズ2へ進む",
+    "accountSummary": "アカウント概要",
+    "balance": "残高",
+    "equity": "エクイティ",
+    "floatingPL": "含みP/L",
+    "totalProfit": "総利益",
+    "profitTarget": "利益目標",
+    "dailyDrawdown": "日次ドローダウン",
+    "overallDrawdown": "全体ドローダウン",
+    "target": "目標",
+    "tradingDays": "取引日数",
+    "performanceStatistics": "パフォーマンス統計",
+    "winRate": "勝率",
+    "avgRiskReward": "平均リスクリワード",
+    "totalTrades": "総取引数",
+    "profitFactor": "プロフィットファクター",
+    "largestWin": "最大利益",
+    "largestLoss": "最大損失",
+    "avgLotSize": "平均ロットサイズ",
+    "avgDuration": "平均保有時間",
+    "tradeHistory": "取引履歴",
+    "noTradesFound": "取引が見つかりません",
+    "refresh": "更新",
+    "viewFullTradeHistory": "すべての取引履歴を見る",
+    "challengeProgress": "チャレンジ進捗",
+    "trackJourney": "道のりを追跡",
+    "analytics": "分析",
+    "detailedStats": "詳細統計",
+    "tradingRules": "取引ルール",
+    "viewAllRules": "すべてのルールを見る",
+    "time": "時間",
+    "symbol": "シンボル",
+    "type": "タイプ",
+    "lots": "ロット",
+    "open": "オープン",
+    "close": "クローズ",
+    "pl": "P/L",
+    "status": "ステータス",
+    "closed": "クローズ",
+    "buy": "買い",
+    "sell": "売り",
+    "minTradingDays": "最小取引日数",
+    "days": "日",
+    "newsTrading": "ニュース取引",
+    "weekendHolding": "週末保有",
+    "compliant": "準拠",
+    "allowed": "許可",
+    "equityCurve": "エクイティカーブ",
+    "dailyPerformance": "日次パフォーマンス",
+    "openPositions": {
+      "title": "未決済ポジション",
+      "noPositions": "未決済ポジションはありません",
+      "noPositionsDesc": "進行中の取引がここに表示されます",
+      "lots": "ロット",
+      "stopLoss": "SL",
+      "takeProfit": "TP",
+      "pips": "pips"
+    },
+    "ruleCompliance": {
+      "title": "ルール遵守",
+      "violation": "違反",
+      "violations": "違反",
+      "warning": "警告",
+      "warnings": "警告",
+      "allClear": "問題なし",
+      "profitTarget": "利益目標",
+      "dailyDrawdown": "日次ドローダウン",
+      "overallDrawdown": "全体ドローダウン",
+      "minTradingDays": "最小取引日数",
+      "newsTrading": "ニュース取引",
+      "weekendHolding": "週末保有",
+      "expertAdvisors": "エキスパートアドバイザー",
+      "reachProfitTarget": "合格するには利益目標を達成してください",
+      "maxDailyLoss": "最大日次損失制限",
+      "maxTotalLoss": "最大総損失制限",
+      "minRequiredDays": "必要最小取引日数",
+      "tradingDuringNews": "ニュースイベント中の取引",
+      "holdingOverWeekend": "週末のポジション保有",
+      "automatedTrading": "自動売買を許可",
+      "allowed": "許可",
+      "notAllowed": "不許可",
+      "limit": "上限",
+      "violationDetected": "アカウント違反を検知",
+      "violationMessage": "あなたのアカウントは取引ルールを1つ以上違反しています。取引活動を確認してください"
+    }
+  },
+  "notifications": {
+    "title": "通知",
+    "subtitle": "アカウント活動の更新",
+    "markAllAsRead": "すべて既読にする",
+    "markAsRead": "既読にする",
+    "total": "すべて",
+    "unread": "未読",
+    "warnings": "警告",
+    "violations": "違反",
+    "all": "すべて",
+    "challenges": "チャレンジ",
+    "payouts": "支払い",
+    "account": "アカウント",
+    "noNotifications": "通知はありません",
+    "noNewNotifications": "新しい通知はありません",
+    "allCaughtUp": "すべて確認済みです！",
+    "challenge": "チャレンジ",
+    "payout": "出金",
+    "system": "システム",
+    "notification": "通知",
+    "notifications": "通知",
+    "titles": {
+      "drawdownWarning": "ドローダウン警告",
+      "payoutApproved": "出金承認",
+      "payoutRejected": "出金却下",
+      "payoutProcessed": "出金処理完了",
+      "phase1Completed": "フェーズ1をクリアしました！",
+      "phase2Completed": "フェーズ2をクリアしました！",
+      "accountViolation": "アカウント違反",
+      "accountFailed": "アカウント失格",
+      "challengePurchased": "チャレンジを購入しました",
+      "tradingDaysMilestone": "取引日数のマイルストーン",
+      "newChallengeAvailable": "新しいチャレンジが利用可能",
+      "accountScalingApproved": "アカウント拡大が承認されました",
+      "accountScalingRejected": "アカウント拡大が却下されました",
+      "accountPaused": "アカウントが一時停止されました",
+      "accountClosed": "アカウントが閉鎖されました",
+      "accountResumed": "アカウントが再開されました"
+    },
+    "messages": {
+      "dailyDrawdownWarning": "アカウント #{{accountNumber}} の日次ドローダウンが {{dailyPercent}}% に達しました。許容上限は {{maxPercent}}% です。リスク管理にご注意ください",
+      "overallDrawdownWarning": "アカウント #{{accountNumber}} の全体ドローダウンが {{overallPercent}}% に達しました。許容上限は {{maxPercent}}% です。リスク管理にご注意ください",
+      "dailyDrawdownViolation": "アカウント #{{accountNumber}} の日次ドローダウンが {{dailyPercent}}% に達しました。許容上限は {{maxPercent}}% です。取引は明日までロックされます",
+      "overallDrawdownViolation": "アカウント #{{accountNumber}} の全体ドローダウンが {{overallPercent}}% に達しました。許容上限は {{maxPercent}}% です。チャレンジは失格となりました",
+      "payoutApproved": "出金申請 ${{amount}} は承認されました。24〜48時間以内に送金されます",
+      "payoutRejected": "出金申請 ${{amount}} は却下されました。詳細はサポートまでお問い合わせください",
+      "payoutProcessed": "出金 ${{amount}} は処理され、送金が完了しました",
+      "phase1Completed": "おめでとうございます！${{accountSize}} チャレンジのフェーズ1をクリアしました。続けてフェーズ2へ進みましょう",
+      "phase2Completed": "おめでとうございます！${{accountSize}} チャレンジのフェーズ2をクリアしました。あなたのアカウントは資金提供済みです！",
+      "tradingDaysMilestoneMet": "アカウント #{{accountNumber}} で {{tradingDays}} 日の取引を達成しました。最小取引日数の要件を満たしました！",
+      "tradingDaysMilestone": "アカウント #{{accountNumber}} で {{tradingDays}} 日の取引を達成しました。素晴らしいです！",
+      "challengePurchased": "チャレンジ {{challengeName}} の購入が完了しました。取引アカウント #{{accountNumber}} は開始残高 ${{startingBalance}} で利用可能です",
+      "accountScalingApproved": "アカウント #{{accountNumber}} の拡大申請が承認されました。残高が ${{oldBalance}} から ${{newBalance}} に増加しました",
+      "accountScalingRejected": "アカウント #{{accountNumber}} の拡大申請が却下されました。詳細はサポートまでお問い合わせください",
+      "newChallengeAvailable": "新しいチャレンジ {{challengeName}} をチェック！{{platform}} のアカウントサイズ {{accountSize}}。今すぐ始めましょう",
+      "accountViolationGeneric": "アカウント #{{accountNumber}} が取引ルールに違反しました{{violationPercent}}",
+      "accountPaused": "取引アカウント #{{accountNumber}} は一時停止されました。取引は一時的に停止されています",
+      "accountClosed": "取引アカウント #{{accountNumber}} は閉鎖されました",
+      "accountResumed": "取引アカウント #{{accountNumber}} が再開されました。現在、取引は有効です"
+    }
+  },
+  "buyChallenge": {
+    "title": "新しいチャレンジを追加",
+    "subtitle": "追加チャレンジで取引ポートフォリオを拡大",
+    "purchaseSuccessful": "購入が完了しました！",
+    "purchaseSuccessfulDesc": "チャレンジアカウントを設定中です。5分以内にログイン情報をメールでお送りします",
+    "orderSummary": "注文概要",
+    "noChallenges": "チャレンジなし",
+    "challenge": "チャレンジ",
+    "platform": "プラットフォーム",
+    "amountPaid": "支払金額",
+    "goToDashboard": "ダッシュボードへ",
+    "chooseChallenge": "チャレンジを選択",
+    "selectPlatform": "プラットフォームを選択",
+    "payment": "支払い",
+    "chooseYourChallenge": "チャレンジを選択",
+    "selectAccountSize": "取引スタイルに合ったアカウントサイズを選択",
+    "popular": "人気",
+    "accountSize": "アカウントサイズ",
+    "profitTarget": "利益目標",
+    "drawdown": "ドローダウン",
+    "profitSplit": "利益分配",
+    "continue": "続行",
+    "selectTradingPlatform": "取引プラットフォームを選択",
+    "choosePlatform": "取引したいプラットフォームを選択",
+    "back": "戻る",
+    "completePurchase": "購入を完了",
+    "choosePaymentMethod": "支払い方法を選択して決済を完了してください",
+    "paymentMethod": "支払い方法",
+    "couponCode": "クーポンコード",
+    "enterCode": "コードを入力",
+    "apply": "適用",
+    "validating": "検証中...",
+    "applied": "適用済み",
+    "off": "OFF",
+    "discountApplied": "割引適用: -{{discount}}%",
+    "couponApplied": "{{code}} を適用しました - {{discount}}%OFF！",
+    "couponSuccess": "クーポン適用完了",
+    "couponError": "無効なクーポン",
+    "purchaseError": "購入に失敗しました",
+    "purchaseSuccessfulTitle": "購入完了",
+    "subtotal": "小計",
+    "discount": "割引",
+    "total": "合計",
+    "processing": "処理中...",
+    "pay": "支払う",
+    "payAmount": "${{amount}} を支払う",
+    "secureEncryption": "安全な256-bit SSL暗号化",
+    "minTradingDays": "最低取引日数",
+    "maxTradingDays": "最大取引日数",
+    "eaAllowed": "EA許可",
+    "newsTrading": "ニュース取引",
+    "weekendHolding": "週末保有",
+    "scalingEnabled": "スケーリング",
+    "platforms": {
+      "MT5": {
+        "name": "MetaTrader 5",
+        "desc": "人気の取引プラットフォーム"
+      },
+      "MT4": {
+        "name": "MetaTrader 4",
+        "desc": "定番の取引プラットフォーム"
+      },
+      "cTrader": {
+        "name": "cTrader",
+        "desc": "プロ向けプラットフォーム"
+      },
+      "DXTrade": {
+        "name": "DXTrade",
+        "desc": "Webベースのプラットフォーム"
+      }
+    },
+    "paymentMethods": {
+      "card": {
+        "name": "クレジット/デビットカード",
+        "desc": "Visa, Mastercard, Amex"
+      },
+      "crypto": {
+        "name": "暗号通貨",
+        "desc": "BTC, ETH, USDT"
+      },
+      "paypal": {
+        "name": "PayPal",
+        "desc": "PayPalで支払う"
+      }
+    }
+  },
+  "violationModal": {
+    "dailyLossTitle": "日次損失上限に到達",
+    "drawdownTitle": "最大損失上限に到達",
+    "description": "あなたのアカウントはチャレンジルールに違反しました",
+    "ruleLimit": "ルール上限",
+    "equityAtViolation": "違反時のエクイティ",
+    "actionTaken": "実施された対応",
+    "positionsClosed": "すべてのポジションが自動的にクローズされました",
+    "dailyLockedAction": "取引は明日までロックされます",
+    "disqualifiedAction": "チャレンジは失格となりました",
+    "understood": "了解"
+  },
+  "violationAlert": {
+    "accountFailed": "アカウント失格",
+    "dailyDrawdownExceeded": "日次損失上限を超過",
+    "dailyDrawdownDescription": "日次損失が許容上限 {{limit}}% を超えました",
+    "maximumDrawdownExceeded": "最大損失上限を超過",
+    "maximumDrawdownDescription": "総損失が許容上限 {{limit}}% を超えました",
+    "maximumTradingDaysExceeded": "最大取引日数を超過",
+    "maximumTradingDaysDescription": "許容される最大取引日数を超えました",
+    "valueAtViolation": "違反時の値",
+    "maximumAllowed": "許容上限",
+    "account": "アカウント",
+    "finalBalance": "最終残高",
+    "tradingDays": "取引日数",
+    "days": "日",
+    "startNewChallenge": "新しいチャレンジを開始",
+    "reviewTradingRules": "取引ルールを確認"
+  },
+  "terminal": {
+    "title": "取引ターミナル",
+    "selectAccount": "アカウントを選択",
+    "phase1": "フェーズ 1",
+    "phase2": "フェーズ 2",
+    "funded": "資金提供済み",
+    "failed": "失敗",
+    "phase1Badge": "フェーズ 1",
+    "phase2Badge": "フェーズ 2",
+    "fundedBadge": "資金提供済み",
+    "failedBadge": "失敗",
+    "connected": "接続済み",
+    "disconnected": "切断",
+    "tabs": {
+      "chart": "チャート",
+      "trade": "取引",
+      "watch": "監視",
+      "watchlist": "ウォッチリスト",
+      "positions": "ポジション",
+      "pending": "保留中",
+      "history": "履歴"
+    },
+    "tradeHistory": "取引履歴",
+    "modifyDialog": {
+      "title": "{{symbol}} を編集",
+      "lotSize": "ロットサイズ",
+      "enterTP": "TP価格を入力",
+      "enterSL": "SL価格を入力",
+      "saveChanges": "変更を保存",
+      "saving": "保存中..."
+    },
+    "noPendingOrders": "保留中の注文はありません",
+    "cancel": "キャンセル",
+    "noClosedTrades": "クローズ済みの取引はまだありません",
+    "lots": "ロット",
+    "lot": "ロット",
+    "drawdownWarning": {
+      "title": "損失警告",
+      "details": "ポジションサイズを縮小するか、一部の取引をクローズしてアカウントを保護することをご検討ください"
+    },
+    "violation": {
+      "title": "チャレンジ失格",
+      "message": "最大損失上限を超過しました"
+    },
+    "accountFailed": {
+      "title": "アカウント失格 - 取引が無効化されました",
+      "resetDemo": "デモをリセット",
+      "message": "アカウントが失格となり、取引は無効化されました"
+    },
+    "tradeBlocked": "取引はブロックされています",
+    "invalidTrade": "無効な注文です",
+    "missingFields": "注文情報が不足しています",
+    "noAccount": "アカウントが選択されていません",
+    "selectAccountTitle": "アカウントを選択",
+    "selectAccountMessage": "上のドロップダウンから取引アカウントを選択して、取引の詳細を表示してください",
+    "tradeExecuted": "注文が成立しました",
+    "orderPlaced": "注文を出しました",
+    "orderCancelled": "注文をキャンセルしました",
+    "tradeFailed": "注文に失敗しました",
+    "saveError": "注文をサーバーに保存できませんでした",
+    "positionClosed": "ポジションをクローズしました",
+    "stopLossHit": "ストップロスに到達",
+    "takeProfitHit": "テイクプロフィットに到達",
+    "closedAt": "決済価格",
+    "closeFailed": "ポジションのクローズに失敗しました",
+    "updateError": "サーバー上の注文を更新できませんでした",
+    "accountStatusBlocked": "アカウント状態が {{status}} のため、取引は許可されていません",
+    "invalidLotSize": "ロットサイズが無効です。正の数を入力してください",
+    "duplicateTrade": "重複した注文です",
+    "duplicateTradeMessage": "同様の注文が直近で実行されました。しばらくお待ちください",
+    "accountNotFound": "取引アカウントが見つかりません",
+    "invalidTradeData": "取引データが無効です。入力内容を確認してください",
+    "tradeNotAllowed": "このアカウントでは取引できません",
+    "serverError": "サーバーエラーです。もう一度お試しください",
+    "networkOffline": "インターネットに接続されていません。ネットワークを確認してください",
+    "networkError": "ネットワークエラーです。接続を確認して再試行してください",
+    "tradeNotFound": "注文が見つかりません。削除された可能性があります",
+    "invalidCloseData": "注文クローズ用のデータが無効です",
+    "tradeAlreadyClosed": "この注文はすでにクローズされています",
+    "tradeInProgress": "注文を処理中です。しばらくお待ちください",
+    "dailyLossLimitReached": "日次損失上限に到達しました。取引は明日までロックされます",
+    "dailyLocked": "日次損失上限に到達",
+    "dailyLockedMessage": "日次損失上限を超過したため、アカウントは明日までロックされました",
+    "disqualified": "失格",
+    "disqualifiedMessage": "最大損失上限を超過したため、アカウントは失格となりました",
+    "challengeDisqualified": "チャレンジは失格です。これ以上取引できません",
+    "modificationFailed": "変更に失敗しました",
+    "orderCancelledSuccess": "保留中の注文のキャンセルに成功しました",
+    "orderFailed": "注文に失敗しました",
+    "orderExecutionFailed": "注文の執行に失敗しました",
+    "cancelFailed": "キャンセルに失敗しました",
+    "pendingOrderDescription": "{{type}} {{symbol}} の指値注文を出しました",
+    "tradingPanel": {
+      "newOrder": "新規注文",
+      "buyLong": "買い",
+      "sellShort": "売り",
+      "long": "ロング",
+      "short": "ショート",
+      "price": "価格",
+      "market": "成行",
+      "leaveEmpty": "成行注文の場合は空欄のままにしてください",
+      "amount": "数量",
+      "takeProfit": "利確",
+      "stopLoss": "損切り",
+      "lot": "lot",
+      "optional": "任意",
+      "orderValue": "注文金額",
+      "margin": "証拠金",
+      "leverage": "レバレッジ",
+      "placeBuyOrder": "買い注文を出す",
+      "placeSellOrder": "売り注文を出す",
+      "bid": "売値（Bid）",
+      "ask": "買値（Ask）",
+      "spread": "スプレッド",
+      "limit": "指値"
+    },
+    "chart": {
+      "lastUpdate": "最終更新",
+      "candles": "ローソク足",
+      "tf": "TF",
+      "loadingData": "チャートデータを読み込み中...",
+      "updating": "更新中...",
+      "switchToLineChart": "折れ線グラフに切り替え",
+      "switchToCandlestickChart": "ローソク足チャートに切り替え"
+    },
+    "loadingAccounts": "アカウントを読み込み中...",
+    "watchlist": {
+      "title": "価格を表示",
+      "live": "ライブ",
+      "offline": "オフライン",
+      "search": "検索...",
+      "all": "すべて",
+      "favorites": "★",
+      "forex": "Forex",
+      "crypto": "Crypto",
+      "symbol": "シンボル",
+      "bid": "Bid",
+      "ask": "Ask",
+      "chg": "Chg%",
+      "updated": "更新",
+      "retry": "再試行"
+    },
+    "positions": {
+      "title": "未決済ポジション",
+      "noPositions": "未決済ポジションはありません",
+      "noPositionsDesc": "取引を開始するとここに表示されます",
+      "modifySLTP": "SL/TPを編集",
+      "closePosition": "ポジションをクローズ",
+      "entry": "建値",
+      "current": "現在",
+      "closeAt": "決済価格",
+      "pips": "pips",
+      "buy": "買い",
+      "sell": "売り"
+    },
+    "history": {
+      "filterBySymbol": "シンボルで絞り込み...",
+      "allTrades": "すべての取引",
+      "profitOnly": "利益のみ",
+      "lossOnly": "損失のみ",
+      "allTime": "全期間",
+      "today": "今日",
+      "thisWeek": "今週",
+      "thisMonth": "今月",
+      "totalPL": "総損益",
+      "winRate": "勝率",
+      "wins": "勝ち",
+      "losses": "負け",
+      "noTradesMatch": "条件に一致する取引はありません",
+      "entry": "エントリー",
+      "exit": "エグジット",
+      "autoClosed": "自動クローズ",
+      "breach": "ルール違反",
+      "breachPnL": "違反時のPnL（上限時）"
+    },
+    "accountMetrics": {
+      "balance": "残高",
+      "equity": "エクイティ",
+      "margin": "証拠金",
+      "freeMargin": "余剰証拠金",
+      "marginLevel": "証拠金維持率",
+      "floatingPnL": "含み損益",
+      "profitPercent": "利益 %",
+      "dailyDrawdown": "日次ドローダウン",
+      "overallDrawdown": "全体ドローダウン",
+      "used": "使用済み",
+      "free": "空き",
+      "marginUsed": "使用証拠金",
+      "tradingDays": "取引日数",
+      "phase": "フェーズ",
+      "loss": "損失",
+      "challengeActive": "進行中のチャレンジ",
+      "workingTowardsPhase1": "フェーズ1の完了に向けて進行中",
+      "workingTowardsPhase2": "フェーズ2の完了に向けて進行中",
+      "phase1Complete": "フェーズ1完了",
+      "readyForPhase2": "フェーズ2へ進む準備ができました",
+      "fundedAccount": "資金提供アカウント",
+      "challengeCompleted": "おめでとうございます！チャレンジを完了しました",
+      "phaseProgression": "フェーズの進捗",
+      "completePhase1": "フェーズ1を完了",
+      "completePhase2": "フェーズ2を完了",
+      "profit": "利益",
+      "days": "日",
+      "phase1": "フェーズ 1",
+      "phase2": "フェーズ 2",
+      "funded": "資金提供済み",
+      "dailyLimitViolated": "日次上限違反（ロック中）",
+      "challengeFailed": "チャレンジ失格 / 失敗",
+      "accountLockedUntilTomorrow": "日次損失上限違反のため、アカウントは明日までロックされています",
+      "accountViolatedRules": "アカウントがチャレンジルールに違反しました",
+      "daysRemaining_one": "残り {{count}} 日",
+      "daysRemaining_other": "残り {{count}} 日"
+    }
+  },
+  "nav": {
+    "home": "ホーム",
+    "challenges": "チャレンジ",
+    "howItWorks": "仕組み",
+    "scaling": "スケーリング",
+    "rules": "ルール",
+    "faq": "よくある質問",
+    "contact": "お問い合わせ",
+    "login": "ログイン",
+    "getStarted": "開始する",
+    "dashboard": "ダッシュボード",
+    "tradingTerminal": "取引ターミナル",
+    "buyChallenge": "チャレンジを購入",
+    "myAccounts": "マイアカウント",
+    "accountDetails": "アカウント詳細",
+    "challengeProgress": "チャレンジ進捗",
+    "ruleCompliance": "ルール遵守",
+    "tradeHistory": "取引履歴",
+    "analytics": "分析",
+    "payouts": "支払い",
+    "notifications": "通知",
+    "profile": "プロフィール",
+    "support": "サポート",
+    "overview": "概要",
+    "users": "ユーザー",
+    "accounts": "アカウント",
+    "riskMonitor": "リスク監視",
+    "brokerServers": "ブローカーサーバー",
+    "payments": "支払い",
+    "violations": "違反",
+    "settings": "設定",
+    "website": "ウェブサイト",
+    "logout": "ログアウト",
+    "user": "ユーザー",
+    "adminPanel": "管理者パネル"
+  },
+  "status": {
+    "active": "有効",
+    "ACTIVE": "有効",
+    "passed": "合格",
+    "failed": "失敗",
+    "suspended": "停止",
+    "funded": "資金提供済み",
+    "pending": "保留中",
+    "approved": "承認",
+    "rejected": "却下",
+    "paid": "支払い済み",
+    "completed": "完了",
+    "refunded": "返金済み",
+    "open": "オープン",
+    "in_progress": "進行中",
+    "inprogress": "進行中",
+    "resolved": "解決済み",
+    "closed": "クローズ",
+    "CLOSED": "クローズ",
+    "DAILY_LOCKED": "日次ロック",
+    "DISQUALIFIED": "失格",
+    "phase1": "フェーズ 1",
+    "phase2": "フェーズ 2",
+    "paused": "一時停止",
+    "daily_locked": "日次ロック",
+    "dailylocked": "日次ロック",
+    "Dailylocked": "日次ロック",
+    "disqualified": "失格"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "管理者ダッシュボード",
+      "subtitle": "プラットフォームのパフォーマンスと活動の概要",
+      "stats": {
+        "totalTraders": "総トレーダー数",
+        "activeChallenges": "進行中のチャレンジ",
+        "revenue": "収益",
+        "payouts": "支払い",
+        "fundedAccounts": "資金提供アカウント",
+        "violationsToday": "本日の違反",
+        "changeThisMonth": "今月 +{{percent}}%"
+      },
+      "chart": {
+        "title": "収益と支払い（直近30日）",
+        "revenue": "収益",
+        "payouts": "支払い",
+        "tooltip": {
+          "date": "日付",
+          "revenue": "収益",
+          "payout": "支払い"
+        }
+      },
+      "recentAccounts": {
+        "title": "最近のアカウント"
+      },
+      "recentViolations": {
+        "title": "最近の違反"
+      },
+      "viewAll": "すべて表示",
+      "noDataFound": "データが見つかりません",
+      "table": {
+        "account": "アカウント",
+        "platform": "プラットフォーム",
+        "phase": "フェーズ",
+        "status": "ステータス",
+        "created": "作成日",
+        "type": "タイプ",
+        "description": "説明",
+        "time": "時間"
+      },
+      "quickActions": {
+        "manageUsers": "ユーザー管理",
+        "manageChallenges": "チャレンジ管理",
+        "reviewPayouts": "支払い確認",
+        "platformSettings": "プラットフォーム設定"
+      },
+      "violations": {
+        "daily_drawdown": {
+          "type": "日次損失",
+          "description": "日次損失が5%を超過"
+        },
+        "overall_drawdown": {
+          "type": "全体損失",
+          "description": "全体損失が10%を超過"
+        },
+        "max_trading_days": {
+          "type": "最大取引日数",
+          "description": "取引期間が終了"
+        },
+        "unknown": {
+          "type": "不明",
+          "description": "不明な違反"
+        }
+      }
+    },
+    "users": {
+      "title": "ユーザー管理",
+      "subtitle": "プラットフォームの全ユーザーを表示・管理",
+      "stats": {
+        "totalUsers": "総ユーザー数",
+        "traders": "トレーダー",
+        "admins": "管理者",
+        "newThisWeek": "今週の新規"
+      },
+      "searchPlaceholder": "名前またはメールで検索...",
+      "filter": {
+        "role": "役割",
+        "allRoles": "すべての役割",
+        "traders": "トレーダー",
+        "admins": "管理者"
+      },
+      "table": {
+        "user": "ユーザー",
+        "role": "役割",
+        "joined": "参加日",
+        "actions": "操作"
+      },
+      "roles": {
+        "user": "トレーダー",
+        "admin": "管理者"
+      },
+      "actions": {
+        "viewDetails": "詳細を見る",
+        "sendEmail": "メールを送信",
+        "makeAdmin": "管理者にする",
+        "makeTrader": "トレーダーにする"
+      },
+      "dialog": {
+        "title": "ユーザー詳細",
+        "userId": "ユーザーID",
+        "role": "役割",
+        "firstName": "名",
+        "lastName": "姓",
+        "phone": "電話",
+        "country": "国",
+        "joined": "参加日",
+        "noDetails": "ユーザー詳細を読み込めません",
+        "error": "ユーザー詳細の読み込み中にエラーが発生しました"
+      },
+      "emptyMessage": "ユーザーが見つかりません"
+    },
+    "accounts": {
+      "title": "アカウント管理",
+      "subtitle": "すべての取引アカウントを表示・管理",
+      "stats": {
+        "totalAccounts": "総アカウント数",
+        "active": "進行中",
+        "passed": "合格",
+        "funded": "資金提供済み",
+        "failed": "失敗"
+      },
+      "searchPlaceholder": "口座番号またはメールで検索...",
+      "filter": {
+        "status": "ステータス",
+        "phase": "フェーズ",
+        "allStatus": "すべてのステータス",
+        "allPhases": "すべてのフェーズ",
+        "active": "進行中",
+        "passed": "合格",
+        "funded": "資金提供済み",
+        "failed": "失敗",
+        "suspended": "停止",
+        "phase1": "フェーズ 1",
+        "phase2": "フェーズ 2"
+      },
+      "table": {
+        "account": "アカウント",
+        "platform": "プラットフォーム",
+        "balance": "残高",
+        "phase": "フェーズ",
+        "status": "ステータス",
+        "created": "作成日",
+        "actions": "操作"
+      },
+      "actions": {
+        "viewDetails": "詳細を見る",
+        "forcePass": "強制合格",
+        "forceFail": "強制失敗",
+        "resetAccount": "アカウントをリセット",
+        "moveToFunded": "資金提供へ移行"
+      },
+      "dialog": {
+        "title": "アカウント詳細",
+        "accountId": "アカウントID",
+        "brokerLogin": "ブローカーログイン",
+        "trader": "トレーダー",
+        "platform": "プラットフォーム",
+        "challenge": "チャレンジ",
+        "phase": "フェーズ",
+        "status": "ステータス",
+        "created": "作成日",
+        "initialBalance": "初期残高",
+        "currentBalance": "現在残高",
+        "equity": "エクイティ",
+        "profit": "損益",
+        "totalTrades": "総取引数",
+        "violations": "違反",
+        "phaseTransitions": "フェーズ移行",
+        "recentViolations": "最近の違反",
+        "error": "アカウント詳細の読み込みエラー",
+        "noDetails": "アカウント詳細がありません"
+      },
+      "emptyMessage": "アカウントが見つかりません"
+    },
+    "payouts": {
+      "title": "支払い管理",
+      "subtitle": "トレーダーの出金申請を確認・処理",
+      "stats": {
+        "pending": "保留中",
+        "approved": "承認済み",
+        "totalPaid": "支払い総額",
+        "pendingRequests": "保留中の申請"
+      },
+      "searchPlaceholder": "トレーダーのメールで検索...",
+      "filter": {
+        "status": "ステータス",
+        "allStatus": "すべてのステータス",
+        "pending": "保留中",
+        "approved": "承認済み",
+        "paid": "支払い済み",
+        "rejected": "却下"
+      },
+      "table": {
+        "trader": "トレーダー",
+        "amount": "金額",
+        "method": "方法",
+        "status": "ステータス",
+        "requested": "申請日",
+        "actions": "操作"
+      },
+      "actions": {
+        "markAsPaid": "支払い済みにする",
+        "paid": "支払い済み",
+        "rejected": "却下",
+        "rejecting": "却下中..."
+      },
+      "emptyMessage": "出金申請が見つかりません",
+      "dialog": {
+        "rejectTitle": "出金申請を却下",
+        "rejectMessage": "{{trader}} の {{amount}} の出金を却下します",
+        "rejectReasonPlaceholder": "却下理由...",
+        "cancel": "キャンセル",
+        "rejectPayout": "出金を却下"
+      }
+    },
+    "payments": {
+      "title": "決済管理",
+      "subtitle": "すべてのチャレンジ決済を表示・管理",
+      "stats": {
+        "totalRevenue": "総収益",
+        "completed": "完了",
+        "pending": "保留中",
+        "refunded": "返金済み",
+        "changeThisMonth": "今月 +{{percent}}%"
+      },
+      "searchPlaceholder": "メールまたは取引IDで検索...",
+      "filter": {
+        "status": "ステータス",
+        "allStatus": "すべてのステータス",
+        "completed": "完了",
+        "pending": "保留中",
+        "failed": "失敗",
+        "refunded": "返金済み"
+      },
+      "table": {
+        "trader": "トレーダー",
+        "amount": "金額",
+        "method": "方法",
+        "transactionId": "取引ID",
+        "status": "ステータス",
+        "date": "日付",
+        "actions": "操作"
+      },
+      "methods": {
+        "stripe": "クレジット/デビットカード",
+        "internal": "内部",
+        "unknown": "不明"
+      },
+      "actions": {
+        "refund": "返金",
+        "refunded": "返金済み"
+      },
+      "emptyMessage": "決済が見つかりません",
+      "refundTitle": "返金",
+      "refundConfirm": "この決済を返金しますか？",
+      "refundReason": "返金理由（任意）",
+      "refundReasonPlaceholder": "返金理由を入力...",
+      "cancel": "キャンセル",
+      "confirmRefund": "返金を確定",
+      "refunding": "処理中..."
+    },
+    "violations": {
+      "title": "ルール違反",
+      "subtitle": "取引ルール違反を確認・追跡",
+      "stats": {
+        "totalViolations": "総違反数",
+        "fatalViolations": "重大違反",
+        "warnings": "警告",
+        "today": "今日"
+      },
+      "searchPlaceholder": "アカウントまたはメールで検索...",
+      "filter": {
+        "violationType": "違反タイプ",
+        "allTypes": "すべてのタイプ",
+        "dailyDrawdown": "日次損失",
+        "overallDrawdown": "全体損失",
+        "maxTradingDays": "最大取引日数",
+        "newsTrading": "ニュース取引",
+        "weekendHolding": "週末保有",
+        "restrictedInstrument": "制限銘柄",
+        "lotSize": "ロットサイズ",
+        "eaDetected": "EA検出",
+        "consistency": "一貫性",
+        "ruleBreak": "ルール違反"
+      },
+      "table": {
+        "account": "アカウント",
+        "type": "タイプ",
+        "description": "説明",
+        "value": "値",
+        "fatal": "重大",
+        "time": "時間"
+      },
+      "types": {
+        "dailyDrawdown": "日次損失",
+        "overallDrawdown": "全体損失",
+        "maxTradingDays": "最大取引日数",
+        "newsTrading": "ニュース取引",
+        "weekendHolding": "週末保有",
+        "restrictedInstrument": "制限銘柄",
+        "lotSize": "ロットサイズ",
+        "eaDetected": "EA検出"
+      },
+      "severity": {
+        "fatal": "重大",
+        "warning": "警告"
+      },
+      "descriptions": {
+        "daily_drawdown": "日次損失が {{threshold}}% を超過",
+        "overall_drawdown": "全体損失が {{threshold}}% を超過",
+        "max_trading_days": "最大取引期間が終了",
+        "news_trading": "制限されたニュース時間帯で取引",
+        "weekend_holding": "週末にポジションを保有",
+        "restricted_instrument": "制限銘柄で取引",
+        "lot_size": "ロットサイズ上限を超過",
+        "ea_detected": "Expert Advisor を検出"
+      },
+      "emptyMessage": "違反が見つかりません"
+    },
+    "coupons": {
+      "title": "クーポン管理",
+      "subtitle": "割引クーポンを作成・管理",
+      "createCoupon": "クーポンを作成",
+      "editCoupon": "クーポンを編集",
+      "createNewCoupon": "新しいクーポンを作成",
+      "stats": {
+        "totalCoupons": "総クーポン数",
+        "active": "有効",
+        "totalUses": "総使用回数",
+        "expired": "期限切れ"
+      },
+      "form": {
+        "couponCode": "クーポンコード",
+        "generate": "自動生成",
+        "discountType": "割引タイプ",
+        "percentage": "パーセント",
+        "fixedAmount": "固定額",
+        "discountValue": "割引額",
+        "maxUses": "最大使用回数（任意）",
+        "validUntil": "有効期限（任意）",
+        "active": "有効",
+        "saving": "保存中...",
+        "updateCoupon": "クーポンを更新",
+        "createCoupon": "クーポンを作成"
+      },
+      "table": {
+        "code": "コード",
+        "discount": "割引",
+        "usage": "使用状況",
+        "validUntil": "有効期限",
+        "status": "ステータス",
+        "actions": "操作"
+      },
+      "status": {
+        "active": "有効",
+        "inactive": "無効"
+      },
+      "noExpiry": "有効期限なし",
+      "emptyMessage": "クーポンが見つかりません"
+    },
+    "support": {
+      "title": "サポートチケット",
+      "subtitle": "サポート依頼を管理・返信",
+      "stats": {
+        "openTickets": "オープンチケット",
+        "inProgress": "進行中",
+        "resolved": "解決済み",
+        "today": "今日",
+        "avgResponse": "平均応答時間"
+      },
+      "searchPlaceholder": "メールまたは件名で検索...",
+      "filter": {
+        "status": "ステータス",
+        "allStatus": "すべてのステータス",
+        "open": "オープン",
+        "inProgress": "進行中",
+        "resolved": "解決済み",
+        "closed": "クローズ"
+      },
+      "table": {
+        "ticket": "チケット",
+        "category": "カテゴリー",
+        "priority": "優先度",
+        "status": "ステータス",
+        "created": "作成日",
+        "actions": "操作"
+      },
+      "priority": {
+        "low": "低",
+        "medium": "中",
+        "high": "高"
+      },
+      "category": {
+        "technical": "技術",
+        "payout": "出金",
+        "account": "アカウント",
+        "payment": "支払い",
+        "other": "その他"
+      },
+      "actions": {
+        "take": "担当する",
+        "resolve": "解決"
+      },
+      "dialog": {
+        "from": "送信元",
+        "writeResponse": "返信を書いてください...",
+        "close": "閉じる",
+        "sending": "送信中...",
+        "sendAndResolve": "送信して解決"
+      },
+      "emptyMessage": "チケットが見つかりません",
+      "subjects": {
+        "unableToLoginMT5": "MT5にログインできません",
+        "payoutRequestTakingTooLong": "出金申請に時間がかかりすぎています",
+        "questionAboutScalingPlan": "スケーリングプランについての質問",
+        "refundRequest": "返金申請",
+        "challengeRulesClarification": "チャレンジルールの確認"
+      }
+    },
+    "settings": {
+      "title": "プラットフォーム設定",
+      "subtitle": "設定および連携を構成",
+      "saveChanges": "変更を保存",
+      "saveChange": "保存中...",
+      "settingsSaved": "設定を保存しました",
+      "settingsSaveDescription": "設定が正常に保存されました",
+      "tabs": {
+        "general": "一般",
+        "branding": "ブランディング",
+        "payments": "支払い",
+        "integrations": "連携",
+        "email": "メール"
+      },
+      "general": {
+        "title": "一般設定",
+        "platformName": "プラットフォーム名",
+        "supportEmail": "サポートメール",
+        "maintenanceMode": "メンテナンスモード",
+        "maintenanceModeDesc": "一時的にプラットフォームへのアクセスを停止"
+      },
+      "branding": {
+        "title": "ブランド設定",
+        "primaryColor": "メインカラー",
+        "secondaryColor": "サブカラー",
+        "logoUrl": "{{url}} ロゴ",
+        "logoUrlPlaceholder": "https://example.com/logo.png"
+      },
+      "payments": {
+        "title": "決済設定",
+        "stripe": "Stripe",
+        "stripeDesc": "クレジットカード決済を受け付ける",
+        "stripeApiKey": "Stripe API Key",
+        "stripeApiKeyPlaceholder": "sk_live_...",
+        "paypal": "PayPal",
+        "paypalDesc": "PayPal決済を受け付ける",
+        "cryptocurrency": "暗号通貨",
+        "cryptocurrencyDesc": "BTC, ETH, USDT で決済を受け付ける"
+      },
+      "integrations": {
+        "title": "取引プラットフォーム連携",
+        "mt4": "MetaTrader 4",
+        "mt4Desc": "定番のMT4取引プラットフォーム",
+        "mt5": "MetaTrader 5",
+        "mt5Desc": "高度なMT5取引プラットフォーム",
+        "ctrader": "cTrader",
+        "ctraderDesc": "プロ向けcTraderプラットフォーム",
+        "dxtrade": "DXTrade",
+        "dxtradeDesc": "DXTrade取引プラットフォーム",
+        "note": "注: 取引プラットフォームのAPIキーは安全のため別途設定が必要です"
+      },
+      "email": {
+        "title": "メールテンプレート",
+        "welcomeEmail": "ウェルカムメール",
+        "welcomeEmailDesc": "新規ユーザー登録時に送信",
+        "challengePurchase": "チャレンジ購入",
+        "challengePurchaseDesc": "チャレンジ購入時に送信",
+        "accountCredentials": "アカウントログイン情報",
+        "accountCredentialsDesc": "取引アカウント詳細とともに送信",
+        "phasePassed": "フェーズ合格",
+        "phasePassedDesc": "トレーダーがフェーズを通過した際に送信",
+        "accountFailed": "アカウント失格",
+        "accountFailedDesc": "アカウントが失格となった際に送信",
+        "payoutApproved": "出金承認",
+        "payoutApprovedDesc": "出金が承認された際に送信",
+        "editTemplate": "テンプレートを編集"
+      }
+    },
+    "riskMonitor": {
+      "title": "リスク監視",
+      "subtitle": "アカウントリスクをリアルタイムで監視",
+      "refresh": "更新",
+      "riskLevels": {
+        "critical": "重大リスク",
+        "high": "高リスク",
+        "medium": "中リスク",
+        "low": "低リスク"
+      },
+      "riskBadges": {
+        "critical": "重大",
+        "high": "高",
+        "medium": "中",
+        "low": "低"
+      },
+      "searchPlaceholder": "口座番号またはトレーダーで検索...",
+      "table": {
+        "account": "アカウント",
+        "balance": "残高",
+        "equity": "エクイティ",
+        "dailyDD": "日次DD",
+        "maxDD": "最大DD",
+        "riskLevel": "リスクレベル",
+        "actions": "操作"
+      },
+      "confirmations": {
+        "emergencyClose": "このアカウントの全ポジションをクローズしますか？",
+        "lockAccount": "このアカウントをロックしますか？"
+      },
+      "recentViolations": {
+        "title": "最近の違反",
+        "noViolations": "最近の違反はありません",
+        "account": "アカウント"
+      }
+    },
+    "brokerServers": {
+      "title": "ブローカーサーバー",
+      "subtitle": "取引プラットフォーム接続を管理",
+      "addServer": "サーバーを追加",
+      "adding": "追加中...",
+      "dialog": {
+        "title": "ブローカーサーバーを追加",
+        "serverName": "サーバー名",
+        "serverNamePlaceholder": "例: Prop Capitals MT5 Demo",
+        "platform": "プラットフォーム",
+        "serverAddress": "サーバーアドレス",
+        "serverAddressPlaceholder": "broker.server.com",
+        "port": "ポート",
+        "managerLogin": "マネージャーログイン",
+        "managerPassword": "マネージャーパスワード",
+        "apiKey": "API Key / Client ID",
+        "apiSecret": "API Secret",
+        "demoServer": "デモサーバー"
+      },
+      "platforms": {
+        "mt4": "MetaTrader 4",
+        "mt5": "MetaTrader 5",
+        "ctrader": "cTrader",
+        "dxtrade": "DXTrade"
+      },
+      "status": {
+        "connected": "接続済み",
+        "error": "エラー",
+        "notConnected": "未接続"
+      },
+      "badges": {
+        "demo": "デモ"
+      },
+      "card": {
+        "platform": "プラットフォーム",
+        "timezone": "タイムゾーン",
+        "lastSync": "最終同期"
+      },
+      "actions": {
+        "test": "テスト"
+      },
+      "empty": {
+        "title": "ブローカーサーバーがありません",
+        "description": "最初のブローカーサーバーを追加して取引アカウント作成を開始しましょう"
+      }
+    },
+    "scaling": {
+      "title": "スケーリング管理",
+      "subtitle": "アカウント拡大申請を確認・処理",
+      "summary": {
+        "pendingReview": "確認待ち",
+        "readyToProcess": "処理可能",
+        "completed": "完了"
+      },
+      "tabs": {
+        "pending": "保留中",
+        "approved": "承認済み",
+        "completed": "完了",
+        "all": "すべて"
+      },
+      "table": {
+        "trader": "トレーダー",
+        "currentToNew": "現在 → 新規",
+        "profitSplit": "利益分配",
+        "profitAchieved": "達成利益",
+        "payoutCycles": "支払いサイクル",
+        "status": "ステータス",
+        "actions": "操作",
+        "level": "レベル {{current}} → {{new}}"
+      },
+      "status": {
+        "pending": "保留中",
+        "approved": "承認済み",
+        "completed": "完了",
+        "rejected": "却下"
+      },
+      "actions": {
+        "approve": "承認",
+        "reject": "却下",
+        "process": "処理",
+        "processing": "処理中...",
+        "approving": "承認中...",
+        "rejecting": "却下中..."
+      },
+      "emptyMessage": "拡大申請が見つかりません",
+      "dialog": {
+        "approveTitle": "拡大申請を承認",
+        "rejectTitle": "拡大申請を却下",
+        "currentSize": "現在のサイズ",
+        "newSize": "新しいサイズ",
+        "newProfitSplit": "新しい利益分配",
+        "notes": "メモ（任意）",
+        "notesPlaceholder": "メモを追加...",
+        "cancel": "キャンセル"
+      }
+    },
+    "challenges": {
+      "title": "チャレンジ管理",
+      "subtitle": "取引チャレンジを作成・管理",
+      "createChallenge": "チャレンジを作成",
+      "editChallenge": "チャレンジを編集",
+      "createNewChallenge": "新しいチャレンジを作成",
+      "updateChallenge": "チャレンジを更新",
+      "edit": "編集",
+      "saving": "保存中...",
+      "inactive": "無効",
+      "types": {
+        "one_phase": "1フェーズ",
+        "two_phase": "2フェーズ",
+        "instant_funding": "即時資金提供"
+      },
+      "form": {
+        "challengeName": "チャレンジ名",
+        "challengeType": "チャレンジタイプ",
+        "onePhase": "1フェーズ",
+        "twoPhase": "2フェーズ",
+        "instantFunding": "即時資金提供",
+        "platform": "プラットフォーム",
+        "accountSize": "アカウントサイズ（$）",
+        "price": "価格（$）",
+        "phase1ProfitTarget": "フェーズ1利益目標（%）",
+        "phase2ProfitTarget": "フェーズ2利益目標（%）",
+        "dailyDrawdown": "日次損失（%）",
+        "overallDrawdown": "全体損失（%）",
+        "profitSplit": "利益分配（%）",
+        "minTradingDays": "最小取引日数",
+        "minTradingDaysHint": "トレーダーが取引すべき最小日数",
+        "maxTradingDays": "最大取引日数",
+        "maxTradingDaysHint": "X日後にチャレンジが終了（無制限の場合は空欄）",
+        "tradingRules": "取引ルール",
+        "newsTradingAllowed": "ニュース取引を許可",
+        "weekendHolding": "週末保有",
+        "ea": "EA",
+        "bots": "ボット",
+        "eaBotsAllowed": "{{ea}}/{{bots}} を許可",
+        "active": "有効"
+      },
+      "card": {
+        "accountSize": "アカウントサイズ",
+        "price": "価格",
+        "profitTarget": "利益目標",
+        "drawdown": "損失",
+        "profitSplit": "利益分配"
+      },
+      "deleteConfirmTitle": "チャレンジを削除",
+      "deleteConfirmMessage": "\"{{name}}\" を削除しますか？この操作は元に戻せません",
+      "deleteConfirmWarning": "削除できるのは無効なチャレンジのみです",
+      "cancel": "キャンセル",
+      "confirmDelete": "チャレンジを削除",
+      "deleting": "削除中...",
+      "deleteSuccess": "チャレンジを削除しました",
+      "deleteSuccessDesc": "チャレンジの削除が完了しました",
+      "deleteErrorTitle": "チャレンジを削除できません",
+      "deleteErrorMessage": "このチャレンジは削除できません",
+      "deleteErrorDesc": "既存の取引アカウントに紐づいているため削除できません",
+      "understand": "了解"
+    }
+  },
+  "signIn": {
+    "title": "おかえりなさい",
+    "subtitle": "取引アカウントにログイン",
+    "email": "メールアドレス",
+    "emailPlaceholder": "メールアドレスを入力してください",
+    "password": "パスワード",
+    "passwordPlaceholder": "パスワードを入力してください",
+    "rememberMe": "ログイン状態を保持する",
+    "forgotPassword": "パスワードをお忘れですか？",
+    "signInButton": "ログイン",
+    "noAccount": "アカウントをお持ちではありませんか？",
+    "createAccount": "アカウント作成",
+    "demoCredentials": "例: demo@the-bluehaven.com / demo1234",
+    "secureTrading": "安全な取引",
+    "fundsProtected": "資金は保護されています",
+    "securityDescription": "安心して取引できます。当社のプラットフォームは銀行レベルのセキュリティで、アカウントと取引データを保護します。",
+    "errors": {
+      "invalidCredentials": "メールアドレスまたはパスワードが正しくありません"
+    }
+  },
+  "signUp": {
+    "title": "アカウントを作成",
+    "subtitle": "今日から取引の旅を始めましょう",
+    "otpTitle": "メールアドレスを確認",
+    "otpSubtitle": "お送りした6桁コードを入力してください",
+    "firstName": "名",
+    "firstNamePlaceholder": "ジョン",
+    "lastName": "姓",
+    "lastNamePlaceholder": "ドウ",
+    "email": "メールアドレス",
+    "emailPlaceholder": "メールアドレスを入力してください",
+    "password": "パスワード",
+    "passwordPlaceholder": "パスワードを作成",
+    "confirmPassword": "パスワード確認",
+    "confirmPasswordPlaceholder": "パスワードを再入力してください",
+    "createAccountButton": "アカウント作成",
+    "otpSentTo": "確認コードを送信しました:",
+    "otpLabel": "確認コード",
+    "verifyOtpButton": "確認してアカウント作成",
+    "resendCode": "コードを再送",
+    "resendIn": "{{seconds}}秒後に再送",
+    "changeEmail": "メールアドレスを変更",
+    "hasAccount": "すでにアカウントをお持ちですか？",
+    "signIn": "ログイン",
+    "joinTraders": "数千人のトレーダーに参加",
+    "startJourney": "資金提供アカウントへの旅を開始",
+    "description": "アカウントを作成して、実資金のプロ取引アカウントにアクセス。自信を持って取引し、利益を伸ばしましょう。",
+    "errors": {
+      "passwordsNotMatch": "パスワードが一致しません",
+      "passwordTooShort": "パスワードは6文字以上である必要があります",
+      "registrationFailed": "登録に失敗しました。もう一度お試しください",
+      "registrationSuccess": "登録が完了しました！ログインしてください"
+    }
+  },
+  "faq": {
+    "helpCenter": "ヘルプセンター",
+    "title": "よくある質問",
+    "subtitle": "チャレンジや当社プラットフォームに関する一般的な質問への回答を見つけましょう",
+    "searchPlaceholder": "回答を検索...",
+    "questions": "質問",
+    "stillHaveQuestions": "まだ質問がありますか？",
+    "supportDescription": "サポートチームが24時間365日お手伝いします",
+    "contactSupport": "サポートに連絡",
+    "categories": {
+      "gettingStarted": {
+        "title": "はじめに",
+        "faqs": {
+          "whatIsPropCapitals": {
+            "q": "Prop Capitalsとは何ですか？",
+            "a": "Prop Capitalsは、当社資金で取引できる資金提供アカウントをトレーダーに提供するプロップトレーディング会社です。評価に合格すると、最大90%の利益を受け取れます。資金提供アカウントで取引する際、あなた自身の資金はリスクにさらされません。"
+          },
+          "howToStartChallenge": {
+            "q": "チャレンジはどうやって始めますか？",
+            "a": "チャレンジページで希望する口座サイズと評価タイプを選び、決済すると、数分以内に取引認証情報が届きます。認証情報を受け取ったらすぐに取引を開始できます。"
+          },
+          "tradingPlatforms": {
+            "q": "どの取引プラットフォームに対応していますか？",
+            "a": "MetaTrader 4（MT4）、MetaTrader 5（MT5）、cTrader、DXTradeに対応しています。アカウント設定時に希望のプラットフォームを選択できます。"
+          },
+          "credentialsTiming": {
+            "q": "認証情報はどれくらい早く届きますか？",
+            "a": "取引認証情報は、決済確認後通常5分以内に送信されます。サーバー、口座番号、パスワードなどのログイン詳細が記載されたメールが届きます。"
+          }
+        }
+      },
+      "tradingRules": {
+        "title": "取引ルール",
+        "faqs": {
+          "profitTarget": {
+            "q": "利益目標は何ですか？",
+            "a": "2フェーズ評価の場合：フェーズ1は8%の利益、フェーズ2は5%の利益が必要です。1フェーズ評価の場合は10%が目標です。即時資金提供にはチャレンジフェーズの利益目標はありません。"
+          },
+          "drawdownRules": {
+            "q": "ドローダウン（損失）ルールは何ですか？",
+            "a": "日次ドローダウンは、その日の開始残高の5%までに制限されます。全体ドローダウンは、到達した最大残高（トレーリング）から10%までに制限されます。遵守すべき損失ルールはこれだけです。"
+          },
+          "timeLimit": {
+            "q": "チャレンジ達成に時間制限はありますか？",
+            "a": "いいえ。最大の時間制限はありません。利益目標に到達するまで好きなだけ時間をかけられます。ただし、各フェーズを通過するには最低4取引日が必要です。"
+          },
+          "newsTrading": {
+            "q": "重要ニュース時に取引できますか？",
+            "a": "はい。ニュース取引はすべてのチャレンジで許可されています。高影響ニュース時でも制限やペナルティなしで取引できます。"
+          },
+          "weekendHolding": {
+            "q": "週末をまたいで保有できますか？",
+            "a": "はい。週末をまたいでポジションを保有できます。どのチャレンジタイプでも、オーバーナイトや週末保有の制限はありません。"
+          },
+          "expertAdvisors": {
+            "q": "EA（自動売買）は許可されていますか？",
+            "a": "はい。EAや自動売買システムを使用できます。ただし、プラットフォームの脆弱性を悪用したり、レイテンシーアービトラージやティックスキャルピングなどの手法に関与してはなりません。"
+          }
+        }
+      },
+      "violations": {
+        "title": "違反と失格",
+        "faqs": {
+          "whatHappensIfViolate": {
+            "q": "ルールに違反するとどうなりますか？",
+            "a": "厳格ルール（日次または全体の損失上限）に違反すると、アカウントは自動的に無効化されます。違反内容の詳細が記載されたメールが届き、その後リセット購入または新しいチャレンジの開始が可能です。"
+          },
+          "freeRetry": {
+            "q": "無料で再挑戦できますか？",
+            "a": "はい！失格になる前にチャレンジで8%の利益を達成した場合、無料の再挑戦資格があります。追加費用なしでもう一度挑戦できます。"
+          },
+          "resetAccount": {
+            "q": "アカウントをリセットできますか？",
+            "a": "はい。チャレンジに失敗した場合、割引価格でリセットを購入できます。同じ口座サイズでやり直せます。リセット価格は口座サイズによって異なります。"
+          },
+          "tradingDay": {
+            "q": "取引日として数えられるのは？",
+            "a": "取引日とは、2分以上開いている取引を少なくとも1件持った日のことです。各フェーズを通過するには最低4取引日が必要です。"
+          }
+        }
+      },
+      "payouts": {
+        "title": "出金と利益",
+        "faqs": {
+          "profitSplit": {
+            "q": "利益分配はどうなりますか？",
+            "a": "利益分配は小口座では80%から始まり、より大きな口座やスケーリングプログラムの進行により最大90%まで上がります。一貫性を証明することで分配率が増加します。"
+          },
+          "payoutFrequency": {
+            "q": "どれくらいの頻度で出金申請できますか？",
+            "a": "出金は2週間ごとに処理されます。利益がある場合、14日ごとに出金申請が可能です。初回出金は資金提供アカウント取得から14日後に利用できます。"
+          },
+          "paymentMethods": {
+            "q": "出金方法は何がありますか？",
+            "a": "銀行振込、暗号通貨（BTC, ETH, USDT）、PayPal、Wise送金に対応しています。すべての出金方法は手数料無料です。"
+          },
+          "minimumPayout": {
+            "q": "最低出金額はありますか？",
+            "a": "最低出金額は$50です。上限はなく、希望すれば利益の全額を出金できます。"
+          },
+          "payoutProcessing": {
+            "q": "出金処理にはどれくらい時間がかかりますか？",
+            "a": "出金は承認後、通常24〜48営業時間以内に処理されます。銀行振込の場合、着金までさらに2〜5営業日かかることがあります。"
+          }
+        }
+      },
+      "scaling": {
+        "title": "スケーリングプラン",
+        "faqs": {
+          "howScalingWorks": {
+            "q": "スケーリングプランはどう機能しますか？",
+            "a": "資金提供アカウントで10%の利益を達成し、2回の出金サイクルを完了するたびに、口座サイズが25%増加します。最大$2,000,000まで取引資金を拡大できます。"
+          },
+          "profitSplitScaling": {
+            "q": "スケールすると利益分配はどうなりますか？",
+            "a": "スケールに伴い利益分配率も上がります。80%から開始し、より高いレベルで最大90%に到達できます。各スケーリングレベルで最大分配率に近づきます。"
+          },
+          "scalingConditions": {
+            "q": "スケーリングの条件はありますか？",
+            "a": "スケーリング資格には、少なくとも10%の利益達成、少なくとも2回の出金サイクル完了、評価期間中の良好なリスク管理の維持が必要です。"
+          }
+        }
+      },
+      "account": {
+        "title": "アカウント管理",
+        "faqs": {
+          "refund": {
+            "q": "返金を申請できますか？",
+            "a": "取引を一切行っていない場合に限り、購入から14日以内は返金可能です。取引活動が開始すると評価が始まるため、返金はできなくなります。"
+          },
+          "multipleAccounts": {
+            "q": "複数のアカウントを持てますか？",
+            "a": "はい。複数のチャレンジアカウントや資金提供アカウントを同時に持てます。ただし、異なるアカウント間でコピートレードにより同一戦略を使うことはできません。"
+          },
+          "weekendAccount": {
+            "q": "週末はアカウントがどうなりますか？",
+            "a": "週末もアカウントは有効です。週末をまたいでポジション保有ができ、ドローダウン計算も通常どおり継続されます。市場は閉まっていますが、アカウント監視は継続されます。"
+          },
+          "contactSupport": {
+            "q": "サポートにはどう連絡できますか？",
+            "a": "24/7のライブチャット、support@the-bluehaven.com へのメール、またはダッシュボード内のサポートチケットから連絡できます。"
+          }
+        }
+      }
+    }
+  },
+  "contact": {
+    "support24": "24/7サポート",
+    "title": "お問い合わせ",
+    "subtitle": "ご質問がありますか？私たちがサポートします。ご連絡いただければ、できるだけ早く返信します。",
+    "contactMethods": {
+      "emailSupport": {
+        "title": "メールサポート",
+        "description": "一般的な質問や詳細なお問い合わせに",
+        "contact": "support@the-bluehaven.com"
+      },
+      "liveChat": {
+        "title": "ライブチャット",
+        "description": "チームからすぐに回答を得られます",
+        "contact": "24/7対応"
+      },
+      "responseTime": {
+        "title": "返信時間",
+        "description": "すべてのお問い合わせの平均返信時間",
+        "contact": "24時間以内"
+      }
+    },
+    "contactInformation": "連絡先情報",
+    "email": "メールアドレス",
+    "address": "住所",
+    "website": "ウェブサイト",
+    "workingHours": "営業時間",
+    "followUs": "フォローする",
+    "liveChatTitle": "ライブチャット",
+    "liveChatDescription": "すぐに助けが必要ですか？ライブチャットサポートはいつでも利用できます。",
+    "startChat": "チャットを開始",
+    "sendMessage": "メッセージを送る",
+    "formDescription": "下のフォームに入力してください。24時間以内に返信します。",
+    "fullName": "氏名",
+    "fullNamePlaceholder": "ジョン・ドウ",
+    "emailPlaceholder": "john@example.com",
+    "category": "カテゴリー",
+    "selectCategory": "カテゴリーを選択",
+    "categories": {
+      "general": "一般問い合わせ",
+      "account": "アカウントの問題",
+      "payment": "支払い・請求",
+      "payout": "出金申請",
+      "technical": "技術サポート",
+      "other": "その他"
+    },
+    "subject": "件名",
+    "subjectPlaceholder": "どのようにお手伝いできますか？",
+    "message": "メッセージ",
+    "messagePlaceholder": "質問や問題の詳細を記入してください...",
+    "sendMessageButton": "送信",
+    "messageSent": "送信しました！",
+    "thankYouMessage": "お問い合わせありがとうございます。24時間以内に回答いたします。",
+    "sendAnotherMessage": "別のメッセージを送る"
+  },
+  "howItWorks": {
+    "journeyBadge": "資金提供までの道のり",
+    "title": "仕組み",
+    "subtitle": "3つの簡単ステップで資金提供を受け、当社資金で収益を作り始めましょう",
+    "step": "ステップ",
+    "phases": {
+      "purchaseChallenge": {
+        "title": "チャレンジを購入",
+        "description": "希望の口座サイズと評価タイプを選択し、安全に決済して取引認証情報を即時受け取ります。",
+        "details": {
+          "selectAccountSize": "$10K〜$200Kの口座サイズを選択",
+          "chooseType": "1フェーズ / 2フェーズ / 即時資金提供を選択",
+          "receiveCredentials": "数分以内に認証情報を受け取る",
+          "startTrading": "すぐに取引開始"
+        }
+      },
+      "passEvaluation": {
+        "title": "評価に合格",
+        "description": "利益目標を達成しつつ、リスク管理ルールを守って取引スキルを証明します。",
+        "details": {
+          "reachProfitTarget": "利益目標 8%（フェーズ1）を達成",
+          "maintainDailyDrawdown": "日次損失上限 5% を維持",
+          "maintainOverallDrawdown": "全体損失上限 10% を維持",
+          "tradeMinimumDays": "最低4日取引"
+        }
+      },
+      "getFunded": {
+        "title": "資金提供を受ける",
+        "description": "合格後、実資金の資金提供アカウントを受け取ります。自信を持って取引し、利益を出金できます。",
+        "details": {
+          "tradeWithCapital": "当社資金で取引",
+          "keepProfits": "利益は最大90%受け取り",
+          "biWeeklyPayout": "2週間ごとの出金スケジュール",
+          "scaleUp": "最大$2,000,000までスケール"
+        }
+      }
+    },
+    "rules": {
+      "badge": "取引ルール",
+      "title": "すべてのフェーズで明確なルール",
+      "subtitle": "評価の全フェーズで透明かつ一貫したルール",
+      "rule": "ルール",
+      "phase1": "フェーズ 1",
+      "phase2": "フェーズ 2",
+      "funded": "資金提供後",
+      "profitTarget": {
+        "title": "利益目標",
+        "description": "達成すべき利益率",
+        "funded": "目標なし"
+      },
+      "dailyDrawdown": {
+        "title": "日次損失",
+        "description": "許容される最大日次損失"
+      },
+      "overallDrawdown": {
+        "title": "全体損失",
+        "description": "最高残高からの最大損失"
+      },
+      "minTradingDays": {
+        "title": "最小取引日数",
+        "description": "必要な最小取引日数",
+        "phase1": "4日",
+        "phase2": "4日",
+        "funded": "なし"
+      },
+      "timeLimit": {
+        "title": "時間制限",
+        "description": "最大時間制限なし",
+        "phase1": "無制限",
+        "phase2": "無制限",
+        "funded": "無制限"
+      },
+      "profitSplit": {
+        "title": "利益分配",
+        "description": "あなたの利益取り分",
+        "funded": "最大90%"
+      }
+    },
+    "allowedTrading": {
+      "badge": "取引の自由",
+      "title": "許可されていること",
+      "subtitle": "最小限の制限で、あなたのスタイルで取引できます",
+      "allTradingStyles": {
+        "title": "あらゆる取引スタイル",
+        "desc": "スキャルピング、デイトレード、スイング"
+      },
+      "newsTrading": {
+        "title": "ニュース取引",
+        "desc": "高影響ニュース時に取引"
+      },
+      "weekendHolding": {
+        "title": "週末保有",
+        "desc": "週末をまたいでポジション保有"
+      },
+      "expertAdvisors": {
+        "title": "EA（自動売買）",
+        "desc": "自動売買システムの利用"
+      },
+      "allMajorPairs": {
+        "title": "主要銘柄すべて",
+        "desc": "FX、指数、コモディティ、暗号資産"
+      },
+      "anyStrategy": {
+        "title": "あらゆる戦略",
+        "desc": "ヘッジ、グリッドなど"
+      },
+      "copyTrading": {
+        "title": "コピートレード",
+        "desc": "自分の別アカウントからコピー"
+      },
+      "multipleAccounts": {
+        "title": "複数アカウント",
+        "desc": "複数チャレンジを同時進行"
+      }
+    },
+    "cta": {
+      "title": "始める準備はできましたか？",
+      "subtitle": "資金提供を受けた数千人のトレーダーに参加して、今日から旅を始めましょう",
+      "viewChallenges": "チャレンジを見る"
+    }
+  },
+  "challenges": {
+    "badge": "資金提供への道を選ぶ",
+    "title": "チャレンジを選択",
+    "subtitle": "評価タイプと口座サイズを選んで、資金提供取引の旅を開始しましょう",
+    "typeLabels": {
+      "onePhase": "1フェーズ",
+      "twoPhase": "2フェーズ",
+      "instant": "即時"
+    },
+    "types": {
+      "onePhase": {
+        "title": "1フェーズチャレンジ",
+        "description": "利益目標10%の単一評価フェーズ。より速い資金提供へのルート。"
+      },
+      "twoPhase": {
+        "title": "2フェーズチャレンジ",
+        "description": "標準評価：フェーズ1（8%）とフェーズ2（5%）。最も人気のある選択肢。"
+      },
+      "instantFunding": {
+        "title": "即時資金提供",
+        "description": "評価をスキップして、すぐに資金で取引開始。"
+      }
+    },
+    "rules": {
+      "title": "チャレンジルール概要",
+      "phase1Target": "フェーズ1目標",
+      "phase2Target": "フェーズ2目標",
+      "dailyDrawdown": "日次損失",
+      "maxDrawdown": "最大損失",
+      "minTradingDays": "最小取引日数",
+      "timeLimit": "時間制限",
+      "fourDays": "4日",
+      "unlimited": "無制限"
+    },
+    "card": {
+      "mostPopular": "最も人気",
+      "accountSize": "口座サイズ",
+      "phase1": "フェーズ 1",
+      "phase2": "フェーズ 2",
+      "dailyDD": "日次損失",
+      "maxDD": "最大損失",
+      "profitSplit": "利益分配",
+      "getStarted": "始める"
+    },
+    "comparison": {
+      "title": "すべてのチャレンジを比較",
+      "accountSize": "口座サイズ",
+      "price": "価格",
+      "phase1": "フェーズ 1",
+      "phase2": "フェーズ 2",
+      "dailyDD": "日次損失",
+      "maxDD": "最大損失",
+      "profitSplit": "利益分配",
+      "select": "選択"
+    },
+    "allChallengesInclude": {
+      "title": "すべてのチャレンジに含まれるもの",
+      "subtitle": "すべてのチャレンジに以下の機能が含まれます",
+      "features": {
+        "unlimitedTrading": "取引期間は無制限",
+        "allMajorPairs": "主要なFXペア、指数、コモディティを取引",
+        "weekendHolding": "週末保有が可能",
+        "newsTrading": "重要ニュース時に取引可能",
+        "expertAdvisors": "EA（自動売買）利用可能",
+        "biWeeklyPayouts": "2週間ごとの出金",
+        "support24": "24/7サポート",
+        "analyticsDashboard": "リアルタイム分析ダッシュボード"
+      }
+    },
+    "whyChoose": {
+      "title": "なぜProp Capitals？",
+      "subtitle": "当社が選ばれる理由",
+      "transparentRules": {
+        "title": "透明なルール",
+        "desc": "隠れた条件や予期せぬ失格なし"
+      },
+      "fastPayouts": {
+        "title": "迅速な出金",
+        "desc": "24〜48時間で利益を受け取る"
+      },
+      "scaleTo2M": {
+        "title": "$2Mまでスケール",
+        "desc": "スケーリングプランで口座を成長"
+      },
+      "bestSupport": {
+        "title": "最高のサポート",
+        "desc": "専任チームが24/7対応"
+      }
+    },
+    "faq": {
+      "title": "よくある質問",
+      "timeLimit": {
+        "q": "チャレンジ達成までの時間はどれくらいですか？",
+        "a": "時間制限はありません。リスクルールを守りながら、利益目標を達成するまで自由に取引できます。"
+      },
+      "newsTrading": {
+        "q": "重要ニュース時に取引できますか？",
+        "a": "はい。ニュース取引はすべてのチャレンジで完全に許可されています。制限はありません。"
+      },
+      "ifFail": {
+        "q": "失敗したらどうなりますか？",
+        "a": "割引価格でリセットを購入するか、新しいチャレンジを開始できます。失敗前に8%の利益を達成した場合は無料リトライも提供しています。"
+      },
+      "payoutSpeed": {
+        "q": "出金はどれくらい早いですか？",
+        "a": "出金は承認後24〜48時間以内に処理され、選択した方法で受け取れます。"
+      }
+    },
+    "compareTableTitle": "すべてのチャレンジを比較",
+    "noChallenges": "チャレンジなし"
+  },
+  "scalingPlan": {
+    "badge": "無制限の成長ポテンシャル",
+    "title": "最大",
+    "subtitle": "継続的な実績に応じて取引資金を拡大。各レベルでより大きな口座とより高い利益分配が解放されます。",
+    "startJourney": "今すぐ始める",
+    "stats": {
+      "maxAccountSize": "最大口座サイズ",
+      "maxProfitSplit": "最大利益分配",
+      "scalingLevels": "スケーリングレベル",
+      "growthPerLevel": "1レベルあたりの成長"
+    },
+    "benefits": {
+      "badge": "特典",
+      "title": "当社でスケールする理由",
+      "subtitle": "当社のスケーリングプログラムは、安定したトレーダーにより大きな機会で報います。",
+      "accountGrowth": {
+        "title": "口座サイズ +25%",
+        "desc": "スケーリングの各レベルで口座サイズが25%増加します。"
+      },
+      "profitSplit": {
+        "title": "最大90%の利益分配",
+        "desc": "スケールするほど利益分配率が上がります。"
+      },
+      "noFees": {
+        "title": "追加手数料なし",
+        "desc": "追加費用なしで口座をスケールできます。"
+      },
+      "sameRules": {
+        "title": "同じ取引ルール",
+        "desc": "旅の全期間で一貫したルールが適用されます。"
+      },
+      "scaleTo2M": {
+        "title": "$2Mまでスケール",
+        "desc": "取引資金を最大200万ドルまで拡大できます。"
+      },
+      "automaticUpgrades": {
+        "title": "自動アップグレード",
+        "desc": "要件を満たすと即時に自動アップグレードされます。"
+      }
+    },
+    "howToScale": {
+      "badge": "プロセス",
+      "title": "スケーリングの仕組み",
+      "achieveProfit": {
+        "title": "利益目標を達成",
+        "description": "資金提供口座で少なくとも10%の利益を達成します。"
+      },
+      "completePayouts": {
+        "title": "出金サイクルを完了",
+        "description": "少なくとも2回の出金サイクルを完了します。"
+      },
+      "automaticUpgrade": {
+        "title": "自動アップグレード",
+        "description": "口座は次のレベルへ自動的にアップグレードされます。"
+      }
+    },
+    "roadmap": {
+      "badge": "ロードマップ",
+      "title": "200万ドルへの道",
+      "subtitle": "各レベルで口座がどのように成長するかを確認できます。",
+      "start": "開始",
+      "max": "最大",
+      "level": "レベル",
+      "split": "分配",
+      "ultimateGoal": "最終目標",
+      "withProfitSplit": "利益分配90%付き",
+      "startScalingNow": "今すぐスケールを開始"
+    },
+    "requirements": {
+      "badge": "要件",
+      "title": "スケールに必要なこと",
+      "passEvaluation": "評価に合格",
+      "profitAndPayouts": "利益10% + 出金2回",
+      "profit10": {
+        "title": "利益10%",
+        "desc": "資金提供口座で10%の利益を達成します。"
+      },
+      "payouts2": {
+        "title": "出金2回",
+        "desc": "少なくとも2回の出金サイクルを完了します。"
+      },
+      "consistency": {
+        "title": "一貫性",
+        "desc": "安定した取引活動を維持します。"
+      },
+      "noViolations": {
+        "title": "違反なし",
+        "desc": "その期間中にルール違反がないこと。"
+      }
+    },
+    "ctaSection": {
+      "title": "スケールする準備はできましたか？",
+      "tradingCareer": "あなたのトレードキャリアを次の段階へ。",
+      "subtitle": "どの口座サイズからでも開始し、取引資金200万ドルへとスケールしていきましょう。",
+      "getStartedNow": "今すぐ始める",
+      "footer": "$99から開始 • 最大$2Mまでスケール • 最大90%の利益分配"
+    }
+  },
+  "payoutsPage": {
+    "badge": "速くて信頼できる出金",
+    "title": "稼いだ分を受け取ろう",
+    "subtitle": "面倒なしで素早く出金。隠れた手数料なし、遅延なし、複雑さなし。",
+    "stats": {
+      "totalPaidOut": "累計支払額",
+      "payoutsProcessed": "処理済み出金数",
+      "avgProcessing": "平均処理時間",
+      "payoutFees": "出金手数料"
+    },
+    "profitSharing": {
+      "badge": "利益分配",
+      "title": "最大90%の利益を受け取る",
+      "subtitle": "競争力のある利益分配で、成功したトレーダーに手厚く還元します。",
+      "accountSize": "口座サイズ",
+      "profitSplit": "利益分配",
+      "best": "ベスト",
+      "tiers": {
+        "tier1": "$10K - $25K",
+        "tier2": "$50K",
+        "tier3": "$100K+",
+        "tier4": "スケール後"
+      }
+    },
+    "withdrawalOptions": {
+      "badge": "出金オプション",
+      "title": "複数の出金方法",
+      "subtitle": "あなたに最適な支払い方法を選べます。",
+      "processing": "処理時間",
+      "fee": "手数料",
+      "minimum": "最低額",
+      "methods": {
+        "bankWire": "銀行振込",
+        "cryptocurrency": "暗号資産",
+        "paypal": "PayPal",
+        "wiseTransfer": "Wise送金",
+        "time": {
+          "businessDays": "2〜5営業日",
+          "hours24": "24時間",
+          "businessDays12": "1〜2営業日"
+        }
+      }
+    },
+    "howItWorks": {
+      "title": "出金の流れ",
+      "requestPayout": {
+        "title": "出金申請",
+        "desc": "ダッシュボードから申請を送信します。"
+      },
+      "verification": {
+        "title": "確認",
+        "desc": "取引活動と利益を確認します。"
+      },
+      "processing": {
+        "title": "処理",
+        "desc": "出金は24〜48時間以内に処理されます。"
+      },
+      "receiveFunds": {
+        "title": "受け取り",
+        "desc": "選択した方法で資金を受け取ります。"
+      }
+    },
+    "recentPayouts": {
+      "badge": "ライブ更新",
+      "title": "最近の出金",
+      "subtitle": "本物のトレーダーに本物の出金。成功している資金提供トレーダーのコミュニティに参加しましょう。"
+    },
+    "payoutTerms": {
+      "title": "出金条件",
+      "biWeekly": "2週間ごとの出金スケジュール（14日ごと）",
+      "minimumAmount": "最低出金額は$50です",
+      "noMaximum": "出金上限はありません",
+      "noFees": "どの方法でも出金手数料は無料です",
+      "firstPayout": "初回出金は資金提供後14日から可能",
+      "kycRequired": "初回出金にはKYC（本人確認）が必要です",
+      "profitSplitRange": "利益分配は80%〜90%です",
+      "scaleUp": "スケールして利益分配率を上げましょう"
+    },
+    "cta": {
+      "title": "今日から収益を作ろう",
+      "subtitle": "すでにProp Capitalsで収益を得ている数千人の資金提供トレーダーに参加しましょう。",
+      "getFundedNow": "今すぐ資金提供を受ける"
+    }
+  },
+  "rules": {
+    "badge": "透明で公平",
+    "title": "取引ルール",
+    "subtitle": "成功のために設計された明確でシンプルなルール。隠れた条件や予期しない失格はありません。",
+    "mainRules": {
+      "profitTarget": {
+        "title": "利益目標",
+        "description": "各フェーズを通過するために必要な利益率",
+        "funded": "目標なし"
+      },
+      "dailyDrawdown": {
+        "title": "日次損失",
+        "description": "1取引日に許容される最大損失"
+      },
+      "maximumDrawdown": {
+        "title": "最大損失",
+        "description": "最高残高からの最大累計損失"
+      },
+      "minTradingDays": {
+        "title": "最小取引日数",
+        "description": "実質的に取引する必要がある最小日数",
+        "phase1": "4日",
+        "phase2": "4日",
+        "funded": "なし"
+      },
+      "maxTradingPeriod": {
+        "title": "最大取引期間",
+        "description": "チャレンジ達成の時間制限",
+        "phase1": "無制限",
+        "phase2": "無制限",
+        "funded": "無制限"
+      },
+      "profitSplit": {
+        "title": "利益分配",
+        "description": "資金提供口座でのあなたの利益取り分",
+        "funded": "最大90%"
+      }
+    },
+    "drawdownExplanation": {
+      "title": "ドローダウンを理解する",
+      "subtitle": "最も重要なルール",
+      "dailyDrawdown": {
+        "title": "日次損失（5%）",
+        "description": "1日で許容される最大損失。日初の残高を基準に計算され、サーバー時間の深夜にリセットされます。",
+        "example": "例:",
+        "exampleText": "残高が$50,000の場合、日次損失上限は$2,500です。"
+      },
+      "maximumDrawdown": {
+        "title": "最大損失（10%）",
+        "description": "到達した最高残高からの最大損失。エクイティのピークを追跡するトレーリング方式です。",
+        "example": "例:",
+        "exampleText": "最高残高が$55,000の場合、最大損失ラインは$49,500です。"
+      }
+    },
+    "allowedActions": {
+      "title": "許可されている行為",
+      "subtitle": "あなたのスタイルで自由に取引できます",
+      "allTradingStyles": {
+        "title": "すべての取引スタイル",
+        "desc": "スキャルピング、デイトレード、スイング"
+      },
+      "newsTrading": {
+        "title": "ニュース取引",
+        "desc": "高影響ニュース時の取引"
+      },
+      "weekendHolding": {
+        "title": "週末保有",
+        "desc": "週末をまたいでポジションを保持"
+      },
+      "expertAdvisors": {
+        "title": "EA（自動売買）",
+        "desc": "自動取引ボットの利用"
+      },
+      "hedging": {
+        "title": "ヘッジ",
+        "desc": "反対ポジションの保有"
+      },
+      "allInstruments": {
+        "title": "全銘柄",
+        "desc": "FX、指数、コモディティ、暗号資産"
+      },
+      "anyLotSize": {
+        "title": "任意のロットサイズ",
+        "desc": "最小・最大ロットの制限なし"
+      },
+      "copyTrading": {
+        "title": "コピートレード",
+        "desc": "自分の口座からのコピー"
+      }
+    },
+    "prohibitedActions": {
+      "title": "禁止行為",
+      "subtitle": "口座無効化につながる行為",
+      "latencyArbitrage": {
+        "title": "レイテンシー・アービトラージ",
+        "desc": "価格遅延を利用した取引"
+      },
+      "tickScalping": {
+        "title": "ティックスキャルピング",
+        "desc": "2分未満の超短期スキャルピング"
+      },
+      "accountManagement": {
+        "title": "口座運用代行",
+        "desc": "第三者にあなたの口座を取引させること"
+      },
+      "propFirmCopying": {
+        "title": "他社プロップのコピー",
+        "desc": "他社プロップ口座からの取引コピー"
+      },
+      "toxicFlowStrategies": {
+        "title": "トキシックフロー戦略",
+        "desc": "ブローカーを不当に利用する戦略"
+      },
+      "highFrequencyTrading": {
+        "title": "高頻度取引（HFT）",
+        "desc": "自動HFTシステム"
+      }
+    },
+    "scalingPlan": {
+      "title": "スケーリングプラン",
+      "subtitle": "最大$2,000,000まで口座を成長",
+      "accountSize": "口座サイズ",
+      "profitSplit": "利益分配",
+      "howItWorks": {
+        "title": "スケーリングの仕組み",
+        "description": "10%の利益達成と2回の出金サイクル完了ごとに、口座は次のレベルへ自動的にスケールされます。スケールに応じて利益分配も増加し、最上位で最大90%に到達します。"
+      },
+      "requirements": {
+        "passEvaluation": "評価に合格",
+        "profitAndPayouts": "利益10% + 出金2回"
+      }
+    },
+    "payoutPolicy": {
+      "title": "出金ポリシー",
+      "subtitle": "速くて信頼できる利益出金",
+      "frequency": {
+        "label": "出金頻度",
+        "value": "2週間ごと（14日ごと）"
+      },
+      "minimum": {
+        "label": "最低出金額",
+        "value": "$50"
+      },
+      "maximum": {
+        "label": "最大出金額",
+        "value": "無制限"
+      },
+      "processingTime": {
+        "label": "処理時間",
+        "value": "24〜48時間"
+      },
+      "fee": {
+        "label": "出金手数料",
+        "value": "$0（無料）"
+      },
+      "firstPayout": {
+        "label": "初回出金",
+        "value": "資金提供での取引開始から14日後"
+      }
+    },
+    "cta": {
+      "title": "取引を始める準備はできましたか？",
+      "subtitle": "ルールを理解したら、チャレンジを選んで資金提供への旅を始めましょう。",
+      "viewChallenges": "チャレンジを見る"
+    },
+    "important": "重要",
+    "phase1": "フェーズ 1",
+    "phase2": "フェーズ 2",
+    "funded": "資金提供"
+  },
+  "terms": {
+    "title": "利用規約",
+    "lastUpdated": "最終更新: 2024年1月",
+    "acceptance": {
+      "title": "1. 規約への同意",
+      "content": "Prop Capitalsのサービスにアクセスし利用することで、あなたは本利用規約に拘束されることに同意します。規約に同意できない場合は、当社サービスを利用しないでください。"
+    },
+    "description": {
+      "title": "2. サービスの説明",
+      "content": "Prop Capitalsは、トレーダーが取引スキルを証明できる独自の取引評価プログラム（「チャレンジ」）を提供します。チャレンジの成功により、資金提供取引口座へのアクセスが付与される場合があります。"
+    },
+    "eligibility": {
+      "title": "3. 利用資格",
+      "content": "当社サービスを利用するには18歳以上である必要があります。Prop Capitalsを利用することで、あなたは本契約を締結する法的能力を有することを表明します。"
+    },
+    "accountRegistration": {
+      "title": "4. アカウント登録",
+      "content": "登録時に正確で最新かつ完全な情報を提供することに同意します。アカウント認証情報の機密保持はあなたの責任です。"
+    },
+    "tradingRules": {
+      "title": "5. 取引ルール",
+      "content": "すべてのトレーダーは、各チャレンジタイプに定められた取引ルールを遵守しなければなりません。これらのルール違反は、返金なしでのアカウント無効化につながる場合があります。"
+    },
+    "prohibitedActivities": {
+      "title": "6. 禁止行為",
+      "items": [
+        "プラットフォームの脆弱性や不具合の悪用",
+        "第三者による口座運用代行（未開示）",
+        "異なるブローカー間でのアービトラージ取引",
+        "異なるプロップファーム口座からの取引コピー",
+        "あらゆる形態の市場操作"
+      ]
+    },
+    "refundPolicy": {
+      "title": "7. 返金ポリシー",
+      "content": "取引が一切行われていない場合に限り、購入日から14日以内は返金可能です。取引活動が開始された後は返金できません。"
+    },
+    "payouts": {
+      "title": "8. 出金",
+      "content": "資金提供トレーダーは、利益分配契約に基づき2週間ごとに利益を出金できます。Prop Capitalsは、出金処理前にすべての取引活動を審査する権利を留保します。"
+    },
+    "intellectualProperty": {
+      "title": "9. 知的財産",
+      "content": "Prop Capitalsプラットフォーム上のすべてのコンテンツ、商標、知的財産はProp Capitalsに帰属し、適用法により保護されています。"
+    },
+    "limitationOfLiability": {
+      "title": "10. 責任の制限",
+      "content": "Prop Capitalsは、当社サービスの利用に起因する間接的、付随的、結果的損害について責任を負いません。"
+    },
+    "modifications": {
+      "title": "11. 変更",
+      "content": "Prop Capitalsはいつでも本規約を変更する権利を留保します。変更後もサービス利用を継続することは、更新された規約への同意を意味します。"
+    },
+    "contact": {
+      "title": "12. 連絡先",
+      "content": "本規約に関するご質問は support@the-bluehaven.com までお問い合わせください。"
+    }
+  },
+  "privacy": {
+    "title": "プライバシーポリシー",
+    "lastUpdated": "最終更新: 2024年1月",
+    "informationWeCollect": {
+      "title": "1. 収集する情報",
+      "intro": "当社は、あなたが直接提供する情報を収集します:",
+      "items": [
+        "個人識別情報（氏名、メール、電話番号）",
+        "支払い情報（第三者決済事業者により安全に処理）",
+        "取引口座の情報および活動",
+        "サポートチームとのコミュニケーション記録",
+        "KYC書類（身分証明書、住所証明）"
+      ]
+    },
+    "howWeUse": {
+      "title": "2. 情報の利用目的",
+      "items": [
+        "サービスの提供および維持",
+        "取引の処理と関連情報の送付",
+        "取引活動の監視とルールの適用",
+        "更新情報やプロモーションの連絡",
+        "不正の検知・防止"
+      ]
+    },
+    "dataSecurity": {
+      "title": "3. データセキュリティ",
+      "content": "暗号化、安全なサーバー、定期的なセキュリティ監査など、業界標準の対策で個人情報を保護します。"
+    },
+    "dataSharing": {
+      "title": "4. 情報の共有",
+      "intro": "当社は以下と情報を共有する場合があります:",
+      "items": [
+        "取引プラットフォーム提供者（MT4、MT5、cTrader、DXTrade）",
+        "取引処理のための決済事業者",
+        "KYC本人確認サービス",
+        "法令により必要な場合の法的機関"
+      ]
+    },
+    "yourRights": {
+      "title": "5. あなたの権利",
+      "intro": "あなたには以下の権利があります:",
+      "items": [
+        "個人情報へのアクセス",
+        "不正確な情報の訂正要求",
+        "情報削除の要求（法令要件に従う）",
+        "マーケティング連絡の停止（オプトアウト）",
+        "データポータビリティの要求"
+      ]
+    },
+    "cookies": {
+      "title": "6. クッキー",
+      "content": "当社は、体験向上、利用分析、コンテンツの最適化のためにクッキー等を使用します。ブラウザ設定でクッキー設定を管理できます。"
+    },
+    "dataRetention": {
+      "title": "7. データ保持",
+      "content": "アカウントが有効な間、またはサービス提供に必要な期間、個人情報を保持します。法令遵守や紛争解決のため、一部情報を保持する場合があります。"
+    },
+    "internationalTransfers": {
+      "title": "8. 国際移転",
+      "content": "あなたの情報は居住国以外の国へ移転・処理される場合があります。当社は適切な保護措置を講じます。"
+    },
+    "childrensPrivacy": {
+      "title": "9. 未成年のプライバシー",
+      "content": "当社サービスは18歳未満を対象としていません。当社が未成年から情報を収集していることを把握していません。"
+    },
+    "contactUs": {
+      "title": "10. お問い合わせ",
+      "content": "プライバシーに関するご質問は support@the-bluehaven.com までご連絡ください。"
+    }
+  }
+}

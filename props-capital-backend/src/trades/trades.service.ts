@@ -62,7 +62,9 @@ console.log(data)
     });
 
     // 2️⃣ Update balance/equity (simple: balance += profit)
-    const newBalance = (account.balance ?? account.initialBalance) + profit;
+    // When opening a trade, profit is undefined/0 — balance stays the same
+    const effectiveProfit = profit || 0;
+    const newBalance = (account.balance ?? account.initialBalance) + effectiveProfit;
     const newEquity = newBalance;
 
     // Update maxEquityToDate if equity increased

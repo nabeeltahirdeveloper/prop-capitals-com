@@ -19,6 +19,7 @@ import {
   Shield,
   Loader2,
   ArrowLeft,
+  CheckCircle2,
 } from "lucide-react";
 
 export default function ForgotPassword() {
@@ -30,27 +31,73 @@ export default function ForgotPassword() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  // Email validation helper
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Password validation helper
+  const validatePassword = (password) => {
+    if (password.length < 8) {
+      return "Password must be at least 8 characters";
+    }
+    if (!/[A-Z]/.test(password)) {
+      return "Password must contain at least one uppercase letter";
+    }
+    if (!/[a-z]/.test(password)) {
+      return "Password must contain at least one lowercase letter";
+    }
+    if (!/[0-9]/.test(password)) {
+      return "Password must contain at least one number";
+    }
+    return null;
+  };
+
+  // Countdown timer for resend cooldown
+  React.useEffect(() => {
+    if (resendCooldown > 0) {
+      const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendCooldown]);
 
   // STEP 1 — SEND OTP
-  const sendOtp = async () => {
+  const sendOtp = async (isResend = false) => {
     if (!email) return setError("Email is required");
+    if (!isValidEmail(email)) return setError("Please enter a valid email address");
+
     try {
       setLoading(true);
-      await api.post("/auth/forgot-password", { email });
       setError("");
+      setSuccess("");
+      await api.post("/auth/forgot-password", { email });
+      setSuccess("OTP has been sent to your email. Please check your inbox.");
       setStep(2);
-    } catch {
-      setError("Failed to send OTP");
+      setResendCooldown(60); // 60 second cooldown for resend
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || "Failed to send OTP. Please try again.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
+  // Resend OTP
+  const resendOtp = async () => {
+    if (resendCooldown > 0) return;
+    await sendOtp(true);
+  };
+
   // STEP 2 — VERIFY OTP (UI only)
   const verifyOtp = () => {
-    if (otp.length !== 6) return setError("Invalid OTP");
+    if (otp.length !== 6) return setError("Please enter a valid 6-digit OTP");
     setError("");
+    setSuccess("");
     setStep(3);
   };
 
@@ -60,16 +107,24 @@ export default function ForgotPassword() {
 
     if (password !== confirm) return setError("Passwords do not match");
 
+    // Validate password strength
+    const passwordError = validatePassword(password);
+    if (passwordError) return setError(passwordError);
+
     try {
       setLoading(true);
+      setError("");
+      setSuccess("");
       await api.post("/auth/reset-password", {
         email,
         otp,
         newPassword: password,
       });
-      navigate(createPageUrl("SignIn"));
-    } catch {
-      setError("OTP expired or invalid");
+      setSuccess("Password reset successfully! Redirecting to login...");
+      setTimeout(() => navigate(createPageUrl("SignIn")), 2000);
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || "Failed to reset password. The OTP may have expired.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -121,6 +176,14 @@ export default function ForgotPassword() {
             </div>
           )}
 
+          {/* SUCCESS */}
+          {success && (
+            <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-3 rounded-lg mb-6 flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5" />
+              {success}
+            </div>
+          )}
+
           {/* STEP 1 */}
           {step === 1 && (
             <div className="space-y-6">
@@ -129,8 +192,14 @@ export default function ForgotPassword() {
                 <div className="relative mt-2">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
                   <Input
+                    type="email"
+                    placeholder="your.email@example.com"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value.trim());
+                      setError("");
+                    }}
+                    onKeyPress={(e) => e.key === "Enter" && sendOtp()}
                     className="pl-10 bg-slate-900 border-slate-700 text-white"
                   />
                 </div>
@@ -138,7 +207,7 @@ export default function ForgotPassword() {
 
               <Button
                 className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500"
-                onClick={sendOtp}
+                onClick={() => sendOtp()}
                 disabled={loading}
               >
                 {loading ? <Loader2 className="animate-spin" /> : "Send OTP"}
@@ -149,7 +218,10 @@ export default function ForgotPassword() {
           {/* STEP 2 */}
           {step === 2 && (
             <div className="space-y-6 text-center flex flex-col items-center">
-              <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+              <InputOTP maxLength={6} value={otp} onChange={(value) => {
+                setOtp(value);
+                setError("");
+              }}>
                 <InputOTPGroup>
                   {[0, 1, 2, 3, 4, 5].map((i) => (
                     <InputOTPSlot key={i} index={i} />
@@ -160,24 +232,64 @@ export default function ForgotPassword() {
               <Button
                 className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500"
                 onClick={verifyOtp}
+                disabled={otp.length !== 6}
               >
                 Verify OTP
               </Button>
+
+              <div className="text-sm text-slate-400">
+                Didn't receive the code?{" "}
+                {resendCooldown > 0 ? (
+                  <span className="text-slate-500">
+                    Resend in {resendCooldown}s
+                  </span>
+                ) : (
+                  <button
+                    onClick={resendOtp}
+                    disabled={loading}
+                    className="text-emerald-400 hover:text-emerald-300 font-medium disabled:opacity-50"
+                  >
+                    {loading ? "Sending..." : "Resend OTP"}
+                  </button>
+                )}
+              </div>
             </div>
           )}
 
           {/* STEP 3 */}
           {step === 3 && (
             <div className="space-y-5">
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
-                <Input
-                  type="password"
-                  placeholder="New Password"
-                  className="pl-10 bg-slate-900 border-slate-700 text-white"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+              <div>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
+                  <Input
+                    type="password"
+                    placeholder="New Password"
+                    className="pl-10 bg-slate-900 border-slate-700 text-white"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setError("");
+                    }}
+                  />
+                </div>
+                <div className="mt-2 text-xs text-slate-400 space-y-1">
+                  <p>Password must contain:</p>
+                  <ul className="list-disc list-inside pl-2">
+                    <li className={password.length >= 8 ? "text-emerald-400" : ""}>
+                      At least 8 characters
+                    </li>
+                    <li className={/[A-Z]/.test(password) ? "text-emerald-400" : ""}>
+                      One uppercase letter
+                    </li>
+                    <li className={/[a-z]/.test(password) ? "text-emerald-400" : ""}>
+                      One lowercase letter
+                    </li>
+                    <li className={/[0-9]/.test(password) ? "text-emerald-400" : ""}>
+                      One number
+                    </li>
+                  </ul>
+                </div>
               </div>
 
               <div className="relative">
@@ -187,7 +299,11 @@ export default function ForgotPassword() {
                   placeholder="Confirm Password"
                   className="pl-10 bg-slate-900 border-slate-700 text-white"
                   value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)}
+                  onChange={(e) => {
+                    setConfirm(e.target.value);
+                    setError("");
+                  }}
+                  onKeyPress={(e) => e.key === "Enter" && resetPassword()}
                 />
               </div>
 

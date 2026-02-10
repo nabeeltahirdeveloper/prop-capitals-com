@@ -8,12 +8,10 @@ import { Prisma } from '@prisma/client';
 
 export class UsersService {
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async createUser(data: Prisma.UserCreateInput) {
-
     return this.prisma.user.create({ data });
-
   }
 
   async findByEmail(email: string) {
@@ -22,7 +20,7 @@ export class UsersService {
 
       where: { email },
 
-      include: { 
+      include: {
         profile: true,
         notificationPreference: true,
         verificationDocuments: {
@@ -35,30 +33,22 @@ export class UsersService {
   }
 
   async findById(id: string) {
-
     return this.prisma.user.findUnique({
-
       where: { id },
-
-      include: { 
+      include: {
         profile: true,
         notificationPreference: true,
         verificationDocuments: {
           orderBy: { uploadedAt: 'desc' },
         },
       },
-
     });
-
   }
 
   // Get user profile with full details
   async getUserProfile(userId: string) {
-
-    const user = await this.findById(userId);
-
+    const user = await this.findById(userId)
     if (!user) throw new NotFoundException('User not found');
-
     return {
       id: user.id,
       email: user.email,
@@ -66,6 +56,8 @@ export class UsersService {
       profile: user.profile,
       notificationPreference: user.notificationPreference,
       verificationDocuments: user.verificationDocuments,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     };
 
   }
@@ -79,24 +71,27 @@ export class UsersService {
     city?: string;
     country?: string;
     timezone?: string;
+    lotSize?: number | string;
+    leverage?: string;
+    theme?: string;
   }) {
+
+    const updateData: any = { ...data };
+
+    if (data.lotSize) {
+      updateData.lotSize = parseFloat(data.lotSize.toString());
+    }
 
     // Upsert profile (create if doesn't exist, update if exists)
     const profile = await this.prisma.userProfile.upsert({
-
       where: { userId },
-
-      update: data,
-
+      update: updateData,
       create: {
         userId,
-        ...data,
+        ...updateData,
       },
-
     });
-
     return profile;
-
   }
 
   // Get notification preferences
@@ -131,20 +126,14 @@ export class UsersService {
     marketingEmails?: boolean;
     emailNotifications?: boolean;
   }) {
-
     return this.prisma.notificationPreference.upsert({
-
       where: { userId },
-
       update: data,
-
       create: {
         userId,
         ...data,
       },
-
     });
-
   }
 
   // Get verification documents

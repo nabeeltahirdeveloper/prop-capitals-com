@@ -21,6 +21,11 @@ export class BinanceWebSocketService implements OnModuleInit, OnModuleDestroy {
     'solusdt@bookTicker',
     'adausdt@bookTicker',
     'dogeusdt@bookTicker',
+    'bnbusdt@bookTicker',
+    'avaxusdt@bookTicker',
+    'dotusdt@bookTicker',
+    'maticusdt@bookTicker',
+    'linkusdt@bookTicker',
   ];
 
   onModuleInit() {
@@ -85,7 +90,12 @@ export class BinanceWebSocketService implements OnModuleInit, OnModuleDestroy {
           'XRPUSDT': 'XRP/USD',
           'SOLUSDT': 'SOL/USD',
           'ADAUSDT': 'ADA/USD',
-          'DOGEUSDT': 'DOGE/USD'
+          'DOGEUSDT': 'DOGE/USD',
+          'BNBUSDT': 'BNB/USD',
+          'AVAXUSDT': 'AVAX/USD',
+          'DOTUSDT': 'DOT/USD',
+          'MATICUSDT': 'MATIC/USD',
+          'LINKUSDT': 'LINK/USD',
       };
       
       const symbol = symbolMap[data.s];

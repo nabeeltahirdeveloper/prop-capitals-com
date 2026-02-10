@@ -26,11 +26,11 @@ export const evaluateAccountRealTime = async (id, currentEquity) => {
 };
 
 export const processPriceTick = async (id, symbol, bid, ask, timestamp) => {
-  return apiPost(`/trading-accounts/${id}/price-tick`, { 
-    symbol, 
-    bid, 
-    ask, 
-    ts: timestamp || Date.now() 
+  return apiPost(`/trading-accounts/${id}/price-tick`, {
+    symbol,
+    bid,
+    ask,
+    ts: timestamp || Date.now()
   });
 };
 

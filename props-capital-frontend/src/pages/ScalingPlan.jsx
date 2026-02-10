@@ -419,7 +419,7 @@ export default function ScalingPlan() {
                 BLUEHAVEN MANAGEMENT LTD | 60 TOTTENHAM COURT ROAD, OFFICE 469, LONDON, ENGLAND W1T 2EW
               </p>
               <p className="text-xs text-slate-600 mt-1">
-                Email: support@the-bluehaven.com
+                Email: support@prop-capitals.com
               </p>
             </div>
           </div>
@@ -549,7 +549,7 @@ export default function ScalingPlan() {
                 LONDON, ENGLAND W1T 2EW
               </p>
               <p className="text-xs text-slate-600 mt-1">
-                Email: support@the-bluehaven.com
+                Email: support@prop-capitals.com
               </p>
             </div>
           </div>

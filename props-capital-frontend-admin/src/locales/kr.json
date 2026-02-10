@@ -1,0 +1,2860 @@
+{
+  "common": {
+    "loading": "로딩 중...",
+    "url": "URL",
+    "dismiss": "닫기",
+    "allPlatforms": "모든 플랫폼"
+  },
+  "home": {
+    "hero": {
+      "badge": "전 세계 15,000명 이상의 트레이더가 신뢰하고 있습니다",
+      "title": "거래하세요",
+      "titleHighlight": "저희 자금으로",
+      "subtitle": "당신의 실력을 증명하고 최대 $200,000의 자금을 확보하세요. 자기 자본의 위험 없이 최대 90%의 수익을 유지할 수 있습니다",
+      "cta": "챌린지 시작하기",
+      "howItWorks": "작동 방식",
+      "verified": "인증된 기업",
+      "secure": "안전한 결제",
+      "support": "연중무휴 24시간 지원",
+      "profitToday": "오늘의 수익",
+      "winRate": "승률"
+    },
+    "stats": {
+      "fundedCapital": "제공된 자금",
+      "activeTraders": "활동 중인 트레이더",
+      "paidToTraders": "트레이더에게 지급된 금액",
+      "trustScore": "신뢰 점수"
+    },
+    "features": {
+      "title": "선택받는 이유",
+      "subtitle": "프로 트레이더를 위해 설계됨",
+      "description": "투명한 규칙, 유리한 조건, 그리고 진정한 지원을 갖춘 트레이더 친화적인 프로프 팜을 구축했습니다",
+      "clearObjectives": {
+        "title": "명확한 거래 목표",
+        "description": "투명한 규칙에 기반한 단순하고 달성 가능한 목표. 숨겨진 조건이나 예기치 않은 실패는 없습니다"
+      },
+      "generousDrawdown": {
+        "title": "넉넉한 드로우다운 한도",
+        "description": "일일 손실 5%, 최대 10%까지. 스트레스 없이 편안하게 거래할 수 있습니다",
+        "drawdown": "드로우다운"
+      },
+      "profitSplit": {
+        "title": "최대 90% 수익 분배",
+        "description": "수익의 대부분을 유지하세요. 지연이나 숨겨진 수수료 없이 격주 지급"
+      },
+      "instantSetup": {
+        "title": "즉시 계정 설정",
+        "description": "구매 후 몇 분 이내에 거래 로그인 정보를 받아 바로 거래를 시작할 수 있습니다"
+      },
+      "tradeAnywhere": {
+        "title": "어디서나 거래",
+        "description": "MT4, MT5, cTrader, DXTrade 지원. 전 세계 어디서든 모든 디바이스에서 거래 가능합니다"
+      },
+      "noTimeLimits": {
+        "title": "시간 제한 없음",
+        "description": "목표 달성까지 자신의 페이스로. 최대 거래 기간이나 압박은 없습니다"
+      }
+    },
+    "howItWorks": {
+      "label": "시작 방법",
+      "title": "자금 확보까지 3단계",
+      "step1": {
+        "title": "챌린지 선택",
+        "description": "원하는 계정 규모를 선택하고 안전하게 구매하세요"
+      },
+      "step2": {
+        "title": "평가 통과",
+        "description": "리스크 관리 규칙을 지키며 수익 목표를 달성하세요"
+      },
+      "step3": {
+        "title": "자금 확보",
+        "description": "당사의 자금으로 거래하고 최대 90%의 수익을 유지하세요"
+      },
+      "learnMore": "프로세스 자세히 보기"
+    },
+    "challenges": {
+      "label": "가격",
+      "title": "챌린지 선택",
+      "subtitle": "거래 스타일과 예산에 맞는 계정 규모를 선택하세요",
+      "accountSize": "계정 규모",
+      "price": "가격",
+      "profitTarget": "수익 목표",
+      "profitSplit": "수익 분배",
+      "getStarted": "시작하기",
+      "viewAll": "모든 챌린지 보기",
+      "popular": "인기"
+    },
+    "testimonials": {
+      "label": "고객 후기",
+      "title": "트레이더들이 사랑합니다",
+      "subtitle": "Prop Capitals에서 수익을 올리고 있는 수천 명의 성공한 트레이더와 함께하세요",
+      "totalEarned": "총 수익"
+    },
+    "cta": {
+      "title": "시작할 준비가 되셨나요?",
+      "titleHighlight": "당신의 트레이딩 커리어를",
+      "subtitle": "자금 지원을 받는 수천 명의 트레이더와 함께하고 오늘부터 수익을 시작하세요. 자기 자본의 위험은 없습니다",
+      "button": "지금 자금 확보",
+      "footer": "시작은 단 $99 • 즉시 계정 설정 • 연중무휴 24시간 지원"
+    },
+    "footer": {
+      "description": "가장 트레이더 친화적인 프로프 트레이딩 회사. 저희 자금으로 거래하고 자금을 확보하세요",
+      "propFirm": "프로프 트레이딩 회사",
+      "verified": "인증 및 신뢰",
+      "company": "회사",
+      "support": "지원",
+      "legal": "법적 정보",
+      "copyright": "© 2026 BLUEHAVEN MANAGEMENT LTD. 무단 복제 금지",
+      "secure": "안전 및 암호화",
+      "howItWorks": "작동 방식",
+      "challenges": "챌린지",
+      "scalingPlan": "스케일링 플랜",
+      "payouts": "지급",
+      "faq": "자주 묻는 질문",
+      "contact": "문의하기",
+      "terms": "이용 약관",
+      "privacy": "개인정보 처리방침"
+    },
+    "partners": {
+      "title": "다음 플랫폼을 사용하는 트레이더들이 신뢰합니다:"
+    }
+  },
+  "dashboard": {
+    "welcome": "다시 오신 것을 환영합니다, {{name}}",
+    "overview": "여기에서 거래 개요를 확인할 수 있습니다",
+    "newChallenge": "새 챌린지",
+    "stats": {
+      "totalChallenges": "전체 챌린지",
+      "activeChallenges": "진행 중인 챌린지",
+      "fundedAccounts": "자금 지원 계정",
+      "totalPayouts": "총 지급액"
+    },
+    "accounts": {
+      "title": "활성 거래 계정",
+      "viewAll": "모두 보기",
+      "profitProgress": "수익 진행 상황",
+      "target": "목표",
+      "dailyDD": "일일 DD",
+      "overallDD": "전체 DD",
+      "details": "상세 정보",
+      "trade": "거래",
+      "violation": {
+        "dailyDrawdown": "일일 DD 초과: {{actual}}% > {{threshold}}%",
+        "overallDrawdown": "전체 DD 초과: {{actual}}% > {{threshold}}%",
+        "maximumDrawdown": "최대 DD 초과: {{actual}}% > {{threshold}}%",
+        "maxTradingDays": "최대 거래 일수 초과",
+        "default": "{{message}}"
+      }
+    },
+    "metrics": {
+      "title": "빠른 지표",
+      "currentBalance": "현재 잔액",
+      "profitThisCycle": "이번 사이클 수익",
+      "ddRemaining": "남은 DD",
+      "tradingDays": "거래 일수",
+      "nextPayoutDate": "다음 지급일",
+      "requestPayout": "지급 요청",
+      "account": "계정",
+      "accounts": "계정"
+    },
+    "notifications": {
+      "title": "알림",
+      "noNewNotifications": "새로운 알림이 없습니다",
+      "markAsRead": "읽음으로 표시",
+      "notification": "알림",
+      "notifications": "알림",
+      "noNotifications": "알림이 없습니다",
+      "seeMore": "더 보기"
+    },
+    "rules": {
+      "title": "규칙 준수",
+      "selectAccount": "계정 선택",
+      "phase": "단계",
+      "phase1": "1단계",
+      "phase2": "2단계",
+      "funded": "자금 지원 완료",
+      "failed": "실패"
+    },
+    "quickActions": {
+      "tradingTerminal": "거래 터미널",
+      "openTrading": "거래 시작",
+      "myAccounts": "내 계정",
+      "viewAllAccounts": "모든 계정 보기",
+      "analytics": "분석",
+      "performanceStats": "성과 통계",
+      "payouts": "지급",
+      "requestPayouts": "지급 요청",
+      "scalingPlan": "스케일링 플랜",
+      "growthRoadmap": "성장 로드맵"
+    },
+    "links": {
+      "challengeProgress": "챌린지 진행 상황",
+      "trackJourney": "자금 확보까지의 여정 추적",
+      "tradeHistory": "거래 내역",
+      "viewAllTrades": "모든 거래 보기"
+    },
+    "empty": {
+      "welcome": "환영합니다, {{name}}!",
+      "description": "자금 지원 트레이더로서의 여정을 시작하세요. 챌린지를 선택하고 실력을 증명하여 저희 자금으로 거래하세요",
+      "startChallenge": "첫 챌린지 시작하기"
+    },
+    "rulesPanel": {
+      "title": "챌린지 규칙 및 조건",
+      "profitTarget": "수익 목표",
+      "dailyLossLimit": "일일 손실 한도",
+      "overallDrawdown": "전체 드로우다운",
+      "minTradingDays": "최소 거래 일수",
+      "daysRemaining": "남은 일수",
+      "tradingStyleRules": "거래 스타일 규칙",
+      "newsTrading": "뉴스 거래",
+      "weekendHolding": "주말 보유",
+      "expertAdvisors": "전문가 어드바이저",
+      "hedging": "헤징",
+      "copyTrading": "카피 트레이딩",
+      "leverage": "레버리지",
+      "maxLot": "{{max}} {{lot}}",
+      "lot": "랏",
+      "max": "최대",
+      "profitSplit": "수익 분배",
+      "target": "목표",
+      "limit": "제한",
+      "status": {
+        "reached": "달성",
+        "loss": "손실",
+        "violated": "위반",
+        "danger": "위험",
+        "warning": "경고",
+        "safe": "안전"
+      }
+    }
+  },
+  "myAccounts": {
+    "title": "내 계정",
+    "subtitle": "모든 거래 챌린지 및 자금 지원 계정을 관리합니다",
+    "newChallenge": "새 챌린지",
+    "activeChallenges": "진행 중인 챌린지",
+    "phase1": "1단계",
+    "phase2": "2단계",
+    "funded": "자금 지원 완료",
+    "failed": "실패",
+    "all": "전체",
+    "active": "활성",
+    "noAccounts": "계정을 찾을 수 없습니다",
+    "noAccountsDesc": "새로운 챌린지를 시작하고 거래 여정을 시작하세요",
+    "startChallenge": "챌린지 시작",
+    "balance": "잔액",
+    "profit": "수익",
+    "days": "일",
+    "dailyDD": "일일 손실",
+    "overallDD": "전체 손실",
+    "openDashboard": "거래 대시보드 열기",
+    "progress": "진행 상황",
+    "trades": "거래",
+    "needChallenge": "새로운 챌린지가 필요하신가요?",
+    "needChallengeDesc": "새로운 거래 챌린지로 다시 시작하고 실력을 증명하세요",
+    "buyChallenge": "챌린지 구매"
+  },
+  "analytics": {
+    "title": "분석",
+    "subtitle": "상세한 성과 분석 및 통계",
+    "selectAccount": "계정 선택",
+    "allAccounts": "모든 계정",
+    "totalTrades": "총 거래 수",
+    "winRate": "승률",
+    "totalProfit": "총 수익",
+    "profitFactor": "프로핏 팩터",
+    "winningTrades": "수익 거래",
+    "losingTrades": "손실 거래",
+    "bestTrade": "최고의 거래",
+    "worstTrade": "최악의 거래",
+    "symbolDistribution": "심볼 분포",
+    "tradeHistory": "거래 내역",
+    "noTrades": "거래가 없습니다",
+    "symbol": "심볼",
+    "type": "유형",
+    "lotSize": "로트 크기",
+    "open": "오픈",
+    "close": "클로즈",
+    "profit": "수익",
+    "buy": "매수",
+    "sell": "매도",
+    "performanceMetrics": "성과 지표",
+    "wins": "승리",
+    "losses": "패배",
+    "maxWinStreak": "최대 연승",
+    "maxLossStreak": "최대 연패",
+    "avgWin": "평균 수익",
+    "avgLoss": "평균 손실",
+    "avgRR": "평균 R:R",
+    "avgHolding": "평균 보유 시간",
+    "maxPosition": "최대 포지션",
+    "avgPosition": "평균 포지션",
+    "sharpeRatio": "샤프 비율",
+    "lots": "로트",
+    "equityCurve": "에퀴티 곡선",
+    "accountPerformance": "기간별 계정 성과",
+    "equity": "에퀴티",
+    "balance": "잔액",
+    "startingBalance": "시작 잔액",
+    "dailyPL": "일일 P/L",
+    "winningDays": "수익 일수",
+    "losingDays": "손실 일수",
+    "totalLoss": "총 손실",
+    "netPL": "순 P/L",
+    "pl": "P/L",
+    "bestDay": "최고의 날",
+    "worstDay": "최악의 날",
+    "noData": "심볼 분포 데이터가 없습니다",
+    "loading": "로딩 중..."
+  },
+  "payouts": {
+    "title": "지급",
+    "subtitle": "수익 출금 신청 및 추적",
+    "requestPayout": "출금 신청",
+    "selectAccount": "계정 선택",
+    "allAccounts": "모든 계정",
+    "selectFundedAccount": "자금 지원 계정 선택",
+    "amount": "금액 (USD)",
+    "enterAmount": "금액 입력",
+    "minimum": "최소 금액",
+    "paymentMethod": "지급 방식",
+    "selectPaymentMethod": "지급 방식 선택",
+    "paymentDetails": "지급 세부 정보",
+    "paymentDetailsPlaceholder": "지급 정보를 입력하세요 (지갑 주소, 은행 정보 등)",
+    "submitting": "제출 중...",
+    "submitRequest": "신청 제출",
+    "totalEarnings": "총 수익",
+    "pendingPayouts": "보류 중인 지급",
+    "totalPayouts": "총 지급액",
+    "nextPayout": "다음 지급",
+    "payoutSchedule": "지급 일정",
+    "payoutFrequency": "지급 빈도",
+    "biWeekly": "격주 (14일)",
+    "biWeeklyValue": "격주",
+    "processingTime": "처리 시간",
+    "processingTimeValue": "24~48시간",
+    "businessDays": "2~5영업일",
+    "businessDaysOnly": "영업일 기준",
+    "minimumAmount": "최소 금액",
+    "payoutFee": "출금 수수료",
+    "free": "$0 (무료)",
+    "freeValue": "무료",
+    "availablePaymentMethods": "사용 가능한 지급 방식",
+    "bankTransfer": "은행 송금",
+    "bankTransferTime": "2~5일",
+    "cryptocurrency": "암호화폐",
+    "cryptoTime": "24시간",
+    "paypal": "페이팔",
+    "paypalTime": "24시간",
+    "wise": "와이즈",
+    "wiseTime": "1~2일",
+    "yourProfitSplit": "나의 수익 분배",
+    "profitSplitDesc": "스케일링을 통해 최대 90%의 수익 유지",
+    "currentSplit": "현재 분배율",
+    "withScaling": "스케일링 후",
+    "viewScalingPlan": "스케일링 플랜 보기",
+    "payoutHistory": "지급 내역",
+    "noPayouts": "아직 지급 내역이 없습니다. 거래를 시작하고 수익을 창출하세요!",
+    "needHelp": "지급 관련 도움이 필요하신가요?",
+    "needHelpDesc": "지급 관련 문의는 지원팀에 연락해 주세요",
+    "contactSupport": "지원팀 문의",
+    "date": "날짜",
+    "method": "방법",
+    "status": "상태",
+    "processed": "처리 완료"
+  },
+  "profile": {
+    "title": "프로필",
+    "subtitle": "계정 설정 및 환경 설정 관리",
+    "loadError": "프로필을 불러오지 못했습니다. 다시 시도해 주세요",
+    "user": "사용자",
+    "admin": "관리자",
+    "trader": "트레이더",
+    "personalInfo": "개인 정보",
+    "security": "보안",
+    "verification": "본인 인증",
+    "notifications": "알림",
+    "personalInformation": "개인 정보",
+    "firstName": "이름",
+    "firstNamePlaceholder": "존",
+    "lastName": "성",
+    "lastNamePlaceholder": "도",
+    "email": "이메일 주소",
+    "phoneNumber": "전화번호",
+    "phonePlaceholder": "+66 123 456 789",
+    "country": "국가",
+    "countryPlaceholder": "태국",
+    "city": "도시",
+    "cityPlaceholder": "방콕",
+    "address": "주소",
+    "addressPlaceholder": "메인 스트리트 123",
+    "saving": "저장 중...",
+    "saveChanges": "변경 사항 저장",
+    "changesSaved": "변경 사항이 저장되었습니다",
+    "securitySettings": "보안 설정",
+    "password": "비밀번호",
+    "lastChanged": "마지막 변경",
+    "never": "변경 없음",
+    "changePassword": "비밀번호 변경",
+    "twoFactorAuth": "이중 인증",
+    "twoFactorDesc": "추가 보안 계층 활성화",
+    "enable2FA": "2FA 활성화",
+    "emailNotifications": "이메일 알림",
+    "emailNotificationsDesc": "계정 활동에 대한 알림 수신",
+    "enabled": "활성화됨",
+    "identityVerification": "본인 인증",
+    "verificationDesc": "모든 기능(지급 포함)을 이용하려면 본인 인증을 완료해야 합니다. 첫 출금 시 필수입니다",
+    "governmentID": "신분증",
+    "governmentIDDesc": "여권, 운전면허증 또는 신분증",
+    "pending": "검토 중",
+    "uploadDocument": "문서 업로드",
+    "proofOfAddress": "주소 증명",
+    "proofOfAddressDesc": "공과금 청구서 또는 은행 명세서 (최근 3개월 이내)",
+    "changePasswordDesc": "계정 보안을 유지하기 위해 비밀번호를 업데이트하세요",
+    "currentPassword": "현재 비밀번호",
+    "newPassword": "새 비밀번호",
+    "confirmPassword": "비밀번호 확인",
+    "passwordChanged": "비밀번호가 변경되었습니다",
+    "passwordsDoNotMatch": "비밀번호가 일치하지 않습니다",
+    "passwordTooShort": "비밀번호는 최소 8자 이상이어야 합니다",
+    "changing": "변경 중...",
+    "uploading": "업로드 중...",
+    "uploadGovernmentID": "신분증 업로드",
+    "uploadProofOfAddress": "주소 증명서 업로드",
+    "documentUploaded": "문서 업로드가 완료되었습니다",
+    "approved": "승인됨",
+    "rejected": "거절됨",
+    "comingSoon": "곧 제공 예정",
+    "notUploaded": "미업로드",
+    "notificationPreferences": "알림 설정",
+    "tradeNotifications": "거래 알림",
+    "tradeNotificationsDesc": "거래 시작 및 종료 시 알림 수신",
+    "accountAlerts": "계정 알림",
+    "accountAlertsDesc": "손실 경고 및 계정 상태 업데이트",
+    "payoutUpdates": "지급 업데이트",
+    "payoutUpdatesDesc": "출금 요청 및 처리 상태 알림",
+    "challengeUpdates": "챌린지 업데이트",
+    "challengeUpdatesDesc": "진행 상황 및 단계 변경 알림",
+    "marketingEmails": "마케팅 이메일",
+    "marketingEmailsDesc": "뉴스, 프로모션 및 특별 혜택"
+  },
+  "support": {
+    "title": "지원",
+    "subtitle": "계정 및 거래 관련 지원 받기",
+    "newTicket": "새 티켓",
+    "createTicket": "지원 티켓 생성",
+    "subject": "제목",
+    "subjectPlaceholder": "문제에 대한 간단한 설명",
+    "category": "카테고리",
+    "select": "선택",
+    "account": "계정",
+    "payment": "결제",
+    "payout": "출금",
+    "technical": "기술",
+    "other": "기타",
+    "priority": "우선순위",
+    "low": "낮음",
+    "medium": "중간",
+    "high": "높음",
+    "message": "메시지",
+    "messagePlaceholder": "문제를 자세히 설명해 주세요...",
+    "submitting": "전송 중...",
+    "submitTicket": "티켓 제출",
+    "openTickets": "진행 중인 티켓",
+    "inProgress": "처리 중",
+    "resolved": "해결됨",
+    "avgResponse": "평균 응답 시간",
+    "totalTickets": "총 티켓 수",
+    "faq": "자주 묻는 질문",
+    "searchFAQs": "FAQ 검색...",
+    "viewAllFAQs": "모든 FAQ 보기",
+    "yourTickets": "내 티켓",
+    "noTickets": "아직 지원 티켓이 없습니다. 필요 시 새 티켓을 생성하세요",
+    "needImmediateHelp": "즉각적인 도움이 필요하신가요?",
+    "liveChatDesc": "지원팀은 연중무휴 24시간 라이브 채팅을 제공합니다",
+    "startLiveChat": "라이브 채팅 시작",
+    "faq1Q": "출금은 어떻게 신청하나요?",
+    "faq1A": "지급 섹션으로 이동하여 \"출금 신청\"을 클릭한 후 필요한 정보를 입력하고 제출하세요",
+    "faq2Q": "거래 규칙은 무엇인가요?",
+    "faq2A": "표준 규칙에는 일일 손실 5%, 전체 손실 10%, 최소 거래일 4일이 포함됩니다",
+    "faq3Q": "출금 처리에는 얼마나 걸리나요?",
+    "faq3A": "출금은 승인 후 24~48시간 이내에 처리됩니다. 은행 송금은 2~5영업일이 소요될 수 있습니다",
+    "faq4Q": "뉴스 시간에도 거래할 수 있나요?",
+    "faq4A": "네. 뉴스 거래는 모든 챌린지에서 허용되며, 고영향 뉴스에 대한 제한은 없습니다"
+  },
+  "tradeHistory": {
+    "title": "거래 내역",
+    "subtitle": "전체 거래 기록",
+    "selectAccount": "계정 선택",
+    "allAccounts": "모든 계정",
+    "phase1": "1단계",
+    "phase2": "2단계",
+    "funded": "자금 지원 완료",
+    "failed": "실패",
+    "export": "내보내기",
+    "totalTrades": "총 거래 수",
+    "winRate": "승률",
+    "totalProfit": "총 수익",
+    "avgWin": "평균 수익",
+    "avgLoss": "평균 손실",
+    "searchPlaceholder": "심볼 또는 티켓으로 검색...",
+    "all": "전체",
+    "buy": "매수",
+    "sell": "매도",
+    "open": "오픈",
+    "closed": "클로즈",
+    "openPositions": "미결 포지션",
+    "active": "진행 중",
+    "closedTrades": "청산된 거래",
+    "showing": "표시",
+    "trades": "거래",
+    "noTradesFound": "필터와 일치하는 거래가 없습니다",
+    "ticket": "티켓",
+    "time": "시간",
+    "symbol": "심볼",
+    "type": "유형",
+    "lots": "로트",
+    "openPrice": "진입가",
+    "closePrice": "청산가",
+    "priceChange": "가격 변동",
+    "commSwap": "수수료/스왑",
+    "profit": "수익",
+    "status": "상태",
+    "noAccounts": "거래 계정이 없습니다",
+    "noAccountsDesc": "거래 내역을 보려면 먼저 거래 계정을 생성해야 합니다"
+  },
+  "challengeProgress": {
+    "title": "챌린지 진행 상황",
+    "subtitle": "자금 지원 트레이더가 되기까지의 여정을 추적하세요",
+    "selectAccount": "계정 선택",
+    "viewTradingDashboard": "거래 대시보드 보기",
+    "account": "계정",
+    "profit": "수익",
+    "tradingDays": "거래 일수",
+    "dailyDDUsed": "사용한 일일 DD",
+    "yourJourney": "나의 여정",
+    "purchase": "구매",
+    "purchaseDesc": "챌린지 구매가 완료되었습니다",
+    "challenge": "챌린지",
+    "phase1": "1단계",
+    "phase2": "2단계",
+    "funded": "자금 지원 완료",
+    "scaling": "스케일링",
+    "reachTarget": "수익 목표 {{target}} 달성",
+    "profitTarget": "수익 목표",
+    "minTradingDays": "최소 거래 일수",
+    "maxDailyDD": "최대 일일 DD",
+    "maxOverallDD": "최대 전체 DD",
+    "fundedDesc": "당사 자금으로 거래",
+    "profitSplit80": "수익 분배 80%",
+    "scalingDesc": "$2,000,000까지 성장",
+    "profitSplit90": "최대 90% 수익 분배",
+    "currentPhaseRequirements": "현재 단계 요구사항",
+    "profitSplit": "수익 분배",
+    "whenFunded": "자금 지원 후",
+    "upTo90WithScaling": "스케일링으로 최대 90%",
+    "payoutCycle": "지급 사이클",
+    "biWeeklyPayouts": "격주 지급",
+    "days": "일",
+    "processedWithin24h": "24시간 이내 처리",
+    "scaleTo": "확장 목표",
+    "maximumAccountSize": "최대 계정 규모",
+    "scalingLevels": "스케일링 10단계",
+    "readyToStart": "거래를 시작할 준비가 되셨나요?",
+    "readyToStartDesc": "거래 플랫폼을 열고 수익 목표 달성을 시작하세요",
+    "viewTradingRules": "거래 규칙 보기",
+    "failed": "실패",
+    "noAccountsDesc": "챌린지를 구매하고 진행 상황 추적을 시작하세요"
+  },
+  "phaseTimeline": {
+    "challengeJourney": "챌린지 여정",
+    "trackProgress": "각 단계의 진행 상황 추적",
+    "proceedToNextPhase": "다음 단계로 진행",
+    "phase1": "1단계",
+    "phase2": "2단계",
+    "funded": "자금 지원 완료",
+    "scaling": "스케일링",
+    "evaluation": "평가",
+    "verification": "확인",
+    "liveAccount": "실계좌",
+    "growth": "성장",
+    "profitTarget": "수익 목표 {{target}}",
+    "minTradingDays": "최소 거래 일수 {{days}}일",
+    "maxDailyDD": "최대 일일 DD {{dd}}",
+    "profitSplit80": "수익 분배 80%",
+    "biWeeklyPayouts": "격주 지급",
+    "scalingEligible": "스케일링 대상",
+    "profitSplit90": "최대 90% 수익 분배",
+    "accountSizeIncrease": "계정 규모 증가",
+    "vipBenefits": "VIP 혜택",
+    "completed": "완료",
+    "active": "진행 중",
+    "unlocked": "해제됨",
+    "locked": "잠김",
+    "phaseCompleted": "단계 완료!",
+    "phaseCompletedDesc": "축하합니다! 모든 요구사항을 달성했습니다. 위 버튼을 클릭하여 계속 진행하세요"
+  },
+  "ruleCompliance": {
+    "title": "규칙 준수",
+    "subtitle": "거래 규칙 및 챌린지 요구사항 확인",
+    "selectAccount": "계정 선택",
+    "loading": "로딩 중...",
+    "noAccounts": "거래 계정이 없습니다",
+    "noAccountsDesc": "챌린지를 구매하고 규칙 준수 상태 및 거래 규칙을 확인하세요",
+    "purchaseChallenge": "챌린지 구매",
+    "loadingCompliance": "규칙 준수 로딩 중...",
+    "loadError": "계정 상세 정보를 불러오지 못했습니다",
+    "goToMyAccounts": "내 계정으로",
+    "allRulesCompliant": "모든 규칙 준수",
+    "goodStanding": "계정이 모든 챌린지 규칙을 정상적으로 준수하고 있습니다",
+    "active": "진행 중",
+    "accountFailed": "계정 실패",
+    "failedDesc": "규칙 위반으로 계정이 종료되었습니다",
+    "rulesAtRisk": "규칙 위험",
+    "atRiskDesc": "하나 이상의 규칙이 위반 임계값에 근접하고 있습니다",
+    "warning": "경고",
+    "phase1": "1단계",
+    "phase2": "2단계",
+    "funded": "자금 지원 완료",
+    "failed": "실패",
+    "tradingStyleRules": "거래 스타일 규칙",
+    "newsTrading": "뉴스 거래",
+    "newsTradingDesc": "고영향 뉴스 시간대 거래가 허용됩니다",
+    "newsTradingDetails": "NFP, FOMC 등 고영향 뉴스 시간대에도 거래할 수 있습니다",
+    "weekendHolding": "주말 보유",
+    "weekendHoldingDesc": "주말에 포지션을 보유할 수 있습니다",
+    "weekendHoldingDetails": "금요일 종가부터 월요일 시가까지 페널티 없이 보유할 수 있습니다",
+    "expertAdvisors": "전문가 어드바이저(EA)",
+    "expertAdvisorsDesc": "EA를 통한 자동매매가 허용됩니다",
+    "expertAdvisorsDetails": "EA 사용은 가능하나, 마틴게일 및 그리드 전략은 검토 대상입니다",
+    "hedging": "헤징",
+    "hedgingDesc": "동일 상품에서 반대 포지션 보유가 가능합니다",
+    "hedgingDetails": "모든 상품에서 완전 헤징이 허용됩니다",
+    "copyTrading": "카피 트레이딩",
+    "copyTradingDesc": "다른 트레이더의 거래를 복사하는 것은 허용되지 않습니다",
+    "copyTradingDetails": "각 트레이더는 자신의 거래 전략을 독립적으로 실행해야 합니다",
+    "latencyArbitrage": "레이턴시 아비트라지",
+    "latencyArbitrageDesc": "브로커 간 가격 지연을 이용하는 행위는 금지됩니다",
+    "latencyArbitrageDetails": "가격 피드 지연을 이용한 차익거래는 계정 무효화로 이어질 수 있습니다",
+    "complianceHistory": "준수 기록",
+    "last7Days": "지난 7일",
+    "dailyDrawdown": "일일 드로우다운",
+    "overallDrawdown": "전체 드로우다운",
+    "limit": "한도",
+    "loadingHistory": "준수 기록 로딩 중...",
+    "noComplianceHistory": "준수 기록이 없습니다",
+    "noComplianceHistoryDesc": "거래를 시작하면 여기에서 준수 기록이 표시됩니다",
+    "importantInformation": "중요 안내",
+    "info1": "일일 손실은 전일 마감 잔액을 기준으로 계산됩니다",
+    "info2": "전체 손실은 계정의 최대 잔액(에퀴티 피크)을 기준으로 계산됩니다",
+    "info3": "어떤 규칙이든 위반 시 즉시 실격 처리됩니다",
+    "info4": "경미한 위반(경고)은 모니터링되지만 즉시 실격으로 이어지지는 않습니다",
+    "info5": "모든 규칙 계산은 시장 시간 동안 실시간으로 수행됩니다"
+  },
+  "accountDetails": {
+    "title": "계정 상세",
+    "subtitle": "거래 계정의 상세 정보를 확인하세요",
+    "selectAccountDesc": "상세 정보를 볼 계정을 선택하세요",
+    "selectAccount": "계정 선택",
+    "loading": "계정 상세 로딩 중...",
+    "noAccounts": "거래 계정이 없습니다",
+    "noAccountsDesc": "챌린지를 구매하고 계정 상세 및 거래 대시보드를 확인하세요",
+    "purchaseChallenge": "챌린지 구매",
+    "account": "계정",
+    "started": "시작일",
+    "phase1": "1단계",
+    "phase2": "2단계",
+    "funded": "자금 지원 완료",
+    "failed": "실패",
+    "phase1Completed": "1단계가 완료되었습니다!",
+    "phase1CompletedDesc": "축하합니다! 모든 요구사항을 달성했습니다. 2단계로 진행하세요",
+    "proceedToPhase2": "2단계로 진행",
+    "accountSummary": "계정 요약",
+    "balance": "잔액",
+    "equity": "에퀴티",
+    "floatingPL": "미실현 P/L",
+    "totalProfit": "총 수익",
+    "profitTarget": "수익 목표",
+    "dailyDrawdown": "일일 드로우다운",
+    "overallDrawdown": "전체 드로우다운",
+    "target": "목표",
+    "tradingDays": "거래 일수",
+    "performanceStatistics": "성과 통계",
+    "winRate": "승률",
+    "avgRiskReward": "평균 리스크-리워드",
+    "totalTrades": "총 거래 수",
+    "profitFactor": "프로핏 팩터",
+    "largestWin": "최대 수익",
+    "largestLoss": "최대 손실",
+    "avgLotSize": "평균 로트 크기",
+    "avgDuration": "평균 보유 시간",
+    "tradeHistory": "거래 내역",
+    "noTradesFound": "거래가 없습니다",
+    "refresh": "새로고침",
+    "viewFullTradeHistory": "전체 거래 내역 보기",
+    "challengeProgress": "챌린지 진행 상황",
+    "trackJourney": "여정 추적",
+    "analytics": "분석",
+    "detailedStats": "상세 통계",
+    "tradingRules": "거래 규칙",
+    "viewAllRules": "모든 규칙 보기",
+    "time": "시간",
+    "symbol": "심볼",
+    "type": "유형",
+    "lots": "로트",
+    "open": "오픈",
+    "close": "클로즈",
+    "pl": "P/L",
+    "status": "상태",
+    "closed": "클로즈",
+    "buy": "매수",
+    "sell": "매도",
+    "minTradingDays": "최소 거래 일수",
+    "days": "일",
+    "newsTrading": "뉴스 거래",
+    "weekendHolding": "주말 보유",
+    "compliant": "준수",
+    "allowed": "허용",
+    "equityCurve": "에퀴티 곡선",
+    "dailyPerformance": "일일 성과",
+    "openPositions": {
+      "title": "미결 포지션",
+      "noPositions": "미결 포지션이 없습니다",
+      "noPositionsDesc": "진행 중인 거래가 여기에 표시됩니다",
+      "lots": "로트",
+      "stopLoss": "SL",
+      "takeProfit": "TP",
+      "pips": "pips"
+    },
+    "ruleCompliance": {
+      "title": "규칙 준수",
+      "violation": "위반",
+      "violations": "위반",
+      "warning": "경고",
+      "warnings": "경고",
+      "allClear": "문제 없음",
+      "profitTarget": "수익 목표",
+      "dailyDrawdown": "일일 드로우다운",
+      "overallDrawdown": "전체 드로우다운",
+      "minTradingDays": "최소 거래 일수",
+      "newsTrading": "뉴스 거래",
+      "weekendHolding": "주말 보유",
+      "expertAdvisors": "전문가 어드바이저",
+      "reachProfitTarget": "통과하려면 수익 목표를 달성해야 합니다",
+      "maxDailyLoss": "최대 일일 손실 한도",
+      "maxTotalLoss": "최대 총 손실 한도",
+      "minRequiredDays": "필수 최소 거래 일수",
+      "tradingDuringNews": "뉴스 이벤트 중 거래",
+      "holdingOverWeekend": "주말 포지션 보유",
+      "automatedTrading": "자동매매 허용",
+      "allowed": "허용",
+      "notAllowed": "불허",
+      "limit": "한도",
+      "violationDetected": "계정 위반 감지",
+      "violationMessage": "계정이 하나 이상의 거래 규칙을 위반했습니다. 거래 활동을 확인해 주세요"
+    }
+  },
+  "notifications": {
+    "title": "알림",
+    "subtitle": "계정 활동 업데이트",
+    "markAllAsRead": "모두 읽음으로 표시",
+    "markAsRead": "읽음으로 표시",
+    "total": "전체",
+    "unread": "읽지 않음",
+    "warnings": "경고",
+    "violations": "위반",
+    "all": "전체",
+    "challenges": "챌린지",
+    "payouts": "지급",
+    "account": "계정",
+    "noNotifications": "알림이 없습니다",
+    "noNewNotifications": "새로운 알림이 없습니다",
+    "allCaughtUp": "모두 확인했습니다!",
+    "challenge": "챌린지",
+    "payout": "출금",
+    "system": "시스템",
+    "notification": "알림",
+    "notifications": "알림",
+    "titles": {
+      "drawdownWarning": "드로우다운 경고",
+      "payoutApproved": "출금 승인",
+      "payoutRejected": "출금 거절",
+      "payoutProcessed": "출금 처리 완료",
+      "phase1Completed": "1단계를 통과했습니다!",
+      "phase2Completed": "2단계를 통과했습니다!",
+      "accountViolation": "계정 위반",
+      "accountFailed": "계정 실격",
+      "challengePurchased": "챌린지를 구매했습니다",
+      "tradingDaysMilestone": "거래 일수 마일스톤",
+      "newChallengeAvailable": "새 챌린지 이용 가능",
+      "accountScalingApproved": "계정 확장이 승인되었습니다",
+      "accountScalingRejected": "계정 확장이 거절되었습니다",
+      "accountPaused": "계정이 일시 중지되었습니다",
+      "accountClosed": "계정이 종료되었습니다",
+      "accountResumed": "계정이 재개되었습니다"
+    },
+    "messages": {
+      "dailyDrawdownWarning": "계정 #{{accountNumber}}의 일일 드로우다운이 {{dailyPercent}}%에 도달했습니다. 허용 한도는 {{maxPercent}}%입니다. 리스크 관리를 유의해 주세요",
+      "overallDrawdownWarning": "계정 #{{accountNumber}}의 전체 드로우다운이 {{overallPercent}}%에 도달했습니다. 허용 한도는 {{maxPercent}}%입니다. 리스크 관리를 유의해 주세요",
+      "dailyDrawdownViolation": "계정 #{{accountNumber}}의 일일 드로우다운이 {{dailyPercent}}%에 도달했습니다. 허용 한도는 {{maxPercent}}%입니다. 거래는 내일까지 잠금 처리됩니다",
+      "overallDrawdownViolation": "계정 #{{accountNumber}}의 전체 드로우다운이 {{overallPercent}}%에 도달했습니다. 허용 한도는 {{maxPercent}}%입니다. 챌린지는 실격 처리되었습니다",
+      "payoutApproved": "출금 신청 ${{amount}}이(가) 승인되었습니다. 24~48시간 이내에 송금됩니다",
+      "payoutRejected": "출금 신청 ${{amount}}이(가) 거절되었습니다. 자세한 내용은 지원팀에 문의해 주세요",
+      "payoutProcessed": "출금 ${{amount}}이(가) 처리되어 송금이 완료되었습니다",
+      "phase1Completed": "축하합니다! ${{accountSize}} 챌린지 1단계를 통과했습니다. 계속해서 2단계로 진행하세요",
+      "phase2Completed": "축하합니다! ${{accountSize}} 챌린지 2단계를 통과했습니다. 계정이 자금 지원 상태가 되었습니다!",
+      "tradingDaysMilestoneMet": "계정 #{{accountNumber}}에서 {{tradingDays}}일 거래를 달성했습니다. 최소 거래일 요건을 충족했습니다!",
+      "tradingDaysMilestone": "계정 #{{accountNumber}}에서 {{tradingDays}}일 거래를 달성했습니다. 훌륭합니다!",
+      "challengePurchased": "챌린지 {{challengeName}} 구매가 완료되었습니다. 거래 계정 #{{accountNumber}}은 시작 잔액 ${{startingBalance}}로 이용 가능합니다",
+      "accountScalingApproved": "계정 #{{accountNumber}}의 확장 신청이 승인되었습니다. 잔액이 ${{oldBalance}}에서 ${{newBalance}}로 증가했습니다",
+      "accountScalingRejected": "계정 #{{accountNumber}}의 확장 신청이 거절되었습니다. 자세한 내용은 지원팀에 문의해 주세요",
+      "newChallengeAvailable": "새 챌린지 {{challengeName}}를 확인하세요! {{platform}}에서 계정 규모 {{accountSize}}. 지금 시작해 보세요",
+      "accountViolationGeneric": "계정 #{{accountNumber}}이(가) 거래 규칙을 위반했습니다{{violationPercent}}",
+      "accountPaused": "거래 계정 #{{accountNumber}}이(가) 일시 중지되었습니다. 거래가 일시적으로 중단되었습니다",
+      "accountClosed": "거래 계정 #{{accountNumber}}이(가) 종료되었습니다",
+      "accountResumed": "거래 계정 #{{accountNumber}}이(가) 재개되었습니다. 현재 거래가 활성화되어 있습니다"
+    }
+  },
+  "buyChallenge": {
+    "title": "새 챌린지 추가",
+    "subtitle": "추가 챌린지로 거래 포트폴리오를 확장하세요",
+    "purchaseSuccessful": "구매가 완료되었습니다!",
+    "purchaseSuccessfulDesc": "챌린지 계정을 설정 중입니다. 5분 이내에 로그인 정보를 이메일로 보내드립니다",
+    "orderSummary": "주문 요약",
+    "challenge": "챌린지",
+    "noChallenges": "도전 과제 없음",
+    "platform": "플랫폼",
+    "amountPaid": "결제 금액",
+    "goToDashboard": "대시보드로",
+    "chooseChallenge": "챌린지 선택",
+    "selectPlatform": "플랫폼 선택",
+    "payment": "결제",
+    "chooseYourChallenge": "챌린지 선택",
+    "selectAccountSize": "거래 스타일에 맞는 계정 규모를 선택하세요",
+    "popular": "인기",
+    "accountSize": "계정 규모",
+    "profitTarget": "수익 목표",
+    "drawdown": "드로우다운",
+    "profitSplit": "수익 분배",
+    "continue": "계속",
+    "selectTradingPlatform": "거래 플랫폼 선택",
+    "choosePlatform": "거래할 플랫폼을 선택하세요",
+    "back": "뒤로",
+    "completePurchase": "구매 완료",
+    "choosePaymentMethod": "결제 방법을 선택하고 결제를 완료하세요",
+    "paymentMethod": "결제 방법",
+    "couponCode": "쿠폰 코드",
+    "enterCode": "코드 입력",
+    "apply": "적용",
+    "validating": "확인 중...",
+    "applied": "적용됨",
+    "off": "할인",
+    "discountApplied": "할인 적용: -{{discount}}%",
+    "couponApplied": "{{code}} 적용 - {{discount}}% 할인!",
+    "couponSuccess": "쿠폰 적용 완료",
+    "couponError": "유효하지 않은 쿠폰",
+    "purchaseError": "구매 실패",
+    "purchaseSuccessfulTitle": "구매 완료",
+    "subtotal": "소계",
+    "discount": "할인",
+    "total": "합계",
+    "processing": "처리 중...",
+    "pay": "결제",
+    "payAmount": "${{amount}} 결제",
+    "secureEncryption": "안전한 256-bit SSL 암호화",
+    "minTradingDays": "최소 거래일",
+    "maxTradingDays": "최대 거래일",
+    "eaAllowed": "EA 허용",
+    "newsTrading": "뉴스 거래",
+    "weekendHolding": "주말 보유",
+    "scalingEnabled": "스케일링",
+    "platforms": {
+      "MT5": {
+        "name": "MetaTrader 5",
+        "desc": "인기 거래 플랫폼"
+      },
+      "MT4": {
+        "name": "MetaTrader 4",
+        "desc": "클래식 거래 플랫폼"
+      },
+      "cTrader": {
+        "name": "cTrader",
+        "desc": "전문가용 플랫폼"
+      },
+      "DXTrade": {
+        "name": "DXTrade",
+        "desc": "웹 기반 플랫폼"
+      }
+    },
+    "paymentMethods": {
+      "card": {
+        "name": "신용/체크카드",
+        "desc": "Visa, Mastercard, Amex"
+      },
+      "crypto": {
+        "name": "암호화폐",
+        "desc": "BTC, ETH, USDT"
+      },
+      "paypal": {
+        "name": "PayPal",
+        "desc": "PayPal로 결제"
+      }
+    }
+  },
+  "violationModal": {
+    "dailyLossTitle": "일일 손실 한도 도달",
+    "drawdownTitle": "최대 손실 한도 도달",
+    "description": "계정이 챌린지 규칙을 위반했습니다",
+    "ruleLimit": "규칙 한도",
+    "equityAtViolation": "위반 시 에퀴티",
+    "actionTaken": "조치 내용",
+    "positionsClosed": "모든 포지션이 자동으로 청산되었습니다",
+    "dailyLockedAction": "거래는 내일까지 잠금 처리됩니다",
+    "disqualifiedAction": "챌린지는 실격 처리되었습니다",
+    "understood": "확인"
+  },
+  "violationAlert": {
+    "accountFailed": "계정 실격",
+    "dailyDrawdownExceeded": "일일 손실 한도 초과",
+    "dailyDrawdownDescription": "일일 손실이 허용 한도 {{limit}}%를 초과했습니다",
+    "maximumDrawdownExceeded": "최대 손실 한도 초과",
+    "maximumDrawdownDescription": "총 손실이 허용 한도 {{limit}}%를 초과했습니다",
+    "maximumTradingDaysExceeded": "최대 거래 일수 초과",
+    "maximumTradingDaysDescription": "허용된 최대 거래 일수를 초과했습니다",
+    "valueAtViolation": "위반 시 값",
+    "maximumAllowed": "허용 한도",
+    "account": "계정",
+    "finalBalance": "최종 잔액",
+    "tradingDays": "거래 일수",
+    "days": "일",
+    "startNewChallenge": "새 챌린지 시작",
+    "reviewTradingRules": "거래 규칙 확인"
+  },
+  "terminal": {
+    "title": "거래 터미널",
+    "selectAccount": "계정 선택",
+    "phase1": "1단계",
+    "phase2": "2단계",
+    "funded": "자금 지원 완료",
+    "failed": "실패",
+    "phase1Badge": "1단계",
+    "phase2Badge": "2단계",
+    "fundedBadge": "자금 지원 완료",
+    "failedBadge": "실패",
+    "connected": "연결됨",
+    "disconnected": "연결 끊김",
+    "tabs": {
+      "chart": "차트",
+      "trade": "거래",
+      "watch": "관심",
+      "watchlist": "관심목록",
+      "positions": "포지션",
+      "pending": "대기 중",
+      "history": "내역"
+    },
+    "tradeHistory": "거래 내역",
+    "modifyDialog": {
+      "title": "{{symbol}} 편집",
+      "lotSize": "로트 크기",
+      "enterTP": "TP 가격 입력",
+      "enterSL": "SL 가격 입력",
+      "saveChanges": "변경 사항 저장",
+      "saving": "저장 중..."
+    },
+    "noPendingOrders": "대기 중인 주문이 없습니다",
+    "cancel": "취소",
+    "noClosedTrades": "청산된 거래가 아직 없습니다",
+    "lots": "로트",
+    "lot": "로트",
+    "drawdownWarning": {
+      "title": "손실 경고",
+      "details": "포지션 규모를 줄이거나 일부 거래를 청산하여 계정을 보호하는 것을 고려해 주세요"
+    },
+    "violation": {
+      "title": "챌린지 실격",
+      "message": "최대 손실 한도를 초과했습니다"
+    },
+    "accountFailed": {
+      "title": "계정 실격 - 거래가 비활성화되었습니다",
+      "resetDemo": "데모 리셋",
+      "message": "계정이 실격 처리되어 거래가 비활성화되었습니다"
+    },
+    "tradeBlocked": "거래가 차단되었습니다",
+    "invalidTrade": "유효하지 않은 주문입니다",
+    "missingFields": "주문 정보가 누락되었습니다",
+    "noAccount": "선택된 계정이 없습니다",
+    "selectAccountTitle": "계정 선택",
+    "selectAccountMessage": "상단 드롭다운에서 거래 계정을 선택하여 거래 상세 정보를 확인하세요",
+    "tradeExecuted": "주문이 체결되었습니다",
+    "orderPlaced": "주문이 접수되었습니다",
+    "orderCancelled": "주문을 취소했습니다",
+    "tradeFailed": "주문에 실패했습니다",
+    "saveError": "주문을 서버에 저장할 수 없습니다",
+    "positionClosed": "포지션을 청산했습니다",
+    "stopLossHit": "스톱로스 도달",
+    "takeProfitHit": "테이크프로핏 도달",
+    "closedAt": "청산가",
+    "closeFailed": "포지션 청산에 실패했습니다",
+    "updateError": "서버의 주문을 업데이트할 수 없습니다",
+    "accountStatusBlocked": "계정 상태가 {{status}}이므로 거래가 허용되지 않습니다",
+    "invalidLotSize": "로트 크기가 유효하지 않습니다. 양수를 입력해 주세요",
+    "duplicateTrade": "중복 주문입니다",
+    "duplicateTradeMessage": "유사한 주문이 최근에 실행되었습니다. 잠시 후 다시 시도해 주세요",
+    "accountNotFound": "거래 계정을 찾을 수 없습니다",
+    "invalidTradeData": "거래 데이터가 유효하지 않습니다. 입력 내용을 확인해 주세요",
+    "tradeNotAllowed": "이 계정에서는 거래할 수 없습니다",
+    "serverError": "서버 오류입니다. 다시 시도해 주세요",
+    "networkOffline": "인터넷에 연결되어 있지 않습니다. 네트워크를 확인해 주세요",
+    "networkError": "네트워크 오류입니다. 연결을 확인한 후 다시 시도해 주세요",
+    "tradeNotFound": "주문을 찾을 수 없습니다. 삭제되었을 수 있습니다",
+    "invalidCloseData": "주문 청산 데이터가 유효하지 않습니다",
+    "tradeAlreadyClosed": "이 주문은 이미 청산되었습니다",
+    "tradeInProgress": "주문을 처리 중입니다. 잠시만 기다려 주세요",
+    "dailyLossLimitReached": "일일 손실 한도에 도달했습니다. 거래는 내일까지 잠금 처리됩니다",
+    "dailyLocked": "일일 손실 한도 도달",
+    "dailyLockedMessage": "일일 손실 한도를 초과하여 계정이 내일까지 잠금 처리되었습니다",
+    "disqualified": "실격",
+    "disqualifiedMessage": "최대 손실 한도를 초과하여 계정이 실격 처리되었습니다",
+    "challengeDisqualified": "챌린지가 실격 처리되어 더 이상 거래할 수 없습니다",
+    "modificationFailed": "수정에 실패했습니다",
+    "orderCancelledSuccess": "대기 주문 취소에 성공했습니다",
+    "orderFailed": "주문에 실패했습니다",
+    "orderExecutionFailed": "주문 집행에 실패했습니다",
+    "cancelFailed": "취소에 실패했습니다",
+    "pendingOrderDescription": "{{type}} {{symbol}}의 지정가 주문을 제출했습니다",
+    "tradingPanel": {
+      "newOrder": "신규 주문",
+      "buyLong": "매수",
+      "sellShort": "매도",
+      "long": "롱",
+      "short": "숏",
+      "price": "가격",
+      "market": "시장가",
+      "leaveEmpty": "시장가 주문의 경우 비워 두세요",
+      "amount": "수량",
+      "takeProfit": "익절",
+      "stopLoss": "손절",
+      "lot": "lot",
+      "optional": "선택",
+      "orderValue": "주문 금액",
+      "margin": "증거금",
+      "leverage": "레버리지",
+      "placeBuyOrder": "매수 주문",
+      "placeSellOrder": "매도 주문",
+      "bid": "매도호가(Bid)",
+      "ask": "매수호가(Ask)",
+      "spread": "스프레드",
+      "limit": "지정가"
+    },
+    "chart": {
+      "lastUpdate": "마지막 업데이트",
+      "candles": "캔들",
+      "tf": "TF",
+      "loadingData": "차트 데이터를 불러오는 중...",
+      "updating": "업데이트 중...",
+      "switchToLineChart": "라인 차트로 전환",
+      "switchToCandlestickChart": "캔들스틱 차트로 전환"
+    },
+    "loadingAccounts": "계정을 불러오는 중...",
+    "watchlist": {
+      "title": "가격 보기",
+      "live": "라이브",
+      "offline": "오프라인",
+      "search": "검색...",
+      "all": "전체",
+      "favorites": "★",
+      "forex": "Forex",
+      "crypto": "Crypto",
+      "symbol": "심볼",
+      "bid": "Bid",
+      "ask": "Ask",
+      "chg": "Chg%",
+      "updated": "업데이트",
+      "retry": "재시도"
+    },
+    "positions": {
+      "title": "미결 포지션",
+      "noPositions": "미결 포지션이 없습니다",
+      "noPositionsDesc": "거래를 시작하면 여기에 표시됩니다",
+      "modifySLTP": "SL/TP 편집",
+      "closePosition": "포지션 청산",
+      "entry": "진입가",
+      "current": "현재",
+      "closeAt": "청산가",
+      "pips": "pips",
+      "buy": "매수",
+      "sell": "매도"
+    },
+    "history": {
+      "filterBySymbol": "심볼로 필터...",
+      "allTrades": "모든 거래",
+      "profitOnly": "수익만",
+      "lossOnly": "손실만",
+      "allTime": "전체 기간",
+      "today": "오늘",
+      "thisWeek": "이번 주",
+      "thisMonth": "이번 달",
+      "totalPL": "총 손익",
+      "winRate": "승률",
+      "wins": "승리",
+      "losses": "패배",
+      "noTradesMatch": "조건에 맞는 거래가 없습니다",
+      "entry": "진입",
+      "exit": "청산",
+      "autoClosed": "자동 청산",
+      "breach": "규칙 위반",
+      "breachPnL": "위반 시 PnL(한도 도달)"
+    },
+    "accountMetrics": {
+      "balance": "잔액",
+      "equity": "에퀴티",
+      "margin": "증거금",
+      "freeMargin": "가용 증거금",
+      "marginLevel": "증거금 유지율",
+      "floatingPnL": "미실현 손익",
+      "profitPercent": "수익 %",
+      "dailyDrawdown": "일일 드로우다운",
+      "overallDrawdown": "전체 드로우다운",
+      "used": "사용",
+      "free": "가용",
+      "marginUsed": "사용 증거금",
+      "tradingDays": "거래 일수",
+      "phase": "단계",
+      "loss": "손실",
+      "challengeActive": "진행 중인 챌린지",
+      "workingTowardsPhase1": "1단계 완료를 향해 진행 중",
+      "workingTowardsPhase2": "2단계 완료를 향해 진행 중",
+      "phase1Complete": "1단계 완료",
+      "readyForPhase2": "2단계로 진행할 준비가 되었습니다",
+      "fundedAccount": "자금 지원 계정",
+      "challengeCompleted": "축하합니다! 챌린지를 완료했습니다",
+      "phaseProgression": "단계 진행",
+      "completePhase1": "1단계 완료",
+      "completePhase2": "2단계 완료",
+      "profit": "수익",
+      "days": "일",
+      "phase1": "1단계",
+      "phase2": "2단계",
+      "funded": "자금 지원 완료",
+      "dailyLimitViolated": "일일 한도 위반(잠금)",
+      "challengeFailed": "챌린지 실격 / 실패",
+      "accountLockedUntilTomorrow": "일일 손실 한도 위반으로 계정이 내일까지 잠금 처리되었습니다",
+      "accountViolatedRules": "계정이 챌린지 규칙을 위반했습니다",
+      "daysRemaining_one": "남은 {{count}}일",
+      "daysRemaining_other": "남은 {{count}}일"
+    }
+  },
+  "nav": {
+    "home": "홈",
+    "challenges": "챌린지",
+    "howItWorks": "작동 방식",
+    "scaling": "스케일링",
+    "rules": "규칙",
+    "faq": "자주 묻는 질문",
+    "contact": "문의하기",
+    "login": "로그인",
+    "getStarted": "시작하기",
+    "dashboard": "대시보드",
+    "tradingTerminal": "거래 터미널",
+    "buyChallenge": "챌린지 구매",
+    "myAccounts": "내 계정",
+    "accountDetails": "계정 상세",
+    "challengeProgress": "챌린지 진행 상황",
+    "ruleCompliance": "규칙 준수",
+    "tradeHistory": "거래 내역",
+    "analytics": "분석",
+    "payouts": "지급",
+    "notifications": "알림",
+    "profile": "프로필",
+    "support": "지원",
+    "overview": "개요",
+    "users": "사용자",
+    "accounts": "계정",
+    "riskMonitor": "리스크 모니터링",
+    "brokerServers": "브로커 서버",
+    "payments": "결제",
+    "violations": "위반",
+    "settings": "설정",
+    "website": "웹사이트",
+    "logout": "로그아웃",
+    "user": "사용자",
+    "adminPanel": "관리자 패널"
+  },
+  "status": {
+    "active": "활성",
+    "ACTIVE": "활성",
+    "passed": "통과",
+    "failed": "실패",
+    "suspended": "정지",
+    "funded": "자금 지원 완료",
+    "pending": "대기 중",
+    "approved": "승인됨",
+    "rejected": "거절됨",
+    "paid": "지급 완료",
+    "completed": "완료",
+    "refunded": "환불 완료",
+    "open": "오픈",
+    "in_progress": "처리 중",
+    "inprogress": "처리 중",
+    "resolved": "해결됨",
+    "closed": "클로즈",
+    "CLOSED": "클로즈",
+    "DAILY_LOCKED": "일일 잠금",
+    "DISQUALIFIED": "실격",
+    "phase1": "1단계",
+    "phase2": "2단계",
+    "paused": "일시 중지",
+    "daily_locked": "일일 잠금",
+    "dailylocked": "일일 잠금",
+    "Dailylocked": "일일 잠금",
+    "disqualified": "실격"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "관리자 대시보드",
+      "subtitle": "플랫폼 성과 및 활동 개요",
+      "stats": {
+        "totalTraders": "총 트레이더 수",
+        "activeChallenges": "진행 중인 챌린지",
+        "revenue": "수익",
+        "payouts": "지급",
+        "fundedAccounts": "자금 지원 계정",
+        "violationsToday": "오늘의 위반",
+        "changeThisMonth": "이번 달 +{{percent}}%"
+      },
+      "chart": {
+        "title": "수익 및 지급(최근 30일)",
+        "revenue": "수익",
+        "payouts": "지급",
+        "tooltip": {
+          "date": "날짜",
+          "revenue": "수익",
+          "payout": "지급"
+        }
+      },
+      "recentAccounts": {
+        "title": "최근 계정"
+      },
+      "recentViolations": {
+        "title": "최근 위반"
+      },
+      "viewAll": "모두 보기",
+      "noDataFound": "데이터를 찾을 수 없습니다",
+      "table": {
+        "account": "계정",
+        "platform": "플랫폼",
+        "phase": "단계",
+        "status": "상태",
+        "created": "생성일",
+        "type": "유형",
+        "description": "설명",
+        "time": "시간"
+      },
+      "quickActions": {
+        "manageUsers": "사용자 관리",
+        "manageChallenges": "챌린지 관리",
+        "reviewPayouts": "지급 검토",
+        "platformSettings": "플랫폼 설정"
+      },
+      "violations": {
+        "daily_drawdown": {
+          "type": "일일 손실",
+          "description": "일일 손실이 5%를 초과"
+        },
+        "overall_drawdown": {
+          "type": "전체 손실",
+          "description": "전체 손실이 10%를 초과"
+        },
+        "max_trading_days": {
+          "type": "최대 거래 일수",
+          "description": "거래 기간 종료"
+        },
+        "unknown": {
+          "type": "알 수 없음",
+          "description": "알 수 없는 위반"
+        }
+      }
+    },
+    "users": {
+      "title": "사용자 관리",
+      "subtitle": "플랫폼의 전체 사용자를 조회 및 관리",
+      "stats": {
+        "totalUsers": "총 사용자 수",
+        "traders": "트레이더",
+        "admins": "관리자",
+        "newThisWeek": "이번 주 신규"
+      },
+      "searchPlaceholder": "이름 또는 이메일로 검색...",
+      "filter": {
+        "role": "역할",
+        "allRoles": "모든 역할",
+        "traders": "트레이더",
+        "admins": "관리자"
+      },
+      "table": {
+        "user": "사용자",
+        "role": "역할",
+        "joined": "가입일",
+        "actions": "작업"
+      },
+      "roles": {
+        "user": "트레이더",
+        "admin": "관리자"
+      },
+      "actions": {
+        "viewDetails": "상세 보기",
+        "sendEmail": "이메일 보내기",
+        "makeAdmin": "관리자로 지정",
+        "makeTrader": "트레이더로 지정"
+      },
+      "dialog": {
+        "title": "사용자 상세",
+        "userId": "사용자 ID",
+        "role": "역할",
+        "firstName": "이름",
+        "lastName": "성",
+        "phone": "전화",
+        "country": "국가",
+        "joined": "가입일",
+        "noDetails": "사용자 상세 정보를 불러올 수 없습니다",
+        "error": "사용자 상세 정보를 불러오는 중 오류가 발생했습니다"
+      },
+      "emptyMessage": "사용자를 찾을 수 없습니다"
+    },
+    "accounts": {
+      "title": "계정 관리",
+      "subtitle": "모든 거래 계정을 조회 및 관리",
+      "stats": {
+        "totalAccounts": "총 계정 수",
+        "active": "진행 중",
+        "passed": "통과",
+        "funded": "자금 지원 완료",
+        "failed": "실패"
+      },
+      "searchPlaceholder": "계정 번호 또는 이메일로 검색...",
+      "filter": {
+        "status": "상태",
+        "phase": "단계",
+        "allStatus": "모든 상태",
+        "allPhases": "모든 단계",
+        "active": "진행 중",
+        "passed": "통과",
+        "funded": "자금 지원 완료",
+        "failed": "실패",
+        "suspended": "정지",
+        "phase1": "1단계",
+        "phase2": "2단계"
+      },
+      "table": {
+        "account": "계정",
+        "platform": "플랫폼",
+        "balance": "잔액",
+        "phase": "단계",
+        "status": "상태",
+        "created": "생성일",
+        "actions": "작업"
+      },
+      "actions": {
+        "viewDetails": "상세 보기",
+        "forcePass": "강제 통과",
+        "forceFail": "강제 실패",
+        "resetAccount": "계정 리셋",
+        "moveToFunded": "자금 지원으로 이동"
+      },
+      "dialog": {
+        "title": "계정 상세",
+        "accountId": "계정 ID",
+        "brokerLogin": "브로커 로그인",
+        "trader": "트레이더",
+        "platform": "플랫폼",
+        "challenge": "챌린지",
+        "phase": "단계",
+        "status": "상태",
+        "created": "생성일",
+        "initialBalance": "초기 잔액",
+        "currentBalance": "현재 잔액",
+        "equity": "에퀴티",
+        "profit": "손익",
+        "totalTrades": "총 거래 수",
+        "violations": "위반",
+        "phaseTransitions": "단계 전환",
+        "recentViolations": "최근 위반",
+        "error": "계정 상세 정보를 불러오는 중 오류가 발생했습니다",
+        "noDetails": "계정 상세 정보가 없습니다"
+      },
+      "emptyMessage": "계정을 찾을 수 없습니다"
+    },
+    "payouts": {
+      "title": "지급 관리",
+      "subtitle": "트레이더의 출금 요청을 검토 및 처리",
+      "stats": {
+        "pending": "대기 중",
+        "approved": "승인됨",
+        "totalPaid": "총 지급액",
+        "pendingRequests": "대기 중인 요청"
+      },
+      "searchPlaceholder": "트레이더 이메일로 검색...",
+      "filter": {
+        "status": "상태",
+        "allStatus": "모든 상태",
+        "pending": "대기 중",
+        "approved": "승인됨",
+        "paid": "지급 완료",
+        "rejected": "거절됨"
+      },
+      "table": {
+        "trader": "트레이더",
+        "amount": "금액",
+        "method": "방법",
+        "status": "상태",
+        "requested": "요청일",
+        "actions": "작업"
+      },
+      "actions": {
+        "markAsPaid": "지급 완료로 표시",
+        "paid": "지급 완료",
+        "rejected": "거절됨",
+        "rejecting": "거절 중..."
+      },
+      "emptyMessage": "출금 요청을 찾을 수 없습니다",
+      "dialog": {
+        "rejectTitle": "출금 요청 거절",
+        "rejectMessage": "{{trader}}의 {{amount}} 출금을 거절합니다",
+        "rejectReasonPlaceholder": "거절 사유...",
+        "cancel": "취소",
+        "rejectPayout": "출금 거절"
+      }
+    },
+    "payments": {
+      "title": "결제 관리",
+      "subtitle": "모든 챌린지 결제를 조회 및 관리",
+      "stats": {
+        "totalRevenue": "총 수익",
+        "completed": "완료",
+        "pending": "대기 중",
+        "refunded": "환불 완료",
+        "changeThisMonth": "이번 달 +{{percent}}%"
+      },
+      "searchPlaceholder": "이메일 또는 거래 ID로 검색...",
+      "filter": {
+        "status": "상태",
+        "allStatus": "모든 상태",
+        "completed": "완료",
+        "pending": "대기 중",
+        "failed": "실패",
+        "refunded": "환불 완료"
+      },
+      "table": {
+        "trader": "트레이더",
+        "amount": "금액",
+        "method": "방법",
+        "transactionId": "거래 ID",
+        "status": "상태",
+        "date": "날짜",
+        "actions": "작업"
+      },
+      "methods": {
+        "stripe": "신용/체크카드",
+        "internal": "내부",
+        "unknown": "알 수 없음"
+      },
+      "actions": {
+        "refund": "환불",
+        "refunded": "환불 완료"
+      },
+      "emptyMessage": "결제를 찾을 수 없습니다",
+      "refundTitle": "환불",
+      "refundConfirm": "이 결제를 환불하시겠습니까?",
+      "refundReason": "환불 사유(선택)",
+      "refundReasonPlaceholder": "환불 사유 입력...",
+      "cancel": "취소",
+      "confirmRefund": "환불 확정",
+      "refunding": "처리 중..."
+    },
+    "violations": {
+      "title": "규칙 위반",
+      "subtitle": "거래 규칙 위반을 확인 및 추적",
+      "stats": {
+        "totalViolations": "총 위반 수",
+        "fatalViolations": "중대 위반",
+        "warnings": "경고",
+        "today": "오늘"
+      },
+      "searchPlaceholder": "계정 또는 이메일로 검색...",
+      "filter": {
+        "violationType": "위반 유형",
+        "allTypes": "모든 유형",
+        "dailyDrawdown": "일일 손실",
+        "overallDrawdown": "전체 손실",
+        "maxTradingDays": "최대 거래 일수",
+        "newsTrading": "뉴스 거래",
+        "weekendHolding": "주말 보유",
+        "restrictedInstrument": "제한 종목",
+        "lotSize": "로트 크기",
+        "eaDetected": "EA 감지",
+        "consistency": "일관성",
+        "ruleBreak": "규칙 위반"
+      },
+      "table": {
+        "account": "계정",
+        "type": "유형",
+        "description": "설명",
+        "value": "값",
+        "fatal": "중대",
+        "time": "시간"
+      },
+      "types": {
+        "dailyDrawdown": "일일 손실",
+        "overallDrawdown": "전체 손실",
+        "maxTradingDays": "최대 거래 일수",
+        "newsTrading": "뉴스 거래",
+        "weekendHolding": "주말 보유",
+        "restrictedInstrument": "제한 종목",
+        "lotSize": "로트 크기",
+        "eaDetected": "EA 감지"
+      },
+      "severity": {
+        "fatal": "중대",
+        "warning": "경고"
+      },
+      "descriptions": {
+        "daily_drawdown": "일일 손실이 {{threshold}}%를 초과",
+        "overall_drawdown": "전체 손실이 {{threshold}}%를 초과",
+        "max_trading_days": "최대 거래 기간 종료",
+        "news_trading": "제한된 뉴스 시간대에 거래",
+        "weekend_holding": "주말에 포지션 보유",
+        "restricted_instrument": "제한 종목으로 거래",
+        "lot_size": "로트 크기 한도 초과",
+        "ea_detected": "Expert Advisor 감지"
+      },
+      "emptyMessage": "위반을 찾을 수 없습니다"
+    },
+    "coupons": {
+      "title": "쿠폰 관리",
+      "subtitle": "할인 쿠폰을 생성 및 관리",
+      "createCoupon": "쿠폰 생성",
+      "editCoupon": "쿠폰 편집",
+      "createNewCoupon": "새 쿠폰 생성",
+      "stats": {
+        "totalCoupons": "총 쿠폰 수",
+        "active": "활성",
+        "totalUses": "총 사용 횟수",
+        "expired": "만료됨"
+      },
+      "form": {
+        "couponCode": "쿠폰 코드",
+        "generate": "자동 생성",
+        "discountType": "할인 유형",
+        "percentage": "퍼센트",
+        "fixedAmount": "고정 금액",
+        "discountValue": "할인 값",
+        "maxUses": "최대 사용 횟수(선택)",
+        "validUntil": "유효기간(선택)",
+        "active": "활성",
+        "saving": "저장 중...",
+        "updateCoupon": "쿠폰 업데이트",
+        "createCoupon": "쿠폰 생성"
+      },
+      "table": {
+        "code": "코드",
+        "discount": "할인",
+        "usage": "사용 현황",
+        "validUntil": "유효기간",
+        "status": "상태",
+        "actions": "작업"
+      },
+      "status": {
+        "active": "활성",
+        "inactive": "비활성"
+      },
+      "noExpiry": "유효기간 없음",
+      "emptyMessage": "쿠폰을 찾을 수 없습니다"
+    },
+    "support": {
+      "title": "지원 티켓",
+      "subtitle": "지원 요청을 관리 및 답변",
+      "stats": {
+        "openTickets": "오픈 티켓",
+        "inProgress": "처리 중",
+        "resolved": "해결됨",
+        "today": "오늘",
+        "avgResponse": "평균 응답 시간"
+      },
+      "searchPlaceholder": "이메일 또는 제목으로 검색...",
+      "filter": {
+        "status": "상태",
+        "allStatus": "모든 상태",
+        "open": "오픈",
+        "inProgress": "처리 중",
+        "resolved": "해결됨",
+        "closed": "클로즈"
+      },
+      "table": {
+        "ticket": "티켓",
+        "category": "카테고리",
+        "priority": "우선순위",
+        "status": "상태",
+        "created": "생성일",
+        "actions": "작업"
+      },
+      "priority": {
+        "low": "낮음",
+        "medium": "중간",
+        "high": "높음"
+      },
+      "category": {
+        "technical": "기술",
+        "payout": "출금",
+        "account": "계정",
+        "payment": "결제",
+        "other": "기타"
+      },
+      "actions": {
+        "take": "담당하기",
+        "resolve": "해결"
+      },
+      "dialog": {
+        "from": "보낸 사람",
+        "writeResponse": "답변을 작성해 주세요...",
+        "close": "닫기",
+        "sending": "전송 중...",
+        "sendAndResolve": "전송하고 해결"
+      },
+      "emptyMessage": "티켓을 찾을 수 없습니다",
+      "subjects": {
+        "unableToLoginMT5": "MT5에 로그인할 수 없습니다",
+        "payoutRequestTakingTooLong": "출금 요청이 너무 오래 걸립니다",
+        "questionAboutScalingPlan": "스케일링 플랜 관련 질문",
+        "refundRequest": "환불 요청",
+        "challengeRulesClarification": "챌린지 규칙 확인"
+      }
+    },
+    "settings": {
+      "title": "플랫폼 설정",
+      "subtitle": "설정 및 연동 구성",
+      "saveChanges": "변경 사항 저장",
+      "settingsSaved": "설정을 저장했습니다",
+      "saveChange": "저장 중...",
+      "settingsSaveDescription": "설정이 성공적으로 저장되었습니다.",
+      "tabs": {
+        "general": "일반",
+        "branding": "브랜딩",
+        "payments": "결제",
+        "integrations": "연동",
+        "email": "이메일"
+      },
+      "general": {
+        "title": "일반 설정",
+        "platformName": "플랫폼 이름",
+        "supportEmail": "지원 이메일",
+        "maintenanceMode": "점검 모드",
+        "maintenanceModeDesc": "일시적으로 플랫폼 접근을 중지"
+      },
+      "branding": {
+        "title": "브랜드 설정",
+        "primaryColor": "기본 색상",
+        "secondaryColor": "보조 색상",
+        "logoUrl": "{{url}} 로고",
+        "logoUrlPlaceholder": "https://example.com/logo.png"
+      },
+      "payments": {
+        "title": "결제 설정",
+        "stripe": "Stripe",
+        "stripeDesc": "카드 결제 수단을 받습니다",
+        "stripeApiKey": "Stripe API Key",
+        "stripeApiKeyPlaceholder": "sk_live_...",
+        "paypal": "PayPal",
+        "paypalDesc": "PayPal 결제를 받습니다",
+        "cryptocurrency": "암호화폐",
+        "cryptocurrencyDesc": "BTC, ETH, USDT로 결제를 받습니다"
+      },
+      "integrations": {
+        "title": "거래 플랫폼 연동",
+        "mt4": "MetaTrader 4",
+        "mt4Desc": "클래식 MT4 거래 플랫폼",
+        "mt5": "MetaTrader 5",
+        "mt5Desc": "고급 MT5 거래 플랫폼",
+        "ctrader": "cTrader",
+        "ctraderDesc": "전문가용 cTrader 플랫폼",
+        "dxtrade": "DXTrade",
+        "dxtradeDesc": "DXTrade 거래 플랫폼",
+        "note": "참고: 보안을 위해 거래 플랫폼 API 키는 별도로 설정해야 합니다"
+      },
+      "email": {
+        "title": "이메일 템플릿",
+        "welcomeEmail": "환영 이메일",
+        "welcomeEmailDesc": "신규 사용자 가입 시 전송",
+        "challengePurchase": "챌린지 구매",
+        "challengePurchaseDesc": "챌린지 구매 시 전송",
+        "accountCredentials": "계정 로그인 정보",
+        "accountCredentialsDesc": "거래 계정 상세와 함께 전송",
+        "phasePassed": "단계 통과",
+        "phasePassedDesc": "트레이더가 단계를 통과했을 때 전송",
+        "accountFailed": "계정 실격",
+        "accountFailedDesc": "계정이 실격 처리되었을 때 전송",
+        "payoutApproved": "출금 승인",
+        "payoutApprovedDesc": "출금이 승인되었을 때 전송",
+        "editTemplate": "템플릿 편집"
+      }
+    },
+    "riskMonitor": {
+      "title": "리스크 모니터링",
+      "subtitle": "계정 리스크를 실시간으로 모니터링",
+      "refresh": "새로고침",
+      "riskLevels": {
+        "critical": "치명적 리스크",
+        "high": "높은 리스크",
+        "medium": "중간 리스크",
+        "low": "낮은 리스크"
+      },
+      "riskBadges": {
+        "critical": "치명",
+        "high": "높음",
+        "medium": "중간",
+        "low": "낮음"
+      },
+      "searchPlaceholder": "계정 번호 또는 트레이더로 검색...",
+      "table": {
+        "account": "계정",
+        "balance": "잔액",
+        "equity": "에퀴티",
+        "dailyDD": "일일 DD",
+        "maxDD": "최대 DD",
+        "riskLevel": "리스크 레벨",
+        "actions": "작업"
+      },
+      "confirmations": {
+        "emergencyClose": "이 계정의 모든 포지션을 청산하시겠습니까?",
+        "lockAccount": "이 계정을 잠그시겠습니까?"
+      },
+      "recentViolations": {
+        "title": "최근 위반",
+        "noViolations": "최근 위반이 없습니다",
+        "account": "계정"
+      }
+    },
+    "brokerServers": {
+      "title": "브로커 서버",
+      "subtitle": "거래 플랫폼 연결을 관리",
+      "addServer": "서버 추가",
+      "adding": "추가 중...",
+      "dialog": {
+        "title": "브로커 서버 추가",
+        "serverName": "서버 이름",
+        "serverNamePlaceholder": "예: Prop Capitals MT5 Demo",
+        "platform": "플랫폼",
+        "serverAddress": "서버 주소",
+        "serverAddressPlaceholder": "broker.server.com",
+        "port": "포트",
+        "managerLogin": "매니저 로그인",
+        "managerPassword": "매니저 비밀번호",
+        "apiKey": "API Key / Client ID",
+        "apiSecret": "API Secret",
+        "demoServer": "데모 서버"
+      },
+      "platforms": {
+        "mt4": "MetaTrader 4",
+        "mt5": "MetaTrader 5",
+        "ctrader": "cTrader",
+        "dxtrade": "DXTrade"
+      },
+      "status": {
+        "connected": "연결됨",
+        "error": "오류",
+        "notConnected": "연결되지 않음"
+      },
+      "badges": {
+        "demo": "데모"
+      },
+      "card": {
+        "platform": "플랫폼",
+        "timezone": "타임존",
+        "lastSync": "마지막 동기화"
+      },
+      "actions": {
+        "test": "테스트"
+      },
+      "empty": {
+        "title": "브로커 서버가 없습니다",
+        "description": "첫 브로커 서버를 추가하여 거래 계정 생성을 시작하세요"
+      }
+    },
+    "scaling": {
+      "title": "스케일링 관리",
+      "subtitle": "계정 확장 신청을 검토 및 처리",
+      "summary": {
+        "pendingReview": "검토 대기",
+        "readyToProcess": "처리 가능",
+        "completed": "완료"
+      },
+      "tabs": {
+        "pending": "대기 중",
+        "approved": "승인됨",
+        "completed": "완료",
+        "all": "전체"
+      },
+      "table": {
+        "trader": "트레이더",
+        "currentToNew": "현재 → 신규",
+        "profitSplit": "수익 분배",
+        "profitAchieved": "달성 수익",
+        "payoutCycles": "지급 사이클",
+        "status": "상태",
+        "actions": "작업",
+        "level": "레벨 {{current}} → {{new}}"
+      },
+      "status": {
+        "pending": "대기 중",
+        "approved": "승인됨",
+        "completed": "완료",
+        "rejected": "거절됨"
+      },
+      "actions": {
+        "approve": "승인",
+        "reject": "거절",
+        "process": "처리",
+        "processing": "처리 중...",
+        "approving": "승인 중...",
+        "rejecting": "거절 중..."
+      },
+      "emptyMessage": "확장 신청을 찾을 수 없습니다",
+      "dialog": {
+        "approveTitle": "확장 신청 승인",
+        "rejectTitle": "확장 신청 거절",
+        "currentSize": "현재 크기",
+        "newSize": "새 크기",
+        "newProfitSplit": "새 수익 분배",
+        "notes": "메모(선택)",
+        "notesPlaceholder": "메모 추가...",
+        "cancel": "취소"
+      }
+    },
+    "challenges": {
+      "title": "챌린지 관리",
+      "subtitle": "거래 챌린지를 생성 및 관리",
+      "createChallenge": "챌린지 생성",
+      "editChallenge": "챌린지 편집",
+      "createNewChallenge": "새 챌린지 생성",
+      "updateChallenge": "챌린지 업데이트",
+      "edit": "편집",
+      "saving": "저장 중...",
+      "inactive": "비활성",
+      "types": {
+        "one_phase": "1단계",
+        "two_phase": "2단계",
+        "instant_funding": "즉시 자금 지원"
+      },
+      "form": {
+        "challengeName": "챌린지 이름",
+        "challengeType": "챌린지 유형",
+        "onePhase": "1단계",
+        "twoPhase": "2단계",
+        "instantFunding": "즉시 자금 지원",
+        "platform": "플랫폼",
+        "accountSize": "계정 규모($)",
+        "price": "가격($)",
+        "phase1ProfitTarget": "1단계 수익 목표(%)",
+        "phase2ProfitTarget": "2단계 수익 목표(%)",
+        "dailyDrawdown": "일일 손실(%)",
+        "overallDrawdown": "전체 손실(%)",
+        "profitSplit": "수익 분배(%)",
+        "minTradingDays": "최소 거래 일수",
+        "minTradingDaysHint": "트레이더가 거래해야 하는 최소 일수",
+        "maxTradingDays": "최대 거래 일수",
+        "maxTradingDaysHint": "X일 후 챌린지 종료(무제한이면 비워두기)",
+        "tradingRules": "거래 규칙",
+        "newsTradingAllowed": "뉴스 거래 허용",
+        "weekendHolding": "주말 보유",
+        "ea": "EA",
+        "bots": "봇",
+        "eaBotsAllowed": "{{ea}}/{{bots}} 허용",
+        "active": "활성"
+      },
+      "card": {
+        "accountSize": "계정 규모",
+        "price": "가격",
+        "profitTarget": "수익 목표",
+        "drawdown": "손실",
+        "profitSplit": "수익 분배"
+      },
+      "deleteConfirmTitle": "챌린지 삭제",
+      "deleteConfirmMessage": "\"{{name}}\"을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다",
+      "deleteConfirmWarning": "비활성 챌린지만 삭제할 수 있습니다",
+      "cancel": "취소",
+      "confirmDelete": "챌린지 삭제",
+      "deleting": "삭제 중...",
+      "deleteSuccess": "챌린지가 삭제되었습니다",
+      "deleteSuccessDesc": "챌린지 삭제가 완료되었습니다",
+      "deleteErrorTitle": "챌린지를 삭제할 수 없습니다",
+      "deleteErrorMessage": "이 챌린지는 삭제할 수 없습니다",
+      "deleteErrorDesc": "기존 거래 계정과 연결되어 있어 삭제할 수 없습니다",
+      "understand": "확인"
+    }
+  },
+  "signIn": {
+    "title": "다시 오신 것을 환영합니다",
+    "subtitle": "거래 계정에 로그인",
+    "email": "이메일 주소",
+    "emailPlaceholder": "이메일 주소를 입력해 주세요",
+    "password": "비밀번호",
+    "passwordPlaceholder": "비밀번호를 입력해 주세요",
+    "rememberMe": "로그인 상태 유지",
+    "forgotPassword": "비밀번호를 잊으셨나요?",
+    "signInButton": "로그인",
+    "noAccount": "계정이 없으신가요?",
+    "createAccount": "계정 만들기",
+    "demoCredentials": "예: demo@the-bluehaven.com / demo1234",
+    "secureTrading": "안전한 거래",
+    "fundsProtected": "자금은 보호됩니다",
+    "securityDescription": "안심하고 거래하세요. 당사 플랫폼은 은행 수준의 보안으로 계정과 거래 데이터를 보호합니다.",
+    "errors": {
+      "invalidCredentials": "이메일 주소 또는 비밀번호가 올바르지 않습니다"
+    }
+  },
+  "signUp": {
+    "title": "계정 만들기",
+    "subtitle": "오늘부터 거래 여정을 시작하세요",
+    "otpTitle": "이메일 주소 확인",
+    "otpSubtitle": "전송된 6자리 코드를 입력해 주세요",
+    "firstName": "이름",
+    "firstNamePlaceholder": "존",
+    "lastName": "성",
+    "lastNamePlaceholder": "도",
+    "email": "이메일 주소",
+    "emailPlaceholder": "이메일 주소를 입력해 주세요",
+    "password": "비밀번호",
+    "passwordPlaceholder": "비밀번호 생성",
+    "confirmPassword": "비밀번호 확인",
+    "confirmPasswordPlaceholder": "비밀번호를 다시 입력해 주세요",
+    "createAccountButton": "계정 만들기",
+    "otpSentTo": "확인 코드를 보냈습니다:",
+    "otpLabel": "확인 코드",
+    "verifyOtpButton": "확인하고 계정 만들기",
+    "resendCode": "코드 재전송",
+    "resendIn": "{{seconds}}초 후 재전송",
+    "changeEmail": "이메일 주소 변경",
+    "hasAccount": "이미 계정이 있으신가요?",
+    "signIn": "로그인",
+    "joinTraders": "수천 명의 트레이더와 함께하세요",
+    "startJourney": "자금 지원 계정 여정 시작",
+    "description": "계정을 만들고 실제 자금의 프로 거래 계정에 접근하세요. 자신감 있게 거래하고 수익을 성장시키세요.",
+    "errors": {
+      "passwordsNotMatch": "비밀번호가 일치하지 않습니다",
+      "passwordTooShort": "비밀번호는 6자 이상이어야 합니다",
+      "registrationFailed": "등록에 실패했습니다. 다시 시도해 주세요",
+      "registrationSuccess": "등록이 완료되었습니다! 로그인해 주세요"
+    }
+  },
+  "faq": {
+    "helpCenter": "도움말 센터",
+    "title": "자주 묻는 질문",
+    "subtitle": "챌린지와 당사 플랫폼에 대한 일반적인 질문의 답을 찾아보세요",
+    "searchPlaceholder": "답변 검색...",
+    "questions": "질문",
+    "stillHaveQuestions": "아직 질문이 있으신가요?",
+    "supportDescription": "지원팀이 24/7 도와드립니다",
+    "contactSupport": "지원팀에 문의",
+    "categories": {
+      "gettingStarted": {
+        "title": "시작하기",
+        "faqs": {
+          "whatIsPropCapitals": {
+            "q": "Prop Capitals란 무엇인가요?",
+            "a": "Prop Capitals는 트레이더에게 당사 자금으로 거래할 수 있는 자금 지원 계정을 제공하는 프로프 트레이딩 회사입니다. 평가에 합격하면 최대 90%의 수익을 받을 수 있습니다. 자금 지원 계정으로 거래할 때는 본인 자금이 위험에 노출되지 않습니다."
+          },
+          "howToStartChallenge": {
+            "q": "챌린지는 어떻게 시작하나요?",
+            "a": "챌린지 페이지에서 원하는 계정 규모와 평가 유형을 선택하고 결제하면, 몇 분 내로 거래 인증 정보가 전달됩니다. 인증 정보를 받는 즉시 거래를 시작할 수 있습니다."
+          },
+          "tradingPlatforms": {
+            "q": "어떤 거래 플랫폼을 지원하나요?",
+            "a": "MetaTrader 4(MT4), MetaTrader 5(MT5), cTrader, DXTrade를 지원합니다. 계정 설정 시 원하는 플랫폼을 선택할 수 있습니다."
+          },
+          "credentialsTiming": {
+            "q": "인증 정보는 얼마나 빨리 받을 수 있나요?",
+            "a": "거래 인증 정보는 결제 확인 후 일반적으로 5분 이내에 전송됩니다. 서버, 계정 번호, 비밀번호 등의 로그인 상세가 포함된 이메일을 받게 됩니다."
+          }
+        }
+      },
+      "tradingRules": {
+        "title": "거래 규칙",
+        "faqs": {
+          "profitTarget": {
+            "q": "수익 목표는 무엇인가요?",
+            "a": "2단계 평가의 경우: 1단계는 8%, 2단계는 5%의 수익이 필요합니다. 1단계 평가는 10%가 목표입니다. 즉시 자금 지원에는 챌린지 단계의 수익 목표가 없습니다."
+          },
+          "drawdownRules": {
+            "q": "드로우다운(손실) 규칙은 무엇인가요?",
+            "a": "일일 드로우다운은 해당일 시작 잔액의 5%로 제한됩니다. 전체 드로우다운은 도달한 최고 잔액(트레일링) 대비 10%로 제한됩니다. 준수해야 하는 손실 규칙은 이것이 전부입니다."
+          },
+          "timeLimit": {
+            "q": "챌린지 달성에 시간 제한이 있나요?",
+            "a": "아니요. 최대 시간 제한은 없습니다. 수익 목표에 도달할 때까지 원하는 만큼 시간을 사용할 수 있습니다. 다만, 각 단계를 통과하려면 최소 4거래일이 필요합니다."
+          },
+          "newsTrading": {
+            "q": "중요 뉴스 시간에 거래할 수 있나요?",
+            "a": "네. 뉴스 거래는 모든 챌린지에서 허용됩니다. 고영향 뉴스 시간에도 제한이나 페널티 없이 거래할 수 있습니다."
+          },
+          "weekendHolding": {
+            "q": "주말을 넘겨 보유할 수 있나요?",
+            "a": "네. 주말을 넘겨 포지션을 보유할 수 있습니다. 어떤 챌린지 유형에서도 오버나이트/주말 보유 제한이 없습니다."
+          },
+          "expertAdvisors": {
+            "q": "EA(자동매매)는 허용되나요?",
+            "a": "네. EA 및 자동매매 시스템을 사용할 수 있습니다. 다만 플랫폼 취약점을 악용하거나, 레이턴시 아비트라지 및 틱 스캘핑과 같은 방식에 관여해서는 안 됩니다."
+          }
+        }
+      },
+      "violations": {
+        "title": "위반 및 실격",
+        "faqs": {
+          "whatHappensIfViolate": {
+            "q": "규칙을 위반하면 어떻게 되나요?",
+            "a": "엄격 규칙(일일 또는 전체 손실 한도)을 위반하면 계정이 자동으로 비활성화됩니다. 위반 상세가 포함된 이메일을 받게 되며, 이후 리셋 구매 또는 새 챌린지 시작이 가능합니다."
+          },
+          "freeRetry": {
+            "q": "무료로 재도전할 수 있나요?",
+            "a": "네! 실격되기 전에 챌린지에서 8% 수익을 달성했다면 무료 재도전 자격이 주어집니다. 추가 비용 없이 다시 도전할 수 있습니다."
+          },
+          "resetAccount": {
+            "q": "계정을 리셋할 수 있나요?",
+            "a": "네. 챌린지에 실패한 경우 할인된 가격으로 리셋을 구매할 수 있습니다. 동일한 계정 규모로 다시 시작할 수 있으며, 리셋 가격은 계정 규모에 따라 달라집니다."
+          },
+          "tradingDay": {
+            "q": "거래일로 계산되는 기준은 무엇인가요?",
+            "a": "거래일은 2분 이상 열린 거래를 최소 1건 보유한 날을 의미합니다. 각 단계를 통과하려면 최소 4거래일이 필요합니다."
+          }
+        }
+      },
+      "payouts": {
+        "title": "출금 및 수익",
+        "faqs": {
+          "profitSplit": {
+            "q": "수익 분배는 어떻게 되나요?",
+            "a": "수익 분배는 소형 계정에서 80%로 시작하며, 더 큰 계정 또는 스케일링 프로그램 진행에 따라 최대 90%까지 증가합니다. 일관성을 증명하면 분배율이 올라갑니다."
+          },
+          "payoutFrequency": {
+            "q": "출금은 얼마나 자주 신청할 수 있나요?",
+            "a": "출금은 2주마다 처리됩니다. 수익이 있다면 14일마다 출금 신청이 가능합니다. 첫 출금은 자금 지원 계정을 받은 후 14일 뒤부터 가능합니다."
+          },
+          "paymentMethods": {
+            "q": "출금 방법은 무엇이 있나요?",
+            "a": "은행 송금, 암호화폐(BTC, ETH, USDT), PayPal, Wise 송금을 지원합니다. 모든 출금 방식은 수수료가 없습니다."
+          },
+          "minimumPayout": {
+            "q": "최소 출금액이 있나요?",
+            "a": "최소 출금액은 $50입니다. 상한은 없으며, 원하면 수익 전액을 출금할 수 있습니다."
+          },
+          "payoutProcessing": {
+            "q": "출금 처리에는 얼마나 걸리나요?",
+            "a": "출금은 승인 후 보통 24~48영업시간 내에 처리됩니다. 은행 송금의 경우 입금까지 추가로 2~5영업일이 걸릴 수 있습니다."
+          }
+        }
+      },
+      "scaling": {
+        "title": "스케일링 플랜",
+        "faqs": {
+          "howScalingWorks": {
+            "q": "스케일링 플랜은 어떻게 작동하나요?",
+            "a": "자금 지원 계정에서 10% 수익을 달성하고 2번의 출금 사이클을 완료할 때마다 계정 규모가 25% 증가합니다. 최대 $2,000,000까지 거래 자금을 확장할 수 있습니다."
+          },
+          "profitSplitScaling": {
+            "q": "스케일하면 수익 분배는 어떻게 되나요?",
+            "a": "스케일링에 따라 수익 분배율도 올라갑니다. 80%에서 시작해 더 높은 레벨에서 최대 90%에 도달할 수 있습니다. 각 스케일링 레벨에서 최대 분배율에 가까워집니다."
+          },
+          "scalingConditions": {
+            "q": "스케일링 조건이 있나요?",
+            "a": "스케일링 자격을 얻으려면 최소 10% 수익 달성, 최소 2회 출금 사이클 완료, 평가 기간 동안 양호한 리스크 관리 유지가 필요합니다."
+          }
+        }
+      },
+      "account": {
+        "title": "계정 관리",
+        "faqs": {
+          "refund": {
+            "q": "환불을 신청할 수 있나요?",
+            "a": "거래를 전혀 하지 않은 경우에 한해, 구매 후 14일 이내에는 환불이 가능합니다. 거래 활동이 시작되면 평가가 시작되므로 환불이 불가능합니다."
+          },
+          "multipleAccounts": {
+            "q": "여러 계정을 가질 수 있나요?",
+            "a": "네. 여러 챌린지 계정 및 자금 지원 계정을 동시에 보유할 수 있습니다. 단, 서로 다른 계정 간 카피 트레이딩으로 동일 전략을 사용하는 것은 허용되지 않습니다."
+          },
+          "weekendAccount": {
+            "q": "주말에는 계정이 어떻게 되나요?",
+            "a": "주말에도 계정은 활성 상태입니다. 주말을 넘겨 포지션을 보유할 수 있으며, 드로우다운 계산도 정상적으로 계속됩니다. 시장은 닫혀 있지만 계정 모니터링은 유지됩니다."
+          },
+          "contactSupport": {
+            "q": "지원팀에는 어떻게 연락하나요?",
+            "a": "24/7 라이브 채팅, support@the-bluehaven.com 이메일, 또는 대시보드 내 지원 티켓을 통해 연락할 수 있습니다."
+          }
+        }
+      }
+    }
+  },
+  "contact": {
+    "support24": "24/7 지원",
+    "title": "문의하기",
+    "subtitle": "질문이 있으신가요? 저희가 도와드릴게요. 연락 주시면 가능한 한 빠르게 답변드립니다.",
+    "contactMethods": {
+      "emailSupport": {
+        "title": "이메일 지원",
+        "description": "일반 문의 또는 상세 문의용",
+        "contact": "support@the-bluehaven.com"
+      },
+      "liveChat": {
+        "title": "라이브 채팅",
+        "description": "팀으로부터 즉시 답변을 받을 수 있습니다",
+        "contact": "24/7 이용 가능"
+      },
+      "responseTime": {
+        "title": "응답 시간",
+        "description": "모든 문의의 평균 응답 시간",
+        "contact": "24시간 이내"
+      }
+    },
+    "contactInformation": "연락처 정보",
+    "email": "이메일 주소",
+    "address": "주소",
+    "website": "웹사이트",
+    "workingHours": "운영 시간",
+    "followUs": "팔로우",
+    "liveChatTitle": "라이브 채팅",
+    "liveChatDescription": "지금 도움이 필요하신가요? 라이브 채팅 지원은 언제든 이용할 수 있습니다.",
+    "startChat": "채팅 시작",
+    "sendMessage": "메시지 보내기",
+    "formDescription": "아래 양식을 작성해 주세요. 24시간 이내에 답변드립니다.",
+    "fullName": "성명",
+    "fullNamePlaceholder": "존 도",
+    "emailPlaceholder": "john@example.com",
+    "category": "카테고리",
+    "selectCategory": "카테고리 선택",
+    "categories": {
+      "general": "일반 문의",
+      "account": "계정 문제",
+      "payment": "결제/청구",
+      "payout": "출금 요청",
+      "technical": "기술 지원",
+      "other": "기타"
+    },
+    "subject": "제목",
+    "subjectPlaceholder": "무엇을 도와드릴까요?",
+    "message": "메시지",
+    "messagePlaceholder": "질문 또는 문제에 대한 자세한 내용을 작성해 주세요...",
+    "sendMessageButton": "보내기",
+    "messageSent": "전송되었습니다!",
+    "thankYouMessage": "문의해 주셔서 감사합니다. 24시간 이내에 답변드리겠습니다.",
+    "sendAnotherMessage": "다른 메시지 보내기"
+  },
+  "howItWorks": {
+    "journeyBadge": "자금 지원까지의 여정",
+    "title": "작동 방식",
+    "subtitle": "3가지 간단한 단계로 자금 지원을 받고, 당사 자금으로 수익을 만들기 시작하세요",
+    "step": "단계",
+    "phases": {
+      "purchaseChallenge": {
+        "title": "챌린지 구매",
+        "description": "원하는 계정 규모와 평가 유형을 선택하고 안전하게 결제하여 거래 인증 정보를 즉시 받습니다.",
+        "details": {
+          "selectAccountSize": "$10K~$200K 계정 규모 선택",
+          "chooseType": "1단계 / 2단계 / 즉시 자금 지원 선택",
+          "receiveCredentials": "몇 분 내 인증 정보 수신",
+          "startTrading": "바로 거래 시작"
+        }
+      },
+      "passEvaluation": {
+        "title": "평가 통과",
+        "description": "수익 목표를 달성하면서 리스크 관리 규칙을 준수해 거래 실력을 증명합니다.",
+        "details": {
+          "reachProfitTarget": "수익 목표 8%(1단계) 달성",
+          "maintainDailyDrawdown": "일일 손실 한도 5% 유지",
+          "maintainOverallDrawdown": "전체 손실 한도 10% 유지",
+          "tradeMinimumDays": "최소 4일 거래"
+        }
+      },
+      "getFunded": {
+        "title": "자금 지원 받기",
+        "description": "합격 후 실제 자금이 제공되는 자금 지원 계정을 받습니다. 자신감 있게 거래하고 수익을 출금할 수 있습니다.",
+        "details": {
+          "tradeWithCapital": "당사 자금으로 거래",
+          "keepProfits": "수익 최대 90% 수령",
+          "biWeeklyPayout": "격주 출금 스케줄",
+          "scaleUp": "최대 $2,000,000까지 스케일"
+        }
+      }
+    },
+    "rules": {
+      "badge": "거래 규칙",
+      "title": "모든 단계에서 명확한 규칙",
+      "subtitle": "평가 전 단계에서 투명하고 일관된 규칙",
+      "rule": "규칙",
+      "phase1": "1단계",
+      "phase2": "2단계",
+      "funded": "자금 지원 후",
+      "profitTarget": {
+        "title": "수익 목표",
+        "description": "달성해야 하는 수익률",
+        "funded": "목표 없음"
+      },
+      "dailyDrawdown": {
+        "title": "일일 손실",
+        "description": "허용되는 최대 일일 손실"
+      },
+      "overallDrawdown": {
+        "title": "전체 손실",
+        "description": "최고 잔액 대비 최대 손실"
+      },
+      "minTradingDays": {
+        "title": "최소 거래 일수",
+        "description": "필요한 최소 거래 일수",
+        "phase1": "4일",
+        "phase2": "4일",
+        "funded": "없음"
+      },
+      "timeLimit": {
+        "title": "시간 제한",
+        "description": "최대 시간 제한 없음",
+        "phase1": "무제한",
+        "phase2": "무제한",
+        "funded": "무제한"
+      },
+      "profitSplit": {
+        "title": "수익 분배",
+        "description": "트레이더 수익 배분",
+        "funded": "최대 90%"
+      }
+    },
+    "allowedTrading": {
+      "badge": "거래 자유",
+      "title": "허용되는 사항",
+      "subtitle": "최소한의 제한으로, 당신의 스타일대로 거래하세요",
+      "allTradingStyles": {
+        "title": "모든 거래 스타일",
+        "desc": "스캘핑, 데이트레이딩, 스윙"
+      },
+      "newsTrading": {
+        "title": "뉴스 거래",
+        "desc": "고영향 뉴스 시간대 거래"
+      },
+      "weekendHolding": {
+        "title": "주말 보유",
+        "desc": "주말을 넘겨 포지션 보유"
+      },
+      "expertAdvisors": {
+        "title": "EA(자동매매)",
+        "desc": "자동매매 시스템 사용"
+      },
+      "allMajorPairs": {
+        "title": "주요 종목 전체",
+        "desc": "FX, 지수, 원자재, 암호자산"
+      },
+      "anyStrategy": {
+        "title": "모든 전략",
+        "desc": "헤징, 그리드 등"
+      },
+      "copyTrading": {
+        "title": "카피 트레이딩",
+        "desc": "본인 다른 계정에서 복사"
+      },
+      "multipleAccounts": {
+        "title": "여러 계정",
+        "desc": "다수 챌린지 동시 진행"
+      }
+    },
+    "cta": {
+      "title": "시작할 준비가 되셨나요?",
+      "subtitle": "자금 지원을 받은 수천 명의 트레이더와 함께 오늘 여정을 시작하세요",
+      "viewChallenges": "챌린지 보기"
+    }
+  },
+  "challenges": {
+    "badge": "자금 지원으로 가는 길 선택",
+    "title": "챌린지 선택",
+    "subtitle": "평가 유형과 계정 규모를 선택하고 자금 지원 거래 여정을 시작하세요",
+    "typeLabels": {
+      "onePhase": "1단계",
+      "twoPhase": "2단계",
+      "instant": "즉시"
+    },
+    "types": {
+      "onePhase": {
+        "title": "1단계 챌린지",
+        "description": "수익 목표 10%의 단일 평가 단계. 더 빠른 자금 지원 루트."
+      },
+      "twoPhase": {
+        "title": "2단계 챌린지",
+        "description": "표준 평가: 1단계(8%)와 2단계(5%). 가장 인기 있는 선택."
+      },
+      "instantFunding": {
+        "title": "즉시 자금 지원",
+        "description": "평가를 건너뛰고 바로 자금으로 거래를 시작."
+      }
+    },
+    "rules": {
+      "title": "챌린지 규칙 요약",
+      "phase1Target": "1단계 목표",
+      "phase2Target": "2단계 목표",
+      "dailyDrawdown": "일일 손실",
+      "maxDrawdown": "최대 손실",
+      "minTradingDays": "최소 거래 일수",
+      "timeLimit": "시간 제한",
+      "fourDays": "4일",
+      "unlimited": "무제한"
+    },
+    "card": {
+      "mostPopular": "가장 인기",
+      "accountSize": "계정 규모",
+      "phase1": "1단계",
+      "phase2": "2단계",
+      "dailyDD": "일일 손실",
+      "maxDD": "최대 손실",
+      "profitSplit": "수익 분배",
+      "getStarted": "시작하기"
+    },
+    "comparison": {
+      "title": "모든 챌린지 비교",
+      "accountSize": "계정 규모",
+      "price": "가격",
+      "phase1": "1단계",
+      "phase2": "2단계",
+      "dailyDD": "일일 손실",
+      "maxDD": "최대 손실",
+      "profitSplit": "수익 분배",
+      "select": "선택"
+    },
+    "allChallengesInclude": {
+      "title": "모든 챌린지 포함 사항",
+      "subtitle": "모든 챌린지에는 다음 기능이 포함됩니다",
+      "features": {
+        "unlimitedTrading": "거래 기간 무제한",
+        "allMajorPairs": "주요 FX 페어, 지수, 원자재 거래",
+        "weekendHolding": "주말 보유 가능",
+        "newsTrading": "중요 뉴스 시간 거래 가능",
+        "expertAdvisors": "EA(자동매매) 사용 가능",
+        "biWeeklyPayouts": "격주 출금",
+        "support24": "24/7 지원",
+        "analyticsDashboard": "실시간 분석 대시보드"
+      }
+    },
+    "whyChoose": {
+      "title": "왜 Prop Capitals인가요?",
+      "subtitle": "당사가 선택되는 이유",
+      "transparentRules": {
+        "title": "투명한 규칙",
+        "desc": "숨겨진 조건이나 예기치 않은 실격 없음"
+      },
+      "fastPayouts": {
+        "title": "빠른 출금",
+        "desc": "24~48시간 내 수익 수령"
+      },
+      "scaleTo2M": {
+        "title": "$2M까지 스케일",
+        "desc": "스케일링 플랜으로 계정 성장"
+      },
+      "bestSupport": {
+        "title": "최고의 지원",
+        "desc": "전담 팀 24/7 지원"
+      }
+    },
+    "faq": {
+      "title": "자주 묻는 질문",
+      "timeLimit": {
+        "q": "챌린지를 달성하는 데 얼마나 걸리나요?",
+        "a": "시간 제한은 없습니다. 리스크 규칙을 준수하면서 수익 목표를 달성할 때까지 자유롭게 거래할 수 있습니다."
+      },
+      "newsTrading": {
+        "q": "중요 뉴스 시간에 거래할 수 있나요?",
+        "a": "네. 뉴스 거래는 모든 챌린지에서 완전히 허용됩니다. 제한이 없습니다."
+      },
+      "ifFail": {
+        "q": "실패하면 어떻게 되나요?",
+        "a": "할인된 가격으로 리셋을 구매하거나 새 챌린지를 시작할 수 있습니다. 실패 전 8% 수익을 달성했다면 무료 재도전도 제공합니다."
+      },
+      "payoutSpeed": {
+        "q": "출금은 얼마나 빠른가요?",
+        "a": "출금은 승인 후 24~48시간 내 처리되며, 선택한 방법으로 수령할 수 있습니다."
+      }
+    },
+    "compareTableTitle": "모든 챌린지 비교",
+    "noChallenges": "도전 과제 없음"
+  },
+  "scalingPlan": {
+    "badge": "무제한 성장 잠재력",
+    "title": "최대",
+    "subtitle": "지속적인 실적에 따라 거래 자금을 확장하세요. 각 레벨에서 더 큰 계정과 더 높은 수익 분배가 해제됩니다.",
+    "startJourney": "지금 시작하기",
+    "stats": {
+      "maxAccountSize": "최대 계정 규모",
+      "maxProfitSplit": "최대 수익 분배",
+      "scalingLevels": "스케일링 레벨",
+      "growthPerLevel": "레벨당 성장"
+    },
+    "benefits": {
+      "badge": "혜택",
+      "title": "왜 우리와 함께 스케일하나요?",
+      "subtitle": "당사의 스케일링 프로그램은 꾸준한 트레이더에게 더 큰 기회로 보답합니다.",
+      "accountGrowth": {
+        "title": "계정 규모 +25%",
+        "desc": "스케일링 각 레벨마다 계정 규모가 25% 증가합니다."
+      },
+      "profitSplit": {
+        "title": "최대 90% 수익 분배",
+        "desc": "스케일할수록 수익 분배율이 올라갑니다."
+      },
+      "noFees": {
+        "title": "추가 수수료 없음",
+        "desc": "추가 비용 없이 계정을 스케일할 수 있습니다."
+      },
+      "sameRules": {
+        "title": "동일한 거래 규칙",
+        "desc": "여정 전 기간 동안 일관된 규칙이 적용됩니다."
+      },
+      "scaleTo2M": {
+        "title": "$2M까지 스케일",
+        "desc": "거래 자금을 최대 200만 달러까지 확장할 수 있습니다."
+      },
+      "automaticUpgrades": {
+        "title": "자동 업그레이드",
+        "desc": "요건을 충족하면 즉시 자동 업그레이드됩니다."
+      }
+    },
+    "howToScale": {
+      "badge": "프로세스",
+      "title": "스케일링 작동 방식",
+      "achieveProfit": {
+        "title": "수익 목표 달성",
+        "description": "자금 지원 계정에서 최소 10%의 수익을 달성합니다."
+      },
+      "completePayouts": {
+        "title": "출금 사이클 완료",
+        "description": "최소 2회의 출금 사이클을 완료합니다."
+      },
+      "automaticUpgrade": {
+        "title": "자동 업그레이드",
+        "description": "계정이 다음 레벨로 자동 업그레이드됩니다."
+      }
+    },
+    "roadmap": {
+      "badge": "로드맵",
+      "title": "200만 달러로 가는 길",
+      "subtitle": "각 레벨에서 계정이 어떻게 성장하는지 확인하세요.",
+      "start": "시작",
+      "max": "최대",
+      "level": "레벨",
+      "split": "분배",
+      "ultimateGoal": "최종 목표",
+      "withProfitSplit": "수익 분배 90% 포함",
+      "startScalingNow": "지금 스케일 시작하기"
+    },
+    "requirements": {
+      "badge": "요건",
+      "title": "스케일에 필요한 조건",
+      "passEvaluation": "평가 통과",
+      "profitAndPayouts": "수익 10% + 출금 2회",
+      "profit10": {
+        "title": "수익 10%",
+        "desc": "자금 지원 계정에서 10% 수익을 달성합니다."
+      },
+      "payouts2": {
+        "title": "출금 2회",
+        "desc": "최소 2회의 출금 사이클을 완료합니다."
+      },
+      "consistency": {
+        "title": "일관성",
+        "desc": "안정적인 거래 활동을 유지합니다."
+      },
+      "noViolations": {
+        "title": "위반 없음",
+        "desc": "해당 기간 동안 규칙 위반이 없어야 합니다."
+      }
+    },
+    "ctaSection": {
+      "title": "스케일할 준비가 되셨나요?",
+      "tradingCareer": "당신의 트레이딩 커리어를 다음 단계로.",
+      "subtitle": "어떤 계정 규모에서든 시작해 거래 자금을 200만 달러까지 스케일해 보세요.",
+      "getStartedNow": "지금 시작하기",
+      "footer": "$99부터 시작 • 최대 $2M까지 스케일 • 최대 90% 수익 분배"
+    }
+  },
+  "payoutsPage": {
+    "badge": "빠르고 신뢰할 수 있는 출금",
+    "title": "번 만큼 받아가세요",
+    "subtitle": "번거로움 없이 빠르게 출금. 숨은 수수료 없이, 지연 없이, 복잡함 없이.",
+    "stats": {
+      "totalPaidOut": "누적 지급액",
+      "payoutsProcessed": "처리된 출금 건수",
+      "avgProcessing": "평균 처리 시간",
+      "payoutFees": "출금 수수료"
+    },
+    "profitSharing": {
+      "badge": "수익 분배",
+      "title": "최대 90% 수익을 받으세요",
+      "subtitle": "경쟁력 있는 수익 분배로 성공한 트레이더에게 더 크게 보상합니다.",
+      "accountSize": "계정 규모",
+      "profitSplit": "수익 분배",
+      "best": "최고",
+      "tiers": {
+        "tier1": "$10K - $25K",
+        "tier2": "$50K",
+        "tier3": "$100K+",
+        "tier4": "스케일 이후"
+      }
+    },
+    "withdrawalOptions": {
+      "badge": "출금 옵션",
+      "title": "다양한 출금 방법",
+      "subtitle": "당신에게 가장 적합한 결제 방법을 선택할 수 있습니다.",
+      "processing": "처리 시간",
+      "fee": "수수료",
+      "minimum": "최소 금액",
+      "methods": {
+        "bankWire": "은행 송금",
+        "cryptocurrency": "암호자산",
+        "paypal": "PayPal",
+        "wiseTransfer": "Wise 송금",
+        "time": {
+          "businessDays": "2~5영업일",
+          "hours24": "24시간",
+          "businessDays12": "1~2영업일"
+        }
+      }
+    },
+    "howItWorks": {
+      "title": "출금 절차",
+      "requestPayout": {
+        "title": "출금 신청",
+        "desc": "대시보드에서 신청을 제출합니다."
+      },
+      "verification": {
+        "title": "확인",
+        "desc": "거래 활동과 수익을 확인합니다."
+      },
+      "processing": {
+        "title": "처리",
+        "desc": "출금은 24~48시간 이내 처리됩니다."
+      },
+      "receiveFunds": {
+        "title": "수령",
+        "desc": "선택한 방법으로 자금을 받습니다."
+      }
+    },
+    "recentPayouts": {
+      "badge": "실시간 업데이트",
+      "title": "최근 출금",
+      "subtitle": "진짜 트레이더에게 진짜 출금. 성공한 자금 지원 트레이더 커뮤니티에 참여하세요."
+    },
+    "payoutTerms": {
+      "title": "출금 조건",
+      "biWeekly": "격주 출금 스케줄(14일마다)",
+      "minimumAmount": "최소 출금액은 $50입니다",
+      "noMaximum": "출금 상한은 없습니다",
+      "noFees": "어떤 방법이든 출금 수수료는 무료입니다",
+      "firstPayout": "첫 출금은 자금 지원 후 14일부터 가능합니다",
+      "kycRequired": "첫 출금에는 KYC(본인 확인)가 필요합니다",
+      "profitSplitRange": "수익 분배는 80%~90%입니다",
+      "scaleUp": "스케일하여 수익 분배율을 올리세요"
+    },
+    "cta": {
+      "title": "오늘부터 수익을 만드세요",
+      "subtitle": "이미 Prop Capitals에서 수익을 내고 있는 수천 명의 자금 지원 트레이더와 함께하세요.",
+      "getFundedNow": "지금 자금 지원 받기"
+    }
+  },
+  "rules": {
+    "badge": "투명하고 공정하게",
+    "title": "거래 규칙",
+    "subtitle": "성공을 위해 설계된 명확하고 간단한 규칙. 숨겨진 조건이나 예기치 않은 실격은 없습니다.",
+    "mainRules": {
+      "profitTarget": {
+        "title": "수익 목표",
+        "description": "각 단계를 통과하기 위해 필요한 수익률",
+        "funded": "목표 없음"
+      },
+      "dailyDrawdown": {
+        "title": "일일 손실",
+        "description": "하루(1거래일) 동안 허용되는 최대 손실"
+      },
+      "maximumDrawdown": {
+        "title": "최대 손실",
+        "description": "최고 잔액 대비 최대 누적 손실"
+      },
+      "minTradingDays": {
+        "title": "최소 거래 일수",
+        "description": "실질적으로 거래해야 하는 최소 일수",
+        "phase1": "4일",
+        "phase2": "4일",
+        "funded": "없음"
+      },
+      "maxTradingPeriod": {
+        "title": "최대 거래 기간",
+        "description": "챌린지 달성 시간 제한",
+        "phase1": "무제한",
+        "phase2": "무제한",
+        "funded": "무제한"
+      },
+      "profitSplit": {
+        "title": "수익 분배",
+        "description": "자금 지원 계정에서 당신의 수익 몫",
+        "funded": "최대 90%"
+      }
+    },
+    "drawdownExplanation": {
+      "title": "드로우다운 이해하기",
+      "subtitle": "가장 중요한 규칙",
+      "dailyDrawdown": {
+        "title": "일일 손실(5%)",
+        "description": "하루에 허용되는 최대 손실입니다. 당일 시작 잔액을 기준으로 계산되며 서버 시간 자정에 리셋됩니다.",
+        "example": "예:",
+        "exampleText": "잔액이 $50,000라면 일일 손실 한도는 $2,500입니다."
+      },
+      "maximumDrawdown": {
+        "title": "최대 손실(10%)",
+        "description": "도달한 최고 잔액 대비 최대 손실입니다. 에퀴티 피크를 추적하는 트레일링 방식입니다.",
+        "example": "예:",
+        "exampleText": "최고 잔액이 $55,000이라면 최대 손실 라인은 $49,500입니다."
+      }
+    },
+    "allowedActions": {
+      "title": "허용되는 행위",
+      "subtitle": "당신의 스타일로 자유롭게 거래하세요",
+      "allTradingStyles": {
+        "title": "모든 거래 스타일",
+        "desc": "스캘핑, 데이트레이딩, 스윙"
+      },
+      "newsTrading": {
+        "title": "뉴스 거래",
+        "desc": "고영향 뉴스 시간대 거래"
+      },
+      "weekendHolding": {
+        "title": "주말 보유",
+        "desc": "주말을 넘겨 포지션 보유"
+      },
+      "expertAdvisors": {
+        "title": "EA(자동매매)",
+        "desc": "자동매매 봇 사용"
+      },
+      "hedging": {
+        "title": "헤징",
+        "desc": "반대 포지션 보유"
+      },
+      "allInstruments": {
+        "title": "전체 종목",
+        "desc": "FX, 지수, 원자재, 암호자산"
+      },
+      "anyLotSize": {
+        "title": "임의의 로트 크기",
+        "desc": "최소/최대 로트 제한 없음"
+      },
+      "copyTrading": {
+        "title": "카피 트레이딩",
+        "desc": "본인 계정 간 복사"
+      }
+    },
+    "prohibitedActions": {
+      "title": "금지 행위",
+      "subtitle": "계정 무효화로 이어질 수 있는 행위",
+      "latencyArbitrage": {
+        "title": "레이턴시 아비트라지",
+        "desc": "가격 지연을 이용한 거래"
+      },
+      "tickScalping": {
+        "title": "틱 스캘핑",
+        "desc": "2분 미만의 초단기 스캘핑"
+      },
+      "accountManagement": {
+        "title": "계정 대리 운용",
+        "desc": "제3자가 당신의 계정을 거래하도록 하는 행위"
+      },
+      "propFirmCopying": {
+        "title": "타사 프로프 복사",
+        "desc": "다른 프로프 계정에서 거래를 복사"
+      },
+      "toxicFlowStrategies": {
+        "title": "토픽 플로우 전략",
+        "desc": "브로커를 부당하게 이용하는 전략"
+      },
+      "highFrequencyTrading": {
+        "title": "고빈도 거래(HFT)",
+        "desc": "자동 HFT 시스템"
+      }
+    },
+    "scalingPlan": {
+      "title": "스케일링 플랜",
+      "subtitle": "계정을 최대 $2,000,000까지 성장",
+      "accountSize": "계정 규모",
+      "profitSplit": "수익 분배",
+      "howItWorks": {
+        "title": "스케일링 작동 방식",
+        "description": "10% 수익 달성과 2회의 출금 사이클 완료마다 계정이 다음 레벨로 자동 스케일됩니다. 스케일에 따라 수익 분배도 증가하며, 최상위에서 최대 90%에 도달합니다."
+      },
+      "requirements": {
+        "passEvaluation": "평가 통과",
+        "profitAndPayouts": "수익 10% + 출금 2회"
+      }
+    },
+    "payoutPolicy": {
+      "title": "출금 정책",
+      "subtitle": "빠르고 신뢰할 수 있는 수익 출금",
+      "frequency": {
+        "label": "출금 빈도",
+        "value": "격주(14일마다)"
+      },
+      "minimum": {
+        "label": "최소 출금액",
+        "value": "$50"
+      },
+      "maximum": {
+        "label": "최대 출금액",
+        "value": "무제한"
+      },
+      "processingTime": {
+        "label": "처리 시간",
+        "value": "24~48시간"
+      },
+      "fee": {
+        "label": "출금 수수료",
+        "value": "$0(무료)"
+      },
+      "firstPayout": {
+        "label": "첫 출금",
+        "value": "자금 지원으로 거래 시작 후 14일"
+      }
+    },
+    "cta": {
+      "title": "거래를 시작할 준비가 되셨나요?",
+      "subtitle": "규칙을 이해했다면, 챌린지를 선택하고 자금 지원 여정을 시작하세요.",
+      "viewChallenges": "챌린지 보기"
+    },
+    "important": "중요",
+    "phase1": "1단계",
+    "phase2": "2단계",
+    "funded": "자금 지원"
+  },
+  "terms": {
+    "title": "이용약관",
+    "lastUpdated": "최종 업데이트: 2024년 1월",
+    "acceptance": {
+      "title": "1. 약관 동의",
+      "content": "Prop Capitals 서비스에 접근하고 이용함으로써, 귀하는 본 이용약관에 구속되는 것에 동의합니다. 약관에 동의할 수 없다면 서비스를 이용하지 마세요."
+    },
+    "description": {
+      "title": "2. 서비스 설명",
+      "content": "Prop Capitals는 트레이더가 거래 실력을 증명할 수 있는 독자적인 거래 평가 프로그램(“챌린지”)을 제공합니다. 챌린지를 성공적으로 완료하면 자금 지원 거래 계정에 접근할 수 있습니다."
+    },
+    "eligibility": {
+      "title": "3. 이용 자격",
+      "content": "서비스 이용을 위해서는 만 18세 이상이어야 합니다. Prop Capitals를 이용함으로써 귀하는 본 계약을 체결할 법적 능력이 있음을 진술합니다."
+    },
+    "accountRegistration": {
+      "title": "4. 계정 등록",
+      "content": "등록 시 정확하고 최신이며 완전한 정보를 제공하는 데 동의합니다. 계정 인증 정보의 기밀 유지 책임은 귀하에게 있습니다."
+    },
+    "tradingRules": {
+      "title": "5. 거래 규칙",
+      "content": "모든 트레이더는 각 챌린지 유형에 정의된 거래 규칙을 준수해야 합니다. 규칙 위반은 환불 없이 계정이 무효화될 수 있습니다."
+    },
+    "prohibitedActivities": {
+      "title": "6. 금지 행위",
+      "items": [
+        "플랫폼 취약점 또는 버그 악용",
+        "제3자에 의한 계정 대리 운용(미공개)",
+        "서로 다른 브로커 간 차익거래",
+        "다른 프로프 펌 계정에서 거래 복사",
+        "어떠한 형태의 시장 조작"
+      ]
+    },
+    "refundPolicy": {
+      "title": "7. 환불 정책",
+      "content": "거래가 전혀 이루어지지 않은 경우에 한해, 구매일로부터 14일 이내 환불이 가능합니다. 거래 활동이 시작된 이후에는 환불이 불가합니다."
+    },
+    "payouts": {
+      "title": "8. 출금",
+      "content": "자금 지원 트레이더는 수익 분배 계약에 따라 2주마다 수익을 출금할 수 있습니다. Prop Capitals는 출금 처리 전 모든 거래 활동을 검토할 권리를 보유합니다."
+    },
+    "intellectualProperty": {
+      "title": "9. 지식재산권",
+      "content": "Prop Capitals 플랫폼의 모든 콘텐츠, 상표 및 지식재산은 Prop Capitals에 귀속되며 관련 법률에 의해 보호됩니다."
+    },
+    "limitationOfLiability": {
+      "title": "10. 책임 제한",
+      "content": "Prop Capitals는 서비스 이용으로 인해 발생하는 간접적, 부수적, 결과적 손해에 대해 책임을 지지 않습니다."
+    },
+    "modifications": {
+      "title": "11. 변경",
+      "content": "Prop Capitals는 언제든 본 약관을 변경할 권리를 보유합니다. 변경 후에도 서비스를 계속 이용하는 것은 업데이트된 약관에 동의하는 것을 의미합니다."
+    },
+    "contact": {
+      "title": "12. 연락처",
+      "content": "본 약관에 관한 문의는 support@the-bluehaven.com 으로 연락해 주세요."
+    }
+  },
+  "privacy": {
+    "title": "개인정보 처리방침",
+    "lastUpdated": "최종 업데이트: 2024년 1월",
+    "informationWeCollect": {
+      "title": "1. 수집하는 정보",
+      "intro": "당사는 귀하가 직접 제공하는 다음 정보를 수집합니다:",
+      "items": [
+        "개인 식별 정보(이름, 이메일, 전화번호)",
+        "결제 정보(제3자 결제 사업자가 안전하게 처리)",
+        "거래 계정 정보 및 활동",
+        "지원팀과의 커뮤니케이션 기록",
+        "KYC 서류(신분증, 주소 증명)"
+      ]
+    },
+    "howWeUse": {
+      "title": "2. 정보 이용 목적",
+      "items": [
+        "서비스 제공 및 유지",
+        "결제 처리 및 관련 정보 발송",
+        "거래 활동 모니터링 및 규칙 집행",
+        "업데이트 및 프로모션 안내",
+        "사기 탐지 및 예방"
+      ]
+    },
+    "dataSecurity": {
+      "title": "3. 데이터 보안",
+      "content": "암호화, 보안 서버, 정기적인 보안 감사 등 업계 표준 조치를 통해 개인정보를 보호합니다."
+    },
+    "dataSharing": {
+      "title": "4. 정보 공유",
+      "intro": "당사는 다음과 정보 공유를 할 수 있습니다:",
+      "items": [
+        "거래 플랫폼 제공자(MT4, MT5, cTrader, DXTrade)",
+        "거래 처리를 위한 결제 사업자",
+        "KYC 본인 확인 서비스",
+        "법령상 필요한 경우의 정부/법적 기관"
+      ]
+    },
+    "yourRights": {
+      "title": "5. 귀하의 권리",
+      "intro": "귀하는 다음 권리를 가집니다:",
+      "items": [
+        "개인정보 열람",
+        "부정확한 정보 정정 요청",
+        "정보 삭제 요청(법적 요건에 따름)",
+        "마케팅 연락 수신 거부(옵트아웃)",
+        "데이터 이동성 요청"
+      ]
+    },
+    "cookies": {
+      "title": "6. 쿠키",
+      "content": "당사는 경험 향상, 사용 분석, 콘텐츠 최적화를 위해 쿠키 등을 사용합니다. 브라우저 설정에서 쿠키를 관리할 수 있습니다."
+    },
+    "dataRetention": {
+      "title": "7. 데이터 보관",
+      "content": "계정이 활성 상태인 동안 또는 서비스 제공에 필요한 기간 동안 개인정보를 보관합니다. 법 준수 및 분쟁 해결을 위해 일부 정보를 보관할 수 있습니다."
+    },
+    "internationalTransfers": {
+      "title": "8. 국외 이전",
+      "content": "귀하의 정보는 거주 국가 외의 국가로 이전·처리될 수 있습니다. 당사는 적절한 보호 조치를 시행합니다."
+    },
+    "childrensPrivacy": {
+      "title": "9. 미성년자 개인정보",
+      "content": "당사 서비스는 만 18세 미만을 대상으로 하지 않습니다. 당사는 미성년자로부터 정보를 수집하고 있음을 인지하지 못합니다."
+    },
+    "contactUs": {
+      "title": "10. 문의하기",
+      "content": "개인정보와 관련된 문의는 support@the-bluehaven.com 으로 연락해 주세요."
+    }
+  }
+}

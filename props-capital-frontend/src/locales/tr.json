@@ -1418,7 +1418,8 @@
         "markAsPaid": "Ödendi işaretle",
         "paid": "Ödendi",
         "rejected": "Reddedildi",
-        "rejecting": "Reddediliyor..."
+        "rejecting": "Reddediliyor...",
+        "processing": "İşleniyor..."
       },
       "emptyMessage": "Çekim talebi bulunamadı",
       "dialog": {
@@ -1490,12 +1491,7 @@
         "allTypes": "Tüm türler",
         "dailyDrawdown": "Günlük zarar",
         "overallDrawdown": "Toplam zarar",
-        "maxTradingDays": "Maksimum işlem günleri",
         "newsTrading": "Haber işlemleri",
-        "weekendHolding": "Hafta sonu taşıma",
-        "restrictedInstrument": "Kısıtlı enstrüman",
-        "lotSize": "Lot boyutu",
-        "eaDetected": "EA tespit edildi",
         "consistency": "Tutarlılık",
         "ruleBreak": "Kural ihlali"
       },
@@ -1510,12 +1506,9 @@
       "types": {
         "dailyDrawdown": "Günlük zarar",
         "overallDrawdown": "Toplam zarar",
-        "maxTradingDays": "Maksimum işlem günleri",
         "newsTrading": "Haber işlemleri",
-        "weekendHolding": "Hafta sonu taşıma",
-        "restrictedInstrument": "Kısıtlı enstrüman",
-        "lotSize": "Lot boyutu",
-        "eaDetected": "EA tespit edildi"
+        "consistency": "Tutarlılık",
+        "ruleBreak": "Kural ihlali"
       },
       "severity": {
         "fatal": "Kritik",
@@ -1524,12 +1517,12 @@
       "descriptions": {
         "daily_drawdown": "Günlük zarar {{threshold}}% eşiğini aştı",
         "overall_drawdown": "Toplam zarar {{threshold}}% eşiğini aştı",
-        "max_trading_days": "Maksimum işlem süresi sona erdi",
-        "news_trading": "Kısıtlı haber saatlerinde işlem",
-        "weekend_holding": "Hafta sonu pozisyon taşıma",
-        "restricted_instrument": "Kısıtlı enstrümanda işlem",
-        "lot_size": "Lot boyutu limitini aştı",
-        "ea_detected": "Expert Advisor tespit edildi"
+        "news": "Kısıtlı haber saatlerinde işlem",
+        "consistency": "Tutarlılık kuralı ihlal edildi",
+        "rule_break": "İşlem kuralı ihlali tespit edildi"
+      },
+      "pagination": {
+        "showing": "Sayfa {{page}} / {{totalPages}} (toplam {{total}})"
       },
       "emptyMessage": "İhlal bulunamadı"
     },
@@ -2089,7 +2082,7 @@
           },
           "contactSupport": {
             "q": "Destek ile nasıl iletişime geçebilirim?",
-            "a": "7/24 canlı sohbet, support@the-bluehaven.com adresine e-posta veya panodaki destek talebi üzerinden ulaşabilirsiniz."
+            "a": "7/24 canlı sohbet, support@prop-capitals.com adresine e-posta veya panodaki destek talebi üzerinden ulaşabilirsiniz."
           }
         }
       }
@@ -2103,7 +2096,7 @@
       "emailSupport": {
         "title": "E-posta desteği",
         "description": "Genel sorular ve detaylı talepler için",
-        "contact": "support@the-bluehaven.com"
+        "contact": "support@prop-capitals.com"
       },
       "liveChat": {
         "title": "Canlı sohbet",
@@ -2788,7 +2781,7 @@
     },
     "contact": {
       "title": "12. İletişim",
-      "content": "Bu şartlarla ilgili sorularınız için support@the-bluehaven.com adresine yazabilirsiniz."
+      "content": "Bu şartlarla ilgili sorularınız için support@prop-capitals.com adresine yazabilirsiniz."
     }
   },
   "privacy": {
@@ -2858,7 +2851,7 @@
     },
     "contactUs": {
       "title": "10. Bize ulaşın",
-      "content": "Gizlilikle ilgili sorularınız için support@the-bluehaven.com adresinden bize ulaşabilirsiniz."
+      "content": "Gizlilikle ilgili sorularınız için support@prop-capitals.com adresinden bize ulaşabilirsiniz."
     }
   }
 }

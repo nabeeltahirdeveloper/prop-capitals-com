@@ -1416,7 +1416,8 @@
         "markAsPaid": "지급 완료로 표시",
         "paid": "지급 완료",
         "rejected": "거절됨",
-        "rejecting": "거절 중..."
+        "rejecting": "거절 중...",
+        "processing": "처리 중..."
       },
       "emptyMessage": "출금 요청을 찾을 수 없습니다",
       "dialog": {
@@ -1488,12 +1489,7 @@
         "allTypes": "모든 유형",
         "dailyDrawdown": "일일 손실",
         "overallDrawdown": "전체 손실",
-        "maxTradingDays": "최대 거래 일수",
         "newsTrading": "뉴스 거래",
-        "weekendHolding": "주말 보유",
-        "restrictedInstrument": "제한 종목",
-        "lotSize": "로트 크기",
-        "eaDetected": "EA 감지",
         "consistency": "일관성",
         "ruleBreak": "규칙 위반"
       },
@@ -1508,12 +1504,9 @@
       "types": {
         "dailyDrawdown": "일일 손실",
         "overallDrawdown": "전체 손실",
-        "maxTradingDays": "최대 거래 일수",
         "newsTrading": "뉴스 거래",
-        "weekendHolding": "주말 보유",
-        "restrictedInstrument": "제한 종목",
-        "lotSize": "로트 크기",
-        "eaDetected": "EA 감지"
+        "consistency": "일관성",
+        "ruleBreak": "규칙 위반"
       },
       "severity": {
         "fatal": "중대",
@@ -1522,12 +1515,12 @@
       "descriptions": {
         "daily_drawdown": "일일 손실이 {{threshold}}%를 초과",
         "overall_drawdown": "전체 손실이 {{threshold}}%를 초과",
-        "max_trading_days": "최대 거래 기간 종료",
-        "news_trading": "제한된 뉴스 시간대에 거래",
-        "weekend_holding": "주말에 포지션 보유",
-        "restricted_instrument": "제한 종목으로 거래",
-        "lot_size": "로트 크기 한도 초과",
-        "ea_detected": "Expert Advisor 감지"
+        "news": "제한된 뉴스 시간대에 거래",
+        "consistency": "일관성 규칙 위반",
+        "rule_break": "거래 규칙 위반 감지"
+      },
+      "pagination": {
+        "showing": "페이지 {{page}} / {{totalPages}} (총 {{total}}건)"
       },
       "emptyMessage": "위반을 찾을 수 없습니다"
     },
@@ -2087,7 +2080,7 @@
           },
           "contactSupport": {
             "q": "지원팀에는 어떻게 연락하나요?",
-            "a": "24/7 라이브 채팅, support@the-bluehaven.com 이메일, 또는 대시보드 내 지원 티켓을 통해 연락할 수 있습니다."
+            "a": "24/7 라이브 채팅, support@prop-capitals.com 이메일, 또는 대시보드 내 지원 티켓을 통해 연락할 수 있습니다."
           }
         }
       }
@@ -2101,7 +2094,7 @@
       "emailSupport": {
         "title": "이메일 지원",
         "description": "일반 문의 또는 상세 문의용",
-        "contact": "support@the-bluehaven.com"
+        "contact": "support@prop-capitals.com"
       },
       "liveChat": {
         "title": "라이브 채팅",
@@ -2786,7 +2779,7 @@
     },
     "contact": {
       "title": "12. 연락처",
-      "content": "본 약관에 관한 문의는 support@the-bluehaven.com 으로 연락해 주세요."
+      "content": "본 약관에 관한 문의는 support@prop-capitals.com 으로 연락해 주세요."
     }
   },
   "privacy": {
@@ -2856,7 +2849,7 @@
     },
     "contactUs": {
       "title": "10. 문의하기",
-      "content": "개인정보와 관련된 문의는 support@the-bluehaven.com 으로 연락해 주세요."
+      "content": "개인정보와 관련된 문의는 support@prop-capitals.com 으로 연락해 주세요."
     }
   }
 }

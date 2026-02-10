@@ -1,6 +1,7 @@
 
 export function createPageUrl(pageName) {
-    return '/' + pageName.toLowerCase().replace(/ /g, '-');
+    // return '/' + pageName.toLowerCase().replace(/ /g, '-');
+    return '/' + pageName.toLowerCase();
 }
 
 export function getPlatform(account, fallback = 'MT5') {

@@ -1,16 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import {
-  calculatePositionsWithPnL,
-  getPositionDuration,
-} from "@/utils/positionCalculations";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  DollarSign,
   TrendingUp,
-  TrendingDown,
   Shield,
   Target,
   AlertTriangle,
@@ -25,373 +19,26 @@ import {
   Calendar,
 } from "lucide-react";
 import { useTranslation } from "../../contexts/LanguageContext";
-import { PnlDisplay } from "../PnlDisplay";
-import { getChallenge } from "@/api/challenges";
-import { useQuery } from "@tanstack/react-query";
 
 export default function AccountMetrics({
   account,
-  positions = [],
-  currentPrices = {},
-  getPriceForPosition,
-  isCryptoSymbol,
   isLoading = false,
 }) {
   const { t } = useTranslation();
-  // Real-time display states for smooth updates
-  const [displayEquity, setDisplayEquity] = React.useState(
-    account?.equity || 100850,
-  );
-  const [displayFloatingPnL, setDisplayFloatingPnL] = React.useState(
-    account?.floatingPnL || 0,
-  );
-
-  console.log(account);
-  // const [disp
-  // layBalance, setDisplayBalance] = React.useState(
-  //   account?.balance || 100000,
-  // );
-
-
-
-
-
-
-
-
-
-
-  // console.log(account?.balance)
-  // Calculate real-time margin and "used" balance: baseBalance - totalMarginUsed
-  // This updates in real-time as positions open/close.
-  // NOTE: Backend balance is the ledger balance and should only change when trades close.
-  // We use this computed balance only for non-funded/demo-style views; real accounts keep balance static.
-  // const calculateRealTimeMarginAndBalance = React.useCallback(() => {
-  //   const baseBalance = account?.balance || 100000;
-
-  //   // If no positions, balance equals base balance, margin is 0
-  //   if (!positions || positions.length === 0) {
-  //     return { margin: 0, balance: baseBalance };
-  //     // return { margin: 0 };
-  //   }
-
-  //   // Calculate total margin used by all open positions
-  //   // Margin is based on entry price (doesn't change as price moves)
-  //   let totalMargin = 0;
-  //   const leverage = 100;
-
-  //   positions.forEach((pos) => {
-  //     // Get current price for margin calculation
-  //     // For margin calculation, we use the entry price side (ask for BUY, bid for SELL)
-  //     // But we need current market price, so we use getPriceForPosition with the position type
-  //     const currentPrice = getPriceForPosition(
-  //       pos.symbol,
-  //       pos.type,
-  //       pos.entryPrice,
-  //     );
-
-  //     if (!currentPrice || currentPrice <= 0) {
-  //       // Fallback to entry price if current price unavailable
-  //       const fallbackPrice = pos.entryPrice;
-  //       const contractSize = isCryptoSymbol(pos.symbol) ? 1 : 100000;
-  //       const positionMargin =
-  //         (pos.lotSize * contractSize * fallbackPrice) / leverage;
-  //       totalMargin += positionMargin;
-  //     } else {
-  //       // Calculate margin using current price (margin changes as price moves)
-  //       const contractSize = isCryptoSymbol(pos.symbol) ? 1 : 100000;
-  //       const positionMargin =
-  //         (pos.lotSize * contractSize * currentPrice) / leverage;
-  //       totalMargin += positionMargin;
-  //     }
-  //   });
-
-  //   // Real-time "used" balance = base balance - margin used
-  //   return {
-  //     margin: totalMargin,
-  //     balance: Math.max(0, baseBalance - totalMargin),
-  //   };
-  // }, [account?.balance, positions, getPriceForPosition, isCryptoSymbol]);
-
-  // Calculate real-time "used" balance (for backward compatibility)
-  // const calculateRealTimeBalance = React.useCallback(() => {
-  //   return calculateRealTimeMarginAndBalance().balance;
-
-  // }, [calculateRealTimeMarginAndBalance]);
-
-  // Calculate real-time margin for display
-  // const realTimeMargin = React.useMemo(() => {
-  //   return calculateRealTimeMarginAndBalance().margin;
-  // }, [calculateRealTimeMarginAndBalance]);
-
-  // Calculate real-time free margin: equity - margin used
-  // const realTimeFreeMargin = React.useMemo(() => {
-  //   const currentEquity = account?.equity || 100000;
-  //   return Math.max(0, currentEquity - realTimeMargin);
-  // }, [account?.equity, realTimeMargin]);
-
-  const [displayProfitPercent, setDisplayProfitPercent] = React.useState(
-    account?.profitPercent || 0,
-  );
-  const [displayDailyDrawdown, setDisplayDailyDrawdown] = React.useState(
-    account?.dailyDrawdown || 0,
-  );
-  const [displayOverallDrawdown, setDisplayOverallDrawdown] = React.useState(
-    account?.overallDrawdown || 0,
-  );
-  const [equityColor, setEquityColor] = React.useState("text-emerald-400");
-  const [floatingPnLColor, setFloatingPnLColor] =
-    React.useState("text-emerald-400");
-
-  // Ref to track previous values for threshold checking (prevent flickering)
-  const prevValuesRef = React.useRef({
-    equity: account?.equity || 100850,
-    floatingPnL: account?.floatingPnL || 0,
-    balance: account?.balance || 100000,
-    profitPercent: account?.profitPercent || 0,
-    dailyDrawdown: account?.dailyDrawdown || 0,
-    overallDrawdown: account?.overallDrawdown || 0,
-  });
-
-  // Store frozen drawdown values when limit is reached (so bars stay at 100%)
-  // Get from sessionStorage if available (set when violation occurs), otherwise use current values
-  // Use namespaced keys: violation:${accountId}:... to prevent overwrites across accounts
-  const getFrozenDrawdown = (key, currentValue) => {
-    if (typeof window === "undefined") return null;
-    const stored = sessionStorage.getItem(key);
-    return stored ? parseFloat(stored) : null;
-  };
 
   const accountId = account?.id || "";
-  const frozenDailyDrawdownValue = getFrozenDrawdown(
-    `violation:${accountId}:daily_dd`,
-    displayDailyDrawdown,
-  );
-  const frozenOverallDrawdownValue = getFrozenDrawdown(
-    `violation:${accountId}:overall_dd`,
-    displayOverallDrawdown,
-  );
 
-  const frozenDailyDrawdownRef = React.useRef(frozenDailyDrawdownValue);
-  const frozenOverallDrawdownRef = React.useRef(frozenOverallDrawdownValue);
+  // ✅ ALL values come directly from account props (backend is single source of truth)
+  // No local display states, no intervals, no frontend calculations
+  // Backend updates these via processPriceTick (50ms) and syncAccountFromBackend
+  const displayEquity = account?.equity ?? 0;
+  const displayFloatingPnL = account?.floatingPnL ?? 0;
+  const displayDailyDrawdown = account?.dailyDrawdown ?? 0;
+  const displayOverallDrawdown = account?.overallDrawdown ?? 0;
 
-  // Update refs from sessionStorage if available (use namespaced keys)
-  // Also check for breach snapshot values from trades if available
-  React.useEffect(() => {
-    if (accountId) {
-      const dailyDD = getFrozenDrawdown(
-        `violation:${accountId}:daily_dd`,
-        displayDailyDrawdown,
-      );
-      const overallDD = getFrozenDrawdown(
-        `violation:${accountId}:overall_dd`,
-        displayOverallDrawdown,
-      );
-      if (dailyDD !== null) frozenDailyDrawdownRef.current = dailyDD;
-      if (overallDD !== null) frozenOverallDrawdownRef.current = overallDD;
-
-      // Also check for breach snapshot from trades (more accurate - from actual trade records)
-      // This ensures progress bars use the exact breach snapshot values captured at breach moment
-      if (typeof window !== "undefined") {
-        // Try to get breach snapshot from most recent auto-closed trade
-        // This is done asynchronously after trades are loaded, but we can also check sessionStorage
-        // which should have been updated from trades
-        const snapshotOverallDD = sessionStorage.getItem(
-          `violation:${accountId}:snapshot_overall_dd`,
-        );
-        if (snapshotOverallDD !== null) {
-          const snapshotValue = parseFloat(snapshotOverallDD);
-          if (Number.isFinite(snapshotValue) && snapshotValue > 0) {
-            frozenOverallDrawdownRef.current = snapshotValue;
-          }
-        }
-      }
-    }
-  }, [accountId, displayDailyDrawdown, displayOverallDrawdown]);
-
-  // Real-time updates for all metrics - updates every 1 second for responsiveness
-  React.useEffect(() => {
-    // Calculate real-time "used" balance based on positions
-    // const realTimeBalance = calculateRealTimeBalance();
-    const baseBalance = account?.balance || 100000;
-
-    // Calculate real-time equity from positions (balance + floating PnL)
-    let calculatedRealTimeEquity = baseBalance;
-    if (positions && positions.length > 0) {
-      let totalFloatingPnL = 0;
-      positions.forEach((pos) => {
-        const currentPrice = getPriceForPosition(
-          pos.symbol,
-          pos.type,
-          pos.entryPrice,
-        );
-        if (currentPrice && currentPrice > 0) {
-          const isCrypto =
-            typeof isCryptoSymbol === "function"
-              ? isCryptoSymbol(pos.symbol)
-              : /BTC|ETH|SOL|XRP|ADA|DOGE/.test(pos.symbol || "");
-          const contractSize = isCrypto ? 1 : 100000;
-          const priceDiff =
-            pos.type === "BUY"
-              ? currentPrice - pos.entryPrice
-              : pos.entryPrice - currentPrice;
-          const positionPnL = isCrypto
-            ? priceDiff * pos.lotSize
-            : priceDiff * pos.lotSize * contractSize;
-          totalFloatingPnL += positionPnL;
-        }
-      });
-      calculatedRealTimeEquity = baseBalance + totalFloatingPnL;
-    }
-
-    // Equity from backend (settled equity – updated when trades close)
-    const currentEquity = account?.equity;
-    const currentFloatingPnL = account?.floatingPnL || 0;
-    const currentProfitPercent = account?.profitPercent || 0;
-
-    // CRITICAL: Use frozen violation values if account is locked/disqualified
-    // This ensures progress bars show the violation values, not current values
-    const statusUpper = String(account?.status || "").toUpperCase();
-    const isDailyLocked = statusUpper.includes("DAILY");
-    const isDisqualified =
-      statusUpper.includes("FAIL") || statusUpper.includes("DISQUAL");
-
-    let currentDailyDrawdown = account?.dailyDrawdown || 0;
-    let currentOverallDrawdown = account?.overallDrawdown || 0;
-
-    // If DAILY_LOCKED, use frozen violation value
-    if (isDailyLocked && typeof window !== "undefined" && accountId) {
-      const violationDailyDD = sessionStorage.getItem(
-        `violation:${accountId}:daily_dd`,
-      );
-      if (violationDailyDD !== null) {
-        const violationValue = parseFloat(violationDailyDD);
-        if (Number.isFinite(violationValue) && violationValue > 0) {
-          currentDailyDrawdown = violationValue;
-        }
-      }
-    }
-
-    // If DISQUALIFIED, use frozen violation value
-    if (isDisqualified && typeof window !== "undefined" && accountId) {
-      const violationOverallDD = sessionStorage.getItem(
-        `violation:${accountId}:overall_dd`,
-      );
-      if (violationOverallDD !== null) {
-        const violationValue = parseFloat(violationOverallDD);
-        if (Number.isFinite(violationValue) && violationValue > 0) {
-          currentOverallDrawdown = violationValue;
-        }
-      }
-    }
-
-    // Initial set
-    setDisplayEquity(currentEquity);
-    setDisplayFloatingPnL(currentFloatingPnL);
-
-    // ✅ Use account.liveProfitPercent from earliest version (ignore incorrect calculation)
-    // Remove incorrect totalProfit calculation - use account.liveProfitPercent directly
-    setDisplayDailyDrawdown(currentDailyDrawdown);
-    setDisplayOverallDrawdown(currentOverallDrawdown);
-    // setEquityColor(
-    //   currentEquity >= realTimeBalance ? "text-emerald-400" : "text-red-400",
-    // );
-    setFloatingPnLColor(
-      currentFloatingPnL >= 0 ? "text-emerald-400" : "text-red-400",
-    );
-
-    // Update ref with initial values
-    prevValuesRef.current = {
-      equity: currentEquity,
-      floatingPnL: currentFloatingPnL,
-      // balance: realTimeBalance,
-      profitPercent: currentProfitPercent,
-      dailyDrawdown: currentDailyDrawdown,
-      overallDrawdown: currentOverallDrawdown,
-    };
-    console.log(account.profitPercent);
-
-    // Update all metrics in real-time with smooth transitions
-    // Use threshold checks to prevent flickering from tiny changes
-    const interval = setInterval(() => {
-      // Calculate real-time "used" balance (updates as positions/prices change)
-      // const realTimeBal = calculateRealTimeBalance();
-
-      // Equity is taken directly from backend (source of truth).
-      // Backend evaluation service already accounts for unrealized PnL where applicable.
-      const eq = account?.equity || 100850;
-      const fpl = account?.floatingPnL || 0;
-      const profitPct = account?.profitPercent || 0;
-      const dailyDD = account?.dailyDrawdown || 0;
-      const overallDD = account?.overallDrawdown || 0;
-
-      const prev = prevValuesRef.current;
-
-      // Only update if values changed significantly (prevent flickering)
-      const equityChanged = Math.abs(prev.equity - eq) >= 0.01;
-      const pnlChanged = Math.abs(prev.floatingPnL - fpl) >= 0.01;
-      // const balanceChanged = Math.abs(prev.balance - realTimeBal) >= 0.01;
-      const profitChanged = Math.abs(prev.profitPercent - profitPct) >= 0.01; // Reduced to 0.01% for real-time updates
-      const dailyDDChanged = Math.abs(prev.dailyDrawdown - dailyDD) >= 0.005;
-      const overallDDChanged =
-        Math.abs(prev.overallDrawdown - overallDD) >= 0.005;
-
-      if (
-        equityChanged ||
-        pnlChanged ||
-        // balanceChanged ||
-        profitChanged ||
-        dailyDDChanged ||
-        overallDDChanged
-      ) {
-        if (equityChanged) {
-          // Always use backend equity as single source of truth
-          setDisplayEquity(eq);
-          prev.equity = eq;
-        }
-        if (pnlChanged) {
-          setDisplayFloatingPnL(fpl);
-          prev.floatingPnL = fpl;
-        }
-        // if (balanceChanged) {
-        //   // FUNDED (real) accounts: keep balance static (backend ledger),
-        //   // other phases: show "used" balance as before
-        //   const balanceForDisplay = isFunded
-        //     ? account?.balance || 100000
-        //     : realTimeBal;
-        //   setDisplayBalance(balanceForDisplay);
-        //   prev.balance = balanceForDisplay;
-        // }
-        // if (profitChanged) {
-        //   setDisplayProfitPercent(profitPct);
-        //   prev.profitPercent = profitPct;
-        // }
-        if (dailyDDChanged) {
-          setDisplayDailyDrawdown(dailyDD);
-          prev.dailyDrawdown = dailyDD;
-        }
-        if (overallDDChanged) {
-          setDisplayOverallDrawdown(overallDD);
-          prev.overallDrawdown = overallDD;
-        }
-
-        // Update colors - compare equity to balance (from earliest version)
-        const bal = account?.balance || 100000;
-        setEquityColor(eq >= bal ? "text-emerald-400" : "text-red-400");
-        setFloatingPnLColor(fpl >= 0 ? "text-emerald-400" : "text-red-400");
-      }
-    }, 2000); // Update every 2 seconds for stable display
-
-    return () => clearInterval(interval);
-  }, [
-    account?.equity,
-    account?.balance,
-    account?.floatingPnL,
-    account?.profitPercent,
-    account?.dailyDrawdown,
-    account?.overallDrawdown,
-    // calculateRealTimeBalance,
-  ]);
+  // Colors derived directly from props
+  const equityColor = displayEquity >= (account?.balance ?? 0) ? "text-emerald-400" : "text-red-400";
+  const floatingPnLColor = displayFloatingPnL >= 0 ? "text-emerald-400" : "text-red-400";
 
   const {
     balance = 100000,
@@ -416,7 +63,6 @@ export default function AccountMetrics({
   } = account || {};
 
   // Determine if account is locked or disqualified
-  // Handle all possible failure statuses: DAILY_LOCKED, DISQUALIFIED, FAILED, CHALLENGE_FAILED, ACCOUNT_FAILED, etc.
   const statusUpper = String(status || "").toUpperCase();
   const isLocked =
     statusUpper.includes("DAILY") ||
@@ -426,90 +72,18 @@ export default function AccountMetrics({
   const isDisqualified =
     statusUpper.includes("FAIL") || statusUpper.includes("DISQUAL");
 
-  // Freeze drawdown values when limit is reached - use stored violation values from sessionStorage
-  React.useEffect(() => {
-    if (accountId) {
-      // Always check sessionStorage when status changes to locked/disqualified
-      if (isDailyLocked) {
-        const storedValue = getFrozenDrawdown(
-          `violation:${accountId}:daily_dd`,
-          displayDailyDrawdown,
-        );
-        if (storedValue !== null) {
-          frozenDailyDrawdownRef.current = storedValue;
-        } else if (frozenDailyDrawdownRef.current === null) {
-          // Fallback to max limit if no stored value
-          frozenDailyDrawdownRef.current = maxDailyDrawdown;
-        }
-      }
-      if (isDisqualified) {
-        const storedValue = getFrozenDrawdown(
-          `violation:${accountId}:overall_dd`,
-          displayOverallDrawdown,
-        );
-        if (storedValue !== null) {
-          frozenOverallDrawdownRef.current = storedValue;
-        } else if (frozenOverallDrawdownRef.current === null) {
-          // Fallback to max limit if no stored value
-          frozenOverallDrawdownRef.current = maxOverallDrawdown;
-        }
-      }
-    }
-
-    // Reset frozen values when account becomes active again (e.g., after daily reset)
-    const statusUpperCheck = String(status || "").toUpperCase();
-    if (statusUpperCheck === "ACTIVE" && !isDailyLocked && !isDisqualified) {
-      frozenDailyDrawdownRef.current = null;
-      frozenOverallDrawdownRef.current = null;
-      if (typeof window !== "undefined" && accountId) {
-        sessionStorage.removeItem(`violation:${accountId}:daily_dd`);
-        sessionStorage.removeItem(`violation:${accountId}:overall_dd`);
-      }
-    }
-  }, [
-    status,
-    isDailyLocked,
-    isDisqualified,
-    maxDailyDrawdown,
-    maxOverallDrawdown,
-    accountId,
-    displayDailyDrawdown,
-    displayOverallDrawdown,
-  ]);
-
-  // Use frozen values if available, otherwise use current display values
-  // Freeze progress bars at violation values when account is locked/disqualified
-  // CRITICAL: Overall drawdown should come from account state (backend metrics), not sessionStorage fallback
-  // Only use sessionStorage for violation freezing, not for general fallback
-  const dailyDrawdownForBar =
-    isDailyLocked && frozenDailyDrawdownRef.current !== null
-      ? frozenDailyDrawdownRef.current
-      : displayDailyDrawdown;
-
-  // For overall drawdown: only freeze if disqualified, otherwise use account state value
-  // Account state already has the correct backend value or fallback from syncAccountFromBackend
-  const overallDrawdownForBar =
-    isDisqualified && frozenOverallDrawdownRef.current !== null
-      ? frozenOverallDrawdownRef.current
-      : displayOverallDrawdown; // This comes from account.overallDrawdown (backend source of truth)
-
-  // Always show 100% when locked/disqualified, otherwise show actual percentage
+  // ✅ Backend DD values are already monotonic (tracked via minEquityToday/minEquityOverall)
+  // When violated, show 100% on the progress bar; use the backend DD value for the label
   const dailyDDUsage = isDailyLocked
-    ? 100 // Always 100% when daily locked
-    : (dailyDrawdownForBar / maxDailyDrawdown) * 100;
+    ? 100
+    : (displayDailyDrawdown / maxDailyDrawdown) * 100;
   const overallDDUsage = isDisqualified
-    ? 100 // Always 100% when disqualified
-    : (overallDrawdownForBar / maxOverallDrawdown) * 100;
+    ? 100
+    : (displayOverallDrawdown / maxOverallDrawdown) * 100;
 
-  // Display the frozen violation values in the UI (not 0% after positions close)
-  const displayDailyDrawdownFinal =
-    isDailyLocked && frozenDailyDrawdownRef.current !== null
-      ? frozenDailyDrawdownRef.current
-      : displayDailyDrawdown;
-  const displayOverallDrawdownFinal =
-    isDisqualified && frozenOverallDrawdownRef.current !== null
-      ? frozenOverallDrawdownRef.current
-      : displayOverallDrawdown;
+  // Display values for labels
+  const displayDailyDrawdownFinal = displayDailyDrawdown;
+  const displayOverallDrawdownFinal = displayOverallDrawdown;
 
   // ✅ Profit progress calculation from earliest version
   const profitProgress = (profitForTarget / profitTarget) * 100;
@@ -530,8 +104,10 @@ export default function AccountMetrics({
   const phase1ProfitMet = profitForTarget >= profitTarget;
   // const phase1ProfitMet = displayProfitPercent >= profitTarget;
   const phase1TradingDaysMet = tradingDays >= minTradingDays;
-  const phase1DailyDDMet = dailyDrawdown <= maxDailyDrawdown;
-  const phase1OverallDDMet = overallDrawdown <= maxOverallDrawdown;
+  // If account is locked/failed/disqualified, no requirement should show as "met"
+  // The challenge is over — showing green checkmarks on a failed account is misleading
+  const phase1DailyDDMet = !isLocked && dailyDrawdown < maxDailyDrawdown;
+  const phase1OverallDDMet = !isLocked && overallDrawdown < maxOverallDrawdown;
   const phase1Passed =
     phase1ProfitMet &&
     phase1TradingDaysMet &&
@@ -782,8 +358,8 @@ export default function AccountMetrics({
                       phase1ProfitMet ? "text-emerald-400" : "text-slate-300"
                     }
                   >
-                    {phase1ProfitMet ? "✓" : "✗"} {profitForTarget.toFixed(2)}%
-                    / {profitTarget}%
+                    {profitForTarget.toFixed(2)}% / {profitTarget}%
+                    {phase1ProfitMet && " ✓"}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -797,8 +373,8 @@ export default function AccountMetrics({
                         : "text-slate-300"
                     }
                   >
-                    {phase1TradingDaysMet ? "✓" : "✗"} {tradingDays} /{" "}
-                    {minTradingDays}
+                    {tradingDays} / {minTradingDays}
+                    {phase1TradingDaysMet && " ✓"}
                   </span>
                 </div>
               </div>
@@ -899,6 +475,7 @@ export default function AccountMetrics({
           ) : (
             <>
               <div className="text-sm sm:text-lg font-bold text-white font-mono">
+                {/* Balance is static - only updates when trades close (backend-controlled) */}
                 ${account?.balance?.toFixed(2) || "0.00"}
               </div>
 
@@ -975,8 +552,8 @@ export default function AccountMetrics({
             <p
               className={`text-sm sm:text-lg font-bold font-mono ${equityColor}`}
             >
-              {/* ✅ Use account.equity directly (calculated in TradingTerminal) */}
-              ${Math.round(displayEquity).toLocaleString()}
+              {/* ✅ Use account.equity directly with 2 decimal places for consistency */}
+              ${displayEquity?.toFixed(2) || "0.00"}
             </p>
           )}
         </Card>
@@ -1012,9 +589,9 @@ export default function AccountMetrics({
           {isLoading ? (
             <Skeleton className="h-6 w-16 bg-slate-800" />
           ) : (
-            <p className="text-sm sm:text-lg font-bold font-mono text-emerald-400">
-              {/* ✅ Show liveProfitPercent from earliest version */}+
-              {liveProfitPercent.toFixed(2)}%
+            <p className={`text-sm sm:text-lg font-bold font-mono ${profitForTarget >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+              {/* ✅ Show total profit (realized + live) - matches Profit Target */}
+              {profitForTarget >= 0 ? "+" : ""}{profitForTarget.toFixed(2)}%
             </p>
           )}
         </Card>
@@ -1070,7 +647,7 @@ export default function AccountMetrics({
           ) : (
             <>
               <Progress
-                value={Math.min(Math.max(0, profitProgress))}
+                value={Math.min(100, Math.max(0, profitProgress))}
                 className="h-3 bg-slate-800 transition-all duration-700 ease-out"
               />
               <div className="flex justify-between mt-2 text-xs">
@@ -1204,7 +781,7 @@ export default function AccountMetrics({
           ) : (
             <>
               <Progress
-                value={overallDDUsage}
+                value={Math.min(100, overallDDUsage)}
                 className={`h-3 bg-slate-800 transition-all duration-300 ${overallDDUsage >= 80 ? "[&>div]:bg-red-500" : overallDDUsage >= 50 ? "[&>div]:bg-amber-500" : ""}`}
               />
               <div className="flex justify-between mt-2 text-xs">

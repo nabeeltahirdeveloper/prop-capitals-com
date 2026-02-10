@@ -76,8 +76,8 @@ export const adminApprovePayout = async (id) => {
   return apiPatch(`/admin/payouts/${id}/approve`);
 };
 
-export const adminRejectPayout = async (id) => {
-  return apiPatch(`/admin/payouts/${id}/reject`);
+export const adminRejectPayout = async (id, reason) => {
+  return apiPatch(`/admin/payouts/${id}/reject`, { reason });
 };
 
 export const adminMarkPayoutAsPaid = async (id) => {
@@ -217,8 +217,8 @@ export const adminGetAccountRisk = async (accountId) => {
   return apiGet(`/admin/risk/account/${accountId}`);
 };
 
-export const adminGetAllViolations = async () => {
-  return apiGet("/admin/risk/violations");
+export const adminGetAllViolations = async (page = 1, limit = 50) => {
+  return apiGet(`/admin/risk/violations?page=${page}&limit=${limit}`);
 };
 
 export const adminGetViolation = async (id) => {
@@ -272,6 +272,29 @@ export const adminGetTradesByAccount = async (accountId) => {
 
 export const adminGetTradeById = async (tradeId) => {
   return apiGet(`/admin/trades/${tradeId}`);
+};
+
+// ============================================================================
+// Admin Coupons
+// ============================================================================
+export const adminGetAllCoupons = async () => {
+  return apiGet("/admin/coupons");
+};
+
+export const adminGetCoupon = async (id) => {
+  return apiGet(`/admin/coupons/${id}`);
+};
+
+export const adminCreateCoupon = async (data) => {
+  return apiPost("/admin/coupons", data);
+};
+
+export const adminUpdateCoupon = async (id, data) => {
+  return apiPatch(`/admin/coupons/${id}`, data);
+};
+
+export const adminDeleteCoupon = async (id) => {
+  return apiDelete(`/admin/coupons/${id}`);
 };
 
 // ============================================================================

@@ -1422,7 +1422,8 @@
         "markAsPaid": "ทำเครื่องหมายว่าจ่ายแล้ว",
         "paid": "จ่ายแล้ว",
         "rejected": "ปฏิเสธ",
-        "rejecting": "กำลังปฏิเสธ..."
+        "rejecting": "กำลังปฏิเสธ...",
+        "processing": "กำลังดำเนินการ..."
       },
       "emptyMessage": "ไม่พบคำขอจ่ายเงิน",
       "dialog": {
@@ -1494,12 +1495,7 @@
         "allTypes": "ประเภททั้งหมด",
         "dailyDrawdown": "การขาดทุนรายวัน",
         "overallDrawdown": "การขาดทุนรวม",
-        "maxTradingDays": "วันเทรดสูงสุด",
         "newsTrading": "การเทรดข่าว",
-        "weekendHolding": "ถือครองสุดสัปดาห์",
-        "restrictedInstrument": "เครื่องมือที่ถูกจำกัด",
-        "lotSize": "ขนาดล็อต",
-        "eaDetected": "ตรวจพบ EA",
         "consistency": "ความสม่ำเสมอ",
         "ruleBreak": "การละเมิดกฎ"
       },
@@ -1514,12 +1510,9 @@
       "types": {
         "dailyDrawdown": "การขาดทุนรายวัน",
         "overallDrawdown": "การขาดทุนรวม",
-        "maxTradingDays": "วันเทรดสูงสุด",
         "newsTrading": "การเทรดข่าว",
-        "weekendHolding": "ถือครองสุดสัปดาห์",
-        "restrictedInstrument": "เครื่องมือที่ถูกจำกัด",
-        "lotSize": "ขนาดล็อต",
-        "eaDetected": "ตรวจพบ EA"
+        "consistency": "ความสม่ำเสมอ",
+        "ruleBreak": "การละเมิดกฎ"
       },
       "severity": {
         "fatal": "ร้ายแรง",
@@ -1528,12 +1521,12 @@
       "descriptions": {
         "daily_drawdown": "การขาดทุนรายวันเกิน {{threshold}}%",
         "overall_drawdown": "การขาดทุนรวมเกิน {{threshold}}%",
-        "max_trading_days": "ระยะเวลาการเทรดสูงสุดหมดอายุ",
-        "news_trading": "เทรดในช่วงข่าวที่ถูกจำกัด",
-        "weekend_holding": "ถือครองตำแหน่งในช่วงสุดสัปดาห์",
-        "restricted_instrument": "เทรดเครื่องมือที่ถูกจำกัด",
-        "lot_size": "เกินขีดจำกัดขนาดล็อต",
-        "ea_detected": "ตรวจพบ Expert Advisor"
+        "news": "เทรดในช่วงข่าวที่ถูกจำกัด",
+        "consistency": "ละเมิดกฎความสม่ำเสมอ",
+        "rule_break": "ตรวจพบการละเมิดกฎการเทรด"
+      },
+      "pagination": {
+        "showing": "หน้า {{page}} จาก {{totalPages}} (ทั้งหมด {{total}} รายการ)"
       },
       "emptyMessage": "ไม่พบการละเมิด"
     },
@@ -2093,7 +2086,7 @@
           },
           "contactSupport": {
             "q": "ฉันจะติดต่อฝ่ายสนับสนุนได้อย่างไร?",
-            "a": "คุณสามารถติดต่อทีมสนับสนุนของเราตลอด 24/7 ผ่านแชทสดบนเว็บไซต์ของเรา อีเมลที่ support@the-bluehaven.com หรือผ่านระบบตั๋วสนับสนุนในแดชบอร์ดของคุณ"
+            "a": "คุณสามารถติดต่อทีมสนับสนุนของเราตลอด 24/7 ผ่านแชทสดบนเว็บไซต์ของเรา อีเมลที่ support@prop-capitals.com หรือผ่านระบบตั๋วสนับสนุนในแดชบอร์ดของคุณ"
           }
         }
       }
@@ -2107,7 +2100,7 @@
       "emailSupport": {
         "title": "สนับสนุนทางอีเมล",
         "description": "สำหรับคำถามทั่วไปและคำถามโดยละเอียด",
-        "contact": "support@the-bluehaven.com"
+        "contact": "support@prop-capitals.com"
       },
       "liveChat": {
         "title": "แชทสด",
@@ -2792,7 +2785,7 @@
     },
     "contact": {
       "title": "12. ติดต่อ",
-      "content": "สำหรับคำถามเกี่ยวกับข้อกำหนดเหล่านี้ โปรดติดต่อเราที่ support@the-bluehaven.com"
+      "content": "สำหรับคำถามเกี่ยวกับข้อกำหนดเหล่านี้ โปรดติดต่อเราที่ support@prop-capitals.com"
     }
   },
   "privacy": {
@@ -2862,7 +2855,7 @@
     },
     "contactUs": {
       "title": "10. ติดต่อเรา",
-      "content": "สำหรับคำถามเกี่ยวกับความเป็นส่วนตัว โปรดติดต่อเจ้าหน้าที่คุ้มครองข้อมูลของเราที่ support@the-bluehaven.com"
+      "content": "สำหรับคำถามเกี่ยวกับความเป็นส่วนตัว โปรดติดต่อเจ้าหน้าที่คุ้มครองข้อมูลของเราที่ support@prop-capitals.com"
     }
   }
 }

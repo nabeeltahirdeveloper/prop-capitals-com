@@ -3,7 +3,8 @@
     "loading": "Chargement...",
     "url": "URL",
     "dismiss": "Fermer",
-    "allPlatforms": "Toutes les plateformes"
+    "allPlatforms": "Toutes les plateformes",
+    "remaining": "restant"
   },
   "home": {
     "hero": {
@@ -206,6 +207,7 @@
       "overallDrawdown": "Drawdown global",
       "minTradingDays": "Jours minimum de trading",
       "daysRemaining": "Jours restants",
+      "days": "jours",
       "tradingStyleRules": "Règles de style de trading",
       "newsTrading": "Trading sur les actualités",
       "weekendHolding": "Maintien le week-end",
@@ -1418,7 +1420,8 @@
         "markAsPaid": "Marquer comme payé",
         "paid": "Payé",
         "rejected": "Rejeté",
-        "rejecting": "Rejet en cours..."
+        "rejecting": "Rejet en cours...",
+        "processing": "Traitement..."
       },
       "emptyMessage": "Aucune demande de retrait trouvée",
       "dialog": {
@@ -1486,16 +1489,11 @@
       },
       "searchPlaceholder": "Rechercher par compte ou e-mail...",
       "filter": {
-        "violationType": "Type d’infraction",
+        "violationType": "Type d'infraction",
         "allTypes": "Tous les types",
         "dailyDrawdown": "Perte journalière",
         "overallDrawdown": "Perte totale",
-        "maxTradingDays": "Jours de trading max",
         "newsTrading": "Trading sur les actualités",
-        "weekendHolding": "Maintien le week-end",
-        "restrictedInstrument": "Instrument restreint",
-        "lotSize": "Taille de lot",
-        "eaDetected": "EA détecté",
         "consistency": "Cohérence",
         "ruleBreak": "Infraction aux règles"
       },
@@ -1510,12 +1508,9 @@
       "types": {
         "dailyDrawdown": "Perte journalière",
         "overallDrawdown": "Perte totale",
-        "maxTradingDays": "Jours de trading max",
         "newsTrading": "Trading sur les actualités",
-        "weekendHolding": "Maintien le week-end",
-        "restrictedInstrument": "Instrument restreint",
-        "lotSize": "Taille de lot",
-        "eaDetected": "EA détecté"
+        "consistency": "Cohérence",
+        "ruleBreak": "Infraction aux règles"
       },
       "severity": {
         "fatal": "Grave",
@@ -1524,12 +1519,12 @@
       "descriptions": {
         "daily_drawdown": "La perte journalière a dépassé {{threshold}}%",
         "overall_drawdown": "La perte totale a dépassé {{threshold}}%",
-        "max_trading_days": "La période maximale de trading est terminée",
-        "news_trading": "Trading pendant une période d’actualités restreinte",
-        "weekend_holding": "Position maintenue pendant le week-end",
-        "restricted_instrument": "Trading sur un instrument restreint",
-        "lot_size": "La limite de taille de lot a été dépassée",
-        "ea_detected": "Expert Advisor détecté"
+        "news": "Trading pendant une période d'actualités restreinte",
+        "consistency": "Règle de cohérence violée",
+        "rule_break": "Infraction aux règles de trading détectée"
+      },
+      "pagination": {
+        "showing": "Page {{page}} sur {{totalPages}} ({{total}} au total)"
       },
       "emptyMessage": "Aucune infraction trouvée"
     },
@@ -2089,7 +2084,7 @@
           },
           "contactSupport": {
             "q": "Comment contacter le support ?",
-            "a": "Vous pouvez nous contacter via le chat en direct 24/7, par e-mail à support@the-bluehaven.com ou via les tickets de support dans le tableau de bord."
+            "a": "Vous pouvez nous contacter via le chat en direct 24/7, par e-mail à support@prop-capitals.com ou via les tickets de support dans le tableau de bord."
           }
         }
       }
@@ -2103,7 +2098,7 @@
       "emailSupport": {
         "title": "Support par e-mail",
         "description": "Pour les questions générales et les demandes détaillées",
-        "contact": "support@the-bluehaven.com"
+        "contact": "support@prop-capitals.com"
       },
       "liveChat": {
         "title": "Chat en direct",
@@ -2788,7 +2783,7 @@
     },
     "contact": {
       "title": "12. Contact",
-      "content": "Pour toute question concernant ces conditions, contactez-nous à support@the-bluehaven.com."
+      "content": "Pour toute question concernant ces conditions, contactez-nous à support@prop-capitals.com."
     }
   },
   "privacy": {
@@ -2858,7 +2853,7 @@
     },
     "contactUs": {
       "title": "10. Nous contacter",
-      "content": "Pour toute question relative à la confidentialité, contactez-nous à support@the-bluehaven.com."
+      "content": "Pour toute question relative à la confidentialité, contactez-nous à support@prop-capitals.com."
     }
   }
 }
