@@ -158,11 +158,11 @@ const TraderPanelLayoutInner = () => {
     },
   });
 
-  // Header dropdown: unread on top, then by date (newest first). If no unread, show latest.
+  // Header dropdown: only show unread notifications, sorted by date (newest first)
   const notificationsForDropdown = (allNotificationsData || [])
+    .filter(n => !n.read) // Only unread notifications
     .slice()
     .sort((a, b) => {
-      if (a.read !== b.read) return a.read ? 1 : -1; // unread first
       return (
         new Date(b.createdAt || 0).getTime() -
         new Date(a.createdAt || 0).getTime()
@@ -527,39 +527,49 @@ const TraderPanelLayoutInner = () => {
                       </div>
                     </div>
                     <div className="max-h-80 overflow-y-auto">
-                      {notifications.map((notif) => (
-                        <div
-                          key={notif.id}
-                          className={`p-4 border-b transition-all cursor-pointer ${isDark ? 'border-white/5 hover:bg-white/5' : 'border-slate-100 hover:bg-slate-50'
-                            } ${!notif.read ? isDark ? 'bg-white/5' : 'bg-amber-50/50' : ''}`}
-                        >
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="flex items-start gap-3">
-                              <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${notif.type === 'success' ? 'bg-emerald-500' :
-                                notif.type === 'warning' ? 'bg-amber-500' :
-                                notif.type === 'error' ? 'bg-red-500' : 'bg-blue-500'
-                                }`} />
-                              <div className="flex-1 min-w-0">
-                                <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{notif.title}</p>
-                                <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{notif.message}</p>
-                                <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{notif.time}</p>
-                              </div>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7 text-slate-400 flex-shrink-0 hover:bg-slate-400"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                markAsReadMutation.mutate(notif.id);
-                              }}
-                              title={t("notifications.markAsRead")}
-                            >
-                              <Check className="w-4 h-4" />
-                            </Button>
+                      {notifications.length === 0 ? (
+                        <div className="p-8 text-center">
+                          <div className={`w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center ${isDark ? 'bg-white/5' : 'bg-slate-200'}`}>
+                            <Bell className={`w-6 h-6 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                           </div>
+                          <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>No new notifications</p>
+                          <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>You're all caught up!</p>
                         </div>
-                      ))}
+                      ) : (
+                        notifications.map((notif) => (
+                          <div
+                            key={notif.id}
+                            className={`p-4 border-b transition-all cursor-pointer ${isDark ? 'border-white/5 hover:bg-white/5' : 'border-slate-100 hover:bg-slate-50'
+                              } ${!notif.read ? isDark ? 'bg-white/5' : 'bg-amber-50/50' : ''}`}
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex items-start gap-3">
+                                <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${notif.type === 'success' ? 'bg-emerald-500' :
+                                  notif.type === 'warning' ? 'bg-amber-500' :
+                                  notif.type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+                                  }`} />
+                                <div className="flex-1 min-w-0">
+                                  <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{notif.title}</p>
+                                  <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{notif.message}</p>
+                                  <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{notif.time}</p>
+                                </div>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-slate-400 flex-shrink-0 hover:bg-slate-400"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  markAsReadMutation.mutate(notif.id);
+                                }}
+                                title={t("notifications.markAsRead")}
+                              >
+                                <Check className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
                     <div className={`p-3 text-center border-t ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
                       <Link to="/traderdashboard/notifications" className="w-full text-center text-sm text-amber-500 hover:text-amber-400 font-medium" onClick={() => {
