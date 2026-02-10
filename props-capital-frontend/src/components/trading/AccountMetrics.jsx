@@ -314,8 +314,9 @@ export default function AccountMetrics({
           </h3>
         </div>
 
-        {/* RESPONSIVE CONTAINER */}
-        <div className="flex flex-col md:flex-row items-center md:justify-between gap-4">
+        {/* RESPONSIVE CONTAINER with horizontal scroll on small tablets */}
+        <div className="overflow-x-auto pb-2 custom-scrollbar">
+          <div className="flex flex-col md:flex-row items-center md:justify-between gap-4 min-w-0 md:min-w-[600px] lg:min-w-0">
           {/* Phase 1 */}
           <div
             className={`w-full md:flex-1 p-3 rounded-lg border-2 transition-all
@@ -459,10 +460,11 @@ export default function AccountMetrics({
             )}
           </div>
         </div>
+      </div>
       </Card>
 
       {/* Main Stats Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="bg-slate-900 border-slate-800 p-2 sm:p-3">
           <div className="flex items-center gap-1 mb-1">
             <Wallet className="w-3 h-3 text-slate-400" />

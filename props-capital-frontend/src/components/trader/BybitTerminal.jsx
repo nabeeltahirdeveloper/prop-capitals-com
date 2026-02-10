@@ -398,7 +398,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
   /* ════════════════════════ RENDER ════════════════════════ */
   return (
-    <div className="flex flex-col h-full" style={{ background: C.bg, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", color: C.textP, fontSize: 12 }}>
+    <div className="flex flex-col" style={{ background: C.bg, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", color: C.textP, fontSize: 12 }}>
 
       {/* ═══ LOCKED BANNER ═══ */}
       {isAccountLocked && (
@@ -408,7 +408,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
       )}
 
       {/* ═══ TOP HEADER BAR ═══ */}
-      <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, position: 'relative', zIndex: 100 }} className="flex items-center px-4 py-2 gap-6 flex-wrap">
+      <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, position: 'relative', zIndex: 100 }} className="flex items-center px-4 py-3 gap-y-4 gap-x-6 flex-wrap">
         {/* Symbol selector */}
         <div className="relative shrink-0" ref={dropdownRef}>
           <button
@@ -544,14 +544,14 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                 <button onClick={() => setChartType('line')} className="px-2 py-1 shrink-0"
                   style={{ fontSize: 11, color: chartType === 'line' ? C.textP : C.textS }}>Line</button>
               </div>
-              <div className="flex-1 min-h-0" style={{ minHeight: 300 }}>
+              <div className="flex-1 min-h-0">
                 <TradingChart key={`chart-bybit-${currentSymbolStr}`} symbol={enrichedSelectedSymbol} openPositions={openPositions} onPriceUpdate={handlePriceUpdate} showBuySellPanel={false} />
               </div>
             </SectionErrorBoundary>
           )}
 
           {chartTab === 'overview' && (
-            <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ minHeight: 300 }}>
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {/* Symbol Header */}
               <div className="flex items-center gap-3">
                 <div style={{ width: 40, height: 40, borderRadius: '50%', background: C.card, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -658,7 +658,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
           )}
 
           {chartTab === 'data' && (
-            <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ minHeight: 300 }}>
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {/* Contract / Pair Specifications */}
               <div style={{ background: C.card, borderRadius: 8, border: `1px solid ${C.border}` }} className="p-4">
                 <div style={{ fontSize: 11, color: C.textT, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
@@ -770,7 +770,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
         {/* ── MIDDLE: ORDER BOOK ── */}
         <SectionErrorBoundary label="Order Book">
-        <div className="shrink-0 flex flex-col overflow-hidden" style={{ width: 280, background: C.panel, borderLeft: `1px solid ${C.border}`, borderRight: `1px solid ${C.border}` }}>
+        <div className="w-full lg:w-[280px] shrink-0 flex flex-col border-b lg:border-b-0 lg:border-r" style={{ background: C.panel, borderColor: C.border }}>
           {/* OB Header */}
           <div className="flex items-center justify-between px-3 shrink-0" style={{ borderBottom: `1px solid ${C.border}` }}>
             <div className="flex">
@@ -867,7 +867,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
         {/* ── RIGHT: TRADE PANEL ── */}
         <SectionErrorBoundary label="Trade Panel">
-        <div className="shrink-0 flex flex-col overflow-hidden" style={{ width: 280, background: C.panel }}>
+        <div className="w-full lg:w-[280px] shrink-0 flex flex-col border-t lg:border-t-0 lg:border-l" style={{ background: C.panel, borderColor: C.border }}>
           {/* Trade header */}
           <div className="px-4 py-2.5 flex items-center justify-between shrink-0" style={{ borderBottom: `1px solid ${C.border}` }}>
             <span style={{ fontSize: 14, fontWeight: 700, color: C.textP }}>Trade</span>

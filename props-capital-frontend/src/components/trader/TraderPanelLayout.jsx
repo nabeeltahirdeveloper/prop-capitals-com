@@ -322,10 +322,10 @@ const TraderPanelLayoutInner = () => {
           </div>
         </aside>
 
-        {/* Main Content */}
-        <main className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'} ml-0`}>
+       {/* Main Content */}
+        <main className={`h-screen flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'} ml-0`}>
           {/* Top Header */}
-          <header className={`h-14 sm:h-16 border-b flex items-center justify-between px-3 sm:px-6 sticky top-0 z-30 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'
+          <header className={`h-14 sm:h-16 border-b flex items-center justify-between px-3 sm:px-6 shrink-0 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'
             }`}>
             <div className="flex items-center gap-2 sm:gap-4">
               {/* Mobile Menu Button */}
@@ -506,7 +506,7 @@ const TraderPanelLayoutInner = () => {
           </header>
 
           {/* Page Content */}
-          <div className="p-3 sm:p-4 md:p-6">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6">
             <Outlet />
           </div>
         </main>
