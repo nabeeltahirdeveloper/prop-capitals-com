@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TrendingUp, ChevronDown } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
 import { useChallenges } from '@/contexts/ChallengesContext';
 import ChallengeActiveBanner from '../trading/ChallengeActiveBanner';
@@ -11,9 +11,7 @@ import TradingStyleRules from '../trading/TradingStyleRules';
 const CommonTerminalWrapper = ({ children }) => {
   const { isDark } = useTraderTheme();
   const { 
-    challenges, 
     selectedChallenge, 
-    selectChallenge, 
     getChallengePhaseLabel, 
     getRuleCompliance,
     loading 
@@ -69,38 +67,6 @@ const CommonTerminalWrapper = ({ children }) => {
 
   return (
     <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
-      {/* ==================== CHALLENGE SELECTOR ==================== */}
-      {challenges.length > 1 && (
-        <div className={cardClass + ' p-4'}>
-          <div className="flex items-center gap-3">
-            <label className={`text-sm font-medium ${textClass}`}>Active Challenge:</label>
-            <div className="relative flex-1 max-w-md">
-              <select
-                value={selectedChallenge.id}
-                onChange={(e) => selectChallenge(e.target.value)}
-                className={`appearance-none w-full px-4 py-2 pr-10 rounded-xl border font-medium text-sm cursor-pointer transition-all ${
-                  isDark 
-                    ? 'bg-[#1a1f2e] border-white/10 text-white hover:border-white/20' 
-                    : 'bg-white border-slate-200 text-slate-900 hover:border-slate-300'
-                }`}
-                style={{ colorScheme: isDark ? 'dark' : 'light' }}
-              >
-                {challenges.map((challenge) => {
-                  const label = getChallengePhaseLabel(challenge);
-                  const type = challenge.type === '1-step' ? '1S' : '2S';
-                  return (
-                    <option key={challenge.id} value={challenge.id}>
-                      {type} ${challenge.accountSize.toLocaleString()} - {label}
-                    </option>
-                  );
-                })}
-              </select>
-              <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${mutedClass}`} />
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* ==================== CHALLENGE ACTIVE BANNER ==================== */}
       <ChallengeActiveBanner challenge={selectedChallenge} phaseLabel={phaseLabel} />
 
