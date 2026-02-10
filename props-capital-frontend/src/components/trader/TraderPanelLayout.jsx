@@ -21,7 +21,8 @@ import {
   Trophy,
   LogOut,
   Menu,
-  X
+  X,
+  Check
 } from 'lucide-react';
 import { ChallengesProvider, useChallenges } from '@/contexts/ChallengesContext';
 import { useTrading } from '@/contexts/TradingContext';
@@ -34,6 +35,9 @@ import {
 } from "@/api/notifications";
 import { getUserPayouts, getPayoutStatistics } from "@/api/payouts";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { translateNotification } from '@/utils/notificationTranslations';
+import { useTranslation } from '@/contexts/LanguageContext';
+import { Button } from '../ui/button';
 
 export const TraderThemeContext = React.createContext();
 export const useTraderTheme = () => React.useContext(TraderThemeContext);
@@ -41,6 +45,7 @@ export const useTraderTheme = () => React.useContext(TraderThemeContext);
 const TraderPanelLayoutInner = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation()
   const { logout } = useAuth();
   const queryClient = useQueryClient();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -116,22 +121,67 @@ const TraderPanelLayoutInner = () => {
   //   retry: false,
   // });
 
-  // const { data: notifications = [] } = useQuery({
-  //   queryKey: ["notifications", user?.userId],
-  //   queryFn: async () => {
-  //     if (!user?.userId) return [];
-  //     try {
-  //       return await getUserNotifications(user.userId);
-  //     } catch (error) {
-  //       console.error("Failed to fetch notifications:", error);
-  //       return [];
-  //     }
-  //   },
-  //   enabled: !!user?.userId,
-  //   retry: false,
-  //   refetchInterval: 30000,
-  //   staleTime: 15000,
-  // });
+  // Notifications
+  const { data: allNotificationsData = [] } = useQuery({
+    queryKey: ["notifications", user?.userId],
+    queryFn: async () => {
+      if (!user?.userId) return [];
+      try {
+        return await getUserNotifications(user.userId);
+      } catch (error) {
+        console.error("Failed to fetch notifications:", error);
+        return [];
+      }
+    },
+    enabled: !!user?.userId,
+    retry: false,
+    refetchInterval: 5000,
+  });
+
+  const markAsReadMutation = useMutation({
+    mutationFn: (id) => markNotificationAsRead(id),
+    onSuccess: (_, id) => {
+      queryClient.setQueryData(
+        ["notifications", user?.userId],
+        (oldData = []) =>
+          oldData.map((n) => (n.id === id ? { ...n, read: true } : n)),
+      );
+      queryClient.invalidateQueries({
+        queryKey: ["notifications", user?.userId],
+      });
+    },
+    onError: (error) => {
+      console.error("Failed to mark notification as read:", error);
+      queryClient.invalidateQueries({
+        queryKey: ["notifications", user?.userId],
+      });
+    },
+  });
+
+  // Header dropdown: only show unread notifications, sorted by date (newest first)
+  const notificationsForDropdown = (allNotificationsData || [])
+    .filter(n => !n.read) // Only unread notifications
+    .slice()
+    .sort((a, b) => {
+      return (
+        new Date(b.createdAt || 0).getTime() -
+        new Date(a.createdAt || 0).getTime()
+      );
+    })
+    .slice(0, 5)
+    .map((n) => {
+      const translated = translateNotification(n.title, n.body, t);
+      return {
+        id: n.id,
+        title: translated.title,
+        message: translated.message,
+        read: !!n.read,
+      };
+    });
+  const notifications = notificationsForDropdown;
+  const unreadNotificationCount = (allNotificationsData || []).filter(
+    (n) => !n.read,
+  ).length;
 
   const toggleTheme = () => setIsDark(!isDark);
 
@@ -143,16 +193,6 @@ const TraderPanelLayoutInner = () => {
       setIsRefreshing(false);
     }, 1000);
   };
-
-  // Demo notifications data
-  const notifications = [
-    { id: 1, type: 'success', title: 'Trade Executed', message: 'EUR/USD Buy order filled at 1.08567', time: '2 mins ago', read: false },
-    { id: 2, type: 'warning', title: 'Daily Loss Warning', message: 'You have reached 80% of your daily loss limit', time: '15 mins ago', read: false },
-    { id: 3, type: 'info', title: 'Market Update', message: 'US Non-Farm Payroll data releasing in 1 hour', time: '1 hour ago', read: true },
-    { id: 4, type: 'success', title: 'Challenge Progress', message: 'Profit target 50% completed!', time: '3 hours ago', read: true },
-  ];
-
-  const unreadCount = notifications.filter(n => !n.read).length;
 
   const mainNavItems = [
     { path: '/traderdashboard', icon: LayoutDashboard, label: 'Account Overview', exact: true },
@@ -469,9 +509,9 @@ const TraderPanelLayoutInner = () => {
                     }`}
                 >
                   <Bell className="w-5 h-5" />
-                  {unreadCount > 0 && (
+                  {unreadNotificationCount > 0 && (
                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 text-[10px] font-bold text-[#0a0d12] rounded-full flex items-center justify-center">
-                      {unreadCount}
+                      {unreadNotificationCount}
                     </span>
                   )}
                 </button>
@@ -483,34 +523,60 @@ const TraderPanelLayoutInner = () => {
                     <div className={`p-4 border-b ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
                       <div className="flex items-center justify-between">
                         <h3 className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Notifications</h3>
-                        <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{unreadCount} unread</span>
+                        <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{unreadNotificationCount} unread</span>
                       </div>
                     </div>
                     <div className="max-h-80 overflow-y-auto">
-                      {notifications.map((notif) => (
-                        <div
-                          key={notif.id}
-                          className={`p-4 border-b transition-all cursor-pointer ${isDark ? 'border-white/5 hover:bg-white/5' : 'border-slate-100 hover:bg-slate-50'
-                            } ${!notif.read ? isDark ? 'bg-white/5' : 'bg-amber-50/50' : ''}`}
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${notif.type === 'success' ? 'bg-emerald-500' :
-                              notif.type === 'warning' ? 'bg-amber-500' :
-                                notif.type === 'error' ? 'bg-red-500' : 'bg-blue-500'
-                              }`} />
-                            <div className="flex-1 min-w-0">
-                              <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{notif.title}</p>
-                              <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{notif.message}</p>
-                              <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{notif.time}</p>
+                      {notifications.length === 0 ? (
+                        <div className="p-8 text-center">
+                          <div className={`w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center ${isDark ? 'bg-white/5' : 'bg-slate-200'}`}>
+                            <Bell className={`w-6 h-6 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
+                          </div>
+                          <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>No new notifications</p>
+                          <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>You're all caught up!</p>
+                        </div>
+                      ) : (
+                        notifications.map((notif) => (
+                          <div
+                            key={notif.id}
+                            className={`p-4 border-b transition-all cursor-pointer ${isDark ? 'border-white/5 hover:bg-white/5' : 'border-slate-100 hover:bg-slate-50'
+                              } ${!notif.read ? isDark ? 'bg-white/5' : 'bg-amber-50/50' : ''}`}
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex items-start gap-3">
+                                <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${notif.type === 'success' ? 'bg-emerald-500' :
+                                  notif.type === 'warning' ? 'bg-amber-500' :
+                                  notif.type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+                                  }`} />
+                                <div className="flex-1 min-w-0">
+                                  <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{notif.title}</p>
+                                  <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{notif.message}</p>
+                                  <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{notif.time}</p>
+                                </div>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-slate-400 flex-shrink-0 hover:bg-slate-400"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  markAsReadMutation.mutate(notif.id);
+                                }}
+                                title={t("notifications.markAsRead")}
+                              >
+                                <Check className="w-4 h-4" />
+                              </Button>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))
+                      )}
                     </div>
-                    <div className={`p-3 border-t ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
-                      <button className="w-full text-center text-sm text-amber-500 hover:text-amber-400 font-medium">
+                    <div className={`p-3 text-center border-t ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
+                      <Link to="/traderdashboard/notifications" className="w-full text-center text-sm text-amber-500 hover:text-amber-400 font-medium" onClick={() => {
+                        setShowNotifications(false);
+                      }}>
                         View All Notifications
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 )}
