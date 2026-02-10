@@ -21,7 +21,8 @@ import {
   Trophy,
   LogOut,
   Menu,
-  X
+  X,
+  Check
 } from 'lucide-react';
 import { ChallengesProvider, useChallenges } from '@/contexts/ChallengesContext';
 import { useTrading } from '@/contexts/TradingContext';
@@ -36,6 +37,7 @@ import { getUserPayouts, getPayoutStatistics } from "@/api/payouts";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { translateNotification } from '@/utils/notificationTranslations';
 import { useTranslation } from '@/contexts/LanguageContext';
+import { Button } from '../ui/button';
 
 export const TraderThemeContext = React.createContext();
 export const useTraderTheme = () => React.useContext(TraderThemeContext);
@@ -531,16 +533,30 @@ const TraderPanelLayoutInner = () => {
                           className={`p-4 border-b transition-all cursor-pointer ${isDark ? 'border-white/5 hover:bg-white/5' : 'border-slate-100 hover:bg-slate-50'
                             } ${!notif.read ? isDark ? 'bg-white/5' : 'bg-amber-50/50' : ''}`}
                         >
-                          <div className="flex items-start gap-3">
-                            <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${notif.type === 'success' ? 'bg-emerald-500' :
-                              notif.type === 'warning' ? 'bg-amber-500' :
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-start gap-3">
+                              <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${notif.type === 'success' ? 'bg-emerald-500' :
+                                notif.type === 'warning' ? 'bg-amber-500' :
                                 notif.type === 'error' ? 'bg-red-500' : 'bg-blue-500'
-                              }`} />
-                            <div className="flex-1 min-w-0">
-                              <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{notif.title}</p>
-                              <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{notif.message}</p>
-                              <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{notif.time}</p>
+                                }`} />
+                              <div className="flex-1 min-w-0">
+                                <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{notif.title}</p>
+                                <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{notif.message}</p>
+                                <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{notif.time}</p>
+                              </div>
                             </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-slate-400 flex-shrink-0 hover:bg-slate-400"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                markAsReadMutation.mutate(notif.id);
+                              }}
+                              title={t("notifications.markAsRead")}
+                            >
+                              <Check className="w-4 h-4" />
+                            </Button>
                           </div>
                         </div>
                       ))}
