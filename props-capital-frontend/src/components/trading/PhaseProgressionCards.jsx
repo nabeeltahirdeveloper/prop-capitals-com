@@ -61,11 +61,11 @@ const PhaseProgressionCards = ({ challenge }) => {
         <Layers className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
         <h3 className={`font-bold text-sm sm:text-base ${textClass}`}>Phase Progression</h3>
       </div>
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 overflow-x-auto">
         {phases.map((phase, index) => (
           <React.Fragment key={phase.name}>
             <div
-              className={`flex-1 rounded-xl p-3 sm:p-4 border-2 ${
+              className={`flex-1 min-w-0 rounded-xl p-3 sm:p-4 border-2 ${
                 phase.status === 'active'
                   ? 'border-blue-500/50 bg-blue-500/10'
                   : phase.status === 'completed'
