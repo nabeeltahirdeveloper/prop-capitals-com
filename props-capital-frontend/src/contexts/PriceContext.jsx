@@ -408,17 +408,17 @@ export function PriceProvider({ children, currentPathname = null }) {
         backoffTimeoutRef.current = null;
       }
 
-      if (process.env.NODE_ENV !== "production") {
-        if (authStatus !== "authenticated") {
-          console.log(
-            "[PriceContext] User not authenticated, skipping price polling"
-          );
-        } else if (!isPriceRequiredPage(pathname)) {
-          // console.log(
-          //   `[PriceContext] Not on a price-required page (${pathname}), skipping price polling`
-          // );
-        }
-      }
+      // if (process.env.NODE_ENV !== "production") {
+      //   if (authStatus !== "authenticated") {
+      //     console.log(
+      //       "[PriceContext] User not authenticated, skipping price polling"
+      //     );
+      //   } else if (!isPriceRequiredPage(pathname)) {
+      //     // console.log(
+      //     //   `[PriceContext] Not on a price-required page (${pathname}), skipping price polling`
+      //     // );
+      //   }
+      // }
       return;
     }
 

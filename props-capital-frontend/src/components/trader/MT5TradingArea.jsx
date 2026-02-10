@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { useTraderTheme } from './TraderPanelLayout';
-import { useTrading } from '@/contexts/TradingContext';
+// import { useTrading } from '@/contexts/TradingContext';
 import { usePrices } from '@/contexts/PriceContext';
 import TradingChart from '../trading/TradingChart';
 import MarketWatchlist from '../trading/MarketWatchlist';
@@ -12,6 +12,19 @@ import { Card } from '../ui/card';
 import { useTranslation } from "../../contexts/LanguageContext";
 import { useSearchParams } from 'react-router-dom';
 import { useToast } from '../ui/use-toast';
+import {
+  TradingProvider,
+  Chart,
+  CoinSelector,
+  VolumeControl,
+  StopLoss,
+  TakeProfit,
+  DrawingTools,
+  TimeframeSelector,
+  ChartTypeSelector,
+  useTrading
+} from '@nabeeltahirdeveloper/chart-sdk'
+
 
 const MT5TradingArea = ({
   selectedChallenge,
@@ -22,18 +35,22 @@ const MT5TradingArea = ({
   accountBalance: accountBalanceFromParent,
   selectedAccountId: selectedAccountIdFromParent,
   account: accountFromParent,
-  selectedSymbol: selectedSymbolFromParent,
-  setSelectedSymbol: setSelectedSymbolFromParent,
+  // selectedSymbol: selectedSymbolFromParent,
+  // setSelectedSymbol: setSelectedSymbolFromParent,
 }) => {
   const { isDark } = useTraderTheme();
+  // const {
+  //   selectedSymbol: tradingSelectedSymbol,
+  //   setSelectedSymbol: setTradingSelectedSymbol,
+  //   selectedTimeframe,
+  //   setSelectedTimeframe,
+  //   chartType,
+  //   setChartType,
+  // } = useTrading();
   const {
-    selectedSymbol: tradingSelectedSymbol,
-    setSelectedSymbol: setTradingSelectedSymbol,
-    selectedTimeframe,
-    setSelectedTimeframe,
-    chartType,
-    setChartType,
-  } = useTrading();
+    selectedSymbol,
+    setSelectedSymbol,
+  } = useTrading()
   const { t } = useTranslation();
   const { toast } = useToast();
 
@@ -53,12 +70,12 @@ const MT5TradingArea = ({
   const chartAreaRef = useRef(null);
   const pricesRef = useRef({});
   // When parent provides symbol state, use it (flow from TradingTerminal); otherwise use local state
-  const selectedSymbol = setSelectedSymbolFromParent ? (selectedSymbolFromParent ?? selectedSymbolLocal) : selectedSymbolLocal;
-  const setSelectedSymbol = (sym) => {
-    if (setSelectedSymbolFromParent) setSelectedSymbolFromParent(sym);
-    setSelectedSymbolLocal(sym);
-    setTradingSelectedSymbol(sym?.symbol ?? sym);
-  };
+  // const selectedSymbol = setSelectedSymbolFromParent ? (selectedSymbolFromParent ?? selectedSymbolLocal) : selectedSymbolLocal;
+  // const setSelectedSymbol = (sym) => {
+  //   if (setSelectedSymbolFromParent) setSelectedSymbolFromParent(sym);
+  //   setSelectedSymbolLocal(sym);
+  //   setTradingSelectedSymbol(sym?.symbol ?? sym);
+  // };
 
   // Chart Buy/Sell should open our modal (connected to handleExecuteTrade), not the chart's internal modal
   const handleChartBuyClick = useCallback(() => {
@@ -614,7 +631,7 @@ const MT5TradingArea = ({
       {/* Demo WebTrader - Trading Terminal */}
       <div className={cardClass + ' overflow-hidden max-h-[85vh] flex flex-col'}>
         <div className={`p-4 border-b flex items-center justify-between flex-shrink-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-          <TopBar
+          {/* <TopBar
             selectedSymbol={selectedSymbol}
             selectedTimeframe={selectedTimeframe}
             onTimeframeChange={setSelectedTimeframe}
@@ -629,26 +646,58 @@ const MT5TradingArea = ({
             onToggleMarketWatch={() => setShowMarketWatch(prev => !prev)}
             onToggleBuySell={handleToggleBuySell}
             buySellPanelOpen={showBuySellPanel}
-          />
+          /> */}
+
+          <TradingProvider baseUrl="https://api-chart-sdk.e-volvo.io">
+            <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '18px',
+                flexWrap: 'wrap',
+              }}>
+                <CoinSelector />
+                <TimeframeSelector />
+                <ChartTypeSelector />
+
+
+              </div>
+            </div>
+          </TradingProvider>
+
         </div>
 
         <div className="flex flex-col lg:flex-row flex-1 min-h-0 w-full">
           {/* Left sidebar */}
           <div className="hidden lg:flex lg:w-12 lg:shrink-0 flex-col min-h-0 overflow-hidden">
-            <LeftSidebar />
+            <TradingProvider>
+              <DrawingTools
+                // style={{display:"flex" , flexDirection:"column"}}
+                className="flex flex-col"
+              />
+            </TradingProvider>
           </div>
 
           {/* Chart Area - wrapper with relative so modal matches chart height */}
           <div className="flex-1 min-w-0 flex flex-col min-h-0 order-first lg:order-none">
             <div className="flex-1 min-h-[200px] flex flex-col relative min-w-0">
-              <TradingChart
+              {/* <TradingChart
                 key={`chart-mobile-${selectedSymbol?.symbol}`}
                 symbol={enrichedSelectedSymbol}
                 openPositions={positions}
                 onPriceUpdate={handlePriceUpdate}
                 onBuyClick={handleChartBuyClick}
                 onSellClick={handleChartSellClick}
-              />
+              />*/}
+              <TradingProvider baseUrl="https://api-chart-sdk.e-volvo.io">
+                <div
+                  style={{ width: '60vw', height: '100vh', display: 'flex', flexDirection: 'column' }}
+                >
+                  <Chart
+                    selectedSymbol={setSelectedSymbol}
+                  />
+                </div>
+              </TradingProvider>
               <MarketExecutionModal
                 isOpen={showBuySellPanel}
                 onClose={() => setShowBuySellPanel(false)}
@@ -662,13 +711,14 @@ const MT5TradingArea = ({
           </div>
           {/* Market Watch / Symbols */}
           <div className={`flex w-full lg:w-72 shrink-0 p-3 border-l flex-col min-h-[160px] min-w-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-            <MarketWatchlist
+            {/* <MarketWatchlist
               onSymbolSelect={(symbol) => {
                 setSelectedSymbol(symbol);
                 setTradingSelectedSymbol(symbol?.symbol ?? symbol);
               }}
               selectedSymbol={selectedSymbol}
-            />
+            /> */}
+
           </div>
         </div>
       </div>

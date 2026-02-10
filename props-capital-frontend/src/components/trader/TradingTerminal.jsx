@@ -5,13 +5,16 @@ import MT5TradingArea from './MT5TradingArea';
 import BybitTerminal from './BybitTerminal';
 import TradeLockerComingSoon from './TradeLockerComingSoon';
 import PT5Terminal from '@/pages/TradingTerminal';
+import { TradingProvider } from '@nabeeltahirdeveloper/chart-sdk'
 
 const MT5Terminal = () => {
   const { selectedChallenge } = useChallenges();
 
   return (
     <CommonTerminalWrapper>
-      <MT5TradingArea selectedChallenge={selectedChallenge} />
+      <TradingProvider baseUrl="https://your-api-url.com">
+        <MT5TradingArea selectedChallenge={selectedChallenge} />
+      </ TradingProvider>
     </CommonTerminalWrapper>
   );
 };
