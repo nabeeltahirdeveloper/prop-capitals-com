@@ -5,7 +5,7 @@ import { createPageUrl } from '../utils';
 
 export default function ProtectedRoute({ allowedRoles = [] }) {
   const location = useLocation();
-  const { status, user, isAdmin } = useAuth();
+  const { status, user } = useAuth();
   const { t } = useTranslation();
 
   // Block ALL rendering until auth status is resolved
@@ -29,14 +29,11 @@ export default function ProtectedRoute({ allowedRoles = [] }) {
   if (allowedRoles.length > 0) {
     const userRole = user.role?.toUpperCase(); // Normalize to uppercase
     const hasAccess = allowedRoles.some(role => role.toUpperCase() === userRole);
-    
+
     if (!hasAccess) {
-      // Redirect based on user role to their appropriate dashboard
-      if (userRole === 'ADMIN') {
-        return <Navigate to={createPageUrl('AdminDashboard')} replace />;
-      } else {
-        return <Navigate to={createPageUrl('TraderDashboard')} replace />;
-      }
+      // Clear token and redirect to sign in (this shouldn't happen if sign-in validation works)
+      localStorage.removeItem('token');
+      return <Navigate to={createPageUrl('SignIn')} replace />;
     }
   }
 
@@ -64,10 +61,6 @@ export function DashboardRedirect() {
     return <Navigate to={createPageUrl('SignIn')} replace />;
   }
 
-  const userRole = user.role?.toUpperCase();
-  if (userRole === 'ADMIN') {
-    return <Navigate to={createPageUrl('AdminDashboard')} replace />;
-  }
   return <Navigate to={createPageUrl('TraderDashboard')} replace />;
 }
 
@@ -89,14 +82,9 @@ export function PublicOnlyRoute({ children }) {
     );
   }
 
-  // If authenticated, redirect to appropriate dashboard based on role
+  // If authenticated, redirect to trader dashboard
   if (status === 'authenticated' && user) {
-    const userRole = user.role?.toUpperCase();
-    if (userRole === 'ADMIN') {
-      return <Navigate to={createPageUrl('AdminDashboard')} replace />;
-    } else {
-      return <Navigate to={createPageUrl('TraderDashboard')} replace />;
-    }
+    return <Navigate to={createPageUrl('TraderDashboard')} replace />;
   }
 
   // User is not authenticated - allow access to auth pages

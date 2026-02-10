@@ -1,566 +1,286 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { createPageUrl } from '../utils';
-import { useTranslation } from '../contexts/LanguageContext';
-import { useQuery } from '@tanstack/react-query';
-import api from '@/lib/api';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Check,
-  ArrowRight,
-  Shield,
-  Target,
-  Clock,
-  Zap,
-  Info,
-  Star,
-  Award,
-  TrendingUp,
-  Calendar,
-  Percent,
-  DollarSign,
-  BarChart3,
-  Sparkles,
-  ChevronDown
-} from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Check, ArrowRight, Star, Shield, Zap, Clock, TrendingUp, Award } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { useTheme } from '@/contexts/ThemeContext';
 
-export default function Challenges() {
-  const { t } = useTranslation();
-  const [challengeType, setChallengeType] = useState('two_phase');
+const accountSizes = [
+  { label: '$5K', key: '5K', value: 5000 },
+  { label: '$10K', key: '10K', value: 10000 },
+  { label: '$25K', key: '25K', value: 25000 },
+  { label: '$50K', key: '50K', value: 50000 },
+  { label: '$100K', key: '100K', value: 100000 },
+  { label: '$200K', key: '200K', value: 200000 }
+];
 
-  const { data: challenges = [], isLoading } = useQuery({
-    queryKey: ['challenges'],
-    queryFn: async () => {
-      const response = await api.get('/challenges');
-      return response.data;
-    },
-  });
+const challengeTypes = [
+  {
+    id: "one-step",
+    name: "1-Step Challenge",
+    badge: "Most Popular",
+    description: "Quick evaluation with achievable targets and best value for traders",
+    phases: 1,
+    profitTarget: "10%",
+    dailyDrawdown: "4%",
+    maxDrawdown: "8%",
+    profitSplit: "85%",
+    leverage: "1:30",
+    minDays: "None",
+    popular: true,
+    prices: { "5K": 55, "10K": 99, "25K": 189, "50K": 299, "100K": 499, "200K": 949 }
+  },
+  {
+    id: "two-step",
+    name: "2-Step Challenge",
+    badge: "Best Split",
+    description: "Traditional evaluation with highest profit split potential up to 90%",
+    phases: 2,
+    profitTarget: "8% / 5%",
+    dailyDrawdown: "5%",
+    maxDrawdown: "10%",
+    profitSplit: "90%",
+    leverage: "1:50",
+    minDays: "None",
+    popular: false,
+    prices: { "5K": 45, "10K": 79, "25K": 159, "50K": 249, "100K": 449, "200K": 849 }
+  }
+];
 
-  const mockChallenges = [
-    {
-      id: '1',
-      name: '$10,000 Challenge',
-      account_size: 10000,
-      price: 99,
-      challenge_type: challengeType,
-      phase1_profit_target: 8,
-      phase2_profit_target: 5,
-      max_daily_drawdown: 5,
-      max_overall_drawdown: 10,
-      min_trading_days: 4,
-      profit_split: 80,
-      features: ['Unlimited trading period', 'All trading styles allowed', 'Free retake on 8% profit', 'Weekend holding allowed']
-    },
-    {
-      id: '2',
-      name: '$25,000 Challenge',
-      account_size: 25000,
-      price: 199,
-      challenge_type: challengeType,
-      phase1_profit_target: 8,
-      phase2_profit_target: 5,
-      max_daily_drawdown: 5,
-      max_overall_drawdown: 10,
-      min_trading_days: 4,
-      profit_split: 80,
-      features: ['Unlimited trading period', 'All trading styles allowed', 'Free retake on 8% profit', 'Weekend holding allowed']
-    },
-    {
-      id: '3',
-      name: '$50,000 Challenge',
-      account_size: 50000,
-      price: 299,
-      challenge_type: challengeType,
-      phase1_profit_target: 8,
-      phase2_profit_target: 5,
-      max_daily_drawdown: 5,
-      max_overall_drawdown: 10,
-      min_trading_days: 4,
-      profit_split: 85,
-      popular: true,
-      features: ['Unlimited trading period', 'All trading styles allowed', 'Free retake on 8% profit', 'Weekend holding allowed', 'Priority support']
-    },
-    {
-      id: '4',
-      name: '$100,000 Challenge',
-      account_size: 100000,
-      price: 499,
-      challenge_type: challengeType,
-      phase1_profit_target: 8,
-      phase2_profit_target: 5,
-      max_daily_drawdown: 5,
-      max_overall_drawdown: 10,
-      min_trading_days: 4,
-      profit_split: 85,
-      features: ['Unlimited trading period', 'All trading styles allowed', 'Free retake on 8% profit', 'Weekend holding allowed', 'Priority support']
-    },
-    {
-      id: '5',
-      name: '$200,000 Challenge',
-      account_size: 200000,
-      price: 999,
-      challenge_type: challengeType,
-      phase1_profit_target: 8,
-      phase2_profit_target: 5,
-      max_daily_drawdown: 5,
-      max_overall_drawdown: 10,
-      min_trading_days: 4,
-      profit_split: 90,
-      features: ['Unlimited trading period', 'All trading styles allowed', 'Free retake on 8% profit', 'Weekend holding allowed', 'Priority support', 'Dedicated account manager']
-    },
-  ];
+const features = [
+  { icon: Zap, title: "No Time Limit", description: "Complete the challenge at your own pace" },
+  { icon: Shield, title: "100% Fee Refund", description: "Get your fee back on first payout" },
+  { icon: TrendingUp, title: "All Strategies", description: "EAs, scalping, news trading allowed" },
+  { icon: Clock, title: "Fast Payouts", description: "Under 90 minutes average" }
+];
 
-  // Normalize API challenges to match expected field names
-  const normalizedChallenges = challenges.map(challenge => {
-    // Helper to safely get numeric value
-    const getNumericValue = (value) => {
-      if (value === null || value === undefined) return null;
-      const num = typeof value === 'string' ? parseFloat(value) : value;
-      return isNaN(num) ? null : num;
-    };
-
-    return {
-      ...challenge,
-      account_size: challenge.accountSize || challenge.account_size,
-      price: challenge.price || challenge.cost,
-      challenge_type: challenge.challengeType || challenge.challenge_type || challenge.type,
-      phase1_profit_target: getNumericValue(challenge.phase1TargetPercent || challenge.phase1Target || challenge.phase1_profit_target || challenge.phase1ProfitTarget),
-      phase2_profit_target: getNumericValue(challenge.phase2TargetPercent || challenge.phase2Target || challenge.phase2_profit_target || challenge.phase2ProfitTarget),
-      max_daily_drawdown: getNumericValue(challenge.dailyDrawdownPercent || challenge.maxDailyDrawdown || challenge.max_daily_drawdown || challenge.maxDailyDrawdownPercent),
-      max_overall_drawdown: getNumericValue(challenge.overallDrawdownPercent || challenge.maxOverallDrawdown || challenge.max_overall_drawdown || challenge.maxOverallDrawdownPercent),
-      min_trading_days: challenge.minTradingDays || challenge.min_trading_days,
-      profit_split: getNumericValue(challenge.profitSplit || challenge.profit_split || challenge.profitSplitPercent || challenge.profitSplitPercentage || challenge.profit_split_percent || challenge.profit_split_percentage || challenge.profitSplitValue) ?? 80,
-    };
-  });
-
-  // Only use real challenges from backend, no mock data fallback
-  const displayChallenges = normalizedChallenges;
-
-  const rules = [
-    { icon: Target, label: t('challenges.rules.phase1Target'), value: '8%', color: 'text-emerald-400', bg: 'bg-emerald-500/20' },
-    { icon: Target, label: t('challenges.rules.phase2Target'), value: '5%', color: 'text-cyan-400', bg: 'bg-cyan-500/20' },
-    { icon: Shield, label: t('challenges.rules.dailyDrawdown'), value: '5%', color: 'text-amber-400', bg: 'bg-amber-500/20' },
-    { icon: Shield, label: t('challenges.rules.maxDrawdown'), value: '10%', color: 'text-red-400', bg: 'bg-red-500/20' },
-    { icon: Calendar, label: t('challenges.rules.minTradingDays'), value: t('challenges.rules.fourDays'), color: 'text-blue-400', bg: 'bg-blue-500/20' },
-    { icon: Clock, label: t('challenges.rules.timeLimit'), value: t('challenges.rules.unlimited'), color: 'text-purple-400', bg: 'bg-purple-500/20' },
-  ];
-
-  const challengeTypeInfo = {
-    one_phase: {
-      title: t('challenges.types.onePhase.title'),
-      description: t('challenges.types.onePhase.description'),
-      image: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=600&h=400&fit=crop'
-    },
-    two_phase: {
-      title: t('challenges.types.twoPhase.title'),
-      description: t('challenges.types.twoPhase.description'),
-      image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&h=400&fit=crop'
-    },
-    instant_funding: {
-      title: t('challenges.types.instantFunding.title'),
-      description: t('challenges.types.instantFunding.description'),
-      image: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&h=400&fit=crop'
-    }
-  };
+const ChallengesPage = () => {
+  const { isDark } = useTheme();
+  const [selectedSize, setSelectedSize] = useState(3);
 
   return (
-    <div className="min-h-screen bg-slate-950 pt-16 sm:pt-20 md:pt-24 pb-12 md:pb-16 overflow-x-hidden">
+    <div className={`min-h-screen pt-20 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      <section className="py-12 lg:py-20 relative overflow-hidden">
         <div className="absolute inset-0">
-          <img
-            src="https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=1920&h=600&fit=crop"
-            alt="Trading"
-            className="w-full h-full object-cover opacity-10"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-950/90 to-slate-950" />
+          <div className={`absolute top-1/4 left-1/4 w-64 lg:w-96 h-64 lg:h-96 rounded-full blur-3xl ${isDark ? 'bg-amber-500/10' : 'bg-amber-500/5'}`}></div>
+          <div className={`absolute bottom-1/4 right-1/4 w-64 lg:w-96 h-64 lg:h-96 rounded-full blur-3xl ${isDark ? 'bg-purple-500/10' : 'bg-purple-500/5'}`}></div>
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-12">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-6"
-            >
-              <Sparkles className="w-4 h-4 text-emerald-400" />
-              <span className="text-sm text-emerald-400">{t('challenges.badge')}</span>
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4"
-            >
-              {t('challenges.title')}
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-xl text-slate-400 max-w-2xl mx-auto"
-            >
-              {t('challenges.subtitle')}
-            </motion.p>
+            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">Funding Programs</span>
+            <h1 className={`text-3xl sm:text-4xl lg:text-6xl font-black mb-4 lg:mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              Choose Your <span className="bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">Challenge</span>
+            </h1>
+            <p className={`text-base lg:text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
+              Select the evaluation program that matches your trading style. All programs include free education and 100% fee refund.
+            </p>
           </div>
 
-          {/* Challenge Type Selector */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="flex justify-center mb-8"
-          >
-            <div className="bg-slate-900 rounded-2xl p-2 border border-slate-800">
-              <div className="flex flex-col sm:flex-row gap-2">
-                {[
-                  { value: 'one_phase', label: t('challenges.typeLabels.onePhase'), icon: Zap },
-                  { value: 'two_phase', label: t('challenges.typeLabels.twoPhase'), icon: Target },
-                  { value: 'instant_funding', label: t('challenges.typeLabels.instant'), icon: Sparkles }
-                ].map((type) => (
-                  <button
-                    key={type.value}
-                    onClick={() => setChallengeType(type.value)}
-                    className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl font-medium transition-all text-sm sm:text-base ${challengeType === type.value
-                      ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-white'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                      }`}
-                  >
-                    <type.icon className="w-4 h-4" />
-                    {type.label}
-                  </button>
-                ))}
-              </div>
+          {/* Account Size Selector */}
+          <div className="flex justify-center mb-12 overflow-x-auto pb-2">
+            <div className={`rounded-full p-1.5 inline-flex gap-1 border min-w-max ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`}>
+              {accountSizes.map((size, index) => (
+                <button
+                  key={size.value}
+                  onClick={() => setSelectedSize(index)}
+                  className={`px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${
+                    selectedSize === index
+                      ? 'bg-amber-400 text-[#0a0d12]'
+                      : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
+                  }`}
+                >
+                  {size.label}
+                </button>
+              ))}
             </div>
-          </motion.div>
-
-          {/* Challenge Type Info Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <Card className="bg-slate-900/50 border-slate-800 overflow-hidden mb-8 md:mb-12">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-                <div className="p-4 sm:p-6 md:p-8">
-                  <h2 className="text-2xl font-bold text-white mb-3">{challengeTypeInfo[challengeType].title}</h2>
-                  <p className="text-slate-400 mb-6">{challengeTypeInfo[challengeType].description}</p>
-                  <div className="grid grid-cols-3 gap-3 md:gap-4">
-                    {rules.slice(0, 3).map((rule, i) => (
-                      <div key={i} className="text-center">
-                        <div className={`w-12 h-12 ${rule.bg} rounded-xl flex items-center justify-center mx-auto mb-2`}>
-                          <rule.icon className={`w-6 h-6 ${rule.color}`} />
-                        </div>
-                        <p className="text-xs text-slate-400">{rule.label}</p>
-                        <p className="text-lg font-semibold text-white">{rule.value}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="relative h-64 md:h-auto">
-                  <img
-                    src={challengeTypeInfo[challengeType].image}
-                    alt={challengeTypeInfo[challengeType].title}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-slate-900 to-transparent" />
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Rules Summary */}
-        <Card className="bg-slate-900/50 border-slate-800 p-4 md:p-6 mb-8 md:mb-12">
-          <h3 className="text-lg font-semibold text-white mb-6 text-center">{t('challenges.rules.title')}</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
-            {rules.map((rule, i) => (
-              <div key={i} className="text-center group">
-                <div className={`w-14 h-14 ${rule.bg} rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform`}>
-                  <rule.icon className={`w-7 h-7 ${rule.color}`} />
-                </div>
-                <p className="text-sm text-slate-400 mb-1">{rule.label}</p>
-                <p className="text-xl font-bold text-white">{rule.value}</p>
-              </div>
-            ))}
           </div>
-        </Card>
 
-        {/* Challenge Cards */}
-        {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 mb-12 md:mb-16">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <Card key={i} className="bg-slate-900 border-slate-800 p-6 h-full">
-                <Skeleton className="h-16 w-16 mx-auto mb-4 rounded-2xl" />
-                <Skeleton className="h-6 w-24 mx-auto mb-2" />
-                <Skeleton className="h-4 w-32 mx-auto mb-6" />
-                <div className="space-y-2 mb-6">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                </div>
-                <Skeleton className="h-10 w-full mb-4" />
-                <Skeleton className="h-8 w-20 mx-auto" />
-              </Card>
-            ))}
-          </div>
-        ) : displayChallenges.length === 0 ? (
-          <div className="text-center py-12 mb-16">
-            <p className="text-slate-400">{t('challenges.noChallenges')}</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 mb-12 md:mb-16">
-            {displayChallenges.map((challenge, i) => (
-              <motion.div
+          {/* Challenge Cards */}
+          <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto">
+            {challengeTypes.map((challenge) => (
+              <div 
                 key={challenge.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
+                className={`relative rounded-3xl p-6 lg:p-8 border transition-all duration-300 hover:-translate-y-2 ${
+                  challenge.popular 
+                    ? 'border-amber-400 shadow-[0_0_40px_rgba(251,191,36,0.15)]' 
+                    : isDark ? 'border-white/10 hover:border-amber-500/30' : 'border-slate-200 hover:border-amber-500/30'
+                } ${isDark ? 'bg-gradient-to-br from-[#12161d] to-[#0d1117]' : 'bg-white'}`}
               >
-                <Card className={`relative bg-slate-900 border-slate-800 p-4 sm:p-6 h-full flex flex-col hover:border-emerald-500/50 transition-all hover:-translate-y-2 ${challenge.popular ? 'ring-2 ring-emerald-500' : ''}`}>
-                  {challenge.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white text-xs font-bold px-4 py-1 rounded-full flex items-center gap-1">
-                        <Star className="w-3 h-3" /> {t('challenges.card.mostPopular')}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="text-center mb-6">
-                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <DollarSign className="w-8 h-8 text-emerald-400" />
-                    </div>
-                    <p className="text-3xl font-bold text-white">
-                      ${challenge.account_size?.toLocaleString()}
-                    </p>
-                    <p className="text-slate-400">{t('challenges.card.accountSize')}</p>
+                {/* Badge */}
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <div className={`px-4 py-1 rounded-full text-sm font-bold flex items-center gap-1 whitespace-nowrap ${
+                    challenge.popular 
+                      ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-[#0a0d12]' 
+                      : isDark ? 'bg-[#1a1f2a] text-gray-400 border border-white/10' : 'bg-slate-100 text-slate-500 border border-slate-200'
+                  }`}>
+                    {challenge.popular && <Star className="w-4 h-4 fill-current" />}
+                    {challenge.badge}
                   </div>
+                </div>
 
-                  <div className="space-y-3 mb-6">
-                    <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                      <span className="text-slate-400 flex items-center gap-1">
-                        <Target className="w-4 h-4" />
-                        {t('challenges.card.phase1')}
-                      </span>
-                      <span className="text-white font-medium">{challenge.phase1_profit_target}%</span>
+                {/* Header */}
+                <div className="text-center mb-6 pt-4">
+                  <h3 className={`text-xl lg:text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{challenge.name}</h3>
+                  <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{challenge.description}</p>
+                </div>
+
+                {/* Price */}
+                <div className={`text-center mb-6 py-5 rounded-2xl ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
+                  <div className={`text-sm line-through mb-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
+                    ${(challenge.prices[accountSizes[selectedSize].key] * 3).toFixed(0)}
+                  </div>
+                  <div className="text-amber-500 text-4xl lg:text-5xl font-black">
+                    ${challenge.prices[accountSizes[selectedSize].key]}
+                  </div>
+                  <div className="text-emerald-400 text-sm font-semibold mt-1">70% OFF - Limited Time</div>
+                </div>
+
+                {/* Stats */}
+                <div className="space-y-3 mb-6">
+                  {[
+                    { label: 'Phases', value: `${challenge.phases} Phase${challenge.phases > 1 ? 's' : ''}` },
+                    { label: 'Profit Target', value: challenge.profitTarget },
+                    { label: 'Daily Drawdown', value: challenge.dailyDrawdown },
+                    { label: 'Max Drawdown', value: challenge.maxDrawdown },
+                    { label: 'Leverage', value: challenge.leverage },
+                    { label: 'Min Trading Days', value: challenge.minDays, highlight: true },
+                    { label: 'Profit Split', value: challenge.profitSplit, highlight: 'amber', large: true }
+                  ].map((item, index) => (
+                    <div key={index} className={`flex items-center justify-between py-2 ${index < 6 ? isDark ? 'border-b border-white/5' : 'border-b border-slate-100' : ''}`}>
+                      <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>{item.label}</span>
+                      <span className={`font-semibold ${
+                        item.highlight === 'amber' ? 'text-amber-500 text-xl font-bold' :
+                        item.highlight ? 'text-emerald-400' :
+                        isDark ? 'text-white' : 'text-slate-900'
+                      }`}>{item.value}</span>
                     </div>
-                    {challengeType === 'two_phase' && (
-                      <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                        <span className="text-slate-400 flex items-center gap-1">
-                          <Target className="w-4 h-4" />
-                          {t('challenges.card.phase2')}
-                        </span>
-                        <span className="text-white font-medium">{challenge.phase2_profit_target}%</span>
+                  ))}
+                </div>
+
+                {/* Features */}
+                <div className="space-y-2 mb-6">
+                  {['No time limit', 'All strategies allowed', '100% fee refund', 'Free trading course'].map((feature, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                        <Check className="w-3 h-3 text-emerald-400" />
                       </div>
-                    )}
-                    <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                      <span className="text-slate-400 flex items-center gap-1">
-                        <Shield className="w-4 h-4" />
-                        {t('challenges.card.dailyDD')}
-                      </span>
-                      <span className="text-white font-medium">{challenge.max_daily_drawdown}%</span>
+                      <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-slate-600'}`}>{feature}</span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                      <span className="text-slate-400 flex items-center gap-1">
-                        <Shield className="w-4 h-4" />
-                        {t('challenges.card.maxDD')}
-                      </span>
-                      <span className="text-white font-medium">{challenge.max_overall_drawdown}%</span>
-                    </div>
-                    <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                      <span className="text-slate-400 flex items-center gap-1">
-                        <Percent className="w-4 h-4" />
-                        {t('challenges.card.profitSplit')}
-                      </span>
-                      <span className="text-emerald-400 font-bold">{challenge.profit_split ?? 'N/A'}%</span>
-                    </div>
-                  </div>
+                  ))}
+                </div>
 
-                  <div className="space-y-2 mb-6 flex-grow">
-                    {challenge.features?.slice(0, 3).map((feature, j) => (
-                      <div key={j} className="flex items-center gap-2 text-sm text-slate-300">
-                        <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                        <span>{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-auto">
-                    <p className="text-center text-3xl font-bold text-white mb-4">
-                      ${challenge.price}
-                    </p>
-                    <Link to={createPageUrl('BuyChallenge') + `?challengeId=${challenge.id}&size=${challenge.account_size}`}>
-                      <Button
-                        className={`w-full ${challenge.popular
-                          ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600'
-                          : 'bg-slate-800 hover:bg-slate-700'
-                          }`}
-                      >
-                        {t('challenges.card.getStarted')}
-                        <ArrowRight className="ml-2 w-4 h-4" />
-                      </Button>
-                    </Link>
-                  </div>
-                </Card>
-              </motion.div>
+                {/* CTA Button */}
+                <Link to={`/checkout?type=${challenge.id}&size=${accountSizes[selectedSize].key}`}>
+                  <Button 
+                    className={`w-full rounded-full py-6 h-auto text-base font-bold transition-all group ${
+                      challenge.popular 
+                        ? 'bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] shadow-lg shadow-amber-500/25' 
+                        : 'bg-slate-900 hover:bg-slate-800 text-white'
+                    }`}
+                  >
+                    Start Challenge
+                    <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </Link>
+              </div>
             ))}
           </div>
-        )}
-
-        {/* Comparison Table */}
-        {!isLoading && displayChallenges.length > 0 && (
-          <Card className="bg-slate-900 border-slate-800 overflow-hidden mb-12 md:mb-16">
-            <div className="p-4 md:p-6 border-b border-slate-800">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-emerald-400" />
-                {t('challenges.compareTableTitle')}
-              </h3>
-            </div>
-            <div className="overflow-x-auto -mx-4 md:mx-0">
-              <table className="w-full min-w-[800px]">
-                <thead>
-                  <tr className="border-b border-slate-800 bg-slate-800/50">
-                    <th className="text-left p-4 text-slate-400 font-medium">{t('challenges.comparison.accountSize')}</th>
-                    <th className="text-center p-4 text-slate-400 font-medium">{t('challenges.comparison.price')}</th>
-                    <th className="text-center p-4 text-slate-400 font-medium">{t('challenges.comparison.phase1')}</th>
-                    <th className="text-center p-4 text-slate-400 font-medium">{t('challenges.comparison.phase2')}</th>
-                    <th className="text-center p-4 text-slate-400 font-medium">{t('challenges.comparison.dailyDD')}</th>
-                    <th className="text-center p-4 text-slate-400 font-medium">{t('challenges.comparison.maxDD')}</th>
-                    <th className="text-center p-4 text-slate-400 font-medium">{t('challenges.comparison.profitSplit')}</th>
-                    <th className="text-center p-4 text-slate-400 font-medium"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {displayChallenges.map((challenge, i) => (
-                    <tr key={i} className="border-b border-slate-800 hover:bg-slate-800/30 transition-colors">
-                      <td className="p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                            <DollarSign className="w-5 h-5 text-emerald-400" />
-                          </div>
-                          <span className="text-white font-semibold">${challenge.account_size?.toLocaleString()}</span>
-                          {challenge.popular && <Star className="w-4 h-4 text-amber-400" />}
-                        </div>
-                      </td>
-                      <td className="text-center p-4 text-white font-medium">${challenge.price}</td>
-                      <td className="text-center p-4 text-emerald-400">{challenge.phase1_profit_target}%</td>
-                      <td className="text-center p-4 text-cyan-400">{challenge.phase2_profit_target}%</td>
-                      <td className="text-center p-4 text-amber-400">{challenge.max_daily_drawdown}%</td>
-                      <td className="text-center p-4 text-red-400">{challenge.max_overall_drawdown}%</td>
-                      <td className="text-center p-4">
-                        <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full font-semibold">
-                          {challenge.profit_split ?? 'N/A'}%
-                        </span>
-                      </td>
-                      <td className="p-4">
-                        <Link to={createPageUrl('BuyChallenge') + `?challengeId=${challenge.id}&size=${challenge.account_size}`}>
-                          <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600">
-                            {t('challenges.comparison.select')}
-                          </Button>
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Card>
-        )}
-
-        {/* Additional Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12 md:mb-16">
-          <Card className="bg-slate-900 border-slate-800 p-4 md:p-8">
-            <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center">
-                <Check className="w-6 h-6 text-emerald-400" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-2">{t('challenges.allChallengesInclude.title')}</h3>
-                <p className="text-slate-400">{t('challenges.allChallengesInclude.subtitle')}</p>
-              </div>
-            </div>
-            <div className="grid gap-3">
-              {[
-                t('challenges.allChallengesInclude.features.unlimitedTrading'),
-                t('challenges.allChallengesInclude.features.allMajorPairs'),
-                t('challenges.allChallengesInclude.features.weekendHolding'),
-                t('challenges.allChallengesInclude.features.newsTrading'),
-                t('challenges.allChallengesInclude.features.expertAdvisors'),
-                t('challenges.allChallengesInclude.features.biWeeklyPayouts'),
-                t('challenges.allChallengesInclude.features.support24'),
-                t('challenges.allChallengesInclude.features.analyticsDashboard')
-              ].map((item, i) => (
-                <div key={i} className="flex items-center gap-3 text-slate-300">
-                  <Check className="w-5 h-5 text-emerald-400 flex-shrink-0" />
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
-          </Card>
-
-          <Card className="bg-slate-900 border-slate-800 p-4 md:p-8">
-            <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 bg-cyan-500/20 rounded-xl flex items-center justify-center">
-                <Award className="w-6 h-6 text-cyan-400" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-2">{t('challenges.whyChoose.title')}</h3>
-                <p className="text-slate-400">{t('challenges.whyChoose.subtitle')}</p>
-              </div>
-            </div>
-            <div className="space-y-4">
-              {[
-                { title: t('challenges.whyChoose.transparentRules.title'), desc: t('challenges.whyChoose.transparentRules.desc') },
-                { title: t('challenges.whyChoose.fastPayouts.title'), desc: t('challenges.whyChoose.fastPayouts.desc') },
-                { title: t('challenges.whyChoose.scaleTo2M.title'), desc: t('challenges.whyChoose.scaleTo2M.desc') },
-                { title: t('challenges.whyChoose.bestSupport.title'), desc: t('challenges.whyChoose.bestSupport.desc') }
-              ].map((item, i) => (
-                <div key={i} className="p-4 bg-slate-800/50 rounded-lg">
-                  <p className="text-white font-medium">{item.title}</p>
-                  <p className="text-sm text-slate-400">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-          </Card>
         </div>
+      </section>
 
-        {/* FAQ Section */}
-        <Card className="bg-slate-900 border-slate-800 p-4 md:p-8">
-          <h3 className="text-xl font-bold text-white mb-6 text-center">{t('challenges.faq.title')}</h3>
-          <Accordion type="single" collapsible className="space-y-2">
-            {[
-              { q: t('challenges.faq.timeLimit.q'), a: t('challenges.faq.timeLimit.a') },
-              { q: t('challenges.faq.newsTrading.q'), a: t('challenges.faq.newsTrading.a') },
-              { q: t('challenges.faq.ifFail.q'), a: t('challenges.faq.ifFail.a') },
-              { q: t('challenges.faq.payoutSpeed.q'), a: t('challenges.faq.payoutSpeed.a') }
-            ].map((faq, i) => (
-              <AccordionItem key={i} value={`faq-${i}`} className="border-slate-800 bg-slate-800/30 rounded-lg px-4">
-                <AccordionTrigger className="text-white hover:text-emerald-400">{faq.q}</AccordionTrigger>
-                <AccordionContent className="text-slate-400">{faq.a}</AccordionContent>
-              </AccordionItem>
+      {/* Features Section */}
+      <section className={`py-16 lg:py-24 ${isDark ? 'bg-gradient-to-b from-[#0a0d12] to-[#0d1117]' : 'bg-white'}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              Why Choose <span className="text-amber-500">Prop Capitals</span>?
+            </h2>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feature, index) => (
+              <div 
+                key={index}
+                className={`rounded-2xl p-6 border hover:border-amber-500/30 transition-all text-center ${
+                  isDark ? 'bg-[#12161d] border-white/10' : 'bg-slate-50 border-slate-200'
+                }`}
+              >
+                <div className="w-14 h-14 bg-amber-500/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <feature.icon className="w-7 h-7 text-amber-500" />
+                </div>
+                <h3 className={`font-bold text-lg mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{feature.title}</h3>
+                <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{feature.description}</p>
+              </div>
             ))}
-          </Accordion>
-        </Card>
-      </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Comparison Table */}
+      <section className={`py-16 lg:py-24 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              Compare <span className="text-amber-500">Challenges</span>
+            </h2>
+          </div>
+
+          <div className={`rounded-2xl border overflow-hidden ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`}>
+            <div className={`grid grid-cols-3 ${isDark ? 'bg-[#0d1117]' : 'bg-slate-50'}`}>
+              <div className="p-4 lg:p-6">
+                <span className={`font-medium ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Feature</span>
+              </div>
+              <div className={`p-4 lg:p-6 text-center border-l ${isDark ? 'border-white/5' : 'border-slate-100'}`}>
+                <span className="text-amber-500 font-bold">1-Step</span>
+              </div>
+              <div className={`p-4 lg:p-6 text-center border-l ${isDark ? 'border-white/5' : 'border-slate-100'}`}>
+                <span className="text-blue-400 font-bold">2-Step</span>
+              </div>
+            </div>
+            
+            {[
+              { feature: "Phases", oneStep: "1", twoStep: "2" },
+              { feature: "Profit Target", oneStep: "10%", twoStep: "8% + 5%" },
+              { feature: "Daily Drawdown", oneStep: "4%", twoStep: "5%" },
+              { feature: "Max Drawdown", oneStep: "8%", twoStep: "10%" },
+              { feature: "Profit Split", oneStep: "85%", twoStep: "90%" },
+              { feature: "Leverage", oneStep: "1:30", twoStep: "1:50" },
+              { feature: "Time Limit", oneStep: "Unlimited", twoStep: "Unlimited" }
+            ].map((row, index) => (
+              <div key={index} className={`grid grid-cols-3 ${index % 2 === 0 ? isDark ? 'bg-[#0a0d12]' : 'bg-slate-50/50' : ''}`}>
+                <div className="p-4 lg:p-5">
+                  <span className={`font-medium text-sm lg:text-base ${isDark ? 'text-white' : 'text-slate-900'}`}>{row.feature}</span>
+                </div>
+                <div className={`p-4 lg:p-5 text-center border-l ${isDark ? 'border-white/5' : 'border-slate-100'}`}>
+                  <span className={`text-sm lg:text-base ${isDark ? 'text-gray-300' : 'text-slate-600'}`}>{row.oneStep}</span>
+                </div>
+                <div className={`p-4 lg:p-5 text-center border-l ${isDark ? 'border-white/5' : 'border-slate-100'}`}>
+                  <span className={`text-sm lg:text-base ${isDark ? 'text-gray-300' : 'text-slate-600'}`}>{row.twoStep}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className={`py-16 lg:py-20 ${isDark ? 'bg-gradient-to-b from-[#0d1117] to-[#0a0d12]' : 'bg-white'}`}>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            Ready to Get <span className="text-amber-500">Funded</span>?
+          </h2>
+          <p className={`text-base lg:text-lg mb-8 max-w-xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
+            Join thousands of successful traders. Start your challenge today and trade with up to $200,000.
+          </p>
+          <Button className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-10 py-6 h-auto text-lg font-bold shadow-xl shadow-amber-500/25 group">
+            Start Trading Now
+            <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+          </Button>
+        </div>
+      </section>
     </div>
   );
-}
+};
+
+export default ChallengesPage;

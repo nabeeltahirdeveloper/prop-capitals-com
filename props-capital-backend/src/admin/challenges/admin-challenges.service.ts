@@ -61,7 +61,7 @@ export class AdminChallengesService {
       description: data.description || null,
       accountSize: parseInt(String(accountSize)),
       price: parseInt(String(price)),
-      platform: (data.platform && ['MT5', 'MT4', 'CTRADER', 'DXTRADE'].includes(data.platform.toUpperCase()) 
+      platform: (data.platform && ['MT5', 'MT4', 'CTRADER', 'DXTRADE', 'BYBIT', 'PT5', 'TRADELOCKER'].includes(data.platform.toUpperCase()) 
         ? data.platform.toUpperCase() 
         : 'MT5') as ChallengePlatform, // Validate and normalize platform value
       challengeType: data.challengeType || data.challenge_type || 'two_phase',
@@ -134,7 +134,7 @@ export class AdminChallengesService {
     }
     if (data.platform !== undefined) {
       // Validate and normalize platform value
-      const normalizedPlatform = data.platform && ['MT5', 'MT4', 'CTRADER', 'DXTRADE'].includes(data.platform.toUpperCase())
+      const normalizedPlatform = data.platform && ['MT5', 'MT4', 'CTRADER', 'DXTRADE', 'BYBIT', 'PT5', 'TRADELOCKER'].includes(data.platform.toUpperCase())
         ? data.platform.toUpperCase()
         : 'MT5';
       updateData.platform = normalizedPlatform as ChallengePlatform;

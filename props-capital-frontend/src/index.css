@@ -2,24 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ========================================
-   GLOBAL SCROLLBAR FIX - HIDE ALL SCROLLBARS
-   ======================================== */
 
-/* Hide scrollbar for Chrome, Safari, Edge, Opera */
-::-webkit-scrollbar {
-  display: none;
-}
-
-/* Hide scrollbar for Firefox */
-* {
-  scrollbar-width: none;
-}
-
-/* Hide scrollbar for IE and Edge Legacy */
-* {
-  -ms-overflow-style: none;
-}
 
 /* ========================================
    GLOBAL OVERFLOWS

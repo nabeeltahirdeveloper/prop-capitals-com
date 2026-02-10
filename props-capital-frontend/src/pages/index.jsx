@@ -3,90 +3,54 @@ import ErrorBoundary from "../components/ErrorBoundary.jsx";
 import { LanguageProvider } from "../contexts/LanguageContext";
 
 import Home from "./Home";
-
 import Challenges from "./Challenges";
-
 import HowItWorks from "./HowItWorks";
-
 import FAQ from "./FAQ";
-
 import Contact from "./Contact";
-
 import ScalingPlan from "./ScalingPlan";
-
 import Payouts from "./Payouts";
-
 import Terms from "./Terms";
-
 import Privacy from "./Privacy";
-
 import TraderDashboard from "./TraderDashboard";
-
 import MyAccounts from "./MyAccounts";
-
 import Analytics from "./Analytics";
-
 import TraderPayouts from "./TraderPayouts";
-
 import Profile from "./Profile";
-
-import AdminProfile from "./AdminProfile";
-
 import Support from "./Support";
-
-import AdminDashboard from "./AdminDashboard";
-
-import AdminUsers from "./AdminUsers";
-
-import AdminChallenges from "./AdminChallenges";
-
-import AdminAccounts from "./AdminAccounts";
-
-import AdminPayouts from "./AdminPayouts";
-
-import AdminPayments from "./AdminPayments";
-
-import AdminViolations from "./AdminViolations";
-
-import AdminCoupons from "./AdminCoupons";
-
-import AdminSupport from "./AdminSupport";
-
-import AdminSettings from "./AdminSettings";
-
 import Rules from "./Rules";
-
 import BuyChallenge from "./BuyChallenge";
-
 import AccountDetails from "./AccountDetails";
-
-import AdminBrokerServers from "./AdminBrokerServers";
-
-import AdminRiskMonitor from "./AdminRiskMonitor";
-
-import AdminScaling from "./AdminScaling";
-
 import Notifications from "./Notifications";
-
 import TradeHistory from "./TradeHistory";
-
 import ChallengeProgress from "./ChallengeProgress";
-
 import TradingTerminal from "./TradingTerminal";
-
 import RuleCompliance from "./RuleCompliance";
-
 import SignIn from "./SignIn";
-
 import SignUp from "./SignUp";
-import ForgotPassword from "./ForgotPassword.jsx";
-
 import TraderBuyChallenge from "./TraderBuyChallenge";
-
-import CRMLeads from "./CRMLeads";
-import CRMPipeline from "./CRMPipeline";
-import CRMFTDReport from "./CRMFTDReport";
-import CRMCalendar from "./CRMCalendar";
+import About from "./About.jsx";
+import WatchDemo from "./WatchDemoPage.jsx"
+import CareersPage from "./CareersPage.jsx"
+import BlogPage from "./BlogPage.jsx";
+import TradingRulesPage from "./TradingRulesPage.jsx"
+import AffiliatePage from "./AffiliatePage.jsx"
+import RiskDisclosurePage from "./RiskDisclosurePage.jsx"
+import RefundPage from "./RefundPage.jsx"
+import CheckoutPage from "./CheckoutPage.jsx";
+import CheckoutSuccessPage from "./CheckoutSuccessPage.jsx";
+// Dashboard
+import TraderPanelLayout from "@/components/trader/TraderPanelLayout.jsx";
+import AccountOverview from "@/components/trader/AccountOverview.jsx";
+import Trading from "@/components/trader/TradingTerminal.jsx";
+import OrdersPage from "@/components/trader/OrdersPage.jsx";
+import EconomicCalendar from "@/components/trader/EconomicCalendar.jsx";
+import PayoutHistory from "@/components/trader/PayoutHistory.jsx";
+import AccountSettings from "@/components/trader/AccountSettings.jsx";
+import NotificationsPage from "@/components/trader/NotificationsPage.jsx";
+import ProfilePage from "@/components/trader/ProfilePage.jsx";
+import SupportPage from "@/components/trader/SupportPage.jsx";
+import FAQPage from "@/components/trader/FAQPage.jsx";
+import TradeCheckoutPanelPage from "@/components/trader/TradeCheckoutPanelPage.jsx";
 
 import {
   BrowserRouter as Router,
@@ -101,99 +65,57 @@ import ProtectedRoute, {
 } from "../components/ProtectedRoute";
 import { PriceProviderWithRouter } from "../contexts/PriceContext";
 
+
 const PAGES = {
   Home: Home,
-
   Challenges: Challenges,
-
   HowItWorks: HowItWorks,
-
   FAQ: FAQ,
-
+  ABOUT: About,
   Contact: Contact,
-
   ScalingPlan: ScalingPlan,
-
   Payouts: Payouts,
-
   Terms: Terms,
-
   Privacy: Privacy,
-
-  TraderDashboard: TraderDashboard,
-
+  // TraderDashboard: TraderDashboard,
   MyAccounts: MyAccounts,
-
   Analytics: Analytics,
-
   TraderPayouts: TraderPayouts,
-
   Profile: Profile,
-
-  AdminProfile: AdminProfile,
-
   Support: Support,
-
-  AdminDashboard: AdminDashboard,
-
-  AdminUsers: AdminUsers,
-
-  AdminChallenges: AdminChallenges,
-
-  AdminAccounts: AdminAccounts,
-
-  AdminPayouts: AdminPayouts,
-
-  AdminPayments: AdminPayments,
-
-  AdminViolations: AdminViolations,
-
-  AdminCoupons: AdminCoupons,
-
-  AdminSupport: AdminSupport,
-
-  AdminSettings: AdminSettings,
-
   Rules: Rules,
-
   BuyChallenge: BuyChallenge,
-
   AccountDetails: AccountDetails,
-
-  AdminBrokerServers: AdminBrokerServers,
-
-  AdminRiskMonitor: AdminRiskMonitor,
-
-  AdminScaling: AdminScaling,
-
   Notifications: Notifications,
-
   TradeHistory: TradeHistory,
-
   ChallengeProgress: ChallengeProgress,
-
   TradingTerminal: TradingTerminal,
-
   RuleCompliance: RuleCompliance,
-
   SignIn: SignIn,
-  ForgotPassword: ForgotPassword,
-
   SignUp: SignUp,
-
   TraderBuyChallenge: TraderBuyChallenge,
+  // New Dashboard
+  TraderDashboard: TraderPanelLayout,
+  TRADING: Trading,
+  AccountOverview: AccountOverview,
+  ORDERS: OrdersPage,
+  CALENDAR: EconomicCalendar,
+  PAYOUTS: PayoutHistory,
+  SETTINGS: AccountSettings,
+  PROFILE: ProfilePage,
+  SUPPORT: SupportPage,
+  FAQS: FAQPage,
+  checkout: TradeCheckoutPanelPage,
 
-  CRMLeads: CRMLeads,
-  CRMPipeline: CRMPipeline,
-  CRMFTDReport: CRMFTDReport,
-  CRMCalendar: CRMCalendar,
 };
 
 function _getCurrentPage(url) {
   if (url.endsWith("/")) {
     url = url.slice(0, -1);
   }
+
   let urlLastPart = url.split("/").pop();
+
   if (urlLastPart.includes("?")) {
     urlLastPart = urlLastPart.split("?")[0];
   }
@@ -201,6 +123,7 @@ function _getCurrentPage(url) {
   const pageName = Object.keys(PAGES).find(
     (page) => page.toLowerCase() === urlLastPart.toLowerCase(),
   );
+
   return pageName || Object.keys(PAGES)[0];
 }
 
@@ -219,15 +142,24 @@ function PagesContent() {
               <Route path="/" element={<Home />} />
               <Route path="/Home" element={<Home />} />
               <Route path="/Challenges" element={<Challenges />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
               <Route path="/HowItWorks" element={<HowItWorks />} />
               <Route path="/FAQ" element={<FAQ />} />
               <Route path="/Contact" element={<Contact />} />
               <Route path="/ScalingPlan" element={<ScalingPlan />} />
               <Route path="/Payouts" element={<Payouts />} />
-              <Route path="/Terms" element={<Terms />} />
-              <Route path="/Privacy" element={<Privacy />} />
               <Route path="/Rules" element={<Rules />} />
-              <Route path="/forgotpassword" element={<ForgotPassword />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/watch-demo" element={<WatchDemo />} />
+              <Route path="/careers" element={<CareersPage />} />
+              <Route path="/blog" element={<BlogPage />} />
+              <Route path="/trading-rules" element={<TradingRulesPage />} />
+              <Route path="/affiliate" element={<AffiliatePage />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/Privacy" element={<Privacy />} />
+              <Route path="/risk-disclosure" element={<RiskDisclosurePage />} />
+              <Route path="/refund-policy" element={<RefundPage />} />
               <Route
                 path="/SignIn"
                 element={
@@ -249,7 +181,6 @@ function PagesContent() {
                 }
               />
               <Route path="/dashboard" element={<DashboardRedirect />} />
-
               {/* Trader Routes */}
               <Route element={<ProtectedRoute allowedRoles={["TRADER"]} />}>
                 <Route path="/TraderDashboard" element={<TraderDashboard />} />
@@ -272,32 +203,20 @@ function PagesContent() {
                 />
               </Route>
 
-              {/* Admin Routes */}
-              <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
-                <Route path="/AdminDashboard" element={<AdminDashboard />} />
-                <Route path="/AdminUsers" element={<AdminUsers />} />
-                <Route path="/AdminChallenges" element={<AdminChallenges />} />
-                <Route path="/AdminAccounts" element={<AdminAccounts />} />
-                <Route path="/AdminPayouts" element={<AdminPayouts />} />
-                <Route path="/AdminPayments" element={<AdminPayments />} />
-                <Route path="/AdminViolations" element={<AdminViolations />} />
-                <Route path="/AdminCoupons" element={<AdminCoupons />} />
-                <Route path="/AdminSupport" element={<AdminSupport />} />
-                <Route path="/AdminSettings" element={<AdminSettings />} />
-                <Route
-                  path="/AdminBrokerServers"
-                  element={<AdminBrokerServers />}
-                />
-                <Route
-                  path="/AdminRiskMonitor"
-                  element={<AdminRiskMonitor />}
-                />
-                <Route path="/AdminScaling" element={<AdminScaling />} />
-                <Route path="/AdminProfile" element={<AdminProfile />} />
-                <Route path="/CRMLeads" element={<CRMLeads />} />
-                <Route path="/CRMPipeline" element={<CRMPipeline />} />
-                <Route path="/CRMFTDReport" element={<CRMFTDReport />} />
-                <Route path="/CRMCalendar" element={<CRMCalendar />} />
+              <Route element={<ProtectedRoute allowedRoles={["TRADER"]} />}>
+                <Route path="/traderdashboard" element={<TraderPanelLayout />}>
+                  <Route index element={<AccountOverview />} />
+                  <Route path="trading" element={<Trading />} />
+                  <Route path="orders" element={<OrdersPage />} />
+                  <Route path="calendar" element={<EconomicCalendar />} />
+                  <Route path="payouts" element={<PayoutHistory />} />
+                  <Route path="settings" element={<AccountSettings />} />
+                  <Route path="notifications" element={<NotificationsPage />} />
+                  <Route path="profile" element={<ProfilePage />} />
+                  <Route path="support" element={<SupportPage />} />
+                  <Route path="faqs" element={<FAQPage />} />
+                  <Route path="checkout" element={<TradeCheckoutPanelPage />} />
+                </Route>
               </Route>
 
               {/* Trader Profile Route */}
@@ -305,10 +224,8 @@ function PagesContent() {
                 <Route path="/Profile" element={<Profile />} />
               </Route>
 
-              {/* Shared Routes (TRADER and ADMIN) */}
-              <Route
-                element={<ProtectedRoute allowedRoles={["TRADER", "ADMIN"]} />}
-              >
+              {/* Notifications Route */}
+              <Route element={<ProtectedRoute allowedRoles={["TRADER"]} />}>
                 <Route path="/Notifications" element={<Notifications />} />
               </Route>
             </Routes>

@@ -2,23 +2,43 @@ import { io } from 'socket.io-client';
 
 const getAuthToken = () => {
   return (
-    localStorage.getItem('accessToken') ||
     localStorage.getItem('token') ||
+    localStorage.getItem('accessToken') ||
     localStorage.getItem('jwt_token')
   );
 };
 
-const socket = io('http://localhost:5002/trading', {
-  auth: {
-    token: getAuthToken(),
-  },
-  autoConnect: true,
+const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+// Backend gateway is on namespace /trading – connect there with JWT
+const socket = io(`${baseUrl}/trading`, {
+  path: '/socket.io',
+  auth: (cb) => cb({ token: getAuthToken() }),
+  autoConnect: false,
   reconnection: true,
   reconnectionDelay: 1000,
   reconnectionDelayMax: 5000,
-  reconnectionAttempts: 5,
+  reconnectionAttempts: 10,
   transports: ['websocket', 'polling'],
 });
+
+// Connect only when token exists (avoids "Invalid token" before login)
+function tryConnect() {
+  if (getAuthToken() && !socket.connected) socket.connect();
+}
+if (typeof window !== 'undefined') {
+  tryConnect();
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'token' && e.newValue) tryConnect();
+  });
+}
+
+export function reconnectSocketWithToken() {
+  socket.auth = (cb) => cb({ token: getAuthToken() });
+  if (getAuthToken()) {
+    if (!socket.connected) socket.connect();
+    else socket.disconnect().connect();
+  }
+}
 
 socket.on('connect', () => {
   console.log('✅ Connected to trading WebSocket');

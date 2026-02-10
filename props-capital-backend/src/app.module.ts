@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-
+import { EconomicCalendarModule } from './economic-calendar/economic-calendar.module';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 
@@ -33,16 +33,15 @@ import { AdminDashboardModule } from './admin/dashboard/admin-dashboard.module';
 import { AdminSupportModule } from './admin/support/admin-support.module';
 import { WebsocketModule } from './websocket/websocket.module';
 import { CrmModule } from './crm/crm.module';
+import { ExternalApiModule } from './external-api/external-api.module';
 import { CommonModule } from './common/common.module';
+import { ContactModule } from './contact/contact.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
-
   imports: [
-
     ConfigModule.forRoot({
-
       isGlobal: true,
-
     }),
 
     ScheduleModule.forRoot(),
@@ -52,6 +51,8 @@ import { CommonModule } from './common/common.module';
     PrismaModule,
 
     UsersModule,
+
+    EconomicCalendarModule,
 
     AuthModule,
 
@@ -107,10 +108,13 @@ import { CommonModule } from './common/common.module';
 
     WebsocketModule,
 
-    CrmModule
+    CrmModule,
 
+    ExternalApiModule,
+
+    ContactModule,
+
+    ChatModule,
   ],
-
 })
-
-export class AppModule { }
+export class AppModule {}

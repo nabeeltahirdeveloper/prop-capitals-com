@@ -244,6 +244,133 @@ export class EmailService {
   }
 
   /**
+   * Send contact form confirmation email to user
+   */
+  async sendContactConfirmationEmail(
+    to: string,
+    name: string,
+    subject: string,
+  ): Promise<EmailResult> {
+    return this.sendWithTimeout({
+      to,
+      from: this.fromEmail,
+      subject: 'We received your message - Props Capital',
+      text: `Hi ${name},\n\nThank you for contacting Props Capital. We have received your message regarding "${subject}" and will get back to you within 24 hours.\n\nBest regards,\nProps Capital Support Team`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fa;">
+          <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #10b981; margin: 0; font-size: 28px;">Props Capital</h1>
+            </div>
+
+            <h2 style="color: #1f2937; margin: 0 0 16px;">Thank You for Contacting Us</h2>
+
+            <p style="color: #4b5563; line-height: 1.6; margin: 0 0 16px;">Hi ${name},</p>
+
+            <p style="color: #4b5563; line-height: 1.6; margin: 0 0 16px;">
+              We have received your message regarding <strong>"${subject}"</strong> and our support team will review it shortly.
+            </p>
+
+            <div style="background-color: #f0fdf4; border-left: 4px solid #10b981; padding: 16px; margin: 20px 0; border-radius: 4px;">
+              <p style="color: #065f46; margin: 0; font-weight: 500;">
+                ✓ Expected Response Time: Within 24 hours
+              </p>
+            </div>
+
+            <p style="color: #4b5563; line-height: 1.6; margin: 0 0 16px;">
+              If you have any urgent questions, you can also reach us at:
+            </p>
+
+            <ul style="color: #4b5563; line-height: 1.8; margin: 0 0 24px;">
+              <li>Email: <a href="mailto:support@prop-capitals.com" style="color: #10b981;">support@prop-capitals.com</a></li>
+              <li>Live Chat: Available 24/7 on our website</li>
+            </ul>
+
+            <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 30px;">
+              <p style="color: #6b7280; font-size: 14px; margin: 0;">
+                Best regards,<br>
+                <strong>Props Capital Support Team</strong>
+              </p>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin-top: 20px; color: #6b7280; font-size: 12px;">
+            <p style="margin: 0;">© ${new Date().getFullYear()} Props Capital. All rights reserved.</p>
+          </div>
+        </div>
+      `,
+    });
+  }
+
+  /**
+   * Send contact form notification to support team
+   */
+  async sendContactNotificationToSupport(
+    userName: string,
+    userEmail: string,
+    category: string,
+    subject: string,
+    message: string,
+  ): Promise<EmailResult> {
+    const supportEmail = this.configService.get<string>('SUPPORT_EMAIL') || 'support@prop-capitals.com';
+
+    return this.sendWithTimeout({
+      to: supportEmail,
+      from: this.fromEmail,
+      replyTo: userEmail,
+      subject: `[Contact Form] ${category}: ${subject}`,
+      text: `New contact form submission:\n\nName: ${userName}\nEmail: ${userEmail}\nCategory: ${category}\nSubject: ${subject}\n\nMessage:\n${message}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background-color: #3b82f6; color: white; padding: 20px; border-radius: 8px 8px 0 0;">
+            <h2 style="margin: 0;">New Contact Form Submission</h2>
+          </div>
+
+          <div style="background-color: white; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">Name:</td>
+                <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb; color: #6b7280;">${userName}</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">Email:</td>
+                <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                  <a href="mailto:${userEmail}" style="color: #3b82f6; text-decoration: none;">${userEmail}</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">Category:</td>
+                <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                  <span style="background-color: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 12px; font-size: 14px;">
+                    ${category}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">Subject:</td>
+                <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb; color: #6b7280;">${subject}</td>
+              </tr>
+            </table>
+
+            <div style="margin-top: 24px;">
+              <h3 style="color: #374151; margin: 0 0 12px;">Message:</h3>
+              <div style="background-color: #f9fafb; padding: 16px; border-radius: 6px; border-left: 4px solid #3b82f6;">
+                <p style="color: #4b5563; line-height: 1.6; margin: 0; white-space: pre-wrap;">${message}</p>
+              </div>
+            </div>
+
+            <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
+              <a href="mailto:${userEmail}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500;">
+                Reply to ${userName}
+              </a>
+            </div>
+          </div>
+        </div>
+      `,
+    });
+  }
+
+  /**
    * Check if email service is operational
    */
   isOperational(): boolean {

@@ -3,7 +3,8 @@
     "loading": "読み込み中...",
     "url": "URL",
     "dismiss": "閉じる",
-    "allPlatforms": "すべてのプラットフォーム"
+    "allPlatforms": "すべてのプラットフォーム",
+    "remaining": "残り"
   },
   "home": {
     "hero": {
@@ -1418,7 +1419,8 @@
         "markAsPaid": "支払い済みにする",
         "paid": "支払い済み",
         "rejected": "却下",
-        "rejecting": "却下中..."
+        "rejecting": "却下中...",
+        "processing": "処理中..."
       },
       "emptyMessage": "出金申請が見つかりません",
       "dialog": {
@@ -1490,12 +1492,7 @@
         "allTypes": "すべてのタイプ",
         "dailyDrawdown": "日次損失",
         "overallDrawdown": "全体損失",
-        "maxTradingDays": "最大取引日数",
         "newsTrading": "ニュース取引",
-        "weekendHolding": "週末保有",
-        "restrictedInstrument": "制限銘柄",
-        "lotSize": "ロットサイズ",
-        "eaDetected": "EA検出",
         "consistency": "一貫性",
         "ruleBreak": "ルール違反"
       },
@@ -1510,12 +1507,9 @@
       "types": {
         "dailyDrawdown": "日次損失",
         "overallDrawdown": "全体損失",
-        "maxTradingDays": "最大取引日数",
         "newsTrading": "ニュース取引",
-        "weekendHolding": "週末保有",
-        "restrictedInstrument": "制限銘柄",
-        "lotSize": "ロットサイズ",
-        "eaDetected": "EA検出"
+        "consistency": "一貫性",
+        "ruleBreak": "ルール違反"
       },
       "severity": {
         "fatal": "重大",
@@ -1524,12 +1518,12 @@
       "descriptions": {
         "daily_drawdown": "日次損失が {{threshold}}% を超過",
         "overall_drawdown": "全体損失が {{threshold}}% を超過",
-        "max_trading_days": "最大取引期間が終了",
-        "news_trading": "制限されたニュース時間帯で取引",
-        "weekend_holding": "週末にポジションを保有",
-        "restricted_instrument": "制限銘柄で取引",
-        "lot_size": "ロットサイズ上限を超過",
-        "ea_detected": "Expert Advisor を検出"
+        "news": "制限されたニュース時間帯で取引",
+        "consistency": "一貫性ルールに違反",
+        "rule_break": "取引ルール違反を検出"
+      },
+      "pagination": {
+        "showing": "ページ {{page}} / {{totalPages}} (合計 {{total}} 件)"
       },
       "emptyMessage": "違反が見つかりません"
     },
@@ -2089,7 +2083,7 @@
           },
           "contactSupport": {
             "q": "サポートにはどう連絡できますか？",
-            "a": "24/7のライブチャット、support@the-bluehaven.com へのメール、またはダッシュボード内のサポートチケットから連絡できます。"
+            "a": "24/7のライブチャット、support@prop-capitals.com へのメール、またはダッシュボード内のサポートチケットから連絡できます。"
           }
         }
       }
@@ -2103,7 +2097,7 @@
       "emailSupport": {
         "title": "メールサポート",
         "description": "一般的な質問や詳細なお問い合わせに",
-        "contact": "support@the-bluehaven.com"
+        "contact": "support@prop-capitals.com"
       },
       "liveChat": {
         "title": "ライブチャット",
@@ -2788,7 +2782,7 @@
     },
     "contact": {
       "title": "12. 連絡先",
-      "content": "本規約に関するご質問は support@the-bluehaven.com までお問い合わせください。"
+      "content": "本規約に関するご質問は support@prop-capitals.com までお問い合わせください。"
     }
   },
   "privacy": {
@@ -2858,7 +2852,7 @@
     },
     "contactUs": {
       "title": "10. お問い合わせ",
-      "content": "プライバシーに関するご質問は support@the-bluehaven.com までご連絡ください。"
+      "content": "プライバシーに関するご質問は support@prop-capitals.com までご連絡ください。"
     }
   }
 }

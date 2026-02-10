@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 
 import { AdminRiskService } from './admin-risk.service';
 import { JwtAuthGuard } from '../../auth/jwt.guard';
@@ -20,8 +20,14 @@ export class AdminRiskController {
   }
 
   @Get('violations')
-  getAllViolations() {
-    return this.riskService.getAllViolations();
+  getAllViolations(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.riskService.getAllViolations(
+      page ? parseInt(page, 10) : 1,
+      limit ? parseInt(limit, 10) : 50,
+    );
   }
 
   @Get('violations/:id')

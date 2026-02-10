@@ -1,0 +1,485 @@
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+  createContext,
+  useContext,
+} from "react";
+import { getCurrentUser } from "@/api/auth";
+import { getUserAccounts, getAccountSummary } from "@/api/accounts";
+import { getAccountTrades } from "@/api/trades";
+import { getUnifiedPrices } from "@/api/market-data";
+import socket from "@/lib/socket";
+
+const defaultAccountSummary = { balance: 0, equity: 0, margin: 0, freeMargin: 0, level: "0" };
+const noop = () => {};
+const defaultTradingContext = {
+  selectedSymbol: "EUR/USD",
+  setSelectedSymbol: noop,
+  selectedTimeframe: "M1",
+  setSelectedTimeframe: noop,
+  symbols: [],
+  setSymbols: noop,
+  symbolsLoading: false,
+  orders: [],
+  setOrders: noop,
+  ordersLoading: false,
+  fetchOrders: noop,
+  fetchUserBalance: noop,
+  userBalance: 0,
+  setUserBalance: noop,
+  accountSummary: defaultAccountSummary,
+  currentSymbolData: { bid: "0", ask: "0", change: 0 },
+  activeTool: null,
+  setActiveTool: noop,
+  chartObjects: [],
+  setChartObjects: noop,
+  showGrid: true,
+  setShowGrid: noop,
+  snapToGrid: false,
+  setSnapToGrid: noop,
+  drawingsVisible: true,
+  setDrawingsVisible: noop,
+  chartType: "candles",
+  setChartType: noop,
+  chartLocked: false,
+  setChartLocked: noop,
+  theme: "dark",
+  setTheme: noop,
+};
+const TradingContext = createContext(defaultTradingContext);
+
+export const useTrading = () => {
+  const context = useContext(TradingContext);
+  return context ?? defaultTradingContext;
+};
+
+export const TradingProvider = ({ children }) => {
+  const [selectedSymbol, setSelectedSymbol] = useState("CADJPY");
+  const [selectedTimeframe, setSelectedTimeframe] = useState("M1");
+
+  const [symbols, setSymbols] = useState([]);
+  const [symbolsLoading, setSymbolsLoading] = useState(true);
+
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+
+  const [userBalance, setUserBalance] = useState(100000);
+
+  const [activeTool, setActiveTool] = useState(null);
+  const [chartObjects, setChartObjects] = useState([]);
+  const [showGrid, setShowGrid] = useState(true);
+  const [snapToGrid, setSnapToGrid] = useState(false);
+  const [drawingsVisible, setDrawingsVisible] = useState(true);
+  const [chartType, setChartType] = useState("candles");
+  const [chartLocked, setChartLocked] = useState(false);
+  const [theme, setTheme] = useState("dark"); // 'dark' | 'light'
+
+  const socketRef = useRef(null);
+
+  // ✅ Price update batching refs (slowed down for MT5-like stability)
+  const pendingPriceRef = useRef(new Map()); // symbol -> latest update
+  const flushTimerRef = useRef(null);
+  const FLUSH_MS = 1000; // 1 second batching for natural, stable price updates (MT5-like)
+
+  // ---------------------------------------
+  // API: fetchOrders – project APIs: auth/me → trading-accounts → trades/account
+  // ---------------------------------------
+  const fetchOrders = useCallback(async (accountId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      setOrdersLoading(true);
+
+      // If no accountId provided, resolve it from the API chain
+      let resolvedAccountId = accountId;
+      if (!resolvedAccountId) {
+        const user = await getCurrentUser();
+        if (!user?.userId) {
+          setOrders([]);
+          return;
+        }
+        const accounts = await getUserAccounts(user.userId);
+        const account = Array.isArray(accounts) && accounts.length > 0 ? accounts[0] : null;
+        if (!account?.id) {
+          setOrders([]);
+          return;
+        }
+        resolvedAccountId = account.id;
+      }
+
+      const trades = await getAccountTrades(resolvedAccountId);
+      const list = Array.isArray(trades) ? trades : [];
+      const fetchedOrders = list.map((trade) => ({
+        id: trade.id,
+        ticket: trade.id,
+        symbol: trade.symbol,
+        type: trade.type,
+        volume: trade.volume,
+        price: trade.openPrice,
+        stopLoss: trade.stopLoss ?? undefined,
+        takeProfit: trade.takeProfit ?? undefined,
+        comment: "",
+        status: trade.closedAt ? "CLOSED" : "OPEN",
+        swap: 0,
+        profit: trade.profit ?? 0,
+        profitCurrency: "USD",
+        time: new Date(trade.openedAt).toLocaleTimeString(),
+        openAt: trade.openedAt,
+        closeAt: trade.closedAt ?? null,
+        closePrice: trade.closePrice ?? null,
+      }));
+      setOrders(fetchedOrders);
+    } catch (error) {
+      console.error("❌ Error fetching orders:", error?.message || error);
+      setOrders([]);
+    } finally {
+      setOrdersLoading(false);
+    }
+  }, []);
+
+  // ---------------------------------------
+  // Profit calc (stable)
+  // ---------------------------------------
+  const calculateRealTimeProfit = useCallback((order, currentPrice) => {
+    if (!currentPrice || !order.price || isNaN(currentPrice) || isNaN(order.price)) {
+      return order.profit || 0;
+    }
+
+    const priceDiff =
+      order.type === "BUY" ? currentPrice - order.price : order.price - currentPrice;
+
+    return priceDiff * order.volume;
+  }, []);
+
+  // ---------------------------------------
+  // API: fetchUserBalance – project APIs: auth/me → trading-accounts → account summary
+  // ---------------------------------------
+  const fetchUserBalance = useCallback(async (accountId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      // If no accountId provided, resolve it from the API chain
+      let resolvedAccountId = accountId;
+      if (!resolvedAccountId) {
+        const user = await getCurrentUser();
+        if (!user?.userId) return;
+        const accounts = await getUserAccounts(user.userId);
+        const account = Array.isArray(accounts) && accounts.length > 0 ? accounts[0] : null;
+        if (!account?.id) return;
+        resolvedAccountId = account.id;
+      }
+
+      const summary = await getAccountSummary(resolvedAccountId);
+      const balance = summary?.balance != null ? parseFloat(summary.balance) : NaN;
+      if (!isNaN(balance)) setUserBalance(balance);
+    } catch (error) {
+      console.error("❌ Error fetching user balance:", error?.message || error);
+    }
+  }, []);
+
+  // ---------------------------------------
+  // ✅ Derived accountSummary (NO setState loop)
+  // ---------------------------------------
+  const accountSummary = useMemo(() => {
+    const baseBalance = userBalance;
+
+    const totalMargin = orders.reduce((sum, order) => {
+      const marginRate = 0.01;
+      return sum + order.volume * order.price * marginRate;
+    }, 0);
+
+    const totalProfit = orders.reduce((sum, order) => {
+      const symbolData = symbols.find((s) => s.symbol === order.symbol);
+      if (symbolData) {
+        const currentPrice =
+          order.type === "BUY"
+            ? parseFloat(symbolData.bid || 0)
+            : parseFloat(symbolData.ask || 0);
+
+        if (currentPrice && currentPrice > 0 && !isNaN(currentPrice)) {
+          return sum + calculateRealTimeProfit(order, currentPrice);
+        }
+      }
+      return sum + (order.profit || 0);
+    }, 0);
+
+    const equity = baseBalance + totalProfit;
+    const freeMargin = equity - totalMargin;
+    const level = totalMargin > 0 ? (equity / totalMargin) * 100 : 0;
+
+    return {
+      balance: baseBalance,
+      equity,
+      margin: totalMargin,
+      freeMargin,
+      level: level.toFixed(2),
+    };
+  }, [orders, symbols, userBalance, calculateRealTimeProfit]);
+
+  // ---------------------------------------
+  // on mount: orders + balance
+  // ---------------------------------------
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetchOrders();
+      fetchUserBalance();
+    }
+  }, [fetchOrders, fetchUserBalance]);
+
+  // ---------------------------------------
+  // symbols list on mount – project API: market-data/prices
+  // ---------------------------------------
+  useEffect(() => {
+    const loadSymbols = async () => {
+      try {
+        setSymbolsLoading(true);
+        const data = await getUnifiedPrices();
+        const fetchedSymbols = data?.prices ?? [];
+        setSymbols(fetchedSymbols);
+        if (fetchedSymbols.length > 0) {
+          const normalized = selectedSymbol.replace("/", "");
+          const exists = fetchedSymbols.find(
+            (s) => (s.symbol && s.symbol.replace("/", "") === normalized) || s.symbol === selectedSymbol
+          );
+          if (!exists) setSelectedSymbol(fetchedSymbols[0].symbol);
+        }
+      } catch (error) {
+        console.error("❌ Error fetching symbols:", error?.message || error);
+        setSymbols([]);
+      } finally {
+        setSymbolsLoading(false);
+      }
+    };
+    loadSymbols();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ---------------------------------------
+  // ✅ 500ms flush function (batch state updates)
+  // ---------------------------------------
+  const flushPriceUpdates = useCallback(() => {
+    const updatesMap = pendingPriceRef.current;
+    if (updatesMap.size === 0) return;
+
+    // clone & clear
+    const localUpdates = new Map(updatesMap);
+    updatesMap.clear();
+
+    // 1) update symbols ONCE
+    setSymbols((prev) =>
+      prev.map((s) => {
+        const u = localUpdates.get(s.symbol);
+        return u ? { ...s, ...u } : s;
+      })
+    );
+
+    // 2) update orders profit ONCE
+    setOrders((prev) => {
+      let changed = false;
+
+      const next = prev.map((order) => {
+        const u = localUpdates.get(order.symbol);
+        if (!u) return order;
+
+        const currentPrice =
+          order.type === "BUY"
+            ? parseFloat(u.bid || 0)
+            : parseFloat(u.ask || 0);
+
+        if (!currentPrice || isNaN(currentPrice) || currentPrice <= 0) return order;
+
+        const newProfit = calculateRealTimeProfit(order, currentPrice);
+        if (newProfit === order.profit) return order;
+
+        changed = true;
+        return { ...order, profit: newProfit };
+      });
+
+      return changed ? next : prev;
+    });
+  }, [calculateRealTimeProfit]);
+
+  // ---------------------------------------
+  // Socket.io price updates (batched)
+  // ---------------------------------------
+  useEffect(() => {
+    if (!socketRef.current) {
+      socketRef.current = socket;
+    }
+
+    const sock = socketRef.current;
+
+    const onConnect = () => console.log("✅ TradingContext: Connected");
+    const onDisconnect = () => console.log("⚠️ TradingContext: Disconnected");
+
+    const onPriceUpdate = (updatedSymbol) => {
+      if (!updatedSymbol?.symbol) return;
+
+      // store latest update
+      pendingPriceRef.current.set(updatedSymbol.symbol, updatedSymbol);
+
+      // schedule flush every 500ms
+      if (!flushTimerRef.current) {
+        flushTimerRef.current = setTimeout(() => {
+          flushTimerRef.current = null;
+          flushPriceUpdates();
+        }, FLUSH_MS);
+      }
+    };
+
+    // Backend emits "position:closed" (not "tradeClosed"). Normalize payload for one handler.
+    const onTradeClosed = async (data) => {
+      console.log("🔔 Trade closed event received:", data);
+      if (!data) return;
+
+      // balance update from event (account:update has newBalance; position:closed may not)
+      if (data.newBalance !== undefined) {
+        const newBalance = parseFloat(data.newBalance);
+        if (!isNaN(newBalance)) setUserBalance(newBalance);
+      }
+
+      // optional UI notification (backend: profit, closeReason)
+      if (window.notify) {
+        const profitLoss = data.profitLoss ?? data.profit ?? 0;
+        const profitText = profitLoss >= 0 ? `+${profitLoss.toFixed(2)}` : profitLoss.toFixed(2);
+        const symbol = data.symbol || "Trade";
+        const reason = data.reason ?? data.closeReason ?? "Closed";
+        window.notify(
+          `Trade Closed: ${reason} | ${symbol} | P/L: ${profitText} USD`,
+          profitLoss >= 0 ? "success" : "error"
+        );
+      }
+
+      // optimistic remove
+      if (data.tradeId) {
+        setOrders((prev) => prev.filter((o) => o.id !== data.tradeId));
+      }
+
+      // refresh from API (sync)
+      await fetchOrders();
+      await fetchUserBalance();
+    };
+
+    sock.on("connect", onConnect);
+    sock.on("disconnect", onDisconnect);
+    sock.on("priceUpdate", onPriceUpdate);
+    // Backend sends "position:closed"; listen for that so trade-closed events work
+    sock.on("position:closed", onTradeClosed);
+
+    return () => {
+      sock.off("connect", onConnect);
+      sock.off("disconnect", onDisconnect);
+      sock.off("priceUpdate", onPriceUpdate);
+      sock.off("position:closed", onTradeClosed);
+
+      // clear pending flush timer on unmount
+      if (flushTimerRef.current) {
+        clearTimeout(flushTimerRef.current);
+        flushTimerRef.current = null;
+      }
+
+      pendingPriceRef.current.clear();
+    };
+  }, [flushPriceUpdates, fetchOrders, fetchUserBalance]);
+
+  // ---------------------------------------
+  // Global theme (dark/light) applied to document root
+  // ---------------------------------------
+  useEffect(() => {
+    try {
+      const root = document.documentElement;
+      if (!root) return;
+      root.dataset.theme = theme;
+    } catch {
+      // ignore if document is not available (SSR etc.)
+    }
+  }, [theme]);
+
+  // ---------------------------------------
+  // current symbol data (memo)
+  // ---------------------------------------
+  const currentSymbolData = useMemo(() => {
+    return (
+      symbols.find((s) => s.symbol === selectedSymbol) || {
+        bid: "0.00000",
+        ask: "0.00000",
+        change: 0,
+      }
+    );
+  }, [symbols, selectedSymbol]);
+
+  // ---------------------------------------
+  // ✅ Provider value memoized (stability)
+  // ---------------------------------------
+  const value = useMemo(
+    () => ({
+      selectedSymbol,
+      setSelectedSymbol,
+      selectedTimeframe,
+      setSelectedTimeframe,
+
+      symbols,
+      setSymbols,
+      symbolsLoading,
+
+      orders,
+      setOrders,
+      ordersLoading,
+
+      fetchOrders,
+      fetchUserBalance,
+
+      userBalance,
+      setUserBalance,
+
+      accountSummary,
+      currentSymbolData,
+
+      activeTool,
+      setActiveTool,
+      chartObjects,
+      setChartObjects,
+      showGrid,
+      setShowGrid,
+      snapToGrid,
+      setSnapToGrid,
+      drawingsVisible,
+      setDrawingsVisible,
+      chartType,
+      setChartType,
+      chartLocked,
+      setChartLocked,
+      theme,
+      setTheme,
+    }),
+    [
+      selectedSymbol,
+      selectedTimeframe,
+      symbols,
+      symbolsLoading,
+      orders,
+      ordersLoading,
+      fetchOrders,
+      fetchUserBalance,
+      userBalance,
+      accountSummary,
+      currentSymbolData,
+      activeTool,
+      chartObjects,
+      showGrid,
+      snapToGrid,
+      drawingsVisible,
+      chartType,
+      chartLocked,
+      theme,
+    ]
+  );
+
+  return <TradingContext.Provider value={value}>{children}</TradingContext.Provider>;
+};

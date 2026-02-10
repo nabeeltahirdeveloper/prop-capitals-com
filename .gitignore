@@ -1,0 +1,11 @@
+package-lock.json
+
+# Apple Files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Editor Configuration  Files
+.zed
+.vscode

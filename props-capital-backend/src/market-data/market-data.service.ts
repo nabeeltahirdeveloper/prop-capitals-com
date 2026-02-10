@@ -40,6 +40,11 @@ export class MarketDataService {
     'USD/CHF',
     'NZD/USD',
     'EUR/GBP',
+    'EUR/JPY',
+    'GBP/JPY',
+    'CAD/JPY',
+    'XAU/USD',
+    'XAG/USD',
   ];
 
   private readonly CRYPTO_SYMBOLS: { [symbol: string]: string } = {
@@ -49,6 +54,11 @@ export class MarketDataService {
     'SOL/USD': 'solana',
     'ADA/USD': 'cardano',
     'DOGE/USD': 'dogecoin',
+    'BNB/USD': 'binancecoin',
+    'AVAX/USD': 'avalanche-2',
+    'DOT/USD': 'polkadot',
+    'MATIC/USD': 'matic-network',
+    'LINK/USD': 'chainlink',
   };
 
   constructor(
