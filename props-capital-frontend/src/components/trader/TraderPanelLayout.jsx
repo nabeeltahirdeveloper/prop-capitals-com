@@ -34,6 +34,8 @@ import {
 } from "@/api/notifications";
 import { getUserPayouts, getPayoutStatistics } from "@/api/payouts";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { translateNotification } from '@/utils/notificationTranslations';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 export const TraderThemeContext = React.createContext();
 export const useTraderTheme = () => React.useContext(TraderThemeContext);
@@ -41,6 +43,7 @@ export const useTraderTheme = () => React.useContext(TraderThemeContext);
 const TraderPanelLayoutInner = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation()
   const { logout } = useAuth();
   const queryClient = useQueryClient();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -116,22 +119,67 @@ const TraderPanelLayoutInner = () => {
   //   retry: false,
   // });
 
-  // const { data: notifications = [] } = useQuery({
-  //   queryKey: ["notifications", user?.userId],
-  //   queryFn: async () => {
-  //     if (!user?.userId) return [];
-  //     try {
-  //       return await getUserNotifications(user.userId);
-  //     } catch (error) {
-  //       console.error("Failed to fetch notifications:", error);
-  //       return [];
-  //     }
-  //   },
-  //   enabled: !!user?.userId,
-  //   retry: false,
-  //   refetchInterval: 30000,
-  //   staleTime: 15000,
-  // });
+  // Notifications
+  const { data: allNotificationsData = [] } = useQuery({
+    queryKey: ["notifications", user?.userId],
+    queryFn: async () => {
+      if (!user?.userId) return [];
+      try {
+        return await getUserNotifications(user.userId);
+      } catch (error) {
+        console.error("Failed to fetch notifications:", error);
+        return [];
+      }
+    },
+    enabled: !!user?.userId,
+    retry: false,
+    refetchInterval: 5000,
+  });
+
+  const markAsReadMutation = useMutation({
+    mutationFn: (id) => markNotificationAsRead(id),
+    onSuccess: (_, id) => {
+      queryClient.setQueryData(
+        ["notifications", user?.userId],
+        (oldData = []) =>
+          oldData.map((n) => (n.id === id ? { ...n, read: true } : n)),
+      );
+      queryClient.invalidateQueries({
+        queryKey: ["notifications", user?.userId],
+      });
+    },
+    onError: (error) => {
+      console.error("Failed to mark notification as read:", error);
+      queryClient.invalidateQueries({
+        queryKey: ["notifications", user?.userId],
+      });
+    },
+  });
+
+  // Header dropdown: unread on top, then by date (newest first). If no unread, show latest.
+  const notificationsForDropdown = (allNotificationsData || [])
+    .slice()
+    .sort((a, b) => {
+      if (a.read !== b.read) return a.read ? 1 : -1; // unread first
+      return (
+        new Date(b.createdAt || 0).getTime() -
+        new Date(a.createdAt || 0).getTime()
+      );
+    })
+    .slice(0, 5)
+    .map((n) => {
+      const translated = translateNotification(n.title, n.body, t);
+      return {
+        id: n.id,
+        title: translated.title,
+        message: translated.message,
+        read: !!n.read,
+      };
+    });
+  const notifications = notificationsForDropdown;
+  const unreadNotificationCount = (allNotificationsData || []).filter(
+    (n) => !n.read,
+  ).length;
 
   const toggleTheme = () => setIsDark(!isDark);
 
@@ -143,16 +191,6 @@ const TraderPanelLayoutInner = () => {
       setIsRefreshing(false);
     }, 1000);
   };
-
-  // Demo notifications data
-  const notifications = [
-    { id: 1, type: 'success', title: 'Trade Executed', message: 'EUR/USD Buy order filled at 1.08567', time: '2 mins ago', read: false },
-    { id: 2, type: 'warning', title: 'Daily Loss Warning', message: 'You have reached 80% of your daily loss limit', time: '15 mins ago', read: false },
-    { id: 3, type: 'info', title: 'Market Update', message: 'US Non-Farm Payroll data releasing in 1 hour', time: '1 hour ago', read: true },
-    { id: 4, type: 'success', title: 'Challenge Progress', message: 'Profit target 50% completed!', time: '3 hours ago', read: true },
-  ];
-
-  const unreadCount = notifications.filter(n => !n.read).length;
 
   const mainNavItems = [
     { path: '/traderdashboard', icon: LayoutDashboard, label: 'Account Overview', exact: true },
@@ -469,9 +507,9 @@ const TraderPanelLayoutInner = () => {
                     }`}
                 >
                   <Bell className="w-5 h-5" />
-                  {unreadCount > 0 && (
+                  {unreadNotificationCount > 0 && (
                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 text-[10px] font-bold text-[#0a0d12] rounded-full flex items-center justify-center">
-                      {unreadCount}
+                      {unreadNotificationCount}
                     </span>
                   )}
                 </button>
@@ -483,7 +521,7 @@ const TraderPanelLayoutInner = () => {
                     <div className={`p-4 border-b ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
                       <div className="flex items-center justify-between">
                         <h3 className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Notifications</h3>
-                        <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{unreadCount} unread</span>
+                        <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{unreadNotificationCount} unread</span>
                       </div>
                     </div>
                     <div className="max-h-80 overflow-y-auto">
