@@ -47,9 +47,10 @@ const TraderPanelLayoutInner = () => {
   const [isDark, setIsDark] = useState(true);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showAccountDropdown, setShowAccountDropdown] = useState(false);
   const [lastRefresh, setLastRefresh] = useState(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const { selectedChallenge, getChallengePhaseLabel, challenges } = useChallenges();
+  const { selectedChallenge, getChallengePhaseLabel, challenges, selectChallenge } = useChallenges();
 
   const { data: user } = useQuery({
     queryKey: ["user", "me"],
@@ -337,23 +338,91 @@ const TraderPanelLayoutInner = () => {
                 <Menu className="w-5 h-5" />
               </button>
 
-              <h1 className={`font-bold text-base sm:text-xl ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {selectedChallenge ? `Account ${selectedChallenge.accountId}` : 'Account #5214'}
-              </h1>
-              {selectedChallenge && (
-                <div className="hidden sm:flex items-center gap-2">
-                  <span className={`px-2 py-1 text-xs font-medium rounded ${statusColor === 'emerald' ? 'bg-emerald-500/10 text-emerald-500' :
-                    statusColor === 'red' ? 'bg-red-500/10 text-red-500' :
-                      'bg-amber-500/10 text-amber-500'
-                    }`}>
-                    {phaseLabel}
-                  </span>
-                  <span className={`px-2 py-1 text-xs font-medium rounded ${selectedChallenge.status === 'active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'
-                    }`}>
-                    {selectedChallenge.status === 'active' ? 'Active' : 'Failed'}
-                  </span>
-                </div>
-              )}
+              {/* Account Selector Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowAccountDropdown(!showAccountDropdown)}
+                  className={`flex items-center gap-2 sm:gap-3 px-3 py-1.5 rounded-xl transition-all ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-100'}`}
+                >
+                  <h1 className={`font-bold text-base sm:text-xl ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    {selectedChallenge ? `Account ${selectedChallenge.accountId}` : 'Account -'}
+                  </h1>
+                  {selectedChallenge && (
+                    <div className="hidden sm:flex items-center gap-2">
+                      <span className={`px-2 py-1 text-xs font-medium rounded ${statusColor === 'emerald' ? 'bg-emerald-500/10 text-emerald-500' :
+                        statusColor === 'red' ? 'bg-red-500/10 text-red-500' :
+                          'bg-amber-500/10 text-amber-500'
+                        }`}>
+                        {phaseLabel}
+                      </span>
+                      <span className={`px-2 py-1 text-xs font-medium rounded ${selectedChallenge.status === 'active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'
+                        }`}>
+                        {selectedChallenge.status === 'active' ? 'Active' : 'Failed'}
+                      </span>
+                    </div>
+                  )}
+                  {challenges.length > 1 && (
+                    <ChevronDown className={`w-4 h-4 transition-transform ${showAccountDropdown ? 'rotate-180' : ''} ${isDark ? 'text-gray-400' : 'text-slate-400'}`} />
+                  )}
+                </button>
+
+                {/* Account Dropdown Panel */}
+                {showAccountDropdown && challenges.length > 1 && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setShowAccountDropdown(false)} />
+                    <div className={`absolute left-0 top-full mt-2 w-80 rounded-xl shadow-2xl border z-50 ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`}>
+                      <div className={`p-3 border-b ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
+                        <p className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>Switch Account</p>
+                      </div>
+                      <div className="max-h-64 overflow-y-auto p-2">
+                        {challenges.map((challenge) => {
+                          const label = getChallengePhaseLabel(challenge);
+                          const isSelected = selectedChallenge?.id === challenge.id;
+                          const color = challenge.status === 'failed' ? 'red' :
+                            challenge.phase === 'funded' ? 'emerald' : 'amber';
+                          return (
+                            <button
+                              key={challenge.id}
+                              onClick={() => {
+                                selectChallenge(challenge.id);
+                                setShowAccountDropdown(false);
+                              }}
+                              className={`w-full flex items-center justify-between gap-3 px-3 py-3 rounded-lg transition-all ${
+                                isSelected
+                                  ? isDark ? 'bg-amber-500/10 border border-amber-500/20' : 'bg-amber-50 border border-amber-200'
+                                  : isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'
+                              }`}
+                            >
+                              <div className="flex flex-col items-start gap-1">
+                                <span className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                  Account {challenge.accountId}
+                                </span>
+                                <div className="flex items-center gap-2">
+                                  <span className={`px-2 py-0.5 text-xs font-medium rounded ${
+                                    color === 'emerald' ? 'bg-emerald-500/10 text-emerald-500' :
+                                    color === 'red' ? 'bg-red-500/10 text-red-500' :
+                                      'bg-amber-500/10 text-amber-500'
+                                  }`}>
+                                    {label}
+                                  </span>
+                                  <span className={`px-2 py-0.5 text-xs font-medium rounded ${
+                                    challenge.status === 'active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'
+                                  }`}>
+                                    {challenge.status === 'active' ? 'Active' : 'Failed'}
+                                  </span>
+                                </div>
+                              </div>
+                              {isSelected && (
+                                <div className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0" />
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
 
             <div className="flex items-center gap-2 sm:gap-4">
