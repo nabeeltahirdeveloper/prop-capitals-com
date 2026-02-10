@@ -561,10 +561,12 @@ const TraderPanelLayoutInner = () => {
                         </div>
                       ))}
                     </div>
-                    <div className={`p-3 border-t ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
-                      <button className="w-full text-center text-sm text-amber-500 hover:text-amber-400 font-medium">
+                    <div className={`p-3 text-center border-t ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
+                      <Link to="/traderdashboard/notifications" className="w-full text-center text-sm text-amber-500 hover:text-amber-400 font-medium" onClick={() => {
+                        setShowNotifications(false);
+                      }}>
                         View All Notifications
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 )}
