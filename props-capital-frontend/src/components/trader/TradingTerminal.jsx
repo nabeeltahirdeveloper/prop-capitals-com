@@ -12,9 +12,9 @@ const MT5Terminal = () => {
 
   return (
     <CommonTerminalWrapper>
-      <TradingProvider baseUrl="https://your-api-url.com">
+      <TradingProvider baseUrl="https://api-chart-sdk.e-volvo.io">
         <MT5TradingArea selectedChallenge={selectedChallenge} />
-      </ TradingProvider>
+      </TradingProvider>
     </CommonTerminalWrapper>
   );
 };
