@@ -38,6 +38,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { translateNotification } from '@/utils/notificationTranslations';
 import { useTranslation } from '@/contexts/LanguageContext';
 import { Button } from '../ui/button';
+import { dayjs } from '@/lib/utils';
 
 export const TraderThemeContext = React.createContext();
 export const useTraderTheme = () => React.useContext(TraderThemeContext);
@@ -176,6 +177,7 @@ const TraderPanelLayoutInner = () => {
         title: translated.title,
         message: translated.message,
         read: !!n.read,
+        time: dayjs(n.createdAt).fromNow(),
       };
     });
   const notifications = notificationsForDropdown;
