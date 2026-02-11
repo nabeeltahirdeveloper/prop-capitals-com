@@ -152,7 +152,7 @@ const ChatSupport = () => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-28 right-4 sm:right-6 w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 transition-all hover:scale-110 z-[9999]"
+          className="fixed bottom-4 right-4 sm:right-6 w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 transition-all hover:scale-110 z-[9999]"
           data-testid="chat-toggle-button"
         >
           <MessageCircle className="w-7 h-7 text-[#0a0d12]" />

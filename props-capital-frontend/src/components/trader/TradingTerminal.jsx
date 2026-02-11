@@ -4,7 +4,7 @@ import CommonTerminalWrapper from './CommonTerminalWrapper';
 import MT5TradingArea from './MT5TradingArea';
 import BybitTerminal from './BybitTerminal';
 import TradeLockerComingSoon from './TradeLockerComingSoon';
-import PT5Terminal from '@/pages/TradingTerminal';
+import PT5Terminal from './PT5Terminal';
 
 const MT5Terminal = () => {
   const { selectedChallenge } = useChallenges();
