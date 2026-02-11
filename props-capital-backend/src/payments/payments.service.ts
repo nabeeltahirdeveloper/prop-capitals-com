@@ -197,6 +197,7 @@ export class PaymentsService {
     // Adding platform credentials to the account.
     const platformEmail =
       user.email.split('@')[0] +
+      '-' +
       account.id.substring(0, 8) +
       '@prop-capitals.com';
     const platformPassword = generatePassword();
