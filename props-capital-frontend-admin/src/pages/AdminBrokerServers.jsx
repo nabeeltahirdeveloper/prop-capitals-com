@@ -197,17 +197,17 @@ export default function AdminBrokerServers() {
   if (error) {
     return (
       <div className="space-y-6">
-        <Card className="bg-slate-900 border-slate-800 p-8 text-center">
-          <XCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-white mb-2">
+        <Card className="bg-card border-border p-8 text-center">
+          <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-foreground mb-2">
             {t("admin.brokerServers.error.title")}
           </h3>
-          <p className="text-slate-400 mb-4">
+          <p className="text-muted-foreground mb-4">
             {error.message || t("admin.brokerServers.error.description")}
           </p>
           <Button
             onClick={() => queryClient.invalidateQueries({ queryKey: ["broker-servers"] })}
-            className="bg-gradient-to-r from-emerald-500 to-cyan-500"
+            className="bg-gradient-to-r from-[#d97706] to-[#d97706] text-[#0a0d12] hover:brightness-110"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
             {t("admin.brokerServers.error.retry")}
@@ -221,42 +221,42 @@ export default function AdminBrokerServers() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">
             {t("admin.brokerServers.title")}
           </h1>
-          <p className="text-sm sm:text-base text-slate-400">
+          <p className="text-sm sm:text-base text-muted-foreground">
             {t("admin.brokerServers.subtitle")}
           </p>
         </div>
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500 w-full sm:w-auto">
+            <Button className="bg-gradient-to-r from-[#d97706] to-[#d97706] text-[#0a0d12] hover:brightness-110 w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />{" "}
               {t("admin.brokerServers.addServer")}
             </Button>
           </DialogTrigger>
           <DialogContent
             className="
-    bg-slate-900 border-slate-800
+    bg-card border-border
     w-[95vw] sm:w-full sm:max-w-lg
     p-4 sm:p-6 max-h-[90vh] overflow-y-auto
 
-    [&>button]:text-white
+    [&>button]:text-foreground
     [&>button:hover]:opacity-100
   "
           >
             <DialogHeader>
-              <DialogTitle className="text-white text-base sm:text-lg md:text-xl">
+              <DialogTitle className="text-foreground text-base sm:text-lg md:text-xl">
                 {t("admin.brokerServers.dialog.title")}
               </DialogTitle>
-              <DialogDescription className="text-slate-400 text-sm">
+              <DialogDescription className="text-muted-foreground text-sm">
                 {t("admin.brokerServers.dialog.description")}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5 sm:space-y-2">
-                  <Label className="text-slate-400 text-xs sm:text-sm">
+                  <Label className="text-muted-foreground text-xs sm:text-sm">
                     {t("admin.brokerServers.dialog.serverName")}
                   </Label>
                   <Input
@@ -264,14 +264,14 @@ export default function AdminBrokerServers() {
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    className="bg-slate-800 border-slate-700 text-white text-sm"
+                    className="bg-muted border-border text-foreground text-sm placeholder:text-muted-foreground"
                     placeholder={t(
                       "admin.brokerServers.dialog.serverNamePlaceholder"
                     )}
                   />
                 </div>
                 <div className="space-y-1.5 sm:space-y-2">
-                  <Label className="text-slate-400 text-xs sm:text-sm">
+                  <Label className="text-muted-foreground text-xs sm:text-sm">
                     {t("admin.brokerServers.dialog.platform")}
                   </Label>
                   <Select
@@ -280,20 +280,20 @@ export default function AdminBrokerServers() {
                       setFormData({ ...formData, platform: v })
                     }
                   >
-                    <SelectTrigger className="bg-slate-800 border-slate-700 text-white text-sm">
+                    <SelectTrigger className="bg-muted border-border text-foreground text-sm">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-900 border-slate-800 text-white">
-                      <SelectItem value="MT4" className="text-white">
+                    <SelectContent className="bg-card border-border text-foreground">
+                      <SelectItem value="MT4" className="text-foreground">
                         {t("admin.brokerServers.platforms.mt4")}
                       </SelectItem>
-                      <SelectItem value="MT5" className="text-white">
+                      <SelectItem value="MT5" className="text-foreground">
                         {t("admin.brokerServers.platforms.mt5")}
                       </SelectItem>
-                      <SelectItem value="CTRADER" className="text-white">
+                      <SelectItem value="CTRADER" className="text-foreground">
                         {t("admin.brokerServers.platforms.ctrader")}
                       </SelectItem>
-                      <SelectItem value="DXTRADE" className="text-white">
+                      <SelectItem value="DXTRADE" className="text-foreground">
                         {t("admin.brokerServers.platforms.dxtrade")}
                       </SelectItem>
                     </SelectContent>
@@ -303,7 +303,7 @@ export default function AdminBrokerServers() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5 sm:space-y-2">
-                  <Label className="text-slate-400 text-xs sm:text-sm">
+                  <Label className="text-muted-foreground text-xs sm:text-sm">
                     {t("admin.brokerServers.dialog.serverAddress")}
                   </Label>
                   <Input
@@ -314,14 +314,14 @@ export default function AdminBrokerServers() {
                         server_address: e.target.value,
                       })
                     }
-                    className="bg-slate-800 border-slate-700 text-white text-sm"
+                    className="bg-muted border-border text-foreground text-sm placeholder:text-muted-foreground"
                     placeholder={t(
                       "admin.brokerServers.dialog.serverAddressPlaceholder"
                     )}
                   />
                 </div>
                 <div className="space-y-1.5 sm:space-y-2">
-                  <Label className="text-slate-400 text-xs sm:text-sm">
+                  <Label className="text-muted-foreground text-xs sm:text-sm">
                     {t("admin.brokerServers.dialog.port")}
                   </Label>
                   <Input
@@ -333,7 +333,7 @@ export default function AdminBrokerServers() {
                         server_port: parseInt(e.target.value) || 443,
                       })
                     }
-                    className="bg-slate-800 border-slate-700 text-white text-sm"
+                    className="bg-muted border-border text-foreground text-sm"
                   />
                 </div>
               </div>
@@ -341,7 +341,7 @@ export default function AdminBrokerServers() {
               {(formData.platform === "MT4" || formData.platform === "MT5") && (
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5 sm:space-y-2">
-                    <Label className="text-slate-400 text-xs sm:text-sm">
+                    <Label className="text-muted-foreground text-xs sm:text-sm">
                       {t("admin.brokerServers.dialog.managerLogin")}
                     </Label>
                     <Input
@@ -352,11 +352,11 @@ export default function AdminBrokerServers() {
                           manager_login: e.target.value,
                         })
                       }
-                      className="bg-slate-800 border-slate-700 text-white text-sm"
+                      className="bg-muted border-border text-foreground text-sm"
                     />
                   </div>
                   <div className="space-y-1.5 sm:space-y-2">
-                    <Label className="text-slate-400 text-xs sm:text-sm">
+                    <Label className="text-muted-foreground text-xs sm:text-sm">
                       {t("admin.brokerServers.dialog.managerPassword")}
                     </Label>
                     <Input
@@ -368,7 +368,7 @@ export default function AdminBrokerServers() {
                           manager_password: e.target.value,
                         })
                       }
-                      className="bg-slate-800 border-slate-700 text-white text-sm"
+                      className="bg-muted border-border text-foreground text-sm"
                     />
                   </div>
                 </div>
@@ -378,7 +378,7 @@ export default function AdminBrokerServers() {
                 formData.platform === "DXTRADE") && (
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5 sm:space-y-2">
-                    <Label className="text-slate-400 text-xs sm:text-sm">
+                    <Label className="text-muted-foreground text-xs sm:text-sm">
                       {t("admin.brokerServers.dialog.apiKey")}
                     </Label>
                     <Input
@@ -386,11 +386,11 @@ export default function AdminBrokerServers() {
                       onChange={(e) =>
                         setFormData({ ...formData, api_key: e.target.value })
                       }
-                      className="bg-slate-800 border-slate-700 text-white text-sm"
+                      className="bg-muted border-border text-foreground text-sm"
                     />
                   </div>
                   <div className="space-y-1.5 sm:space-y-2">
-                    <Label className="text-slate-400 text-xs sm:text-sm">
+                    <Label className="text-muted-foreground text-xs sm:text-sm">
                       {t("admin.brokerServers.dialog.apiSecret")}
                     </Label>
                     <Input
@@ -399,21 +399,21 @@ export default function AdminBrokerServers() {
                       onChange={(e) =>
                         setFormData({ ...formData, api_secret: e.target.value })
                       }
-                      className="bg-slate-800 border-slate-700 text-white text-sm"
+                      className="bg-muted border-border text-foreground text-sm"
                     />
                   </div>
                 </div>
               )}
 
               <div className="flex items-center gap-4 py-1">
-                <label className="flex items-center gap-2 text-slate-300 text-sm sm:text-base cursor-pointer">
+                <label className="flex items-center gap-2 text-muted-foreground text-sm sm:text-base cursor-pointer">
                   <input
                     type="checkbox"
                     checked={formData.is_demo}
                     onChange={(e) =>
                       setFormData({ ...formData, is_demo: e.target.checked })
                     }
-                    className="rounded border-slate-700 bg-slate-800"
+                    className="rounded border-border bg-muted"
                   />
                   {t("admin.brokerServers.dialog.demoServer")}
                 </label>
@@ -421,7 +421,7 @@ export default function AdminBrokerServers() {
 
               <Button
                 onClick={() => createServerMutation.mutate(formData)}
-                className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500"
+                className="w-full bg-gradient-to-r from-[#d97706] to-[#d97706] text-[#0a0d12] hover:brightness-110"
                 disabled={createServerMutation.isPending || !formData.name || !formData.server_address}
               >
                 {createServerMutation.isPending
@@ -436,16 +436,16 @@ export default function AdminBrokerServers() {
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="bg-slate-900 border-slate-800 p-4 sm:p-6 animate-pulse">
+            <Card key={i} className="bg-card border-border p-4 sm:p-6 animate-pulse">
               <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 rounded-xl bg-slate-800"></div>
-                <div className="w-20 h-6 rounded bg-slate-800"></div>
+                <div className="w-12 h-12 rounded-xl bg-muted"></div>
+                <div className="w-20 h-6 rounded bg-muted"></div>
               </div>
-              <div className="h-6 w-32 bg-slate-800 rounded mb-2"></div>
-              <div className="h-4 w-48 bg-slate-800 rounded mb-4"></div>
+              <div className="h-6 w-32 bg-muted rounded mb-2"></div>
+              <div className="h-4 w-48 bg-muted rounded mb-4"></div>
               <div className="space-y-2">
-                <div className="h-4 bg-slate-800 rounded"></div>
-                <div className="h-4 bg-slate-800 rounded"></div>
+                <div className="h-4 bg-muted rounded"></div>
+                <div className="h-4 bg-muted rounded"></div>
               </div>
             </Card>
           ))}
@@ -455,7 +455,7 @@ export default function AdminBrokerServers() {
           {servers.map((server) => (
             <Card
               key={server.id}
-              className="bg-slate-900 border-slate-800 p-4 sm:p-6"
+              className="bg-card border-border p-4 sm:p-6"
             >
               <div className="flex items-start justify-between mb-4">
                 <div
@@ -467,7 +467,7 @@ export default function AdminBrokerServers() {
                 </div>
                 <div className="flex items-center gap-2">
                   {server.is_demo && (
-                    <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">
+                    <Badge className="bg-amber-500/10 text-[#d97706] border border-amber-200">
                       {t("admin.brokerServers.badges.demo")}
                     </Badge>
                   )}
@@ -475,42 +475,44 @@ export default function AdminBrokerServers() {
                 </div>
               </div>
 
-              <h3 className="text-lg font-semibold text-white mb-1">
+              <h3 className="text-lg font-semibold text-foreground mb-1">
                 {server.name}
               </h3>
-              <p className="text-slate-400 text-sm mb-4">
+              <p className="text-muted-foreground text-sm mb-4">
                 {server.server_address}:{server.server_port}
               </p>
 
               <div className="space-y-2 text-sm mb-4">
                 <div className="flex justify-between">
-                  <span className="text-slate-400">
+                  <span className="text-muted-foreground">
                     {t("admin.brokerServers.card.platform")}
                   </span>
-                  <span className="text-white font-medium">
+                  <span className="text-foreground font-medium">
                     {getPlatformLabel(server.platform)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">
+                  <span className="text-muted-foreground">
                     {t("admin.brokerServers.card.timezone")}
                   </span>
-                  <span className="text-white">{server.timezone}</span>
+                  <span className="text-foreground">{server.timezone}</span>
                 </div>
                 {server.accounts_count > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-slate-400">
+                    <span className="text-muted-foreground">
                       {t("admin.brokerServers.card.accounts")}
                     </span>
-                    <span className="text-white">{server.accounts_count}</span>
+                    <span className="text-foreground">
+                      {server.accounts_count}
+                    </span>
                   </div>
                 )}
                 {server.last_sync && (
                   <div className="flex justify-between">
-                    <span className="text-slate-400">
+                    <span className="text-muted-foreground">
                       {t("admin.brokerServers.card.lastSync")}
                     </span>
-                    <span className="text-white">
+                    <span className="text-foreground">
                       {new Date(server.last_sync).toLocaleString()}
                     </span>
                   </div>
@@ -521,7 +523,7 @@ export default function AdminBrokerServers() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex-1 border-slate-700 text-slate-300"
+                  className="flex-1 border-border text-foreground hover:bg-accent"
                   onClick={() => handleTestConnection(server)}
                   disabled={testingServer === server.id}
                 >
@@ -535,14 +537,14 @@ export default function AdminBrokerServers() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-slate-700 text-slate-300"
+                  className="border-border text-foreground hover:bg-accent"
                 >
                   <Settings className="w-4 h-4" />
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-red-800 text-red-400 hover:bg-red-500/10"
+                  className="border-red-500/60 text-red-500 hover:bg-red-500/10"
                   onClick={() => handleDeleteServer(server)}
                   disabled={deleteServerMutation.isPending}
                 >
@@ -553,17 +555,17 @@ export default function AdminBrokerServers() {
           ))}
 
           {servers.length === 0 && !isLoading && (
-            <Card className="bg-slate-900 border-slate-800 p-8 sm:p-12 col-span-full text-center">
-              <Server className="w-10 h-10 sm:w-12 sm:h-12 text-slate-600 mx-auto mb-3 sm:mb-4" />
-              <h3 className="text-base sm:text-lg font-semibold text-white mb-1.5 sm:mb-2">
+            <Card className="bg-card border-border p-8 sm:p-12 col-span-full text-center">
+              <Server className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-base sm:text-lg font-semibold text-foreground mb-1.5 sm:mb-2">
                 {t("admin.brokerServers.empty.title")}
               </h3>
-              <p className="text-xs sm:text-sm text-slate-400 mb-4 sm:mb-6">
+              <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">
                 {t("admin.brokerServers.empty.description")}
               </p>
               <Button
                 onClick={() => setShowAddDialog(true)}
-                className="bg-gradient-to-r from-emerald-500 to-cyan-500 w-full sm:w-auto"
+                className="bg-gradient-to-r from-[#d97706] to-[#d97706] text-[#0a0d12] hover:brightness-110 w-full sm:w-auto"
               >
                 <Plus className="w-4 h-4 mr-2" />{" "}
                 {t("admin.brokerServers.addServer")}

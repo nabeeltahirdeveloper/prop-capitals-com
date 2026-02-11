@@ -139,15 +139,15 @@ export default function AdminCoupons() {
       accessorKey: "code",
       cell: (row) => (
         <div className="flex items-center gap-2">
-          <code className="bg-slate-800 px-2 py-1 rounded text-emerald-400 font-mono">
+          <code className="bg-muted px-2 py-1 rounded text-emerald-500 font-mono border border-border">
             {row.code}
           </code>
           <button
             onClick={() => copyCode(row.code)}
-            className="text-white transition-colors"
+            className="text-foreground transition-colors"
           >
             {copiedCode === row.code ? (
-              <Check className="w-4 h-4 text-emerald-400" />
+              <Check className="w-4 h-4 text-emerald-500" />
             ) : (
               <Copy className="w-4 h-4" />
             )}
@@ -159,7 +159,7 @@ export default function AdminCoupons() {
       header: t("admin.coupons.table.discount"),
       accessorKey: "discountPct",
       cell: (row) => (
-        <span className="text-white font-medium">
+        <span className="text-foreground font-medium">
           {row.discountType === "fixed"
             ? `$${row.discountPct}`
             : `${row.discountPct}%`}
@@ -170,7 +170,7 @@ export default function AdminCoupons() {
       header: t("admin.coupons.table.usage"),
       accessorKey: "usedCount",
       cell: (row) => (
-        <span className="text-slate-300">
+        <span className="text-muted-foreground">
           {row.usedCount || 0} / {row.maxUses || "\u221e"}
         </span>
       ),
@@ -188,10 +188,10 @@ export default function AdminCoupons() {
       accessorKey: "isActive",
       cell: (row) => (
         <span
-          className={`px-2 py-1 rounded text-xs font-medium ${
+          className={`px-2 py-1 rounded-full text-xs font-medium border ${
             row.isActive
-              ? "bg-emerald-500/20 text-emerald-400"
-              : "bg-slate-700 text-slate-400"
+              ? "bg-emerald-50 text-emerald-600 border-emerald-200"
+              : "bg-muted text-muted-foreground border-border"
           }`}
         >
           {row.isActive
@@ -208,7 +208,7 @@ export default function AdminCoupons() {
           <Button
             size="sm"
             variant="ghost"
-            className="text-slate-400"
+            className="text-muted-foreground hover:text-foreground"
             onClick={() => handleEdit(row)}
           >
             <Pencil className="w-4 h-4" />
@@ -216,7 +216,7 @@ export default function AdminCoupons() {
           <Button
             size="sm"
             variant="ghost"
-            className="text-red-400 hover:text-red-300"
+            className="text-red-500 hover:text-red-600"
             onClick={() => deleteMutation.mutate(row.id)}
           >
             <Trash2 className="w-4 h-4" />
@@ -231,10 +231,10 @@ export default function AdminCoupons() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">
             {t("admin.coupons.title")}
           </h1>
-          <p className="text-sm sm:text-base text-slate-400">
+          <p className="text-sm sm:text-base text-muted-foreground">
             {t("admin.coupons.subtitle")}
           </p>
         </div>
@@ -246,20 +246,14 @@ export default function AdminCoupons() {
           }}
         >
           <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500 w-full sm:w-auto h-10 sm:h-11">
+            <Button className="bg-gradient-to-r from-[#d97706] to-[#d97706] hover:from-amber-600 hover:to-amber-600 w-full sm:w-auto h-10 sm:h-11">
               <Plus className="w-4 h-4 mr-2" />
               {t("admin.coupons.createCoupon")}
             </Button>
           </DialogTrigger>
-          <DialogContent
-            className="
-    bg-slate-900 border-slate-800 w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6 max-h-[90vh] overflow-y-auto
-    [&>button]:text-white
-    [&>button]:hover:text-white
-  "
-          >
+          <DialogContent className="bg-card border-border w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-white text-base sm:text-lg">
+              <DialogTitle className="text-foreground text-base sm:text-lg">
                 {editingCoupon
                   ? t("admin.coupons.editCoupon")
                   : t("admin.coupons.createNewCoupon")}
@@ -267,7 +261,7 @@ export default function AdminCoupons() {
             </DialogHeader>
             <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
               <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-slate-300 text-xs sm:text-sm">
+                <Label className="text-muted-foreground text-xs sm:text-sm">
                   {t("admin.coupons.form.couponCode")}
                 </Label>
                 <div className="flex gap-2">
@@ -280,11 +274,11 @@ export default function AdminCoupons() {
                       })
                     }
                     placeholder="WELCOME20"
-                    className="bg-slate-800 border-slate-700 font-mono text-white placeholder:text-slate-500 text-sm h-9 sm:h-10"
+                    className="bg-muted border-border font-mono text-foreground placeholder:text-muted-foreground text-sm h-9 sm:h-10"
                   />
                   <Button
                     variant="outline"
-                    className="border-slate-700 text-black hover:text-white hover:bg-slate-800 h-9 sm:h-10 text-xs sm:text-sm whitespace-nowrap px-3"
+                    className="border-border text-foreground hover:bg-accent h-9 sm:h-10 text-xs sm:text-sm whitespace-nowrap px-3"
                     onClick={generateCode}
                   >
                     {t("admin.coupons.form.generate")}
@@ -294,7 +288,7 @@ export default function AdminCoupons() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-1.5 sm:space-y-2">
-                  <Label className="text-slate-300 text-xs sm:text-sm">
+                  <Label className="text-muted-foreground text-xs sm:text-sm">
                     {t("admin.coupons.form.discountType")}
                   </Label>
                   <Select
@@ -306,18 +300,18 @@ export default function AdminCoupons() {
                     <SelectTrigger className="bg-slate-800 border-slate-700 text-white text-sm h-9 sm:h-10">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                      <SelectItem value="percentage" className="text-white">
+                    <SelectContent className="bg-card border-border text-foreground">
+                      <SelectItem value="percentage" className="text-foreground">
                         {t("admin.coupons.form.percentage")}
                       </SelectItem>
-                      <SelectItem value="fixed" className="text-white">
+                      <SelectItem value="fixed" className="text-foreground">
                         {t("admin.coupons.form.fixedAmount")}
                       </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-1.5 sm:space-y-2">
-                  <Label className="text-slate-300 text-xs sm:text-sm">
+                  <Label className="text-muted-foreground text-xs sm:text-sm">
                     {t("admin.coupons.form.discountValue")}{" "}
                     {formData.discountType === "percentage" ? "(%)" : "($)"}
                   </Label>
@@ -333,14 +327,14 @@ export default function AdminCoupons() {
                     placeholder={
                       formData.discountType === "percentage" ? "20" : "50"
                     }
-                    className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm h-9 sm:h-10"
+                    className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm h-9 sm:h-10"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-1.5 sm:space-y-2">
-                  <Label className="text-slate-300 text-xs sm:text-sm">
+                  <Label className="text-muted-foreground text-xs sm:text-sm">
                     {t("admin.coupons.form.maxUses")}
                   </Label>
                   <Input
@@ -350,11 +344,11 @@ export default function AdminCoupons() {
                       setFormData({ ...formData, maxUses: e.target.value })
                     }
                     placeholder="100"
-                    className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm h-9 sm:h-10"
+                    className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm h-9 sm:h-10"
                   />
                 </div>
                 <div className="space-y-1.5 sm:space-y-2">
-                  <Label className="text-slate-300 text-xs sm:text-sm">
+                  <Label className="text-muted-foreground text-xs sm:text-sm">
                     {t("admin.coupons.form.validUntil")}
                   </Label>
                   <Input
@@ -364,7 +358,7 @@ export default function AdminCoupons() {
                       setFormData({ ...formData, expiresAt: e.target.value })
                     }
                     className="
-    bg-slate-800 border-slate-700 text-white text-sm h-9 sm:h-10
+    bg-muted border-border text-foreground text-sm h-9 sm:h-10
     [&::-webkit-calendar-picker-indicator]:invert
     [&::-webkit-calendar-picker-indicator]:opacity-100
     [&::-webkit-calendar-picker-indicator]:cursor-pointer
@@ -374,7 +368,7 @@ export default function AdminCoupons() {
               </div>
 
               <div className="flex items-center justify-between pt-2">
-                <Label className="text-slate-300 text-xs sm:text-sm">
+                <Label className="text-muted-foreground text-xs sm:text-sm">
                   {t("admin.coupons.form.active")}
                 </Label>
                 <Switch
@@ -387,7 +381,7 @@ export default function AdminCoupons() {
 
               <Button
                 onClick={handleSubmit}
-                className="cursor-pointer w-full bg-gradient-to-r from-emerald-500 to-cyan-500 mt-2 sm:mt-4 h-10 sm:h-11 text-sm font-semibold"
+                className="cursor-pointer w-full bg-gradient-to-r from-[#d97706] to-[#d97706] hover:from-amber-600 hover:to-amber-600 mt-2 sm:mt-4 h-10 sm:h-11 text-sm font-semibold"
                 disabled={
                   createMutation.isPending ||
                   updateMutation.isPending ||
@@ -408,35 +402,35 @@ export default function AdminCoupons() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400 truncate">
+        <Card className="bg-card border-border p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-muted-foreground truncate">
             {t("admin.coupons.stats.totalCoupons")}
           </p>
-          <p className="text-xl sm:text-2xl font-bold text-white truncate">
+          <p className="text-xl sm:text-2xl font-bold text-foreground truncate">
             {coupons.length}
           </p>
         </Card>
-        <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400 truncate">
+        <Card className="bg-card border-border p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-muted-foreground truncate">
             {t("admin.coupons.stats.active")}
           </p>
-          <p className="text-xl sm:text-2xl font-bold text-emerald-400 truncate">
+          <p className="text-xl sm:text-2xl font-bold text-emerald-500 truncate">
             {coupons.filter((c) => c.isActive).length}
           </p>
         </Card>
-        <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400 truncate">
+        <Card className="bg-card border-border p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-muted-foreground truncate">
             {t("admin.coupons.stats.totalUses")}
           </p>
-          <p className="text-xl sm:text-2xl font-bold text-cyan-400 truncate">
+          <p className="text-xl sm:text-2xl font-bold text-sky-500 truncate">
             {coupons.reduce((sum, c) => sum + (c.usedCount || 0), 0)}
           </p>
         </Card>
-        <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400 truncate">
+        <Card className="bg-card border-border p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-muted-foreground truncate">
             {t("admin.coupons.stats.expired")}
           </p>
-          <p className="text-xl sm:text-2xl font-bold text-slate-400 truncate">
+          <p className="text-xl sm:text-2xl font-bold text-muted-foreground truncate">
             {
               coupons.filter(
                 (c) => c.expiresAt && new Date(c.expiresAt) < new Date(),
@@ -447,12 +441,13 @@ export default function AdminCoupons() {
       </div>
 
       {/* Coupons Table */}
-      <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4 md:p-6 overflow-hidden">
+      <Card className="bg-card border-border p-3 sm:p-4 md:p-6 overflow-hidden">
         <DataTable
           columns={columns}
           data={coupons}
           isLoading={isLoading}
           emptyMessage={t("admin.coupons.emptyMessage")}
+          variant="light"
         />
       </Card>
     </div>

@@ -36,6 +36,8 @@ import {
   Calendar,
   UserPlus,
   DollarSign,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -50,9 +52,11 @@ import { Badge } from "@/components/ui/badge";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useTranslation } from "../contexts/LanguageContext";
 import { translateNotification } from "../utils/notificationTranslations";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function Layout({ children, currentPageName }) {
   const { t } = useTranslation();
+  const { isDark, toggleTheme } = useTheme();
 
   // Mobile drawer open/close
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -212,16 +216,21 @@ export default function Layout({ children, currentPageName }) {
       { name: t("nav.scaling"), icon: Zap, page: "AdminScaling" },
       { name: t("nav.payments"), icon: CreditCard, page: "AdminPayments" },
       { name: t("nav.payouts"), icon: Wallet, page: "AdminPayouts" },
+      {
+        name: "CRM",
+        icon: UserPlus,
+        children: [
+          { name: "CRM Leads", icon: UserPlus, page: "CRMLeads" },
+          { name: "Pipeline", icon: Target, page: "CRMPipeline" },
+          { name: "FTD Report", icon: DollarSign, page: "CRMFTDReport" },
+          { name: "Calendar", icon: Calendar, page: "CRMCalendar" },
+        ],
+      },
       { name: t("nav.coupons"), icon: Zap, page: "AdminCoupons" },
       { name: t("nav.violations"), icon: Shield, page: "AdminViolations" },
       { name: t("nav.support"), icon: HelpCircle, page: "AdminSupport" },
       { name: t("nav.settings"), icon: Settings, page: "AdminSettings" },
       { name: t("nav.profile"), icon: User, page: "AdminProfile" },
-      { type: "divider", label: "CRM" },
-      { name: "CRM Leads", icon: UserPlus, page: "CRMLeads" },
-      { name: "Pipeline", icon: Target, page: "CRMPipeline" },
-      { name: "FTD Report", icon: DollarSign, page: "CRMFTDReport" },
-      { name: "Calendar", icon: Calendar, page: "CRMCalendar" },
     ],
     [t],
   );
@@ -409,17 +418,11 @@ export default function Layout({ children, currentPageName }) {
 
   // Protected layout (responsive + collapsible sidebar)
   return (
-    <div className="min-h-screen bg-slate-950 flex w-full overflow-x-hidden">
-      <style>{`
-        :root {
-          --primary: 160 84% 39%;
-          --primary-foreground: 0 0% 100%;
-        }
-      `}</style>
+    <div className="min-h-screen bg-background flex w-full overflow-x-hidden">
 
       {/* Sidebar — group for hover-to-show toggle */}
       <aside
-        className={`group fixed inset-y-0 left-0 z-50 bg-slate-900 border-r border-slate-800 transform transition-[width,transform] duration-300 ease-in-out
+        className={`group fixed inset-y-0 left-0 z-50 bg-sidebar border-r border-sidebar-border transform transition-[width,transform] duration-300 ease-in-out
         ${sidebarCollapsed ? "w-20" : "w-64"}
         lg:translate-x-0
         ${sidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"}
@@ -430,29 +433,33 @@ export default function Layout({ children, currentPageName }) {
           <button
             type="button"
             onClick={() => setSidebarCollapsed((v) => !v)}
-            className="hidden lg:flex absolute -right-2.5 top-1/2 -translate-y-1/2 z-[60] h-7 w-5 items-center justify-center rounded-md text-slate-500 hover:bg-slate-800/90 hover:text-white transition-all duration-200 focus:outline-none "
+            className="hidden lg:flex absolute -right-4 top-1/2 -translate-y-1/2 z-[60] h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:bg-amber-50 hover:text-[#d97706] hover:border-[#d97706] shadow-sm transition-all duration-200 focus:outline-none"
             aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {sidebarCollapsed ? (
-              <ChevronRight className="w-6 h-6" />
+              <ChevronRight className="w-5 h-5 font-bold" />
             ) : (
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-5 h-5 font-bold" />
             )}
           </button>
 
           {/* Logo + controls */}
-          <div className={`flex items-center justify-between h-16 shrink-0 border-b border-slate-800 transition-all ${sidebarCollapsed ? "px-2" : "px-4"}`}>
+          <div className={`flex items-center justify-between h-16 shrink-0 border-b border-sidebar-border transition-all ${sidebarCollapsed ? "px-2" : "px-4"}`}>
             <Link
               to={createPageUrl("AdminDashboard")}
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center min-w-0 transition-all ${sidebarCollapsed ? "justify-center" : "gap-2"}`}
               title="Admin Dashboard"
             >
-              <div className="w-10 h-10 shrink-0 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
-              {!sidebarCollapsed && <span className="text-xl font-bold text-white truncate">Prop Capitals Admin</span>}
+                <div className="w-10 h-10 shrink-0 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center text-[#0a0d12] font-black">
+                  PC
+                </div>
+              {!sidebarCollapsed && (
+                <span className="text-xl font-bold truncate text-sidebar-foreground">
+                  PROP<span className="text-amber-500">CAPITALS</span>
+                </span>
+              )}
             </Link>
 
             {/* Mobile: close button */}
@@ -469,7 +476,7 @@ export default function Layout({ children, currentPageName }) {
           <nav className={`flex-1 py-6 space-y-1 overflow-y-auto overflow-x-hidden transition-all ${sidebarCollapsed ? "px-2" : "px-4"}`}>
             {showAdminMenu && !sidebarCollapsed && (
               <div className="mb-4 px-2">
-                <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">
+                <Badge className="bg-amber-500/20 text-black-400 border-amber-500/30">
                   {t("nav.adminPanel")}
                 </Badge>
               </div>
@@ -503,12 +510,16 @@ export default function Layout({ children, currentPageName }) {
                         }
                         setOpenSubmenu(isSubmenuOpen ? null : item.name);
                       }}
-                      className={`w-full flex items-center justify-between transition-all ${sidebarCollapsed ? "px-2 justify-center" : "px-3"} py-2.5 rounded-xl ${isAnyChildActive ? "bg-slate-800 text-white" : "text-slate-400 hover:text-white hover:bg-slate-800"
+                      className={`w-full flex items-center justify-between transition-all ${sidebarCollapsed ? "px-2 justify-center" : "px-3"} py-2.5 rounded-xl ${
+                        isAnyChildActive
+                          ? "bg-amber-500/10 text-foreground border border-amber-500/40"
+                          : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                      }
                         }`}
                       title={sidebarCollapsed ? item.name : undefined}
                     >
                       <div className={`flex items-center transition-all ${sidebarCollapsed ? "justify-center" : "gap-3"}`}>
-                        <item.icon className={`w-5 h-5 shrink-0 ${isAnyChildActive ? "text-emerald-400" : ""}`} />
+                        <item.icon className={`w-5 h-5 shrink-0 ${isAnyChildActive ? "text-amber-500" : ""}`} />
                         {!sidebarCollapsed && <span className="font-medium truncate">{item.name}</span>}
                       </div>
 
@@ -527,12 +538,13 @@ export default function Layout({ children, currentPageName }) {
                             <Link
                               key={child.page}
                               to={createPageUrl(child.page)}
-                              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${isChildActive
-                                ? "bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-white"
-                                : "text-slate-400 hover:text-white hover:bg-slate-800"
-                                }`}
+                              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${
+                                isChildActive
+                                  ? "bg-amber-500/10 text-foreground border border-amber-500/40"
+                                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                              }`}
                             >
-                              <child.icon className={`w-4 h-4 ${isChildActive ? "text-emerald-400" : ""}`} />
+                              <child.icon className={`w-4 h-4 ${isChildActive ? "text-amber-500" : ""}`} />
                               <span className="text-sm font-medium">{child.name}</span>
                             </Link>
                           );
@@ -561,12 +573,15 @@ export default function Layout({ children, currentPageName }) {
                   onClick={handleClick}
                   to={createPageUrl(item.page)}
                   title={sidebarCollapsed ? item.name : undefined}
-                  className={`flex items-center transition-all ${sidebarCollapsed ? "justify-center px-2" : "gap-3 px-3"} py-2.5 rounded-xl transition-colors ${isActive
-                    ? "bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-white border border-emerald-500/30"
-                    : "text-slate-400 hover:text-white hover:bg-slate-800"
-                    }`}
+                  className={`flex items-center transition-all ${
+                    sidebarCollapsed ? "justify-center px-2" : "gap-3 px-3"
+                  } py-2.5 rounded-xl transition-colors ${
+                    isActive
+                      ? "bg-amber-500/10 text-foreground border border-amber-500/40"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                  }`}
                 >
-                  <item.icon className={`w-5 h-5 shrink-0 ${isActive ? "text-emerald-400" : ""}`} />
+                  <item.icon className={`w-5 h-5 shrink-0 ${isActive ? "text-amber-500" : ""}`} />
                   {!sidebarCollapsed && <span className="font-medium truncate min-w-0">{item.name}</span>}
                 </Link>
               );
@@ -574,18 +589,22 @@ export default function Layout({ children, currentPageName }) {
           </nav>
 
           {/* User Section */}
-          <div className={`border-t border-slate-800 transition-all ${sidebarCollapsed ? "p-2" : "p-4"}`}>
-            <div className={`flex items-center transition-all ${sidebarCollapsed ? "justify-center" : "gap-3 px-3"} py-2`}>
-              <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-white font-bold">
+          <div className={`border-t border-sidebar-border transition-all ${sidebarCollapsed ? "p-2" : "p-4"}`}>
+            <div
+              className={`flex items-center transition-all ${
+                sidebarCollapsed ? "justify-center" : "gap-3 px-3"
+              } py-2`}
+            >
+              <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-[#0a0d12] font-bold">
                 {currentUser?.profile?.firstName?.[0] || currentUser?.email?.[0] || "U"}
               </div>
 
               {!sidebarCollapsed && (
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">
+                  <p className="text-sm font-medium text-foreground truncate">
                     {currentUser?.profile?.firstName || t("nav.user")}
                   </p>
-                  <p className="text-xs text-slate-400 truncate">{currentUser?.email}</p>
+                  <p className="text-xs text-muted-foreground truncate">{currentUser?.email}</p>
                 </div>
               )}
             </div>
@@ -595,14 +614,13 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Main Content */}
       <div
-        className={`flex-1 min-w-0 transition-all duration-300 ${sidebarCollapsed ? "lg:pl-20" : "lg:pl-64"
-          }`}
+        className={`flex-1 min-w-0 transition-all duration-300 ${sidebarCollapsed ? "lg:pl-20" : "lg:pl-64"}`}
       >
         {/* Top Bar */}
-        <header className="sticky top-0 z-40 h-16 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800 flex items-center justify-between px-4 lg:px-8">
+        <header className="sticky top-0 z-40 h-16 bg-card/90 backdrop-blur-xl border-b border-border flex items-center justify-between px-4 lg:px-8">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden flex items-center justify-center w-10 h-10 -ml-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+            className="lg:hidden flex items-center justify-center w-10 h-10 -ml-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500/50"
             aria-label="Open menu"
           >
             <Menu className="w-6 h-6" />
@@ -611,45 +629,56 @@ export default function Layout({ children, currentPageName }) {
           <div className="flex-1" />
 
           <div className="flex items-center gap-4">
+            <button
+              onClick={toggleTheme}
+              className="flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              aria-label="Toggle theme"
+            >
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
             <LanguageSwitcher />
 
             {/* Notifications */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative text-slate-400">
-                  <Bell className="w-5 h-5" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative h-15 w-15 text-foreground hover:text-[#d97706]"
+                >
+                  <Bell className="w-10 h-10" strokeWidth={2.4} />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center font-semibold">
                       {unreadCount}
                     </span>
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80 bg-slate-900 border-slate-800">
-                <div className="p-4 border-b border-slate-800">
-                  <h3 className="font-semibold text-white">{t("notifications.title")}</h3>
+              <DropdownMenuContent align="end" className="w-80 bg-card border-border">
+                <div className="p-4 border-b border-border">
+                  <h3 className="font-semibold">{t("notifications.title")}</h3>
                 </div>
 
                 {notifications.length === 0 ? (
-                  <div className="p-4 text-center text-slate-400">
+                  <div className="p-4 text-center text-muted-foreground">
                     {t("notifications.noNewNotifications")}
                   </div>
                 ) : (
                   notifications.map((notif) => (
                     <DropdownMenuItem
                       key={notif.id}
-                      className="p-4 cursor-pointer focus:bg-slate-800"
+                      className="p-4 cursor-pointer focus:bg-accent"
                       onSelect={(e) => e.preventDefault()}
                     >
                       <div className="flex items-start justify-between gap-3 w-full">
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-white">{notif.title}</p>
-                          <p className="text-sm text-slate-400">{notif.message}</p>
+                          <p className="font-medium">{notif.title}</p>
+                          <p className="text-sm text-muted-foreground">{notif.message}</p>
                         </div>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7 text-slate-400 flex-shrink-0"
+                          className="h-7 w-7 text-muted-foreground flex-shrink-0"
                           onClick={(e) => {
                             e.stopPropagation();
                             markAsReadMutation.mutate(notif.id);
@@ -668,22 +697,22 @@ export default function Layout({ children, currentPageName }) {
             {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2 text-slate-300 hover:text-white">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-white font-bold text-sm">
+                <Button variant="ghost" className="flex items-center gap-2 text-foreground hover:bg-accent">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-[#0a0d12] font-bold text-sm">
                     {currentUser?.profile?.firstName?.[0] || currentUser?.email?.[0] || "U"}
                   </div>
-                  <ChevronDown className="w-4 h-4 text-slate-400 data-[state=open]:text-white" />
+                  <ChevronDown className="w-4 h-4 text-muted-foreground data-[state=open]:text-foreground" />
                 </Button>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent align="end" className="w-56 bg-slate-900 border-slate-800">
+              <DropdownMenuContent align="end" className="w-56 bg-card border-border">
                 <DropdownMenuItem
                   asChild
-                  className="cursor-pointer focus:bg-slate-800 data-[highlighted]:bg-slate-800"
+                  className="cursor-pointer focus:bg-accent data-[highlighted]:bg-accent"
                 >
                   <Link
                     to={createPageUrl(isAdmin ? "AdminProfile" : "Profile")}
-                    className="flex items-center gap-2 text-slate-300 data-[highlighted]:text-white"
+                    className="flex items-center gap-2"
                     onClick={(e) => {
                       if (currentPageName === "TradingTerminal") {
                         e.preventDefault();
@@ -692,21 +721,21 @@ export default function Layout({ children, currentPageName }) {
                       }
                     }}
                   >
-                    <User className="w-4 h-4 data-[highlighted]:text-white" />
+                    <User className="w-4 h-4" />
                     <span>{t("nav.profile")}</span>
                   </Link>
                 </DropdownMenuItem>
 
-                <DropdownMenuSeparator className="bg-slate-800" />
+                <DropdownMenuSeparator className="bg-border" />
 
                 <DropdownMenuItem
-                  className="cursor-pointer text-red-400 data-[highlighted]:bg-white data-[highlighted]:text-red-500"
+                  className="cursor-pointer text-red-500 data-[highlighted]:bg-accent"
                   onClick={() => {
                     localStorage.removeItem("token");
                     window.location.href = createPageUrl("SignIn");
                   }}
                 >
-                  <LogOut className="w-4 h-4 mr-2 data-[highlighted]:text-red-500" />
+                  <LogOut className="w-4 h-4 mr-2" />
                   {t("nav.logout")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -714,7 +743,7 @@ export default function Layout({ children, currentPageName }) {
           </div>
         </header>
 
-        <main className="p-4 lg:p-8 bg-slate-950 min-h-screen">{children}</main>
+        <main className="p-4 lg:p-8 bg-background min-h-screen">{children}</main>
       </div>
 
       {/* Mobile overlay: backdrop with blur */}

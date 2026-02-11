@@ -221,7 +221,9 @@ export default function AdminDashboard() {
       header: t("admin.dashboard.table.account"),
       accessorKey: "account_number",
       cell: (row) => (
-        <span className="font-medium text-white">{row.account_number}</span>
+        <span className="font-medium text-foreground">
+          {row.account_number}
+        </span>
       ),
     },
     { header: t("admin.dashboard.table.platform"), accessorKey: "platform" },
@@ -286,8 +288,8 @@ export default function AdminDashboard() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <AlertTriangle className="w-12 h-12 text-red-500 mb-4" />
-        <h2 className="text-xl font-bold text-white mb-2">Failed to Load Dashboard</h2>
-        <p className="text-slate-400 mb-4">
+        <h2 className="text-xl font-bold text-foreground mb-2">Failed to Load Dashboard</h2>
+        <p className="text-muted-foreground mb-4">
           {overviewErrorObj?.message || "An unexpected error occurred"}
         </p>
         <Button onClick={() => window.location.reload()}>
@@ -312,10 +314,10 @@ export default function AdminDashboard() {
 
       {/* Header */}
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-white">
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground">
           {t("admin.dashboard.title")}
         </h1>
-        <p className="text-sm sm:text-base text-slate-400">
+        <p className="text-sm sm:text-base text-muted-foreground">
           {t("admin.dashboard.subtitle")}
         </p>
       </div>
@@ -326,7 +328,7 @@ export default function AdminDashboard() {
           title={t("admin.dashboard.stats.totalTraders")}
           value={overview.totalUsers || 0}
           icon={Users}
-          gradient="from-blue-500 to-cyan-500"
+          gradient="from-[#020617] to-[#020617]"
           change={
             overview.usersChangePercent !== undefined
               ? t("admin.dashboard.stats.changeThisMonth", {
@@ -342,13 +344,13 @@ export default function AdminDashboard() {
           title={t("admin.dashboard.stats.activeChallenges")}
           value={overview.activeAccounts || 0}
           icon={TrendingUp}
-          gradient="from-emerald-500 to-teal-500"
+          gradient="from-[#0f766e] to-[#14b8a6]"
         />
         <StatsCard
           title={t("admin.dashboard.stats.revenue")}
           value={`$${(overview.totalRevenue || 0).toLocaleString()}`}
           icon={DollarSign}
-          gradient="from-green-500 to-emerald-500"
+          gradient="from-[#15803d] to-[#22c55e]"
           change={
             overview.revenueChangePercent !== undefined
               ? t("admin.dashboard.stats.changeThisMonth", {
@@ -364,38 +366,38 @@ export default function AdminDashboard() {
           title={t("admin.dashboard.stats.payouts")}
           value={`$${(overview.pendingPayoutsAmount || 0).toLocaleString()}`}
           icon={Wallet}
-          gradient="from-purple-500 to-pink-500"
+          gradient="from-[#4c1d95] to-[#ec4899]"
         />
         <StatsCard
           title={t("admin.dashboard.stats.fundedAccounts")}
           value={overview.fundedAccounts || 0}
           icon={Award}
-          gradient="from-amber-500 to-orange-500"
+          gradient="from-[#d97706] to-[#d97706]"
         />
         <StatsCard
           title={t("admin.dashboard.stats.violationsToday")}
           value={overview.violationsToday || 0}
           icon={AlertTriangle}
-          gradient="from-red-500 to-pink-500"
+          gradient="from-[#991b1b] to-[#e11d48]"
         />
       </div>
 
       {/* Revenue Chart */}
-      <Card className="bg-slate-900 border-slate-900 p-4 sm:p-6">
+      <Card className="bg-card border-border p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
-          <h3 className="text-base sm:text-lg font-semibold text-white">
+          <h3 className="text-base sm:text-lg font-semibold text-foreground">
             {t("admin.dashboard.chart.title")}
           </h3>
           <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm">
             <div className="flex items-center gap-2">
               <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-500" />
-              <span className="text-slate-400">
+              <span className="text-muted-foreground">
                 {t("admin.dashboard.chart.revenue")}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-purple-500" />
-              <span className="text-slate-400">
+              <span className="text-muted-foreground">
                 {t("admin.dashboard.chart.payouts")}
               </span>
             </div>
@@ -408,11 +410,11 @@ export default function AdminDashboard() {
           </div>
         ) : revenueError ? (
           <div className="h-[300px] flex items-center justify-center">
-            <p className="text-slate-400">Failed to load chart data</p>
+            <p className="text-muted-foreground">Failed to load chart data</p>
           </div>
         ) : revenueData.length === 0 ? (
           <div className="h-[300px] flex items-center justify-center">
-            <p className="text-slate-400">No revenue data available</p>
+            <p className="text-muted-foreground">No revenue data available</p>
           </div>
         ) : (
           <div className="h-[200px] sm:h-[250px] md:h-[300px]">
@@ -482,16 +484,16 @@ export default function AdminDashboard() {
       {/* Tables - FIXED: Added no-scrollbar class */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Recent Accounts */}
-        <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
+        <Card className="bg-card border-border p-4 sm:p-6">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h3 className="text-base sm:text-lg font-semibold text-white">
+            <h3 className="text-base sm:text-lg font-semibold text-foreground">
               {t("admin.dashboard.recentAccounts.title")}
             </h3>
             <Link to={createPageUrl("AdminAccounts")}>
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-slate-400 hover:!text-black text-xs sm:text-sm px-2 sm:px-3"
+                className="text-muted-foreground hover:!text-foreground text-xs sm:text-sm px-2 sm:px-3"
               >
                 {t("admin.dashboard.viewAll")}{" "}
                 <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
@@ -503,7 +505,7 @@ export default function AdminDashboard() {
               <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
             </div>
           ) : accountsError ? (
-            <p className="text-center text-slate-400 py-8">
+            <p className="text-center text-muted-foreground py-8">
               Failed to load accounts
             </p>
           ) : (
@@ -512,15 +514,16 @@ export default function AdminDashboard() {
                 columns={accountColumns}
                 data={displayRecentAccounts}
                 emptyMessage={t("admin.dashboard.noDataFound")}
+                variant="light"
               />
             </div>
           )}
         </Card>
 
         {/* Recent Violations */}
-        <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
+        <Card className="bg-card border-border p-4 sm:p-6">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h3 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-semibold text-foreground flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-red-400" />
               {t("admin.dashboard.recentViolations.title")}
             </h3>
@@ -528,7 +531,7 @@ export default function AdminDashboard() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-slate-400 hover:!text-black text-xs sm:text-sm px-2 sm:px-3"
+                className="text-muted-foreground hover:!text-foreground text-xs sm:text-sm px-2 sm:px-3"
               >
                 {t("admin.dashboard.viewAll")}{" "}
                 <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
@@ -540,7 +543,7 @@ export default function AdminDashboard() {
               <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
             </div>
           ) : violationsError ? (
-            <p className="text-center text-slate-400 py-8">
+            <p className="text-center text-muted-foreground py-8">
               Failed to load violations
             </p>
           ) : (
@@ -549,6 +552,7 @@ export default function AdminDashboard() {
                 columns={violationColumns}
                 data={displayRecentViolations}
                 emptyMessage={t("admin.dashboard.noDataFound")}
+                variant="light"
               />
             </div>
           )}
@@ -558,40 +562,40 @@ export default function AdminDashboard() {
       {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <Link to={createPageUrl("AdminUsers")}>
-          <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4 hover:border-emerald-500/50 transition-colors cursor-pointer h-full">
+        <Card className="bg-card border-border p-3 sm:p-4 hover:border-emerald-500/50 transition-colors cursor-pointer h-full">
             <div className="flex items-center gap-2 sm:gap-3">
               <Users className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 flex-shrink-0" />
-              <span className="text-white font-medium text-xs sm:text-sm">
+              <span className="text-foreground font-medium text-xs sm:text-sm">
                 {t("admin.dashboard.quickActions.manageUsers")}
               </span>
             </div>
           </Card>
         </Link>
         <Link to={createPageUrl("AdminChallenges")}>
-          <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4 hover:border-cyan-500/50 transition-colors cursor-pointer h-full">
+        <Card className="bg-card border-border p-3 sm:p-4 hover:border-cyan-500/50 transition-colors cursor-pointer h-full">
             <div className="flex items-center gap-2 sm:gap-3">
               <Award className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400 flex-shrink-0" />
-              <span className="text-white font-medium text-xs sm:text-sm">
+              <span className="text-foreground font-medium text-xs sm:text-sm">
                 {t("admin.dashboard.quickActions.manageChallenges")}
               </span>
             </div>
           </Card>
         </Link>
         <Link to={createPageUrl("AdminPayouts")}>
-          <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4 hover:border-purple-500/50 transition-colors cursor-pointer h-full">
+        <Card className="bg-card border-border p-3 sm:p-4 hover:border-purple-500/50 transition-colors cursor-pointer h-full">
             <div className="flex items-center gap-2 sm:gap-3">
               <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400 flex-shrink-0" />
-              <span className="text-white font-medium text-xs sm:text-sm">
+              <span className="text-foreground font-medium text-xs sm:text-sm">
                 {t("admin.dashboard.quickActions.reviewPayouts")}
               </span>
             </div>
           </Card>
         </Link>
         <Link to={createPageUrl("AdminSettings")}>
-          <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4 hover:border-amber-500/50 transition-colors cursor-pointer h-full">
+        <Card className="bg-card border-border p-3 sm:p-4 hover:border-amber-500/50 transition-colors cursor-pointer h-full">
             <div className="flex items-center gap-2 sm:gap-3">
               <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 flex-shrink-0" />
-              <span className="text-white font-medium text-xs sm:text-sm">
+              <span className="text-foreground font-medium text-xs sm:text-sm">
                 {t("admin.dashboard.quickActions.platformSettings")}
               </span>
             </div>
