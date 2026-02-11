@@ -1,12 +1,12 @@
 import React from 'react';
-import { DollarSign, Clock, AlertCircle, TrendingUp, AlertTriangle, ChevronDown } from 'lucide-react';
+import { DollarSign, Clock, AlertCircle, TrendingUp, AlertTriangle } from 'lucide-react';
 
 import { useTraderTheme } from './TraderPanelLayout';
 import { useChallenges } from '@/contexts/ChallengesContext';
 
 const PayoutHistory = () => {
   const { isDark } = useTraderTheme();
-  const { selectedChallenge, challenges, selectChallenge, getChallengePhaseLabel } = useChallenges();
+  const { selectedChallenge } = useChallenges();
 
 
   // Calculate available balance from selected challenge
@@ -29,36 +29,7 @@ const PayoutHistory = () => {
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <h2 className={`text-xl sm:text-2xl font-bold ${textClass}`}>Payout History</h2>
-
-          {/* Challenge Dropdown */}
-          {challenges.length > 1 && (
-            <div className="relative">
-              <select
-                value={selectedChallenge?.id || ''}
-                onChange={(e) => selectChallenge(e.target.value)}
-                data-testid="payout-challenge-selector"
-                className={`appearance-none px-3 py-1.5 pr-8 rounded-lg font-medium cursor-pointer text-sm transition-all ${isDark
-                  ? 'bg-[#1a1f2e] border border-white/10 text-white hover:border-amber-500/50'
-                  : 'bg-slate-50 border border-slate-200 text-slate-900 hover:border-amber-500'
-                  } focus:outline-none focus:ring-2 focus:ring-amber-500/50`}
-                style={isDark ? { colorScheme: 'dark' } : {}}
-              >
-                {challenges.map((challenge) => {
-                  const label = getChallengePhaseLabel(challenge);
-                  const type = challenge.type === '1-step' ? '1-Step' : '2-Step';
-                  return (
-                    <option key={challenge.id} value={challenge.id} className={isDark ? 'bg-[#1a1f2e] text-white' : ''}>
-                      {type} ${challenge.accountSize.toLocaleString()} - {label}
-                    </option>
-                  );
-                })}
-              </select>
-              <ChevronDown className={`absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${isDark ? 'text-gray-400' : 'text-slate-500'}`} />
-            </div>
-          )}
-        </div>
+        <h2 className={`text-xl sm:text-2xl font-bold ${textClass}`}>Payout History</h2>
         <button
           onClick={() => { }}
           disabled={!canRequestPayout}
