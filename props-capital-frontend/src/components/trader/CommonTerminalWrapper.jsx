@@ -270,7 +270,7 @@ const CommonTerminalWrapper = ({ children }) => {
   const tdStyle = { padding: '6px 12px', fontSize: 12, fontFamily: 'monospace', whiteSpace: 'nowrap' };
 
   return (
-    <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+    <div className="space-y-4 sm:space-y-6 pt-2 pb-6 px-3 sm:px-4 md:px-0">
       {/* ==================== CHALLENGE SELECTOR ==================== */}
       {challenges.length > 1 && (
         <div className={cardClass + ' p-4'}>

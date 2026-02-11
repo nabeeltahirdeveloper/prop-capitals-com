@@ -4565,11 +4565,6 @@ const ChartArea = forwardRef(function ChartArea({
       return;
     }
 
-    // Get container dimensions (fallback if layout not ready yet)
-    const rect = container.getBoundingClientRect();
-    const w = Math.max(rect.width || container.clientWidth || 0, 400);
-    const h = Math.max(rect.height || container.clientHeight || 0, 320);
-
     // Price labels: never show minus sign (trading prices are positive; library default can show minus)
     const priceFormatter = (price) => {
       const n = Math.abs(Number(price));
@@ -4581,8 +4576,6 @@ const ChartArea = forwardRef(function ChartArea({
 
 
     const chart = createChart(container, {
-      width: w,
-      height: h,
       autoSize: true,
       localization: {
         priceFormatter,
@@ -4727,14 +4720,13 @@ const ChartArea = forwardRef(function ChartArea({
     // Subscribe to visible range changes
     timeScale.subscribeVisibleTimeRangeChange(handleVisibleRangeChange);
 
-    // Proper resize observer that uses resize method
+    // Proper resize observer - autoSize handles the resize, we just preserve zoom
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const { width, height } = entry.contentRect;
         if (width > 0 && height > 0 && chart) {
-          // Save zoom before resize
+          // Save zoom state (autoSize handles the actual resize)
           const currentRange = timeScale.getVisibleRange();
-          chart.resize(width, height);
           // Restore zoom after resize if we had one
           if (currentRange) {
             setTimeout(() => {

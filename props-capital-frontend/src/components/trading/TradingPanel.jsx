@@ -252,7 +252,7 @@ export default function TradingPanel({
         </div>
 
         {/* Quick Amount Buttons */}
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-5 gap-1.5">
           {[10, 25, 50, 75, 100].map((percent) => {
             const marginForPercent = accountBalance * (percent / 100);
             const priceForCalc = symbol.bid || 1;
@@ -269,7 +269,7 @@ export default function TradingPanel({
                   const finalLotSize = Math.max(minLot, Math.min(calculatedLot, maxLotSize));
                   setLotSize(parseFloat(finalLotSize.toFixed(decimals)));
                 }}
-                className={`py-2 text-xs rounded-lg font-medium transition-all ${
+                className={`py-2 px-0.5 text-[10px] sm:text-xs rounded-lg font-medium transition-all ${
                   leveragePercent === percent
                     ? 'bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-emerald-400 border border-emerald-500/30'
                     : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'

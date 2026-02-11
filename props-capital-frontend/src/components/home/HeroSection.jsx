@@ -9,6 +9,7 @@ const HeroSection = () => {
   const { isDark } = useTheme();
   const globeRef = useRef();
   const [globeReady, setGlobeReady] = useState(false);
+  const [globeDimensions, setGlobeDimensions] = useState({ width: 520, height: 520 });
 
   const stats = [
     { icon: Users, value: '18,500+', label: 'Active Traders' },
@@ -92,6 +93,21 @@ const HeroSection = () => {
       repeatPeriod: 1500 + Math.random() * 1000,
     }));
   }, [tradingHubs]);
+
+  // Calculate globe dimensions on mount and resize (handles zoom changes)
+  useEffect(() => {
+    const calculateDimensions = () => {
+      const width = window.innerWidth < 640 ? 320 : window.innerWidth < 1024 ? 400 : 520;
+      setGlobeDimensions({ width, height: width });
+    };
+    
+    // Calculate on mount
+    calculateDimensions();
+    
+    // Recalculate on resize/zoom (browser zoom triggers resize event)
+    window.addEventListener('resize', calculateDimensions);
+    return () => window.removeEventListener('resize', calculateDimensions);
+  }, []);
 
   // Initialize globe settings
   useEffect(() => {
@@ -207,15 +223,15 @@ const HeroSection = () => {
 
           {/* Right Content - 3D Globe */}
           <div className="relative flex items-center justify-center order-1 lg:order-2">
-            <div className="relative w-[320px] h-[320px] sm:w-[400px] sm:h-[400px] lg:w-[520px] lg:h-[520px]">
+            <div className="relative" style={{ width: `${globeDimensions.width}px`, height: `${globeDimensions.height}px` }}>
               {/* Globe Container with glow effect */}
               <div className={`absolute inset-0 rounded-full ${isDark ? 'shadow-[0_0_100px_30px_rgba(59,130,246,0.15)]' : 'shadow-[0_0_80px_20px_rgba(59,130,246,0.1)]'}`} />
               
               <Globe
                 ref={globeRef}
                 onGlobeReady={() => setGlobeReady(true)}
-                width={typeof window !== 'undefined' && window.innerWidth < 640 ? 320 : window.innerWidth < 1024 ? 400 : 520}
-                height={typeof window !== 'undefined' && window.innerWidth < 640 ? 320 : window.innerWidth < 1024 ? 400 : 520}
+                width={globeDimensions.width}
+                height={globeDimensions.height}
                 globeImageUrl={globeImageUrl}
                 bumpImageUrl={bumpImageUrl}
                 backgroundImageUrl={null}
