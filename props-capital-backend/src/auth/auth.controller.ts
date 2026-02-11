@@ -1,10 +1,12 @@
-import { Controller, Post, Body, Get, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Req, Param, BadRequestException } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 
 import { JwtAuthGuard } from './jwt.guard';
 
 import type { Request } from 'express';
+import { AuthPayload } from './auth-payload.decorator';
+import { JwtPayload } from './types';
 
 @Controller('auth')
 
@@ -30,6 +32,41 @@ export class AuthController {
   @Post('login')
   login(@Body() body: any) {
     return this.authService.login(body);
+  }
+
+  @Post('account/:accountId/platform-login')
+  @UseGuards(JwtAuthGuard)
+  processPlatformLogin(
+    @Param('accountId') accountId: string,
+    @Body() body: { email: string; password: string },
+    @AuthPayload() user: JwtPayload,
+  ) {
+    if (!body.email || !body.password) {
+      throw new BadRequestException('email and password are required');
+    }
+    return this.authService.processPlatformLogin(
+      user,
+      accountId,
+      body.email,
+      body.password,
+    );
+  }
+
+  @Post('account/:accountId/validate-platform-access')
+  @UseGuards(JwtAuthGuard)
+  validatePlatformAccess(
+    @Param('accountId') accountId: string,
+    @Body() body: { platformToken: string },
+    @AuthPayload() user: JwtPayload,
+  ) {
+    if (!body.platformToken) {
+      throw new BadRequestException('platformToken is required');
+    }
+    return this.authService.validatePlatformAccess(
+      user,
+      accountId,
+      body.platformToken,
+    );
   }
 
 
