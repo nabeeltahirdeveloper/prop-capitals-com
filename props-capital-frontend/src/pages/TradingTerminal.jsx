@@ -3999,7 +3999,7 @@ const {
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-2 sm:gap-4 w-full">
           {/* Keep the “small screen” topbar layout up to md; switch layout at lg */}
-          <div className="w-96 lg:w-auto lg:flex gap-3">
+          <div className="w-full max-w-[400px] lg:w-auto lg:flex gap-3">
             <div className="flex justify-between py-2 sm:justify-start">
               <h1 className="text-base sm:text-lg md:text-xl font-bold text-white me-3">
                 {t("terminal.title")}
@@ -4240,7 +4240,7 @@ const {
 
       {/* Mobile (small screens): show everything in sequence (no tabs) */}
       {hasValidAccount && (
-        <div className="lg:hidden space-y-6">
+        <div className="md:hidden space-y-6">
           {/* 1) Prices / Symbols */}
           <Card className="bg-slate-900 border-slate-800 p-3">
             <h4 className="text-white font-medium mb-3">
@@ -4487,12 +4487,12 @@ const {
 
       {/* Desktop Layout */}
       {hasValidAccount && (
-        <div className="hidden lg:block space-y-4">
+        <div className="hidden md:block space-y-4">
           {/* Main Trading Area */}
           <div className="grid grid-cols-12 gap-4">
             {/* Left Sidebar - Market Watch */}
             <div
-              className={`${sidebarCollapsed ? "col-span-1" : "col-span-2"} transition-all relative h-[450px]`}
+              className={`${sidebarCollapsed ? "col-span-1" : "col-span-3 lg:col-span-2"} transition-all relative h-[450px] md:hidden lg:block`}
             >
               {sidebarCollapsed ? (
                 <div
@@ -4551,7 +4551,7 @@ const {
 
             {/* Center - Chart - flex so chart fills full height */}
             <div
-              className={`${sidebarCollapsed ? "col-span-8" : "col-span-7"} transition-all flex flex-col h-[450px] min-w-0`}
+              className={`${sidebarCollapsed ? "col-span-11" : "col-span-12 lg:col-span-7"} transition-all flex flex-col h-[450px] min-w-0`}
             >
               <TopBar
                    selectedSymbol={selectedSymbol}
@@ -4578,7 +4578,7 @@ const {
             </div>
 
             {/* Right Sidebar - Trading Panel */}
-            <div className="col-span-3">
+            <div className="col-span-12 lg:col-span-3">
               <TradingPanel
                 selectedSymbol={enrichedSelectedSymbol}
                 accountBalance={account.freeMargin}

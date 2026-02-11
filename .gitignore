@@ -9,3 +9,11 @@ package-lock.json
 # Editor Configuration  Files
 .zed
 .vscode
+node_modules
+props-capital-backend/yarn.lock
+props-capital-frontend/yarn.lock
+props-capital-admin/yarn.lock
+props-capital-frontend/package-lock.json
+props-capital-admin/package-lock.json
+props-capital-backend/package-lock.json
+props-capital-frontend/package-lock.json
