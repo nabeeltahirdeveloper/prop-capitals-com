@@ -185,7 +185,7 @@ const TraderPanelLayoutInner = () => {
     (n) => !n.read,
   ).length;
 
-  const toggleTheme = () => setIsDark(!isDark);
+  const toggleTheme = () => globalToggleTheme();
 
   const handleRefresh = () => {
     setIsRefreshing(true);
