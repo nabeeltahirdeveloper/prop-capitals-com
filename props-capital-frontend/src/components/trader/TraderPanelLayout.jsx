@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { ChallengesProvider, useChallenges } from '@/contexts/ChallengesContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { getCurrentUser } from "@/api/auth";
 import { getUserAccounts } from "@/api/accounts";
 import {
@@ -42,9 +43,9 @@ const TraderPanelLayoutInner = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const queryClient = useQueryClient();
+  const { isDark, toggleTheme: globalToggleTheme } = useTheme();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isDark, setIsDark] = useState(true);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [lastRefresh, setLastRefresh] = useState(new Date());
@@ -78,10 +79,11 @@ const TraderPanelLayoutInner = () => {
         theme,
       });
 
-      if (theme === "light") {
-        setIsDark(false);
-      } else {
-        setIsDark(true);
+      // Sync user's saved theme preference with the global ThemeContext
+      if (theme === "light" && isDark) {
+        globalToggleTheme();
+      } else if (theme !== "light" && !isDark) {
+        globalToggleTheme();
       }
     }
   }, [user]);
@@ -121,8 +123,8 @@ const TraderPanelLayoutInner = () => {
   //   refetchInterval: 30000,
   //   staleTime: 15000,
   // });
-
-  const toggleTheme = () => setIsDark(!isDark);
+const toggleTheme = () => setIsDark(!isDark);
+//  const toggleTheme = () => globalToggleTheme();
 
   const handleRefresh = () => {
     setIsRefreshing(true);
