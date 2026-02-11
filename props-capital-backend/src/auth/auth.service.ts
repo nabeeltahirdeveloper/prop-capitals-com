@@ -517,7 +517,7 @@ export class AuthService {
 
     if (!account) throw new BadRequestException("Account doesn't exist");
 
-    const newPassword = generatePassword();
+    const newPassword = generatePassword(20);
     const hash = await bcrypt.hash(newPassword, 10);
 
     await this.prisma.tradingAccount.update({

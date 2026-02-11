@@ -200,7 +200,7 @@ export class PaymentsService {
       '-' +
       account.id.substring(0, 8) +
       '@prop-capitals.com';
-    const platformPassword = generatePassword();
+    const platformPassword = generatePassword(20);
     const platformHashedPassword = await bcrypt.hash(platformPassword, 10);
 
     await this.prisma.tradingAccount.update({
