@@ -1,12 +1,19 @@
 import { useState } from "react";
 
-export default function MT5Login(props) {
+export default function MT5Login({
+  onPlatformLogin,
+  onPasswordReset,
+  isSubmitting = false,
+  isResetting = false,
+}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   function onSubmit(e) {
     e.preventDefault();
-    props.onPlatformLogin(email, password);
+    if (!isSubmitting) {
+      onPlatformLogin(email, password);
+    }
   }
 
   return (
@@ -54,10 +61,11 @@ export default function MT5Login(props) {
               <span>Forgot Password?</span>{" "}
               <button
                 type="button"
+                disabled={isResetting || isSubmitting}
                 className="text-blue-600 hover:underline"
-                onClick={() => props.onPasswordReset()}
+                onClick={() => onPasswordReset()}
               >
-                Send reset credentials
+                {isResetting ? "Sending..." : "Send reset credentials"}
               </button>
             </div>
             <div />
@@ -79,9 +87,10 @@ export default function MT5Login(props) {
           <div className="mt-8 flex justify-end">
             <button
               type="submit"
+              disabled={isSubmitting || isResetting}
               className="h-8 rounded bg-green-500 border border-green-600 px-2 text-sm text-white hover:bg-green-600"
             >
-              Connect to account
+              {isSubmitting ? "Connecting..." : "Connect to account"}
             </button>
           </div>
         </form>

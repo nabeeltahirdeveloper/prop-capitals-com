@@ -28,6 +28,16 @@ export const usePlatformTokensStore = create()(
             [id]: token,
           },
         })),
+
+      /**
+       * @param {string} id
+       */
+      clearPlatfromToken: (id) =>
+        set((state) => {
+          const nextTokens = { ...(state.platformTokens || {}) };
+          delete nextTokens[id];
+          return { platformTokens: nextTokens };
+        }),
     }),
     {
       name: "platform-tokens-storage",
