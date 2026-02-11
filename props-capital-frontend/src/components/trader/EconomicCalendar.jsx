@@ -15,6 +15,7 @@ function monthKeyUTC(dateObj) {
   return `${y}-${m}`;
 }
 
+
 function utcDayKeyFromParts(y, m1to12, d1to31) {
   const mm = String(m1to12).padStart(2, '0');
   const dd = String(d1to31).padStart(2, '0');
