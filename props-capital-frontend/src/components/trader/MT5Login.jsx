@@ -6,7 +6,7 @@ export default function MT5Login(props) {
 
   function onSubmit(e) {
     e.preventDefault();
-    props.onPlatformLogin(email, password)
+    props.onPlatformLogin(email, password);
   }
 
   return (
@@ -48,6 +48,19 @@ export default function MT5Login(props) {
                 className="h-8 flex-1 border border-gray-300 px-3 text-xs outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
               />
             </div>
+
+            <div />
+            <div className="text-xs text-gray-600">
+              <span>Forgot Password?</span>{" "}
+              <button
+                type="button"
+                className="text-blue-600 hover:underline"
+                onClick={() => props.onPasswordReset()}
+              >
+                Send reset credentials
+              </button>
+            </div>
+            <div />
 
             {/* Save Password */}
             <label className="flex items-center gap-2 text-xs text-gray-700">
