@@ -17,8 +17,8 @@ export default function MT5Login({
   }
 
   return (
-    <div className=" bg-white flex items-center justify-center p-6">
-      <div className="w-full max-w-4xl overflow-hidden rounded-md border border-gray-200 bg-white shadow-[0_16px_46px_8px_rgba(0,0,0,0.12)]">
+    <div className=" bg-white h-full flex items-center justify-center p-6">
+      <div className="w-full max-w-xl overflow-hidden rounded-md border border-gray-200 bg-white shadow-[0_16px_46px_8px_rgba(0,0,0,0.12)]">
         {/* Header bar */}
         <div className="bg-blue-500 px-4 py-3 text-xs font-medium text-white mb-2">
           Trading accounts: MetaQuotes Ltd..
@@ -37,7 +37,7 @@ export default function MT5Login({
               placeholder="Enter Login"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="h-8 border border-gray-300 px-3 text-xs outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+              className="text-black h-8 border border-gray-300 px-3 text-xs outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
             />
 
             <div />
@@ -52,9 +52,18 @@ export default function MT5Login({
                 placeholder="Enter Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-8 flex-1 border border-gray-300 px-3 text-xs outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
+                className="text-black h-8 flex-1 border border-gray-300 px-3 text-xs outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
               />
             </div>
+
+            {/* Save Password */}
+            <label className="flex items-center gap-2 text-xs text-gray-700">
+              <input
+                type="checkbox"
+                className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-200"
+              />
+              <span>Save password</span>
+            </label>
 
             <div />
             <div className="text-xs text-gray-600">
@@ -69,15 +78,6 @@ export default function MT5Login({
               </button>
             </div>
             <div />
-
-            {/* Save Password */}
-            <label className="flex items-center gap-2 text-xs text-gray-700">
-              <input
-                type="checkbox"
-                className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-200"
-              />
-              <span>Save password</span>
-            </label>
 
             {/* Server */}
             <label className="text-xs text-gray-900">Server</label>
