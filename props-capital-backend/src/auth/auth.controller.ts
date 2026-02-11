@@ -70,6 +70,16 @@ export class AuthController {
   }
 
 
+  @Post('account/:accountId/reset-password')
+  @UseGuards(JwtAuthGuard)
+  resetPlatformPassword(
+    @Param('accountId') accountId: string,
+    @AuthPayload() user: JwtPayload,
+  ) {
+    return this.authService.resetPlatformPassword(user, accountId);
+  }
+
+
   @UseGuards(JwtAuthGuard)
 
   @Get('me')
@@ -102,7 +112,5 @@ export class AuthController {
     const { email, otp, newPassword } = body;
     return this.authService.verifyOtpAndResetPassword(email, otp, newPassword);
   }
-
-
 
 }

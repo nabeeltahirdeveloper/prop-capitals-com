@@ -221,6 +221,7 @@ export class PaymentsService {
         id: account.id.substring(0, 8),
         platform: account.platform,
       },
+      'setup',
     );
 
     // Create notification for challenge purchase

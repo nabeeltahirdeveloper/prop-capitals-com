@@ -11,6 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import type { JwtPayload, PlatformJwtPayload } from './types';
+import { generatePassword } from 'src/utils/generate-password.util';
 
 @Injectable()
 
@@ -502,5 +503,40 @@ export class AuthService {
 
     if (validated.userId !== user.sub || validated.accountId !== accountId)
       throw new UnauthorizedException('Invalid platform token');
+  }
+
+  async resetPlatformPassword(user: JwtPayload, accountId: string) {
+    const account = await this.prisma.tradingAccount.findUnique({
+      where: { id: accountId },
+      select: {
+        id: true,
+        platformEmail: true,
+        platform: true,
+      },
+    });
+
+    if (!account) throw new BadRequestException("Account doesn't exist");
+
+    const newPassword = generatePassword();
+    const hash = await bcrypt.hash(newPassword, 10);
+
+    await this.prisma.tradingAccount.update({
+      where: { id: accountId },
+      data: {
+        platformHashedPassword: hash,
+      },
+    });
+
+    await this.emailService.sendPlatformAccountCredentials(
+      user.email,
+      account.platformEmail as string,
+      newPassword,
+      account,
+      'password-reset',
+    );
+
+    return {
+      message: 'Email with new credentials sent',
+    };
   }
 }
