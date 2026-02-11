@@ -136,7 +136,10 @@ export default function AdminPayments() {
       header: t("admin.payments.table.trader"),
       accessorKey: "trader_id",
       cell: (row) => (
-        <span className="text-white font-medium block max-w-[180px] truncate" title={row.trader_id}>
+        <span
+          className="text-foreground font-medium block max-w-[180px] truncate"
+          title={row.trader_id}
+        >
           {row.trader_id}
         </span>
       ),
@@ -145,7 +148,7 @@ export default function AdminPayments() {
       header: t("admin.payments.table.amount"),
       accessorKey: "amount",
       cell: (row) => (
-        <span className="text-emerald-400 font-bold">${row.amount}</span>
+        <span className="text-emerald-500 font-bold">${row.amount}</span>
       ),
     },
     {
@@ -173,7 +176,7 @@ export default function AdminPayments() {
 
         return (
           <span className="flex items-center gap-2">
-            <CreditCard className="w-4 h-4 text-slate-400" />
+            <CreditCard className="w-4 h-4 text-muted-foreground" />
             {displayMethod}
           </span>
         );
@@ -184,7 +187,7 @@ export default function AdminPayments() {
       accessorKey: "transaction_id",
       cell: (row) => (
         <span
-          className="text-xs font-mono text-slate-400 block max-w-[120px] truncate"
+          className="text-xs font-mono text-muted-foreground block max-w-[120px] truncate"
           title={row.transaction_id || "-"}
         >
           {row.transaction_id || "-"}
@@ -235,21 +238,21 @@ export default function AdminPayments() {
                   {t("admin.payments.actions.refund")}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-slate-900 border-slate-800 w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6 [&>button]:text-white [&>button]:hover:text-white">
+              <DialogContent className="bg-card border-border w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6">
                 <DialogHeader>
-                  <DialogTitle className="text-white text-base sm:text-lg md:text-xl">
+                  <DialogTitle className="text-foreground text-base sm:text-lg md:text-xl">
                     {t("admin.payments.refundTitle") || "Refund Payment"}
                   </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
                   <div>
-                    <p className="text-slate-400 text-xs sm:text-sm">
+                    <p className="text-muted-foreground text-xs sm:text-sm">
                       {t("admin.payments.refundConfirm") ||
                         `Are you sure you want to refund $${row.amount} to ${row.trader_id}?`}
                     </p>
                   </div>
                   <div className="space-y-1.5 sm:space-y-2">
-                    <Label className="text-slate-300 text-xs sm:text-sm">
+                    <Label className="text-muted-foreground text-xs sm:text-sm">
                       {t("admin.payments.refundReason") ||
                         "Refund Reason (Optional)"}
                     </Label>
@@ -260,7 +263,7 @@ export default function AdminPayments() {
                         t("admin.payments.refundReasonPlaceholder") ||
                         "Enter reason for refund..."
                       }
-                      className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm"
+                      className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
                     />
                   </div>
                   <div className="flex flex-col sm:flex-row gap-2 justify-end mt-4">
@@ -271,14 +274,14 @@ export default function AdminPayments() {
                         setSelectedPayment(null);
                         setRefundReason("");
                       }}
-                      className="border-slate-600 text-slate-300 hover:text-white hover:bg-slate-800 w-full sm:w-auto order-2 sm:order-1"
+                      className="border-border text-foreground hover:bg-accent w-full sm:w-auto order-2 sm:order-1"
                     >
                       {t("admin.payments.cancel") || "Cancel"}
                     </Button>
                     <Button
                       onClick={confirmRefund}
                       disabled={refundMutation.isPending}
-                      className="bg-amber-500 hover:bg-amber-600 text-white w-full sm:w-auto order-1 sm:order-2"
+                      className="bg-[#d97706] hover:bg-amber-600 text-white w-full sm:w-auto order-1 sm:order-2"
                     >
                       {refundMutation.isPending
                         ? t("admin.payments.refunding") || "Processing..."
@@ -291,12 +294,12 @@ export default function AdminPayments() {
           )}
           {row.status === "refunded" && (
             <div className="flex flex-col max-w-[150px]">
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-muted-foreground">
                 {t("admin.payments.actions.refunded")}
               </span>
               {row.refund_reason && (
                 <span
-                  className="text-xs text-slate-500 mt-1 truncate"
+                  className="text-xs text-muted-foreground mt-1 truncate"
                   title={row.refund_reason}
                 >
                   {row.refund_reason}
@@ -314,10 +317,10 @@ export default function AdminPayments() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">
             {t("admin.payments.title")}
           </h1>
-          <p className="text-sm sm:text-base text-slate-400">
+          <p className="text-sm sm:text-base text-muted-foreground">
             {t("admin.payments.subtitle")}
           </p>
         </div>
@@ -351,7 +354,7 @@ export default function AdminPayments() {
           title={t("admin.payments.stats.pending")}
           value={`$${pendingAmount.toLocaleString()}`}
           icon={CreditCard}
-          gradient="from-amber-500 to-orange-500"
+          gradient="from-[#d97706] to-[#d97706]"
         />
         <StatsCard
           title={t("admin.payments.stats.refunded")}
@@ -362,35 +365,35 @@ export default function AdminPayments() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
+      <Card className="bg-card border-border p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder={t("admin.payments.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm"
+              className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
             />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-[180px] bg-slate-800 border-slate-700 text-white text-sm">
+            <SelectTrigger className="w-full sm:w-[180px] bg-muted border-border text-foreground text-sm">
               <SelectValue placeholder={t("admin.payments.filter.status")} />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-700 text-white">
-              <SelectItem value="all" className="text-white">
+            <SelectContent className="bg-card border-border text-foreground">
+              <SelectItem value="all" className="text-foreground">
                 {t("admin.payments.filter.allStatus")}
               </SelectItem>
-              <SelectItem value="completed" className="text-white">
+              <SelectItem value="completed" className="text-foreground">
                 {t("admin.payments.filter.completed")}
               </SelectItem>
-              <SelectItem value="pending" className="text-white">
+              <SelectItem value="pending" className="text-foreground">
                 {t("admin.payments.filter.pending")}
               </SelectItem>
-              <SelectItem value="failed" className="text-white">
+              <SelectItem value="failed" className="text-foreground">
                 {t("admin.payments.filter.failed")}
               </SelectItem>
-              <SelectItem value="refunded" className="text-white">
+              <SelectItem value="refunded" className="text-foreground">
                 {t("admin.payments.filter.refunded")}
               </SelectItem>
             </SelectContent>
@@ -399,12 +402,13 @@ export default function AdminPayments() {
       </Card>
 
       {/* Payments Table */}
-      <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4 md:p-6">
+      <Card className="bg-card border-border p-3 sm:p-4 md:p-6">
         <DataTable
           columns={columns}
           data={filteredPayments}
           isLoading={isLoading}
           emptyMessage={t("admin.payments.emptyMessage")}
+          variant="light"
         />
       </Card>
     </div>
