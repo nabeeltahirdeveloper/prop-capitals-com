@@ -19,7 +19,7 @@ export const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     // Save to localStorage
-    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
     
     // Update document class
     if (isDark) {
