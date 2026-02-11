@@ -4,7 +4,7 @@ import { useTraderTheme } from './TraderPanelLayout';
 
 
 async function fetchCalendarMonth(monthYYYYMM) {
-  const res = await fetch(`/economic-calendar?month=${encodeURIComponent(monthYYYYMM)}`);
+  const res = await fetch(`/api/economic-calendar?month=${encodeURIComponent(monthYYYYMM)}`);
   if (!res.ok) throw new Error(`Calendar fetch failed: ${res.status}`);
   return res.json(); // { month, events: [...] }
 }
