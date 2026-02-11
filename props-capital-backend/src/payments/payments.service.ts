@@ -194,35 +194,39 @@ export class PaymentsService {
       account.id,
     );
 
-    // Adding platform credentials to the account.
-    const platformEmail =
-      user.email.split('@')[0] +
-      '-' +
-      account.id.substring(0, 8) +
-      '@prop-capitals.com';
-    const platformPassword = generatePassword(20);
-    const platformHashedPassword = await bcrypt.hash(platformPassword, 10);
+    // Adding platform credentials to the account for MT5
 
-    await this.prisma.tradingAccount.update({
-      where: {
-        id: account.id,
-      },
-      data: {
-        platformEmail: platformEmail,
-        platformHashedPassword: platformHashedPassword,
-      },
-    });
+    if (account.platform === 'MT5') {
+      const platformEmail =
+        user.email.split('@')[0] +
+        '-' +
+        account.id.substring(0, 8) +
+        '@prop-capitals.com';
+      const platformPassword = generatePassword(20);
+      const platformHashedPassword = await bcrypt.hash(platformPassword, 10);
 
-    await this.emailService.sendPlatformAccountCredentials(
-      user.email,
-      platformEmail,
-      platformPassword,
-      {
-        id: account.id.substring(0, 8),
-        platform: account.platform,
-      },
-      'setup',
-    );
+      await this.prisma.tradingAccount.update({
+        where: {
+          id: account.id,
+        },
+        data: {
+          platformEmail: platformEmail,
+          platformHashedPassword: platformHashedPassword,
+        },
+      });
+
+      await this.emailService.sendPlatformAccountCredentials(
+        user.email,
+        platformEmail,
+        platformPassword,
+        {
+          id: account.id.substring(0, 8),
+          platform: account.platform,
+        },
+        'setup',
+      );
+    }
+
 
     // Create notification for challenge purchase
     await this.notificationsService.create(

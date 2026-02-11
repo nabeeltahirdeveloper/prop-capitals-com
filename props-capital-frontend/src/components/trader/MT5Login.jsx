@@ -98,7 +98,7 @@ export default function MT5Login({
 
             {/* Server */}
             <label className={`text-xs ${labelClass}`}>Server</label>
-            <div className={`text-xs ${labelClass}`}>MetaQuotes-Demo</div>
+            <div className={`text-xs ${labelClass}`}>MetaQuotes</div>
           </div>
 
           <div className="mt-8 flex justify-end">
