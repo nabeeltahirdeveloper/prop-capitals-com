@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import type { TradingAccount } from '@prisma/client';
 import sgMail from '@sendgrid/mail';
 
 export interface EmailResult {
@@ -387,4 +388,33 @@ export class EmailService {
       fromEmail: this.fromEmail,
     };
   }
+
+  /**
+   * Send platform account credentials email
+   */
+  async sendPlatformAccountCredentials(
+    to: string,
+    email: string,
+    password: string,
+    cardData: Pick<TradingAccount, 'id' | 'platform'>,
+    type: 'setup' | 'password-reset',
+  ): Promise<EmailResult> {
+    return this.sendWithTimeout({
+      to,
+      from: this.fromEmail,
+      subject: `Your Props Capital ${cardData.platform} Account Credentials`,
+      text: `Your Props Capital ${cardData.platform} account ${type === 'setup' ? 'has been created' : 'password has been reset'}.\n\nEmail: ${email}\nPassword: ${password}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.5;">
+          <h2 style="margin: 0 0 12px;">${type === 'setup' ? 'Your account is ready' : 'Your password has been reset'}</h2>
+          <p style="margin: 0 0 12px;">Following are the credentials for your Props Capital ${cardData.platform} account:</p>
+          <div style="margin: 12px 0; padding: 12px; background-color: #f9fafb; border-radius: 4px;">
+            <p style="margin: 0 0 8px;"><strong>Email:</strong> ${email}</p>
+            <p style="margin: 0;"><strong>Password:</strong> ${password}</p>
+          </div>
+        </div>
+      `,
+    });
+  }
+
 }
