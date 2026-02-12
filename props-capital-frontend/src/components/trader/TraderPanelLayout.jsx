@@ -399,7 +399,7 @@ const TraderPanelLayoutInner = () => {
                   className={`flex items-center gap-2 sm:gap-3 px-3 py-1.5 rounded-xl transition-all ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-100'}`}
                 >
                   <h1 className={`font-bold text-base sm:text-xl ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    {selectedChallenge ? `Account ${selectedChallenge.accountId}` : 'Account -'}
+                    {selectedChallenge ? `Account ${selectedChallenge.accountId}` : null}
                   </h1>
                   {selectedChallenge && (
                     <div className="hidden sm:flex items-center gap-2">
