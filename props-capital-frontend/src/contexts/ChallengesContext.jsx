@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getUserAccounts } from '@/api/accounts';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTraderAccountsStore } from '@/lib/stores/trader-accounts.store';
 
 const ChallengesContext = createContext();
 
@@ -261,8 +262,13 @@ export const challengeTypes = {
 export const ChallengesProvider = ({ children }) => {
   const { user, status } = useAuth();
   const [challenges, setChallenges] = useState([]);
-  const [selectedChallengeId, setSelectedChallengeId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const selectedChallengeId = useTraderAccountsStore((state) =>
+    user?.userId ? state.selectedChallengeIds?.[user.userId] : null
+  );
+  const setStoredSelectedChallengeId = useTraderAccountsStore(
+    (state) => state.setSelectedChallengeId
+  );
 
   // Fetch real user accounts from backend
   useEffect(() => {
@@ -276,13 +282,14 @@ export const ChallengesProvider = ({ children }) => {
       try {
         setLoading(true);
         const accounts = await getUserAccounts(user.userId);
-        
+
         if (Array.isArray(accounts) && accounts.length > 0) {
           // Transform backend accounts to challenge format
           const transformedChallenges = accounts.map(account => {
             const challenge = account.challenge || {};
             const phaseLabel = account.phase === 'PHASE1' ? 1 : account.phase === 'PHASE2' ? 2 : 'funded';
             const challengeType = challenge.challengeType === 'one_phase' ? '1-step' : '2-step';
+
             const backendStatus = String(account.status || '').toUpperCase();
             const uiStatus =
               backendStatus === 'ACTIVE'
@@ -342,8 +349,14 @@ export const ChallengesProvider = ({ children }) => {
           });
 
           setChallenges(transformedChallenges);
-          if (!selectedChallengeId && transformedChallenges.length > 0) {
-            setSelectedChallengeId(transformedChallenges[0].id);
+          const storedSelectedChallengeId =
+            useTraderAccountsStore.getState().selectedChallengeIds?.[user.userId];
+          const hasStoredSelection = transformedChallenges.some(
+            (challenge) => challenge.id === storedSelectedChallengeId
+          );
+
+          if (!hasStoredSelection) {
+            setStoredSelectedChallengeId(user.userId, transformedChallenges[0].id);
           }
         } else {
           setChallenges([]);
@@ -357,12 +370,13 @@ export const ChallengesProvider = ({ children }) => {
     };
 
     fetchUserChallenges();
-  }, [user?.userId, status, selectedChallengeId]);
+  }, [user?.userId, status, setStoredSelectedChallengeId]);
 
   const selectedChallenge = challenges.find(c => c.id === selectedChallengeId) || challenges[0];
 
   const selectChallenge = (challengeId) => {
-    setSelectedChallengeId(challengeId);
+    if (!user?.userId || !challengeId) return;
+    setStoredSelectedChallengeId(user.userId, challengeId);
   };
 
   // Update challenge balance (for demo payout flow)
