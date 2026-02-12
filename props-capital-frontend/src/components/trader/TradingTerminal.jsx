@@ -4,7 +4,7 @@ import CommonTerminalWrapper from './CommonTerminalWrapper';
 import MT5TradingArea from './MT5TradingArea';
 import BybitTerminal from './BybitTerminal';
 import TradeLockerComingSoon from './TradeLockerComingSoon';
-import PT5Terminal from '@/pages/TradingTerminal';
+import PT5Terminal from './PT5Terminal';
 import MT5Login from './MT5Login';
 import { useToast } from '@/components/ui/use-toast';
 import {
@@ -16,7 +16,7 @@ import { usePlatformTokensStore } from '@/lib/stores/platform-tokens.store';
 
 const MT5TerminalContent = ({ selectedChallenge }) => {
   return (
-    <CommonTerminalWrapper>
+    <CommonTerminalWrapper selectedChallenge={selectedChallenge}>
       <MT5TradingArea selectedChallenge={selectedChallenge} />
     </CommonTerminalWrapper>
   );
@@ -171,15 +171,16 @@ const BybitTerminalWrapper = () => {
   const { selectedChallenge } = useChallenges();
 
   return (
-    <CommonTerminalWrapper>
+    <CommonTerminalWrapper selectedChallenge={selectedChallenge}>
       <BybitTerminal selectedChallenge={selectedChallenge} />
     </CommonTerminalWrapper>
   );
 };
 
 const PT5TerminalWrapper = () => {
+  const { selectedChallenge } = useChallenges();
   return (
-    <CommonTerminalWrapper>
+    <CommonTerminalWrapper selectedChallenge={selectedChallenge}>
       <PT5Terminal />
     </CommonTerminalWrapper>
   );

@@ -31,6 +31,17 @@ export class PendingOrdersService {
       throw new NotFoundException('Trading account not found');
     }
 
+    // Block pending order creation when account is locked/disqualified/inactive
+    if (account.status === ('DAILY_LOCKED' as any)) {
+      throw new BadRequestException('Daily loss limit reached. Trading locked until tomorrow.');
+    }
+    if (account.status === ('DISQUALIFIED' as any)) {
+      throw new BadRequestException('Challenge disqualified. Trading is no longer allowed.');
+    }
+    if (account.status === ('CLOSED' as any) || account.status === ('PAUSED' as any)) {
+      throw new BadRequestException('Account is not active for trading.');
+    }
+
     // Create the pending order
     const pendingOrder = await this.prisma.pendingOrder.create({
       data: {
@@ -87,6 +98,18 @@ export class PendingOrdersService {
 
     if (!pendingOrder) {
       throw new NotFoundException('Pending order not found');
+    }
+
+    // Re-check account status before execution
+    const accountStatus = pendingOrder.tradingAccount?.status;
+    if (accountStatus === ('DAILY_LOCKED' as any)) {
+      throw new BadRequestException('Daily loss limit reached. Trading locked until tomorrow.');
+    }
+    if (accountStatus === ('DISQUALIFIED' as any)) {
+      throw new BadRequestException('Challenge disqualified. Trading is no longer allowed.');
+    }
+    if (accountStatus === ('CLOSED' as any) || accountStatus === ('PAUSED' as any)) {
+      throw new BadRequestException('Account is not active for trading.');
     }
 
     // Check if order is already cancelled or filled
