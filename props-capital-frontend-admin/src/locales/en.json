@@ -1961,7 +1961,8 @@
       "deleteErrorTitle": "Cannot Delete Challenge",
       "deleteErrorMessage": "This challenge cannot be deleted",
       "deleteErrorDesc": "Challenge cannot be deleted because it is linked to existing trading accounts.",
-      "understand": "I Understand"
+      "understand": "I Understand",
+      "noChallenges": "No challenges available"
     }
   },
   "signIn": {

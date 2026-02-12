@@ -176,7 +176,29 @@ console.log(data)
       }
       updateData.closePrice = closePrice;
       updateData.closedAt = new Date();
-      updateData.profit = profit !== undefined ? profit : trade.profit;
+      if (profit !== undefined) {
+        updateData.profit = profit;
+      } else {
+        const symbolUpper = String(trade.symbol || '').toUpperCase();
+        const isCrypto =
+          symbolUpper.includes('BTC') ||
+          symbolUpper.includes('ETH') ||
+          symbolUpper.includes('SOL') ||
+          symbolUpper.includes('XRP') ||
+          symbolUpper.includes('ADA') ||
+          symbolUpper.includes('DOGE') ||
+          symbolUpper.includes('BNB') ||
+          symbolUpper.includes('AVAX') ||
+          symbolUpper.includes('DOT') ||
+          symbolUpper.includes('MATIC') ||
+          symbolUpper.includes('LINK');
+        const contractSize = isCrypto ? 1 : 100000;
+        const priceDiff =
+          trade.type === 'BUY'
+            ? closePrice - trade.openPrice
+            : trade.openPrice - closePrice;
+        updateData.profit = priceDiff * (trade.volume || 0) * contractSize;
+      }
     }
 
     // Allow updating stopLoss and takeProfit for open trades
@@ -227,15 +249,49 @@ console.log(data)
 
     // 2️⃣ Update balance/equity only when closing the trade
     if (closePrice !== undefined) {
-      const profitToAdd = profit !== undefined ? profit : updatedTrade.profit;
-      const newBalance = (account.balance ?? account.initialBalance) + profitToAdd;
+      const profitToAdd = updatedTrade.profit ?? 0;
+      const previousBalance = account.balance ?? account.initialBalance;
+      const newBalance = previousBalance + profitToAdd;
+
+      const nextEquity = newBalance;
+
+      const accountUpdateData: any = {
+        balance: newBalance,
+        equity: nextEquity,
+      };
+
+      const initialBalance = account.initialBalance ?? newBalance;
+      const currentMaxEquity = (account as any).maxEquityToDate ?? initialBalance;
+      if (nextEquity > currentMaxEquity) {
+        accountUpdateData.maxEquityToDate = nextEquity;
+      }
+
+      const today = new Date().toISOString().substring(0, 10);
+      const lastReset = (account as any).lastDailyReset;
+      const lastResetDate = lastReset
+        ? new Date(lastReset).toISOString().substring(0, 10)
+        : null;
+
+      if (lastResetDate !== today) {
+        // New day baseline initialization for drawdown tracking.
+        accountUpdateData.todayStartEquity = nextEquity;
+        accountUpdateData.minEquityToday = nextEquity;
+        accountUpdateData.lastDailyReset = new Date();
+      } else {
+        const currentMinToday = (account as any).minEquityToday ?? nextEquity;
+        if (nextEquity < currentMinToday) {
+          accountUpdateData.minEquityToday = nextEquity;
+        }
+      }
+
+      const currentMinOverall = (account as any).minEquityOverall ?? initialBalance;
+      if (nextEquity < currentMinOverall) {
+        accountUpdateData.minEquityOverall = nextEquity;
+      }
 
       await this.prisma.tradingAccount.update({
         where: { id: account.id },
-        data: {
-          balance: newBalance,
-          equity: newBalance,
-        },
+        data: accountUpdateData,
       });
 
       // 3️⃣ Run evaluation engine when trade is closed

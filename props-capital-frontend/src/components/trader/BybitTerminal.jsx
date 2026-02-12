@@ -5,12 +5,14 @@ import { useTrading } from '@/contexts/TradingContext';
 import { usePrices } from '@/contexts/PriceContext';
 import { useTradingWebSocket } from '@/hooks/useTradingWebSocket';
 import { useBinanceStream } from '@/hooks/useBinanceStream';
-import { getAccountTrades, createTrade, updateTrade } from '@/api/trades';
-import { getPendingOrders, createPendingOrder, cancelPendingOrder } from '@/api/pending-orders';
+import { getAccountTrades, createTrade } from '@/api/trades';
+import { createPendingOrder } from '@/api/pending-orders';
 import { getCurrentPrice } from '@/api/market-data';
+import { getAccountSummary } from '@/api/accounts';
 import { useToast } from '@/components/ui/use-toast';
 import { useTraderTheme } from './TraderPanelLayout';
 import TradingChart from '../trading/TradingChart';
+import SectionErrorBoundary from '../ui/SectionErrorBoundary';
 
 /* ───────────────────────── Symbol List (Crypto + Forex) ───────────────────────── */
 const ALL_SYMBOLS = [
@@ -125,6 +127,22 @@ const formatVolume = (v) => {
 
 const getSymbolInfo = (sym) => ALL_SYMBOLS.find(s => s.symbol === sym) || ALL_SYMBOLS[0];
 
+const toComparableSymbol = (sym) => {
+  if (!sym) return '';
+  return String(sym)
+    .toUpperCase()
+    .replace(/\//g, '')
+    .replace(/USDT$/, 'USD');
+};
+
+const symbolsMatch = (a, b) => toComparableSymbol(a) === toComparableSymbol(b);
+
+const deterministicQty = (base, i, side) => {
+  const factor = side === 'ask' ? 1.07 : 1.04;
+  const raw = Math.max(0.001, base * Math.pow(factor, i));
+  return raw.toFixed(5);
+};
+
 /* ═══════════════════════════════════════════════════════════════════════ */
 
 const BybitTradingArea = ({ selectedChallenge }) => {
@@ -138,13 +156,13 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   const [orderSide, setOrderSide] = useState('buy');
   const [limitPrice, setLimitPrice] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [leverage, setLeverage] = useState(10);
   const [tpPrice, setTpPrice] = useState('');
   const [slPrice, setSlPrice] = useState('');
   const [showTpSl, setShowTpSl] = useState(false);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
-  const [bottomTab, setBottomTab] = useState('positions');
   const [obTab, setObTab] = useState('book');
+  const [obMode, setObMode] = useState('both');
+  const [chartTab, setChartTab] = useState('chart');
   const [sliderPct, setSliderPct] = useState(0);
   const [symbolDropdownOpen, setSymbolDropdownOpen] = useState(false);
   const [symbolSearch, setSymbolSearch] = useState('');
@@ -164,7 +182,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   // Set to BTCUSDT on mount if current symbol is unsupported
   useEffect(() => {
     if (!isKnownSymbol) setSelectedSymbol('BTCUSDT');
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isKnownSymbol, setSelectedSymbol]);
 
   /* ── Binance live streams (crypto only — forex has no Binance data) ── */
   const isCrypto = symbolInfo.type === 'crypto';
@@ -179,15 +197,22 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     // For crypto, direct Binance stream is primary; backend is fallback
     // For forex, backend (Massive WS) is the ONLY source
     let cancelled = false;
+    setBackendPrice(null);
     const fetchPrice = async () => {
       try {
         // getCurrentPrice auto-normalizes symbol format (BTCUSDT → BTC/USD, EURUSD → EUR/USD)
         const data = await getCurrentPrice(currentSymbolStr);
         if (cancelled) return;
         if (data && (data.bid || data.ask || data.price)) {
+          const fallbackPrice = Number(data.price) || 0;
+          const bid = Number(data.bid);
+          const ask = Number(data.ask);
+          const hasBid = Number.isFinite(bid) && bid > 0;
+          const hasAsk = Number.isFinite(ask) && ask > 0;
+          const syntheticSpread = fallbackPrice > 0 ? fallbackPrice * 0.0002 : 0;
           setBackendPrice({
-            bid: data.bid || data.price || 0,
-            ask: data.ask || data.price || 0,
+            bid: hasBid ? bid : (isCrypto ? Math.max(0, fallbackPrice - syntheticSpread / 2) : fallbackPrice),
+            ask: hasAsk ? ask : (isCrypto ? fallbackPrice + syntheticSpread / 2 : fallbackPrice),
           });
         }
       } catch { /* silent */ }
@@ -201,8 +226,23 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   /* ── Account ── */
   const accountId = selectedChallenge?.id;
   const accountStatus = selectedChallenge?.status;
-  const isAccountLocked = accountStatus === 'failed' || accountStatus === 'inactive';
-  const balance = selectedChallenge?.currentBalance || 0;
+  const normalizedAccountStatus = String(accountStatus || '').toLowerCase();
+  const isAccountLocked =
+    normalizedAccountStatus === 'failed' ||
+    normalizedAccountStatus === 'inactive' ||
+    normalizedAccountStatus === 'daily_locked' ||
+    normalizedAccountStatus === 'disqualified' ||
+    normalizedAccountStatus === 'closed' ||
+    normalizedAccountStatus === 'paused';
+  const { data: accountSummaryData } = useQuery({
+    queryKey: ['accountSummary', accountId],
+    queryFn: () => getAccountSummary(accountId),
+    enabled: !!accountId,
+    refetchInterval: 3000,
+  });
+  const balance = Number.isFinite(accountSummaryData?.account?.balance)
+    ? accountSummaryData.account.balance
+    : (selectedChallenge?.currentBalance || 0);
 
   /* ── Queries ── */
   const { data: tradesData } = useQuery({
@@ -211,50 +251,67 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     enabled: !!accountId,
     refetchInterval: 3000,
   });
-  const { data: pendingOrdersData } = useQuery({
-    queryKey: ['pendingOrders', accountId],
-    queryFn: () => getPendingOrders(accountId),
-    enabled: !!accountId,
-    refetchInterval: 3000,
-  });
-
   /* ── WebSocket ── */
   const handlePositionClosed = useCallback(() => {
-    queryClient.invalidateQueries(['trades', accountId]);
+    queryClient.invalidateQueries({ queryKey: ['trades', accountId] });
+    queryClient.invalidateQueries({ queryKey: ['accountSummary', accountId] });
   }, [queryClient, accountId]);
   const handleAccountStatusChange = useCallback((event) => {
-    queryClient.invalidateQueries(['trades', accountId]);
-    queryClient.invalidateQueries(['pendingOrders', accountId]);
+    queryClient.invalidateQueries({ queryKey: ['trades', accountId] });
+    queryClient.invalidateQueries({ queryKey: ['pendingOrders', accountId] });
+    queryClient.invalidateQueries({ queryKey: ['accountSummary', accountId] });
     if (event?.status === 'DISQUALIFIED' || event?.status === 'DAILY_LOCKED') {
       toast({ title: 'Account Status Changed', description: `Account is now ${event.status}`, variant: 'destructive' });
     }
   }, [queryClient, accountId, toast]);
   const handleAccountUpdate = useCallback(() => {
-    queryClient.invalidateQueries(['trades', accountId]);
+    queryClient.invalidateQueries({ queryKey: ['trades', accountId] });
+    queryClient.invalidateQueries({ queryKey: ['accountSummary', accountId] });
   }, [queryClient, accountId]);
   useTradingWebSocket({ accountId, onPositionClosed: handlePositionClosed, onAccountStatusChange: handleAccountStatusChange, onAccountUpdate: handleAccountUpdate });
 
   /* ── Derived data ── */
   const openPositions = useMemo(() => { const t = Array.isArray(tradesData) ? tradesData : []; return t.filter(x => !x.closedAt); }, [tradesData]);
-  const closedTrades = useMemo(() => { const t = Array.isArray(tradesData) ? tradesData : []; return t.filter(x => x.closedAt); }, [tradesData]);
-  const activePendingOrders = useMemo(() => { const o = Array.isArray(pendingOrdersData) ? pendingOrdersData : []; return o.filter(x => x.status === 'PENDING'); }, [pendingOrdersData]);
+  const recentTrades = useMemo(() => {
+    const list = Array.isArray(tradesData) ? tradesData : [];
+    return list
+      .filter((t) => symbolsMatch(t.symbol, currentSymbolStr))
+      .map((t) => ({
+        id: t.id,
+        type: t.type,
+        volume: t.volume || 0,
+        price: t.closePrice ?? t.openPrice ?? 0,
+        time: t.closedAt || t.openedAt || null,
+      }))
+      .sort((a, b) => new Date(b.time || 0).getTime() - new Date(a.time || 0).getTime())
+      .slice(0, 40);
+  }, [tradesData, currentSymbolStr]);
 
   const enrichedSelectedSymbol = useMemo(() => {
-    if (!selectedSymbol?.symbol) return selectedSymbol;
-    // Try both terminal format (EURUSD) and backend format (EUR/USD) as price keys
-    const p = unifiedPrices[selectedSymbol.symbol] || unifiedPrices[backendSymbol];
+    const baseSymbol = getSymbolInfo(currentSymbolStr);
+    const p = unifiedPrices[currentSymbolStr] || unifiedPrices[backendSymbol];
     if (p && typeof p === 'object' && p.bid !== undefined && p.ask !== undefined) {
-      return { ...selectedSymbol, bid: p.bid, ask: p.ask, spread: Math.abs(p.ask - p.bid) };
+      return { ...baseSymbol, bid: p.bid, ask: p.ask, spread: Math.abs(p.ask - p.bid) };
     }
-    return selectedSymbol;
-  }, [selectedSymbol, unifiedPrices, backendSymbol]);
+    return baseSymbol;
+  }, [currentSymbolStr, unifiedPrices, backendSymbol]);
 
   /* ── Prices: Binance ticker for crypto, Massive WS (via backend) for forex ── */
   const currentBid = isCrypto
-    ? (ticker?.lastPrice || backendPrice?.bid || enrichedSelectedSymbol?.bid || 0)
+    ? (
+      parseFloat(orderBook?.bids?.[0]?.[0]) ||
+      backendPrice?.bid ||
+      enrichedSelectedSymbol?.bid ||
+      (ticker?.lastPrice ? ticker.lastPrice - ((ticker.lastPrice * 0.0002) / 2) : 0)
+    )
     : (backendPrice?.bid || enrichedSelectedSymbol?.bid || 0);
   const currentAsk = isCrypto
-    ? (ticker?.lastPrice || backendPrice?.ask || enrichedSelectedSymbol?.ask || 0)
+    ? (
+      parseFloat(orderBook?.asks?.[0]?.[0]) ||
+      backendPrice?.ask ||
+      enrichedSelectedSymbol?.ask ||
+      (ticker?.lastPrice ? ticker.lastPrice + ((ticker.lastPrice * 0.0002) / 2) : 0)
+    )
     : (backendPrice?.ask || enrichedSelectedSymbol?.ask || 0);
   const currentMid = (currentBid && currentAsk) ? (currentBid + currentAsk) / 2 : 0;
 
@@ -275,9 +332,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     const base = currentAsk || currentMid || 100;
     const step = base > 1000 ? 0.10 : base > 100 ? 0.01 : 0.0001;
     const rows = [];
+    const baseQty = Math.max(0.02, base > 1000 ? 0.05 : base > 100 ? 0.2 : 0.8);
     for (let i = 0; i < 10; i++) {
       const price = base + (10 - i) * step;
-      const qty = (Math.random() * 3 + 0.001).toFixed(5);
+      const qty = deterministicQty(baseQty, i, 'ask');
       const cumTotal = rows.length > 0 ? parseFloat(rows[rows.length - 1].rawTotal) + parseFloat(qty) : parseFloat(qty);
       rows.push({ price: formatPrice(price), qty, total: cumTotal.toFixed(5), rawTotal: cumTotal, rawPrice: price });
     }
@@ -298,9 +356,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     const base = currentBid || currentMid || 100;
     const step = base > 1000 ? 0.10 : base > 100 ? 0.01 : 0.0001;
     const rows = [];
+    const baseQty = Math.max(0.02, base > 1000 ? 0.05 : base > 100 ? 0.2 : 0.8);
     for (let i = 0; i < 10; i++) {
       const price = base - (i + 1) * step;
-      const qty = (Math.random() * 3 + 0.001).toFixed(5);
+      const qty = deterministicQty(baseQty, i, 'bid');
       const cumTotal = rows.length > 0 ? parseFloat(rows[rows.length - 1].rawTotal) + parseFloat(qty) : parseFloat(qty);
       rows.push({ price: formatPrice(price), qty, total: cumTotal.toFixed(5), rawTotal: cumTotal, rawPrice: price });
     }
@@ -323,17 +382,18 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   }, [orderBook, currentAsk, currentBid]);
 
   /* ── Computed values ── */
+  const contractSize = isCrypto ? 1 : 100000;
   const effectivePrice = orderType === 'limit' && limitPrice ? parseFloat(limitPrice) || 0 : (orderSide === 'buy' ? currentAsk : currentBid);
   const qty = parseFloat(quantity) || 0;
-  const orderValue = qty * effectivePrice;
+  const orderValue = qty * effectivePrice * contractSize;
 
   /* ── Slider → qty ── */
   const handleSlider = useCallback((pct) => {
     setSliderPct(pct);
-    if (!balance || !effectivePrice || effectivePrice === 0 || leverage === 0) return;
-    const maxQty = (balance * leverage) / effectivePrice;
+    if (!balance || !effectivePrice || effectivePrice === 0) return;
+    const maxQty = balance / (effectivePrice * contractSize);
     setQuantity((maxQty * pct / 100).toFixed(6));
-  }, [balance, effectivePrice, leverage]);
+  }, [balance, effectivePrice, contractSize]);
 
   /* ── Symbol switching ── */
   const handleSymbolSelect = useCallback((sym) => {
@@ -365,23 +425,13 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   /* ── Mutations ── */
   const createTradeMutation = useMutation({
     mutationFn: createTrade,
-    onSuccess: () => { queryClient.invalidateQueries(['trades', accountId]); toast({ title: 'Order Placed' }); setQuantity(''); setLimitPrice(''); setTpPrice(''); setSlPrice(''); setSliderPct(0); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['trades', accountId] }); queryClient.invalidateQueries({ queryKey: ['accountSummary', accountId] }); toast({ title: 'Order Placed' }); setQuantity(''); setLimitPrice(''); setTpPrice(''); setSlPrice(''); setSliderPct(0); },
     onError: (e) => { toast({ title: 'Order Failed', description: e?.response?.data?.message || e.message || 'Failed', variant: 'destructive' }); },
   });
   const createPendingOrderMutation = useMutation({
     mutationFn: createPendingOrder,
-    onSuccess: () => { queryClient.invalidateQueries(['pendingOrders', accountId]); toast({ title: 'Pending Order Created' }); setQuantity(''); setLimitPrice(''); setTpPrice(''); setSlPrice(''); setSliderPct(0); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['pendingOrders', accountId] }); queryClient.invalidateQueries({ queryKey: ['accountSummary', accountId] }); toast({ title: 'Pending Order Created' }); setQuantity(''); setLimitPrice(''); setTpPrice(''); setSlPrice(''); setSliderPct(0); },
     onError: (e) => { toast({ title: 'Order Failed', description: e?.response?.data?.message || e.message || 'Failed', variant: 'destructive' }); },
-  });
-  const cancelOrderMutation = useMutation({
-    mutationFn: cancelPendingOrder,
-    onSuccess: () => { queryClient.invalidateQueries(['pendingOrders', accountId]); toast({ title: 'Order Cancelled' }); },
-    onError: (e) => { toast({ title: 'Cancel Failed', description: e?.response?.data?.message || e.message, variant: 'destructive' }); },
-  });
-  const closePositionMutation = useMutation({
-    mutationFn: ({ tradeId, closePrice }) => updateTrade(tradeId, { closePrice, closedAt: new Date().toISOString(), closeReason: 'USER_CLOSE' }),
-    onSuccess: () => { queryClient.invalidateQueries(['trades', accountId]); toast({ title: 'Position Closed' }); },
-    onError: (e) => { toast({ title: 'Close Failed', description: e?.response?.data?.message || e.message, variant: 'destructive' }); },
   });
 
   /* ── Handlers ── */
@@ -395,36 +445,15 @@ const BybitTradingArea = ({ selectedChallenge }) => {
       if (orderType === 'market') {
         const openPrice = orderSide === 'buy' ? currentAsk : currentBid;
         if (!openPrice) { toast({ title: 'No price available', variant: 'destructive' }); return; }
-        await createTradeMutation.mutateAsync({ accountId, symbol: currentSymbolStr, type: orderSide.toUpperCase(), volume: parseFloat(quantity), openPrice, stopLoss: slPrice ? parseFloat(slPrice) : null, takeProfit: tpPrice ? parseFloat(tpPrice) : null });
+        await createTradeMutation.mutateAsync({ accountId, symbol: backendSymbol, type: orderSide.toUpperCase(), volume: parseFloat(quantity), openPrice, stopLoss: slPrice ? parseFloat(slPrice) : null, takeProfit: tpPrice ? parseFloat(tpPrice) : null });
       } else {
-        await createPendingOrderMutation.mutateAsync({ tradingAccountId: accountId, symbol: currentSymbolStr, type: orderSide.toUpperCase(), orderType: orderType === 'tp/sl' ? 'STOP' : 'LIMIT', volume: parseFloat(quantity), price: parseFloat(limitPrice), stopLoss: slPrice ? parseFloat(slPrice) : null, takeProfit: tpPrice ? parseFloat(tpPrice) : null });
+        await createPendingOrderMutation.mutateAsync({ tradingAccountId: accountId, symbol: backendSymbol, type: orderSide.toUpperCase(), orderType: orderType === 'tp/sl' ? 'STOP' : 'LIMIT', volume: parseFloat(quantity), price: parseFloat(limitPrice), stopLoss: slPrice ? parseFloat(slPrice) : null, takeProfit: tpPrice ? parseFloat(tpPrice) : null });
       }
-    } catch (_) {} finally { setIsPlacingOrder(false); }
+    } catch (e) {
+      console.error('[BybitTerminal] Place order failed:', e);
+    } finally { setIsPlacingOrder(false); }
   };
 
-  const handleClosePosition = (trade) => {
-    const cp = trade.type === 'BUY' ? currentBid : currentAsk;
-    if (!cp) { toast({ title: 'No price', variant: 'destructive' }); return; }
-    closePositionMutation.mutate({ tradeId: trade.id, closePrice: cp });
-  };
-
-  const calcPnL = useCallback((trade) => {
-    const p = trade.type === 'BUY' ? currentBid : currentAsk;
-    if (!p || !trade.openPrice) return 0;
-    return (trade.type === 'BUY' ? p - trade.openPrice : trade.openPrice - p) * (trade.volume || 0);
-  }, [currentBid, currentAsk]);
-
-  /* ── P&L summary ── */
-  const pnlSummary = useMemo(() => {
-    if (closedTrades.length === 0) return null;
-    const totalPnL = closedTrades.reduce((sum, t) => sum + (t.profit || 0), 0);
-    const wins = closedTrades.filter(t => (t.profit || 0) > 0).length;
-    const losses = closedTrades.filter(t => (t.profit || 0) < 0).length;
-    const winRate = closedTrades.length > 0 ? (wins / closedTrades.length * 100) : 0;
-    const avgWin = wins > 0 ? closedTrades.filter(t => (t.profit || 0) > 0).reduce((s, t) => s + t.profit, 0) / wins : 0;
-    const avgLoss = losses > 0 ? closedTrades.filter(t => (t.profit || 0) < 0).reduce((s, t) => s + t.profit, 0) / losses : 0;
-    return { totalPnL, wins, losses, total: closedTrades.length, winRate, avgWin, avgLoss };
-  }, [closedTrades]);
 
   const timeframes = [
     { key: 'M1', label: '1m' },
@@ -439,17 +468,23 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
   /* ════════════════════════ RENDER ════════════════════════ */
   return (
-    <div className="flex flex-col h-full" style={{ background: C.bg, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", color: C.textP, fontSize: 12 }}>
+    <div className="flex flex-col" style={{ background: C.bg, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", color: C.textP, fontSize: 12 }}>
 
       {/* ═══ LOCKED BANNER ═══ */}
       {isAccountLocked && (
         <div style={{ background: C.redDim, borderBottom: `1px solid ${C.red}` }} className="px-4 py-1.5 text-center">
-          <span style={{ color: C.red, fontSize: 12 }}>Account {accountStatus === 'failed' ? 'Failed — Trading Disabled' : 'Inactive'}</span>
+          <span style={{ color: C.red, fontSize: 12 }}>
+            Account {normalizedAccountStatus === 'failed' || normalizedAccountStatus === 'disqualified'
+              ? 'Failed - Trading Disabled'
+              : normalizedAccountStatus === 'daily_locked'
+                ? 'Daily Locked'
+                : 'Inactive'}
+          </span>
         </div>
       )}
 
       {/* ═══ TOP HEADER BAR ═══ */}
-      <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, position: 'relative', zIndex: 100 }} className="flex items-center px-4 py-2 gap-6 flex-wrap">
+      <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, position: 'relative', zIndex: 100 }} className="flex items-center px-4 py-3 gap-y-4 gap-x-6 flex-wrap">
         {/* Symbol selector */}
         <div className="relative shrink-0" ref={dropdownRef}>
           <button
@@ -552,49 +587,266 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
       {/* ═══ CHART NAV TABS ═══ */}
       <div style={{ background: C.panel, borderBottom: `1px solid ${C.border}`, position: 'relative', zIndex: 2 }} className="flex items-center px-4 gap-1">
-        {['Chart', 'Overview', 'Data', 'Trade Analysis'].map((tab, i) => (
-          <button key={tab} className="px-3 py-2" style={{ fontSize: 12, color: i === 0 ? C.textP : C.textS, fontWeight: i === 0 ? 600 : 400, borderBottom: i === 0 ? `2px solid ${C.yellow}` : '2px solid transparent' }}>
-            {tab}
+        {[{ key: 'chart', label: 'Chart' }, { key: 'overview', label: 'Overview' }, { key: 'data', label: 'Data' }].map((tab) => (
+          <button key={tab.key} onClick={() => setChartTab(tab.key)} className="px-3 py-2" style={{ fontSize: 12, color: chartTab === tab.key ? C.textP : C.textS, fontWeight: chartTab === tab.key ? 600 : 400, borderBottom: chartTab === tab.key ? `2px solid ${C.yellow}` : '2px solid transparent' }}>
+            {tab.label}
           </button>
         ))}
         <div className="flex-1" />
-        <div className="flex items-center gap-1 shrink-0">
-          {['TradingView', 'Depth'].map((v, i) => (
-            <button key={v} className="px-2 py-1.5" style={{ fontSize: 11, color: i === 0 ? C.textP : C.textS }}>{v}</button>
-          ))}
-        </div>
       </div>
 
       {/* ═══ MAIN 3-COLUMN AREA ═══ */}
       <div className="flex flex-col lg:flex-row flex-1 min-h-0" style={{ position: 'relative', zIndex: 1 }}>
 
-        {/* ── LEFT: CHART ── */}
+        {/* ── LEFT: CHART / OVERVIEW / DATA ── */}
         <div className="flex-1 min-w-0 flex flex-col" style={{ background: C.panel }}>
-          {/* Timeframe bar */}
-          <div className="flex items-center px-2 py-1 gap-0.5 overflow-x-auto" style={{ borderBottom: `1px solid ${C.border}` }}>
-            {timeframes.map((tf) => (
-              <button key={tf.key} onClick={() => setSelectedTimeframe(tf.key)}
-                className="px-2 py-1 shrink-0" style={{
-                  fontSize: 11,
-                  fontWeight: selectedTimeframe === tf.key ? 600 : 400,
-                  color: selectedTimeframe === tf.key ? C.yellow : C.textS,
-                  background: selectedTimeframe === tf.key ? C.yellowDim : 'transparent',
-                  borderRadius: 3,
-                }}>{tf.label}</button>
-            ))}
-            <div style={{ width: 1, height: 14, background: C.border, margin: '0 6px' }} className="shrink-0" />
-            <button onClick={() => setChartType('candlestick')} className="px-2 py-1 shrink-0"
-              style={{ fontSize: 11, color: chartType === 'candlestick' ? C.textP : C.textS }}>Candles</button>
-            <button onClick={() => setChartType('line')} className="px-2 py-1 shrink-0"
-              style={{ fontSize: 11, color: chartType === 'line' ? C.textP : C.textS }}>Line</button>
-          </div>
-          <div className="flex-1 min-h-0" style={{ minHeight: 340 }}>
-            <TradingChart key={`chart-bybit-${currentSymbolStr}`} symbol={enrichedSelectedSymbol} openPositions={openPositions} onPriceUpdate={handlePriceUpdate} showBuySellPanel={false} />
-          </div>
+          {chartTab === 'chart' && (
+            <SectionErrorBoundary label="Chart">
+              {/* Timeframe bar */}
+              <div className="flex items-center px-2 py-1 gap-0.5 overflow-x-auto" style={{ borderBottom: `1px solid ${C.border}` }}>
+                {timeframes.map((tf) => (
+                  <button key={tf.key} onClick={() => setSelectedTimeframe(tf.key)}
+                    className="px-2 py-1 shrink-0" style={{
+                      fontSize: 11,
+                      fontWeight: selectedTimeframe === tf.key ? 600 : 400,
+                      color: selectedTimeframe === tf.key ? C.yellow : C.textS,
+                      background: selectedTimeframe === tf.key ? C.yellowDim : 'transparent',
+                      borderRadius: 3,
+                    }}>{tf.label}</button>
+                ))}
+                <div style={{ width: 1, height: 14, background: C.border, margin: '0 6px' }} className="shrink-0" />
+                <button onClick={() => setChartType('candlestick')} className="px-2 py-1 shrink-0"
+                  style={{ fontSize: 11, color: chartType === 'candlestick' ? C.textP : C.textS }}>Candles</button>
+                <button onClick={() => setChartType('line')} className="px-2 py-1 shrink-0"
+                  style={{ fontSize: 11, color: chartType === 'line' ? C.textP : C.textS }}>Line</button>
+              </div>
+              <div className="flex-1 min-h-0">
+                <TradingChart key={`chart-bybit-${currentSymbolStr}`} symbol={enrichedSelectedSymbol} openPositions={openPositions} onPriceUpdate={handlePriceUpdate} showBuySellPanel={false} />
+              </div>
+            </SectionErrorBoundary>
+          )}
+
+          {chartTab === 'overview' && (
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {/* Symbol Header */}
+              <div className="flex items-center gap-3">
+                <div style={{ width: 40, height: 40, borderRadius: '50%', background: C.card, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: C.yellow }}>{symbolInfo.base.slice(0, 2)}</span>
+                </div>
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: C.textP }}>{symbolInfo.label}</div>
+                  <div style={{ fontSize: 12, color: C.textS }}>{isCrypto ? 'Perpetual Contract' : symbolInfo.type === 'forex' && symbolInfo.base === 'XAU' ? 'Spot Metal' : 'Forex Spot'}</div>
+                </div>
+              </div>
+
+              {/* Price Overview Card */}
+              <div style={{ background: C.card, borderRadius: 8, border: `1px solid ${C.border}` }} className="p-4">
+                <div style={{ fontSize: 11, color: C.textT, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>Price Overview</div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <div style={{ fontSize: 10, color: C.textT, marginBottom: 2 }}>Bid</div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: C.green, fontFamily: 'monospace' }}>{currentBid > 0 ? formatPrice(currentBid) : '--'}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 10, color: C.textT, marginBottom: 2 }}>Ask</div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: C.red, fontFamily: 'monospace' }}>{currentAsk > 0 ? formatPrice(currentAsk) : '--'}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 10, color: C.textT, marginBottom: 2 }}>Mid Price</div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: C.textP, fontFamily: 'monospace' }}>{currentMid > 0 ? formatPrice(currentMid) : '--'}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 10, color: C.textT, marginBottom: 2 }}>Spread</div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: C.textP, fontFamily: 'monospace' }}>{spread > 0 ? formatPrice(spread) : '--'}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 24h Statistics (crypto only, from Binance ticker) */}
+              {isCrypto && ticker && (
+                <div style={{ background: C.card, borderRadius: 8, border: `1px solid ${C.border}` }} className="p-4">
+                  <div style={{ fontSize: 11, color: C.textT, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>24h Statistics</div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <div style={{ fontSize: 10, color: C.textT, marginBottom: 2 }}>24h Change</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: ticker.priceChangePercent >= 0 ? C.green : C.red, fontFamily: 'monospace' }}>
+                        {ticker.priceChangePercent >= 0 ? '+' : ''}{ticker.priceChangePercent.toFixed(2)}%
+                      </div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 10, color: C.textT, marginBottom: 2 }}>24h Volume</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: C.textP, fontFamily: 'monospace' }}>{formatVolume(ticker.volume)} {symbolInfo.base}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 10, color: C.textT, marginBottom: 2 }}>24h High</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: C.textP, fontFamily: 'monospace' }}>{formatPrice(ticker.highPrice)}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 10, color: C.textT, marginBottom: 2 }}>24h Low</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: C.textP, fontFamily: 'monospace' }}>{formatPrice(ticker.lowPrice)}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 10, color: C.textT, marginBottom: 2 }}>24h Turnover</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: C.textP, fontFamily: 'monospace' }}>{formatVolume(ticker.quoteVolume)} USDT</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 10, color: C.textT, marginBottom: 2 }}>Last Price</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: C.textP, fontFamily: 'monospace' }}>{formatPrice(ticker.lastPrice)}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Market Info */}
+              <div style={{ background: C.card, borderRadius: 8, border: `1px solid ${C.border}` }} className="p-4">
+                <div style={{ fontSize: 11, color: C.textT, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>Market Info</div>
+                <div className="space-y-2">
+                  {[
+                    { label: 'Base Asset', value: symbolInfo.base },
+                    { label: 'Quote Asset', value: symbolInfo.quote },
+                    { label: 'Market Type', value: isCrypto ? 'Crypto Perpetual' : symbolInfo.base === 'XAU' || symbolInfo.base === 'XAG' ? 'Precious Metal' : 'Forex' },
+                    { label: 'Price Source', value: isCrypto ? 'Binance WebSocket' : 'REST Polling' },
+                    { label: 'Status', value: 'Trading' },
+                  ].map((row) => (
+                    <div key={row.label} className="flex justify-between items-center" style={{ fontSize: 12 }}>
+                      <span style={{ color: C.textS }}>{row.label}</span>
+                      <span style={{ color: C.textP, fontWeight: 500 }}>{row.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* About Section */}
+              <div style={{ background: C.card, borderRadius: 8, border: `1px solid ${C.border}` }} className="p-4">
+                <div style={{ fontSize: 11, color: C.textT, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>About {symbolInfo.label}</div>
+                <p style={{ fontSize: 12, color: C.textS, lineHeight: 1.6 }}>
+                  {isCrypto
+                    ? `${symbolInfo.base} is traded against ${symbolInfo.quote} as a perpetual contract. This pair tracks the spot price of ${symbolInfo.base} and is one of the most liquid cryptocurrency trading pairs available.`
+                    : symbolInfo.base === 'XAU'
+                      ? 'Gold (XAU) is a precious metal traded against the US Dollar. It is considered a safe-haven asset and is one of the most actively traded commodities worldwide.'
+                      : symbolInfo.base === 'XAG'
+                        ? 'Silver (XAG) is a precious metal traded against the US Dollar. It serves as both an industrial commodity and a store of value.'
+                        : `The ${symbolInfo.base}/${symbolInfo.quote} pair represents the exchange rate between the ${symbolInfo.base} and ${symbolInfo.quote}. It is one of the major forex pairs traded in the global foreign exchange market.`
+                  }
+                </p>
+              </div>
+            </div>
+          )}
+
+          {chartTab === 'data' && (
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {/* Contract / Pair Specifications */}
+              <div style={{ background: C.card, borderRadius: 8, border: `1px solid ${C.border}` }} className="p-4">
+                <div style={{ fontSize: 11, color: C.textT, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
+                  {isCrypto ? 'Contract Specifications' : 'Pair Specifications'}
+                </div>
+                <div className="space-y-2">
+                  {[
+                    { label: 'Symbol', value: symbolInfo.label },
+                    { label: 'Type', value: isCrypto ? 'USDT Perpetual' : 'Spot' },
+                    { label: 'Base Currency', value: symbolInfo.base },
+                    { label: 'Quote Currency', value: symbolInfo.quote },
+                    { label: 'Contract Size', value: isCrypto ? `1 ${symbolInfo.base}` : '100,000 units' },
+                    { label: 'Tick Size', value: isCrypto ? (currentMid >= 1000 ? '0.01' : currentMid >= 1 ? '0.0001' : '0.000001') : (currentMid >= 100 ? '0.001' : '0.00001') },
+                    { label: 'Margin', value: 'Spot (No Leverage)' },
+                    { label: 'Trading Hours', value: isCrypto ? '24/7' : 'Mon-Fri, 00:00-24:00 UTC' },
+                  ].map((row) => (
+                    <div key={row.label} className="flex justify-between items-center py-1" style={{ fontSize: 12, borderBottom: `1px solid ${C.border}` }}>
+                      <span style={{ color: C.textS }}>{row.label}</span>
+                      <span style={{ color: C.textP, fontWeight: 500, fontFamily: 'monospace' }}>{row.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Current Position for this symbol */}
+              {(() => {
+                const symbolPositions = openPositions.filter(t => symbolsMatch(t.symbol, currentSymbolStr));
+                if (symbolPositions.length === 0) return (
+                  <div style={{ background: C.card, borderRadius: 8, border: `1px solid ${C.border}` }} className="p-4">
+                    <div style={{ fontSize: 11, color: C.textT, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>My Position</div>
+                    <p style={{ fontSize: 12, color: C.textS, textAlign: 'center', padding: '12px 0' }}>No open position for {symbolInfo.label}</p>
+                  </div>
+                );
+                return (
+                  <div style={{ background: C.card, borderRadius: 8, border: `1px solid ${C.border}` }} className="p-4">
+                    <div style={{ fontSize: 11, color: C.textT, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>My Positions — {symbolInfo.label}</div>
+                    {symbolPositions.map((pos) => {
+                      const exitP = pos.type === 'BUY' ? currentBid : currentAsk;
+                      const priceDiff = pos.type === 'BUY' ? (exitP - pos.openPrice) : (pos.openPrice - exitP);
+                      const pnl = isCrypto ? priceDiff * (pos.volume || 0) : priceDiff * (pos.volume || 0) * 100000;
+                      return (
+                        <div key={pos.id} className="space-y-2 mb-3 pb-3" style={{ borderBottom: `1px solid ${C.border}` }}>
+                          <div className="flex justify-between items-center">
+                            <span style={{ fontSize: 13, fontWeight: 700, color: pos.type === 'BUY' ? C.green : C.red }}>{pos.type === 'BUY' ? 'Long' : 'Short'}</span>
+                            <span style={{ fontSize: 13, fontWeight: 700, color: pnl >= 0 ? C.green : C.red, fontFamily: 'monospace' }}>{pnl >= 0 ? '+' : ''}{pnl.toFixed(2)} USDT</span>
+                          </div>
+                          {[
+                            { label: 'Size', value: `${pos.volume?.toFixed(isCrypto ? 6 : 3)} ${isCrypto ? symbolInfo.base : 'Lots'}` },
+                            { label: 'Entry Price', value: formatPrice(pos.openPrice) },
+                            { label: 'Mark Price', value: formatPrice(exitP) },
+                            { label: 'Mode', value: 'Spot' },
+                            ...(pos.stopLoss ? [{ label: 'Stop Loss', value: formatPrice(pos.stopLoss) }] : []),
+                            ...(pos.takeProfit ? [{ label: 'Take Profit', value: formatPrice(pos.takeProfit) }] : []),
+                          ].map((row) => (
+                            <div key={row.label} className="flex justify-between" style={{ fontSize: 12 }}>
+                              <span style={{ color: C.textS }}>{row.label}</span>
+                              <span style={{ color: C.textP, fontFamily: 'monospace' }}>{row.value}</span>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+
+              {/* Price Reference */}
+              <div style={{ background: C.card, borderRadius: 8, border: `1px solid ${C.border}` }} className="p-4">
+                <div style={{ fontSize: 11, color: C.textT, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>Price Reference</div>
+                <div className="space-y-2">
+                  {[
+                    { label: 'Bid', value: currentBid > 0 ? formatPrice(currentBid) : '--', color: C.green },
+                    { label: 'Ask', value: currentAsk > 0 ? formatPrice(currentAsk) : '--', color: C.red },
+                    { label: 'Spread', value: spread > 0 ? formatPrice(spread) : '--', color: C.textP },
+                    ...(isCrypto && ticker ? [
+                      { label: '24h High', value: formatPrice(ticker.highPrice), color: C.textP },
+                      { label: '24h Low', value: formatPrice(ticker.lowPrice), color: C.textP },
+                      { label: '24h Volume', value: `${formatVolume(ticker.volume)} ${symbolInfo.base}`, color: C.textP },
+                    ] : []),
+                  ].map((row) => (
+                    <div key={row.label} className="flex justify-between items-center" style={{ fontSize: 12 }}>
+                      <span style={{ color: C.textS }}>{row.label}</span>
+                      <span style={{ color: row.color, fontWeight: 500, fontFamily: 'monospace' }}>{row.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Account Trading Summary */}
+              <div style={{ background: C.card, borderRadius: 8, border: `1px solid ${C.border}` }} className="p-4">
+                <div style={{ fontSize: 11, color: C.textT, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>Account Summary</div>
+                <div className="space-y-2">
+                  {[
+                    { label: 'Balance', value: `${formatNum(balance)} USDT` },
+                    { label: 'Open Positions', value: `${openPositions.length}` },
+                    { label: `${symbolInfo.label} Positions`, value: `${openPositions.filter(t => symbolsMatch(t.symbol, currentSymbolStr)).length}` },
+                    { label: 'Account Status', value: isAccountLocked ? 'Locked' : 'Active', color: isAccountLocked ? C.red : C.green },
+                  ].map((row) => (
+                    <div key={row.label} className="flex justify-between items-center" style={{ fontSize: 12 }}>
+                      <span style={{ color: C.textS }}>{row.label}</span>
+                      <span style={{ color: row.color || C.textP, fontWeight: 500, fontFamily: 'monospace' }}>{row.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ── MIDDLE: ORDER BOOK ── */}
-        <div className="shrink-0 flex flex-col overflow-hidden" style={{ width: 280, background: C.panel, borderLeft: `1px solid ${C.border}`, borderRight: `1px solid ${C.border}` }}>
+        <SectionErrorBoundary label="Order Book">
+        <div className="w-full lg:w-[280px] shrink-0 flex flex-col border-b lg:border-b-0 lg:border-r" style={{ background: C.panel, borderColor: C.border }}>
           {/* OB Header */}
           <div className="flex items-center justify-between px-3 shrink-0" style={{ borderBottom: `1px solid ${C.border}` }}>
             <div className="flex">
@@ -603,9 +855,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
               <button onClick={() => setObTab('trades')} className="py-2"
                 style={{ fontSize: 12, fontWeight: 600, color: obTab === 'trades' ? C.textP : C.textS, borderBottom: obTab === 'trades' ? `2px solid ${C.yellow}` : '2px solid transparent' }}>Recent Trades</button>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1" style={{ opacity: obTab === 'book' ? 1 : 0.45, pointerEvents: obTab === 'book' ? 'auto' : 'none' }}>
               {['both', 'asks', 'bids'].map((mode) => (
-                <button key={mode} className="p-1 rounded" style={{ background: mode === 'both' ? C.card : 'transparent' }}>
+                <button key={mode} onClick={() => setObMode(mode)} className="p-1 rounded" style={{ background: obMode === mode ? C.card : 'transparent' }}>
                   <div style={{ width: 14, height: 14, display: 'flex', flexDirection: 'column', gap: 1, justifyContent: 'center', alignItems: 'center' }}>
                     <div style={{ width: 10, height: 2, background: mode === 'asks' || mode === 'both' ? C.red : C.textT, borderRadius: 1 }} />
                     <div style={{ width: 10, height: 2, background: mode === 'bids' || mode === 'both' ? C.green : C.textT, borderRadius: 1 }} />
@@ -615,94 +867,127 @@ const BybitTradingArea = ({ selectedChallenge }) => {
             </div>
           </div>
 
-          {/* OB Column Headers */}
-          <div className="grid grid-cols-3 px-3 py-1.5 shrink-0" style={{ fontSize: 10, color: C.textT }}>
-            <span>Price(USDT)</span>
-            <span className="text-right">Qty</span>
-            <span className="text-right">Total</span>
-          </div>
+          {obTab === 'book' ? (
+            <>
+              {/* OB Column Headers */}
+              <div className="grid grid-cols-3 px-3 py-1.5 shrink-0" style={{ fontSize: 10, color: C.textT }}>
+                <span>Price(USDT)</span>
+                <span className="text-right">Qty</span>
+                <span className="text-right">Total</span>
+              </div>
 
-          {/* OB Content */}
-          <div className="flex-1 flex flex-col px-3 overflow-hidden">
-            {/* Ask side */}
-            <div className="flex-1 flex flex-col justify-end overflow-hidden">
-              {askOrders.map((o, i) => {
-                const pct = o.rawTotal ? (o.rawTotal / maxAskTotal) * 100 : 0;
-                return (
-                  <div key={`a-${i}`} onClick={() => o.rawPrice && setLimitPrice(o.rawPrice.toString())}
-                    className="relative grid grid-cols-3 py-[1.5px] cursor-pointer hover:brightness-125" style={{ fontSize: 11 }}>
-                    <div className="absolute right-0 top-0 bottom-0" style={{ width: `${pct}%`, background: C.redDim }} />
-                    <span style={{ color: C.red, fontFamily: 'monospace' }} className="relative z-10">{o.price}</span>
-                    <span style={{ color: C.textP, fontFamily: 'monospace' }} className="text-right relative z-10">{o.qty}</span>
-                    <span style={{ color: C.textS, fontFamily: 'monospace' }} className="text-right relative z-10">{o.total}</span>
+              {/* OB Content */}
+              <div className="flex-1 flex flex-col px-3 overflow-hidden">
+                {/* Ask side */}
+                {obMode !== 'bids' && (
+                  <div className="flex-1 flex flex-col justify-end overflow-hidden">
+                    {askOrders.map((o, i) => {
+                      const pct = o.rawTotal ? (o.rawTotal / maxAskTotal) * 100 : 0;
+                      return (
+                        <div key={`a-${i}`} onClick={() => o.rawPrice && setLimitPrice(o.rawPrice.toString())}
+                          className="relative grid grid-cols-3 py-[1.5px] cursor-pointer hover:brightness-125" style={{ fontSize: 11 }}>
+                          <div className="absolute right-0 top-0 bottom-0" style={{ width: `${pct}%`, background: C.redDim }} />
+                          <span style={{ color: C.red, fontFamily: 'monospace' }} className="relative z-10">{o.price}</span>
+                          <span style={{ color: C.textP, fontFamily: 'monospace' }} className="text-right relative z-10">{o.qty}</span>
+                          <span style={{ color: C.textS, fontFamily: 'monospace' }} className="text-right relative z-10">{o.total}</span>
+                        </div>
+                      );
+                    })}
                   </div>
-                );
-              })}
-            </div>
+                )}
 
-            {/* Spread / current price */}
-            <div className="py-2 flex items-center gap-2 shrink-0" style={{ borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}` }}>
-              {currentMid > 0 ? (
-                <>
-                  {isCrypto ? (
-                    ticker?.priceChangePercent >= 0 ? (
-                      <ArrowUp size={14} style={{ color: C.green }} />
-                    ) : (
-                      <ArrowDown size={14} style={{ color: C.red }} />
-                    )
-                  ) : null}
-                  <span style={{ fontSize: 16, fontWeight: 700, color: isCrypto ? (ticker?.priceChangePercent >= 0 ? C.green : C.red) : C.textP, fontFamily: 'monospace' }}>{formatPrice(currentMid)}</span>
-                  <span style={{ fontSize: 11, color: C.textS }}>≈{formatNum(currentMid)} USD</span>
-                  {spread > 0 && <span style={{ fontSize: 10, color: C.textT, marginLeft: 'auto' }}>Spread: {formatPrice(spread)}</span>}
-                </>
+                {/* Spread / current price */}
+                <div className="py-2 flex items-center gap-2 shrink-0" style={{ borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}` }}>
+                  {currentMid > 0 ? (
+                    <>
+                      {isCrypto ? (
+                        ticker?.priceChangePercent >= 0 ? (
+                          <ArrowUp size={14} style={{ color: C.green }} />
+                        ) : (
+                          <ArrowDown size={14} style={{ color: C.red }} />
+                        )
+                      ) : null}
+                      <span style={{ fontSize: 16, fontWeight: 700, color: isCrypto ? (ticker?.priceChangePercent >= 0 ? C.green : C.red) : C.textP, fontFamily: 'monospace' }}>{formatPrice(currentMid)}</span>
+                      <span style={{ fontSize: 11, color: C.textS }}>≈{formatNum(currentMid)} USD</span>
+                      {spread > 0 && <span style={{ fontSize: 10, color: C.textT, marginLeft: 'auto' }}>Spread: {formatPrice(spread)}</span>}
+                    </>
+                  ) : (
+                    <span style={{ color: C.textS }}>--</span>
+                  )}
+                </div>
+
+                {/* Bid side */}
+                {obMode !== 'asks' && (
+                  <div className="flex-1 overflow-hidden">
+                    {bidOrders.map((o, i) => {
+                      const pct = o.rawTotal ? (o.rawTotal / maxBidTotal) * 100 : 0;
+                      return (
+                        <div key={`b-${i}`} onClick={() => o.rawPrice && setLimitPrice(o.rawPrice.toString())}
+                          className="relative grid grid-cols-3 py-[1.5px] cursor-pointer hover:brightness-125" style={{ fontSize: 11 }}>
+                          <div className="absolute right-0 top-0 bottom-0" style={{ width: `${pct}%`, background: C.greenDim }} />
+                          <span style={{ color: C.green, fontFamily: 'monospace' }} className="relative z-10">{o.price}</span>
+                          <span style={{ color: C.textP, fontFamily: 'monospace' }} className="text-right relative z-10">{o.qty}</span>
+                          <span style={{ color: C.textS, fontFamily: 'monospace' }} className="text-right relative z-10">{o.total}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Buy/Sell ratio bar */}
+                <div className="flex items-center gap-0 shrink-0 py-2" style={{ borderTop: `1px solid ${C.border}` }}>
+                  <span style={{ fontSize: 10, color: C.green, marginRight: 4 }}>B</span>
+                  <div className="flex-1 flex h-1 rounded overflow-hidden">
+                    <div style={{ width: '45%', background: C.green }} />
+                    <div style={{ width: '55%', background: C.red }} />
+                  </div>
+                  <span style={{ fontSize: 10, color: C.red, marginLeft: 4 }}>S</span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 overflow-y-auto px-3 py-2">
+              {recentTrades.length === 0 ? (
+                <div className="text-center py-4" style={{ fontSize: 12, color: C.textS }}>No recent trades for {symbolInfo.label}</div>
               ) : (
-                <span style={{ color: C.textS }}>--</span>
+                <>
+                  <div className="grid grid-cols-3 px-1 py-1.5 sticky top-0 z-10" style={{ fontSize: 10, color: C.textT, background: C.panel }}>
+                    <span>Price</span>
+                    <span className="text-right">Qty</span>
+                    <span className="text-right">Time</span>
+                  </div>
+                  <div className="space-y-0.5">
+                    {recentTrades.map((t) => (
+                      <div key={t.id} className="grid grid-cols-3 py-1 px-1" style={{ fontSize: 11 }}>
+                        <span style={{ color: t.type === 'BUY' ? C.green : C.red, fontFamily: 'monospace' }}>{formatPrice(t.price)}</span>
+                        <span className="text-right" style={{ color: C.textP, fontFamily: 'monospace' }}>{(t.volume || 0).toFixed(isCrypto ? 6 : 3)}</span>
+                        <span className="text-right" style={{ color: C.textS, fontFamily: 'monospace' }}>
+                          {t.time ? new Date(t.time).toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '--'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
-
-            {/* Bid side */}
-            <div className="flex-1 overflow-hidden">
-              {bidOrders.map((o, i) => {
-                const pct = o.rawTotal ? (o.rawTotal / maxBidTotal) * 100 : 0;
-                return (
-                  <div key={`b-${i}`} onClick={() => o.rawPrice && setLimitPrice(o.rawPrice.toString())}
-                    className="relative grid grid-cols-3 py-[1.5px] cursor-pointer hover:brightness-125" style={{ fontSize: 11 }}>
-                    <div className="absolute right-0 top-0 bottom-0" style={{ width: `${pct}%`, background: C.greenDim }} />
-                    <span style={{ color: C.green, fontFamily: 'monospace' }} className="relative z-10">{o.price}</span>
-                    <span style={{ color: C.textP, fontFamily: 'monospace' }} className="text-right relative z-10">{o.qty}</span>
-                    <span style={{ color: C.textS, fontFamily: 'monospace' }} className="text-right relative z-10">{o.total}</span>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Buy/Sell ratio bar */}
-            <div className="flex items-center gap-0 shrink-0 py-2" style={{ borderTop: `1px solid ${C.border}` }}>
-              <span style={{ fontSize: 10, color: C.green, marginRight: 4 }}>B</span>
-              <div className="flex-1 flex h-1 rounded overflow-hidden">
-                <div style={{ width: '45%', background: C.green }} />
-                <div style={{ width: '55%', background: C.red }} />
-              </div>
-              <span style={{ fontSize: 10, color: C.red, marginLeft: 4 }}>S</span>
-            </div>
-          </div>
+          )}
         </div>
+        </SectionErrorBoundary>
 
         {/* ── RIGHT: TRADE PANEL ── */}
-        <div className="shrink-0 flex flex-col overflow-hidden" style={{ width: 280, background: C.panel }}>
+        <SectionErrorBoundary label="Trade Panel">
+        <div className="w-full lg:w-[280px] shrink-0 flex flex-col border-t lg:border-t-0 lg:border-l" style={{ background: C.panel, borderColor: C.border }}>
           {/* Trade header */}
           <div className="px-4 py-2.5 flex items-center justify-between shrink-0" style={{ borderBottom: `1px solid ${C.border}` }}>
             <span style={{ fontSize: 14, fontWeight: 700, color: C.textP }}>Trade</span>
           </div>
 
-          {/* Spot / Convert / Margin tabs */}
+          {/* Spot mode */}
           <div className="flex px-4 shrink-0" style={{ borderBottom: `1px solid ${C.border}` }}>
-            {['Spot', 'Convert', 'Margin'].map((t, i) => (
-              <button key={t} className="py-2 mr-4"
-                style={{ fontSize: 12, fontWeight: i === 0 ? 600 : 400, color: i === 0 ? C.textP : C.textS, borderBottom: i === 0 ? `2px solid ${C.yellow}` : '2px solid transparent' }}>
-                {t === 'Margin' ? <><span className="inline-flex items-center gap-0.5"><span style={{ width: 6, height: 6, borderRadius: '50%', background: C.green, display: 'inline-block' }} /><span style={{ width: 6, height: 6, borderRadius: '50%', background: C.red, display: 'inline-block', marginLeft: -2 }} /></span> {t}</> : t}
-              </button>
-            ))}
+            <button className="py-2 mr-4"
+              style={{ fontSize: 12, fontWeight: 600, color: C.textP, borderBottom: `2px solid ${C.yellow}` }}>
+              Spot
+            </button>
           </div>
 
           <div className="flex-1 overflow-y-auto">
@@ -806,17 +1091,6 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                 </div>
               )}
 
-              {/* Leverage row */}
-              <div className="flex items-center justify-between">
-                <span style={{ fontSize: 12, color: C.textS }}>Leverage</span>
-                <div className="flex items-center gap-1">
-                  {[1, 5, 10, 25, 50, 100].map((v) => (
-                    <button key={v} onClick={() => setLeverage(v)}
-                      style={{ fontSize: 10, padding: '2px 6px', borderRadius: 3, fontWeight: leverage === v ? 600 : 400, color: leverage === v ? C.yellow : C.textS, background: leverage === v ? C.yellowDim : 'transparent' }}>{v}x</button>
-                  ))}
-                </div>
-              </div>
-
               {/* Order summary */}
               <div className="space-y-1 pt-1" style={{ borderTop: `1px solid ${C.border}` }}>
                 <div className="flex justify-between" style={{ fontSize: 12 }}>
@@ -826,7 +1100,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                 <div className="flex justify-between" style={{ fontSize: 12 }}>
                   <span style={{ color: C.textS }}>Max. buying amount</span>
                   <span style={{ color: C.textP, fontFamily: 'monospace' }}>
-                    {balance > 0 && effectivePrice > 0 ? (balance * leverage / effectivePrice).toFixed(isCrypto ? 6 : 2) : '--'} {isCrypto ? symbolInfo.base : 'Lots'}
+                    {balance > 0 && effectivePrice > 0 ? (balance / (effectivePrice * contractSize)).toFixed(isCrypto ? 6 : 2) : '--'} {isCrypto ? symbolInfo.base : 'Lots'}
                   </span>
                 </div>
               </div>
@@ -848,182 +1122,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* ═══ BOTTOM PANEL ═══ */}
-      <div style={{ background: C.panel, borderTop: `1px solid ${C.border}`, minHeight: 160, maxHeight: 260, position: 'relative', zIndex: 1 }} className="flex flex-col shrink-0">
-        {/* Tabs */}
-        <div className="flex items-center px-4 overflow-x-auto shrink-0" style={{ borderBottom: `1px solid ${C.border}` }}>
-          {[
-            { key: 'positions', label: 'Positions', count: openPositions.length },
-            { key: 'open', label: 'Open Orders', count: activePendingOrders.length },
-            { key: 'history', label: 'Trade History', count: closedTrades.length },
-            { key: 'assets', label: 'Assets', count: 0 },
-            { key: 'pnl', label: 'P&L', count: 0 },
-          ].map(({ key, label, count }) => (
-            <button key={key} onClick={() => setBottomTab(key)} className="py-2 mr-5 shrink-0 relative"
-              style={{ fontSize: 12, color: bottomTab === key ? C.textP : C.textS, fontWeight: bottomTab === key ? 600 : 400 }}>
-              {label}
-              {count > 0 && <span style={{ fontSize: 9, marginLeft: 3, padding: '1px 4px', borderRadius: 3, background: C.yellowDim, color: C.yellow }}>{count}</span>}
-              {bottomTab === key && <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, background: C.yellow }} />}
-            </button>
-          ))}
-        </div>
-
-        {/* Table content */}
-        <div className="flex-1 overflow-auto">
-          {/* POSITIONS */}
-          {bottomTab === 'positions' && (
-            openPositions.length === 0
-              ? <div className="flex items-center justify-center h-full" style={{ color: C.textT, fontSize: 12 }}>No open positions</div>
-              : <table style={{ width: '100%', fontSize: 11, borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ color: C.textT, borderBottom: `1px solid ${C.border}` }}>
-                      {['Symbol', 'Side', 'Qty', 'Entry', 'Mark', 'PnL', 'SL', 'TP', ''].map((h, i) => (
-                        <th key={i} style={{ padding: '6px 10px', fontWeight: 500, textAlign: i < 2 ? 'left' : i === 8 ? 'center' : 'right' }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {openPositions.map((trade) => {
-                      const pnl = calcPnL(trade);
-                      const mark = trade.type === 'BUY' ? currentBid : currentAsk;
-                      return (
-                        <tr key={trade.id} style={{ borderBottom: `1px solid ${C.border}22` }} className="hover:brightness-110">
-                          <td style={{ padding: '5px 10px', color: C.textP, fontFamily: 'monospace' }}>{trade.symbol}</td>
-                          <td style={{ padding: '5px 10px', color: trade.type === 'BUY' ? C.green : C.red, fontWeight: 600 }}>{trade.type === 'BUY' ? 'Long' : 'Short'}</td>
-                          <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textP, fontFamily: 'monospace' }}>{trade.volume?.toFixed(3)}</td>
-                          <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textP, fontFamily: 'monospace' }}>{formatPrice(trade.openPrice)}</td>
-                          <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textP, fontFamily: 'monospace' }}>{mark > 0 ? formatPrice(mark) : '--'}</td>
-                          <td style={{ padding: '5px 10px', textAlign: 'right', fontFamily: 'monospace', fontWeight: 600, color: pnl >= 0 ? C.green : C.red }}>{pnl >= 0 ? '+' : ''}{pnl.toFixed(2)}</td>
-                          <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textT, fontFamily: 'monospace' }}>{trade.stopLoss ? formatPrice(trade.stopLoss) : '--'}</td>
-                          <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textT, fontFamily: 'monospace' }}>{trade.takeProfit ? formatPrice(trade.takeProfit) : '--'}</td>
-                          <td style={{ padding: '5px 10px', textAlign: 'center' }}>
-                            <button onClick={() => handleClosePosition(trade)} disabled={closePositionMutation.isLoading || isAccountLocked}
-                              style={{ fontSize: 10, padding: '3px 10px', borderRadius: 3, border: `1px solid ${C.border}`, background: 'transparent', color: C.textS, cursor: 'pointer' }}
-                              className="hover:brightness-150 disabled:opacity-50">Close</button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-          )}
-
-          {/* OPEN ORDERS (pending) */}
-          {bottomTab === 'open' && (
-            activePendingOrders.length === 0
-              ? <div className="flex items-center justify-center h-full" style={{ color: C.textT, fontSize: 12 }}>No open orders</div>
-              : <table style={{ width: '100%', fontSize: 11, borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ color: C.textT, borderBottom: `1px solid ${C.border}` }}>
-                      {['Symbol', 'Type', 'Side', 'Qty', 'Price', 'SL', 'TP', ''].map((h, i) => (
-                        <th key={i} style={{ padding: '6px 10px', fontWeight: 500, textAlign: i < 3 ? 'left' : i === 7 ? 'center' : 'right' }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {activePendingOrders.map((order) => (
-                      <tr key={order.id} style={{ borderBottom: `1px solid ${C.border}22` }}>
-                        <td style={{ padding: '5px 10px', color: C.textP, fontFamily: 'monospace' }}>{order.symbol}</td>
-                        <td style={{ padding: '5px 10px', color: C.textS }}>{order.orderType}</td>
-                        <td style={{ padding: '5px 10px', color: order.type === 'BUY' ? C.green : C.red, fontWeight: 600 }}>{order.type === 'BUY' ? 'Long' : 'Short'}</td>
-                        <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textP, fontFamily: 'monospace' }}>{order.volume?.toFixed(3)}</td>
-                        <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textP, fontFamily: 'monospace' }}>{formatPrice(order.price)}</td>
-                        <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textT, fontFamily: 'monospace' }}>{order.stopLoss ? formatPrice(order.stopLoss) : '--'}</td>
-                        <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textT, fontFamily: 'monospace' }}>{order.takeProfit ? formatPrice(order.takeProfit) : '--'}</td>
-                        <td style={{ padding: '5px 10px', textAlign: 'center' }}>
-                          <button onClick={() => cancelOrderMutation.mutate(order.id)} disabled={cancelOrderMutation.isLoading}
-                            style={{ fontSize: 10, padding: '3px 10px', borderRadius: 3, border: `1px solid ${C.red}33`, background: 'transparent', color: C.red, cursor: 'pointer' }}
-                            className="hover:brightness-150 disabled:opacity-50">Cancel</button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-          )}
-
-          {/* TRADE HISTORY */}
-          {bottomTab === 'history' && (
-            closedTrades.length === 0
-              ? <div className="flex items-center justify-center h-full" style={{ color: C.textT, fontSize: 12 }}>No trade history</div>
-              : <table style={{ width: '100%', fontSize: 11, borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ color: C.textT, borderBottom: `1px solid ${C.border}` }}>
-                      {['Symbol', 'Side', 'Qty', 'Entry', 'Close', 'PnL', 'Reason'].map((h, i) => (
-                        <th key={i} style={{ padding: '6px 10px', fontWeight: 500, textAlign: i < 2 ? 'left' : 'right' }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {closedTrades.slice(0, 50).map((trade) => (
-                      <tr key={trade.id} style={{ borderBottom: `1px solid ${C.border}22` }}>
-                        <td style={{ padding: '5px 10px', color: C.textP, fontFamily: 'monospace' }}>{trade.symbol}</td>
-                        <td style={{ padding: '5px 10px', color: trade.type === 'BUY' ? C.green : C.red, fontWeight: 600 }}>{trade.type === 'BUY' ? 'Long' : 'Short'}</td>
-                        <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textP, fontFamily: 'monospace' }}>{trade.volume?.toFixed(3)}</td>
-                        <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textP, fontFamily: 'monospace' }}>{formatPrice(trade.openPrice)}</td>
-                        <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textP, fontFamily: 'monospace' }}>{formatPrice(trade.closePrice)}</td>
-                        <td style={{ padding: '5px 10px', textAlign: 'right', fontFamily: 'monospace', fontWeight: 600, color: (trade.profit || 0) >= 0 ? C.green : C.red }}>{(trade.profit || 0) >= 0 ? '+' : ''}{(trade.profit || 0).toFixed(2)}</td>
-                        <td style={{ padding: '5px 10px', textAlign: 'right', color: C.textT }}>{trade.closeReason || '--'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-          )}
-
-          {/* ASSETS */}
-          {bottomTab === 'assets' && (
-            <div className="p-4">
-              <div className="grid grid-cols-2 gap-4" style={{ maxWidth: 500 }}>
-                <div className="p-3 rounded" style={{ background: C.card }}>
-                  <div style={{ fontSize: 11, color: C.textT, marginBottom: 4 }}>Total Balance</div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: C.textP, fontFamily: 'monospace' }}>{formatNum(balance)} USDT</div>
-                </div>
-                <div className="p-3 rounded" style={{ background: C.card }}>
-                  <div style={{ fontSize: 11, color: C.textT, marginBottom: 4 }}>Equity</div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: C.textP, fontFamily: 'monospace' }}>{formatNum(selectedChallenge?.equity || balance)} USDT</div>
-                </div>
-                <div className="p-3 rounded" style={{ background: C.card }}>
-                  <div style={{ fontSize: 11, color: C.textT, marginBottom: 4 }}>Open Positions</div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: C.textP }}>{openPositions.length}</div>
-                </div>
-                <div className="p-3 rounded" style={{ background: C.card }}>
-                  <div style={{ fontSize: 11, color: C.textT, marginBottom: 4 }}>Pending Orders</div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: C.textP }}>{activePendingOrders.length}</div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* P&L */}
-          {bottomTab === 'pnl' && (
-            !pnlSummary
-              ? <div className="flex items-center justify-center h-full" style={{ color: C.textT, fontSize: 12 }}>No trading data available</div>
-              : <div className="p-4">
-                  <div className="grid grid-cols-4 gap-3" style={{ maxWidth: 700 }}>
-                    <div className="p-3 rounded" style={{ background: C.card }}>
-                      <div style={{ fontSize: 11, color: C.textT, marginBottom: 4 }}>Total P&L</div>
-                      <div style={{ fontSize: 16, fontWeight: 700, fontFamily: 'monospace', color: pnlSummary.totalPnL >= 0 ? C.green : C.red }}>
-                        {pnlSummary.totalPnL >= 0 ? '+' : ''}{pnlSummary.totalPnL.toFixed(2)}
-                      </div>
-                    </div>
-                    <div className="p-3 rounded" style={{ background: C.card }}>
-                      <div style={{ fontSize: 11, color: C.textT, marginBottom: 4 }}>Win Rate</div>
-                      <div style={{ fontSize: 16, fontWeight: 700, color: C.textP }}>{pnlSummary.winRate.toFixed(1)}%</div>
-                      <div style={{ fontSize: 10, color: C.textT }}>{pnlSummary.wins}W / {pnlSummary.losses}L / {pnlSummary.total} Total</div>
-                    </div>
-                    <div className="p-3 rounded" style={{ background: C.card }}>
-                      <div style={{ fontSize: 11, color: C.textT, marginBottom: 4 }}>Avg Win</div>
-                      <div style={{ fontSize: 14, fontWeight: 600, fontFamily: 'monospace', color: C.green }}>+{pnlSummary.avgWin.toFixed(2)}</div>
-                    </div>
-                    <div className="p-3 rounded" style={{ background: C.card }}>
-                      <div style={{ fontSize: 11, color: C.textT, marginBottom: 4 }}>Avg Loss</div>
-                      <div style={{ fontSize: 14, fontWeight: 600, fontFamily: 'monospace', color: C.red }}>{pnlSummary.avgLoss.toFixed(2)}</div>
-                    </div>
-                  </div>
-                </div>
-          )}
-        </div>
+        </SectionErrorBoundary>
       </div>
     </div>
   );

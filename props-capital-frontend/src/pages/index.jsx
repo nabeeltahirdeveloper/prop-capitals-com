@@ -46,6 +46,7 @@ import OrdersPage from "@/components/trader/OrdersPage.jsx";
 import EconomicCalendar from "@/components/trader/EconomicCalendar.jsx";
 import PayoutHistory from "@/components/trader/PayoutHistory.jsx";
 import AccountSettings from "@/components/trader/AccountSettings.jsx";
+import NotificationsPage from "@/components/trader/NotificationsPage.jsx";
 import ProfilePage from "@/components/trader/ProfilePage.jsx";
 import SupportPage from "@/components/trader/SupportPage.jsx";
 import FAQPage from "@/components/trader/FAQPage.jsx";
@@ -63,6 +64,7 @@ import ProtectedRoute, {
   PublicOnlyRoute,
 } from "../components/ProtectedRoute";
 import { PriceProviderWithRouter } from "../contexts/PriceContext";
+
 
 const PAGES = {
   Home: Home,
@@ -135,7 +137,7 @@ function PagesContent() {
       <LanguageProvider>
         <ErrorBoundary>
           <Layout currentPageName={currentPage}>
-            <Routes key={location.pathname}>
+            <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Home />} />
               <Route path="/Home" element={<Home />} />
@@ -209,6 +211,7 @@ function PagesContent() {
                   <Route path="calendar" element={<EconomicCalendar />} />
                   <Route path="payouts" element={<PayoutHistory />} />
                   <Route path="settings" element={<AccountSettings />} />
+                  <Route path="notifications" element={<NotificationsPage />} />
                   <Route path="profile" element={<ProfilePage />} />
                   <Route path="support" element={<SupportPage />} />
                   <Route path="faqs" element={<FAQPage />} />

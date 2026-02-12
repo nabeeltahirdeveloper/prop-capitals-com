@@ -87,24 +87,31 @@ export const TradingProvider = ({ children }) => {
   // ---------------------------------------
   // API: fetchOrders – project APIs: auth/me → trading-accounts → trades/account
   // ---------------------------------------
-  const fetchOrders = useCallback(async () => {
+  const fetchOrders = useCallback(async (accountId) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
 
       setOrdersLoading(true);
-      const user = await getCurrentUser();
-      if (!user?.userId) {
-        setOrders([]);
-        return;
+
+      // If no accountId provided, resolve it from the API chain
+      let resolvedAccountId = accountId;
+      if (!resolvedAccountId) {
+        const user = await getCurrentUser();
+        if (!user?.userId) {
+          setOrders([]);
+          return;
+        }
+        const accounts = await getUserAccounts(user.userId);
+        const account = Array.isArray(accounts) && accounts.length > 0 ? accounts[0] : null;
+        if (!account?.id) {
+          setOrders([]);
+          return;
+        }
+        resolvedAccountId = account.id;
       }
-      const accounts = await getUserAccounts(user.userId);
-      const account = Array.isArray(accounts) && accounts.length > 0 ? accounts[0] : null;
-      if (!account?.id) {
-        setOrders([]);
-        return;
-      }
-      const trades = await getAccountTrades(account.id);
+
+      const trades = await getAccountTrades(resolvedAccountId);
       const list = Array.isArray(trades) ? trades : [];
       const fetchedOrders = list.map((trade) => ({
         id: trade.id,
@@ -123,6 +130,7 @@ export const TradingProvider = ({ children }) => {
         time: new Date(trade.openedAt).toLocaleTimeString(),
         openAt: trade.openedAt,
         closeAt: trade.closedAt ?? null,
+        closePrice: trade.closePrice ?? null,
       }));
       setOrders(fetchedOrders);
     } catch (error) {
@@ -150,17 +158,23 @@ export const TradingProvider = ({ children }) => {
   // ---------------------------------------
   // API: fetchUserBalance – project APIs: auth/me → trading-accounts → account summary
   // ---------------------------------------
-  const fetchUserBalance = useCallback(async () => {
+  const fetchUserBalance = useCallback(async (accountId) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const user = await getCurrentUser();
-      if (!user?.userId) return;
-      const accounts = await getUserAccounts(user.userId);
-      const account = Array.isArray(accounts) && accounts.length > 0 ? accounts[0] : null;
-      if (!account?.id) return;
-      const summary = await getAccountSummary(account.id);
+      // If no accountId provided, resolve it from the API chain
+      let resolvedAccountId = accountId;
+      if (!resolvedAccountId) {
+        const user = await getCurrentUser();
+        if (!user?.userId) return;
+        const accounts = await getUserAccounts(user.userId);
+        const account = Array.isArray(accounts) && accounts.length > 0 ? accounts[0] : null;
+        if (!account?.id) return;
+        resolvedAccountId = account.id;
+      }
+
+      const summary = await getAccountSummary(resolvedAccountId);
       const balance = summary?.balance != null ? parseFloat(summary.balance) : NaN;
       if (!isNaN(balance)) setUserBalance(balance);
     } catch (error) {

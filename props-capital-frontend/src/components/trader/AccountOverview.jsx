@@ -9,7 +9,6 @@ import {
   DollarSign,
   Activity,
   ArrowRight,
-  ChevronDown,
   Shield,
   Zap,
   Award,
@@ -21,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
 import { useChallenges, challengeTypes } from '@/contexts/ChallengesContext';
+import { usePlatformTokensStore } from '@/lib/stores/platform-tokens.store';
 
 // Generate demo chart data
 const generateChartData = (startBalance, currentBalance) => {
@@ -127,8 +127,23 @@ const AccountOverview = () => {
     selectChallenge,
     getChallengePhaseLabel,
     getChallengeStatusColor,
-    getRuleCompliance
+    getRuleCompliance,
+    loading
   } = useChallenges();
+  const pinnedAccounts = usePlatformTokensStore((state) => state.pinnedAccounts || []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4" />
+          <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>
+            Loading accounts...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (!selectedChallenge) {
     return <div className={`text-center py-12 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>No challenges found. Buy a challenge to get started!</div>;
@@ -138,6 +153,10 @@ const AccountOverview = () => {
   const profitAmount = selectedChallenge.currentBalance - selectedChallenge.accountSize;
   const profitPercent = (profitAmount / selectedChallenge.accountSize) * 100;
   const compliance = getRuleCompliance(selectedChallenge);
+  const pinnedChallenges = pinnedAccounts
+    .map((id) => challenges.find((challenge) => challenge.id === id))
+    .filter(Boolean)
+    .slice(0, 4);
 
   // Get phase progression based on challenge type
   const getPhases = () => {
@@ -158,7 +177,7 @@ const AccountOverview = () => {
 
   return (
     <div className="space-y-6">
-      {/* Challenge Selector - Cards + Dropdown for more */}
+      {/* Challenge Selector - Pinned Cards */}
       <div className={`rounded-2xl border p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -166,41 +185,18 @@ const AccountOverview = () => {
               <Award className="w-5 h-5 text-amber-500" />
             </div>
             <div>
-              <h3 className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>My Challenges</h3>
-              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{challenges.length} accounts</p>
+              <h3 className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Pinned Challenges</h3>
+              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
+                {pinnedChallenges.length} of {challenges.length} accounts pinned
+              </p>
             </div>
           </div>
-
-          {/* Dropdown for more than 4 challenges */}
-          {challenges.length > 4 && (
-            <div className="relative">
-              <select
-                value={selectedChallenge.id}
-                onChange={(e) => selectChallenge(e.target.value)}
-                className={`appearance-none px-4 py-2.5 pr-10 rounded-xl font-medium cursor-pointer transition-all text-sm ${isDark
-                  ? 'bg-[#1a1f2e] border border-white/10 text-white hover:border-amber-500/50'
-                  : 'bg-slate-50 border border-slate-200 text-slate-900 hover:border-amber-500'
-                  } focus:outline-none focus:ring-2 focus:ring-amber-500/50`}
-                style={isDark ? { colorScheme: 'dark' } : {}}
-              >
-                {challenges.slice(4).map((challenge) => {
-                  const phaseLabel = getChallengePhaseLabel(challenge);
-                  const typeLabel = challenge.type === '1-step' ? '1-Step' : '2-Step';
-                  return (
-                    <option key={challenge.id} value={challenge.id} className={isDark ? 'bg-[#1a1f2e] text-white' : ''}>
-                      {typeLabel} ${challenge.accountSize.toLocaleString()} - {phaseLabel}
-                    </option>
-                  );
-                })}
-              </select>
-              <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${isDark ? 'text-gray-400' : 'text-slate-500'}`} />
-            </div>
-          )}
         </div>
 
-        {/* Display first 4 challenges as cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {challenges.slice(0, 4).map((challenge) => {
+        {/* Display pinned challenges as cards */}
+        {pinnedChallenges.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {pinnedChallenges.map((challenge) => {
             const isSelected = selectedChallenge.id === challenge.id;
             const phaseLabel = getChallengePhaseLabel(challenge);
             const statusColor = getChallengeStatusColor(challenge);
@@ -258,30 +254,11 @@ const AccountOverview = () => {
                 </div>
               </button>
             );
-          })}
-        </div>
-
-        {/* Show message if viewing challenge from dropdown (not in first 4) */}
-        {challenges.length > 4 && !challenges.slice(0, 4).find(c => c.id === selectedChallenge.id) && (
-          <div className={`mt-3 p-3 rounded-xl flex items-center justify-between ${isDark ? 'bg-amber-500/10 border border-amber-500/20' : 'bg-amber-50 border border-amber-200'}`}>
-            <div className="flex items-center gap-3">
-              <span className={`text-xs font-medium px-2 py-0.5 rounded ${selectedChallenge.type === '1-step' ? 'bg-blue-500/10 text-blue-500' : 'bg-purple-500/10 text-purple-500'
-                }`}>
-                {selectedChallenge.type === '1-step' ? '1-Step' : '2-Step'}
-              </span>
-              <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                ${selectedChallenge.accountSize.toLocaleString()}
-              </span>
-              <span className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                {selectedChallenge.accountId} • {selectedChallenge.platform}
-              </span>
-            </div>
-            <span className={`text-xs font-medium px-2.5 py-1 rounded-lg ${getChallengeStatusColor(selectedChallenge) === 'emerald' ? 'bg-emerald-500/10 text-emerald-500' :
-              getChallengeStatusColor(selectedChallenge) === 'red' ? 'bg-red-500/10 text-red-500' :
-                'bg-amber-500/10 text-amber-500'
-              }`}>
-              {getChallengePhaseLabel(selectedChallenge)}
-            </span>
+            })}
+          </div>
+        ) : (
+          <div className={`rounded-xl border px-4 py-5 text-sm ${isDark ? 'border-white/10 bg-white/5 text-gray-400' : 'border-slate-200 bg-slate-50 text-slate-500'}`}>
+            No pinned challenges yet. Pin up to 4 accounts from the header account selector.
           </div>
         )}
       </div>

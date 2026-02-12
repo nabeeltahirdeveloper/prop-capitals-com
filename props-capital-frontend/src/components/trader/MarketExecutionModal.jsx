@@ -4,7 +4,10 @@
 // import { getCurrentPrice } from '@/api/market-data'
 // import socket from '@/lib/socket'
 
-// const norm = (s) => (s || '').replace(/\//g, '').toUpperCase()
+const norm = (s) => {
+    const val = typeof s === 'object' ? s?.symbol : s;
+    return (val || '').replace(/\//g, '').toUpperCase();
+}
 
 // const MarketExecutionModal = ({ isOpen, onClose, orderType: initialOrderType }) => {
 //     const { selectedSymbol, setOrders, currentSymbolData } = useTrading()

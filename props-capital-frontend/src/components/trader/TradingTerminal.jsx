@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useChallenges } from '@/contexts/ChallengesContext';
 import CommonTerminalWrapper from './CommonTerminalWrapper';
 import MT5TradingArea from './MT5TradingArea';
 import BybitTerminal from './BybitTerminal';
 import TradeLockerComingSoon from './TradeLockerComingSoon';
-import PT5Terminal from '@/pages/TradingTerminal';
+import PT5Terminal from './PT5Terminal';
 import { TradingProvider } from '@nabeeltahirdeveloper/chart-sdk'
 
 
@@ -33,19 +33,22 @@ const MT5Terminal = () => {
   );
 };
 
+
+
 const BybitTerminalWrapper = () => {
   const { selectedChallenge } = useChallenges();
 
   return (
-    <CommonTerminalWrapper>
+    <CommonTerminalWrapper selectedChallenge={selectedChallenge}>
       <BybitTerminal selectedChallenge={selectedChallenge} />
     </CommonTerminalWrapper>
   );
 };
 
 const PT5TerminalWrapper = () => {
+  const { selectedChallenge } = useChallenges();
   return (
-    <CommonTerminalWrapper>
+    <CommonTerminalWrapper selectedChallenge={selectedChallenge}>
       <PT5Terminal />
     </CommonTerminalWrapper>
   );

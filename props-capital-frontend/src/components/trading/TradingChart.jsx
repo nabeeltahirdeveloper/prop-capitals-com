@@ -4560,11 +4560,6 @@ const ChartArea = forwardRef(function ChartArea({
       return;
     }
 
-    // Get container dimensions (fallback if layout not ready yet)
-    const rect = container.getBoundingClientRect();
-    const w = Math.max(rect.width || container.clientWidth || 0, 400);
-    const h = Math.max(rect.height || container.clientHeight || 0, 320);
-
     // Price labels: never show minus sign (trading prices are positive; library default can show minus)
     const priceFormatter = (price) => {
       const n = Math.abs(Number(price));
@@ -4576,8 +4571,6 @@ const ChartArea = forwardRef(function ChartArea({
 
 
     const chart = createChart(container, {
-      width: w,
-      height: h,
       autoSize: true,
       localization: {
         priceFormatter,
@@ -4722,14 +4715,13 @@ const ChartArea = forwardRef(function ChartArea({
     // Subscribe to visible range changes
     timeScale.subscribeVisibleTimeRangeChange(handleVisibleRangeChange);
 
-    // Proper resize observer that uses resize method
+    // Proper resize observer - autoSize handles the resize, we just preserve zoom
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const { width, height } = entry.contentRect;
         if (width > 0 && height > 0 && chart) {
-          // Save zoom before resize
+          // Save zoom state (autoSize handles the actual resize)
           const currentRange = timeScale.getVisibleRange();
-          chart.resize(width, height);
           // Restore zoom after resize if we had one
           if (currentRange) {
             setTimeout(() => {
@@ -5163,8 +5155,8 @@ const ChartArea = forwardRef(function ChartArea({
   useEffect(() => {
     if (!selectedSymbolStr || !selectedTimeframe) return;
 
-    const POLL_INTERVAL_MS = 800;
-    const THROTTLE_MS = 150;
+    const POLL_INTERVAL_MS = 250;
+    const THROTTLE_MS = 120;
 
     const intervalId = setInterval(() => {
       const s = seriesRef.current;
@@ -5186,7 +5178,12 @@ const ChartArea = forwardRef(function ChartArea({
       const tfSec = timeframeToSeconds(selectedTimeframe);
       const nowAligned = alignToTimeframe(Math.floor(Date.now() / 1000), tfSec);
       const lastHist = lastHistTimeRef.current || 0;
-      if (lastHist && (nowAligned - lastHist) > tfSec * 5) return;
+      // Don't hard-stop updates if history is stale; keep chart responsive with live ticks.
+      // This is especially important for forex feeds where initial history and live stream
+      // timestamps may temporarily drift.
+      if (lastHist && (nowAligned - lastHist) > tfSec * 5) {
+        // keep going with the aligned current time
+      }
       const barTime = nowAligned;
       const existing = candlesMapRef.current.get(barTime);
       const open = existing ? existing.open : price;

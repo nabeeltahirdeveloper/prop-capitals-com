@@ -75,6 +75,35 @@ export function PriceProvider({ children, currentPathname = null }) {
   const authStatusRef = useRef(authStatus); // Track current auth status for polling checks
   const locationRef = useRef(getCurrentPathname()); // Track current location for polling checks
 
+  const resolvePriceData = useCallback(
+    (symbol) => {
+      if (!symbol) return null;
+
+      const raw = String(symbol).trim();
+      const upper = raw.toUpperCase();
+      const compact = upper.replace(/[^A-Z]/g, "");
+      const compactUsd = compact.replace(/USDT$/, "USD");
+      const candidates = [
+        raw,
+        upper,
+        compact,
+        compactUsd,
+        compact.length === 6 ? `${compact.slice(0, 3)}/${compact.slice(3)}` : null,
+        compactUsd.length === 6
+          ? `${compactUsd.slice(0, 3)}/${compactUsd.slice(3)}`
+          : null,
+        compact.endsWith("USDT") ? `${compact.slice(0, -4)}/USDT` : null,
+        compact.endsWith("USDT") ? `${compact.slice(0, -4)}/USD` : null,
+      ].filter(Boolean);
+
+      for (const key of candidates) {
+        if (prices[key]) return prices[key];
+      }
+      return null;
+    },
+    [prices]
+  );
+
   /**
    * Calculate exponential backoff delay
    */
@@ -521,7 +550,7 @@ export function PriceProvider({ children, currentPathname = null }) {
    */
   const getPrice = useCallback(
     (symbol, side = "bid") => {
-      const priceData = prices[symbol];
+      const priceData = resolvePriceData(symbol);
       if (!priceData) return null;
 
       switch (side) {
@@ -535,7 +564,7 @@ export function PriceProvider({ children, currentPathname = null }) {
           return priceData.bid;
       }
     },
-    [prices]
+    [resolvePriceData]
   );
 
   /**

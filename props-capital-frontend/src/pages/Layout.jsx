@@ -126,68 +126,6 @@ export default function Layout({ children, currentPageName }) {
 
   const currentUser = authUser;
 
-  // Notifications
-  const { data: allNotificationsData = [] } = useQuery({
-    queryKey: ["notifications", currentUser?.userId],
-    queryFn: async () => {
-      if (!currentUser?.userId) return [];
-      try {
-        return await getUserNotifications(currentUser.userId);
-      } catch (error) {
-        console.error("Failed to fetch notifications:", error);
-        return [];
-      }
-    },
-    enabled: !!currentUser?.userId,
-    retry: false,
-    refetchInterval: 5000,
-  });
-
-  const markAsReadMutation = useMutation({
-    mutationFn: (id) => markNotificationAsRead(id),
-    onSuccess: (_, id) => {
-      queryClient.setQueryData(
-        ["notifications", currentUser?.userId],
-        (oldData = []) =>
-          oldData.map((n) => (n.id === id ? { ...n, read: true } : n)),
-      );
-      queryClient.invalidateQueries({
-        queryKey: ["notifications", currentUser?.userId],
-      });
-    },
-    onError: (error) => {
-      console.error("Failed to mark notification as read:", error);
-      queryClient.invalidateQueries({
-        queryKey: ["notifications", currentUser?.userId],
-      });
-    },
-  });
-
-  // Header dropdown: unread on top, then by date (newest first). If no unread, show latest.
-  const notificationsForDropdown = (allNotificationsData || [])
-    .slice()
-    .sort((a, b) => {
-      if (a.read !== b.read) return a.read ? 1 : -1; // unread first
-      return (
-        new Date(b.createdAt || 0).getTime() -
-        new Date(a.createdAt || 0).getTime()
-      );
-    })
-    .slice(0, 5)
-    .map((n) => {
-      const translated = translateNotification(n.title, n.body, t);
-      return {
-        id: n.id,
-        title: translated.title,
-        message: translated.message,
-        read: !!n.read,
-      };
-    });
-  const notifications = notificationsForDropdown;
-  const unreadNotificationCount = (allNotificationsData || []).filter(
-    (n) => !n.read,
-  ).length;
-
   const traderNavItems = useMemo(
     () => [
       {

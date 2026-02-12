@@ -163,7 +163,7 @@ const initialSymbols = [
   },
 ];
 
-export default function MarketWatchlist({ onSymbolSelect, selectedSymbol }) {
+export default function MarketWatchlist({ onSymbolSelect, selectedSymbol, headless = false }) {
   const { t } = useTranslation();
   const {
     prices: unifiedPrices,
@@ -292,169 +292,223 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol }) {
     return price.toFixed(5);
   };
 
-  return (
-    <Card className={`min-h-0 flex flex-col ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
-      <div className={`p-3 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
-        {/* Connection Status */}
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-1.5">
-            {connectionStatus === "connected" ? (
-              <>
-                <Wifi className="w-3 h-3 text-emerald-400" />
-                <span className="text-[10px] text-emerald-400">
-                  {t("terminal.watchlist.live")}
-                </span>
-              </>
-            ) : connectionStatus === "reconnecting" ? (
-              <>
-                <Loader2 className="w-3 h-3 text-amber-400 animate-spin" />
-                <span className="text-[10px] text-amber-400">
-                  {t("terminal.watchlist.reconnecting", "Reconnecting")} (
-                  {failedAttempts}/{maxReconnectAttempts})
-                </span>
-              </>
-            ) : (
-              <>
-                <WifiOff className="w-3 h-3 text-red-400" />
-                <span className="text-[10px] text-red-400">
-                  {t("terminal.watchlist.offline")}
-                </span>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={handleRetry}
-                  disabled={isRetrying}
-                  className="h-5 px-1.5 ml-1 text-[10px] text-amber-400 hover:text-amber-300 hover:bg-amber-500/10"
-                >
-                  {isRetrying ? (
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                  ) : (
-                    <RefreshCw className="w-3 h-3" />
-                  )}
-                  <span className="ml-1">
-                    {t("terminal.watchlist.retry", "Retry")}
-                    
-                  </span>
-                </Button>
-              </>
+  const content = (
+    <div className="flex flex-col h-full overflow-hidden">
+      <div
+        className={[
+          "sticky top-0 z-10",
+          "border-b border-border/60",
+          "backdrop-blur supports-[backdrop-filter]:bg-background/70",
+          "p-2.5",
+          isDark ? "bg-black/10" : "bg-white/70",
+        ].join(" ")}
+      >
+        {/* Status row */}
+        <div className="flex items-center justify-between mb-2 px-0.5">
+          <div className="flex items-center gap-2">
+            <span
+              className={[
+                "inline-flex items-center gap-1.5 rounded-full px-2 py-0.5",
+                "border text-[9px] font-black uppercase tracking-wide",
+                connectionStatus === "connected"
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600"
+                  : "border-red-500/30 bg-red-500/10 text-red-600",
+              ].join(" ")}
+            >
+              <span
+                className={[
+                  "h-1.5 w-1.5 rounded-full",
+                  connectionStatus === "connected" ? "bg-emerald-500" : "bg-red-500",
+                ].join(" ")}
+              />
+              {connectionStatus === "connected" ? "LIVE" : "OFFLINE"}
+            </span>
+
+            {lastUpdate && (
+              <span className="text-[9px] font-mono text-muted-foreground/70">
+                {new Date(lastUpdate).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                })}
+              </span>
             )}
           </div>
+
+          {/* optional tiny action area later (settings, etc.) */}
+          <div className="h-6 w-6" />
         </div>
 
-        <div className="relative mb-2">
-          <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/60" />
           <Input
             placeholder={t("terminal.watchlist.search")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className={`pl-8 text-xs h-8 ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'}`}
+            className={[
+              "h-8 pl-8 pr-2 text-[11px] font-medium",
+              "rounded-lg",
+              "bg-muted/40 border-border/60",
+              "focus-visible:ring-1 focus-visible:ring-emerald-500/40",
+              isDark ? "text-slate-100" : "text-slate-900",
+            ].join(" ")}
           />
         </div>
-        <div className="flex gap-1 overflow-x-auto ">
-          {categories.map((cat) => (
-            <Button
-              key={cat.id}
-              size="sm"
-              variant={activeCategory === cat.id ? "default" : "ghost"}
-              onClick={() => setActiveCategory(cat.id)}
-              className={`h-6 px-2 text-[10px] whitespace-nowrap ${activeCategory === cat.id
-                  ? "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30"
-                  : isDark ? "text-slate-400 hover:text-white hover:bg-slate-800" : "text-slate-500 hover:text-slate-900 hover:bg-slate-200"
-                }`}
-            >
-              {cat.label}
-            </Button>
-          ))}
+
+        {/* Tabs */}
+        <div className="mt-2 flex gap-1 overflow-x-auto no-scrollbar">
+          {categories.map((cat) => {
+            const active = activeCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={[
+                  "px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wide",
+                  "transition-all border",
+                  active
+                    ? "bg-emerald-500/12 text-emerald-600 border-emerald-500/25"
+                    : "bg-transparent border-transparent text-muted-foreground/70 hover:text-foreground hover:bg-muted/40",
+                ].join(" ")}
+              >
+                {cat.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Table with horizontal scroll */}
-      <div className="flex-1 overflow-x-auto overflow-y-auto">
-        {/* Table Header */}
-        <div className={`px-3 py-2 border-b min-w-[320px] ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
-          <div className={`flex items-center text-[10px] uppercase tracking-wider ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
-            <div className="w-[120px] min-w-[120px] flex-shrink-0">
-              {t("terminal.watchlist.symbol")}
-            </div>
-            <div className="w-[90px] min-w-[90px] text-right flex-shrink-0">
-              {t("terminal.watchlist.bid")}
-            </div>
-            <div className="w-[90px] min-w-[90px] text-right flex-shrink-0">
-              {t("terminal.watchlist.ask")}
-            </div>
-          </div>
-        </div>
-
-        <div className={`divide-y ${isDark ? 'divide-slate-800/50' : 'divide-slate-200'}`}>
-          {filteredSymbols.map((item) => (
-            <div
-              key={item.symbol}
-              onClick={() => onSymbolSelect?.(item)}
-              className={`px-3 py-2.5 flex items-center min-w-[320px] cursor-pointer transition-all ${isDark ? 'hover:bg-slate-800/50' : 'hover:bg-slate-100'} ${selectedSymbol?.symbol === item.symbol
-                  ? "bg-emerald-500/10 border-l-2 border-emerald-500"
-                  : ""
-                }`}
-            >
-              {/* Symbol Info */}
-              <div className="w-[120px] min-w-[120px] flex-shrink-0 flex items-center gap-2">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFavorite(item.symbol);
-                  }}
-                  className="flex-shrink-0"
-                >
-                  <Star
-                    className={`w-3 h-3 ${favorites.includes(item.symbol)
-                        ? "text-amber-400 fill-amber-400"
-                        : isDark ? "text-slate-600 hover:text-slate-400" : "text-slate-400 hover:text-slate-600"
-                      }`}
-                  />
-                </button>
-                <div className="min-w-0">
-                  <p className={`text-xs font-medium truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    {item.symbol}
-                  </p>
-                  <p className={`text-[10px] truncate ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
-                    {item.category}
-                  </p>
+      {/* Scrollable Table Section */}
+      <div className="flex-1 flex flex-col min-h-0 overflow-x-auto custom-pro-scrollbar">
+        <div className="min-w-[240px] flex flex-col h-full">
+          {/* Table Header - Synchronized and Compact */}
+          <div className="border-b border-border/60 bg-muted/20 flex-shrink-0">
+            <div className="flex items-center px-3 py-2">
+              <div className="flex-1 text-[9px] font-black uppercase tracking-widest text-muted-foreground/70">
+                {t("terminal.watchlist.symbol")}
+              </div>
+              <div className="flex gap-2 pr-1">
+                <div className="w-14 text-right text-[9px] font-black uppercase tracking-widest text-muted-foreground/70">
+                  BID
+                </div>
+                <div className="w-14 text-right text-[9px] font-black uppercase tracking-widest text-muted-foreground/70">
+                  ASK
                 </div>
               </div>
-
-              {/* Bid */}
-              <div
-                className={`w-[90px] min-w-[90px] text-right font-mono text-xs tabular-nums flex-shrink-0 ${item.direction === "up"
-                    ? "text-emerald-400"
-                    : item.direction === "down"
-                      ? "text-red-400"
-                      : isDark ? "text-white" : "text-slate-900"
-                  }`}
-              >
-                {formatPrice(item.bid, item.symbol)}
-              </div>
-
-              {/* Ask */}
-              <div
-                className={`w-[90px] min-w-[90px] text-right font-mono text-xs tabular-nums flex-shrink-0 ${item.direction === "up"
-                    ? "text-emerald-400"
-                    : item.direction === "down"
-                      ? "text-red-400"
-                      : isDark ? "text-white" : "text-slate-900"
-                  }`}
-              >
-                {formatPrice(item.ask, item.symbol)}
-              </div>
             </div>
-          ))}
+          </div>
+
+          {/* Symbols List - Full Scrollable Area */}
+          <div className="flex-1 overflow-y-auto custom-pro-scrollbar min-h-0">
+        <div className="divide-y divide-border/40">
+          {filteredSymbols.map((item, idx) => {
+            const selected = selectedSymbol?.symbol === item.symbol;
+
+            return (
+              <div
+                key={item.symbol}
+                onClick={() => onSymbolSelect?.(item)}
+                className={[
+                  "px-3 py-2 flex items-center cursor-pointer group",
+                  "transition-colors",
+                  !selected && (idx % 2 === 1 ? "bg-muted/[0.10]" : "bg-transparent"),
+                  selected
+                    ? "bg-emerald-500/8 border-l-2 border-emerald-500"
+                    : "hover:bg-muted/30",
+                ].join(" ")}
+              >
+                <div className="flex-1 min-w-0 flex items-center gap-2 overflow-hidden">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(item.symbol);
+                    }}
+                    className="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity"
+                    aria-label="favorite"
+                  >
+                    <Star
+                      className={[
+                        "w-3 h-3",
+                        favorites.includes(item.symbol)
+                          ? "text-amber-400 fill-amber-400"
+                          : "text-muted-foreground/70",
+                      ].join(" ")}
+                    />
+                  </button>
+
+                  <div className="min-w-0 flex items-center gap-2">
+                    <span
+                      className={[
+                        "text-[11px] font-black tracking-tight whitespace-nowrap",
+                        selected ? "text-emerald-600" : "text-foreground",
+                      ].join(" ")}
+                    >
+                      {item.symbol}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 text-right pr-1">
+                  <div
+                    className={[
+                      "w-14 font-mono text-[11px] font-black tabular-nums",
+                      item.direction === "up"
+                        ? "text-emerald-500"
+                        : item.direction === "down"
+                        ? "text-red-500"
+                        : "text-muted-foreground",
+                    ].join(" ")}
+                  >
+                    {formatPrice(item.bid, item.symbol)}
+                  </div>
+
+                  <div
+                    className={[
+                      "w-14 font-mono text-[11px] font-black tabular-nums",
+                      item.direction === "up"
+                        ? "text-emerald-500"
+                        : item.direction === "down"
+                        ? "text-red-500"
+                        : "text-muted-foreground",
+                    ].join(" ")}
+                  >
+                    {formatPrice(item.ask, item.symbol)}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {filteredSymbols.length === 0 && (
+            <div className="py-10 text-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+              No results found
+            </div>
+          )}
+          </div>
         </div>
       </div>
+    </div>
+  </div>
+);
 
-      {lastUpdate && (
-        <div className={`px-3 py-1.5 border-t text-[9px] text-center ${isDark ? 'border-slate-800 text-slate-500' : 'border-slate-200 text-slate-500'}`}>
-          {t("terminal.watchlist.updated")}:{" "}
-          {new Date(lastUpdate).toLocaleTimeString()}
-        </div>
-      )}
+  if (headless) {
+    return (
+      <div className={`flex flex-col h-full bg-transparent overflow-hidden`}>
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <Card
+      className={[
+        "min-h-0 flex flex-col overflow-hidden",
+        "border border-border/60 shadow-sm",
+        isDark ? "bg-slate-950/40" : "bg-white",
+      ].join(" ")}
+    >
+      {content}
     </Card>
   );
 }

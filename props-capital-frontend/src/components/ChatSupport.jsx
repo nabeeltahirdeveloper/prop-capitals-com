@@ -1,11 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User, Minimize2, Maximize2, Loader2, UserCheck } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useChatSupportStore } from '@/lib/stores/chat-support.store';
 
 const ChatSupport = () => {
   const { isDark } = useTheme();
-  const [isOpen, setIsOpen] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false);
+  const isOpen = useChatSupportStore((state) => state.isOpen);
+  const isMinimized = useChatSupportStore((state) => state.isMinimized);
+  const openChat = useChatSupportStore((state) => state.openChat);
+  const closeChat = useChatSupportStore((state) => state.closeChat);
+  const toggleMinimized = useChatSupportStore((state) => state.toggleMinimized);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([
     {
@@ -151,8 +155,8 @@ const ChatSupport = () => {
       {/* Chat Toggle Button */}
       {!isOpen && (
         <button
-          onClick={() => setIsOpen(true)}
-          className="fixed bottom-24 right-4 sm:right-6 w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 transition-all hover:scale-110 z-50"
+          onClick={openChat}
+          className="fixed bottom-4 right-4 sm:right-6 w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 transition-all hover:scale-110 z-[9999]"
           data-testid="chat-toggle-button"
         >
           <MessageCircle className="w-7 h-7 text-[#0a0d12]" />
@@ -163,10 +167,10 @@ const ChatSupport = () => {
       {/* Chat Window - Fully Responsive */}
       {isOpen && (
         <div
-          className={`fixed z-50 shadow-2xl overflow-hidden transition-all duration-300 flex flex-col
+          className={`fixed z-[9999] shadow-2xl overflow-hidden transition-all duration-300 flex flex-col
             ${isMinimized
-              ? 'bottom-24 right-4 sm:right-6 w-[calc(100%-2rem)] sm:w-[380px] h-[56px] rounded-2xl'
-              : 'inset-4 sm:inset-auto sm:bottom-24 sm:right-6 sm:w-[400px] sm:h-[580px] sm:max-h-[calc(100vh-140px)] rounded-2xl'
+              ? 'bottom-28 right-4 sm:right-6 w-[calc(100%-2rem)] sm:w-[380px] h-[56px] rounded-2xl'
+              : 'inset-4 sm:inset-auto sm:bottom-28 sm:right-6 sm:w-[400px] sm:h-[580px] sm:max-h-[calc(100vh-140px)] rounded-2xl'
             }
             ${isDark ? 'bg-[#0d1117] border border-white/10' : 'bg-white border border-slate-200'}
           `}
@@ -195,14 +199,14 @@ const ChatSupport = () => {
             </div>
             <div className="flex items-center gap-1">
               <button
-                onClick={() => setIsMinimized(!isMinimized)}
+                onClick={toggleMinimized}
                 className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-white/10 text-gray-400' : 'hover:bg-slate-100 text-slate-500'}`}
                 data-testid="chat-minimize-button"
               >
                 {isMinimized ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
               </button>
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={closeChat}
                 className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-white/10 text-gray-400' : 'hover:bg-slate-100 text-slate-500'}`}
                 data-testid="chat-close-button"
               >

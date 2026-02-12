@@ -128,9 +128,9 @@ export default function AdminSupport() {
   });
 
   const priorityColors = {
-    low: 'bg-slate-500/20 text-slate-400',
-    medium: 'bg-amber-500/20 text-amber-400',
-    high: 'bg-red-500/20 text-red-400'
+    low: 'bg-muted text-muted-foreground border border-border',
+    medium: 'bg-amber-50 text-[#d97706] border border-amber-200',
+    high: 'bg-red-50 text-red-600 border border-red-200',
   };
 
   const columns = [
@@ -139,10 +139,10 @@ export default function AdminSupport() {
       accessorKey: 'subject',
       cell: (row) => (
         <div>
-          <p className="text-white font-medium">
+          <p className="text-foreground font-medium">
             {row.subjectKey ? t(`admin.support.subjects.${row.subjectKey}`, { defaultValue: row.subject }) : row.subject}
           </p>
-          <p className="text-xs text-slate-400">{row.user_id}</p>
+          <p className="text-xs text-muted-foreground">{row.user_id}</p>
         </div>
       )
     },
@@ -150,7 +150,7 @@ export default function AdminSupport() {
       header: t('admin.support.table.category'),
       accessorKey: 'category',
       cell: (row) => (
-        <span className="capitalize">
+        <span className="capitalize text-foreground">
           {t(`admin.support.category.${row.category}`, { defaultValue: row.category })}
         </span>
       )
@@ -159,7 +159,7 @@ export default function AdminSupport() {
       header: t('admin.support.table.priority'),
       accessorKey: 'priority',
       cell: (row) => (
-        <span className={`px-2 py-1 rounded text-xs font-medium capitalize ${priorityColors[row.priority]}`}>
+        <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${priorityColors[row.priority]}`}>
           {t(`admin.support.priority.${row.priority}`, { defaultValue: row.priority })}
         </span>
       )
@@ -187,7 +187,7 @@ export default function AdminSupport() {
           <Button
             size="sm"
             variant="ghost"
-            className="text-slate-400 hover:text-white"
+            className="text-muted-foreground hover:text-foreground"
             onClick={() => setSelectedTicket(row)}
           >
             <Eye className="w-4 h-4" />
@@ -196,7 +196,7 @@ export default function AdminSupport() {
             <Button
               size="sm"
               variant="ghost"
-              className="text-amber-400 hover:text-amber-300"
+              className="text-[#d97706] hover:text-amber-600"
               onClick={() => handleUpdateStatus(row, 'in_progress')}
             >
               {t('admin.support.actions.take')}
@@ -206,7 +206,7 @@ export default function AdminSupport() {
             <Button
               size="sm"
               variant="ghost"
-              className="text-emerald-400 hover:text-emerald-300"
+              className="text-emerald-500 hover:text-emerald-600"
               onClick={() => handleUpdateStatus(row, 'resolved')}
             >
               {t('admin.support.actions.resolve')}
@@ -227,8 +227,8 @@ export default function AdminSupport() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">{t('admin.support.title')}</h1>
-          <p className="text-sm sm:text-base text-slate-400">{t('admin.support.subtitle')}</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">{t('admin.support.title')}</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">{t('admin.support.subtitle')}</p>
         </div>
       </div>
 
@@ -244,7 +244,7 @@ export default function AdminSupport() {
           title={t('admin.support.stats.inProgress')}
           value={inProgressCount}
           icon={Clock}
-          gradient="from-amber-500 to-orange-500"
+          gradient="from-[#d97706] to-[#d97706]"
         />
         <StatsCard
           title={t('admin.support.stats.resolved')}
@@ -261,60 +261,61 @@ export default function AdminSupport() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
+      <Card className="bg-card border-border p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder={t('admin.support.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm"
+              className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
             />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-[150px] bg-slate-800 border-slate-700 text-white text-sm">
+            <SelectTrigger className="w-full sm:w-[150px] bg-muted border-border text-foreground text-sm">
               <SelectValue placeholder={t('admin.support.filter.status')} />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-700 text-white">
-              <SelectItem value="all" className="text-white">{t('admin.support.filter.allStatus')}</SelectItem>
-              <SelectItem value="open" className="text-white">{t('admin.support.filter.open')}</SelectItem>
-              <SelectItem value="in_progress" className="text-white">{t('admin.support.filter.inProgress')}</SelectItem>
-              <SelectItem value="resolved" className="text-white">{t('admin.support.filter.resolved')}</SelectItem>
-              <SelectItem value="closed" className="text-white">{t('admin.support.filter.closed')}</SelectItem>
+            <SelectContent className="bg-card border-border text-foreground">
+              <SelectItem value="all" className="text-foreground">{t('admin.support.filter.allStatus')}</SelectItem>
+              <SelectItem value="open" className="text-foreground">{t('admin.support.filter.open')}</SelectItem>
+              <SelectItem value="in_progress" className="text-foreground">{t('admin.support.filter.inProgress')}</SelectItem>
+              <SelectItem value="resolved" className="text-foreground">{t('admin.support.filter.resolved')}</SelectItem>
+              <SelectItem value="closed" className="text-foreground">{t('admin.support.filter.closed')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </Card>
 
       {/* Tickets Table */}
-      <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4 md:p-6">
+      <Card className="bg-card border-border p-3 sm:p-4 md:p-6">
         <DataTable
           columns={columns}
           data={filteredTickets}
           isLoading={isLoading}
           emptyMessage={t('admin.support.emptyMessage')}
+          variant="light"
         />
       </Card>
 
       {/* Ticket Detail Dialog */}
       <Dialog open={!!selectedTicket} onOpenChange={() => setSelectedTicket(null)}>
-        <DialogContent className="bg-slate-900 border-slate-800 w-[95vw] sm:w-full sm:max-w-2xl p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-card border-border w-[95vw] sm:w-full sm:max-w-2xl p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-white text-base sm:text-lg md:text-xl">{selectedTicket?.subject}</DialogTitle>
+            <DialogTitle className="text-foreground text-base sm:text-lg md:text-xl">{selectedTicket?.subject}</DialogTitle>
           </DialogHeader>
           {selectedTicket && (
             <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
               <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-                <span className="text-xs sm:text-sm text-slate-400">{t('admin.support.dialog.from')}: {selectedTicket.user_id}</span>
+                <span className="text-xs sm:text-sm text-muted-foreground">{t('admin.support.dialog.from')}: {selectedTicket.user_id}</span>
                 <StatusBadge status={selectedTicket.status} />
                 <span className={`px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs font-medium capitalize ${priorityColors[selectedTicket.priority]}`}>
                   {t(`admin.support.priority.${selectedTicket.priority}`, { defaultValue: selectedTicket.priority })}
                 </span>
               </div>
 
-              <div className="bg-slate-800/50 rounded-lg p-3 sm:p-4">
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{selectedTicket.message}</p>
+              <div className="bg-muted/60 rounded-lg p-3 sm:p-4">
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{selectedTicket.message}</p>
               </div>
 
               {selectedTicket.status !== 'closed' && (
@@ -323,18 +324,18 @@ export default function AdminSupport() {
                     placeholder={t('admin.support.dialog.writeResponse')}
                     value={response}
                     onChange={(e) => setResponse(e.target.value)}
-                    className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm min-h-[100px] sm:min-h-[120px]"
+                    className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm min-h-[100px] sm:min-h-[120px]"
                   />
                   <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     <Button
                       variant="outline"
-                      className="w-full sm:flex-1 border-slate-700 text-slate-300 hover:text-white order-2 sm:order-1 h-9 sm:h-11"
+                      className="w-full sm:flex-1 border-border text-foreground hover:bg-accent order-2 sm:order-1 h-9 sm:h-11"
                       onClick={() => setSelectedTicket(null)}
                     >
                       {t('admin.support.dialog.close')}
                     </Button>
                     <Button
-                      className="w-full sm:flex-1 bg-gradient-to-r from-emerald-500 to-cyan-500 order-1 sm:order-2 h-9 sm:h-11"
+                      className="w-full sm:flex-1 bg-gradient-to-r from-[#d97706] to-[#d97706] hover:from-amber-600 hover:to-amber-600 order-1 sm:order-2 h-9 sm:h-11 text-white"
                       onClick={handleSendResponse}
                       disabled={updateMutation.isPending}
                     >

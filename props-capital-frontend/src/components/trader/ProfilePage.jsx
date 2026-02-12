@@ -53,6 +53,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (user) {
+      const joinDate = user.profile?.joinDate || user.createdAt;
       setProfile({
         firstName: user.profile?.firstName || '-',
         lastName: user.profile?.lastName || '-',
@@ -61,10 +62,9 @@ const ProfilePage = () => {
         city: user.profile?.city || '-',
         country: user.profile?.country || '-',
         timezone: user.profile?.timezone || '-',
-        joinDate: user.profile?.joinDate || '-',
+        joinDate: joinDate ? formatDate(joinDate) : '-',
         tradingExperience: user.profile?.tradingExperience || '-',
         preferredPlatform: user.profile?.preferredPlatform || '-',
-        joinDate: formatDate(user.createdAt) || '-',
       });
     }
   }, [user]);
@@ -354,7 +354,7 @@ const ProfilePage = () => {
       )}
 
       {/* Security Section */}
-      <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
+      {/* <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
         <div className="flex items-center gap-2 mb-4">
           <Shield className={`w-5 h-5 ${isDark ? 'text-gray-400' : 'text-slate-500'}`} />
           <h2 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Security</h2>
@@ -373,7 +373,7 @@ const ProfilePage = () => {
             Enabled
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 
 import { UsersService } from '../users/users.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -9,6 +10,8 @@ import { ConfigService } from '@nestjs/config';
 
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
+import type { JwtPayload, PlatformJwtPayload } from './types';
+import { generatePassword } from 'src/utils/generate-password.util';
 
 @Injectable()
 
@@ -157,7 +160,7 @@ export class AuthService {
 
     await this.prisma.signupOtp.delete({ where: { email } }).catch(() => undefined);
 
-    const token = await this.jwtService.signAsync({
+    const token = await this.jwtService.signAsync<JwtPayload>({
       sub: user.id,
       email: user.email,
       role: user.role,
@@ -235,7 +238,7 @@ export class AuthService {
 
     const user = await this.validateUser(data.email, data.password);
 
-    const token = await this.jwtService.signAsync({
+    const token = await this.jwtService.signAsync<JwtPayload>({
 
       sub: user.id,
 
@@ -395,8 +398,8 @@ export class AuthService {
     const emailResult = await this.emailService.sendPasswordResetOtp(email, otp);
 
     if (!emailResult.success) {
-      // Log error but generally return success to user for security, 
-      // UNLESS needed for debugging. Given the user's issue, 
+      // Log error but generally return success to user for security,
+      // UNLESS needed for debugging. Given the user's issue,
       // if it fails we might want to throw to let them know config is wrong.
       console.error(`Failed to send reset OTP: ${emailResult.error}`);
       throw new BadRequestException('Failed to send email. Please contact support.');
@@ -437,6 +440,103 @@ export class AuthService {
 
 
 
+  async processPlatformLogin(
+    user: JwtPayload,
+    accountId: string,
+    email: string,
+    password: string,
+  ) {
+    const account = await this.prisma.tradingAccount.findUnique({
+      where: { id: accountId },
+      select: {
+        platformEmail: true,
+        platformHashedPassword: true,
+      },
+    });
 
+    if (!account) throw new BadRequestException("Account doesn't exist");
 
+    if (email !== account.platformEmail)
+      throw new BadRequestException('Invalid email');
+
+    const passMatch = await bcrypt.compare(
+      password,
+      account.platformHashedPassword as string,
+    );
+
+    if (!passMatch) throw new BadRequestException('Invalid password');
+
+    const newSessionId = uuidv4();
+
+    const token = await this.jwtService.signAsync<PlatformJwtPayload>({
+      userId: user.sub,
+      accountId,
+      sessionId: newSessionId,
+    });
+
+    await this.prisma.tradingAccount.update({
+      where: { id: accountId },
+      data: {
+        platformSessionId: newSessionId,
+      },
+    });
+
+    return {
+      platformToken: token,
+    };
+  }
+
+  async validatePlatformAccess(
+    user: JwtPayload,
+    accountId: string,
+    platformToken: string,
+  ) {
+    let validated: PlatformJwtPayload;
+    try {
+      validated =
+        await this.jwtService.verifyAsync<PlatformJwtPayload>(platformToken);
+    } catch (e) {
+      throw new UnauthorizedException(
+        'Invalid or expired platform access. Please login again'
+      );
+    }
+
+    if (validated.userId !== user.sub || validated.accountId !== accountId)
+      throw new UnauthorizedException('Invalid platform token');
+  }
+
+  async resetPlatformPassword(user: JwtPayload, accountId: string) {
+    const account = await this.prisma.tradingAccount.findUnique({
+      where: { id: accountId },
+      select: {
+        id: true,
+        platformEmail: true,
+        platform: true,
+      },
+    });
+
+    if (!account) throw new BadRequestException("Account doesn't exist");
+
+    const newPassword = generatePassword(20);
+    const hash = await bcrypt.hash(newPassword, 10);
+
+    await this.prisma.tradingAccount.update({
+      where: { id: accountId },
+      data: {
+        platformHashedPassword: hash,
+      },
+    });
+
+    await this.emailService.sendPlatformAccountCredentials(
+      user.email,
+      account.platformEmail as string,
+      newPassword,
+      account,
+      'password-reset',
+    );
+
+    return {
+      message: 'Email with new credentials sent',
+    };
+  }
 }

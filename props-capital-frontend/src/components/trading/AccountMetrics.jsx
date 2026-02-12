@@ -1,4 +1,3 @@
-import React from "react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -26,38 +25,26 @@ export default function AccountMetrics({
 }) {
   const { t } = useTranslation();
 
-  const accountId = account?.id || "";
-
-  // ✅ ALL values come directly from account props (backend is single source of truth)
-  // No local display states, no intervals, no frontend calculations
-  // Backend updates these via processPriceTick (50ms) and syncAccountFromBackend
   const displayEquity = account?.equity ?? 0;
   const displayFloatingPnL = account?.floatingPnL ?? 0;
   const displayDailyDrawdown = account?.dailyDrawdown ?? 0;
   const displayOverallDrawdown = account?.overallDrawdown ?? 0;
 
-  // Colors derived directly from props
   const equityColor = displayEquity >= (account?.balance ?? 0) ? "text-emerald-400" : "text-red-400";
   const floatingPnLColor = displayFloatingPnL >= 0 ? "text-emerald-400" : "text-red-400";
 
   const {
-    balance = 100000,
-    equity = 100850,
-    margin = 0, // Use backend value
-    freeMargin = 100000, // Use backend value
-    floatingPnL = 850,
-    profitPercent = 0.85,
-    realizedProfitPercent = 0, // ✅ Added from earliest version
-    liveProfitPercent = 0, // ✅ Added from earliest version
-    profitForTarget = 0, // ✅ Added from earliest version
+    margin = 0,
+    freeMargin = 100000,
+    profitForTarget = 0,
     dailyDrawdown = 0,
     maxDailyDrawdown = 5,
     overallDrawdown = 3.5,
     maxOverallDrawdown = 10,
     profitTarget = 10,
-    tradingDays = 0, // Use backend value
-    minTradingDays = 5, // Use backend value
-    daysRemaining = 0, // Use backend value
+    tradingDays = 0,
+    minTradingDays = 5,
+    daysRemaining = 0,
     phase = "phase1",
     status = "active",
   } = account || {};
@@ -72,8 +59,6 @@ export default function AccountMetrics({
   const isDisqualified =
     statusUpper.includes("FAIL") || statusUpper.includes("DISQUAL");
 
-  // ✅ Backend DD values are already monotonic (tracked via minEquityToday/minEquityOverall)
-  // When violated, show 100% on the progress bar; use the backend DD value for the label
   const dailyDDUsage = isDailyLocked
     ? 100
     : (displayDailyDrawdown / maxDailyDrawdown) * 100;
@@ -81,31 +66,20 @@ export default function AccountMetrics({
     ? 100
     : (displayOverallDrawdown / maxOverallDrawdown) * 100;
 
-  // Display values for labels
-  const displayDailyDrawdownFinal = displayDailyDrawdown;
-  const displayOverallDrawdownFinal = displayOverallDrawdown;
-
-  // ✅ Profit progress calculation from earliest version
   const profitProgress = (profitForTarget / profitTarget) * 100;
 
-  // Determine challenge status - show failed banner for DAILY_LOCKED and DISQUALIFIED/FAILED
-  const statusUpperForFailed = String(status || "").toUpperCase();
   const isFailed =
     status === "failed" ||
     phase === "failed" ||
-    statusUpperForFailed.includes("FAIL") ||
-    statusUpperForFailed.includes("DISQUAL") ||
-    statusUpperForFailed.includes("DAILY");
+    statusUpper.includes("FAIL") ||
+    statusUpper.includes("DISQUAL") ||
+    statusUpper.includes("DAILY");
   const isFunded = phase === "funded" || phase === "FUNDED";
   const isPhase2 = phase === "phase2" || phase === "PHASE2";
   const isPhase1 = phase === "phase1" || phase === "PHASE1";
 
-  // ✅ Check if Phase 1 requirements are met (use profitForTarget from earliest version)
   const phase1ProfitMet = profitForTarget >= profitTarget;
-  // const phase1ProfitMet = displayProfitPercent >= profitTarget;
   const phase1TradingDaysMet = tradingDays >= minTradingDays;
-  // If account is locked/failed/disqualified, no requirement should show as "met"
-  // The challenge is over — showing green checkmarks on a failed account is misleading
   const phase1DailyDDMet = !isLocked && dailyDrawdown < maxDailyDrawdown;
   const phase1OverallDDMet = !isLocked && overallDrawdown < maxOverallDrawdown;
   const phase1Passed =
@@ -155,46 +129,21 @@ export default function AccountMetrics({
     };
   };
 
-  const getProfitStatus = (displayProfitPercent, profitTarget, progress) => {
-    // If profit is negative, it's loss
-    if (displayProfitPercent > 0)
-      // console.log(profitPercent)
-      return { color: "text-red-400", bg: "bg-red-500", statusKey: "safe" };
-    // If target is reached, it's reached
+  const getProfitStatus = (displayProfitPercent, progress) => {
+    if (displayProfitPercent < 0)
+      return { color: "text-red-400", bg: "bg-red-500", statusKey: "loss" };
     if (progress >= 100)
-      return {
-        color: "text-emerald-400",
-        bg: "bg-emerald-500",
-        statusKey: "reached",
-      };
-    // If progress is good (>= 70%), it's safe
+      return { color: "text-emerald-400", bg: "bg-emerald-500", statusKey: "reached" };
     if (progress >= 70)
-      return {
-        color: "text-emerald-400",
-        bg: "bg-emerald-500",
-        statusKey: "safe",
-      };
-    // If progress is moderate (>= 30%), it's warning
+      return { color: "text-emerald-400", bg: "bg-emerald-500", statusKey: "safe" };
     if (progress >= 30)
-      return {
-        color: "text-amber-400",
-        bg: "bg-amber-500",
-        statusKey: "warning",
-      };
-
-    // If progress is low (< 30%), it's danger
+      return { color: "text-amber-400", bg: "bg-amber-500", statusKey: "warning" };
     return { color: "text-red-400", bg: "bg-red-500", statusKey: "danger" };
   };
 
-  // ✅ Use account.margin and account.freeMargin directly from backend (calculated in TradingTerminal)
-
   const dailyStatus = getDDStatus(dailyDDUsage);
   const overallStatus = getDDStatus(overallDDUsage);
-  const profitStatus = getProfitStatus(
-    profitForTarget, // ✅ Use profitForTarget from earliest version
-    profitTarget,
-    profitProgress,
-  );
+  const profitStatus = getProfitStatus(profitForTarget, profitProgress);
 
   return (
     <div className="space-y-3">
@@ -314,8 +263,9 @@ export default function AccountMetrics({
           </h3>
         </div>
 
-        {/* RESPONSIVE CONTAINER */}
-        <div className="flex flex-col md:flex-row items-center md:justify-between gap-4">
+        {/* RESPONSIVE CONTAINER with horizontal scroll on small tablets */}
+        <div className="overflow-x-auto pb-2 custom-scrollbar">
+          <div className="flex flex-col md:flex-row items-center md:justify-between gap-4 min-w-0 md:min-w-[600px] lg:min-w-0">
           {/* Phase 1 */}
           <div
             className={`w-full md:flex-1 p-3 rounded-lg border-2 transition-all
@@ -459,10 +409,11 @@ export default function AccountMetrics({
             )}
           </div>
         </div>
+      </div>
       </Card>
 
       {/* Main Stats Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="bg-slate-900 border-slate-800 p-2 sm:p-3">
           <div className="flex items-center gap-1 mb-1">
             <Wallet className="w-3 h-3 text-slate-400" />
@@ -473,70 +424,10 @@ export default function AccountMetrics({
           {isLoading ? (
             <Skeleton className="h-6 w-24 bg-slate-800" />
           ) : (
-            <>
-              <div className="text-sm sm:text-lg font-bold text-white font-mono">
-                {/* Balance is static - only updates when trades close (backend-controlled) */}
-                ${account?.balance?.toFixed(2) || "0.00"}
-              </div>
-
-              {/* {(realTimeMargin > 0 || positions?.length > 0) && (
-      <div className="mt-1 pt-1 border-t border-slate-700">
-        <p className="text-[9px] text-red-400">
-          -${realTimeMargin.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}{" "}
-          {t("terminal.accountMetrics.used")}
-        </p>
-        <p className="text-[9px] text-emerald-400">
-          ${realTimeFreeMargin.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}{" "}
-          {t("terminal.accountMetrics.free")}
-        </p>
-      </div>
-    )} */}
-            </>
+            <div className="text-sm sm:text-lg font-bold text-white font-mono">
+              ${account?.balance?.toFixed(2) || "0.00"}
+            </div>
           )}
-          {/* {isLoading ? (
-            <Skeleton className="h-6 w-24 bg-slate-800" />
-          ) : (
-            <> */}
-          {/* ${account.balance.toFixed(2)} */}
-          {/* {positionsWithPnL.map((position) => (
-              <p className="text-sm sm:text-lg font-bold text-white font-mono"> 
-<PnlDisplay
-  pnl={position.pnl}
-  priceChange={position.priceChange}
-  isForex={position.isForex}
-  isCrypto={position.isCrypto}
-  size="default"
-/>
-
-</p>
-} */}
-
-          {/* {(realTimeMargin > 0 || positions?.length > 0) && (
-  <div className="mt-1 pt-1 border-t border-slate-700">
-  <p className="text-[9px] text-red-400">
-                    -$
-                    {realTimeMargin.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}{" "}
-                    {t("terminal.accountMetrics.used")}
-                  </p>
-                  <p className="text-[9px] text-emerald-400">
-                    $
-                    {realTimeFreeMargin.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                      })}{" "}
-                      {t("terminal.accountMetrics.free")}
-                      </p>
-                      </div>
-                      )} */}
         </Card>
 
         <Card className="bg-slate-900 border-slate-800 p-2 sm:p-3">
@@ -552,7 +443,6 @@ export default function AccountMetrics({
             <p
               className={`text-sm sm:text-lg font-bold font-mono ${equityColor}`}
             >
-              {/* ✅ Use account.equity directly with 2 decimal places for consistency */}
               ${displayEquity?.toFixed(2) || "0.00"}
             </p>
           )}
@@ -577,8 +467,6 @@ export default function AccountMetrics({
           )}
         </Card>
 
-        {/* floating pNl */}
-
         <Card className="bg-slate-900 border-slate-800 p-2 sm:p-3">
           <div className="flex items-center gap-1 mb-1">
             <BarChart2 className="w-3 h-3 text-slate-400" />
@@ -590,7 +478,6 @@ export default function AccountMetrics({
             <Skeleton className="h-6 w-16 bg-slate-800" />
           ) : (
             <p className={`text-sm sm:text-lg font-bold font-mono ${profitForTarget >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-              {/* ✅ Show total profit (realized + live) - matches Profit Target */}
               {profitForTarget >= 0 ? "+" : ""}{profitForTarget.toFixed(2)}%
             </p>
           )}
@@ -652,7 +539,6 @@ export default function AccountMetrics({
               />
               <div className="flex justify-between mt-2 text-xs">
                 <span className="text-emerald-400">
-                  {/* ✅ Show profitForTarget from earliest version */}
                   {profitForTarget.toFixed(2)}% {phase1ProfitMet && "✓"}
                 </span>
 
@@ -723,7 +609,7 @@ export default function AccountMetrics({
                   }
                 >
                   {t("terminal.accountMetrics.loss")}:{" "}
-                  {displayDailyDrawdownFinal.toFixed(2)}%{" "}
+                  {displayDailyDrawdown.toFixed(2)}%{" "}
                   {phase1DailyDDMet && "✓"}
                 </span>
                 <span className="text-slate-400">
@@ -792,7 +678,7 @@ export default function AccountMetrics({
                       : overallStatus.color
                   }
                 >
-                  {displayOverallDrawdownFinal.toFixed(2)}%{" "}
+                  {displayOverallDrawdown.toFixed(2)}%{" "}
                   {phase1OverallDDMet && "✓"}
                 </span>
                 <span className="text-slate-400">
@@ -814,7 +700,7 @@ export default function AccountMetrics({
             <Skeleton className="h-4 w-20 bg-slate-700" />
           ) : (
             <p className="text-white font-mono text-sm">
-              {/* ✅ Use account.margin directly from backend */}$
+              $
               {margin.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
@@ -830,7 +716,7 @@ export default function AccountMetrics({
             <Skeleton className="h-4 w-20 bg-slate-700" />
           ) : (
             <p className="text-white font-mono text-sm">
-              {/* ✅ Use account.freeMargin directly from backend */}$
+              $
               {freeMargin.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,

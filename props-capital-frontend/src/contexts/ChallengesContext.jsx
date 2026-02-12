@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getUserAccounts } from '@/api/accounts';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTraderAccountsStore } from '@/lib/stores/trader-accounts.store';
 
 const ChallengesContext = createContext();
 
@@ -261,8 +262,13 @@ export const challengeTypes = {
 export const ChallengesProvider = ({ children }) => {
   const { user, status } = useAuth();
   const [challenges, setChallenges] = useState([]);
-  const [selectedChallengeId, setSelectedChallengeId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const selectedChallengeId = useTraderAccountsStore((state) =>
+    user?.userId ? state.selectedChallengeIds?.[user.userId] : null
+  );
+  const setStoredSelectedChallengeId = useTraderAccountsStore(
+    (state) => state.setSelectedChallengeId
+  );
 
   // Fetch real user accounts from backend
   useEffect(() => {
@@ -276,23 +282,34 @@ export const ChallengesProvider = ({ children }) => {
       try {
         setLoading(true);
         const accounts = await getUserAccounts(user.userId);
-        
+
         if (Array.isArray(accounts) && accounts.length > 0) {
           // Transform backend accounts to challenge format
           const transformedChallenges = accounts.map(account => {
             const challenge = account.challenge || {};
             const phaseLabel = account.phase === 'PHASE1' ? 1 : account.phase === 'PHASE2' ? 2 : 'funded';
             const challengeType = challenge.challengeType === 'one_phase' ? '1-step' : '2-step';
+
+            const backendStatus = String(account.status || '').toUpperCase();
+            const uiStatus =
+              backendStatus === 'ACTIVE'
+                ? 'active'
+                : (backendStatus === 'DISQUALIFIED' || backendStatus === 'FAILED')
+                  ? 'failed'
+                  : 'inactive';
             
-            // Calculate stats
-            const currentProfit = ((account.balance - account.initialBalance) / account.initialBalance) * 100;
-            const currentDrawdown = account.maxEquityToDate 
-              ? ((account.maxEquityToDate - account.equity) / account.maxEquityToDate) * 100 
-              : 0;
-            
-            // Get today's loss
-            const todayStartEquity = account.todayStartEquity || account.initialBalance;
-            const currentDailyLoss = ((todayStartEquity - account.equity) / todayStartEquity) * 100;
+            // Use backend values (single source of truth — monotonic metrics)
+            const initialBalance = account.initialBalance || 1;
+            const maxEquity = account.maxEquityToDate || initialBalance;
+            const minEquityOverall = account.minEquityOverall || initialBalance;
+            const minEquityToday = account.minEquityToday || initialBalance;
+            const todayStart = account.todayStartEquity || initialBalance;
+            const tradingDaysCurrent = Number.isFinite(account.tradingDaysCount) ? account.tradingDaysCount : 0;
+            const tradingDaysRequired = challenge.minTradingDays || 5;
+
+            const currentProfit = ((maxEquity - initialBalance) / initialBalance) * 100;
+            const currentDrawdown = ((initialBalance - minEquityOverall) / initialBalance) * 100;
+            const currentDailyLoss = ((todayStart - minEquityToday) / todayStart) * 100;
 
             return {
               id: account.id,
@@ -302,37 +319,44 @@ export const ChallengesProvider = ({ children }) => {
               currentBalance: account.balance || 0,
               equity: account.equity || 0,
               phase: phaseLabel,
-              status: account.status === 'ACTIVE' ? 'active' : account.status === 'FAILED' ? 'failed' : 'inactive',
+              status: uiStatus,
+              backendStatus,
               platform: (account.platform || challenge.platform || 'MT5').toLowerCase(),
               server: 'PropCapitals-Live',
               createdAt: account.createdAt,
-              tradingDays: { 
-                current: 0, // Would need to calculate from trades
-                required: challenge.minTradingDays || 5 
+              tradingDays: {
+                current: tradingDaysCurrent,
+                required: tradingDaysRequired
               },
               rules: {
                 profitTarget: phaseLabel === 1 ? challenge.phase1TargetPercent : challenge.phase2TargetPercent || challenge.phase1TargetPercent,
                 maxDailyLoss: challenge.dailyDrawdownPercent || 5,
                 maxTotalDrawdown: challenge.overallDrawdownPercent || 10,
-                minTradingDays: challenge.minTradingDays || 5,
+                minTradingDays: tradingDaysRequired,
               },
               stats: {
-                currentProfit: Math.max(currentProfit, 0),
-                currentDailyLoss: Math.max(currentDailyLoss, 0),
-                currentDrawdown: Math.max(currentDrawdown, 0),
-                totalTrades: 0, // Would need to get from trades API
-                winRate: 0,
-                avgRR: 0,
+                currentProfit: Math.max(0, currentProfit),
+                currentDailyLoss: Math.max(0, currentDailyLoss),
+                currentDrawdown: Math.max(0, currentDrawdown),
+                totalTrades: account.totalTrades || 0,
+                winRate: account.winRate || 0,
+                avgRR: account.avgRR || 0,
               },
               profitSplit: phaseLabel === 'funded' ? challenge.profitSplit : null,
-              payoutEligible: phaseLabel === 'funded' && account.status === 'ACTIVE',
+              payoutEligible: phaseLabel === 'funded' && backendStatus === 'ACTIVE',
               totalPaidOut: 0,
             };
           });
 
           setChallenges(transformedChallenges);
-          if (!selectedChallengeId && transformedChallenges.length > 0) {
-            setSelectedChallengeId(transformedChallenges[0].id);
+          const storedSelectedChallengeId =
+            useTraderAccountsStore.getState().selectedChallengeIds?.[user.userId];
+          const hasStoredSelection = transformedChallenges.some(
+            (challenge) => challenge.id === storedSelectedChallengeId
+          );
+
+          if (!hasStoredSelection) {
+            setStoredSelectedChallengeId(user.userId, transformedChallenges[0].id);
           }
         } else {
           setChallenges([]);
@@ -346,12 +370,13 @@ export const ChallengesProvider = ({ children }) => {
     };
 
     fetchUserChallenges();
-  }, [user?.userId, status, selectedChallengeId]);
+  }, [user?.userId, status, setStoredSelectedChallengeId]);
 
   const selectedChallenge = challenges.find(c => c.id === selectedChallengeId) || challenges[0];
 
   const selectChallenge = (challengeId) => {
-    setSelectedChallengeId(challengeId);
+    if (!user?.userId || !challengeId) return;
+    setStoredSelectedChallengeId(user.userId, challengeId);
   };
 
   // Update challenge balance (for demo payout flow)
@@ -400,6 +425,8 @@ export const ChallengesProvider = ({ children }) => {
 
   const getRuleCompliance = (challenge) => {
     const { stats, rules } = challenge;
+    const tradingDaysCurrent = challenge?.tradingDays?.current || 0;
+    const tradingDaysRequired = challenge?.tradingDays?.required || rules?.minTradingDays || 5;
     return {
       profitTarget: {
         current: stats.currentProfit,
@@ -422,10 +449,10 @@ export const ChallengesProvider = ({ children }) => {
         percentage: (stats.currentDrawdown / rules.maxTotalDrawdown) * 100,
       },
       tradingDays: {
-        current: challenge.tradingDays.current,
-        required: challenge.tradingDays.required,
-        status: challenge.tradingDays.current >= challenge.tradingDays.required ? 'passed' : 'in-progress',
-        percentage: Math.min((challenge.tradingDays.current / challenge.tradingDays.required) * 100, 100),
+        current: tradingDaysCurrent,
+        required: tradingDaysRequired,
+        status: tradingDaysCurrent >= tradingDaysRequired ? 'passed' : 'in-progress',
+        percentage: Math.min((tradingDaysCurrent / tradingDaysRequired) * 100, 100),
       },
     };
   };
