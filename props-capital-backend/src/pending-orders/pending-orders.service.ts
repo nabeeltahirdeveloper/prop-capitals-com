@@ -101,7 +101,9 @@ export class PendingOrdersService {
     }
 
     // Re-check account status before execution
-    const accountStatus = pendingOrder.tradingAccount?.status;
+    const tradingAccount = await this.tradingAccountService.findById(pendingOrder.tradingAccountId);
+
+    const accountStatus = tradingAccount?.status;
     if (accountStatus === ('DAILY_LOCKED' as any)) {
       throw new BadRequestException('Daily loss limit reached. Trading locked until tomorrow.');
     }
