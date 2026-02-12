@@ -101,7 +101,9 @@ export class PendingOrdersService {
     }
 
     // Re-check account status before execution
-    const tradingAccount = await this.tradingAccountService.findById(pendingOrder.tradingAccountId);
+    const tradingAccount = await this.prisma.tradingAccount.findUnique({
+      where: { id: pendingOrder.tradingAccountId },
+    });
 
     const accountStatus = tradingAccount?.status;
     if (accountStatus === ('DAILY_LOCKED' as any)) {
