@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/economic-calendar': 'http://localhost:5002'
+      '/economic-calendar': 'http://localhost:5101'
     },
     allowedHosts: true
   },
