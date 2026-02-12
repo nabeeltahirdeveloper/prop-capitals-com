@@ -374,7 +374,7 @@ const TraderPanelLayoutInner = () => {
           </nav>
 
           {/* Bottom Section - Language Only */}
-          <div className={`absolute bottom-0 left-0 right-0 p-4 border-t ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
+          {/* <div className={`absolute bottom-0 left-0 right-0 p-4 border-t ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
             <div className={`flex items-center gap-3 px-3 py-2.5 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
               <Globe className="w-5 h-5" />
               {!sidebarCollapsed && (
@@ -384,7 +384,7 @@ const TraderPanelLayoutInner = () => {
                 </div>
               )}
             </div>
-          </div>
+          </div>*/}
         </aside>
 
        {/* Main Content */}
@@ -535,23 +535,23 @@ const TraderPanelLayoutInner = () => {
               </div>
             </div>
 
+
             <div className="flex items-center gap-2 sm:gap-4">
-              <span className={`hidden md:block text-xs sm:text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
+            {/* <span className={`hidden md:block text-xs sm:text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
                 Last Updated: {lastRefresh.toLocaleString()}
-              </span>
+              </span> */}
 
-              {/* Theme Toggle */}
-              <button
-                onClick={toggleTheme}
-                className={`p-2 rounded-lg transition-all ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'
-                  }`}
-                title="Toggle theme"
-              >
-                {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </button>
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-lg transition-all ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'
+                }`}
+              title="Toggle theme"
+            >
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
 
-              {/* Refresh Button */}
-              <button
+              {/* <button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
                 className={`p-2 rounded-lg transition-all ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'
@@ -559,7 +559,7 @@ const TraderPanelLayoutInner = () => {
                 title="Refresh data"
               >
                 <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
-              </button>
+              </button>  */}
 
               {/* Notifications */}
               <div className="relative">
