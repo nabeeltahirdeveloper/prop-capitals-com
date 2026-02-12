@@ -19,7 +19,6 @@ import { useTranslation } from '@/contexts/LanguageContext';
 import { useSearchParams } from 'react-router-dom';
 import { getCurrentUser } from '@/api/auth';
 import { Input } from '@/components/ui/input';
-import { getUserAccounts, getAccountSummary } from '@/api/accounts';
 import { createPendingOrder } from '@/api/pending-orders';
 import { Card } from '../ui/card';
 import { cn } from '@/lib/utils';
