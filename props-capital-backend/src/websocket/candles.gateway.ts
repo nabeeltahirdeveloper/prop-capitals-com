@@ -224,22 +224,12 @@ export class CandlesGateway
       clientSubs.forEach((subscription, key) => {
         const { symbol, timeframe } = subscription;
 
-        // OPTIMIZED: Use getHistory which internally uses synthetic candles built from /prices API
-        // This is much faster than external API calls
-        const promise = this.marketDataService
-          .getHistory(symbol, timeframe, 1)
-          .then((candles) => {
-            if (!candles || candles.length === 0) {
-              // Fallback: Build candle directly from /prices API data
-              this.logger.debug(`⚠️ No history for ${symbol}@${timeframe}, building from /prices API`);
-              return this.buildCandleFromPrice(symbol, timeframe, allPrices);
-            }
-
-            // Get the latest (last) candle
-            const latestCandle = candles[candles.length - 1];
-            return latestCandle;
-          })
-          .then((candle) => {
+        // Build fresh candle from current prices instead of using getHistory
+        // This ensures we always emit candles with current/future timestamps
+        const promise = Promise.resolve()
+          .then(() => {
+            const candle = this.buildCandleFromPrice(symbol, timeframe, allPrices);
+            
             if (candle) {
               // Emit candle update to this client
               this.emitCandleUpdate(clientId, symbol, timeframe, candle);
@@ -249,7 +239,7 @@ export class CandlesGateway
           })
           .catch((error) => {
             this.logger.error(
-              `❌ Error getting candles for ${symbol}@${timeframe}: ${error.message}`,
+              `❌ Error building candle for ${symbol}@${timeframe}: ${error.message}`,
             );
           });
 
@@ -257,7 +247,7 @@ export class CandlesGateway
       });
     });
 
-    // Wait for all candle fetches to complete
+    // Wait for all candle updates to complete
     await Promise.allSettled(promises);
   }
 
@@ -284,9 +274,12 @@ export class CandlesGateway
         return null;
       }
 
+      // Calculate the current candle's start time based on timeframe
+      const candleTime = this.getCandleStartTime(now, timeframe);
+
       // Create a simple candle from current price
       return {
-        time: now,
+        time: candleTime, // Use aligned candle time, not raw timestamp
         open: price,
         high: price,
         low: price,
@@ -297,6 +290,26 @@ export class CandlesGateway
       this.logger.error(`❌ Error building candle from price for ${symbol}: ${error.message}`);
       return null;
     }
+  }
+
+  /**
+   * Get the start time of the current candle based on timeframe
+   */
+  private getCandleStartTime(timestamp: number, timeframe: string): number {
+    const intervals = {
+      'M1': 60000,        // 1 minute
+      'M5': 300000,       // 5 minutes
+      'M15': 900000,      // 15 minutes
+      'M30': 1800000,     // 30 minutes
+      'H1': 3600000,      // 1 hour
+      'H4': 14400000,     // 4 hours
+      'D1': 86400000,     // 1 day
+      'W1': 604800000,    // 1 week
+      'MN': 2592000000,   // 30 days (approximate month)
+    };
+
+    const interval = intervals[timeframe] || intervals['M1'];
+    return Math.floor(timestamp / interval) * interval;
   }
 
   /**
