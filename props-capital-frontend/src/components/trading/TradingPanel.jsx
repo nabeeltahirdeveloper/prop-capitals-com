@@ -16,6 +16,7 @@ export default function TradingPanel({
 }) {
   const { t } = useTranslation();
   const { isDark } = useTraderTheme();
+  const [orderType, setOrderType] = useState('limit');
   const [tradeDirection, setTradeDirection] = useState('buy');
   const [lotSize, setLotSize] = useState(0.01);
   const [stopLoss, setStopLoss] = useState('');
@@ -123,41 +124,37 @@ export default function TradingPanel({
   const displaySpread = isCrypto ? baseDisplayPrice * 0.001 : 0.00015;
   const currentPrice = tradeDirection === 'buy' ? baseDisplayPrice + displaySpread : baseDisplayPrice;
 
-  const isDisabled = disabled || isSubmitting;
-
   const content = (
     <div className={`${headless ? "" : "p-2.5"} h-full flex flex-col overflow-hidden`}>
+      {/* Top (no scroll) */}
       <div className="flex-1 min-h-0 flex flex-col justify-between gap-1.5">
-
         {/* Buy/Sell Tabs */}
-        <div className="grid grid-cols-2 gap-1">
+        <div className="justify-center grid grid-cols-2 gap-1">
           <button
-            onClick={() => !isDisabled && setTradeDirection("buy")}
-            disabled={isDisabled}
+            onClick={() => setTradeDirection("buy")}
             className={[
-              "h-8 px-2 rounded-xl text-[11px] font-bold leading-none tracking-wide transition-all",
-              "disabled:opacity-50 disabled:cursor-not-allowed",
+              "h-5 px-2 rounded-xl text-[10px] font-semibold leading-none tracking-wide transition-all",
+              "border border-slate-200",
               tradeDirection === "buy"
-                ? "bg-emerald-500 text-white border border-emerald-500 shadow-[0_4px_12px_rgba(16,185,129,0.15)]"
+                ? "bg-emerald-500 text-white border-emerald-500 shadow-[0_4px_12px_rgba(16,185,129,0.12)]"
                 : isDark
-                ? "bg-slate-900/40 text-slate-400 border border-slate-800 hover:text-slate-100 hover:bg-slate-900/60"
-                : "bg-slate-100 text-slate-500 border border-slate-200 hover:text-slate-900 hover:bg-slate-200",
+                ? "bg-slate-900/40 text-slate-400 border-slate-800 hover:text-slate-100 hover:bg-slate-900/60"
+                : "bg-slate-100 text-slate-500 border-slate-200 hover:text-slate-900 hover:bg-slate-200",
             ].join(" ")}
           >
             {t("terminal.tradingPanel.buyLong")}
           </button>
 
           <button
-            onClick={() => !isDisabled && setTradeDirection("sell")}
-            disabled={isDisabled}
+            onClick={() => setTradeDirection("sell")}
             className={[
-              "h-8 px-2 rounded-xl text-[11px] font-bold leading-none tracking-wide transition-all",
-              "disabled:opacity-50 disabled:cursor-not-allowed",
+              "h-5 px-2 rounded-xl text-[10px] font-semibold leading-none tracking-wide transition-all",
+              "border border-slate-200",
               tradeDirection === "sell"
-                ? "bg-red-500 text-white border border-red-500 shadow-[0_4px_12px_rgba(239,68,68,0.15)]"
+                ? "bg-red-500 text-white border-red-500 shadow-[0_4px_12px_rgba(239,68,68,0.12)]"
                 : isDark
-                ? "bg-slate-900/40 text-slate-400 border border-slate-800 hover:text-slate-100 hover:bg-slate-900/60"
-                : "bg-slate-100 text-slate-500 border border-slate-200 hover:text-slate-900 hover:bg-slate-200",
+                ? "bg-slate-900/40 text-slate-400 border-slate-800 hover:text-slate-100 hover:bg-slate-900/60"
+                : "bg-slate-100 text-slate-500 border-slate-200 hover:text-slate-900 hover:bg-slate-200",
             ].join(" ")}
           >
             {t("terminal.tradingPanel.sellShort")}
@@ -166,7 +163,7 @@ export default function TradingPanel({
 
         {/* PRICE */}
         <div className="space-y-1">
-          <div className="flex justify-between items-center px-1">
+          <div className="flex justify-between items-center px-5">
             <label className={`text-[9px] font-black uppercase tracking-widest ${isDark ? "text-slate-500" : "text-slate-400"}`}>
               {t("terminal.tradingPanel.price")}
             </label>
