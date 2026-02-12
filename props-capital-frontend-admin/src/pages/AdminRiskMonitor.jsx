@@ -284,26 +284,26 @@ export default function AdminRiskMonitor() {
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="border-border bg-slate-100">
-                <TableHead className="text-slate-500 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+              <TableRow className="border-border bg-muted/50">
+                <TableHead className="text-muted-foreground text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.account")}
                 </TableHead>
-                <TableHead className="text-slate-500 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                <TableHead className="text-muted-foreground text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.balance")}
                 </TableHead>
-                <TableHead className="text-slate-500 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                <TableHead className="text-muted-foreground text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.equity")}
                 </TableHead>
-                <TableHead className="text-slate-500 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                <TableHead className="text-muted-foreground text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.dailyDD")}
                 </TableHead>
-                <TableHead className="text-slate-500 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                <TableHead className="text-muted-foreground text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.maxDD")}
                 </TableHead>
-                <TableHead className="text-slate-500 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                <TableHead className="text-muted-foreground text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.riskLevel")}
                 </TableHead>
-                <TableHead className="text-slate-500 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                <TableHead className="text-muted-foreground text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.actions")}
                 </TableHead>
               </TableRow>
@@ -317,7 +317,7 @@ export default function AdminRiskMonitor() {
                 return (
                   <TableRow
                     key={account.id}
-                    className="border-border hover:bg-slate-100"
+                    className="border-border hover:bg-muted/50"
                   >
                     <TableCell className="py-2 sm:py-4 px-2 sm:px-4">
                       <div>
@@ -343,12 +343,12 @@ export default function AdminRiskMonitor() {
                               dailyDD >=
                               (account.daily_drawdown_limit || 5) * 0.8
                                 ? "text-red-500"
-                                : "text-slate-500"
+                                : "text-muted-foreground"
                             }
                           >
                             {dailyDD.toFixed(1)}%
                           </span>
-                          <span className="text-slate-500 hidden sm:inline">
+                          <span className="text-muted-foreground hidden sm:inline">
                             / {account.daily_drawdown_limit || 5}%
                           </span>
                         </div>
@@ -369,12 +369,12 @@ export default function AdminRiskMonitor() {
                               maxDD >=
                               (account.overall_drawdown_limit || 10) * 0.8
                                 ? "text-red-500"
-                                : "text-slate-500"
+                                : "text-muted-foreground"
                             }
                           >
                             {maxDD.toFixed(1)}%
                           </span>
-                          <span className="text-slate-500 hidden sm:inline">
+                          <span className="text-muted-foreground hidden sm:inline">
                             / {account.overall_drawdown_limit || 10}%
                           </span>
                         </div>
