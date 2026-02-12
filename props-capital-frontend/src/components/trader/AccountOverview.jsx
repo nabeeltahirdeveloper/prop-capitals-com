@@ -127,8 +127,22 @@ const AccountOverview = () => {
     selectChallenge,
     getChallengePhaseLabel,
     getChallengeStatusColor,
-    getRuleCompliance
+    getRuleCompliance,
+    loading
   } = useChallenges();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4" />
+          <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>
+            Loading accounts...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (!selectedChallenge) {
     return <div className={`text-center py-12 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>No challenges found. Buy a challenge to get started!</div>;
