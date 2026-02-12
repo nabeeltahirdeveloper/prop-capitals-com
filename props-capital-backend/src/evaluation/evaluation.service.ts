@@ -430,6 +430,80 @@ export class EvaluationService {
       }
     }
 
+    // Phase progression from PEAK profit should also work on live ticks.
+    // This allows maxEquityToDate reached intra-trade to count immediately.
+    if (
+      account.status === TradingAccountStatus.ACTIVE &&
+      !statusChanged &&
+      maxEquityChanged
+    ) {
+      const tradingDaysTrades = await this.prisma.trade.findMany({
+        where: { tradingAccountId: accountId },
+        select: { openedAt: true },
+      });
+      const tradingDaysCompleted = new Set(
+        tradingDaysTrades
+          .filter((t) => t.openedAt)
+          .map((t) => t.openedAt.toISOString().substring(0, 10)),
+      ).size;
+
+      if (
+        account.phase === TradingPhase.PHASE1 &&
+        ruleOutputs.profitPercent >= challenge.phase1TargetPercent &&
+        tradingDaysCompleted >= challenge.minTradingDays
+      ) {
+        await this.prisma.tradingAccount.update({
+          where: { id: accountId },
+          data: { phase: TradingPhase.PHASE2 },
+        });
+
+        await this.prisma.phaseTransition.create({
+          data: {
+            tradingAccountId: accountId,
+            fromPhase: TradingPhase.PHASE1,
+            toPhase: TradingPhase.PHASE2,
+          },
+        });
+
+        if (account.userId) {
+          await this.notificationsService.create(
+            account.userId,
+            'Phase 1 Completed!',
+            `Congratulations! You have successfully completed Phase 1 of your $${challenge.accountSize.toLocaleString()} challenge. Proceed to Phase 2 to continue.`,
+            NotificationType.SUCCESS,
+            NotificationCategory.CHALLENGE,
+          );
+        }
+      } else if (
+        account.phase === TradingPhase.PHASE2 &&
+        ruleOutputs.profitPercent >= challenge.phase2TargetPercent &&
+        tradingDaysCompleted >= challenge.minTradingDays
+      ) {
+        await this.prisma.tradingAccount.update({
+          where: { id: accountId },
+          data: { phase: TradingPhase.FUNDED },
+        });
+
+        await this.prisma.phaseTransition.create({
+          data: {
+            tradingAccountId: accountId,
+            fromPhase: TradingPhase.PHASE2,
+            toPhase: TradingPhase.FUNDED,
+          },
+        });
+
+        if (account.userId) {
+          await this.notificationsService.create(
+            account.userId,
+            'Phase 2 Completed!',
+            `Congratulations! You have successfully completed Phase 2 of your $${challenge.accountSize.toLocaleString()} challenge. Your account is now funded!`,
+            NotificationType.SUCCESS,
+            NotificationCategory.CHALLENGE,
+          );
+        }
+      }
+    }
+
     // Get updated account status
     const updatedAccount = await this.prisma.tradingAccount.findUnique({
       where: { id: accountId },
