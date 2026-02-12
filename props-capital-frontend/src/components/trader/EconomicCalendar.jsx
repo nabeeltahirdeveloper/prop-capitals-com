@@ -2,12 +2,13 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5101';
 
 async function fetchCalendarMonth(monthYYYYMM) {
-  const res = await fetch(`/economic-calendar?month=${encodeURIComponent(monthYYYYMM)}`);
+  const res = await fetch(`${API_BASE}/economic-calendar?month=${encodeURIComponent(monthYYYYMM)}`);
   if (!res.ok) throw new Error(`Calendar fetch failed: ${res.status}`);
-  return res.json(); // { month, events: [...] }
-}
+  return res.json();
+} 
 
 function monthKeyUTC(dateObj) {
   const y = dateObj.getUTCFullYear();
