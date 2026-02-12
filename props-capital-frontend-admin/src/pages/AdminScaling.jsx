@@ -170,27 +170,27 @@ export default function AdminScaling() {
     <div className="overflow-x-auto">
       <Table>
         <TableHeader>
-          <TableRow className="border-slate-800 hover:bg-slate-800/50">
-            <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+          <TableRow className="border-border bg-slate-100">
+            <TableHead className="text-slate-500 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
               {t("admin.scaling.table.trader")}
             </TableHead>
-            <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+            <TableHead className="text-slate-500 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
               {t("admin.scaling.table.currentToNew")}
             </TableHead>
-            <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+            <TableHead className="text-slate-500 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
               {t("admin.scaling.table.profitSplit")}
             </TableHead>
-            <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+            <TableHead className="text-slate-500 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
               {t("admin.scaling.table.profitAchieved")}
             </TableHead>
-            <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+            <TableHead className="text-slate-500 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
               {t("admin.scaling.table.payoutCycles")}
             </TableHead>
-            <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+            <TableHead className="text-slate-500 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
               {t("admin.scaling.table.status")}
             </TableHead>
             {showActions && (
-              <TableHead className="text-slate-400 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+              <TableHead className="text-slate-500 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
                 {t("admin.scaling.table.actions")}
               </TableHead>
             )}
@@ -200,14 +200,14 @@ export default function AdminScaling() {
           {data.map((request) => (
             <TableRow
               key={request.id}
-              className="border-slate-800 hover:bg-slate-800/30"
+              className="border-border hover:bg-slate-100"
             >
               <TableCell className="px-2 sm:px-4 py-3">
                 <div>
-                  <p className="text-white font-medium text-xs sm:text-sm">
+                  <p className="text-foreground font-medium text-xs sm:text-sm">
                     {request.brokerLogin || request.trader_id?.slice(0, 8)}...
                   </p>
-                  <p className="text-[10px] sm:text-xs text-slate-400">
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">
                     {t("admin.scaling.table.level", {
                       current: request.current_level,
                       new: request.requested_level,
@@ -217,22 +217,22 @@ export default function AdminScaling() {
               </TableCell>
               <TableCell className="px-2 sm:px-4 py-3 whitespace-nowrap">
                 <div className="flex items-center gap-1.5 sm:gap-2">
-                  <span className="text-slate-400 text-xs sm:text-sm">
+                  <span className="text-muted-foreground text-xs sm:text-sm">
                     ${request.current_account_size?.toLocaleString()}
                   </span>
                   <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400" />
-                  <span className="text-emerald-400 font-medium text-xs sm:text-sm">
+                  <span className="text-emerald-500 font-medium text-xs sm:text-sm">
                     ${request.new_account_size?.toLocaleString()}
                   </span>
                 </div>
               </TableCell>
               <TableCell className="px-2 sm:px-4 py-3 whitespace-nowrap">
                 <div className="flex items-center gap-1.5 sm:gap-2">
-                  <span className="text-slate-400 text-xs sm:text-sm">
+                  <span className="text-muted-foreground text-xs sm:text-sm">
                     {request.current_profit_split}%
                   </span>
                   <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400" />
-                  <span className="text-emerald-400 font-medium text-xs sm:text-sm">
+                  <span className="text-emerald-500 font-medium text-xs sm:text-sm">
                     {request.new_profit_split}%
                   </span>
                 </div>
@@ -241,8 +241,8 @@ export default function AdminScaling() {
                 <span
                   className={
                     request.eligibility_check?.profit_requirement_met
-                      ? "text-emerald-400"
-                      : "text-red-400"
+                      ? "text-emerald-500"
+                      : "text-red-500"
                   }
                 >
                   {request.profit_achieved?.toFixed(2)}%
@@ -252,8 +252,8 @@ export default function AdminScaling() {
                 <span
                   className={
                     request.eligibility_check?.payout_cycles_met
-                      ? "text-emerald-400"
-                      : "text-red-400"
+                      ? "text-emerald-500"
+                      : "text-red-500"
                   }
                 >
                   {request.payout_cycles_completed}
@@ -282,7 +282,7 @@ export default function AdminScaling() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="border-red-800 text-red-400 h-7 sm:h-9 text-[10px] sm:text-sm whitespace-nowrap"
+                          className="border-red-500/60 text-red-500 h-7 sm:h-9 text-[10px] sm:text-sm whitespace-nowrap"
                           onClick={() =>
                             setSelectedRequest({ ...request, action: "reject" })
                           }
@@ -312,7 +312,7 @@ export default function AdminScaling() {
             <TableRow>
               <TableCell
                 colSpan={showActions ? 7 : 6}
-                className="text-center text-slate-200 py-8 text-sm"
+                className="text-center text-muted-foreground py-8 text-sm"
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center gap-2">
@@ -334,10 +334,10 @@ export default function AdminScaling() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">
             {t("admin.scaling.title")}
           </h1>
-          <p className="text-sm sm:text-base text-slate-400">
+          <p className="text-sm sm:text-base text-muted-foreground">
             {t("admin.scaling.subtitle")}
           </p>
         </div>
@@ -345,48 +345,48 @@ export default function AdminScaling() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-        <Card className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30 p-3 sm:p-4">
+        <Card className="bg-gradient-to-r from-[#fef3c7] to-[#fffbeb] border-amber-500/40 p-3 sm:p-4">
           <div className="flex items-center gap-2.5 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-amber-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-amber-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-[#d97706]" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl sm:text-2xl font-bold text-amber-400 truncate">
+              <p className="text-xl sm:text-2xl font-bold text-[#d97706] truncate">
                 {pendingRequests.length}
               </p>
-              <p className="text-[10px] sm:text-xs text-slate-400 truncate">
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
                 {t("admin.scaling.summary.pendingReview")}
               </p>
             </div>
           </div>
         </Card>
 
-        <Card className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border-blue-500/30 p-3 sm:p-4">
+        <Card className="bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-500/30 p-3 sm:p-4">
           <div className="flex items-center gap-2.5 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-              <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl sm:text-2xl font-bold text-blue-400 truncate">
+              <p className="text-xl sm:text-2xl font-bold text-blue-500 truncate">
                 {approvedRequests.length}
               </p>
-              <p className="text-[10px] sm:text-xs text-slate-400 truncate">
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
                 {t("admin.scaling.summary.readyToProcess")}
               </p>
             </div>
           </div>
         </Card>
 
-        <Card className="bg-gradient-to-r from-emerald-500/10 to-green-500/10 border-emerald-500/30 p-3 sm:p-4 sm:col-span-2 lg:col-span-1">
+        <Card className="bg-gradient-to-r from-emerald-50 to-green-50 border-emerald-500/30 p-3 sm:p-4 sm:col-span-2 lg:col-span-1">
           <div className="flex items-center gap-2.5 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl sm:text-2xl font-bold text-emerald-400 truncate">
+              <p className="text-xl sm:text-2xl font-bold text-emerald-500 truncate">
                 {completedRequests.length}
               </p>
-              <p className="text-[10px] sm:text-xs text-slate-400 truncate">
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
                 {t("admin.scaling.summary.completed")}
               </p>
             </div>
@@ -397,36 +397,36 @@ export default function AdminScaling() {
       {/* Tabs */}
       <Tabs defaultValue="pending" className="space-y-4">
         <div className="overflow-x-auto pb-1 scrollbar-hide">
-          <TabsList className="bg-slate-800 w-full sm:w-auto flex min-w-max">
+          <TabsList className="bg-muted w-full sm:w-auto flex min-w-max">
             <TabsTrigger
               value="pending"
-              className="text-slate-400 text-xs sm:text-sm px-3 sm:px-6 data-[state=active]:bg-slate-700 data-[state=active]:text-white"
+              className="text-muted-foreground text-xs sm:text-sm px-3 sm:px-6 data-[state=active]:bg-card data-[state=active]:text-foreground"
             >
               {t("admin.scaling.tabs.pending")} ({pendingRequests.length})
             </TabsTrigger>
 
             <TabsTrigger
               value="approved"
-              className="text-slate-400 text-xs sm:text-sm px-3 sm:px-6 data-[state=active]:bg-slate-700 data-[state=active]:text-white"
+              className="text-muted-foreground text-xs sm:text-sm px-3 sm:px-6 data-[state=active]:bg-card data-[state=active]:text-foreground"
             >
               {t("admin.scaling.tabs.approved")} ({approvedRequests.length})
             </TabsTrigger>
             <TabsTrigger
               value="completed"
-              className="text-slate-400 text-xs sm:text-sm px-3 sm:px-6 data-[state=active]:bg-slate-700 data-[state=active]:text-white"
+              className="text-muted-foreground text-xs sm:text-sm px-3 sm:px-6 data-[state=active]:bg-card data-[state=active]:text-foreground"
             >
               {t("admin.scaling.tabs.completed")} ({completedRequests.length})
             </TabsTrigger>
             <TabsTrigger
               value="all"
-              className="text-slate-400 text-xs sm:text-sm px-3 sm:px-6 data-[state=active]:bg-slate-700 data-[state=active]:text-white"
+              className="text-muted-foreground text-xs sm:text-sm px-3 sm:px-6 data-[state=active]:bg-card data-[state=active]:text-foreground"
             >
               {t("admin.scaling.tabs.all")}
             </TabsTrigger>
           </TabsList>
         </div>
 
-        <Card className="bg-slate-900 border-slate-800 overflow-hidden">
+        <Card className="bg-card border-border overflow-hidden">
           <TabsContent value="pending" className="m-0">
             <RequestsTable data={pendingRequests} showActions />
           </TabsContent>
@@ -447,50 +447,50 @@ export default function AdminScaling() {
         open={!!selectedRequest}
         onOpenChange={() => setSelectedRequest(null)}
       >
-        <DialogContent className="bg-slate-900 border-slate-800 w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-card border-border w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-white text-base sm:text-lg md:text-xl">
+            <DialogTitle className="text-foreground text-base sm:text-lg md:text-xl">
               {selectedRequest?.action === "approve"
                 ? t("admin.scaling.dialog.approveTitle")
                 : t("admin.scaling.dialog.rejectTitle")}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
-            <div className="bg-slate-800 rounded-lg p-3 sm:p-4 space-y-1.5 sm:space-y-2">
+            <div className="bg-muted/60 rounded-lg p-3 sm:p-4 space-y-1.5 sm:space-y-2">
               <div className="flex justify-between text-[11px] sm:text-sm">
-                <span className="text-slate-400">
+                <span className="text-muted-foreground">
                   {t("admin.scaling.dialog.currentSize")}
                 </span>
-                <span className="text-white">
+                <span className="text-foreground">
                   ${selectedRequest?.current_account_size?.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between text-[11px] sm:text-sm">
-                <span className="text-slate-400">
+                <span className="text-muted-foreground">
                   {t("admin.scaling.dialog.newSize")}
                 </span>
-                <span className="text-emerald-400 font-medium">
+                <span className="text-emerald-500 font-medium">
                   ${selectedRequest?.new_account_size?.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between text-[11px] sm:text-sm">
-                <span className="text-slate-400">
+                <span className="text-muted-foreground">
                   {t("admin.scaling.dialog.newProfitSplit")}
                 </span>
-                <span className="text-emerald-400 font-medium">
+                <span className="text-emerald-500 font-medium">
                   {selectedRequest?.new_profit_split}%
                 </span>
               </div>
             </div>
 
             <div className="space-y-1 sm:space-y-1.5">
-              <label className="text-xs sm:text-sm text-slate-400 block">
+              <label className="text-xs sm:text-sm text-muted-foreground block">
                 {t("admin.scaling.dialog.notes")}
               </label>
               <Textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm min-h-[80px]"
+                className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm min-h-[80px]"
                 placeholder={t("admin.scaling.dialog.notesPlaceholder")}
               />
             </div>
@@ -498,7 +498,7 @@ export default function AdminScaling() {
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4">
               <Button
                 variant="outline"
-                className="w-full sm:flex-1 border-slate-700 text-slate-300 hover:text-white h-9 sm:h-11 order-2 sm:order-1"
+                className="w-full sm:flex-1 border-border text-foreground hover:bg-accent h-9 sm:h-11 order-2 sm:order-1"
                 onClick={() => setSelectedRequest(null)}
               >
                 {t("admin.scaling.dialog.cancel")}

@@ -131,49 +131,69 @@ export default function CRMFTDReport() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white tracking-tight">FTD Report</h1>
-                    <p className="text-slate-400 mt-1">First Time Deposit tracking from converted leads</p>
+                    <h1 className="text-3xl font-bold text-foreground tracking-tight">
+                        FTD Report
+                    </h1>
+                    <p className="text-muted-foreground mt-1">
+                        First Time Deposit tracking from converted leads
+                    </p>
                 </div>
             </div>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card className="bg-slate-900/50 border-slate-800 p-6 flex items-center justify-between hover:bg-slate-900/80 transition-all duration-300">
+                <Card className="bg-card border-border p-6 flex items-center justify-between hover:border-amber-300 transition-all duration-300">
                     <div>
-                        <p className="text-sm font-medium text-slate-400">Total FTD</p>
-                        <h3 className="text-2xl font-bold text-white mt-1">{stats.totalFtd}</h3>
+                        <p className="text-sm font-medium text-muted-foreground">
+                            Total FTD
+                        </p>
+                        <h3 className="text-2xl font-bold text-foreground mt-1">
+                            {stats.totalFtd}
+                        </h3>
                     </div>
-                    <div className="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-400">
+                    <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
                         <Users className="w-6 h-6" />
                     </div>
                 </Card>
 
-                <Card className="bg-slate-900/50 border-slate-800 p-6 flex items-center justify-between hover:bg-slate-900/80 transition-all duration-300">
+                <Card className="bg-card border-border p-6 flex items-center justify-between hover:border-amber-300 transition-all duration-300">
                     <div>
-                        <p className="text-sm font-medium text-slate-400">Total Deposits</p>
-                        <h3 className="text-2xl font-bold text-white mt-1">{formatCurrency(stats.totalDeposits)}</h3>
+                        <p className="text-sm font-medium text-muted-foreground">
+                            Total Deposits
+                        </p>
+                        <h3 className="text-2xl font-bold text-foreground mt-1">
+                            {formatCurrency(stats.totalDeposits)}
+                        </h3>
                     </div>
-                    <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-400">
+                    <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
                         <DollarSign className="w-6 h-6" />
                     </div>
                 </Card>
 
-                <Card className="bg-slate-900/50 border-slate-800 p-6 flex items-center justify-between hover:bg-slate-900/80 transition-all duration-300">
+                <Card className="bg-card border-border p-6 flex items-center justify-between hover:border-amber-300 transition-all duration-300">
                     <div>
-                        <p className="text-sm font-medium text-slate-400">Avg FTD Amount</p>
-                        <h3 className="text-2xl font-bold text-white mt-1">{formatCurrency(stats.avgFtdAmount)}</h3>
+                        <p className="text-sm font-medium text-muted-foreground">
+                            Avg FTD Amount
+                        </p>
+                        <h3 className="text-2xl font-bold text-foreground mt-1">
+                            {formatCurrency(stats.avgFtdAmount)}
+                        </h3>
                     </div>
-                    <div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center text-purple-400">
+                    <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600">
                         <TrendingUp className="w-6 h-6" />
                     </div>
                 </Card>
 
-                <Card className="bg-slate-900/50 border-slate-800 p-6 flex items-center justify-between hover:bg-slate-900/80 transition-all duration-300">
+                <Card className="bg-card border-border p-6 flex items-center justify-between hover:border-amber-300 transition-all duration-300">
                     <div>
-                        <p className="text-sm font-medium text-slate-400">Active Agents</p>
-                        <h3 className="text-2xl font-bold text-white mt-1">{stats.activeAgents}</h3>
+                        <p className="text-sm font-medium text-muted-foreground">
+                            Active Agents
+                        </p>
+                        <h3 className="text-2xl font-bold text-foreground mt-1">
+                            {stats.activeAgents}
+                        </h3>
                     </div>
-                    <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-400">
+                    <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-[#d97706]">
                         <User className="w-6 h-6" />
                     </div>
                 </Card>
@@ -182,20 +202,20 @@ export default function CRMFTDReport() {
             {/* Filters */}
             <div className="flex flex-col lg:flex-row gap-4">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                         placeholder="Search by name or email..."
-                        className="pl-10 bg-slate-900 border-slate-800 text-white"
+                        className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
 
                 <Select value={selectedAgent} onValueChange={setSelectedAgent}>
-                    <SelectTrigger className="w-full lg:w-[200px] bg-slate-900 border-slate-800 text-white">
+                    <SelectTrigger className="w-full lg:w-[200px] bg-muted border-border text-foreground">
                         <SelectValue placeholder="All Agents" />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-900 border-slate-800 text-white">
+                    <SelectContent className="bg-card border-border text-foreground">
                         <SelectItem value="all">All Agents</SelectItem>
                         {agents.map(agent => (
                             <SelectItem key={agent} value={agent}>{agent}</SelectItem>
@@ -206,27 +226,27 @@ export default function CRMFTDReport() {
                 <div className="flex items-center gap-2">
                     <div className="relative">
                         <Calendar
-                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 hover:text-white cursor-pointer z-10"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground hover:text-foreground cursor-pointer z-10"
                             onClick={() => fromDateRef.current?.showPicker()}
                         />
                         <Input
                             ref={fromDateRef}
                             type="date"
-                            className="pl-10 bg-slate-900 border-slate-800 text-white text-xs h-9 w-40 no-calendar-icon"
+                            className="pl-10 bg-muted border-border text-foreground text-xs h-9 w-40 no-calendar-icon"
                             value={fromDate}
                             onChange={(e) => setFromDate(e.target.value)}
                         />
                     </div>
-                    <ArrowRight className="w-4 h-4 text-slate-600" />
+                    <ArrowRight className="w-4 h-4 text-muted-foreground" />
                     <div className="relative">
                         <Calendar
-                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 hover:text-white cursor-pointer z-10"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground hover:text-foreground cursor-pointer z-10"
                             onClick={() => toDateRef.current?.showPicker()}
                         />
                         <Input
                             ref={toDateRef}
                             type="date"
-                            className="pl-10 bg-slate-900 border-slate-800 text-white text-xs h-9 w-40 no-calendar-icon"
+                            className="pl-10 bg-muted border-border text-foreground text-xs h-9 w-40 no-calendar-icon"
                             value={toDate}
                             onChange={(e) => setToDate(e.target.value)}
                         />
@@ -235,15 +255,15 @@ export default function CRMFTDReport() {
             </div>
 
             {/* Main Table Card */}
-            <Card className="bg-slate-900/50 border-slate-800 overflow-hidden">
-                <div className="p-6 border-b border-slate-800">
-                    <h2 className="text-lg font-semibold text-white">First Time Deposits</h2>
+            <Card className="bg-card border-border overflow-hidden">
+                <div className="p-6 border-b border-border">
+                    <h2 className="text-lg font-semibold text-foreground">First Time Deposits</h2>
                 </div>
 
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
-                            <tr className="text-slate-500 border-b border-slate-800">
+                            <tr className="text-muted-foreground border-b border-border">
                                 <th className="px-6 py-4 font-medium text-xs uppercase tracking-wider">Lead Name</th>
                                 <th className="px-6 py-4 font-medium text-xs uppercase tracking-wider">Email</th>
                                 <th className="px-6 py-4 font-medium text-xs uppercase tracking-wider">Phone</th>
@@ -254,16 +274,16 @@ export default function CRMFTDReport() {
                                 <th className="px-6 py-4 w-10"></th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-800">
+                        <tbody className="divide-y divide-border">
                             {loading && leads.length === 0 ? (
                                 <tr>
-                                    <td colSpan="8" className="px-6 py-12 text-center text-slate-500">
+                                    <td colSpan="8" className="px-6 py-12 text-center text-muted-foreground">
                                         Loading FTD data...
                                     </td>
                                 </tr>
                             ) : leads.length === 0 ? (
                                 <tr>
-                                    <td colSpan="8" className="px-6 py-12 text-center text-slate-500">
+                                    <td colSpan="8" className="px-6 py-12 text-center text-muted-foreground">
                                         No first time deposits found.
                                     </td>
                                 </tr>
@@ -271,75 +291,75 @@ export default function CRMFTDReport() {
                                 leads.map((lead) => (
                                     <React.Fragment key={lead.id}>
                                         <tr
-                                            className="hover:bg-slate-800/30 transition-colors cursor-pointer"
+                                            className="hover:bg-muted/60 transition-colors cursor-pointer"
                                             onClick={() => toggleRow(lead.id)}
                                         >
                                             <td className="px-6 py-4">
-                                                <span className="font-semibold text-white">{lead.personName}</span>
+                                                <span className="font-semibold text-foreground">{lead.personName}</span>
                                             </td>
-                                            <td className="px-6 py-4 text-slate-400">{lead.email}</td>
-                                            <td className="px-6 py-4 text-slate-400">{lead.phoneNumber || 'N/A'}</td>
-                                            <td className="px-6 py-4 text-slate-400">
+                                            <td className="px-6 py-4 text-muted-foreground">{lead.email}</td>
+                                            <td className="px-6 py-4 text-muted-foreground">{lead.phoneNumber || 'N/A'}</td>
+                                            <td className="px-6 py-4 text-muted-foreground">
                                                 <div className="flex items-center gap-2">
-                                                    <Globe className="w-4 h-4 text-slate-500" />
+                                                    <Globe className="w-4 h-4 text-muted-foreground" />
                                                     {lead.country || 'N/A'}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className="text-emerald-400 font-bold">{formatCurrency(lead.ftdAmount)}</span>
+                                                <span className="text-emerald-600 font-bold">{formatCurrency(lead.ftdAmount)}</span>
                                             </td>
-                                            <td className="px-6 py-4 text-slate-400">{formatDate(lead.convertedAt || lead.updatedAt)}</td>
+                                            <td className="px-6 py-4 text-muted-foreground">{formatDate(lead.convertedAt || lead.updatedAt)}</td>
                                             <td className="px-6 py-4">
-                                                <Badge className="bg-emerald-500/10 text-emerald-500 border-none">
+                                                <Badge className="bg-emerald-50 text-emerald-600 border-emerald-200">
                                                     Converted
                                                 </Badge>
                                             </td>
                                             <td className="px-6 py-4">
                                                 {expandedRows.has(lead.id) ? (
-                                                    <ChevronUp className="w-5 h-5 text-slate-500" />
+                                                    <ChevronUp className="w-5 h-5 text-muted-foreground" />
                                                 ) : (
-                                                    <ChevronDown className="w-5 h-5 text-slate-500" />
+                                                    <ChevronDown className="w-5 h-5 text-muted-foreground" />
                                                 )}
                                             </td>
                                         </tr>
                                         {expandedRows.has(lead.id) && (
-                                            <tr className="bg-slate-900/80 border-l-4 border-l-emerald-500/50">
+                                            <tr className="bg-muted/70 border-l-4 border-l-emerald-500/60">
                                                 <td colSpan="8" className="px-12 py-8">
                                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                                                         <div className="space-y-1">
-                                                            <p className="text-xs text-slate-500 uppercase font-semibold">Agent</p>
-                                                            <p className="text-white font-medium">{lead.assignedAgent || 'Unassigned'}</p>
+                                                            <p className="text-xs text-muted-foreground uppercase font-semibold">Agent</p>
+                                                            <p className="text-foreground font-medium">{lead.assignedAgent || 'Unassigned'}</p>
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <p className="text-xs text-slate-500 uppercase font-semibold">Payment Method</p>
-                                                            <p className="text-white font-medium">{lead.paymentMethod || 'N/A'}</p>
+                                                            <p className="text-xs text-muted-foreground uppercase font-semibold">Payment Method</p>
+                                                            <p className="text-foreground font-medium">{lead.paymentMethod || 'N/A'}</p>
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <p className="text-xs text-slate-500 uppercase font-semibold">Payment Provider</p>
-                                                            <p className="text-white font-medium">{lead.paymentProvider || 'N/A'}</p>
+                                                            <p className="text-xs text-muted-foreground uppercase font-semibold">Payment Provider</p>
+                                                            <p className="text-foreground font-medium">{lead.paymentProvider || 'N/A'}</p>
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <p className="text-xs text-slate-500 uppercase font-semibold">Source</p>
-                                                            <p className="text-white font-medium">{lead.source || 'N/A'}</p>
+                                                            <p className="text-xs text-muted-foreground uppercase font-semibold">Source</p>
+                                                            <p className="text-foreground font-medium">{lead.source || 'N/A'}</p>
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <p className="text-xs text-slate-500 uppercase font-semibold">Affiliate ID</p>
-                                                            <p className="text-white font-medium">{lead.affiliateId || 'N/A'}</p>
+                                                            <p className="text-xs text-muted-foreground uppercase font-semibold">Affiliate ID</p>
+                                                            <p className="text-foreground font-medium">{lead.affiliateId || 'N/A'}</p>
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <p className="text-xs text-slate-500 uppercase font-semibold">Funnel Name</p>
-                                                            <p className="text-white font-medium">{lead.funnelName || 'N/A'}</p>
+                                                            <p className="text-xs text-muted-foreground uppercase font-semibold">Funnel Name</p>
+                                                            <p className="text-foreground font-medium">{lead.funnelName || 'N/A'}</p>
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <p className="text-xs text-slate-500 uppercase font-semibold">FTD Time</p>
-                                                            <div className="flex items-center gap-2 text-white font-medium">
-                                                                <Calendar className="w-4 h-4 text-slate-500" />
+                                                            <p className="text-xs text-muted-foreground uppercase font-semibold">FTD Time</p>
+                                                            <div className="flex items-center gap-2 text-foreground font-medium">
+                                                                <Calendar className="w-4 h-4 text-muted-foreground" />
                                                                 {formatTime(lead.convertedAt || lead.updatedAt)}
                                                             </div>
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <p className="text-xs text-slate-500 uppercase font-semibold">Sub Parameters</p>
-                                                            <p className="text-white font-medium">{lead.subParameters || 'N/A'}</p>
+                                                            <p className="text-xs text-muted-foreground uppercase font-semibold">Sub Parameters</p>
+                                                            <p className="text-foreground font-medium">{lead.subParameters || 'N/A'}</p>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -353,7 +373,7 @@ export default function CRMFTDReport() {
                 </div>
 
                 {!loading && leads.length > 0 && (
-                    <div className="p-4 border-t border-slate-800 flex items-center justify-between text-slate-500 text-sm">
+                    <div className="p-4 border-t border-border flex items-center justify-between text-muted-foreground text-sm">
                         <p>Showing {leads.length} First Time Deposits</p>
                     </div>
                 )}

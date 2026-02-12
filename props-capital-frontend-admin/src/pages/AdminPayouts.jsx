@@ -163,7 +163,7 @@ export default function AdminPayouts() {
       accessorKey: "trader_id",
       cell: (row) => (
         <span
-          className="text-white font-medium block truncate max-w-[120px] sm:max-w-[200px]"
+          className="text-foreground font-medium block truncate max-w-[120px] sm:max-w-[200px]"
           title={row.trader_id}
         >
           {row.trader_id}
@@ -174,7 +174,7 @@ export default function AdminPayouts() {
       header: t("admin.payouts.table.amount"),
       accessorKey: "amount",
       cell: (row) => (
-        <span className="text-emerald-400 font-bold">
+        <span className="text-emerald-500 font-bold">
           ${row.amount?.toLocaleString()}
         </span>
       ),
@@ -183,7 +183,9 @@ export default function AdminPayouts() {
       header: t("admin.payouts.table.method"),
       accessorKey: "platform",
       cell: (row) => (
-        <span className="capitalize">{row.platform || "N/A"}</span>
+        <span className="capitalize text-foreground">
+          {row.platform || "N/A"}
+        </span>
       ),
     },
     {
@@ -245,7 +247,7 @@ export default function AdminPayouts() {
               </Button>
             )}
             {row.status === "paid" && (
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-muted-foreground">
                 {t("admin.payouts.actions.paid")}{" "}
                 {row.processed_date &&
                   (() => {
@@ -259,7 +261,7 @@ export default function AdminPayouts() {
               </span>
             )}
             {row.status === "rejected" && (
-              <span className="text-xs text-red-400">
+              <span className="text-xs text-red-500">
                 {t("admin.payouts.actions.rejected") || "Rejected"}
               </span>
             )}
@@ -267,7 +269,7 @@ export default function AdminPayouts() {
             {!["pending", "approved", "paid", "rejected"].includes(
               row.status,
             ) && (
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-muted-foreground">
                 {row.status || "N/A"}
               </span>
             )}
@@ -282,10 +284,10 @@ export default function AdminPayouts() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">
             {t("admin.payouts.title")}
           </h1>
-          <p className="text-sm sm:text-base text-slate-400">
+          <p className="text-sm sm:text-base text-muted-foreground">
             {t("admin.payouts.subtitle")}
           </p>
         </div>
@@ -297,7 +299,7 @@ export default function AdminPayouts() {
           title={t("admin.payouts.stats.pending")}
           value={`$${pendingAmount.toLocaleString()}`}
           icon={Clock}
-          gradient="from-amber-500 to-orange-500"
+          gradient="from-[#d97706] to-[#d97706]"
         />
         <StatsCard
           title={t("admin.payouts.stats.approved")}
@@ -320,35 +322,35 @@ export default function AdminPayouts() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
+      <Card className="bg-card border-border p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder={t("admin.payouts.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm"
+              className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
             />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-[180px] bg-slate-800 border-slate-700 text-white text-sm">
+            <SelectTrigger className="w-full sm:w-[180px] bg-muted border-border text-foreground text-sm">
               <SelectValue placeholder={t("admin.payouts.filter.status")} />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-700 text-white z-50">
-              <SelectItem value="all" className="text-white">
+            <SelectContent className="bg-card border-border text-foreground z-50">
+              <SelectItem value="all" className="text-foreground">
                 {t("admin.payouts.filter.allStatus")}
               </SelectItem>
-              <SelectItem value="pending" className="text-white">
+              <SelectItem value="pending" className="text-foreground">
                 {t("admin.payouts.filter.pending")}
               </SelectItem>
-              <SelectItem value="approved" className="text-white">
+              <SelectItem value="approved" className="text-foreground">
                 {t("admin.payouts.filter.approved")}
               </SelectItem>
-              <SelectItem value="paid" className="text-white">
+              <SelectItem value="paid" className="text-foreground">
                 {t("admin.payouts.filter.paid")}
               </SelectItem>
-              <SelectItem value="rejected" className="text-white">
+              <SelectItem value="rejected" className="text-foreground">
                 {t("admin.payouts.filter.rejected")}
               </SelectItem>
             </SelectContent>
@@ -357,12 +359,13 @@ export default function AdminPayouts() {
       </Card>
 
       {/* Payouts Table */}
-      <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4 md:p-6 text-white overflow-hidden">
+      <Card className="bg-card border-border p-3 sm:p-4 md:p-6 overflow-hidden">
         <DataTable
           columns={columns}
           data={filteredPayouts}
           isLoading={isLoading}
           emptyMessage={t("admin.payouts.emptyMessage")}
+          variant="light"
         />
       </Card>
 
@@ -371,14 +374,14 @@ export default function AdminPayouts() {
         open={!!selectedPayout}
         onOpenChange={() => setSelectedPayout(null)}
       >
-        <DialogContent className="bg-slate-900 border-slate-800 w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6">
+        <DialogContent className="bg-card border-border w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6">
           <DialogHeader>
-            <DialogTitle className="text-white text-base sm:text-lg md:text-xl">
+            <DialogTitle className="text-foreground text-base sm:text-lg md:text-xl">
               {t("admin.payouts.dialog.rejectTitle")}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
-            <p className="text-slate-400 text-xs sm:text-sm">
+            <p className="text-muted-foreground text-xs sm:text-sm">
               {t("admin.payouts.dialog.rejectMessage", {
                 amount: `$${selectedPayout?.amount?.toLocaleString()}`,
                 trader: selectedPayout?.trader_id,
@@ -388,18 +391,18 @@ export default function AdminPayouts() {
               placeholder={t("admin.payouts.dialog.rejectReasonPlaceholder")}
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
-              className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm"
+              className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
             />
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4">
               <Button
                 variant="outline"
-                className="flex-1 border-slate-700 text-slate-300 hover:text-white w-full sm:w-auto order-2 sm:order-1"
+                className="flex-1 border-border text-foreground hover:bg-accent w-full sm:w-auto order-2 sm:order-1"
                 onClick={() => setSelectedPayout(null)}
               >
                 {t("admin.payouts.dialog.cancel")}
               </Button>
               <Button
-                className="flex-1 bg-red-500 hover:bg-red-600 w-full sm:w-auto order-1 sm:order-2"
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white w-full sm:w-auto order-1 sm:order-2"
                 onClick={handleReject}
                 disabled={rejectMutation.isPending}
               >

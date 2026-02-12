@@ -237,8 +237,8 @@ export default function AdminAccounts() {
       accessorKey: "account_number",
       cell: (row) => (
         <div>
-          <p className="text-white font-medium">{row.account_number}</p>
-          <p className="text-xs text-slate-300 ">{row.trader_id}</p>
+          <p className="text-foreground font-medium">{row.account_number}</p>
+          <p className="text-xs text-muted-foreground ">{row.trader_id}</p>
         </div>
       ),
     },
@@ -248,14 +248,14 @@ export default function AdminAccounts() {
       accessorKey: "current_balance",
       cell: (row) => (
         <div>
-          <p className="text-white font-medium">
+          <p className="text-foreground font-medium">
             ${row.current_balance?.toLocaleString()}
           </p>
           <p
             className={`text-xs ${
               row.current_profit_percent >= 0
-                ? "text-emerald-400"
-                : "text-red-400"
+                ? "text-emerald-500"
+                : "text-red-500"
             }`}
           >
             {row.current_profit_percent >= 0 ? "+" : ""}
@@ -288,7 +288,7 @@ export default function AdminAccounts() {
             <Button
               variant="ghost"
               size="icon"
-              className="text-slate-400 data-[state=open]:text-white"
+              className="text-muted-foreground data-[state=open]:text-foreground"
             >
               <MoreHorizontal className="w-4 h-4" />
             </Button>
@@ -296,14 +296,13 @@ export default function AdminAccounts() {
 
           <DropdownMenuContent
             align="end"
-            className="bg-slate-900 border-slate-800"
+            className="bg-card border-border"
           >
             <DropdownMenuItem
               className="
         cursor-pointer
-        text-slate-300
-        data-[highlighted]:bg-slate-800
-        data-[highlighted]:text-white
+        text-foreground
+        data-[highlighted]:bg-accent
       "
               onClick={() => handleViewDetails(row.id)}
             >
@@ -311,7 +310,7 @@ export default function AdminAccounts() {
               {t("admin.accounts.actions.viewDetails")}
             </DropdownMenuItem>
 
-            <DropdownMenuSeparator className="bg-slate-800" />
+            <DropdownMenuSeparator className="bg-border" />
 
             {/* Actions for active accounts - can force pass or force fail */}
             {row.status === "active" &&
@@ -320,10 +319,9 @@ export default function AdminAccounts() {
                 <>
                   <DropdownMenuItem
                     className="
-            cursor-pointer
-            text-emerald-400
-            data-[highlighted]:bg-slate-800
-            data-[highlighted]:text-emerald-300
+        cursor-pointer
+        text-emerald-500
+        data-[highlighted]:bg-accent
           "
                     onClick={() => handleForcePass(row)}
                   >
@@ -333,10 +331,9 @@ export default function AdminAccounts() {
 
                   <DropdownMenuItem
                     className="
-            cursor-pointer
-            text-red-400
-            data-[highlighted]:bg-slate-800
-            data-[highlighted]:text-red-300
+        cursor-pointer
+        text-red-500
+        data-[highlighted]:bg-accent
           "
                     onClick={() => handleForceFail(row)}
                   >
@@ -350,10 +347,9 @@ export default function AdminAccounts() {
             {row.status === "paused" && (
               <DropdownMenuItem
                 className="
-          cursor-pointer
-          text-emerald-400
-          data-[highlighted]:bg-slate-800
-          data-[highlighted]:text-emerald-300
+        cursor-pointer
+        text-emerald-500
+        data-[highlighted]:bg-accent
         "
                 onClick={() => handleResume(row)}
               >
@@ -366,10 +362,9 @@ export default function AdminAccounts() {
             {row.status === "active" && (
               <DropdownMenuItem
                 className="
-          cursor-pointer
-          text-yellow-400
-          data-[highlighted]:bg-slate-800
-          data-[highlighted]:text-yellow-300
+        cursor-pointer
+        text-yellow-500
+        data-[highlighted]:bg-accent
         "
                 onClick={() => handlePause(row)}
               >
@@ -382,10 +377,9 @@ export default function AdminAccounts() {
             {row.current_phase === "failed" && (
               <DropdownMenuItem
                 className="
-          cursor-pointer
-          text-cyan-400
-          data-[highlighted]:bg-slate-800
-          data-[highlighted]:text-cyan-300
+        cursor-pointer
+        text-cyan-500
+        data-[highlighted]:bg-accent
         "
                 onClick={() => handleResetAccount(row)}
               >
@@ -421,48 +415,48 @@ export default function AdminAccounts() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-white">
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground">
           {t("admin.accounts.title")}
         </h1>
-        <p className="text-sm sm:text-base text-slate-400">
+        <p className="text-sm sm:text-base text-muted-foreground">
           {t("admin.accounts.subtitle")}
         </p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
-        <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400">
+        <Card className="bg-card border-border p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {t("admin.accounts.stats.totalAccounts")}
           </p>
           {isLoading ? (
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
-            <p className="text-xl sm:text-2xl font-bold text-white">
+            <p className="text-xl sm:text-2xl font-bold text-foreground">
               {displayAccounts.length}
             </p>
           )}
         </Card>
-        <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400">
+        <Card className="bg-card border-border p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {t("admin.accounts.stats.active")}
           </p>
           {isLoading ? (
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
-            <p className="text-xl sm:text-2xl font-bold text-emerald-400">
+            <p className="text-xl sm:text-2xl font-bold text-emerald-500">
               {displayAccounts.filter((a) => a.status === "active").length}
             </p>
           )}
         </Card>
-        <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400">
+        <Card className="bg-card border-border p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {t("admin.accounts.stats.phase2")}
           </p>
           {isLoading ? (
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
-            <p className="text-xl sm:text-2xl font-bold text-blue-400">
+            <p className="text-xl sm:text-2xl font-bold text-blue-500">
               {
                 displayAccounts.filter((a) => a.current_phase === "phase2")
                   .length
@@ -470,14 +464,14 @@ export default function AdminAccounts() {
             </p>
           )}
         </Card>
-        <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400">
+        <Card className="bg-card border-border p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {t("admin.accounts.stats.funded")}
           </p>
           {isLoading ? (
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
-            <p className="text-xl sm:text-2xl font-bold text-purple-400">
+            <p className="text-xl sm:text-2xl font-bold text-purple-500">
               {
                 displayAccounts.filter((a) => a.current_phase === "funded")
                   .length
@@ -485,14 +479,14 @@ export default function AdminAccounts() {
             </p>
           )}
         </Card>
-        <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4 col-span-2 sm:col-span-1">
-          <p className="text-xs sm:text-sm text-slate-400">
+        <Card className="bg-card border-border p-3 sm:p-4 col-span-2 sm:col-span-1">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {t("admin.accounts.stats.failed")}
           </p>
           {isLoading ? (
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
-            <p className="text-xl sm:text-2xl font-bold text-red-400">
+            <p className="text-xl sm:text-2xl font-bold text-red-500">
               {
                 displayAccounts.filter((a) => a.current_phase === "failed")
                   .length
@@ -503,58 +497,58 @@ export default function AdminAccounts() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
+      <Card className="bg-card border-border p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder={t("admin.accounts.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm"
+              className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
             />
           </div>
           <div className="flex gap-2 sm:gap-3">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="flex-1 sm:w-[130px] bg-slate-800 border-slate-700 text-white text-sm">
+              <SelectTrigger className="flex-1 sm:w-[130px] bg-muted border-border text-foreground text-sm">
                 <SelectValue placeholder={t("admin.accounts.filter.status")} />
               </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                <SelectItem value="all" className="text-white">
+              <SelectContent className="bg-card border-border text-foreground">
+                <SelectItem value="all" className="text-foreground">
                   {t("admin.accounts.filter.allStatus")}
                 </SelectItem>
-                <SelectItem value="active" className="text-white">
+                <SelectItem value="active" className="text-foreground">
                   {t("admin.accounts.filter.active")}
                 </SelectItem>
-                <SelectItem value="paused" className="text-white">
+                <SelectItem value="paused" className="text-foreground">
                   {t("admin.accounts.filter.paused")}
                 </SelectItem>
-                <SelectItem value="closed" className="text-white">
+                <SelectItem value="closed" className="text-foreground">
                   {t("admin.accounts.filter.closed")}
                 </SelectItem>
-                <SelectItem value="daily_locked" className="text-white">
+                <SelectItem value="daily_locked" className="text-foreground">
                   {t("admin.accounts.filter.dailyLocked")}
                 </SelectItem>
-                <SelectItem value="disqualified" className="text-white">
+                <SelectItem value="disqualified" className="text-foreground">
                   {t("admin.accounts.filter.disqualified")}
                 </SelectItem>
               </SelectContent>
             </Select>
             <Select value={phaseFilter} onValueChange={setPhaseFilter}>
-              <SelectTrigger className="flex-1 sm:w-[130px] bg-slate-800 border-slate-700 text-white text-sm">
+              <SelectTrigger className="flex-1 sm:w-[130px] bg-muted border-border text-foreground text-sm">
                 <SelectValue placeholder={t("admin.accounts.filter.phase")} />
               </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                <SelectItem value="all" className="text-white">
+              <SelectContent className="bg-card border-border text-foreground">
+                <SelectItem value="all" className="text-foreground">
                   {t("admin.accounts.filter.allPhases")}
                 </SelectItem>
-                <SelectItem value="phase1" className="text-white">
+                <SelectItem value="phase1" className="text-foreground">
                   {t("admin.accounts.filter.phase1")}
                 </SelectItem>
-                <SelectItem value="phase2" className="text-white">
+                <SelectItem value="phase2" className="text-foreground">
                   {t("admin.accounts.filter.phase2")}
                 </SelectItem>
-                <SelectItem value="funded" className="text-white">
+                <SelectItem value="funded" className="text-foreground">
                   {t("admin.accounts.filter.funded")}
                 </SelectItem>
               </SelectContent>
@@ -564,12 +558,13 @@ export default function AdminAccounts() {
       </Card>
 
       {/* Accounts Table */}
-      <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4 md:p-6">
+      <Card className="bg-card border-border p-3 sm:p-4 md:p-6">
         <DataTable
           columns={columns}
           data={filteredAccounts}
           isLoading={isLoading}
           emptyMessage={t("admin.accounts.emptyMessage")}
+          variant="light"
         />
       </Card>
 

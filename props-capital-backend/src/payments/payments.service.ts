@@ -1,10 +1,13 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+import { TradingPhase, TradingAccountStatus, NotificationType, NotificationCategory } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { CouponsService } from '../coupons/coupons.service';
 
-import { TradingPhase, TradingAccountStatus, NotificationType, NotificationCategory } from '@prisma/client';
+import { generatePassword } from 'src/utils/generate-password.util';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 
@@ -13,6 +16,7 @@ export class PaymentsService {
   constructor(
     private prisma: PrismaService,
     private notificationsService: NotificationsService,
+    private readonly emailService: EmailService,
     private couponsService: CouponsService,
   ) { }
 
@@ -27,6 +31,12 @@ export class PaymentsService {
       throw new BadRequestException("Missing required field: userId");
 
     }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) throw new BadRequestException('User not found');
 
     // 1. Validate challenge - find by ID or by accountSize + challengeType
 
@@ -174,12 +184,49 @@ export class PaymentsService {
         brokerLogin: null,
 
         brokerPassword: null,
-
       } as any,
-
     });
 
-    console.log('✅ Account created with platform:', account.platform, 'Account ID:', account.id);
+    console.log(
+      '✅ Account created with platform:',
+      account.platform,
+      'Account ID:',
+      account.id,
+    );
+
+    // Adding platform credentials to the account for MT5
+
+    if (account.platform === 'MT5') {
+      const platformEmail =
+        user.email.split('@')[0] +
+        '-' +
+        account.id.substring(0, 8) +
+        '@prop-capitals.com';
+      const platformPassword = generatePassword(20);
+      const platformHashedPassword = await bcrypt.hash(platformPassword, 10);
+
+      await this.prisma.tradingAccount.update({
+        where: {
+          id: account.id,
+        },
+        data: {
+          platformEmail: platformEmail,
+          platformHashedPassword: platformHashedPassword,
+        },
+      });
+
+      await this.emailService.sendPlatformAccountCredentials(
+        user.email,
+        platformEmail,
+        platformPassword,
+        {
+          id: account.id.substring(0, 8),
+          platform: account.platform,
+        },
+        'setup',
+      );
+    }
+
 
     // Create notification for challenge purchase
     await this.notificationsService.create(

@@ -152,12 +152,12 @@ export default function AdminUsers() {
       accessorKey: "full_name",
       cell: (row) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-white text-sm font-bold">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-[#0a0d12] text-sm font-bold">
             {row.full_name?.[0] || "U"}
           </div>
           <div>
-            <p className="text-white font-medium">{row.full_name}</p>
-            <p className="text-xs text-slate-300">{row.email}</p>
+            <p className="text-foreground font-medium">{row.full_name}</p>
+            <p className="text-xs text-muted-foreground">{row.email}</p>
           </div>
         </div>
       ),
@@ -167,10 +167,10 @@ export default function AdminUsers() {
       accessorKey: "role",
       cell: (row) => (
         <span
-          className={`px-2 py-1 rounded text-xs font-medium ${
+          className={`px-2 py-1 rounded-full text-xs font-medium ${
             row.role === "admin"
-              ? "bg-amber-500/20 text-amber-400"
-              : "bg-slate-700 text-slate-300"
+              ? "bg-amber-500/10 text-amber-600 border border-amber-200"
+              : "bg-emerald-500/10 text-emerald-600 border border-emerald-200"
           }`}
         >
           {t(`admin.users.roles.${row.role}`)}
@@ -191,7 +191,7 @@ export default function AdminUsers() {
             <Button
               variant="ghost"
               size="icon"
-              className="text-slate-400 data-[state=open]:text-white"
+              className="text-muted-foreground data-[state=open]:text-foreground"
             >
               <MoreHorizontal className="w-4 h-4" />
             </Button>
@@ -199,14 +199,13 @@ export default function AdminUsers() {
 
           <DropdownMenuContent
             align="end"
-            className="bg-slate-900 border-slate-800"
+            className="bg-card border-border"
           >
             <DropdownMenuItem
               className="
         cursor-pointer
-        text-slate-300
-        data-[highlighted]:bg-slate-800
-        data-[highlighted]:text-white
+        text-foreground
+        data-[highlighted]:bg-accent
       "
               onClick={() => handleViewDetails(row.id)}
             >
@@ -217,23 +216,21 @@ export default function AdminUsers() {
             <DropdownMenuItem
               className="
         cursor-pointer
-        text-slate-300
-        data-[highlighted]:bg-slate-800
-        data-[highlighted]:text-white
+        text-foreground
+        data-[highlighted]:bg-accent
       "
             >
               <Mail className="w-4 h-4 mr-2 data-[highlighted]:text-white" />
               {t("admin.users.actions.sendEmail")}
             </DropdownMenuItem>
 
-            <DropdownMenuSeparator className="bg-slate-800" />
+            <DropdownMenuSeparator className="bg-border" />
 
             <DropdownMenuItem
               className="
         cursor-pointer
-        text-cyan-400
-        data-[highlighted]:bg-slate-800
-        data-[highlighted]:text-cyan-300
+        text-cyan-500
+        data-[highlighted]:bg-accent
       "
               onClick={() => handleSwitchRole(row)}
               disabled={updateRoleMutation.isPending}
@@ -253,30 +250,30 @@ export default function AdminUsers() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-white">
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground">
           {t("admin.users.title")}
         </h1>
-        <p className="text-sm sm:text-base text-slate-400">
+        <p className="text-sm sm:text-base text-muted-foreground">
           {t("admin.users.subtitle")}
         </p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-        <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400">
+        <Card className="bg-card border-border p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {t("admin.users.stats.totalUsers")}
           </p>
           {isLoading ? (
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
-            <p className="text-xl sm:text-2xl font-bold text-white">
+            <p className="text-xl sm:text-2xl font-bold text-foreground">
               {displayUsers.length}
             </p>
           )}
         </Card>
-        <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400">
+        <Card className="bg-card border-border p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {t("admin.users.stats.traders")}
           </p>
           {isLoading ? (
@@ -287,8 +284,8 @@ export default function AdminUsers() {
             </p>
           )}
         </Card>
-        <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400">
+        <Card className="bg-card border-border p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {t("admin.users.stats.admins")}
           </p>
           {isLoading ? (
@@ -299,8 +296,8 @@ export default function AdminUsers() {
             </p>
           )}
         </Card>
-        <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400">
+        <Card className="bg-card border-border p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {t("admin.users.stats.newThisWeek")}
           </p>
           {isLoading ? (
@@ -320,30 +317,30 @@ export default function AdminUsers() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
+      <Card className="bg-card border-border p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder={t("admin.users.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm"
+              className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
             />
           </div>
           <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-full sm:w-[150px] bg-slate-800 border-slate-700 text-white">
+            <SelectTrigger className="w-full sm:w-[150px] bg-muted border-border text-foreground">
               <Filter className="w-4 h-4 mr-2" />
               <SelectValue placeholder={t("admin.users.filter.role")} />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-700 text-white">
-              <SelectItem value="all" className="text-white">
+            <SelectContent className="bg-card border-border text-foreground">
+              <SelectItem value="all" className="text-foreground">
                 {t("admin.users.filter.allRoles")}
               </SelectItem>
-              <SelectItem value="user" className="text-white">
+              <SelectItem value="user" className="text-foreground">
                 {t("admin.users.filter.traders")}
               </SelectItem>
-              <SelectItem value="admin" className="text-white">
+              <SelectItem value="admin" className="text-foreground">
                 {t("admin.users.filter.admins")}
               </SelectItem>
             </SelectContent>
@@ -352,12 +349,13 @@ export default function AdminUsers() {
       </Card>
 
       {/* Users Table */}
-      <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4 md:p-6">
+      <Card className="bg-card border-border p-3 sm:p-4 md:p-6">
         <DataTable
           columns={columns}
           data={filteredUsers}
           isLoading={isLoading}
           emptyMessage={t("admin.users.emptyMessage")}
+          variant="light"
         />
       </Card>
 
@@ -365,19 +363,19 @@ export default function AdminUsers() {
       <Dialog open={isDetailsDialogOpen} onOpenChange={handleCloseDetails}>
         <DialogContent
           className="
-      bg-slate-900 border-slate-800
+      bg-card border-border
       w-[95vw] sm:w-full sm:max-w-2xl
       max-h-[85vh] overflow-y-auto
       p-4 sm:p-6
 
-      [&>button]:text-white
-      [&>button]:hover:text-white
-      [&>button]:hover:bg-slate-800
+      [&>button]:text-foreground
+      [&>button]:hover:text-foreground
+      [&>button]:hover:bg-accent
       [&>button]:rounded-sm
     "
         >
           <DialogHeader>
-            <DialogTitle className="text-white text-base sm:text-lg md:text-xl">
+            <DialogTitle className="text-foreground text-base sm:text-lg md:text-xl">
               {t("admin.users.dialog.title")}
             </DialogTitle>
           </DialogHeader>
@@ -389,30 +387,30 @@ export default function AdminUsers() {
           ) : userDetails ? (
             <div className="space-y-4 sm:space-y-6 mt-3 sm:mt-4">
               {/* User Header */}
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4 pb-3 sm:pb-4 border-b border-slate-800 text-center sm:text-left">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-white text-lg sm:text-2xl font-bold flex-shrink-0">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4 pb-3 sm:pb-4 border-b border-border text-center sm:text-left">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-[#0a0d12] text-lg sm:text-2xl font-bold flex-shrink-0">
                   {userDetails.profile?.firstName?.[0] ||
                     userDetails.email?.[0]?.toUpperCase() ||
                     "U"}
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-white truncate">
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground truncate">
                     {userDetails.profile?.firstName &&
                     userDetails.profile?.lastName
                       ? `${userDetails.profile.firstName} ${userDetails.profile.lastName}`
                       : userDetails.email || "User"}
                   </h3>
 
-                  <p className="text-slate-400 text-xs sm:text-sm break-all">
+                  <p className="text-muted-foreground text-xs sm:text-sm break-all">
                     {userDetails.email}
                   </p>
 
                   <span
-                    className={`inline-block mt-1.5 sm:mt-2 px-2 py-0.5 sm:py-1 rounded text-xs font-medium ${
+                    className={`inline-block mt-1.5 sm:mt-2 px-2 py-0.5 sm:py-1 rounded-full text-xs font-medium ${
                       userDetails.role === "ADMIN"
-                        ? "bg-amber-500/20 text-amber-400"
-                        : "bg-slate-700 text-slate-300"
+                        ? "bg-amber-500/10 text-amber-600 border border-amber-200"
+                        : "bg-emerald-500/10 text-emerald-600 border border-emerald-200"
                     }`}
                   >
                     {t(
@@ -426,20 +424,20 @@ export default function AdminUsers() {
 
               {/* User Information */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div className="bg-slate-800/30 rounded-lg p-2.5 sm:p-3">
-                  <p className="text-xs text-slate-400 mb-1">
+                <div className="bg-muted/40 rounded-lg p-2.5 sm:p-3">
+                  <p className="text-xs text-muted-foreground mb-1">
                     {t("admin.users.dialog.userId")}
                   </p>
-                  <p className="text-white font-mono text-xs break-all">
+                  <p className="text-foreground font-mono text-xs break-all">
                     {userDetails.id || "N/A"}
                   </p>
                 </div>
 
-                <div className="bg-slate-800/30 rounded-lg p-2.5 sm:p-3">
-                  <p className="text-xs text-slate-400 mb-1">
+                <div className="bg-muted/40 rounded-lg p-2.5 sm:p-3">
+                  <p className="text-xs text-muted-foreground mb-1">
                     {t("admin.users.dialog.role")}
                   </p>
-                  <p className="text-white text-xs sm:text-sm">
+                  <p className="text-foreground text-xs sm:text-sm">
                     {t(
                       `admin.users.roles.${
                         userDetails.role === "ADMIN" ? "admin" : "user"
@@ -449,32 +447,32 @@ export default function AdminUsers() {
                 </div>
 
                 {userDetails.profile?.firstName && (
-                  <div className="bg-slate-800/30 rounded-lg p-2.5 sm:p-3">
-                    <p className="text-xs text-slate-400 mb-1">
+                  <div className="bg-muted/40 rounded-lg p-2.5 sm:p-3">
+                    <p className="text-xs text-muted-foreground mb-1">
                       {t("admin.users.dialog.firstName")}
                     </p>
-                    <p className="text-white text-xs sm:text-sm">
+                    <p className="text-foreground text-xs sm:text-sm">
                       {userDetails.profile.firstName}
                     </p>
                   </div>
                 )}
 
                 {userDetails.profile?.lastName && (
-                  <div className="bg-slate-800/30 rounded-lg p-2.5 sm:p-3">
-                    <p className="text-xs text-slate-400 mb-1">
+                  <div className="bg-muted/40 rounded-lg p-2.5 sm:p-3">
+                    <p className="text-xs text-muted-foreground mb-1">
                       {t("admin.users.dialog.lastName")}
                     </p>
-                    <p className="text-white text-xs sm:text-sm">
+                    <p className="text-foreground text-xs sm:text-sm">
                       {userDetails.profile.lastName}
                     </p>
                   </div>
                 )}
 
-                <div className="bg-slate-800/30 rounded-lg p-2.5 sm:p-3">
-                  <p className="text-xs text-slate-400 mb-1">
+                <div className="bg-muted/40 rounded-lg p-2.5 sm:p-3">
+                  <p className="text-xs text-muted-foreground mb-1">
                     {t("admin.users.dialog.joined")}
                   </p>
-                  <p className="text-white text-xs sm:text-sm">
+                  <p className="text-foreground text-xs sm:text-sm">
                     {userDetails.createdAt
                       ? format(
                           new Date(userDetails.createdAt),
@@ -486,7 +484,7 @@ export default function AdminUsers() {
               </div>
             </div>
           ) : (
-            <div className="text-center py-6 sm:py-8 text-slate-400 text-sm">
+            <div className="text-center py-6 sm:py-8 text-muted-foreground text-sm">
               {t("admin.users.dialog.noDetails")}
             </div>
           )}
