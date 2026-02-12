@@ -137,7 +137,7 @@ function PagesContent() {
       <LanguageProvider>
         <ErrorBoundary>
           <Layout currentPageName={currentPage}>
-            <Routes key={location.pathname}>
+            <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Home />} />
               <Route path="/Home" element={<Home />} />
