@@ -52,6 +52,7 @@ const MT5TradingArea = ({
     selectedTimeframe,
     setSelectedTimeframe,
     symbols,
+    setSymbols,
     symbolsLoading,
     accountSummary,
     orders,
@@ -97,7 +98,33 @@ const MT5TradingArea = ({
 
   const { prices: unifiedPrices } = usePrices();
 
-  // // Enrich selected symbol with real-time price data
+  // Bridge: MT5 live prices → SDK TradingContext symbols update
+  // Jab MT5 PriceContext se live prices aayen, SDK ke symbols mein update karo
+  // IMPORTANT: Dependency array sirf unifiedPrices + setSymbols par rakho
+  // warna infinite re-render / "Maximum update depth exceeded" error aata hai.
+  useEffect(() => {
+    if (!unifiedPrices || Object.keys(unifiedPrices).length === 0) return;
+
+    // Update SDK symbols with live prices from MT5 PriceContext
+    setSymbols(prev =>
+      prev.map((s) => {
+        const livePrice = unifiedPrices[s.symbol];
+        if (!livePrice) return s;
+
+        const next = {
+          ...s,
+          bid: livePrice.bid ?? s.bid,
+          ask: livePrice.ask ?? s.ask,
+          // change field maintain karo (agar MT5 se nahi aata)
+          change: s.change ?? 0,
+        };
+
+        return next;
+      })
+    );
+  }, [unifiedPrices, setSymbols]);
+
+  // Enrich selected symbol with real-time price data
   const enrichedSelectedSymbol = selectedSymbol && unifiedPrices[selectedSymbol.symbol]
     ? {
       ...selectedSymbol,

@@ -7,12 +7,26 @@ import TradeLockerComingSoon from './TradeLockerComingSoon';
 import PT5Terminal from '@/pages/TradingTerminal';
 import { TradingProvider } from '@nabeeltahirdeveloper/chart-sdk'
 
+
+
 const MT5Terminal = () => {
   const { selectedChallenge } = useChallenges();
+  // MT5 backend URL - use env variable for local testing
+  const MT5_API_URL = import.meta.env.VITE_MT5_API_URL || 'https://dev-api.prop-capitals.com';
 
+  // MT5 ke endpoints
+  const endpoints = {
+    candles: '/market-data/history',        // Historical candles endpoint
+    symbols: '/market-data/prices?symbols', // Symbols list (query param allowed)
+    trades: '/trades',               // Trades endpoint (adjust if different)
+    account: '/api/v1/user/account',        // Account endpoint (adjust if different)
+  };
   return (
     <CommonTerminalWrapper>
-      <TradingProvider baseUrl="https://api-chart-sdk.e-volvo.io">
+      <TradingProvider
+        baseUrl={MT5_API_URL}
+        endpoints={endpoints}
+      >
         <MT5TradingArea selectedChallenge={selectedChallenge} />
       </TradingProvider>
     </CommonTerminalWrapper>
