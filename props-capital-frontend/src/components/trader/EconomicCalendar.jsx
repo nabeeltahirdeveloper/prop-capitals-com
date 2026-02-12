@@ -4,7 +4,7 @@ import { useTraderTheme } from './TraderPanelLayout';
 
 
 async function fetchCalendarMonth(monthYYYYMM) {
-  const res = await fetch(`/economic-calendar?month=${encodeURIComponent(monthYYYYMM)}`);
+  const res = await fetch(`/api/economic-calendar?month=${encodeURIComponent(monthYYYYMM)}`);
   if (!res.ok) throw new Error(`Calendar fetch failed: ${res.status}`);
   return res.json(); // { month, events: [...] }
 }
@@ -14,6 +14,7 @@ function monthKeyUTC(dateObj) {
   const m = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
   return `${y}-${m}`;
 }
+
 
 function utcDayKeyFromParts(y, m1to12, d1to31) {
   const mm = String(m1to12).padStart(2, '0');
