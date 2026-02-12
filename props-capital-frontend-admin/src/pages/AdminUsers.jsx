@@ -355,7 +355,6 @@ export default function AdminUsers() {
           data={filteredUsers}
           isLoading={isLoading}
           emptyMessage={t("admin.users.emptyMessage")}
-          variant="light"
         />
       </Card>
 

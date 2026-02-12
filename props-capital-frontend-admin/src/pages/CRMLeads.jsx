@@ -505,12 +505,14 @@ export default function CRMLeads() {
             key={status}
             className={`bg-card border p-3 sm:p-4 cursor-pointer transition-all ${
               activeStatusCard === status
-                ? 'border-[#d97706] bg-amber-50'
-                : 'border-border hover:border-amber-200'
+                ? 'border-[#d97706] ring-2 ring-amber-500/20'
+                : 'border-border hover:border-amber-500/50'
             }`}
             onClick={() => setActiveStatusCard(status)}
           >
-            <p className="text-xl sm:text-2xl font-bold text-foreground mb-1">
+            <p className={`text-xl sm:text-2xl font-bold mb-1 ${
+              activeStatusCard === status ? 'text-amber-500' : 'text-foreground'
+            }`}>
               {count}
             </p>
             <p className="text-xs sm:text-sm text-muted-foreground capitalize">

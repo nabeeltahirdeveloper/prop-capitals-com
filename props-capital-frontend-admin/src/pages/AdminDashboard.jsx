@@ -514,7 +514,6 @@ export default function AdminDashboard() {
                 columns={accountColumns}
                 data={displayRecentAccounts}
                 emptyMessage={t("admin.dashboard.noDataFound")}
-                variant="light"
               />
             </div>
           )}
@@ -552,7 +551,6 @@ export default function AdminDashboard() {
                 columns={violationColumns}
                 data={displayRecentViolations}
                 emptyMessage={t("admin.dashboard.noDataFound")}
-                variant="light"
               />
             </div>
           )}

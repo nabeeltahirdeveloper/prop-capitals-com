@@ -564,7 +564,6 @@ export default function AdminAccounts() {
           data={filteredAccounts}
           isLoading={isLoading}
           emptyMessage={t("admin.accounts.emptyMessage")}
-          variant="light"
         />
       </Card>
 

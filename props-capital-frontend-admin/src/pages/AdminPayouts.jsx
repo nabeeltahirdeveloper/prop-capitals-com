@@ -365,7 +365,6 @@ export default function AdminPayouts() {
           data={filteredPayouts}
           isLoading={isLoading}
           emptyMessage={t("admin.payouts.emptyMessage")}
-          variant="light"
         />
       </Card>
 

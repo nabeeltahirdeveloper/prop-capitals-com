@@ -316,7 +316,6 @@ export default function AdminViolations() {
           data={filteredViolations}
           isLoading={isLoading}
           emptyMessage={t("admin.violations.emptyMessage")}
-          variant="light"
         />
 
         {/* Pagination */}
