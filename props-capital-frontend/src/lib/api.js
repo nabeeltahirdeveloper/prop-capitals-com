@@ -25,7 +25,20 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response?.status === 401) {
+    const responseMessage = error.response?.data?.message;
+    const normalizedResponseMessage = Array.isArray(responseMessage)
+      ? responseMessage.join(" ")
+      : responseMessage;
+    const isPlatformAccessUnauthorized =
+      typeof normalizedResponseMessage === "string" &&
+      normalizedResponseMessage.toLowerCase().includes("platform");
+    const allowPlatformUnauthorized =
+      error.config?.allowPlatformUnauthorized === true;
+
+    if (
+      error.response?.status === 401 &&
+      !(allowPlatformUnauthorized && isPlatformAccessUnauthorized)
+    ) {
       // Clear token from localStorage
       localStorage.removeItem("token");
       // Only redirect to sign in page if we're on a protected page

@@ -108,38 +108,41 @@ model Challenge {
 }
 
 model TradingAccount {
-  id                String               @id @default(cuid())
-  userId            String
-  challengeId       String
-  phase             TradingPhase         @default(PHASE1)
-  status            TradingAccountStatus @default(ACTIVE)
-  balance           Float                @default(0)
-  equity            Float                @default(0)
-  brokerLogin       String?
-  brokerPassword    String?
-  brokerServerId    String?
-  initialBalance    Float                @default(0)
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
-  dailyLockedUntil  DateTime?
-  maxEquityToDate   Float?
-  todayStartEquity  Float?
-  dailyLossViolated Boolean              @default(false)
-  drawdownViolated  Boolean              @default(false)
-  platform          ChallengePlatform?
-  minEquityToday    Float?
-  minEquityOverall  Float?
-  lastDailyReset    DateTime?
-  equityShots       EquitySnapshot[]
-  payouts           Payout[]
-  pendingOrders     PendingOrder[]
-  phaseHistory      PhaseTransition[]
-  scalingRequests   ScalingRequest[]
-  trades            Trade[]
-  brokerServer      BrokerServer?        @relation("BrokerServerAccounts", fields: [brokerServerId], references: [id])
-  challenge         Challenge            @relation(fields: [challengeId], references: [id])
-  user              User                 @relation(fields: [userId], references: [id])
-  violations        Violation[]
+  id                     String               @id @default(cuid())
+  userId                 String
+  challengeId            String
+  phase                  TradingPhase         @default(PHASE1)
+  status                 TradingAccountStatus @default(ACTIVE)
+  balance                Float                @default(0)
+  equity                 Float                @default(0)
+  brokerLogin            String?
+  brokerPassword         String?
+  brokerServerId         String?
+  platformEmail          String?
+  platformHashedPassword String?
+  platformSessionId      String?
+  initialBalance         Float                @default(0)
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  dailyLockedUntil       DateTime?
+  maxEquityToDate        Float?
+  todayStartEquity       Float?
+  dailyLossViolated      Boolean              @default(false)
+  drawdownViolated       Boolean              @default(false)
+  platform               ChallengePlatform?
+  minEquityToday         Float?
+  minEquityOverall       Float?
+  lastDailyReset         DateTime?
+  equityShots            EquitySnapshot[]
+  payouts                Payout[]
+  pendingOrders          PendingOrder[]
+  phaseHistory           PhaseTransition[]
+  scalingRequests        ScalingRequest[]
+  trades                 Trade[]
+  brokerServer           BrokerServer?        @relation("BrokerServerAccounts", fields: [brokerServerId], references: [id])
+  challenge              Challenge            @relation(fields: [challengeId], references: [id])
+  user                   User                 @relation(fields: [userId], references: [id])
+  violations             Violation[]
 }
 
 model Trade {

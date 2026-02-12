@@ -3,10 +3,11 @@ import { PaymentsService } from './payments.service';
 import { PaymentsController } from './payments.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { EmailModule } from 'src/email/email.module';
 import { CouponsModule } from '../coupons/coupons.module';
 
 @Module({
-  imports: [PrismaModule, NotificationsModule, CouponsModule],
+  imports: [PrismaModule, NotificationsModule, EmailModule, CouponsModule],
   providers: [PaymentsService],
   controllers: [PaymentsController]
 })

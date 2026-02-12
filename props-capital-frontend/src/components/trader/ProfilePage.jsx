@@ -53,6 +53,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (user) {
+      const joinDate = user.profile?.joinDate || user.createdAt;
       setProfile({
         firstName: user.profile?.firstName || '-',
         lastName: user.profile?.lastName || '-',
@@ -61,10 +62,9 @@ const ProfilePage = () => {
         city: user.profile?.city || '-',
         country: user.profile?.country || '-',
         timezone: user.profile?.timezone || '-',
-        joinDate: user.profile?.joinDate || '-',
+        joinDate: joinDate ? formatDate(joinDate) : '-',
         tradingExperience: user.profile?.tradingExperience || '-',
         preferredPlatform: user.profile?.preferredPlatform || '-',
-        joinDate: formatDate(user.createdAt) || '-',
       });
     }
   }, [user]);
