@@ -101,7 +101,7 @@ export class PendingOrdersService {
     }
 
     // Re-check account status before execution
-    const accountStatus = pendingOrder.tradingAccountId?.status;
+    const accountStatus = pendingOrder.tradingAccount?.status;
     if (accountStatus === ('DAILY_LOCKED' as any)) {
       throw new BadRequestException('Daily loss limit reached. Trading locked until tomorrow.');
     }
@@ -138,7 +138,7 @@ export class PendingOrdersService {
     // Get the pending order
     const pendingOrder = await this.prisma.pendingOrder.findUnique({
       where: { id: orderId },
-      include: { tradingAccountId: true },
+      include: { tradingAccount: true },
     });
 
     if (!pendingOrder) {
