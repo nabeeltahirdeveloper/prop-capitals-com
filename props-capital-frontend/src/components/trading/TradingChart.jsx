@@ -4530,9 +4530,7 @@ const ChartArea = forwardRef(function ChartArea({
   }, [candles, chartType]);
 
   const handleBuyClick = (orderData) => {
-    // Order data contains: volume, stopLoss, takeProfit, comment, price
-    console.log('Buy Order:', orderData);
-    // If parent provides handler, use it; otherwise use local modal
+    // If parent provides handler (e.g. MT5 opens shared modal), use it; otherwise use chart's local modal
     if (onBuyClickProp) {
       onBuyClickProp('BUY');
     } else {
@@ -4542,9 +4540,6 @@ const ChartArea = forwardRef(function ChartArea({
   };
 
   const handleSellClick = (orderData) => {
-    // Order data contains: volume, stopLoss, takeProfit, comment, price
-    console.log('Sell Order:', orderData);
-    // If parent provides handler, use it; otherwise use local modal
     if (onSellClickProp) {
       onSellClickProp('SELL');
     } else {
@@ -4670,7 +4665,7 @@ const ChartArea = forwardRef(function ChartArea({
       },
       handleScroll: {
         mouseWheel: true,
-        pressedMouseMove: activeTool === null || activeTool === 1,
+        pressedMouseMove: activeTool == null || activeTool === 1,
         horzTouchDrag: true,
         vertTouchDrag: true,
       },
@@ -4834,10 +4829,11 @@ const ChartArea = forwardRef(function ChartArea({
     if (!chartRef.current) return;
 
     // Disable chart panning when drawing tools are active (trendline, rectangle, fibonacci, parallellines, etc.)
-    const isDrawingTool = activeTool !== null && activeTool !== 1 && activeTool !== 0;
-    // When chart is locked, disable all pan and zoom
-    const panAllowed = !chartLocked && !isDrawingTool;
-    const zoomAllowed = !chartLocked;
+    // Treat null/undefined as "no tool" so drag/pan works when context doesn't set activeTool
+    const isDrawingTool = activeTool != null && activeTool !== 1 && activeTool !== 0;
+    // When chart is locked, disable all pan and zoom (treat undefined as unlocked)
+    const panAllowed = chartLocked !== true && !isDrawingTool;
+    const zoomAllowed = chartLocked !== true;
 
     chartRef.current.applyOptions({
       crosshair: {
@@ -6295,7 +6291,7 @@ const ChartArea = forwardRef(function ChartArea({
     const chart = chartRef.current;
     const series = seriesRef.current;
     const container = containerRef.current;
-    const isSelectionAllowed = activeTool === null || activeTool === 1;
+    const isSelectionAllowed = activeTool == null || activeTool === 1;
     if (!isSelectionAllowed || !chart || !series || !container) {
       if (!isSelectionAllowed) {
         setSelectedChartObject(null);
@@ -6330,13 +6326,13 @@ const ChartArea = forwardRef(function ChartArea({
     }
 
     const handleSelectionMouseDown = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
       const rect = container.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
       const hit = hitTestTrendLines(x, y);
       if (hit) {
+        e.preventDefault();
+        e.stopPropagation();
         setSelectedChartObject(hit.object);
         dragModeRef.current = hit.mode;
         if (hit.mode === "line") {
@@ -6350,6 +6346,7 @@ const ChartArea = forwardRef(function ChartArea({
       } else {
         setSelectedChartObject(null);
         dragModeRef.current = null;
+        // Don't preventDefault/stopPropagation so chart can receive events for pan (left/right) and price axis drag (up/down)
       }
     };
 
