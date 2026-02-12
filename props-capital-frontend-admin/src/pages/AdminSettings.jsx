@@ -161,23 +161,23 @@ export default function AdminSettings() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">
             {t("admin.settings.title")}
           </h1>
-          <p className="text-sm sm:text-base text-slate-400">
+          <p className="text-sm sm:text-base text-muted-foreground">
             {t("admin.settings.subtitle")}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
           {saved && (
-            <span className="text-emerald-400 flex items-center gap-2 justify-center text-sm">
+            <span className="text-emerald-500 flex items-center gap-2 justify-center text-sm">
               <CheckCircle className="w-4 h-4" />
               {t("admin.settings.settingsSaved")}
             </span>
           )}
           <Button
             onClick={handleSave}
-            className="bg-gradient-to-r from-emerald-500 to-cyan-500 w-full sm:w-auto"
+            className="bg-gradient-to-r from-[#d97706] to-[#d97706] hover:from-amber-600 hover:to-amber-600 w-full sm:w-auto text-white"
             disabled={isLoading || saveMutation.isPending}
           >
             {saveMutation.isPending ? (
@@ -201,38 +201,38 @@ export default function AdminSettings() {
         className="space-y-6"
       >
         <div className="overflow-x-auto pb-1 scrollbar-hide">
-          <TabsList className="bg-slate-900 border border-slate-800 h-auto p-1 flex min-w-max gap-1">
+          <TabsList className="bg-muted border border-border h-auto p-1 flex min-w-max gap-1">
             <TabsTrigger
               value="general"
-              className="data-[state=active]:bg-slate-800 text-slate-400 data-[state=active]:text-white text-xs sm:text-sm px-3 sm:px-4 py-2"
+              className="data-[state=active]:bg-card text-muted-foreground data-[state=active]:text-foreground text-xs sm:text-sm px-3 sm:px-4 py-2"
             >
               <Settings className="w-4 h-4 mr-2 flex-shrink-0" />
               {t("admin.settings.tabs.general")}
             </TabsTrigger>
             <TabsTrigger
               value="branding"
-              className="data-[state=active]:bg-slate-800 text-slate-400 data-[state=active]:text-white text-xs sm:text-sm px-3 sm:px-4 py-2"
+              className="data-[state=active]:bg-card text-muted-foreground data-[state=active]:text-foreground text-xs sm:text-sm px-3 sm:px-4 py-2"
             >
               <Palette className="w-4 h-4 mr-2 flex-shrink-0" />
               {t("admin.settings.tabs.branding")}
             </TabsTrigger>
             <TabsTrigger
               value="payments"
-              className="data-[state=active]:bg-slate-800 text-slate-400 data-[state=active]:text-white text-xs sm:text-sm px-3 sm:px-4 py-2"
+              className="data-[state=active]:bg-card text-muted-foreground data-[state=active]:text-foreground text-xs sm:text-sm px-3 sm:px-4 py-2"
             >
               <CreditCard className="w-4 h-4 mr-2 flex-shrink-0" />
               {t("admin.settings.tabs.payments")}
             </TabsTrigger>
             <TabsTrigger
               value="integrations"
-              className="data-[state=active]:bg-slate-800 text-slate-400 data-[state=active]:text-white text-xs sm:text-sm px-3 sm:px-4 py-2"
+              className="data-[state=active]:bg-card text-muted-foreground data-[state=active]:text-foreground text-xs sm:text-sm px-3 sm:px-4 py-2"
             >
               <Link className="w-4 h-4 mr-2 flex-shrink-0" />
               {t("admin.settings.tabs.integrations")}
             </TabsTrigger>
             <TabsTrigger
               value="email"
-              className="data-[state=active]:bg-slate-800 text-slate-400 data-[state=active]:text-white text-xs sm:text-sm px-3 sm:px-4 py-2"
+              className="data-[state=active]:bg-card text-muted-foreground data-[state=active]:text-foreground text-xs sm:text-sm px-3 sm:px-4 py-2"
             >
               <Mail className="w-4 h-4 mr-2 flex-shrink-0" />
               {t("admin.settings.tabs.email")}
@@ -241,14 +241,14 @@ export default function AdminSettings() {
         </div>
 
         <TabsContent value="general">
-          <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-white mb-4 sm:mb-6">
+          <Card className="bg-card border-border p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-foreground mb-4 sm:mb-6">
               {t("admin.settings.general.title")}
             </h3>
             <div className="space-y-4 sm:space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-1.5 sm:space-y-2">
-                  <Label className="text-slate-300 text-xs sm:text-sm">
+                  <Label className="text-muted-foreground text-xs sm:text-sm">
                     {t("admin.settings.general.platformName")}
                   </Label>
                   <Input
@@ -259,12 +259,12 @@ export default function AdminSettings() {
                         platform_name: e.target.value,
                       })
                     }
-                    className="bg-slate-800 border-slate-700 text-white"
+                    className="bg-muted border-border text-foreground"
                     disabled={isLoading}
                   />
                 </div>
                 <div className="space-y-1.5 sm:space-y-2">
-                  <Label className="text-slate-300 text-xs sm:text-sm">
+                  <Label className="text-muted-foreground text-xs sm:text-sm">
                     {t("admin.settings.general.supportEmail")}
                   </Label>
                   <Input
@@ -276,17 +276,17 @@ export default function AdminSettings() {
                         support_email: e.target.value,
                       })
                     }
-                    className="bg-slate-800 border-slate-700 text-white text-sm"
+                    className="bg-muted border-border text-foreground text-sm"
                     disabled={isLoading}
                   />
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-slate-800/50 rounded-lg gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-muted/60 rounded-lg gap-3">
                 <div className="min-w-0">
-                  <p className="text-white font-medium text-sm sm:text-base">
+                  <p className="text-foreground font-medium text-sm sm:text-base">
                     {t("admin.settings.general.maintenanceMode")}
                   </p>
-                  <p className="text-xs sm:text-sm text-slate-400 leading-tight">
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
                     {t("admin.settings.general.maintenanceModeDesc")}
                   </p>
                 </div>
@@ -303,14 +303,14 @@ export default function AdminSettings() {
         </TabsContent>
 
         <TabsContent value="branding">
-          <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-white mb-4 sm:mb-6">
+          <Card className="bg-card border-border p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-foreground mb-4 sm:mb-6">
               {t("admin.settings.branding.title")}
             </h3>
             <div className="space-y-4 sm:space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-1.5 sm:space-y-2">
-                  <Label className="text-slate-300 text-xs sm:text-sm">
+                  <Label className="text-muted-foreground text-xs sm:text-sm">
                     {t("admin.settings.branding.primaryColor")}
                   </Label>
                   <div className="flex gap-2">
@@ -323,7 +323,7 @@ export default function AdminSettings() {
                           primary_color: e.target.value,
                         })
                       }
-                      className="w-10 sm:w-12 h-9 sm:h-10 p-1 bg-slate-800 border-slate-700 rounded cursor-pointer"
+                      className="w-10 sm:w-12 h-9 sm:h-10 p-1 bg-muted border-border rounded cursor-pointer"
                       disabled={isLoading}
                     />
                     <Input
@@ -334,13 +334,13 @@ export default function AdminSettings() {
                           primary_color: e.target.value,
                         })
                       }
-                      className="bg-slate-800 border-slate-700 text-white text-sm"
+                      className="bg-muted border-border text-foreground text-sm"
                       disabled={isLoading}
                     />
                   </div>
                 </div>
                 <div className="space-y-1.5 sm:space-y-2">
-                  <Label className="text-slate-300 text-xs sm:text-sm">
+                  <Label className="text-muted-foreground text-xs sm:text-sm">
                     {t("admin.settings.branding.secondaryColor")}
                   </Label>
                   <div className="flex gap-2">
@@ -353,7 +353,7 @@ export default function AdminSettings() {
                           secondary_color: e.target.value,
                         })
                       }
-                      className="w-10 sm:w-12 h-9 sm:h-10 p-1 bg-slate-800 border-slate-700 rounded cursor-pointer"
+                      className="w-10 sm:w-12 h-9 sm:h-10 p-1 bg-muted border-border rounded cursor-pointer"
                       disabled={isLoading}
                     />
                     <Input
@@ -364,14 +364,14 @@ export default function AdminSettings() {
                           secondary_color: e.target.value,
                         })
                       }
-                      className="bg-slate-800 border-slate-700 text-white text-sm"
+                      className="bg-muted border-border text-foreground text-sm"
                       disabled={isLoading}
                     />
                   </div>
                 </div>
               </div>
               <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-slate-300 text-xs sm:text-sm">
+                <Label className="text-muted-foreground text-xs sm:text-sm">
                   {t("admin.settings.branding.logoUrl", {
                     url: t("common.url"),
                   })}
@@ -385,7 +385,7 @@ export default function AdminSettings() {
                     })
                   }
                   placeholder={t("admin.settings.branding.logoUrlPlaceholder")}
-                  className="bg-slate-800 border-slate-700 text-white text-sm"
+                  className="bg-muted border-border text-foreground text-sm"
                   disabled={isLoading}
                 />
               </div>
@@ -394,17 +394,17 @@ export default function AdminSettings() {
         </TabsContent>
 
         <TabsContent value="payments">
-          <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-white mb-4 sm:mb-6">
+          <Card className="bg-card border-border p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-foreground mb-4 sm:mb-6">
               {t("admin.settings.payments.title")}
             </h3>
             <div className="space-y-3 sm:space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-slate-800/50 rounded-lg gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-muted/60 rounded-lg gap-3">
                 <div className="min-w-0">
-                  <p className="text-white font-medium text-sm sm:text-base">
+                  <p className="text-foreground font-medium text-sm sm:text-base">
                     {t("admin.settings.payments.stripe")}
                   </p>
-                  <p className="text-xs sm:text-sm text-slate-400 leading-tight">
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
                     {t("admin.settings.payments.stripeDesc")}
                   </p>
                 </div>
@@ -418,7 +418,7 @@ export default function AdminSettings() {
               </div>
               {localPayment.stripe_enabled && (
                 <div className="space-y-1.5 sm:space-y-2 pl-2 sm:pl-4">
-                  <Label className="text-slate-300 text-xs sm:text-sm">
+                  <Label className="text-muted-foreground text-xs sm:text-sm">
                     {t("admin.settings.payments.stripeApiKey")}
                   </Label>
                   <Input
@@ -433,18 +433,18 @@ export default function AdminSettings() {
                     placeholder={t(
                       "admin.settings.payments.stripeApiKeyPlaceholder"
                     )}
-                    className="bg-slate-800 border-slate-700 text-white text-sm"
+                    className="bg-muted border-border text-foreground text-sm"
                     disabled={isLoading}
                   />
                 </div>
               )}
 
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-slate-800/50 rounded-lg gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-muted/60 rounded-lg gap-3">
                 <div className="min-w-0">
-                  <p className="text-white font-medium text-sm sm:text-base">
+                  <p className="text-foreground font-medium text-sm sm:text-base">
                     {t("admin.settings.payments.paypal")}
                   </p>
-                  <p className="text-xs sm:text-sm text-slate-400 leading-tight">
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
                     {t("admin.settings.payments.paypalDesc")}
                   </p>
                 </div>
@@ -457,12 +457,12 @@ export default function AdminSettings() {
                 />
               </div>
 
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-slate-800/50 rounded-lg gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-muted/60 rounded-lg gap-3">
                 <div className="min-w-0">
-                  <p className="text-white font-medium text-sm sm:text-base">
+                  <p className="text-foreground font-medium text-sm sm:text-base">
                     {t("admin.settings.payments.cryptocurrency")}
                   </p>
-                  <p className="text-xs sm:text-sm text-slate-400 leading-tight">
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
                     {t("admin.settings.payments.cryptocurrencyDesc")}
                   </p>
                 </div>
@@ -479,8 +479,8 @@ export default function AdminSettings() {
         </TabsContent>
 
         <TabsContent value="integrations">
-          <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-white mb-4 sm:mb-6">
+          <Card className="bg-card border-border p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-foreground mb-4 sm:mb-6">
               {t("admin.settings.integrations.title")}
             </h3>
             <div className="space-y-3 sm:space-y-4">
@@ -500,13 +500,13 @@ export default function AdminSettings() {
               ].map((platform) => (
                 <div
                   key={platform.key}
-                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-slate-800/50 rounded-lg gap-3"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-muted/60 rounded-lg gap-3"
                 >
                   <div className="min-w-0">
-                    <p className="text-white font-medium text-sm sm:text-base">
+                    <p className="text-foreground font-medium text-sm sm:text-base">
                       {t(`admin.settings.integrations.${platform.nameKey}`)}
                     </p>
-                    <p className="text-xs sm:text-sm text-slate-400 leading-tight">
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
                       {t(`admin.settings.integrations.${platform.descKey}`)}
                     </p>
                   </div>
@@ -523,15 +523,15 @@ export default function AdminSettings() {
                 </div>
               ))}
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 mt-4 leading-tight">
+            <p className="text-xs sm:text-sm text-muted-foreground mt-4 leading-tight">
               {t("admin.settings.integrations.note")}
             </p>
           </Card>
         </TabsContent>
 
         <TabsContent value="email">
-          <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-white mb-4 sm:mb-6">
+          <Card className="bg-card border-border p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-foreground mb-4 sm:mb-6">
               {t("admin.settings.email.title")}
             </h3>
             <div className="space-y-3 sm:space-y-4">
@@ -551,19 +551,19 @@ export default function AdminSettings() {
               ].map((template, i) => (
                 <div
                   key={i}
-                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-slate-800/50 rounded-lg gap-4"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-muted/60 rounded-lg gap-4"
                 >
                   <div className="min-w-0">
-                    <p className="text-white font-medium text-sm sm:text-base">
+                    <p className="text-foreground font-medium text-sm sm:text-base">
                       {t(`admin.settings.email.${template.nameKey}`)}
                     </p>
-                    <p className="text-xs sm:text-sm text-slate-400 leading-tight">
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
                       {t(`admin.settings.email.${template.descKey}`)}
                     </p>
                   </div>
                   <Button
                     variant="outline"
-                    className="w-full sm:w-auto border-slate-700 text-white bg-slate-800 hover:text-slate-700 hover:bg-white h-9 sm:h-10 text-xs sm:text-sm"
+                    className="w-full sm:w-auto border-border text-foreground bg-card hover:bg-accent h-9 sm:h-10 text-xs sm:text-sm"
                   >
                     {t("admin.settings.email.editTemplate")}
                   </Button>

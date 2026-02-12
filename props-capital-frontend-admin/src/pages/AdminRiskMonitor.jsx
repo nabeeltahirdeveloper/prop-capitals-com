@@ -149,21 +149,28 @@ export default function AdminRiskMonitor() {
     }
   };
 
+  // Ensure violations is always treated as an array for rendering
+  const recentViolations = Array.isArray(violations)
+    ? violations
+    : violations?.items ||
+      violations?.data ||
+      [];
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">
             {t("admin.riskMonitor.title")}
           </h1>
-          <p className="text-sm sm:text-base text-slate-400">
+          <p className="text-sm sm:text-base text-muted-foreground">
             {t("admin.riskMonitor.subtitle")}
           </p>
         </div>
         <Button
           onClick={() => refetch()}
           variant="outline"
-          className="border-slate-700 text-black hover:bg-black hover:text-white w-full sm:w-auto"
+          className="border-border text-foreground hover:bg-accent hover:text-foreground w-full sm:w-auto"
         >
           <RefreshCw className="w-4 h-4 mr-2" />
           <span className="sm:inline">{t("admin.riskMonitor.refresh")}</span>
@@ -173,7 +180,7 @@ export default function AdminRiskMonitor() {
       {/* Risk Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <Card
-          className={`bg-slate-900 border-slate-800 p-3 sm:p-4 cursor-pointer transition-all ${
+          className={`bg-card border-border p-3 sm:p-4 cursor-pointer transition-all ${
             riskFilter === "critical" ? "ring-2 ring-red-500" : ""
           }`}
           onClick={() =>
@@ -181,14 +188,14 @@ export default function AdminRiskMonitor() {
           }
         >
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-red-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-              <XCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-400" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-red-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <XCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl sm:text-2xl font-bold text-red-400">
+              <p className="text-xl sm:text-2xl font-bold text-red-500">
                 {riskCounts.critical}
               </p>
-              <p className="text-xs text-slate-400 truncate">
+              <p className="text-xs text-muted-foreground truncate">
                 {t("admin.riskMonitor.riskLevels.critical")}
               </p>
             </div>
@@ -196,20 +203,20 @@ export default function AdminRiskMonitor() {
         </Card>
 
         <Card
-          className={`bg-slate-900 border-slate-800 p-3 sm:p-4 cursor-pointer transition-all ${
+          className={`bg-card border-border p-3 sm:p-4 cursor-pointer transition-all ${
             riskFilter === "high" ? "ring-2 ring-amber-500" : ""
           }`}
           onClick={() => setRiskFilter(riskFilter === "high" ? "all" : "high")}
         >
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-amber-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-              <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-amber-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-[#d97706]" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl sm:text-2xl font-bold text-amber-400">
+              <p className="text-xl sm:text-2xl font-bold text-[#d97706]">
                 {riskCounts.high}
               </p>
-              <p className="text-xs text-slate-400 truncate">
+              <p className="text-xs text-muted-foreground truncate">
                 {t("admin.riskMonitor.riskLevels.high")}
               </p>
             </div>
@@ -217,7 +224,7 @@ export default function AdminRiskMonitor() {
         </Card>
 
         <Card
-          className={`bg-slate-900 border-slate-800 p-3 sm:p-4 cursor-pointer transition-all ${
+          className={`bg-card border-border p-3 sm:p-4 cursor-pointer transition-all ${
             riskFilter === "medium" ? "ring-2 ring-yellow-500" : ""
           }`}
           onClick={() =>
@@ -225,14 +232,14 @@ export default function AdminRiskMonitor() {
           }
         >
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl sm:text-2xl font-bold text-yellow-400">
+              <p className="text-xl sm:text-2xl font-bold text-yellow-500">
                 {riskCounts.medium}
               </p>
-              <p className="text-xs text-slate-400 truncate">
+              <p className="text-xs text-muted-foreground truncate">
                 {t("admin.riskMonitor.riskLevels.medium")}
               </p>
             </div>
@@ -240,20 +247,20 @@ export default function AdminRiskMonitor() {
         </Card>
 
         <Card
-          className={`bg-slate-900 border-slate-800 p-3 sm:p-4 cursor-pointer transition-all ${
+          className={`bg-card border-border p-3 sm:p-4 cursor-pointer transition-all ${
             riskFilter === "low" ? "ring-2 ring-emerald-500" : ""
           }`}
           onClick={() => setRiskFilter(riskFilter === "low" ? "all" : "low")}
         >
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl sm:text-2xl font-bold text-emerald-400">
+              <p className="text-xl sm:text-2xl font-bold text-emerald-500">
                 {riskCounts.low}
               </p>
-              <p className="text-xs text-slate-400 truncate">
+              <p className="text-xs text-muted-foreground truncate">
                 {t("admin.riskMonitor.riskLevels.low")}
               </p>
             </div>
@@ -263,40 +270,40 @@ export default function AdminRiskMonitor() {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
           placeholder={t("admin.riskMonitor.searchPlaceholder")}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 bg-slate-900 border-slate-800 text-white placeholder:text-slate-500 text-sm"
+          className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
         />
       </div>
 
       {/* Accounts Table */}
-      <Card className="bg-slate-900 border-slate-800 overflow-hidden">
+      <Card className="bg-card border-border overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="border-slate-800 hover:bg-slate-800/50">
-                <TableHead className="text-slate-400 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+              <TableRow className="border-border bg-slate-100">
+                <TableHead className="text-slate-500 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.account")}
                 </TableHead>
-                <TableHead className="text-slate-400 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                <TableHead className="text-slate-500 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.balance")}
                 </TableHead>
-                <TableHead className="text-slate-400 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                <TableHead className="text-slate-500 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.equity")}
                 </TableHead>
-                <TableHead className="text-slate-400 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                <TableHead className="text-slate-500 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.dailyDD")}
                 </TableHead>
-                <TableHead className="text-slate-400 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                <TableHead className="text-slate-500 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.maxDD")}
                 </TableHead>
-                <TableHead className="text-slate-400 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                <TableHead className="text-slate-500 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.riskLevel")}
                 </TableHead>
-                <TableHead className="text-slate-400 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                <TableHead className="text-slate-500 text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.actions")}
                 </TableHead>
               </TableRow>
@@ -310,22 +317,22 @@ export default function AdminRiskMonitor() {
                 return (
                   <TableRow
                     key={account.id}
-                    className="border-slate-800 hover:bg-slate-800/30"
+                    className="border-border hover:bg-slate-100"
                   >
                     <TableCell className="py-2 sm:py-4 px-2 sm:px-4">
                       <div>
-                        <p className="text-white font-medium text-xs sm:text-sm">
+                        <p className="text-foreground font-medium text-xs sm:text-sm">
                           {account.account_number}
                         </p>
-                        <p className="text-xs text-slate-400 hidden sm:block">
+                        <p className="text-xs text-muted-foreground hidden sm:block">
                           {account.platform} • {account.current_phase}
                         </p>
                       </div>
                     </TableCell>
-                    <TableCell className="text-white text-xs sm:text-sm py-2 sm:py-4 px-2 sm:px-4 whitespace-nowrap">
+                    <TableCell className="text-foreground text-xs sm:text-sm py-2 sm:py-4 px-2 sm:px-4 whitespace-nowrap">
                       ${account.current_balance?.toLocaleString()}
                     </TableCell>
-                    <TableCell className="text-white text-xs sm:text-sm py-2 sm:py-4 px-2 sm:px-4 whitespace-nowrap">
+                    <TableCell className="text-foreground text-xs sm:text-sm py-2 sm:py-4 px-2 sm:px-4 whitespace-nowrap">
                       ${account.current_equity?.toLocaleString()}
                     </TableCell>
                     <TableCell className="py-2 sm:py-4 px-2 sm:px-4">
@@ -335,8 +342,8 @@ export default function AdminRiskMonitor() {
                             className={
                               dailyDD >=
                               (account.daily_drawdown_limit || 5) * 0.8
-                                ? "text-red-400"
-                                : "text-slate-400"
+                                ? "text-red-500"
+                                : "text-slate-500"
                             }
                           >
                             {dailyDD.toFixed(1)}%
@@ -350,7 +357,7 @@ export default function AdminRiskMonitor() {
                             (dailyDD / (account.daily_drawdown_limit || 5)) *
                             100
                           }
-                          className="h-1 sm:h-1.5 bg-slate-800"
+                          className="h-1 sm:h-1.5 bg-muted"
                         />
                       </div>
                     </TableCell>
@@ -361,8 +368,8 @@ export default function AdminRiskMonitor() {
                             className={
                               maxDD >=
                               (account.overall_drawdown_limit || 10) * 0.8
-                                ? "text-red-400"
-                                : "text-slate-400"
+                                ? "text-red-500"
+                                : "text-slate-500"
                             }
                           >
                             {maxDD.toFixed(1)}%
@@ -376,7 +383,7 @@ export default function AdminRiskMonitor() {
                             (maxDD / (account.overall_drawdown_limit || 10)) *
                             100
                           }
-                          className="h-1 sm:h-1.5 bg-slate-800"
+                          className="h-1 sm:h-1.5 bg-muted"
                         />
                       </div>
                     </TableCell>
@@ -388,10 +395,10 @@ export default function AdminRiskMonitor() {
                         <Link
                           to={createPageUrl(`AccountDetails?id=${account.id}`)}
                         >
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-slate-400 hover:text-white h-7 w-7 sm:h-8 sm:w-8 p-0"
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-muted-foreground hover:text-foreground h-7 w-7 sm:h-8 sm:w-8 p-0"
                           >
                             <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                           </Button>
@@ -401,7 +408,7 @@ export default function AdminRiskMonitor() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-amber-400 hover:text-amber-300 h-7 w-7 sm:h-8 sm:w-8 p-0"
+                              className="text-[#d97706] hover:text-amber-500 h-7 w-7 sm:h-8 sm:w-8 p-0"
                               onClick={() => handleEmergencyClose(account.id)}
                             >
                               <TrendingDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -409,7 +416,7 @@ export default function AdminRiskMonitor() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-red-400 hover:text-red-300 h-7 w-7 sm:h-8 sm:w-8 p-0"
+                              className="text-red-500 hover:text-red-400 h-7 w-7 sm:h-8 sm:w-8 p-0"
                               onClick={() => handleLockAccount(account.id)}
                             >
                               <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -427,13 +434,13 @@ export default function AdminRiskMonitor() {
       </Card>
 
       {/* Recent Violations */}
-      <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
-        <h2 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center gap-2">
+      <Card className="bg-card border-border p-4 sm:p-6">
+        <h2 className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4 flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
           {t("admin.riskMonitor.recentViolations.title")}
         </h2>
         <div className="space-y-2 sm:space-y-3">
-          {violations.slice(0, 10).map((violation) => {
+          {recentViolations.slice(0, 10).map((violation) => {
             const isFatal = violation.type === "OVERALL_DRAWDOWN";
             const accountNumber =
               violation.tradingAccount?.brokerLogin ||
@@ -442,7 +449,7 @@ export default function AdminRiskMonitor() {
             return (
               <div
                 key={violation.id}
-                className="flex items-center justify-between gap-2 p-2.5 sm:p-3 bg-slate-800/50 rounded-lg"
+                className="flex items-center justify-between gap-2 p-2.5 sm:p-3 bg-muted/60 rounded-lg"
               >
                 <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                   <div
@@ -451,10 +458,10 @@ export default function AdminRiskMonitor() {
                     }`}
                   />
                   <div className="min-w-0">
-                    <p className="text-white text-xs sm:text-sm font-medium truncate">
+                    <p className="text-foreground text-xs sm:text-sm font-medium truncate">
                       {violation.type?.replace(/_/g, " ")}
                     </p>
-                    <p className="text-xs text-slate-400 truncate">
+                    <p className="text-xs text-muted-foreground truncate">
                       <span className="hidden sm:inline">
                         {t("admin.riskMonitor.recentViolations.account")}:{" "}
                       </span>
@@ -465,8 +472,8 @@ export default function AdminRiskMonitor() {
                 <Badge
                   className={`flex-shrink-0 text-xs ${
                     isFatal
-                      ? "bg-red-500/20 text-red-400"
-                      : "bg-amber-500/20 text-amber-400"
+                      ? "bg-red-500/10 text-red-500 border border-red-200"
+                      : "bg-amber-500/10 text-[#d97706] border border-amber-200"
                   }`}
                 >
                   {isFatal
@@ -476,8 +483,8 @@ export default function AdminRiskMonitor() {
               </div>
             );
           })}
-          {violations.length === 0 && (
-            <p className="text-center text-slate-400 py-4 text-sm">
+          {recentViolations.length === 0 && (
+            <p className="text-center text-muted-foreground py-4 text-sm">
               {t("admin.riskMonitor.recentViolations.noViolations")}
             </p>
           )}

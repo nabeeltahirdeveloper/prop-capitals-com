@@ -206,28 +206,30 @@ export default function AdminProfile() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">
             {t("profile.title")}
           </h1>
-          <p className="text-sm sm:text-base text-slate-400">
+          <p className="text-sm sm:text-base text-muted-foreground">
             {t("profile.subtitle")}
           </p>
         </div>
       </div>
 
       {/* Profile Card */}
-      <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
+      <Card className="bg-card border-border p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-4 sm:gap-6 text-center sm:text-left">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-3xl font-bold flex-shrink-0">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#d97706] to-[#d97706] flex items-center justify-center text-white text-3xl font-bold flex-shrink-0">
             {initials}
           </div>
           <div className="min-w-0">
-            <h2 className="text-lg sm:text-xl font-bold text-white truncate">
+            <h2 className="text-lg sm:text-xl font-bold text-foreground truncate">
               {displayName}
             </h2>
-            <p className="text-sm text-slate-400 truncate">{user?.email}</p>
+            <p className="text-sm text-muted-foreground truncate">
+              {user?.email}
+            </p>
             <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
-              <span className="px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs font-medium bg-amber-500/20 text-amber-400">
+              <span className="px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-amber-50 text-[#d97706] border border-amber-200">
                 {t("profile.admin")}
               </span>
             </div>
@@ -236,24 +238,24 @@ export default function AdminProfile() {
       </Card>
 
       <Tabs defaultValue="personal" className="space-y-4 sm:space-y-6">
-        <TabsList className="bg-slate-900 border border-slate-800 h-auto p-1 grid grid-cols-1 sm:grid-cols-3 gap-1">
+        <TabsList className="bg-muted border border-border h-auto p-1 grid grid-cols-1 sm:grid-cols-3 gap-1">
           <TabsTrigger
             value="personal"
-            className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-slate-800 text-slate-400 data-[state=active]:text-white text-xs sm:text-sm"
+            className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-card text-muted-foreground data-[state=active]:text-foreground text-xs sm:text-sm"
           >
             <User className="w-4 h-4 mr-2 flex-shrink-0" />
             {t("profile.personalInfo")}
           </TabsTrigger>
           <TabsTrigger
             value="security"
-            className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-slate-800 text-slate-400 data-[state=active]:text-white text-xs sm:text-sm"
+            className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-card text-muted-foreground data-[state=active]:text-foreground text-xs sm:text-sm"
           >
             <Shield className="w-4 h-4 mr-2 flex-shrink-0" />
             {t("profile.security")}
           </TabsTrigger>
           <TabsTrigger
             value="notifications"
-            className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-slate-800 text-slate-400 data-[state=active]:text-white text-xs sm:text-sm"
+            className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-card text-muted-foreground data-[state=active]:text-foreground text-xs sm:text-sm"
           >
             <Bell className="w-4 h-4 mr-2 flex-shrink-0" />
             {t("profile.notifications")}
@@ -261,13 +263,13 @@ export default function AdminProfile() {
         </TabsList>
 
         <TabsContent value="personal">
-          <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-white mb-4 sm:mb-6">
+          <Card className="bg-card border-border p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-foreground mb-4 sm:mb-6">
               {t("profile.personalInformation")}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-slate-300 text-xs sm:text-sm">
+                <Label className="text-muted-foreground text-xs sm:text-sm">
                   {t("profile.firstName")}
                 </Label>
                 <Input
@@ -275,12 +277,12 @@ export default function AdminProfile() {
                   onChange={(e) =>
                     setFormData({ ...formData, firstName: e.target.value })
                   }
-                  className="bg-slate-800 border-slate-700 text-white text-sm"
+                  className="bg-muted border-border text-foreground text-sm"
                   placeholder={t("profile.firstNamePlaceholder")}
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-slate-300 text-xs sm:text-sm">
+                <Label className="text-muted-foreground text-xs sm:text-sm">
                   {t("profile.lastName")}
                 </Label>
                 <Input
@@ -288,22 +290,22 @@ export default function AdminProfile() {
                   onChange={(e) =>
                     setFormData({ ...formData, lastName: e.target.value })
                   }
-                  className="bg-slate-800 border-slate-700 text-white text-sm"
+                  className="bg-muted border-border text-foreground text-sm"
                   placeholder={t("profile.lastNamePlaceholder")}
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-slate-300 text-xs sm:text-sm">
+                <Label className="text-muted-foreground text-xs sm:text-sm">
                   {t("profile.email")}
                 </Label>
                 <Input
                   value={user?.email || ""}
                   disabled
-                  className="bg-slate-800 border-slate-700 text-white opacity-50 text-sm"
+                  className="bg-muted border-border text-muted-foreground opacity-70 text-sm"
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-slate-300 text-xs sm:text-sm">
+                <Label className="text-muted-foreground text-xs sm:text-sm">
                   {t("profile.phoneNumber")}
                 </Label>
                 <Input
@@ -312,11 +314,11 @@ export default function AdminProfile() {
                     setFormData({ ...formData, phone: e.target.value })
                   }
                   placeholder={t("profile.phonePlaceholder")}
-                  className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm"
+                  className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-slate-300 text-xs sm:text-sm">
+                <Label className="text-muted-foreground text-xs sm:text-sm">
                   {t("profile.country")}
                 </Label>
                 <Input
@@ -325,11 +327,11 @@ export default function AdminProfile() {
                     setFormData({ ...formData, country: e.target.value })
                   }
                   placeholder={t("profile.countryPlaceholder")}
-                  className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm"
+                  className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2">
-                <Label className="text-slate-300 text-xs sm:text-sm">
+                <Label className="text-muted-foreground text-xs sm:text-sm">
                   {t("profile.city")}
                 </Label>
                 <Input
@@ -338,11 +340,11 @@ export default function AdminProfile() {
                     setFormData({ ...formData, city: e.target.value })
                   }
                   placeholder={t("profile.cityPlaceholder")}
-                  className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm"
+                  className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2 md:col-span-2">
-                <Label className="text-slate-300 text-xs sm:text-sm">
+                <Label className="text-muted-foreground text-xs sm:text-sm">
                   {t("profile.address")}
                 </Label>
                 <Input
@@ -351,14 +353,14 @@ export default function AdminProfile() {
                     setFormData({ ...formData, address: e.target.value })
                   }
                   placeholder={t("profile.addressPlaceholder")}
-                  className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm"
+                  className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
                 />
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mt-6 sm:mt-8">
               <Button
                 onClick={handleSave}
-                className="bg-gradient-to-r from-amber-500 to-orange-500 h-10 sm:h-11 text-sm"
+                className="bg-gradient-to-r from-[#d97706] to-[#d97706] hover:from-amber-600 hover:to-amber-600 h-10 sm:h-11 text-sm text-white"
                 disabled={updateProfileMutation.isPending}
               >
                 {updateProfileMutation.isPending ? (
@@ -374,7 +376,7 @@ export default function AdminProfile() {
                 )}
               </Button>
               {saved && (
-                <span className="text-emerald-400 flex items-center justify-center gap-2 text-sm">
+                <span className="text-emerald-500 flex items-center justify-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4" />
                   {t("profile.changesSaved")}
                 </span>
@@ -384,21 +386,21 @@ export default function AdminProfile() {
         </TabsContent>
 
         <TabsContent value="security">
-          <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-white mb-4 sm:mb-6">
+          <Card className="bg-card border-border p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-foreground mb-4 sm:mb-6">
               {t("profile.securitySettings")}
             </h3>
             <div className="space-y-3 sm:space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-slate-800/50 rounded-lg gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-muted/60 rounded-lg gap-3">
                 <div className="flex items-center gap-3 sm:gap-4">
-                  <div className="w-9 h-9 sm:w-10 sm:h-10 bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Key className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Key className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-white  font-medium text-sm sm:text-base">
+                    <p className="text-foreground font-medium text-sm sm:text-base">
                       {t("profile.password")}
                     </p>
-                    <p className="text-xs sm:text-sm text-slate-400 leading-tight">
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
                       {t("profile.changePasswordDesc")}
                     </p>
                   </div>
@@ -410,20 +412,20 @@ export default function AdminProfile() {
                   <DialogTrigger asChild>
                     <Button
                       variant="outline"
-                      className="w-full sm:w-auto border-slate-600 bg-slate-800/50 text-white hover:text-white hover:bg-slate-700  text-xs sm:text-sm h-9"
+                      className="w-full sm:w-auto border-border bg-card text-foreground hover:bg-accent text-xs sm:text-sm h-9"
                     >
                       {t("profile.changePassword")}
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="bg-slate-900 border-slate-800 w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6">
+                  <DialogContent className="bg-card border-border w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6">
                     <DialogHeader>
-                      <DialogTitle className="text-white text-base sm:text-lg">
+                      <DialogTitle className="text-foreground text-base sm:text-lg">
                         {t("profile.changePassword")}
                       </DialogTitle>
                     </DialogHeader>
                     <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
                       <div className="space-y-1.5 sm:space-y-2">
-                        <Label className="text-slate-300 text-xs sm:text-sm">
+                        <Label className="text-muted-foreground text-xs sm:text-sm">
                           {t("profile.currentPassword")}
                         </Label>
                         <div className="relative">
@@ -436,7 +438,7 @@ export default function AdminProfile() {
                                 currentPassword: e.target.value,
                               })
                             }
-                            className="bg-slate-800 border-slate-700 text-white pr-10 text-sm h-9 sm:h-10"
+                            className="bg-muted border-border text-foreground pr-10 text-sm h-9 sm:h-10"
                           />
                           <button
                             type="button"
@@ -446,7 +448,7 @@ export default function AdminProfile() {
                                 current: !showPassword.current,
                               })
                             }
-                            className="absolute right-2 top-2.5 sm:top-3 text-slate-400"
+                            className="absolute right-2 top-2.5 sm:top-3 text-muted-foreground"
                           >
                             {showPassword.current ? (
                               <EyeOff className="w-4 h-4" />
@@ -457,7 +459,7 @@ export default function AdminProfile() {
                         </div>
                       </div>
                       <div className="space-y-1.5 sm:space-y-2">
-                        <Label className="text-slate-300 text-xs sm:text-sm">
+                        <Label className="text-muted-foreground text-xs sm:text-sm">
                           {t("profile.newPassword")}
                         </Label>
                         <div className="relative">
@@ -470,7 +472,7 @@ export default function AdminProfile() {
                                 newPassword: e.target.value,
                               })
                             }
-                            className="bg-slate-800 border-slate-700 text-white pr-10 text-sm h-9 sm:h-10"
+                            className="bg-muted border-border text-foreground pr-10 text-sm h-9 sm:h-10"
                           />
                           <button
                             type="button"
@@ -480,7 +482,7 @@ export default function AdminProfile() {
                                 new: !showPassword.new,
                               })
                             }
-                            className="absolute right-2 top-2.5 sm:top-3 text-slate-400"
+                            className="absolute right-2 top-2.5 sm:top-3 text-muted-foreground"
                           >
                             {showPassword.new ? (
                               <EyeOff className="w-4 h-4" />
@@ -491,7 +493,7 @@ export default function AdminProfile() {
                         </div>
                       </div>
                       <div className="space-y-1.5 sm:space-y-2">
-                        <Label className="text-slate-300 text-xs sm:text-sm">
+                        <Label className="text-muted-foreground text-xs sm:text-sm">
                           {t("profile.confirmPassword")}
                         </Label>
                         <div className="relative">
@@ -504,7 +506,7 @@ export default function AdminProfile() {
                                 confirmPassword: e.target.value,
                               })
                             }
-                            className="bg-slate-800 border-slate-700 text-white pr-10 text-sm h-9 sm:h-10"
+                            className="bg-muted border-border text-foreground pr-10 text-sm h-9 sm:h-10"
                           />
                           <button
                             type="button"
@@ -514,7 +516,7 @@ export default function AdminProfile() {
                                 confirm: !showPassword.confirm,
                               })
                             }
-                            className="absolute right-2 top-2.5 sm:top-3 text-slate-400"
+                            className="absolute right-2 top-2.5 sm:top-3 text-muted-foreground"
                           >
                             {showPassword.confirm ? (
                               <EyeOff className="w-4 h-4" />
@@ -526,7 +528,7 @@ export default function AdminProfile() {
                       </div>
                       <Button
                         onClick={handlePasswordChange}
-                        className="w-full bg-gradient-to-r from-amber-500 to-orange-500"
+                        className="w-full bg-gradient-to-r from-[#d97706] to-[#d97706] hover:from-amber-600 hover:to-amber-600 text-white"
                         disabled={changePasswordMutation.isPending}
                       >
                         {changePasswordMutation.isPending ? (
@@ -547,8 +549,8 @@ export default function AdminProfile() {
         </TabsContent>
 
         <TabsContent value="notifications">
-          <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-white mb-4 sm:mb-6">
+          <Card className="bg-card border-border p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-foreground mb-4 sm:mb-6">
               {t("profile.notificationPreferences")}
             </h3>
             <div className="space-y-3 sm:space-y-4">
@@ -581,13 +583,13 @@ export default function AdminProfile() {
               ].map((item) => (
                 <div
                   key={item.key}
-                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-slate-800/50 rounded-lg gap-3"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-muted/60 rounded-lg gap-3"
                 >
                   <div className="min-w-0">
-                    <p className="text-white font-medium text-sm sm:text-base">
+                    <p className="text-foreground font-medium text-sm sm:text-base">
                       {item.title}
                     </p>
-                    <p className="text-xs sm:text-sm text-slate-400 leading-tight">
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
                       {item.desc}
                     </p>
                   </div>

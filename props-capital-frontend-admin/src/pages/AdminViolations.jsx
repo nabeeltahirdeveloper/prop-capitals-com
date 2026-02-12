@@ -108,29 +108,29 @@ export default function AdminViolations() {
   const violationTypes = {
     daily_drawdown: {
       label: t("admin.violations.types.dailyDrawdown"),
-      color: "text-red-400",
+      color: "text-red-500",
     },
     overall_drawdown: {
       label: t("admin.violations.types.overallDrawdown"),
-      color: "text-red-400",
+      color: "text-red-500",
     },
     news: {
       label: t("admin.violations.types.newsTrading", {
         defaultValue: "News Trading",
       }),
-      color: "text-amber-400",
+      color: "text-[#d97706]",
     },
     consistency: {
       label: t("admin.violations.types.consistency", {
         defaultValue: "Consistency",
       }),
-      color: "text-red-400",
+      color: "text-red-500",
     },
     rule_break: {
       label: t("admin.violations.types.ruleBreak", {
         defaultValue: "Rule Break",
       }),
-      color: "text-orange-400",
+      color: "text-orange-500",
     },
   };
 
@@ -140,8 +140,8 @@ export default function AdminViolations() {
       accessorKey: "account_id",
       cell: (row) => (
         <div>
-          <p className="text-white font-medium">{row.account_id}</p>
-          <p className="text-xs text-slate-300">{row.trader_id}</p>
+          <p className="text-foreground font-medium">{row.account_id}</p>
+          <p className="text-xs text-muted-foreground">{row.trader_id}</p>
         </div>
       ),
     },
@@ -151,7 +151,7 @@ export default function AdminViolations() {
       cell: (row) => (
         <span
           className={`font-medium ${
-            violationTypes[row.type]?.color || "text-slate-400"
+            violationTypes[row.type]?.color || "text-muted-foreground"
           }`}
         >
           {violationTypes[row.type]?.label || row.type}
@@ -176,7 +176,7 @@ export default function AdminViolations() {
       accessorKey: "value_at_violation",
       cell: (row) =>
         row.value_at_violation != null ? (
-          <span className="text-red-400">
+          <span className="text-red-500">
             {row.value_at_violation}%
             {row.threshold != null ? ` / ${row.threshold}%` : ""}
           </span>
@@ -189,10 +189,10 @@ export default function AdminViolations() {
       accessorKey: "is_fatal",
       cell: (row) => (
         <span
-          className={`px-2 py-1 rounded text-xs font-medium ${
+          className={`px-2 py-1 rounded-full text-xs font-medium border ${
             row.is_fatal
-              ? "bg-red-500/20 text-red-400"
-              : "bg-amber-500/20 text-amber-400"
+              ? "bg-red-50 text-red-600 border-red-200"
+              : "bg-amber-50 text-[#d97706] border-amber-200"
           }`}
         >
           {row.is_fatal
@@ -226,10 +226,10 @@ export default function AdminViolations() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">
             {t("admin.violations.title")}
           </h1>
-          <p className="text-sm sm:text-base text-slate-400">
+          <p className="text-sm sm:text-base text-muted-foreground">
             {t("admin.violations.subtitle")}
           </p>
         </div>
@@ -253,7 +253,7 @@ export default function AdminViolations() {
           title={t("admin.violations.stats.warnings")}
           value={warningCount}
           icon={TrendingDown}
-          gradient="from-amber-500 to-orange-500"
+          gradient="from-[#d97706] to-[#d97706]"
         />
         <StatsCard
           title={t("admin.violations.stats.today")}
@@ -264,42 +264,42 @@ export default function AdminViolations() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
+      <Card className="bg-card border-border p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder={t("admin.violations.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm"
+              className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
             />
           </div>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-full sm:w-[200px] bg-slate-800 border-slate-700 text-white text-sm">
+            <SelectTrigger className="w-full sm:w-[200px] bg-muted border-border text-foreground text-sm">
               <SelectValue
                 placeholder={t("admin.violations.filter.violationType")}
               />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-700 text-white">
-              <SelectItem value="all" className="text-white">
+            <SelectContent className="bg-card border-border text-foreground">
+              <SelectItem value="all" className="text-foreground">
                 {t("admin.violations.filter.allTypes")}
               </SelectItem>
-              <SelectItem value="daily_drawdown" className="text-white">
+              <SelectItem value="daily_drawdown" className="text-foreground">
                 {t("admin.violations.filter.dailyDrawdown")}
               </SelectItem>
-              <SelectItem value="overall_drawdown" className="text-white">
+              <SelectItem value="overall_drawdown" className="text-foreground">
                 {t("admin.violations.filter.overallDrawdown")}
               </SelectItem>
-              <SelectItem value="news" className="text-white">
+              <SelectItem value="news" className="text-foreground">
                 {t("admin.violations.filter.newsTrading")}
               </SelectItem>
-              <SelectItem value="consistency" className="text-white">
+              <SelectItem value="consistency" className="text-foreground">
                 {t("admin.violations.filter.consistency", {
                   defaultValue: "Consistency",
                 })}
               </SelectItem>
-              <SelectItem value="rule_break" className="text-white">
+              <SelectItem value="rule_break" className="text-foreground">
                 {t("admin.violations.filter.ruleBreak", {
                   defaultValue: "Rule Break",
                 })}
@@ -310,18 +310,19 @@ export default function AdminViolations() {
       </Card>
 
       {/* Violations Table */}
-      <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4 md:p-6">
+      <Card className="bg-card border-border p-3 sm:p-4 md:p-6">
         <DataTable
           columns={columns}
           data={filteredViolations}
           isLoading={isLoading}
           emptyMessage={t("admin.violations.emptyMessage")}
+          variant="light"
         />
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-800">
-            <p className="text-xs sm:text-sm text-slate-400">
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
+            <p className="text-xs sm:text-sm text-muted-foreground">
               {t("admin.violations.pagination.showing", {
                 page,
                 totalPages,
@@ -335,7 +336,7 @@ export default function AdminViolations() {
                 size="sm"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                className="bg-slate-800 border-slate-700 text-white hover:bg-slate-700 disabled:opacity-50"
+                  className="bg-muted border-border text-foreground hover:bg-accent disabled:opacity-50"
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
@@ -347,7 +348,7 @@ export default function AdminViolations() {
                 size="sm"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                className="bg-slate-800 border-slate-700 text-white hover:bg-slate-700 disabled:opacity-50"
+                  className="bg-muted border-border text-foreground hover:bg-accent disabled:opacity-50"
               >
                 <ChevronRight className="w-4 h-4" />
               </Button>
