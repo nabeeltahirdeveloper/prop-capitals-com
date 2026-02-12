@@ -290,12 +290,22 @@ export const ChallengesProvider = ({ children }) => {
             const phaseLabel = account.phase === 'PHASE1' ? 1 : account.phase === 'PHASE2' ? 2 : 'funded';
             const challengeType = challenge.challengeType === 'one_phase' ? '1-step' : '2-step';
 
+            const backendStatus = String(account.status || '').toUpperCase();
+            const uiStatus =
+              backendStatus === 'ACTIVE'
+                ? 'active'
+                : (backendStatus === 'DISQUALIFIED' || backendStatus === 'FAILED')
+                  ? 'failed'
+                  : 'inactive';
+            
             // Use backend values (single source of truth — monotonic metrics)
             const initialBalance = account.initialBalance || 1;
             const maxEquity = account.maxEquityToDate || initialBalance;
             const minEquityOverall = account.minEquityOverall || initialBalance;
             const minEquityToday = account.minEquityToday || initialBalance;
             const todayStart = account.todayStartEquity || initialBalance;
+            const tradingDaysCurrent = Number.isFinite(account.tradingDaysCount) ? account.tradingDaysCount : 0;
+            const tradingDaysRequired = challenge.minTradingDays || 5;
 
             const currentProfit = ((maxEquity - initialBalance) / initialBalance) * 100;
             const currentDrawdown = ((initialBalance - minEquityOverall) / initialBalance) * 100;
@@ -309,19 +319,20 @@ export const ChallengesProvider = ({ children }) => {
               currentBalance: account.balance || 0,
               equity: account.equity || 0,
               phase: phaseLabel,
-              status: account.status === 'ACTIVE' ? 'active' : account.status === 'FAILED' ? 'failed' : 'inactive',
+              status: uiStatus,
+              backendStatus,
               platform: (account.platform || challenge.platform || 'MT5').toLowerCase(),
               server: 'PropCapitals-Live',
               createdAt: account.createdAt,
               tradingDays: {
-                current: account.tradingDaysCount || 0,
-                required: challenge.minTradingDays || 5
+                current: tradingDaysCurrent,
+                required: tradingDaysRequired
               },
               rules: {
                 profitTarget: phaseLabel === 1 ? challenge.phase1TargetPercent : challenge.phase2TargetPercent || challenge.phase1TargetPercent,
                 maxDailyLoss: challenge.dailyDrawdownPercent || 5,
                 maxTotalDrawdown: challenge.overallDrawdownPercent || 10,
-                minTradingDays: challenge.minTradingDays || 5,
+                minTradingDays: tradingDaysRequired,
               },
               stats: {
                 currentProfit: Math.max(0, currentProfit),
@@ -332,7 +343,7 @@ export const ChallengesProvider = ({ children }) => {
                 avgRR: account.avgRR || 0,
               },
               profitSplit: phaseLabel === 'funded' ? challenge.profitSplit : null,
-              payoutEligible: phaseLabel === 'funded' && account.status === 'ACTIVE',
+              payoutEligible: phaseLabel === 'funded' && backendStatus === 'ACTIVE',
               totalPaidOut: 0,
             };
           });
@@ -414,6 +425,8 @@ export const ChallengesProvider = ({ children }) => {
 
   const getRuleCompliance = (challenge) => {
     const { stats, rules } = challenge;
+    const tradingDaysCurrent = challenge?.tradingDays?.current || 0;
+    const tradingDaysRequired = challenge?.tradingDays?.required || rules?.minTradingDays || 5;
     return {
       profitTarget: {
         current: stats.currentProfit,
@@ -436,10 +449,10 @@ export const ChallengesProvider = ({ children }) => {
         percentage: (stats.currentDrawdown / rules.maxTotalDrawdown) * 100,
       },
       tradingDays: {
-        current: challenge.tradingDays.current,
-        required: challenge.tradingDays.required,
-        status: challenge.tradingDays.current >= challenge.tradingDays.required ? 'passed' : 'in-progress',
-        percentage: Math.min((challenge.tradingDays.current / challenge.tradingDays.required) * 100, 100),
+        current: tradingDaysCurrent,
+        required: tradingDaysRequired,
+        status: tradingDaysCurrent >= tradingDaysRequired ? 'passed' : 'in-progress',
+        percentage: Math.min((tradingDaysCurrent / tradingDaysRequired) * 100, 100),
       },
     };
   };

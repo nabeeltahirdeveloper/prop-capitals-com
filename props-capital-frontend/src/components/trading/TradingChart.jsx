@@ -5159,8 +5159,8 @@ const ChartArea = forwardRef(function ChartArea({
   useEffect(() => {
     if (!selectedSymbolStr || !selectedTimeframe) return;
 
-    const POLL_INTERVAL_MS = 800;
-    const THROTTLE_MS = 150;
+    const POLL_INTERVAL_MS = 250;
+    const THROTTLE_MS = 120;
 
     const intervalId = setInterval(() => {
       const s = seriesRef.current;
@@ -5182,7 +5182,12 @@ const ChartArea = forwardRef(function ChartArea({
       const tfSec = timeframeToSeconds(selectedTimeframe);
       const nowAligned = alignToTimeframe(Math.floor(Date.now() / 1000), tfSec);
       const lastHist = lastHistTimeRef.current || 0;
-      if (lastHist && (nowAligned - lastHist) > tfSec * 5) return;
+      // Don't hard-stop updates if history is stale; keep chart responsive with live ticks.
+      // This is especially important for forex feeds where initial history and live stream
+      // timestamps may temporarily drift.
+      if (lastHist && (nowAligned - lastHist) > tfSec * 5) {
+        // keep going with the aligned current time
+      }
       const barTime = nowAligned;
       const existing = candlesMapRef.current.get(barTime);
       const open = existing ? existing.open : price;

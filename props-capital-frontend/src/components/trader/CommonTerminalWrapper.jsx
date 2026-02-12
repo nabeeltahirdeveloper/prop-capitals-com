@@ -6,7 +6,7 @@ import { useChallenges } from '@/contexts/ChallengesContext';
 import { usePrices } from '@/contexts/PriceContext';
 import { getAccountTrades, updateTrade } from '@/api/trades';
 import { getPendingOrders, cancelPendingOrder } from '@/api/pending-orders';
-import { processPriceTick } from '@/api/accounts';
+import { processPriceTick, getAccountSummary } from '@/api/accounts';
 import { useToast } from '@/components/ui/use-toast';
 import ChallengeActiveBanner from '../trading/ChallengeActiveBanner';
 import PhaseProgressionCards from '../trading/PhaseProgressionCards';
@@ -30,45 +30,71 @@ const isCryptoSymbol = (symbol) => {
     s.includes('MATIC') || s.includes('LINK') || s.endsWith('USDT');
 };
 
-const CommonTerminalWrapper = ({ children }) => {
+const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeProp = null }) => {
   const { isDark } = useTraderTheme();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { prices } = usePrices();
   const {
     challenges,
-    selectedChallenge,
+    selectedChallenge: selectedChallengeFromContext,
     selectChallenge,
     getChallengePhaseLabel,
     getRuleCompliance,
     loading
   } = useChallenges();
+  const selectedChallenge = selectedChallengeProp || selectedChallengeFromContext;
 
   const [selectedTab, setSelectedTab] = useState('positions');
   const [liveMetrics, setLiveMetrics] = useState({ equity: null, profitPercent: null, dailyDrawdownPercent: null, overallDrawdownPercent: null });
   const [closeConfirmTrade, setCloseConfirmTrade] = useState(null);
   const priceTickThrottleRef = useRef({});
+  const activeEquityBaselineRef = useRef(null);
+  const profitBarPeakRef = useRef(0);
+  const overallDrawdownBarPeakRef = useRef(0);
+  const dailyDrawdownBarPeakRef = useRef({ date: null, value: 0 });
 
   const accountId = selectedChallenge?.id;
+  const normalizedStatus = String(selectedChallenge?.status || '').toLowerCase();
+  const isChallengeLocked =
+    normalizedStatus === 'failed' ||
+    normalizedStatus === 'inactive' ||
+    normalizedStatus === 'daily_locked' ||
+    normalizedStatus === 'disqualified' ||
+    normalizedStatus === 'closed' ||
+    normalizedStatus === 'paused';
 
   // Reset live metrics when account changes
   useEffect(() => {
     setLiveMetrics({ equity: null, profitPercent: null, dailyDrawdownPercent: null, overallDrawdownPercent: null });
     priceTickThrottleRef.current = {};
+    profitBarPeakRef.current = 0;
+    overallDrawdownBarPeakRef.current = 0;
+    dailyDrawdownBarPeakRef.current = { date: null, value: 0 };
   }, [accountId]);
 
   /* ── Price lookup helper ── */
   const getPriceForSymbol = useCallback((symbol) => {
     if (!symbol || !prices) return null;
-    let pd = prices[symbol];
-    if (pd && pd.bid !== undefined) return pd;
-    const upper = symbol.toUpperCase();
-    if (upper.endsWith('USDT')) {
-      pd = prices[`${upper.replace(/USDT$/, '')}/USD`];
-    } else if (upper.length >= 6) {
-      pd = prices[`${upper.slice(0, 3)}/${upper.slice(3)}`];
+    const raw = String(symbol).trim();
+    const upper = raw.toUpperCase();
+    const compact = upper.replace(/[^A-Z]/g, '');
+    const compactUsd = compact.replace(/USDT$/, 'USD');
+    const candidates = [
+      raw,
+      upper,
+      compact,
+      compactUsd,
+      compact.length === 6 ? `${compact.slice(0, 3)}/${compact.slice(3)}` : null,
+      compactUsd.length === 6 ? `${compactUsd.slice(0, 3)}/${compactUsd.slice(3)}` : null,
+      compact.endsWith('USDT') ? `${compact.slice(0, -4)}/USDT` : null,
+      compact.endsWith('USDT') ? `${compact.slice(0, -4)}/USD` : null,
+    ].filter(Boolean);
+    for (const key of candidates) {
+      const pd = prices[key];
+      if (pd && pd.bid !== undefined && pd.ask !== undefined) return pd;
     }
-    return pd && pd.bid !== undefined ? pd : null;
+    return null;
   }, [prices]);
 
   /* ── PnL calculation helper ── */
@@ -98,6 +124,12 @@ const CommonTerminalWrapper = ({ children }) => {
   const { data: pendingOrdersData, isLoading: ordersLoading } = useQuery({
     queryKey: ['pendingOrders', accountId],
     queryFn: () => getPendingOrders(accountId),
+    enabled: !!accountId,
+    refetchInterval: 3000,
+  });
+  const { data: accountSummaryData } = useQuery({
+    queryKey: ['accountSummary', accountId],
+    queryFn: () => getAccountSummary(accountId),
     enabled: !!accountId,
     refetchInterval: 3000,
   });
@@ -131,10 +163,37 @@ const CommonTerminalWrapper = ({ children }) => {
     return positionsWithPnL.reduce((sum, pos) => sum + pos.livePnL, 0);
   }, [positionsWithPnL]);
 
+  const hasOpenPositions = openPositions.length > 0;
+  useEffect(() => {
+    if (!hasOpenPositions) {
+      activeEquityBaselineRef.current = null;
+      return;
+    }
+    if (!Number.isFinite(activeEquityBaselineRef.current)) {
+      const summaryEquity = accountSummaryData?.account?.equity;
+      const summaryBalance = accountSummaryData?.account?.balance;
+      activeEquityBaselineRef.current = Number.isFinite(summaryEquity)
+        ? summaryEquity
+        : (Number.isFinite(summaryBalance) ? summaryBalance : (selectedChallenge?.currentBalance || 0));
+    }
+  }, [hasOpenPositions, accountSummaryData, selectedChallenge]);
+
+  useEffect(() => {
+    const metrics = accountSummaryData?.metrics;
+    if (!metrics) return;
+    setLiveMetrics((prev) => ({
+      ...prev,
+      ...(Number.isFinite(metrics?.equity) && { equity: metrics.equity }),
+      ...(Number.isFinite(metrics?.profitPercent) && { profitPercent: metrics.profitPercent }),
+      ...(Number.isFinite(metrics?.dailyDrawdownPercent) && { dailyDrawdownPercent: metrics.dailyDrawdownPercent }),
+      ...(Number.isFinite(metrics?.overallDrawdownPercent) && { overallDrawdownPercent: metrics.overallDrawdownPercent }),
+    }));
+  }, [accountSummaryData]);
+
   /* ── Forward price ticks to backend for violation checking ── */
   useEffect(() => {
     if (openPositions.length === 0 || !accountId) return;
-    const isLocked = selectedChallenge?.status === 'failed' || selectedChallenge?.status === 'inactive';
+    const isLocked = isChallengeLocked;
     if (isLocked) return;
 
     const positionSymbols = [...new Set(openPositions.map(t => t.symbol))];
@@ -169,12 +228,16 @@ const CommonTerminalWrapper = ({ children }) => {
         })
         .catch(() => {});
     });
-  }, [openPositions, accountId, selectedChallenge?.status, prices, getPriceForSymbol, queryClient, toast]);
+  }, [openPositions, accountId, isChallengeLocked, prices, getPriceForSymbol, queryClient, toast]);
 
   /* ── Mutations ── */
   const closePositionMutation = useMutation({
     mutationFn: ({ tradeId, closePrice }) => updateTrade(tradeId, { closePrice, closedAt: new Date().toISOString(), closeReason: 'USER_CLOSE' }),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['trades', accountId] }); toast({ title: 'Position Closed' }); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['trades', accountId] });
+      queryClient.invalidateQueries({ queryKey: ['accountSummary', accountId] });
+      toast({ title: 'Position Closed' });
+    },
     onError: (e) => { toast({ title: 'Close Failed', description: e?.response?.data?.message || e.message, variant: 'destructive' }); },
   });
   const cancelOrderMutation = useMutation({
@@ -227,14 +290,25 @@ const CommonTerminalWrapper = ({ children }) => {
   const red = '#f6465d';
 
   const phaseLabel = getChallengePhaseLabel(selectedChallenge);
-  const balance = selectedChallenge.currentBalance || 0;
-  const equity = (openPositions.length > 0) ? (balance + totalFloatingPnL) : (selectedChallenge.equity || balance);
+  const rules = selectedChallenge?.rules || {};
+  const summaryAccount = accountSummaryData?.account;
+  const summaryMetrics = accountSummaryData?.metrics;
+  const balance = Number.isFinite(summaryAccount?.balance) ? summaryAccount.balance : (selectedChallenge.currentBalance || 0);
+  const baselineEquity = Number.isFinite(activeEquityBaselineRef.current) ? activeEquityBaselineRef.current : balance;
+  const activeEquity = balance + totalFloatingPnL;
+  const equity = hasOpenPositions
+    ? activeEquity
+    : (Number.isFinite(summaryAccount?.equity) ? summaryAccount.equity : (selectedChallenge.equity || balance));
   const floatingPL = totalFloatingPnL;
-  const profitPercent = liveMetrics.profitPercent !== null
-    ? liveMetrics.profitPercent
-    : ((balance - selectedChallenge.accountSize) / selectedChallenge.accountSize) * 100;
+  const activeProfitPercent = hasOpenPositions && baselineEquity > 0
+    ? ((activeEquity - baselineEquity) / baselineEquity) * 100
+    : 0;
+  const activeDrawdownPercent = hasOpenPositions && baselineEquity > 0
+    ? Math.max(0, ((baselineEquity - activeEquity) / baselineEquity) * 100)
+    : 0;
+  const profitPercent = Math.max(0, activeProfitPercent);
 
-  const isAccountLocked = selectedChallenge.status === 'failed' || selectedChallenge.status === 'inactive';
+  const isAccountLocked = isChallengeLocked;
   const isDataLoading = tradesLoading || ordersLoading;
 
   // Compliance: override with live backend metrics when available
@@ -242,21 +316,52 @@ const CommonTerminalWrapper = ({ children }) => {
   const compliance = (() => {
     if (!baseCompliance) return baseCompliance;
     const result = { ...baseCompliance };
-    if (liveMetrics.profitPercent !== null) {
-      const current = liveMetrics.profitPercent;
-      const target = selectedChallenge.rules?.profitTarget || 8;
-      result.profitTarget = { ...result.profitTarget, current, percentage: Math.min((current / target) * 100, 100), status: current >= target ? 'passed' : 'in-progress' };
+    const target = rules.profitTarget || 8;
+    const dailyLimit = rules.maxDailyLoss || 5;
+    const overallLimit = rules.maxTotalDrawdown || 10;
+
+    const currentDate = new Date().toISOString().substring(0, 10);
+    if (dailyDrawdownBarPeakRef.current.date !== currentDate) {
+      dailyDrawdownBarPeakRef.current = {
+        date: currentDate,
+        value: Math.max(0, Number(summaryMetrics?.dailyDrawdownPercent) || 0),
+      };
     }
-    if (liveMetrics.dailyDrawdownPercent !== null) {
-      const current = liveMetrics.dailyDrawdownPercent;
-      const limit = selectedChallenge.rules?.maxDailyLoss || 5;
-      result.dailyLoss = { ...result.dailyLoss, current, percentage: (current / limit) * 100, status: current >= limit ? 'violated' : current >= limit * 0.8 ? 'warning' : 'safe' };
-    }
-    if (liveMetrics.overallDrawdownPercent !== null) {
-      const current = liveMetrics.overallDrawdownPercent;
-      const limit = selectedChallenge.rules?.maxTotalDrawdown || 10;
-      result.totalDrawdown = { ...result.totalDrawdown, current, percentage: (current / limit) * 100, status: current >= limit ? 'violated' : current >= limit * 0.8 ? 'warning' : 'safe' };
-    }
+
+    const profitSeed = Math.max(0, Number(summaryMetrics?.profitPercent) || 0);
+    const overallSeed = Math.max(0, Number(summaryMetrics?.overallDrawdownPercent) || 0);
+    const dailySeed = Math.max(0, Number(summaryMetrics?.dailyDrawdownPercent) || 0);
+
+    const profitCurrentRaw = Math.max(0, activeProfitPercent);
+    const dailyCurrentRaw = Math.max(0, activeDrawdownPercent);
+    const overallCurrentRaw = Math.max(0, activeDrawdownPercent);
+
+    profitBarPeakRef.current = Math.max(profitBarPeakRef.current, profitSeed, profitCurrentRaw);
+    overallDrawdownBarPeakRef.current = Math.max(overallDrawdownBarPeakRef.current, overallSeed, overallCurrentRaw);
+    dailyDrawdownBarPeakRef.current.value = Math.max(dailyDrawdownBarPeakRef.current.value, dailySeed, dailyCurrentRaw);
+
+    const profitCurrent = profitBarPeakRef.current;
+    result.profitTarget = {
+      ...result.profitTarget,
+      current: profitCurrent,
+      percentage: target > 0 ? Math.min((profitCurrent / target) * 100, 100) : 0,
+      status: profitCurrent >= target ? 'passed' : 'in-progress',
+    };
+
+    const dailyCurrent = dailyDrawdownBarPeakRef.current.value;
+    const overallCurrent = overallDrawdownBarPeakRef.current;
+    result.dailyLoss = {
+      ...result.dailyLoss,
+      current: dailyCurrent,
+      percentage: dailyLimit > 0 ? (dailyCurrent / dailyLimit) * 100 : 0,
+      status: dailyCurrent >= dailyLimit ? 'violated' : dailyCurrent >= dailyLimit * 0.8 ? 'warning' : 'safe',
+    };
+    result.totalDrawdown = {
+      ...result.totalDrawdown,
+      current: overallCurrent,
+      percentage: overallLimit > 0 ? (overallCurrent / overallLimit) * 100 : 0,
+      status: overallCurrent >= overallLimit ? 'violated' : overallCurrent >= overallLimit * 0.8 ? 'warning' : 'safe',
+    };
     return result;
   })();
 
@@ -276,10 +381,24 @@ const CommonTerminalWrapper = ({ children }) => {
 
       {/* ==================== PHASE PROGRESSION ==================== */}
       <PhaseProgressionCards challenge={(() => {
-        if (liveMetrics.profitPercent === null) return selectedChallenge;
+        const effectiveProfit = Math.max(
+          0,
+          profitBarPeakRef.current,
+          Number(summaryMetrics?.profitPercent) || 0,
+        );
+        const tradingDaysCompleted = summaryMetrics?.tradingDaysCompleted;
+        if (!Number.isFinite(effectiveProfit) && !Number.isFinite(tradingDaysCompleted)) return selectedChallenge;
         return {
           ...selectedChallenge,
-          stats: { ...selectedChallenge.stats, currentProfit: Math.max(0, liveMetrics.profitPercent) },
+          stats: {
+            ...selectedChallenge.stats,
+            ...(Number.isFinite(effectiveProfit) && { currentProfit: Math.max(0, effectiveProfit) }),
+          },
+          tradingDays: {
+            ...selectedChallenge.tradingDays,
+            ...(Number.isFinite(tradingDaysCompleted) && { current: tradingDaysCompleted }),
+            required: selectedChallenge?.tradingDays?.required || rules.minTradingDays || 5,
+          },
         };
       })()} />
 
