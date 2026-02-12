@@ -401,7 +401,7 @@ export default function AdminAccounts() {
                   updatePhaseMutation.mutate({ id: row.id, phase: "FUNDED" })
                 }
               >
-                <TrendingUp className="w-4 h-4 mr-2 data-[highlighted]:text-purple-300" />
+                <TrendingUp className="w-4 h-4 mr-2 text-purple-300" />
                 {t("admin.accounts.actions.moveToFunded")}
               </DropdownMenuItem>
             )}
@@ -572,19 +572,14 @@ export default function AdminAccounts() {
       <Dialog open={isDetailsDialogOpen} onOpenChange={handleCloseDetails}>
         <DialogContent
           className="
-    bg-slate-900 border-slate-800
-    w-[95vw] sm:w-full sm:max-w-3xl
-    max-h-[85vh] overflow-y-auto
-    p-4 sm:p-6
-
-    [&>button]:text-white
-    [&>button]:opacity-80
-    [&>button:hover]:opacity-100
-    [&>button:hover]:bg-slate-800
-  "
+            bg-card border-border
+            w-[95vw] sm:w-full sm:max-w-3xl
+            max-h-[85vh] overflow-y-auto
+            p-4 sm:p-6
+          "
         >
           <DialogHeader>
-            <DialogTitle className="text-white text-base sm:text-lg md:text-xl">
+            <DialogTitle className="text-foreground text-base sm:text-lg md:text-xl">
               {t("admin.accounts.dialog.title", {
                 defaultValue: "Account Details",
               })}
@@ -592,24 +587,24 @@ export default function AdminAccounts() {
           </DialogHeader>
           {isLoadingDetails ? (
             <div className="flex items-center justify-center py-6 sm:py-8">
-              <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-emerald-400" />
+              <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-amber-500" />
             </div>
           ) : accountDetails ? (
             <div className="space-y-4 sm:space-y-6 mt-3 sm:mt-4">
               {/* Account Header */}
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4 pb-3 sm:pb-4 border-b border-slate-800 text-center sm:text-left">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-white text-lg sm:text-2xl font-bold flex-shrink-0">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4 pb-3 sm:pb-4 border-b border-border text-center sm:text-left">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-[#0a0d12] text-lg sm:text-2xl font-bold flex-shrink-0">
                   {accountDetails.brokerLogin?.[0]?.toUpperCase() ||
                     accountDetails.id?.[0]?.toUpperCase() ||
                     "A"}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-white truncate">
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground truncate">
                     {accountDetails.brokerLogin ||
                       accountDetails.id ||
                       "Account"}
                   </h3>
-                  <p className="text-slate-400 text-xs sm:text-sm break-all">
+                  <p className="text-muted-foreground text-xs sm:text-sm break-all">
                     {accountDetails.user?.email || "N/A"}
                   </p>
                   <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-1.5 sm:mt-2">
@@ -631,58 +626,58 @@ export default function AdminAccounts() {
 
               {/* Account Information */}
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
-                <div className="bg-slate-800/30 rounded-lg p-2.5 sm:p-3">
-                  <p className="text-xs text-slate-400 mb-0.5 sm:mb-1">
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.accountId", {
                       defaultValue: "Account ID",
                     })}
                   </p>
-                  <p className="text-white font-mono text-xs break-all">
+                  <p className="text-foreground font-mono text-xs break-all">
                     {accountDetails.id?.slice(0, 8) || "N/A"}...
                   </p>
                 </div>
-                <div className="bg-slate-800/30 rounded-lg p-2.5 sm:p-3">
-                  <p className="text-xs text-slate-400 mb-0.5 sm:mb-1">
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.brokerLogin", {
                       defaultValue: "Broker Login",
                     })}
                   </p>
-                  <p className="text-white text-xs sm:text-sm">
+                  <p className="text-foreground text-xs sm:text-sm">
                     {accountDetails.brokerLogin || "N/A"}
                   </p>
                 </div>
-                <div className="bg-slate-800/30 rounded-lg p-2.5 sm:p-3">
-                  <p className="text-xs text-slate-400 mb-0.5 sm:mb-1">
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.platform", {
                       defaultValue: "Platform",
                     })}
                   </p>
-                  <p className="text-white text-xs sm:text-sm">
+                  <p className="text-foreground text-xs sm:text-sm">
                     {accountDetails.challenge?.platform || "N/A"}
                   </p>
                 </div>
-                <div className="bg-slate-800/30 rounded-lg p-2.5 sm:p-3">
-                  <p className="text-xs text-slate-400 mb-0.5 sm:mb-1">
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.challenge", {
                       defaultValue: "Challenge",
                     })}
                   </p>
-                  <p className="text-white text-xs sm:text-sm truncate">
+                  <p className="text-foreground text-xs sm:text-sm truncate">
                     {accountDetails.challenge?.name || "N/A"}
                   </p>
                 </div>
-                <div className="bg-slate-800/30 rounded-lg p-2.5 sm:p-3">
-                  <p className="text-xs text-slate-400 mb-0.5 sm:mb-1">
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.trader", {
                       defaultValue: "Trader",
                     })}
                   </p>
-                  <p className="text-white text-xs sm:text-sm truncate">
+                  <p className="text-foreground text-xs sm:text-sm truncate">
                     {accountDetails.user?.email || "N/A"}
                   </p>
                 </div>
-                <div className="bg-slate-800/30 rounded-lg p-2.5 sm:p-3">
-                  <p className="text-xs text-slate-400 mb-0.5 sm:mb-1">
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.phase", {
                       defaultValue: "Phase",
                     })}
@@ -694,8 +689,8 @@ export default function AdminAccounts() {
                     }
                   />
                 </div>
-                <div className="bg-slate-800/30 rounded-lg p-2.5 sm:p-3">
-                  <p className="text-xs text-slate-400 mb-0.5 sm:mb-1">
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.status", {
                       defaultValue: "Status",
                     })}
@@ -707,13 +702,13 @@ export default function AdminAccounts() {
                     }
                   />
                 </div>
-                <div className="bg-slate-800/30 rounded-lg p-2.5 sm:p-3">
-                  <p className="text-xs text-slate-400 mb-0.5 sm:mb-1">
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.created", {
                       defaultValue: "Created",
                     })}
                   </p>
-                  <p className="text-white text-xs sm:text-sm">
+                  <p className="text-foreground text-xs sm:text-sm">
                     {accountDetails.createdAt
                       ? format(
                           new Date(accountDetails.createdAt),
@@ -725,39 +720,39 @@ export default function AdminAccounts() {
               </div>
 
               {/* Balance Information */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 p-3 sm:p-4 bg-slate-800/50 rounded-lg">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 p-3 sm:p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl">
                 <div>
-                  <p className="text-xs text-slate-400 mb-0.5 sm:mb-1">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.initialBalance", {
                       defaultValue: "Initial Balance",
                     })}
                   </p>
-                  <p className="text-white font-bold text-sm sm:text-lg">
+                  <p className="text-foreground font-bold text-sm sm:text-lg">
                     ${accountDetails.initialBalance?.toLocaleString() || "0"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400 mb-0.5 sm:mb-1">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.currentBalance", {
                       defaultValue: "Current Balance",
                     })}
                   </p>
-                  <p className="text-white font-bold text-sm sm:text-lg">
+                  <p className="text-foreground font-bold text-sm sm:text-lg">
                     ${accountDetails.balance?.toLocaleString() || "0"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400 mb-0.5 sm:mb-1">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.equity", {
                       defaultValue: "Equity",
                     })}
                   </p>
-                  <p className="text-white font-bold text-sm sm:text-lg">
+                  <p className="text-foreground font-bold text-sm sm:text-lg">
                     ${accountDetails.equity?.toLocaleString() || "0"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400 mb-0.5 sm:mb-1">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.profit", {
                       defaultValue: "Profit/Loss",
                     })}
@@ -774,7 +769,7 @@ export default function AdminAccounts() {
                       return (
                         <p
                           className={`font-bold text-sm sm:text-lg ${
-                            profit >= 0 ? "text-emerald-400" : "text-red-400"
+                            profit >= 0 ? "text-emerald-500" : "text-red-500"
                           }`}
                         >
                           {profit >= 0 ? "+" : ""}
@@ -787,33 +782,33 @@ export default function AdminAccounts() {
 
               {/* Statistics */}
               <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                <div className="bg-slate-800/30 rounded-lg p-2.5 sm:p-3 text-center">
-                  <p className="text-xs text-slate-400 mb-0.5 sm:mb-1">
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 text-center border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.totalTrades", {
                       defaultValue: "Trades",
                     })}
                   </p>
-                  <p className="text-white font-bold text-base sm:text-lg">
+                  <p className="text-foreground font-bold text-base sm:text-lg">
                     {accountDetails.trades?.length || 0}
                   </p>
                 </div>
-                <div className="bg-slate-800/30 rounded-lg p-2.5 sm:p-3 text-center">
-                  <p className="text-xs text-slate-400 mb-0.5 sm:mb-1">
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 text-center border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.violations", {
                       defaultValue: "Violations",
                     })}
                   </p>
-                  <p className="text-white font-bold text-base sm:text-lg">
+                  <p className="text-foreground font-bold text-base sm:text-lg">
                     {accountDetails.violations?.length || 0}
                   </p>
                 </div>
-                <div className="bg-slate-800/30 rounded-lg p-2.5 sm:p-3 text-center">
-                  <p className="text-xs text-slate-400 mb-0.5 sm:mb-1">
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 text-center border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.phaseTransitions", {
                       defaultValue: "Transitions",
                     })}
                   </p>
-                  <p className="text-white font-bold text-base sm:text-lg">
+                  <p className="text-foreground font-bold text-base sm:text-lg">
                     {accountDetails.phaseHistory?.length || 0}
                   </p>
                 </div>
@@ -823,7 +818,7 @@ export default function AdminAccounts() {
               {accountDetails.violations &&
                 accountDetails.violations.length > 0 && (
                   <div>
-                    <p className="text-xs sm:text-sm text-slate-400 mb-2">
+                    <p className="text-xs sm:text-sm text-muted-foreground mb-2">
                       {t("admin.accounts.dialog.recentViolations", {
                         defaultValue: "Recent Violations",
                       })}
@@ -834,15 +829,15 @@ export default function AdminAccounts() {
                         .map((violation) => (
                           <div
                             key={violation.id}
-                            className="p-2.5 sm:p-3 bg-red-500/10 border border-red-500/20 rounded-lg"
+                            className="p-2.5 sm:p-3 bg-red-500/10 border border-red-500/20 rounded-xl"
                           >
-                            <p className="text-white text-xs sm:text-sm font-medium">
+                            <p className="text-foreground text-xs sm:text-sm font-medium">
                               {violation.type}
                             </p>
-                            <p className="text-slate-400 text-xs mt-1 line-clamp-2">
+                            <p className="text-muted-foreground text-xs mt-1 line-clamp-2">
                               {violation.message}
                             </p>
-                            <p className="text-slate-500 text-xs mt-1">
+                            <p className="text-muted-foreground/70 text-xs mt-1">
                               {format(
                                 new Date(violation.createdAt),
                                 "MMM d, yyyy HH:mm",
@@ -856,18 +851,18 @@ export default function AdminAccounts() {
             </div>
           ) : accountDetailsError ? (
             <div className="text-center py-6 sm:py-8">
-              <p className="text-red-400 mb-2 text-sm">
+              <p className="text-red-500 mb-2 text-sm">
                 {t("admin.accounts.dialog.error", {
                   defaultValue: "Error loading account details",
                 })}
               </p>
-              <p className="text-slate-400 text-xs sm:text-sm">
+              <p className="text-muted-foreground text-xs sm:text-sm">
                 {accountDetailsError.message ||
                   "Failed to load account details"}
               </p>
             </div>
           ) : (
-            <div className="text-center py-6 sm:py-8 text-slate-400 text-sm">
+            <div className="text-center py-6 sm:py-8 text-muted-foreground text-sm">
               {t("admin.accounts.dialog.noDetails", {
                 defaultValue: "No account details available",
               })}
