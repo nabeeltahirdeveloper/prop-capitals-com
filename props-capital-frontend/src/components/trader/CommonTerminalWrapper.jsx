@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTraderTheme } from './TraderPanelLayout';
 import { useChallenges } from '@/contexts/ChallengesContext';
 import { usePrices } from '@/contexts/PriceContext';
-import { getAccountTrades, updateTrade } from '@/api/trades';
+import { getAccountTrades, updateTrade, createTrade } from '@/api/trades';
 import { getPendingOrders, cancelPendingOrder } from '@/api/pending-orders';
 import { processPriceTick, getAccountSummary } from '@/api/accounts';
 import { useToast } from '@/components/ui/use-toast';
@@ -108,6 +108,8 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
   const [selectedTab, setSelectedTab] = useState('positions');
   const [liveMetrics, setLiveMetrics] = useState({ equity: null, profitPercent: null, dailyDrawdownPercent: null, overallDrawdownPercent: null });
   const [closeConfirmTrade, setCloseConfirmTrade] = useState(null);
+  const [showBuySellPanel, setShowBuySellPanel] = useState(false);
+  const [selectedSymbol, setSelectedSymbol] = useState(null);
   const priceTickThrottleRef = useRef({});
   const activeEquityBaselineRef = useRef(null);
   const profitBarPeakRef = useRef(0);
@@ -306,6 +308,39 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
     onError: (e) => { toast({ title: 'Cancel Failed', description: e?.response?.data?.message || e.message, variant: 'destructive' }); },
   });
 
+  const handleExecuteTrade = useCallback(async (trade) => {
+    if (!accountId) {
+      toast({ title: 'No account selected', variant: 'destructive' });
+      return;
+    }
+    if (isChallengeLocked) {
+      toast({ title: 'Trading locked', description: 'Account is not active for trading.', variant: 'destructive' });
+      return;
+    }
+    const volume = trade?.volume ?? trade?.lotSize;
+    const openPrice = trade?.openPrice ?? trade?.entryPrice;
+    if (!trade?.symbol || !trade?.type || (volume == null || volume <= 0) || (openPrice == null)) {
+      toast({ title: 'Invalid trade', description: 'Missing symbol, type, volume or price.', variant: 'destructive' });
+      return;
+    }
+    try {
+      await createTrade({
+        accountId,
+        symbol: trade.symbol,
+        type: String(trade.type).toUpperCase(),
+        volume: parseFloat(volume),
+        openPrice: parseFloat(openPrice),
+        stopLoss: trade.stopLoss != null ? parseFloat(trade.stopLoss) : null,
+        takeProfit: trade.takeProfit != null ? parseFloat(trade.takeProfit) : null,
+      });
+      queryClient.invalidateQueries({ queryKey: ['trades', accountId] });
+      queryClient.invalidateQueries({ queryKey: ['accountSummary', accountId] });
+      toast({ title: 'Trade executed' });
+    } catch (e) {
+      toast({ title: 'Trade failed', description: e?.response?.data?.message || e.message, variant: 'destructive' });
+    }
+  }, [accountId, isChallengeLocked, queryClient, toast]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -353,6 +388,13 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
   const rules = selectedChallenge?.rules || {};
   const summaryAccount = accountSummaryData?.account;
   const summaryMetrics = accountSummaryData?.metrics;
+  const selectedAccountId = accountId;
+  const account = summaryAccount ?? {
+    balance: selectedChallenge?.currentBalance,
+    equity: selectedChallenge?.equity,
+    status: selectedChallenge?.status,
+  };
+  const enrichedSelectedSymbol = selectedSymbol;
   const balance = Number.isFinite(summaryAccount?.balance) ? summaryAccount.balance : (selectedChallenge.currentBalance || 0);
   const baselineEquity = Number.isFinite(activeEquityBaselineRef.current) ? activeEquityBaselineRef.current : balance;
   const activeEquity = balance + totalFloatingPnL;
@@ -478,7 +520,7 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
         {React.Children.map(children, (child) =>
           React.isValidElement(child)
             ? React.cloneElement(child, {
-                positions,
+                positions: openPositions,
                 onExecuteTrade: handleExecuteTrade,
                 showBuySellPanel,
                 setShowBuySellPanel,
@@ -486,7 +528,7 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
                 selectedAccountId,
                 account,
                 selectedSymbol: enrichedSelectedSymbol,
-                setSelectedSymbol,
+                setSelectedSymbol: setSelectedSymbol,
               })
             : child
         )}

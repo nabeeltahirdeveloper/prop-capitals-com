@@ -24,6 +24,9 @@ import {
   MarketExecutionModal,
   MarketWatch
 } from '@nabeeltahirdeveloper/chart-sdk'
+import MT5Login from './MT5Login';
+import { usePlatformTokensStore } from '@/lib/stores/platform-tokens.store';
+import { processPlatformLogin, resetPlatformPassword } from '@/api/auth';
 
 
 const MT5TradingArea = ({
@@ -63,6 +66,71 @@ const MT5TradingArea = ({
   } = useTrading()
   const { t } = useTranslation();
   const { toast } = useToast();
+
+  // Platform authentication state
+  const accountId = selectedChallenge?.id;
+  const getPlatformToken = usePlatformTokensStore((state) => state.getPlatfromToken);
+  const setPlatformToken = usePlatformTokensStore((state) => state.setPlatfromToken);
+  const platformToken = getPlatformToken(accountId);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
+
+  // Handle MT5 platform login
+  const handlePlatformLogin = async (email, password) => {
+    if (!accountId) {
+      toast({ title: 'No account selected', variant: 'destructive' });
+      return;
+    }
+    setIsLoggingIn(true);
+    try {
+      const response = await processPlatformLogin(accountId, email, password);
+      if (response?.platformToken) {
+        setPlatformToken(accountId, response.platformToken);
+        toast({ title: 'Successfully connected to MT5' });
+      }
+    } catch (error) {
+      toast({
+        title: 'Login failed',
+        description: error.response?.data?.message || error.message,
+        variant: 'destructive'
+      });
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  // Handle password reset
+  const handlePasswordReset = async () => {
+    if (!accountId) {
+      toast({ title: 'No account selected', variant: 'destructive' });
+      return;
+    }
+    setIsResettingPassword(true);
+    try {
+      await resetPlatformPassword(accountId);
+      toast({ title: 'Password reset email sent' });
+    } catch (error) {
+      toast({
+        title: 'Reset failed',
+        description: error.response?.data?.message || error.message,
+        variant: 'destructive'
+      });
+    } finally {
+      setIsResettingPassword(false);
+    }
+  };
+
+  // If no platform token, show login screen
+  if (!platformToken) {
+    return (
+      <MT5Login
+        onPlatformLogin={handlePlatformLogin}
+        onPasswordReset={handlePasswordReset}
+        isSubmitting={isLoggingIn}
+        isResetting={isResettingPassword}
+      />
+    );
+  }
 
   // Use trade flow from parent (CommonTerminalWrapper / same as pages/TradingTerminal) when provided
   const positions = positionsFromParent;
