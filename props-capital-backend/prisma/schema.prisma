@@ -118,9 +118,6 @@ model TradingAccount {
   brokerLogin            String?
   brokerPassword         String?
   brokerServerId         String?
-  platformEmail          String?
-  platformHashedPassword String?
-  platformSessionId      String?
   initialBalance         Float                @default(0)
   createdAt              DateTime             @default(now())
   updatedAt              DateTime             @updatedAt
@@ -133,6 +130,9 @@ model TradingAccount {
   minEquityToday         Float?
   minEquityOverall       Float?
   lastDailyReset         DateTime?
+  platformEmail          String?
+  platformHashedPassword String?
+  platformSessionId      String?
   equityShots            EquitySnapshot[]
   payouts                Payout[]
   pendingOrders          PendingOrder[]
