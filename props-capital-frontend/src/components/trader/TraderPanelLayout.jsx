@@ -251,7 +251,7 @@ const TraderPanelLayoutInner = () => {
           } ${sidebarCollapsed ? 'w-20' : 'w-64'} ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
           {/* Logo */}
           <div className={`h-16 flex items-center justify-between px-4 border-b ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
-            <Link to="/" className="flex items-center gap-3" onClick={handleNavClick}>
+            <Link to="/traderdashboard" className="flex items-center gap-3" onClick={handleNavClick}>
               <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center text-[#0a0d12] font-black text-sm">
                 PC
               </div>
