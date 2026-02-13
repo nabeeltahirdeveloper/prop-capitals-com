@@ -6,7 +6,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 
 const socialLinks = [
   { Icon: <SiX className="w-4 h-4" />, url: 'https://x.com/propcapitals0' },
-  { Icon: <SiInstagram className="w-5 h-5" />, url: 'https://www.instagram.com/propcapitals0/' },
+  { Icon: <SiInstagram className="w-[17px] h-[18px]" />, url: 'https://www.instagram.com/propcapitals0/' },
   { Icon: <SiYoutube className="w-6 h-5" />, url: 'https://www.youtube.com/@propcapitals0' },
   { Icon: <SiDiscord className="w-6 h-5" />, url: 'https://discord.gg/UDMRbQbB' },
   { Icon: <Mail className="w-5 h-5" />, url: 'mailto:support@prop-capitals.com' }
@@ -39,13 +39,13 @@ const Footer = () => {
             <p className={`text-sm mb-6 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
               Empowering traders worldwide with funded accounts and industry-leading conditions.
             </p>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-[6px]">
               {socialLinks.map(({Icon, url}, i) => (
                 <a
                   key={url}
                   href={url}
                   target='_blank'
-                  className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
+                  className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${
                     isDark
                       ? 'bg-[#12161d] text-gray-400 hover:text-amber-400 hover:bg-[#1a1f2a]'
                       : 'bg-white border border-slate-200 text-slate-400 hover:text-amber-500 hover:border-amber-200'
