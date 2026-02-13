@@ -170,23 +170,23 @@ export default function AdminScaling() {
     <div className="overflow-x-auto">
       <Table>
         <TableHeader>
-          <TableRow className="border-border bg-muted/50">
-            <TableHead className="text-muted-foreground text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+          <TableRow className="border-slate-200 dark:border-border bg-slate-200 dark:bg-muted/50 [&_tr]:hover:bg-transparent">
+            <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
               {t("admin.scaling.table.trader")}
             </TableHead>
-            <TableHead className="text-muted-foreground text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+            <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
               {t("admin.scaling.table.currentToNew")}
             </TableHead>
-            <TableHead className="text-muted-foreground text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+            <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
               {t("admin.scaling.table.profitSplit")}
             </TableHead>
-            <TableHead className="text-muted-foreground text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+            <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
               {t("admin.scaling.table.profitAchieved")}
             </TableHead>
-            <TableHead className="text-muted-foreground text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+            <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
               {t("admin.scaling.table.payoutCycles")}
             </TableHead>
-            <TableHead className="text-muted-foreground text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+            <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
               {t("admin.scaling.table.status")}
             </TableHead>
             {showActions && (
@@ -200,7 +200,7 @@ export default function AdminScaling() {
           {data.map((request) => (
             <TableRow
               key={request.id}
-              className="border-border hover:bg-muted/50"
+              className="border-slate-200 dark:border-border hover:bg-slate-50 dark:hover:bg-muted/50"
             >
               <TableCell className="px-2 sm:px-4 py-3">
                 <div>

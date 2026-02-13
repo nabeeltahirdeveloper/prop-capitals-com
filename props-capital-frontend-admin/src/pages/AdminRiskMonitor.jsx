@@ -284,26 +284,26 @@ export default function AdminRiskMonitor() {
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="border-border bg-muted/50">
-                <TableHead className="text-muted-foreground text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+              <TableRow className="border-slate-200 dark:border-border bg-slate-200 dark:bg-muted/50 [&_tr]:hover:bg-transparent">
+                <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.account")}
                 </TableHead>
-                <TableHead className="text-muted-foreground text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.balance")}
                 </TableHead>
-                <TableHead className="text-muted-foreground text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.equity")}
                 </TableHead>
-                <TableHead className="text-muted-foreground text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.dailyDD")}
                 </TableHead>
-                <TableHead className="text-muted-foreground text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.maxDD")}
                 </TableHead>
-                <TableHead className="text-muted-foreground text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.riskLevel")}
                 </TableHead>
-                <TableHead className="text-muted-foreground text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                   {t("admin.riskMonitor.table.actions")}
                 </TableHead>
               </TableRow>
@@ -317,7 +317,7 @@ export default function AdminRiskMonitor() {
                 return (
                   <TableRow
                     key={account.id}
-                    className="border-border hover:bg-muted/50"
+                    className="border-slate-200 dark:border-border hover:bg-slate-50 dark:hover:bg-muted/50"
                   >
                     <TableCell className="py-2 sm:py-4 px-2 sm:px-4">
                       <div>
