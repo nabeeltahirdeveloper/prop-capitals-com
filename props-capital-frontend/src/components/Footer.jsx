@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { SiX, SiInstagram, SiYoutube } from 'react-icons/si';
+import { SiX, SiInstagram, SiYoutube, SiDiscord } from 'react-icons/si';
 import { Mail } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -8,6 +8,7 @@ const socialLinks = [
   { Icon: <SiX className="w-4 h-4" />, url: 'https://x.com/propcapitals0' },
   { Icon: <SiInstagram className="w-5 h-5" />, url: 'https://www.instagram.com/propcapitals0/' },
   { Icon: <SiYoutube className="w-6 h-5" />, url: 'https://www.youtube.com/@propcapitals0' },
+  { Icon: <SiDiscord className="w-6 h-5" />, url: 'https://discord.gg/UDMRbQbB' },
   { Icon: <Mail className="w-5 h-5" />, url: 'mailto:support@prop-capitals.com' }
 ]
 
