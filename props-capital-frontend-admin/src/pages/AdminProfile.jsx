@@ -230,7 +230,7 @@ export default function AdminProfile() {
               {user?.email}
             </p>
             <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
-              <span className="px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-amber-50 text-[#d97706] border border-amber-200">
+              <span className="px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium text-[#d97706] border border-amber-200">
                 {t("profile.admin")}
               </span>
             </div>

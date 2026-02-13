@@ -129,8 +129,8 @@ export default function AdminSupport() {
 
   const priorityColors = {
     low: 'bg-muted text-muted-foreground border border-border',
-    medium: 'bg-amber-50 text-[#d97706] border border-amber-200',
-    high: 'bg-red-50 text-red-600 border border-red-200',
+    medium: 'bg-amber-50 text-[#d97706] border border-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:border-amber-700',
+    high: 'bg-red-50 text-red-600 border border-red-200 dark:bg-red-950/60 dark:text-red-400 dark:border-red-800',
   };
 
   const columns = [
