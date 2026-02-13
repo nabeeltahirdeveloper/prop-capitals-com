@@ -16,10 +16,10 @@ const MT5Terminal = () => {
 
   // MT5 ke endpoints
   const endpoints = {
-    candles: '/market-data/history',        // Historical candles endpoint
+    candles: '/market-data/history?symbols',        // Historical candles endpoint
     symbols: '/market-data/prices?symbols', // Symbols list (query param allowed)
     trades: '/trades',               // Trades endpoint (adjust if different)
-    account: '/api/v1/user/account',        // Account endpoint (adjust if different)
+    // account: '/api/v1/user/account',        // Account endpoint (adjust if different)
   };
   return (
     <CommonTerminalWrapper>

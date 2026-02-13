@@ -209,7 +209,7 @@ export default function TradingPanel({
             value={limitPrice}
             onChange={(e) => setLimitPrice(e.target.value)}
             placeholder={t("terminal.tradingPanel.leaveEmpty")}
-            disabled={isInputLocked}
+            // disabled={isDisabled}
             className={[
               "h-8 rounded-lg",
               "text-[10px] font-mono font-black",
@@ -240,7 +240,7 @@ export default function TradingPanel({
                   setLotSize(parseFloat(clamped.toFixed(decimals)));
                 }
               }}
-              disabled={isInputLocked}
+              // disabled={isDisabled}
               className={[
                 "h-8 rounded-lg",
                 "text-[10px] font-mono font-black",
@@ -264,7 +264,8 @@ export default function TradingPanel({
               return (
                 <button
                   key={percent}
-                  disabled={isInputLocked}
+                  // disabled={isDisabled}
+
                   onClick={() => {
                     setAllocationPercent(percent);
                     setLotSize(calculateLotSizeFromPercent(percent));
@@ -327,7 +328,7 @@ export default function TradingPanel({
               value={takeProfit}
               onChange={(e) => setTakeProfit(e.target.value)}
               placeholder="0.0000"
-              disabled={isInputLocked}
+              // disabled={isDisabled}
               className={[
                 "h-8 rounded-lg px-2",
                 "text-[10px] font-mono font-black",
@@ -347,7 +348,7 @@ export default function TradingPanel({
               value={stopLoss}
               onChange={(e) => setStopLoss(e.target.value)}
               placeholder="0.0000"
-              disabled={isInputLocked}
+              // disabled={isDisabled}
               className={[
                 "h-8 rounded-lg px-2",
                 "text-[10px] font-mono font-black",
@@ -401,7 +402,7 @@ export default function TradingPanel({
         {/* Execute */}
         <button
           onClick={handleTrade}
-          disabled={isExecutionBlocked}
+          // disabled={isDisabled}
           className={[
             "w-full h-9 rounded-lg",
             "font-black text-[11px] uppercase tracking-widest",
