@@ -17,6 +17,7 @@ import { getCurrentUser } from "@/api/auth";
 import { getUserTickets, createSupportTicket } from "@/api/support";
 import { useToast } from "@/components/ui/use-toast";
 import { formatDate } from "@/utils/dateFormating";
+import { useChatSupportStore } from "@/lib/stores/chat-support.store";
 
 
 const SupportPage = () => {
@@ -30,6 +31,7 @@ const SupportPage = () => {
   const queryClient = useQueryClient();
   const [isTicketSubmitting, setIsTicketSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const openChat = useChatSupportStore((state) => state.openChat);
 
   const { data: user } = useQuery({
     queryKey: ["user", "me"],
@@ -176,7 +178,10 @@ const SupportPage = () => {
             <p className={`text-sm mb-4 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
               Get instant help from our AI assistant or connect with a live agent.
             </p>
-            <button className="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium rounded-xl transition-all">
+            <button
+              onClick={openChat}
+              className="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium rounded-xl transition-all"
+            >
               Start Chat
             </button>
           </div>

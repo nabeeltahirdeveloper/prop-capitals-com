@@ -294,7 +294,6 @@ export default function AdminSupport() {
           data={filteredTickets}
           isLoading={isLoading}
           emptyMessage={t('admin.support.emptyMessage')}
-          variant="light"
         />
       </Card>
 

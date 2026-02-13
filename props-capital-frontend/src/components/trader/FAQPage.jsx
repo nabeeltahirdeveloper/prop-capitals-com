@@ -11,6 +11,7 @@ import {
   CreditCard,
   AlertTriangle
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useTraderTheme } from './TraderPanelLayout';
 
 const FAQPage = () => {
@@ -209,12 +210,12 @@ const FAQPage = () => {
         <p className={`mb-4 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
           Cannot find what you are looking for? Our support team is here to help.
         </p>
-        <a
-          href="/trader-panel/support"
+        <Link
+          to="/traderdashboard/support"
           className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] font-bold rounded-xl transition-all"
         >
           Contact Support
-        </a>
+        </Link>
       </div>
     </div>
   );

@@ -22,7 +22,9 @@ import {
   LogOut,
   Menu,
   X,
-  Check
+  Check,
+  Pin,
+  PinOff
 } from 'lucide-react';
 import { ChallengesProvider, useChallenges } from '@/contexts/ChallengesContext';
 import { useTrading } from '@/contexts/TradingContext';
@@ -40,6 +42,7 @@ import { translateNotification } from '@/utils/notificationTranslations';
 import { useTranslation } from '@/contexts/LanguageContext';
 import { Button } from '../ui/button';
 import { dayjs } from '@/lib/utils';
+import { usePlatformTokensStore } from '@/lib/stores/platform-tokens.store';
 
 export const TraderThemeContext = React.createContext();
 export const useTraderTheme = () => React.useContext(TraderThemeContext);
@@ -60,6 +63,13 @@ const TraderPanelLayoutInner = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { selectedChallenge, getChallengePhaseLabel, challenges, selectChallenge } = useChallenges();
   const { fetchOrders, fetchUserBalance } = useTrading();
+  const pinnedAccounts = usePlatformTokensStore((state) => state.pinnedAccounts || []);
+  const togglePinnedAccount = usePlatformTokensStore((state) => state.togglePinnedAccount);
+  const pinnedSet = new Set(pinnedAccounts);
+  const orderedChallenges = [
+    ...challenges.filter((challenge) => pinnedSet.has(challenge.id)),
+    ...challenges.filter((challenge) => !pinnedSet.has(challenge.id)),
+  ];
 
   // Refetch orders & balance when the selected account changes
   useEffect(() => {
@@ -251,7 +261,7 @@ const TraderPanelLayoutInner = () => {
           } ${sidebarCollapsed ? 'w-20' : 'w-64'} ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
           {/* Logo */}
           <div className={`h-16 flex items-center justify-between px-4 border-b ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
-            <Link to="/" className="flex items-center gap-3" onClick={handleNavClick}>
+            <Link to="/traderdashboard" className="flex items-center gap-3" onClick={handleNavClick}>
               <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center text-[#0a0d12] font-black text-sm">
                 PC
               </div>
@@ -364,7 +374,7 @@ const TraderPanelLayoutInner = () => {
           </nav>
 
           {/* Bottom Section - Language Only */}
-          <div className={`absolute bottom-0 left-0 right-0 p-4 border-t ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
+          {/* <div className={`absolute bottom-0 left-0 right-0 p-4 border-t ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
             <div className={`flex items-center gap-3 px-3 py-2.5 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
               <Globe className="w-5 h-5" />
               {!sidebarCollapsed && (
@@ -374,7 +384,7 @@ const TraderPanelLayoutInner = () => {
                 </div>
               )}
             </div>
-          </div>
+          </div>*/}
         </aside>
 
        {/* Main Content */}
@@ -399,7 +409,7 @@ const TraderPanelLayoutInner = () => {
                   className={`flex items-center gap-2 sm:gap-3 px-3 py-1.5 rounded-xl transition-all ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-100'}`}
                 >
                   <h1 className={`font-bold text-base sm:text-xl ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    {selectedChallenge ? `Account ${selectedChallenge.accountId}` : 'Account -'}
+                    {selectedChallenge ? `Account ${selectedChallenge.accountId}` : null}
                   </h1>
                   {selectedChallenge && (
                     <div className="hidden sm:flex items-center gap-2">
@@ -429,9 +439,11 @@ const TraderPanelLayoutInner = () => {
                         <p className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>Switch Account</p>
                       </div>
                       <div className="max-h-64 overflow-y-auto p-2">
-                        {challenges.map((challenge) => {
+                        {orderedChallenges.map((challenge) => {
                           const label = getChallengePhaseLabel(challenge);
                           const isSelected = selectedChallenge?.id === challenge.id;
+                          const isPinned = pinnedSet.has(challenge.id);
+                          const pinLimitReached = !isPinned && pinnedAccounts.length >= 4;
                           const color = challenge.status === 'failed' ? 'red' :
                             challenge.phase === 'funded' ? 'emerald' : 'amber';
                           return (
@@ -464,11 +476,55 @@ const TraderPanelLayoutInner = () => {
                                   }`}>
                                     {challenge.status === 'active' ? 'Active' : 'Failed'}
                                   </span>
+                                  {isPinned && (
+                                    <span className="px-2 py-0.5 text-xs font-medium rounded bg-blue-500/10 text-blue-500">
+                                      Pinned
+                                    </span>
+                                  )}
                                 </div>
                               </div>
-                              {isSelected && (
-                                <div className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0" />
-                              )}
+                              <div className="flex items-center gap-2">
+                                <span
+                                  role="button"
+                                  tabIndex={pinLimitReached ? -1 : 0}
+                                  onClick={(event) => {
+                                    if (pinLimitReached) return;
+                                    event.stopPropagation();
+                                    togglePinnedAccount(challenge.id);
+                                  }}
+                                  onKeyDown={(event) => {
+                                    if (pinLimitReached) return;
+                                    if (event.key === 'Enter' || event.key === ' ') {
+                                      event.preventDefault();
+                                      event.stopPropagation();
+                                      togglePinnedAccount(challenge.id);
+                                    }
+                                  }}
+                                  className={`p-1.5 rounded-md transition-all ${
+                                    pinLimitReached
+                                      ? 'opacity-40 cursor-not-allowed'
+                                      : isDark
+                                        ? 'hover:bg-white/10'
+                                        : 'hover:bg-slate-200'
+                                  }`}
+                                  title={
+                                    isPinned
+                                      ? 'Unpin account'
+                                      : pinLimitReached
+                                        ? 'Maximum 4 pinned accounts'
+                                        : 'Pin account'
+                                  }
+                                >
+                                  {isPinned ? (
+                                    <PinOff className="w-3.5 h-3.5 text-amber-500" />
+                                  ) : (
+                                    <Pin className={`w-3.5 h-3.5 ${isDark ? 'text-gray-400' : 'text-slate-500'}`} />
+                                  )}
+                                </span>
+                                {isSelected && (
+                                  <div className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0" />
+                                )}
+                              </div>
                             </button>
                           );
                         })}
@@ -479,23 +535,23 @@ const TraderPanelLayoutInner = () => {
               </div>
             </div>
 
+
             <div className="flex items-center gap-2 sm:gap-4">
-              <span className={`hidden md:block text-xs sm:text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
+            {/* <span className={`hidden md:block text-xs sm:text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
                 Last Updated: {lastRefresh.toLocaleString()}
-              </span>
+              </span> */}
 
-              {/* Theme Toggle */}
-              <button
-                onClick={toggleTheme}
-                className={`p-2 rounded-lg transition-all ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'
-                  }`}
-                title="Toggle theme"
-              >
-                {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </button>
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-lg transition-all ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'
+                }`}
+              title="Toggle theme"
+            >
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
 
-              {/* Refresh Button */}
-              <button
+              {/* <button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
                 className={`p-2 rounded-lg transition-all ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'
@@ -503,7 +559,7 @@ const TraderPanelLayoutInner = () => {
                 title="Refresh data"
               >
                 <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
-              </button>
+              </button>  */}
 
               {/* Notifications */}
               <div className="relative">
@@ -537,7 +593,7 @@ const TraderPanelLayoutInner = () => {
                             <Bell className={`w-6 h-6 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                           </div>
                           <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>No new notifications</p>
-                          <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>You're all caught up!</p>
+                          <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>You&apos;re all caught up!</p>
                         </div>
                       ) : (
                         notifications.map((notif) => (
