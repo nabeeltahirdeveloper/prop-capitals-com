@@ -79,11 +79,31 @@ const ComplianceMetrics = ({ compliance, challenge }) => {
     }
   };
 
+  const colorClasses = {
+    emerald: {
+      badge: 'bg-emerald-500/20 text-emerald-500',
+      bar: 'bg-emerald-500',
+    },
+    amber: {
+      badge: 'bg-amber-500/20 text-amber-500',
+      bar: 'bg-amber-500',
+    },
+    red: {
+      badge: 'bg-red-500/20 text-red-500',
+      bar: 'bg-red-500',
+    },
+    blue: {
+      badge: 'bg-blue-500/20 text-blue-500',
+      bar: 'bg-blue-500',
+    },
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
       {metrics.map((metric) => {
         const statusColor = getStatusColor(metric.status);
         const statusLabel = getStatusLabel(metric.status);
+        const style = colorClasses[statusColor] || colorClasses.blue;
 
         return (
           <div key={metric.id} className={cardClass + ' p-3 sm:p-4'}>
@@ -93,7 +113,7 @@ const ComplianceMetrics = ({ compliance, challenge }) => {
                 <span className={`text-xs sm:text-sm font-medium ${textClass}`}>{metric.label}</span>
               </div>
               <span
-                className={`text-[10px] sm:text-xs font-bold px-2 py-1 rounded-lg bg-${statusColor}-500/20 text-${statusColor}-500`}
+                className={`text-[10px] sm:text-xs font-bold px-2 py-1 rounded-lg ${style.badge}`}
               >
                 {statusLabel}
               </span>
@@ -102,7 +122,7 @@ const ComplianceMetrics = ({ compliance, challenge }) => {
             {/* Progress bar */}
             <div className={`h-2 rounded-full overflow-hidden mb-2 ${isDark ? 'bg-white/5' : 'bg-slate-200'}`}>
               <div
-                className={`h-full rounded-full transition-all bg-${metric.color}-500`}
+                className={`h-full rounded-full transition-all ${style.bar}`}
                 style={{ width: `${Math.min(metric.percentage, 100)}%` }}
               />
             </div>

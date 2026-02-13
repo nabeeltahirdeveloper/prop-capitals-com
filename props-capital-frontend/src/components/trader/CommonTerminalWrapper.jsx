@@ -1,12 +1,12 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { TrendingUp, ChevronDown, Loader2 } from 'lucide-react';
+import { TrendingUp, ChevronDown, Loader2, AlertTriangle, XCircle } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTraderTheme } from './TraderPanelLayout';
 import { useChallenges } from '@/contexts/ChallengesContext';
 import { usePrices } from '@/contexts/PriceContext';
 import { getAccountTrades, updateTrade, createTrade } from '@/api/trades';
 import { getPendingOrders, cancelPendingOrder } from '@/api/pending-orders';
-import { processPriceTick, getAccountSummary } from '@/api/accounts';
+import { processPriceTick, getAccountSummary, evaluateAccountRealTime } from '@/api/accounts';
 import { useToast } from '@/components/ui/use-toast';
 import ChallengeActiveBanner from '../trading/ChallengeActiveBanner';
 import PhaseProgressionCards from '../trading/PhaseProgressionCards';
@@ -15,6 +15,7 @@ import ComplianceMetrics from '../trading/ComplianceMetrics';
 import TradingStyleRules from '../trading/TradingStyleRules';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import OpenPositions from '../trading/OpenPositions';
+import ViolationModal from '../trading/ViolationModal';
 import { useTranslation } from '@/contexts/LanguageContext';
 import { useSearchParams } from 'react-router-dom';
 import { getCurrentUser } from '@/api/auth';
@@ -106,6 +107,7 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
   const selectedChallenge = selectedChallengeProp || selectedChallengeFromContext;
 
   const [selectedTab, setSelectedTab] = useState('positions');
+  const [violationModal, setViolationModal] = useState(null);
   const [liveMetrics, setLiveMetrics] = useState({ equity: null, profitPercent: null, dailyDrawdownPercent: null, overallDrawdownPercent: null });
   const [closeConfirmTrade, setCloseConfirmTrade] = useState(null);
   const [showBuySellPanel, setShowBuySellPanel] = useState(false);
@@ -115,16 +117,29 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
   const profitBarPeakRef = useRef(0);
   const overallDrawdownBarPeakRef = useRef(0);
   const dailyDrawdownBarPeakRef = useRef({ date: null, value: 0 });
+  const dismissedModalAccountsRef = useRef(new Set());
+  const violationEnforcementThrottleRef = useRef({});
+
+  const getViolationTypeFromStatus = useCallback((status) => {
+    const upper = String(status || '').toUpperCase();
+    if (!upper) return null;
+    if (upper.includes('DAILY')) return 'DAILY_LOCKED';
+    if (upper.includes('DISQUAL') || upper.includes('FAIL')) return 'DISQUALIFIED';
+    return null;
+  }, []);
 
   const accountId = selectedChallenge?.id;
-  const normalizedStatus = String(selectedChallenge?.status || '').toLowerCase();
-  const isChallengeLocked =
-    normalizedStatus === 'failed' ||
-    normalizedStatus === 'inactive' ||
-    normalizedStatus === 'daily_locked' ||
-    normalizedStatus === 'disqualified' ||
-    normalizedStatus === 'closed' ||
-    normalizedStatus === 'paused';
+  const isStatusLocked = useCallback((status) => {
+    const normalizedStatus = String(status || '').toLowerCase();
+    return (
+      normalizedStatus === 'failed' ||
+      normalizedStatus === 'inactive' ||
+      normalizedStatus === 'daily_locked' ||
+      normalizedStatus === 'disqualified' ||
+      normalizedStatus === 'closed' ||
+      normalizedStatus === 'paused'
+    );
+  }, []);
 
   // Reset live metrics when account changes
   useEffect(() => {
@@ -133,6 +148,10 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
     profitBarPeakRef.current = 0;
     overallDrawdownBarPeakRef.current = 0;
     dailyDrawdownBarPeakRef.current = { date: null, value: 0 };
+    if (accountId) {
+      dismissedModalAccountsRef.current.delete(accountId);
+    }
+    setViolationModal(null);
   }, [accountId]);
 
   /* ── Price lookup helper ── */
@@ -142,15 +161,24 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
     const upper = raw.toUpperCase();
     const compact = upper.replace(/[^A-Z]/g, '');
     const compactUsd = compact.replace(/USDT$/, 'USD');
+    const compactUsdt = compact.endsWith('USD') ? compact.replace(/USD$/, 'USDT') : compact;
+    const slashFromCompact = compact.length === 6 ? `${compact.slice(0, 3)}/${compact.slice(3)}` : null;
+    const slashFromCompactUsd = compactUsd.length === 6 ? `${compactUsd.slice(0, 3)}/${compactUsd.slice(3)}` : null;
+    const slashFromCompactUsdt = compactUsdt.length === 7 ? `${compactUsdt.slice(0, 3)}/${compactUsdt.slice(3)}` : null;
     const candidates = [
       raw,
       upper,
       compact,
       compactUsd,
-      compact.length === 6 ? `${compact.slice(0, 3)}/${compact.slice(3)}` : null,
-      compactUsd.length === 6 ? `${compactUsd.slice(0, 3)}/${compactUsd.slice(3)}` : null,
+      compactUsdt,
+      slashFromCompact,
+      slashFromCompactUsd,
+      slashFromCompactUsdt,
       compact.endsWith('USDT') ? `${compact.slice(0, -4)}/USDT` : null,
       compact.endsWith('USDT') ? `${compact.slice(0, -4)}/USD` : null,
+      compact.endsWith('USD') ? `${compact.slice(0, -3)}/USDT` : null,
+      compact.endsWith('USD') ? `${compact.slice(0, -3)}USDT` : null,
+      compact.endsWith('USDT') ? `${compact.slice(0, -4)}USD` : null,
     ].filter(Boolean);
     for (const key of candidates) {
       const pd = prices[key];
@@ -167,6 +195,12 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
       : (trade.openPrice - currentPrice);
     if (isCryptoSymbol(trade.symbol)) return priceDiff * (trade.volume || 0);
     return priceDiff * (trade.volume || 0) * 100000;
+  }, []);
+  const calculateRequiredMargin = useCallback((symbol, volume, price, leverage = 100) => {
+    if (!Number.isFinite(volume) || volume <= 0 || !Number.isFinite(price) || price <= 0) return 0;
+    const contractSize = isCryptoSymbol(symbol) ? 1 : 100000;
+    const effectiveLeverage = Number(leverage) <= 0 ? 1 : Number(leverage);
+    return (volume * contractSize * price) / effectiveLeverage;
   }, []);
 
   /* ── Get exit price for a position ── */
@@ -195,6 +229,8 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
     enabled: !!accountId,
     refetchInterval: 3000,
   });
+  const effectiveAccountStatus = accountSummaryData?.account?.status ?? selectedChallenge?.status;
+  const isChallengeLocked = isStatusLocked(effectiveAccountStatus);
 
   /* ── Derived data ── */
   const openPositions = useMemo(() => {
@@ -209,6 +245,7 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
     const o = Array.isArray(pendingOrdersData) ? pendingOrdersData : [];
     return o.filter(x => x.status === 'PENDING');
   }, [pendingOrdersData]);
+  const hasTradeHistory = openPositions.length > 0 || closedTrades.length > 0;
 
   /* ── Live PnL per position ── */
   const positionsWithPnL = useMemo(() => {
@@ -224,6 +261,27 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
   const totalFloatingPnL = useMemo(() => {
     return positionsWithPnL.reduce((sum, pos) => sum + pos.livePnL, 0);
   }, [positionsWithPnL]);
+  const usedOpenMargin = useMemo(() => {
+    return openPositions.reduce((sum, position) => {
+      return sum + calculateRequiredMargin(
+        position.symbol,
+        Number(position.volume),
+        Number(position.openPrice),
+        Number(position.leverage) || 1,
+      );
+    }, 0);
+  }, [openPositions, calculateRequiredMargin]);
+  const usedPendingMargin = useMemo(() => {
+    return activePendingOrders.reduce((sum, order) => {
+      return sum + calculateRequiredMargin(
+        order.symbol,
+        Number(order.volume),
+        Number(order.price),
+        Number(order.leverage) || 1,
+      );
+    }, 0);
+  }, [activePendingOrders, calculateRequiredMargin]);
+  const totalReservedMargin = usedOpenMargin + usedPendingMargin;
 
   const hasOpenPositions = openPositions.length > 0;
   useEffect(() => {
@@ -255,8 +313,6 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
   /* ── Forward price ticks to backend for violation checking ── */
   useEffect(() => {
     if (openPositions.length === 0 || !accountId) return;
-    const isLocked = isChallengeLocked;
-    if (isLocked) return;
 
     const positionSymbols = [...new Set(openPositions.map(t => t.symbol))];
     if (positionSymbols.length === 0) return;
@@ -285,12 +341,115 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
           }
           if (response?.statusChanged) {
             queryClient.invalidateQueries({ queryKey: ['trades', accountId] });
+            queryClient.invalidateQueries({ queryKey: ['accountSummary', accountId] });
+            queryClient.invalidateQueries({ queryKey: ['pendingOrders', accountId] });
             toast({ title: 'Account Status Changed', description: `Limit breached. ${response.positionsClosed || 0} positions auto-closed.`, variant: 'destructive' });
+            const type = response?.violationType || response?.accountStatus;
+            if (type === 'DAILY_LOCKED' || type === 'DISQUALIFIED') {
+              dismissedModalAccountsRef.current.delete(accountId);
+              setViolationModal({
+                type,
+                shown: true,
+                accountId,
+              });
+            }
           }
         })
         .catch(() => {});
     });
-  }, [openPositions, accountId, isChallengeLocked, prices, getPriceForSymbol, queryClient, toast]);
+  }, [openPositions, accountId, getPriceForSymbol, queryClient, toast]);
+
+  useEffect(() => {
+    if (!accountId || openPositions.length === 0) return;
+    const now = Date.now();
+    const throttleKey = `${accountId}-realtime-enforce`;
+    const last = violationEnforcementThrottleRef.current[throttleKey] || 0;
+    if (now - last < 1000) return;
+    violationEnforcementThrottleRef.current[throttleKey] = now;
+
+    const currentBalance = Number(accountSummaryData?.account?.balance ?? selectedChallenge?.currentBalance ?? 0);
+    const activeEquityForEnforcement = currentBalance + totalFloatingPnL;
+
+    evaluateAccountRealTime(accountId, Number(activeEquityForEnforcement))
+      .then((response) => {
+        const responseType =
+          response?.tradingBlockReason ||
+          (response?.drawdownViolated ? 'DISQUALIFIED' : (response?.dailyViolated ? 'DAILY_LOCKED' : null));
+
+        if (response?.statusChanged || responseType) {
+          queryClient.invalidateQueries({ queryKey: ['trades', accountId] });
+          queryClient.invalidateQueries({ queryKey: ['accountSummary', accountId] });
+          queryClient.invalidateQueries({ queryKey: ['pendingOrders', accountId] });
+
+          if (responseType === 'DAILY_LOCKED' || responseType === 'DISQUALIFIED') {
+            dismissedModalAccountsRef.current.delete(accountId);
+            setViolationModal({
+              type: responseType,
+              shown: true,
+              accountId,
+            });
+          }
+        }
+      })
+      .catch((error) => {
+        if (import.meta.env.DEV) {
+          console.warn('[Realtime enforcement] evaluateAccountRealTime failed:', error?.message || error);
+        }
+      });
+  }, [
+    accountId,
+    openPositions,
+    accountSummaryData,
+    selectedChallenge,
+    totalFloatingPnL,
+    queryClient,
+  ]);
+
+  useEffect(() => {
+    if (!accountId || openPositions.length === 0) return;
+    const type = getViolationTypeFromStatus(effectiveAccountStatus);
+    if (!type) return;
+
+    const throttleKey = `${accountId}-locked-open-positions`;
+    const now = Date.now();
+    const last = violationEnforcementThrottleRef.current[throttleKey] || 0;
+    if (now - last < 2000) return;
+    violationEnforcementThrottleRef.current[throttleKey] = now;
+    const currentBalance = Number(accountSummaryData?.account?.balance ?? selectedChallenge?.currentBalance ?? 0);
+    const activeEquityForEnforcement = currentBalance + totalFloatingPnL;
+
+    evaluateAccountRealTime(accountId, Number(activeEquityForEnforcement))
+      .then(() => {
+        queryClient.invalidateQueries({ queryKey: ['trades', accountId] });
+        queryClient.invalidateQueries({ queryKey: ['accountSummary', accountId] });
+      })
+      .catch(() => {});
+  }, [accountId, openPositions.length, effectiveAccountStatus, accountSummaryData, selectedChallenge, totalFloatingPnL, getViolationTypeFromStatus, queryClient]);
+
+  useEffect(() => {
+    if (!accountId) return;
+    const type = getViolationTypeFromStatus(effectiveAccountStatus);
+    if (!type) {
+      setViolationModal(null);
+      dismissedModalAccountsRef.current.delete(accountId);
+      return;
+    }
+    const wasDismissed = dismissedModalAccountsRef.current.has(accountId);
+    if (!wasDismissed) {
+      setViolationModal({
+        type,
+        shown: true,
+        accountId,
+      });
+    }
+  }, [accountId, effectiveAccountStatus, getViolationTypeFromStatus]);
+
+  const handleViolationModalClose = useCallback(() => {
+    if (accountId) {
+      dismissedModalAccountsRef.current.add(accountId);
+    }
+    setViolationModal((prev) => (prev ? { ...prev, shown: false } : null));
+  }, [accountId]);
 
   /* ── Mutations ── */
   const closePositionMutation = useMutation({
@@ -317,29 +476,84 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
       toast({ title: 'Trading locked', description: 'Account is not active for trading.', variant: 'destructive' });
       return;
     }
-    const volume = trade?.volume ?? trade?.lotSize;
-    const openPrice = trade?.openPrice ?? trade?.entryPrice;
-    if (!trade?.symbol || !trade?.type || (volume == null || volume <= 0) || (openPrice == null)) {
-      toast({ title: 'Invalid trade', description: 'Missing symbol, type, volume or price.', variant: 'destructive' });
+    const volume = parseFloat(trade?.volume ?? trade?.lotSize);
+    const openPrice = parseFloat(trade?.openPrice ?? trade?.entryPrice);
+    const isPendingOrder = String(trade?.orderType || '').toLowerCase() !== 'market';
+
+    if (!trade?.symbol || !trade?.type || !Number.isFinite(volume) || volume <= 0) {
+      toast({ title: 'Invalid trade', description: 'Missing symbol, type, or valid volume.', variant: 'destructive' });
+      return;
+    }
+
+    if (!isPendingOrder && (!Number.isFinite(openPrice) || openPrice <= 0)) {
+      toast({ title: 'Invalid trade', description: 'Missing or invalid execution price.', variant: 'destructive' });
+      return;
+    }
+    const pendingPrice = isPendingOrder
+      ? parseFloat(trade?.limitPrice ?? trade?.price ?? trade?.entryPrice ?? trade?.openPrice)
+      : openPrice;
+    const executionPriceForMargin = isPendingOrder ? pendingPrice : openPrice;
+
+    if (!Number.isFinite(executionPriceForMargin) || executionPriceForMargin <= 0) {
+      toast({ title: 'Invalid trade', description: 'Missing or invalid price for margin calculation.', variant: 'destructive' });
+      return;
+    }
+
+    const requestedLeverage = Number(trade?.leverage);
+    const tradeLeverage = Number.isFinite(requestedLeverage) ? requestedLeverage : 100;
+    const requiredMargin = calculateRequiredMargin(trade.symbol, volume, executionPriceForMargin, tradeLeverage);
+    const currentBalance = Number(accountSummaryData?.account?.balance ?? selectedChallenge?.currentBalance ?? 0);
+    const availableMargin = Math.max(0, currentBalance - usedOpenMargin - usedPendingMargin);
+
+    if (requiredMargin > availableMargin) {
+      toast({
+        title: 'Insufficient margin',
+        description: `Required $${requiredMargin.toFixed(2)}, available $${availableMargin.toFixed(2)}.`,
+        variant: 'destructive',
+      });
       return;
     }
     try {
-      await createTrade({
-        accountId,
-        symbol: trade.symbol,
-        type: String(trade.type).toUpperCase(),
-        volume: parseFloat(volume),
-        openPrice: parseFloat(openPrice),
-        stopLoss: trade.stopLoss != null ? parseFloat(trade.stopLoss) : null,
-        takeProfit: trade.takeProfit != null ? parseFloat(trade.takeProfit) : null,
-      });
+      if (isPendingOrder) {
+        if (!Number.isFinite(pendingPrice) || pendingPrice <= 0) {
+          toast({ title: 'Invalid order', description: 'Missing or invalid pending order price.', variant: 'destructive' });
+          return;
+        }
+
+        const rawOrderType = String(trade?.orderType || 'limit').toLowerCase();
+        const mappedOrderType = rawOrderType === 'stop' ? 'STOP' : (rawOrderType === 'stop_limit' ? 'STOP_LIMIT' : 'LIMIT');
+
+        await createPendingOrder({
+          tradingAccountId: accountId,
+          symbol: trade.symbol,
+          type: String(trade.type).toUpperCase(),
+          orderType: mappedOrderType,
+          volume,
+          price: pendingPrice,
+          leverage: tradeLeverage,
+          stopLoss: trade.stopLoss != null ? parseFloat(trade.stopLoss) : null,
+          takeProfit: trade.takeProfit != null ? parseFloat(trade.takeProfit) : null,
+        });
+      } else {
+        await createTrade({
+          accountId,
+          symbol: trade.symbol,
+          type: String(trade.type).toUpperCase(),
+          volume,
+          openPrice,
+          leverage: tradeLeverage,
+          stopLoss: trade.stopLoss != null ? parseFloat(trade.stopLoss) : null,
+          takeProfit: trade.takeProfit != null ? parseFloat(trade.takeProfit) : null,
+        });
+      }
       queryClient.invalidateQueries({ queryKey: ['trades', accountId] });
       queryClient.invalidateQueries({ queryKey: ['accountSummary', accountId] });
-      toast({ title: 'Trade executed' });
+      queryClient.invalidateQueries({ queryKey: ['pendingOrders', accountId] });
+      toast({ title: isPendingOrder ? 'Pending order created' : 'Trade executed' });
     } catch (e) {
       toast({ title: 'Trade failed', description: e?.response?.data?.message || e.message, variant: 'destructive' });
     }
-  }, [accountId, isChallengeLocked, queryClient, toast]);
+  }, [accountId, isChallengeLocked, calculateRequiredMargin, usedOpenMargin, usedPendingMargin, accountSummaryData, selectedChallenge, queryClient, toast]);
 
   if (loading) {
     return (
@@ -396,6 +610,7 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
   };
   const enrichedSelectedSymbol = selectedSymbol;
   const balance = Number.isFinite(summaryAccount?.balance) ? summaryAccount.balance : (selectedChallenge.currentBalance || 0);
+  const availableBalance = Math.max(0, balance - totalReservedMargin);
   const baselineEquity = Number.isFinite(activeEquityBaselineRef.current) ? activeEquityBaselineRef.current : balance;
   const activeEquity = balance + totalFloatingPnL;
   const equity = hasOpenPositions
@@ -410,8 +625,24 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
     : 0;
   const profitPercent = Math.max(0, activeProfitPercent);
 
-  const isAccountLocked = isChallengeLocked;
+  const isAccountLocked = isStatusLocked(account?.status ?? effectiveAccountStatus);
   const isDataLoading = tradesLoading || ordersLoading;
+  const statusLockBanner = (() => {
+    const violationType = getViolationTypeFromStatus(account?.status ?? effectiveAccountStatus);
+    if (!violationType) return null;
+    if (violationType === 'DAILY_LOCKED') {
+      return {
+        type: 'warning',
+        title: 'Daily Loss Limit Reached',
+        message: 'Trading is locked until tomorrow. Open positions are being force-closed.',
+      };
+    }
+    return {
+      type: 'error',
+      title: 'Challenge Disqualified',
+      message: 'Maximum drawdown was exceeded. Trading is disabled and positions are being force-closed.',
+    };
+  })();
 
   // Compliance: override with live backend metrics when available
   const baseCompliance = getRuleCompliance(selectedChallenge);
@@ -434,9 +665,47 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
     const overallSeed = Math.max(0, Number(summaryMetrics?.overallDrawdownPercent) || 0);
     const dailySeed = Math.max(0, Number(summaryMetrics?.dailyDrawdownPercent) || 0);
 
-    const profitCurrentRaw = Math.max(0, activeProfitPercent);
-    const dailyCurrentRaw = Math.max(0, activeDrawdownPercent);
-    const overallCurrentRaw = Math.max(0, activeDrawdownPercent);
+    const profitCurrentRaw = Math.max(
+      0,
+      Number(liveMetrics?.profitPercent ?? summaryMetrics?.profitPercent) || 0,
+      activeProfitPercent,
+    );
+    const dailyCurrentRaw = Math.max(
+      0,
+      Number(liveMetrics?.dailyDrawdownPercent ?? summaryMetrics?.dailyDrawdownPercent) || 0,
+      activeDrawdownPercent,
+    );
+    const overallCurrentRaw = Math.max(
+      0,
+      Number(liveMetrics?.overallDrawdownPercent ?? summaryMetrics?.overallDrawdownPercent) || 0,
+      activeDrawdownPercent,
+    );
+
+    // For brand-new accounts with no executed trades, metrics must stay at 0.
+    if (!hasTradeHistory) {
+      profitBarPeakRef.current = 0;
+      overallDrawdownBarPeakRef.current = 0;
+      dailyDrawdownBarPeakRef.current.value = 0;
+      result.profitTarget = {
+        ...result.profitTarget,
+        current: 0,
+        percentage: 0,
+        status: 'in-progress',
+      };
+      result.dailyLoss = {
+        ...result.dailyLoss,
+        current: 0,
+        percentage: 0,
+        status: 'safe',
+      };
+      result.totalDrawdown = {
+        ...result.totalDrawdown,
+        current: 0,
+        percentage: 0,
+        status: 'safe',
+      };
+      return result;
+    }
 
     profitBarPeakRef.current = Math.max(profitBarPeakRef.current, profitSeed, profitCurrentRaw);
     overallDrawdownBarPeakRef.current = Math.max(overallDrawdownBarPeakRef.current, overallSeed, overallCurrentRaw);
@@ -483,11 +752,13 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
 
       {/* ==================== PHASE PROGRESSION ==================== */}
       <PhaseProgressionCards challenge={(() => {
-        const effectiveProfit = Math.max(
-          0,
-          profitBarPeakRef.current,
-          Number(summaryMetrics?.profitPercent) || 0,
-        );
+        const effectiveProfit = hasTradeHistory
+          ? Math.max(
+              0,
+              profitBarPeakRef.current,
+              Number(summaryMetrics?.profitPercent) || 0,
+            )
+          : 0;
         const tradingDaysCompleted = summaryMetrics?.tradingDaysCompleted;
         if (!Number.isFinite(effectiveProfit) && !Number.isFinite(tradingDaysCompleted)) return selectedChallenge;
         return {
@@ -506,7 +777,7 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
 
       {/* ==================== BALANCE STATS ROW ==================== */}
       <BalanceStatsRow
-        balance={balance}
+        balance={availableBalance}
         equity={equity}
         floatingPL={floatingPL}
         profitPercent={profitPercent}
@@ -514,6 +785,20 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
 
       {/* ==================== COMPLIANCE METRICS ==================== */}
       <ComplianceMetrics compliance={compliance} challenge={selectedChallenge} />
+
+      {statusLockBanner && (
+        <div className={`rounded-xl border px-4 py-3 flex items-start gap-3 ${
+          statusLockBanner.type === 'error'
+            ? (isDark ? 'bg-red-500/10 border-red-500/30 text-red-200' : 'bg-red-50 border-red-200 text-red-800')
+            : (isDark ? 'bg-orange-500/10 border-orange-500/30 text-orange-200' : 'bg-orange-50 border-orange-200 text-orange-800')
+        }`}>
+          {statusLockBanner.type === 'error' ? <XCircle className="w-4 h-4 mt-0.5 shrink-0" /> : <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />}
+          <div className="min-w-0">
+            <p className="text-sm font-semibold">{statusLockBanner.title}</p>
+            <p className="text-xs opacity-90">{statusLockBanner.message}</p>
+          </div>
+        </div>
+      )}
 
       {/* ==================== PLATFORM-SPECIFIC TRADING AREA ==================== */}
       <div className="my-6">
@@ -524,7 +809,7 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
                 onExecuteTrade: handleExecuteTrade,
                 showBuySellPanel,
                 setShowBuySellPanel,
-                accountBalance: selectedChallenge?.currentBalance ?? account?.balance ?? 0,
+                accountBalance: availableBalance,
                 selectedAccountId,
                 account,
                 selectedSymbol: enrichedSelectedSymbol,
@@ -794,6 +1079,17 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
           </div>
         </div>
       )}
+
+      <ViolationModal
+        isOpen={violationModal?.shown === true}
+        onClose={handleViolationModalClose}
+        violationType={violationModal?.type}
+        account={{
+          ...(account || {}),
+          maxDailyDrawdown: rules.maxDailyLoss || 0,
+          maxOverallDrawdown: rules.maxTotalDrawdown || 0,
+        }}
+      />
     </div>
   );
 };
