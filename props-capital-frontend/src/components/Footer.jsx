@@ -1,15 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MessageCircle, Twitter, Instagram, Youtube, Send, Mail } from 'lucide-react';
+import { SiX, SiInstagram, SiYoutube, SiDiscord } from 'react-icons/si';
+import { Mail } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext';
+
+const socialLinks = [
+  { Icon: <SiX className="w-4 h-4" />, url: 'https://x.com/propcapitals0' },
+  { Icon: <SiInstagram className="w-[17px] h-[18px]" />, url: 'https://www.instagram.com/propcapitals0/' },
+  { Icon: <SiYoutube className="w-6 h-5" />, url: 'https://www.youtube.com/@propcapitals0' },
+  { Icon: <SiDiscord className="w-6 h-5" />, url: 'https://discord.gg/UDMRbQbB' },
+  { Icon: <Mail className="w-5 h-5" />, url: 'mailto:support@prop-capitals.com' }
+]
 
 const Footer = () => {
   const { isDark } = useTheme();
-  
+
   return (
     <footer className={`border-t transition-colors duration-300 ${
-      isDark 
-        ? 'bg-[#0a0d12] border-white/5' 
+      isDark
+        ? 'bg-[#0a0d12] border-white/5'
         : 'bg-slate-50 border-slate-200'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
@@ -30,18 +39,19 @@ const Footer = () => {
             <p className={`text-sm mb-6 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
               Empowering traders worldwide with funded accounts and industry-leading conditions.
             </p>
-            <div className="flex items-center gap-3">
-              {[Twitter, Instagram, Youtube, Send, MessageCircle].map((Icon, i) => (
-                <a 
-                  key={i}
-                  href="#" 
-                  className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
-                    isDark 
-                      ? 'bg-[#12161d] text-gray-400 hover:text-amber-400 hover:bg-[#1a1f2a]' 
+            <div className="flex items-center gap-[6px]">
+              {socialLinks.map(({Icon, url}, i) => (
+                <a
+                  key={url}
+                  href={url}
+                  target='_blank'
+                  className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${
+                    isDark
+                      ? 'bg-[#12161d] text-gray-400 hover:text-amber-400 hover:bg-[#1a1f2a]'
                       : 'bg-white border border-slate-200 text-slate-400 hover:text-amber-500 hover:border-amber-200'
                   }`}
                 >
-                  <Icon className="w-5 h-5" />
+                  {Icon}
                 </a>
               ))}
             </div>
@@ -58,8 +68,8 @@ const Footer = () => {
                 { name: 'Blog', path: '/blog' }
               ].map((item) => (
                 <li key={item.path}>
-                  <Link 
-                    to={item.path} 
+                  <Link
+                    to={item.path}
                     className={`text-sm transition-colors ${
                       isDark ? 'text-gray-400 hover:text-amber-400' : 'text-slate-500 hover:text-amber-600'
                     }`}
@@ -82,8 +92,8 @@ const Footer = () => {
                 { name: 'Platforms', path: '/watch-demo' }
               ].map((item, i) => (
                 <li key={i}>
-                  <Link 
-                    to={item.path} 
+                  <Link
+                    to={item.path}
                     className={`text-sm transition-colors ${
                       isDark ? 'text-gray-400 hover:text-amber-400' : 'text-slate-500 hover:text-amber-600'
                     }`}
@@ -106,8 +116,8 @@ const Footer = () => {
                 { name: 'Affiliate Program', path: '/affiliate' }
               ].map((item) => (
                 <li key={item.path}>
-                  <Link 
-                    to={item.path} 
+                  <Link
+                    to={item.path}
                     className={`text-sm transition-colors ${
                       isDark ? 'text-gray-400 hover:text-amber-400' : 'text-slate-500 hover:text-amber-600'
                     }`}
@@ -130,8 +140,8 @@ const Footer = () => {
                 { name: 'Refund Policy', path: '/refund-policy' }
               ].map((item) => (
                 <li key={item.path}>
-                  <Link 
-                    to={item.path} 
+                  <Link
+                    to={item.path}
                     className={`text-sm transition-colors ${
                       isDark ? 'text-gray-400 hover:text-amber-400' : 'text-slate-500 hover:text-amber-600'
                     }`}
@@ -164,9 +174,9 @@ const Footer = () => {
                 { name: 'Risk', path: '/risk-disclosure' },
                 { name: 'Refunds', path: '/refund-policy' }
               ].map((item) => (
-                <Link 
+                <Link
                   key={item.path}
-                  to={item.path} 
+                  to={item.path}
                   className={`text-sm transition-colors ${
                     isDark ? 'text-gray-500 hover:text-amber-400' : 'text-slate-500 hover:text-amber-600'
                   }`}

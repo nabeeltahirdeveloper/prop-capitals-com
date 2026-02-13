@@ -333,7 +333,7 @@ export default function CRMCalendar() {
                         key={day}
                         className={`relative min-h-[100px] p-2 border border-border transition-all cursor-pointer hover:bg-muted/60 group
                             ${!isCurrentMonth ? 'bg-muted/40 text-muted-foreground' : ''}
-                            ${isSelected ? 'bg-amber-50 border-[#d97706] shadow-inner' : ''}
+                            ${isSelected ? 'bg-amber-50 border-[#d97706] shadow-inner dark:bg-amber-900/50 dark:border-amber-500' : ''}
                         `}
                         onClick={() => setSelectedDate(cloneDay)}
                     >
