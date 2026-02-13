@@ -18,13 +18,12 @@ export class TradesService {
   // Create trade and trigger evaluation engine
   async createTrade(data: any) {
     const { accountId, profit, openPrice, closePrice, volume, symbol, stopLoss, takeProfit } = data;
-console.log(data)
     const account = await this.prisma.tradingAccount.findUnique({
       where: { id: accountId },
       include: {
         challenge: true,
         trades: {
-          select: { openedAt: true },
+          select: { openedAt: true, closePrice: true, symbol: true, volume: true, openPrice: true },
         },
       },
     });
@@ -42,6 +41,35 @@ console.log(data)
     }
     if (account.status === ('CLOSED' as any) || account.status === ('PAUSED' as any)) {
       throw new BadRequestException('Account is not active for trading.');
+    }
+
+    // Enforce margin availability to prevent opening unlimited max-size positions.
+    // Existing trades default to 1:100 for reserved margin calculation.
+    if (closePrice === undefined || closePrice === null) {
+      const requestedLeverage = Number(data?.leverage);
+      const effectiveLeverage = Number.isFinite(requestedLeverage) && requestedLeverage > 0 ? requestedLeverage : 1;
+      const isNewCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|MATIC|LINK|USDT/i.test(String(symbol || ''));
+      const newContractSize = isNewCrypto ? 1 : 100000;
+      const requiredMargin = (Number(volume) * newContractSize * Number(openPrice)) / effectiveLeverage;
+
+      const usedMargin = (account.trades || [])
+        .filter((t: any) => t.closePrice === null)
+        .reduce((sum: number, t: any) => {
+          const isCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|MATIC|LINK|USDT/i.test(String(t.symbol || ''));
+          const contractSize = isCrypto ? 1 : 100000;
+          const existingLeverage = Number((t as any)?.leverage);
+          const effectiveExistingLeverage = Number.isFinite(existingLeverage) && existingLeverage > 0 ? existingLeverage : 1;
+          return sum + ((Number(t.volume) * contractSize * Number(t.openPrice)) / effectiveExistingLeverage);
+        }, 0);
+
+      const currentBalance = Number(account.balance ?? account.initialBalance ?? 0);
+      const availableMargin = Math.max(0, currentBalance - usedMargin);
+      if (!Number.isFinite(requiredMargin) || requiredMargin <= 0) {
+        throw new BadRequestException('Invalid margin requirements for requested trade.');
+      }
+      if (requiredMargin > availableMargin) {
+        throw new BadRequestException(`Insufficient margin. Required ${requiredMargin.toFixed(2)}, available ${availableMargin.toFixed(2)}.`);
+      }
     }
 
     // 1️⃣ Store trade

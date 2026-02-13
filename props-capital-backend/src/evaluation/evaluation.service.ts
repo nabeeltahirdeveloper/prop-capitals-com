@@ -121,17 +121,33 @@ export class EvaluationService {
     const dailyLossViolated = (account as any).dailyLossViolated ?? false;
 
     if (drawdownViolated || account.status === ('DISQUALIFIED' as TradingAccountStatus)) {
+      const positionsClosed = account.trades.length > 0
+        ? await this.autoCloseAllPositionsWithPrices(
+            accountId,
+            account.trades,
+            accountPriceCache,
+            'Max Drawdown Violated',
+          )
+        : 0;
       return {
         statusChanged: false,
-        positionsClosed: 0,
+        positionsClosed,
         accountStatus: 'DISQUALIFIED',
       };
     }
 
     if (dailyLossViolated || account.status === ('DAILY_LOCKED' as TradingAccountStatus)) {
+      const positionsClosed = account.trades.length > 0
+        ? await this.autoCloseAllPositionsWithPrices(
+            accountId,
+            account.trades,
+            accountPriceCache,
+            'Daily Loss Limit Violated',
+          )
+        : 0;
       return {
         statusChanged: false,
-        positionsClosed: 0,
+        positionsClosed,
         accountStatus: 'DAILY_LOCKED',
       };
     }
@@ -1046,6 +1062,9 @@ export class EvaluationService {
 
     // If already disqualified, skip evaluation entirely
     if (drawdownViolated || account.status === ('DISQUALIFIED' as TradingAccountStatus)) {
+      if (account.trades.length > 0) {
+        await this.autoCloseAllPositions(accountId, 'Max Drawdown Violated');
+      }
       // Return default outputs indicating violation
       const { challenge } = account;
       return {
@@ -1065,6 +1084,9 @@ export class EvaluationService {
 
     // If already daily locked, skip evaluation
     if (dailyLossViolated || account.status === ('DAILY_LOCKED' as TradingAccountStatus)) {
+      if (account.trades.length > 0) {
+        await this.autoCloseAllPositions(accountId, 'Daily Loss Limit Violated');
+      }
       // Return default outputs indicating daily violation
       const { challenge } = account;
       return {
@@ -1236,7 +1258,18 @@ export class EvaluationService {
           this.logger.debug(`[Auto-Close] Successfully closed trade ${trade.id} (${trade.symbol})`);
         } catch (error) {
           this.logger.error(`[Auto-Close] Failed to auto-close trade ${trade.id}:`, error);
-          // Continue with other trades even if one fails
+          // Fallback: force-close at openPrice to guarantee risk lock consistency
+          try {
+            await this.tradesService.updateTrade(trade.id, {
+              closePrice: trade.openPrice,
+              profit: 0,
+              closedAt: new Date(),
+              closeReason: 'RISK_AUTO_CLOSE_FALLBACK',
+            });
+            this.logger.warn(`[Auto-Close] Fallback close applied for trade ${trade.id} (${trade.symbol}) at open price`);
+          } catch (fallbackError) {
+            this.logger.error(`[Auto-Close] Fallback close also failed for trade ${trade.id}:`, fallbackError);
+          }
         }
       })
     );
