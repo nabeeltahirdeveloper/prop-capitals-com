@@ -444,12 +444,11 @@ const Auth = () => {
                         value={signupData.confirmPassword}
                         onChange={handleSignupChange}
                         required
-                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none transition-colors ${signupData.confirmPassword && signupData.password !== signupData.confirmPassword
-                          ? 'border-red-500/50'
-                          : isDark
+                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none transition-colors ${
+                          isDark
                             ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500 focus:border-amber-500/50'
                             : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:border-amber-500/50'
-                          }`}
+                        } ${signupData.confirmPassword && signupData.password !== signupData.confirmPassword ? '!border-red-500' : ''}`}
                         placeholder="Confirm your password"
                       />
                     </div>
@@ -502,12 +501,12 @@ const Auth = () => {
                         containerClassName="justify-center"
                       >
                         <InputOTPGroup>
-                          <InputOTPSlot index={0} className={isDark ? "border-white/10 text-white" : ""} />
-                          <InputOTPSlot index={1} className={isDark ? "border-white/10 text-white" : ""} />
-                          <InputOTPSlot index={2} className={isDark ? "border-white/10 text-white" : ""} />
-                          <InputOTPSlot index={3} className={isDark ? "border-white/10 text-white" : ""} />
-                          <InputOTPSlot index={4} className={isDark ? "border-white/10 text-white" : ""} />
-                          <InputOTPSlot index={5} className={isDark ? "border-white/10 text-white" : ""} />
+                          <InputOTPSlot index={0} />
+                          <InputOTPSlot index={1} />
+                          <InputOTPSlot index={2} />
+                          <InputOTPSlot index={3} />
+                          <InputOTPSlot index={4} />
+                          <InputOTPSlot index={5} />
                         </InputOTPGroup>
                       </InputOTP>
                     </div>
