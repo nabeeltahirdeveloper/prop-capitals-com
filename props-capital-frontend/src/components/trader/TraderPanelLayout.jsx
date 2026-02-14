@@ -408,22 +408,35 @@ const TraderPanelLayoutInner = () => {
                   onClick={() => setShowAccountDropdown(!showAccountDropdown)}
                   className={`flex items-center gap-2 sm:gap-3 px-3 py-1.5 rounded-xl transition-all ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-100'}`}
                 >
-                  <h1 className={`font-bold text-base sm:text-xl ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    {selectedChallenge ? `Account ${selectedChallenge.accountId}` : null}
-                  </h1>
                   {selectedChallenge && (
-                    <div className="hidden sm:flex items-center gap-2">
-                      <span className={`px-2 py-1 text-xs font-medium rounded ${statusColor === 'emerald' ? 'bg-emerald-500/10 text-emerald-500' :
-                        statusColor === 'red' ? 'bg-red-500/10 text-red-500' :
-                          'bg-amber-500/10 text-amber-500'
-                        }`}>
-                        {phaseLabel}
-                      </span>
-                      <span className={`px-2 py-1 text-xs font-medium rounded ${selectedChallenge.status === 'active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'
-                        }`}>
-                        {selectedChallenge.status === 'active' ? 'Active' : 'Failed'}
-                      </span>
-                    </div>
+                    <>
+                      <h1 className={`font-bold text-base sm:hidden ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        {`Account ${selectedChallenge.accountId}`}
+                      </h1>
+                      <div className="hidden sm:flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <h1 className={`font-bold text-xl ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            {`Account ${selectedChallenge.accountId}`}
+                          </h1>
+                          <span className={`px-2 py-1 text-xs font-medium rounded ${isDark ? 'bg-white/10 text-gray-300' : 'bg-slate-100 text-slate-700'}`}>
+                            ${selectedChallenge.accountSize?.toLocaleString()}
+                          </span>
+                          <span className={`px-2 py-1 text-xs font-medium rounded ${isDark ? 'bg-blue-500/10 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>
+                            {(selectedChallenge.platform || '').toUpperCase()}
+                          </span>
+                          <span className={`px-2 py-1 text-xs font-medium rounded ${statusColor === 'emerald' ? 'bg-emerald-500/10 text-emerald-500' :
+                            statusColor === 'red' ? 'bg-red-500/10 text-red-500' :
+                            'bg-amber-500/10 text-amber-500'
+                            }`}>
+                              {phaseLabel}
+                            </span>
+                            <span className={`px-2 py-1 text-xs font-medium rounded ${selectedChallenge.status === 'active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'
+                              }`}>
+                                {selectedChallenge.status === 'active' ? 'Active' : 'Failed'}
+                            </span>
+                        </div>
+                      </div>
+                    </>
                   )}
                   {challenges.length > 1 && (
                     <ChevronDown className={`w-4 h-4 transition-transform ${showAccountDropdown ? 'rotate-180' : ''} ${isDark ? 'text-gray-400' : 'text-slate-400'}`} />
@@ -433,8 +446,8 @@ const TraderPanelLayoutInner = () => {
                 {/* Account Dropdown Panel */}
                 {showAccountDropdown && challenges.length > 1 && (
                   <>
-                    <div className="fixed inset-0 z-40" onClick={() => setShowAccountDropdown(false)} />
-                    <div className={`absolute left-0 top-full mt-2 w-80 rounded-xl shadow-2xl border z-50 ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`}>
+                    <div className="fixed inset-0 z-[999999]" onClick={() => setShowAccountDropdown(false)} />
+                    <div className={`absolute left-0 top-full mt-2 max-w-2xl rounded-xl shadow-2xl border z-[9999999] ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`}>
                       <div className={`p-3 border-b ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
                         <p className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>Switch Account</p>
                       </div>
@@ -460,10 +473,20 @@ const TraderPanelLayoutInner = () => {
                               }`}
                             >
                               <div className="flex flex-col items-start gap-1">
-                                <span className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                                  Account {challenge.accountId}
-                                </span>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                    Account {challenge.accountId}
+                                  </span>
+                                  <span className={`px-2 py-0.5 text-xs font-medium rounded ${
+                                    isDark ? 'bg-white/10 text-gray-300' : 'bg-slate-100 text-slate-700'
+                                  }`}>
+                                    ${challenge.accountSize?.toLocaleString()}
+                                  </span>
+                                  <span className={`px-2 py-0.5 text-xs font-medium rounded ${
+                                    isDark ? 'bg-blue-500/10 text-blue-400' : 'bg-blue-50 text-blue-600'
+                                  }`}>
+                                    {(challenge.platform || '').toUpperCase()}
+                                  </span>
                                   <span className={`px-2 py-0.5 text-xs font-medium rounded ${
                                     color === 'emerald' ? 'bg-emerald-500/10 text-emerald-500' :
                                     color === 'red' ? 'bg-red-500/10 text-red-500' :
@@ -476,11 +499,6 @@ const TraderPanelLayoutInner = () => {
                                   }`}>
                                     {challenge.status === 'active' ? 'Active' : 'Failed'}
                                   </span>
-                                  {isPinned && (
-                                    <span className="px-2 py-0.5 text-xs font-medium rounded bg-blue-500/10 text-blue-500">
-                                      Pinned
-                                    </span>
-                                  )}
                                 </div>
                               </div>
                               <div className="flex items-center gap-2">
@@ -521,9 +539,6 @@ const TraderPanelLayoutInner = () => {
                                     <Pin className={`w-3.5 h-3.5 ${isDark ? 'text-gray-400' : 'text-slate-500'}`} />
                                   )}
                                 </span>
-                                {isSelected && (
-                                  <div className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0" />
-                                )}
                               </div>
                             </button>
                           );

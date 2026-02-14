@@ -6650,7 +6650,7 @@ const ChartArea = forwardRef(function ChartArea({
   }, [orders, selectedSymbolStr]);
 
   return (
-    <div className={`flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden ${isDark ? 'bg-[#0d1117] border-white/10' : 'bg-white border-slate-200'}`}>
+    <div className={`flex-1 flex flex-col h-full overflow-hidden ${isDark ? 'bg-[#0d1117] border-white/10' : 'bg-white border-slate-200'}`}>
       {/* Chart container: fill all available height */}
       <div
         ref={containerRef}
@@ -6685,7 +6685,7 @@ const ChartArea = forwardRef(function ChartArea({
               onSellClick={handleSellClick}
             />
           </div>
-        )} 
+        )}
 
         {/* Market Execution Panel – floats over chart from the left, similar to MT5 */}
          <MarketExecutionModal
