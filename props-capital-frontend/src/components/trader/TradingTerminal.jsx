@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useChallenges } from '@/contexts/ChallengesContext';
 import CommonTerminalWrapper from './CommonTerminalWrapper';
 import MT5TradingArea from './MT5TradingArea';
@@ -8,24 +8,22 @@ import PT5Terminal from './PT5Terminal';
 import { TradingProvider } from '@nabeeltahirdeveloper/chart-sdk'
 
 
-
 const MT5Terminal = () => {
   const { selectedChallenge } = useChallenges();
-  // MT5 backend URL - use env variable for local testing
   const MT5_API_URL = import.meta.env.VITE_MT5_API_URL || 'https://dev-api.prop-capitals.com';
 
-  // MT5 ke endpoints
   const endpoints = {
-    candles: '/market-data/history?symbols',        // Historical candles endpoint
-    symbols: '/market-data/prices?symbols', // Symbols list (query param allowed)
-    trades: '/trades',               // Trades endpoint (adjust if different)
-    // account: '/api/v1/user/account',        // Account endpoint (adjust if different)
+    candles: '/market-data/history',
+    symbols: '/market-data/prices',
+    // No 'trades' key — SDK uses accountId-aware URL internally via accountId prop
   };
+
   return (
     <CommonTerminalWrapper>
       <TradingProvider
         baseUrl={MT5_API_URL}
         endpoints={endpoints}
+        accountId={selectedChallenge?.id}
       >
         <MT5TradingArea selectedChallenge={selectedChallenge} />
       </TradingProvider>
