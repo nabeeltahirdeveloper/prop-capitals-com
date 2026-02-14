@@ -620,7 +620,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                 <button onClick={() => setChartType('line')} className="px-2 py-1 shrink-0"
                   style={{ fontSize: 11, color: chartType === 'line' ? C.textP : C.textS }}>Line</button>
               </div>
-              <div className="flex-1 min-h-0">
+              <div className="flex-1">
                 <TradingChart key={`chart-bybit-${currentSymbolStr}`} symbol={enrichedSelectedSymbol} openPositions={openPositions} onPriceUpdate={handlePriceUpdate} showBuySellPanel={false} />
               </div>
             </SectionErrorBoundary>
