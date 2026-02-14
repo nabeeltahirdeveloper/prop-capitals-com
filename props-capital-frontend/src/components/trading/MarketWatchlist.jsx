@@ -300,7 +300,7 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol, headle
           "border-b border-border/60",
           "backdrop-blur supports-[backdrop-filter]:bg-background/70",
           "p-2.5",
-          isDark ? "bg-black/10" : "bg-white/70",
+          isDark ? "bg-[#101826]/85" : "bg-white/70",
         ].join(" ")}
       >
         {/* Status row */}

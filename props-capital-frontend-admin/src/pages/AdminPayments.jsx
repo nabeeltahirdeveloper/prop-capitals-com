@@ -408,7 +408,6 @@ export default function AdminPayments() {
           data={filteredPayments}
           isLoading={isLoading}
           emptyMessage={t("admin.payments.emptyMessage")}
-          variant="light"
         />
       </Card>
     </div>

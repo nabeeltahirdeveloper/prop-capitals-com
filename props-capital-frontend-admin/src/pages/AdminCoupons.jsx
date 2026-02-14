@@ -447,7 +447,6 @@ export default function AdminCoupons() {
           data={coupons}
           isLoading={isLoading}
           emptyMessage={t("admin.coupons.emptyMessage")}
-          variant="light"
         />
       </Card>
     </div>

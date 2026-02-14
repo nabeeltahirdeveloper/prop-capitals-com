@@ -799,7 +799,7 @@ export class TradingAccountsService {
   // Unified summary for dashboard
 
   async getAccountSummary(id: string) {
-    const account = await this.prisma.tradingAccount.findUnique({
+    let account = await this.prisma.tradingAccount.findUnique({
       where: { id },
 
       include: {
@@ -820,6 +820,24 @@ export class TradingAccountsService {
     });
 
     if (!account) throw new NotFoundException('Account not found');
+
+    // Keep equity consistent after all positions are closed.
+    // If no open trades remain, equity should always match balance.
+    const hasOpenPositions = account.trades.some((trade) => trade.closePrice === null);
+    if (!hasOpenPositions && Number.isFinite(account.balance) && Number.isFinite(account.equity)) {
+      const normalizedBalance = Number(account.balance);
+      const normalizedEquity = Number(account.equity);
+      if (Math.abs(normalizedEquity - normalizedBalance) > 1e-8) {
+        await this.prisma.tradingAccount.update({
+          where: { id },
+          data: { equity: normalizedBalance },
+        });
+        account = {
+          ...account,
+          equity: normalizedBalance,
+        };
+      }
+    }
 
     // Validate challenge rules before proceeding
     const { challenge } = account;
