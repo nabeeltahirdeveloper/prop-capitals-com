@@ -1,10 +1,10 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { TrendingUp, ChevronDown, Loader2, AlertTriangle, XCircle } from 'lucide-react';
+import { TrendingUp, ChevronDown, Loader2, AlertTriangle, XCircle, Pencil } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTraderTheme } from './TraderPanelLayout';
 import { useChallenges } from '@/contexts/ChallengesContext';
 import { usePrices } from '@/contexts/PriceContext';
-import { getAccountTrades, updateTrade, createTrade } from '@/api/trades';
+import { getAccountTrades, updateTrade, createTrade, modifyPosition } from '@/api/trades';
 import { getPendingOrders, cancelPendingOrder } from '@/api/pending-orders';
 import { processPriceTick, getAccountSummary, evaluateAccountRealTime } from '@/api/accounts';
 import { useToast } from '@/components/ui/use-toast';
@@ -24,6 +24,7 @@ import { createPendingOrder } from '@/api/pending-orders';
 import { Card } from '../ui/card';
 import { cn } from '@/lib/utils';
 import MarketExecutionModal from './MarketExecutionModal';
+import WalletPanel from './WalletPanel';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Badge } from '../ui/badge';
 import { Calendar } from '../ui/calendar';
@@ -110,6 +111,9 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
   const [violationModal, setViolationModal] = useState(null);
   const [liveMetrics, setLiveMetrics] = useState({ equity: null, profitPercent: null, dailyDrawdownPercent: null, overallDrawdownPercent: null });
   const [closeConfirmTrade, setCloseConfirmTrade] = useState(null);
+  const [modifyTPSLTrade, setModifyTPSLTrade] = useState(null);
+  const [modifyTP, setModifyTP] = useState('');
+  const [modifySL, setModifySL] = useState('');
   const [showBuySellPanel, setShowBuySellPanel] = useState(false);
   const [selectedSymbol, setSelectedSymbol] = useState(null);
   const priceTickThrottleRef = useRef({});
@@ -461,6 +465,18 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
     },
     onError: (e) => { toast({ title: 'Close Failed', description: e?.response?.data?.message || e.message, variant: 'destructive' }); },
   });
+  const modifyTPSLMutation = useMutation({
+    mutationFn: ({ tradeId, stopLoss, takeProfit }) => modifyPosition(tradeId, { stopLoss, takeProfit }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['trades', accountId] });
+      toast({ title: 'TP/SL updated' });
+      setModifyTPSLTrade(null);
+      setModifyTP('');
+      setModifySL('');
+    },
+    onError: (e) => { toast({ title: 'Modify failed', description: e?.response?.data?.message || e.message, variant: 'destructive' }); },
+  });
+
   const cancelOrderMutation = useMutation({
     mutationFn: cancelPendingOrder,
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['pendingOrders', accountId] }); toast({ title: 'Order Cancelled' }); },
@@ -736,10 +752,12 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
     return result;
   })();
 
+  const spotPositionsCount = openPositions.filter((t) => t.positionType === 'SPOT').length;
   const tabs = [
     { id: 'positions', label: 'Positions', count: openPositions.length },
     { id: 'pending', label: 'Pending', count: activePendingOrders.length },
     { id: 'history', label: 'History', count: closedTrades.length },
+    { id: 'wallet', label: 'Wallet', count: spotPositionsCount },
   ];
 
   const thStyle = { padding: '8px 12px', fontWeight: 500, fontSize: 12, whiteSpace: 'nowrap' };
@@ -897,15 +915,31 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
                         <td style={{ ...tdStyle, textAlign: 'right' }} className={mutedClass}>{trade.stopLoss ? formatPrice(trade.stopLoss) : '--'}</td>
                         <td style={{ ...tdStyle, textAlign: 'right' }} className={mutedClass}>{trade.takeProfit ? formatPrice(trade.takeProfit) : '--'}</td>
                         <td style={{ ...tdStyle, textAlign: 'center' }}>
-                          <button
-                            onClick={() => setCloseConfirmTrade(trade)}
-                            disabled={closePositionMutation.isPending || isAccountLocked}
-                            className={`text-xs px-3 py-1 rounded border transition-colors disabled:opacity-50 ${
-                              isDark ? 'border-white/10 text-gray-400 hover:text-white hover:border-white/30' : 'border-slate-300 text-slate-500 hover:text-slate-900 hover:border-slate-400'
-                            }`}
-                          >
-                            Close
-                          </button>
+                          <div className="flex items-center justify-center gap-1">
+                            <button
+                              onClick={() => {
+                                setModifyTPSLTrade(trade);
+                                setModifyTP(trade.takeProfit ? String(trade.takeProfit) : '');
+                                setModifySL(trade.stopLoss ? String(trade.stopLoss) : '');
+                              }}
+                              disabled={isAccountLocked}
+                              title="Modify TP/SL"
+                              className={`p-1 rounded transition-colors disabled:opacity-50 ${
+                                isDark ? 'text-gray-400 hover:text-amber-400' : 'text-slate-400 hover:text-amber-600'
+                              }`}
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => setCloseConfirmTrade(trade)}
+                              disabled={closePositionMutation.isPending || isAccountLocked}
+                              className={`text-xs px-3 py-1 rounded border transition-colors disabled:opacity-50 ${
+                                isDark ? 'border-white/10 text-gray-400 hover:text-white hover:border-white/30' : 'border-slate-300 text-slate-500 hover:text-slate-900 hover:border-slate-400'
+                              }`}
+                            >
+                              Close
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -1014,11 +1048,85 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
               </div>
             )
           )}
+
+          {/* ── WALLET TAB ── */}
+          {selectedTab === 'wallet' && (
+            <WalletPanel
+              accountId={selectedAccountId}
+              openPositions={openPositions}
+              prices={prices}
+              availableBalance={availableBalance}
+              isDark={isDark}
+              isAccountLocked={isAccountLocked}
+              onTradeExecuted={() => {
+                queryClient.invalidateQueries({ queryKey: ['trades', accountId] });
+                queryClient.invalidateQueries({ queryKey: ['accountSummary', accountId] });
+                queryClient.invalidateQueries({ queryKey: ['pendingOrders', accountId] });
+              }}
+            />
+          )}
         </div>
       </div>
 
       {/* ==================== TRADING STYLE RULES ==================== */}
       <TradingStyleRules challenge={selectedChallenge} />
+
+      {/* ==================== MODIFY TP/SL DIALOG ==================== */}
+      {modifyTPSLTrade && (
+        <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/60" onClick={() => setModifyTPSLTrade(null)}>
+          <div className={`${cardClass} p-6 max-w-sm w-full mx-4 shadow-xl`} onClick={(e) => e.stopPropagation()}>
+            <h3 className={`text-lg font-bold mb-1 ${textClass}`}>Modify TP / SL</h3>
+            <p className={`text-sm ${mutedClass} mb-4`}>
+              {modifyTPSLTrade.symbol} · {modifyTPSLTrade.type === 'BUY' ? 'Long' : 'Short'} · Entry {formatPrice(modifyTPSLTrade.openPrice)}
+            </p>
+            <div className="space-y-3 mb-5">
+              <div>
+                <label className={`text-xs font-medium ${mutedClass} mb-1 block`}>Take Profit</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="any"
+                  placeholder="Leave blank to remove"
+                  value={modifyTP}
+                  onChange={(e) => setModifyTP(e.target.value)}
+                  className={`w-full px-3 py-2 rounded-lg border text-sm focus:outline-none focus:ring-1 focus:ring-amber-500 ${isDark ? 'bg-[#0a0d12] border-white/10 text-white placeholder-gray-600' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'}`}
+                />
+              </div>
+              <div>
+                <label className={`text-xs font-medium ${mutedClass} mb-1 block`}>Stop Loss</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="any"
+                  placeholder="Leave blank to remove"
+                  value={modifySL}
+                  onChange={(e) => setModifySL(e.target.value)}
+                  className={`w-full px-3 py-2 rounded-lg border text-sm focus:outline-none focus:ring-1 focus:ring-amber-500 ${isDark ? 'bg-[#0a0d12] border-white/10 text-white placeholder-gray-600' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'}`}
+                />
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setModifyTPSLTrade(null); setModifyTP(''); setModifySL(''); }}
+                className={`flex-1 py-2.5 rounded-xl border text-sm font-medium transition-colors ${isDark ? 'border-white/10 text-gray-400 hover:text-white' : 'border-slate-200 text-slate-500 hover:text-slate-900'}`}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  const tp = modifyTP !== '' ? parseFloat(modifyTP) : null;
+                  const sl = modifySL !== '' ? parseFloat(modifySL) : null;
+                  modifyTPSLMutation.mutate({ tradeId: modifyTPSLTrade.id, takeProfit: tp, stopLoss: sl });
+                }}
+                disabled={modifyTPSLMutation.isPending}
+                className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black text-sm font-bold transition-colors"
+              >
+                {modifyTPSLMutation.isPending ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ==================== CLOSE CONFIRMATION DIALOG ==================== */}
       {closeConfirmTrade && (
