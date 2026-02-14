@@ -167,6 +167,7 @@ model Trade {
   breachType                   String?
   breachUnrealizedPnl          Float?
   closeReason                  String?
+  positionType                 String         @default("CFD")
   tradingAccount               TradingAccount @relation(fields: [tradingAccountId], references: [id])
 }
 
@@ -185,6 +186,7 @@ model PendingOrder {
   updatedAt        DateTime       @updatedAt
   filledAt         DateTime?
   cancelledAt      DateTime?
+  positionType     String         @default("CFD")
   tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
 }
 
