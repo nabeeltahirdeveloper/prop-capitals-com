@@ -16,6 +16,7 @@ import {
   Bell,
   Menu,
   X,
+  Briefcase,
   LogOut,
   ChevronDown,
   ChevronLeft,
@@ -218,12 +219,12 @@ export default function Layout({ children, currentPageName }) {
       { name: t("nav.payouts"), icon: Wallet, page: "AdminPayouts" },
       {
         name: "CRM",
-        icon: UserPlus,
+        icon: Briefcase,
         children: [
-          { name: "CRM Leads", icon: UserPlus, page: "CRMLeads" },
-          { name: "Pipeline", icon: Target, page: "CRMPipeline" },
-          { name: "FTD Report", icon: DollarSign, page: "CRMFTDReport" },
-          { name: "Calendar", icon: Calendar, page: "CRMCalendar" },
+          { name: "CRM Leads", page: "CRMLeads" },
+          { name: "Pipeline", page: "CRMPipeline" },
+          { name: "FTD Report", page: "CRMFTDReport" },
+          { name: "Calendar", page: "CRMCalendar" },
         ],
       },
       { name: t("nav.coupons"), icon: Zap, page: "AdminCoupons" },
@@ -544,7 +545,7 @@ export default function Layout({ children, currentPageName }) {
                                   : "text-muted-foreground hover:text-foreground hover:bg-accent"
                               }`}
                             >
-                              <child.icon className={`w-4 h-4 ${isChildActive ? "text-amber-500" : ""}`} />
+                              {child.icon && <child.icon className={`w-4 h-4 shrink-0 ${isChildActive ? "text-amber-500" : ""}`} />}
                               <span className="text-sm font-medium">{child.name}</span>
                             </Link>
                           );
