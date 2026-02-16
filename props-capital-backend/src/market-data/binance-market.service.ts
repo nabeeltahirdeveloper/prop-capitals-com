@@ -26,13 +26,15 @@ export class BinanceMarketService {
 
   // Timeframe mapping: our format -> Binance format
   private readonly TIMEFRAME_MAP: { [key: string]: string } = {
-    M1: '1m',
-    M5: '5m',
-    M15: '15m',
-    M30: '30m',
-    H1: '1h',
-    H4: '4h',
-    D1: '1d',
+    'M1': '1m',
+    'M5': '5m',
+    'M15': '15m',
+    'M30': '30m',
+    'H1': '1h',
+    'H4': '4h',
+    'D1': '1d',
+    'W1': '1w',
+    'MN': '1M',
   };
 
   // Cache for candles: key = `binance:candles:{symbol}:{tf}`, value = { data, timestamp, ttl }

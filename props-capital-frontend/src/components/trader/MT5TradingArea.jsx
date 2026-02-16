@@ -1,23 +1,19 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useContext } from 'react';
 // import { useTrading } from '@/contexts/TradingContext';
 import { usePrices } from '@/contexts/PriceContext';
+import { alignToTimeframe } from '@/utils/timeEngine';
+import { timeframeToSeconds } from '@/utils/candleEngine';
+import { io } from 'socket.io-client';
 // import TopBar from '../trading/Topbar';
 // import LeftSidebar from '../trading/LeftSidebar';
 // import MarketExecutionModal from './MarketExecutionModal';
 import TradingPanel from '../trading/TradingPanel';
 import { Card } from '../ui/card';
 import { useTranslation } from "../../contexts/LanguageContext";
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '../ui/use-toast';
 import {
   Chart,
-  CoinSelector,
-  VolumeControl,
-  StopLoss,
-  TakeProfit,
-  DrawingTools,
-  TimeframeSelector,
-  ChartTypeSelector,
   useTrading,
   TopBar,
   LeftSidebar,
@@ -27,6 +23,10 @@ import {
 import MT5Login from './MT5Login';
 import { usePlatformTokensStore } from '@/lib/stores/platform-tokens.store';
 import { processPlatformLogin, resetPlatformPassword } from '@/api/auth';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { createTrade } from '@/api/trades';
+import { getAccountSummary, getUserAccounts } from '@/api/accounts';
+import { useAuth } from '@/contexts/AuthContext';
 
 
 const MT5TradingArea = ({
@@ -41,14 +41,6 @@ const MT5TradingArea = ({
   // selectedSymbol: selectedSymbolFromParent,
   // setSelectedSymbol: setSelectedSymbolFromParent,
 }) => {
-  // const {
-  //   selectedSymbol: tradingSelectedSymbol,
-  //   setSelectedSymbol: setTradingSelectedSymbol,
-  //   selectedTimeframe,
-  //   setSelectedTimeframe,
-  //   chartType,
-  //   setChartType,
-  // } = useTrading();
   const {
     selectedSymbol,
     setSelectedSymbol,
@@ -59,22 +51,70 @@ const MT5TradingArea = ({
     symbolsLoading,
     accountSummary,
     orders,
+    setOrders,
+    fetchOrders,
     currentSymbolData,
     chartType,
     setChartType,
     theme
   } = useTrading()
   const { t } = useTranslation();
+  const { user } = useAuth()
   const { toast } = useToast();
 
-  // Platform authentication state
+  const navigate = useNavigate()
+
   const accountId = selectedChallenge?.id;
+  const accountStatus = selectedChallenge?.status;
+  const normalizedAccountStatus = String(accountStatus || '').toLowerCase();
+  const isAccountLocked =
+    normalizedAccountStatus === 'failed' ||
+    normalizedAccountStatus === 'inactive' ||
+    normalizedAccountStatus === 'daily_locked' ||
+    normalizedAccountStatus === 'disqualified' ||
+    normalizedAccountStatus === 'closed' ||
+    normalizedAccountStatus === 'paused';
+  const { data: accountSummaryData } = useQuery({
+    queryKey: ['accountSummary', accountId],
+    queryFn: () => getAccountSummary(accountId),
+    enabled: !!accountId,
+    refetchInterval: 3000,
+  });
+  const balance = Number.isFinite(accountSummaryData?.account?.balance)
+    ? accountSummaryData.account.balance
+    : (selectedChallenge?.currentBalance || 0);
+
+  // WebSocket connection for real-time candle updates
+  const candlesSocketRef = useRef(null);
+  const queryClient = useQueryClient();
+
+  const { data: userAccounts } = useQuery({
+    queryKey: ["userAccounts", user?.userId],
+    queryFn: async () => getUserAccounts(user?.userId),
+    enabled: !!user?.userId,
+  })
+
+  console.log("MT5", userAccounts)
+  console.log("USER:", user);
+  console.log("USER ID:", user?.id);
+  console.log("ACCOUNTS:", userAccounts);
+
+
+  //move on Ecnomic calendar page 
+
+
+  const onMove = () => {
+    navigate("/traderdashboard/calendar")
+  }
+
+
+  // Platform authentication state
+  // const accountId = selectedChallenge?.id;
   const getPlatformToken = usePlatformTokensStore((state) => state.getPlatfromToken);
   const setPlatformToken = usePlatformTokensStore((state) => state.setPlatfromToken);
   const platformToken = getPlatformToken(accountId);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
-
   // Handle MT5 platform login
   const handlePlatformLogin = async (email, password) => {
     if (!accountId) {
@@ -86,6 +126,7 @@ const MT5TradingArea = ({
       const response = await processPlatformLogin(accountId, email, password);
       if (response?.platformToken) {
         setPlatformToken(accountId, response.platformToken);
+        console.log(accountId, response);
         toast({ title: 'Successfully connected to MT5' });
       }
     } catch (error) {
@@ -120,51 +161,25 @@ const MT5TradingArea = ({
     }
   };
 
-  // If no platform token, show login screen
-  if (!platformToken) {
-    return (
-      <MT5Login
-        onPlatformLogin={handlePlatformLogin}
-        onPasswordReset={handlePasswordReset}
-        isSubmitting={isLoggingIn}
-        isResetting={isResettingPassword}
-      />
-    );
-  }
-
-  // Use trade flow from parent (CommonTerminalWrapper / same as pages/TradingTerminal) when provided
-  const positions = positionsFromParent;
-  const handleExecuteTrade = onExecuteTrade || (() => {
-    toast({ title: t("terminal.tradeFailed"), description: "Trade flow not connected.", variant: "destructive" });
-  });
+  // All hooks must be declared before any early return (Rules of Hooks)
   const [showBuySellPanelLocal, setShowBuySellPanelLocal] = useState(false);
   const showBuySellPanel = setShowBuySellPanelProp !== undefined ? showBuySellPanelProp : showBuySellPanelLocal;
   const setShowBuySellPanel = setShowBuySellPanelProp !== undefined ? setShowBuySellPanelProp : setShowBuySellPanelLocal;
-  const accountBalance = accountBalanceFromParent ?? selectedChallenge?.currentBalance ?? 100000;
-
   const [selectedSymbolLocal, setSelectedSymbolLocal] = useState(null);
   const [modalInitialOrderType, setModalInitialOrderType] = useState(null); // 'buy' | 'sell' | null when opening from chart/topbar
-  const showMarketWatch = true;
   const pricesRef = useRef({});
-  // When parent provides symbol state, use it (flow from TradingTerminal); otherwise use local state
-  // const selectedSymbol = setSelectedSymbolFromParent ? (selectedSymbolFromParent ?? selectedSymbolLocal) : selectedSymbolLocal;
-  // const setSelectedSymbol = (sym) => {
-  //   if (setSelectedSymbolFromParent) setSelectedSymbolFromParent(sym);
-  //   setSelectedSymbolLocal(sym);
-  //   setTradingSelectedSymbol(sym?.symbol ?? sym);
-  // };
 
   // Chart Buy/Sell should open our modal (connected to handleExecuteTrade), not the chart's internal modal
   const handleChartBuyClick = useCallback(() => {
-    setModalInitialOrderType('buy');
+    setModalInitialOrderType('BUY');
     setShowBuySellPanel(true);
   }, [setShowBuySellPanel]);
   const handleChartSellClick = useCallback(() => {
-    setModalInitialOrderType('sell');
+    setModalInitialOrderType('SELL');
     setShowBuySellPanel(true);
   }, [setShowBuySellPanel]);
 
-  const { prices: unifiedPrices } = usePrices();
+  const { prices: unifiedPrices, getPrice: getUnifiedPrice } = usePrices();
 
   // Bridge: MT5 live prices → SDK TradingContext symbols update
   // Jab MT5 PriceContext se live prices aayen, SDK ke symbols mein update karo
@@ -192,6 +207,135 @@ const MT5TradingArea = ({
     );
   }, [unifiedPrices, setSymbols]);
 
+  // Real-time candle updates for SDK Chart
+  // SDK Chart receives bidPrice/askPrice props, but candles need to be updated through SDK's context
+  // Since SDK Chart is a black box, we ensure prices are updating frequently to trigger SDK's internal candle updates
+  const [realTimeBidPrice, setRealTimeBidPrice] = useState(null);
+  const [realTimeAskPrice, setRealTimeAskPrice] = useState(null);
+
+  // Derive real-time bid/ask reactively from PriceContext (no polling loop)
+  useEffect(() => {
+    const symbolStr = typeof selectedSymbol === 'object' ? selectedSymbol?.symbol : selectedSymbol;
+    if (!symbolStr) return;
+
+    const live = unifiedPrices[symbolStr];
+    if (!live) return;
+
+    const bidNum = parseFloat(live.bid);
+    const askNum = parseFloat(live.ask);
+
+    if (Number.isFinite(bidNum) && bidNum > 0) setRealTimeBidPrice(bidNum);
+    if (Number.isFinite(askNum) && askNum > 0) setRealTimeAskPrice(askNum);
+  }, [unifiedPrices, selectedSymbol]);
+
+  // WebSocket listener for real-time candle updates from backend
+  useEffect(() => {
+    if (!selectedSymbol || !selectedTimeframe) return;
+
+    const WEBSOCKET_URL = import.meta.env.VITE_WEBSOCKET_URL || 'http://localhost:5002';
+    const symbolStr = selectedSymbol.symbol || selectedSymbol;
+    const timeframeStr = selectedTimeframe || 'M1';
+
+    // Get auth token
+    const getAuthToken = () => {
+      return (
+        localStorage.getItem('token') ||
+        localStorage.getItem('accessToken') ||
+        localStorage.getItem('authToken') ||
+        localStorage.getItem('jwt_token')
+      );
+    };
+
+    // Connect to candles WebSocket (root namespace)
+    const socket = io(WEBSOCKET_URL, {
+      auth: (cb) => cb({ token: getAuthToken() }),
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 10,
+    });
+
+    candlesSocketRef.current = socket;
+
+    socket.on('connect', () => {
+      console.log('[MT5TradingArea] ✅ Connected to candles WebSocket');
+      // Subscribe to candle updates for current symbol/timeframe
+      // Backend automatically sends updates based on client subscriptions
+    });
+
+    socket.on('disconnect', (reason) => {
+      console.log('[MT5TradingArea] ❌ Candles WebSocket disconnected:', reason);
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('[MT5TradingArea] 🔌 Candles WebSocket connection error:', error.message);
+    });
+
+    // Listen for candleUpdate events from backend
+    socket.on('candleUpdate', (data) => {
+      try {
+        // Backend sends: { symbol, timeframe, candle: { time, open, high, low, close, volume } }
+        if (!data || !data.candle || !data.symbol || !data.timeframe) {
+          console.warn('[MT5TradingArea] Invalid candleUpdate data:', data);
+          return;
+        }
+
+        // Check if this update is for current symbol/timeframe
+        const normalizedSymbol = (data.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const currentSymbolNormalized = (symbolStr || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+        if (normalizedSymbol !== currentSymbolNormalized || data.timeframe !== timeframeStr) {
+          // Not for current symbol/timeframe, ignore
+          return;
+        }
+
+        const candle = data.candle;
+
+        // Convert time from milliseconds to seconds if needed (lightweight-charts uses seconds)
+        let candleTime = candle.time;
+        if (candleTime > 1e10) {
+          // Time is in milliseconds, convert to seconds
+          candleTime = Math.floor(candleTime / 1000);
+        }
+
+        // Update SDK Chart component with new candle
+        // Since SDK Chart is a black box, we need to check if SDK provides a method to update candles
+        // For now, we'll try to update through SDK's context if available
+        // If SDK Chart component has a ref method to update candles, we can use that
+
+        // Note: SDK Chart component should automatically update when candles are updated in SDK's context
+        // If SDK doesn't support this, we may need to manually update the chart through ref methods
+
+        console.log('[MT5TradingArea] 📊 Received candleUpdate:', {
+          symbol: data.symbol,
+          timeframe: data.timeframe,
+          candle: {
+            time: candleTime,
+            open: candle.open,
+            high: candle.high,
+            low: candle.low,
+            close: candle.close,
+          },
+        });
+
+        // TODO: Update SDK Chart component with this candle
+        // This depends on SDK's API - check SDK documentation for updateCandle or similar method
+        // For now, we'll log it and let SDK Chart handle it if it listens to WebSocket internally
+
+      } catch (error) {
+        console.error('[MT5TradingArea] Error processing candleUpdate:', error);
+      }
+    });
+
+    return () => {
+      if (socket && socket.connected) {
+        socket.disconnect();
+      }
+      candlesSocketRef.current = null;
+    };
+  }, [selectedSymbol, selectedTimeframe]);
+
   // Enrich selected symbol with real-time price data
   const enrichedSelectedSymbol = selectedSymbol && unifiedPrices[selectedSymbol.symbol]
     ? {
@@ -209,19 +353,23 @@ const MT5TradingArea = ({
   const handleToggleBuySell = () => setShowBuySellPanel((prev) => !prev);
 
   const handleZoomIn = () => {
-    console.log('Zoom in');
+    chartAreaRef.current?.zoomIn?.();
   };
 
   const handleZoomOut = () => {
-    console.log('Zoom out');
+    chartAreaRef.current?.zoomOut?.();
   };
 
   const handleDownloadChartPNG = () => {
-    console.log('Download chart');
+    chartAreaRef.current?.downloadChartAsPNG?.();
   };
 
   const handleToggleFullscreen = () => {
-    console.log('Toggle fullscreen');
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen?.();
+    } else {
+      document.exitFullscreen?.();
+    }
   };
 
   const isLight = theme === 'light'
@@ -231,7 +379,6 @@ const MT5TradingArea = ({
   const resizeStartX = useRef(0)
   const resizeStartWidth = useRef(200)
 
-  const [bottomPanelHeight, setBottomPanelHeight] = useState(180) // Bottom orders panel height (default: thoda sa neeche/chhota)
   const [isBottomResizing, setIsBottomResizing] = useState(false)
   const bottomResizeRef = useRef(null)
   const chartAreaRef = useRef(null)
@@ -331,97 +478,102 @@ const MT5TradingArea = ({
   }, [isBottomResizing])
 
 
+
+
+  // Professional trade execution: optimistic update → API call → sync or rollback
+  const handleExecuteTrade = useCallback(async (trade) => {
+    if (isAccountLocked) {
+      toast({ title: t("terminal.tradeFailed"), description: 'Account is locked.', variant: 'destructive' });
+      return;
+    }
+    if (!accountId) {
+      toast({ title: t("terminal.tradeFailed"), description: 'No account selected.', variant: 'destructive' });
+      return;
+    }
+
+    const symbolStr = typeof selectedSymbol === 'object' ? selectedSymbol?.symbol : selectedSymbol;
+    const tradeType = String(trade.type || '').toUpperCase();
+    const volume = parseFloat(trade.lotSize) || 0.01;
+    const openPrice = parseFloat(trade.entryPrice) || 0;
+
+    if (!openPrice) {
+      toast({ title: t("terminal.tradeFailed"), description: 'No price available.', variant: 'destructive' });
+      return;
+    }
+
+    // Optimistic order — shown immediately in the positions panel
+    const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const optimisticOrder = {
+      id: tempId,
+      ticket: tempId.substring(5, 13),
+      symbol: trade.symbol || symbolStr,
+      type: tradeType,
+      volume,
+      price: openPrice,
+      stopLoss: trade.stopLoss ? parseFloat(trade.stopLoss) : null,
+      takeProfit: trade.takeProfit ? parseFloat(trade.takeProfit) : null,
+      comment: trade.comment || '',
+      status: 'OPEN',
+      swap: 0,
+      profit: 0,
+      profitCurrency: 'USD',
+      time: new Date().toLocaleTimeString(),
+      openAt: new Date().toISOString(),
+      closeAt: null,
+    };
+    setOrders((prev) => [...prev, optimisticOrder]);
+
+    try {
+      await createTrade({
+        accountId,
+        symbol: trade.symbol || symbolStr,
+        type: tradeType,
+        volume,
+        openPrice,
+        leverage: 100,
+        stopLoss: trade.stopLoss ? parseFloat(trade.stopLoss) : null,
+        takeProfit: trade.takeProfit ? parseFloat(trade.takeProfit) : null,
+      });
+
+      // Sync real data from backend (replaces optimistic order)
+      await fetchOrders();
+      queryClient.invalidateQueries({ queryKey: ['accountSummary', accountId] });
+      toast({ title: 'Order Placed', description: `${tradeType} ${volume} ${trade.symbol || symbolStr}` });
+    } catch (err) {
+      // Rollback optimistic order on failure
+      setOrders((prev) => prev.filter((o) => o.id !== tempId));
+      const msg = err?.message || err?.response?.data?.message || 'Trade failed';
+      toast({ title: 'Order Failed', description: msg, variant: 'destructive' });
+    }
+  }, [accountId, isAccountLocked, selectedSymbol, setOrders, fetchOrders, queryClient, toast, t]);
+
+  // If no platform token, show login screen (after all hooks)
+  if (!platformToken) {
+    return (
+      <MT5Login
+        onPlatformLogin={handlePlatformLogin}
+        onPasswordReset={handlePasswordReset}
+        isSubmitting={isLoggingIn}
+        isResetting={isResettingPassword}
+        userEmail={user?.email}
+      />
+    );
+  }
+
+  const positions = positionsFromParent;
+  const accountBalance = accountBalanceFromParent ?? selectedChallenge?.currentBalance ?? 100000;
+  const showMarketWatch = true;
+
   return (
     <>
-      {/* Demo WebTrader - Trading Terminal (single SDK context from TradingTerminal’s TradingProvider) */}
-      {/* <div className={cardClass + ' overflow-hidden max-h-[85vh] flex flex-col'}>
-        <div className={`p-4 border-b flex items-center justify-between flex-shrink-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-          <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '18px',
-              flexWrap: 'wrap',
-            }}>
-              <TopBar
-                selectedSymbol={selectedSymbol}
-                selectedTimeframe={selectedTimeframe}
-                onTimeframeChange={setSelectedTimeframe}
-                chartType={chartType}
-                onChartTypeChange={setChartType}
-                onNewOrder={handleNewOrder}
-                onZoomIn={handleZoomIn}
-                onZoomOut={handleZoomOut}
-                onDownloadChartPNG={handleDownloadChartPNG}
-                onToggleFullscreen={handleToggleFullscreen}
-                marketWatchOpen={showMarketWatch}
-                onToggleMarketWatch={() => setShowMarketWatch(prev => !prev)}
-                onToggleBuySell={handleToggleBuySell}
-                buySellPanelOpen={showBuySellPanel}
-              /> */}
-      {/* <CoinSelector />
-              <TimeframeSelector />
-              <ChartTypeSelector /> */}
-      {/* </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col lg:flex-row flex-1 min-h-0 w-full">
-          <div className="hidden lg:flex lg:w-12 lg:shrink-0 flex-col min-h-0 overflow-hidden">
-          </div>
-
-          <div className="flex-1 min-w-0 flex flex-col min-h-0 order-first lg:order-none">
-            <div className="flex-1 min-h-[200px] flex flex-col relative min-w-0">
-              <div */}
-      {/* style={{ width: '60vw', height: '100vh', display: 'flex', flexDirection: 'column' }} */}
-      {/* > */}
-      {/* <Chart
-                  selectedSymbol={selectedSymbol}
-                  onBuyClick={handleBuyClick}
-                  onSellClick={handleSellClick}
-                  /> */}
-      {/* <Chart
-                  ref={chartAreaRef}
-                  bidPrice={currentSymbolData.bid}
-                  askPrice={currentSymbolData.ask}
-                  showBuySellPanel={showBuySellPanel}
-                  onBuyClick={handleBuyClick}
-                  onSellClick={handleSellClick}
-                />
-                <LeftSidebar /> */}
-
-      {/* </div> */}
-      {/* <MarketExecutionModal
-                isOpen={showBuySellPanel}
-                onClose={() => setShowBuySellPanel(false)}
-                selectedSymbol={enrichedSelectedSymbol}
-                accountBalance={accountBalance}
-                onExecuteTrade={handleExecuteTrade}
-                chartPrice={enrichedSelectedSymbol?.bid || null}
-                orderType={modalInitialOrderType}
-              /> */}
-      {/* <MarketExecutionModal
-                isOpen={isOrderModalOpen}
-                onClose={() => setIsOrderModalOpen(false)}
-                orderType={orderType}
-                bidPrice={currentSymbolData.bid}
-                askPrice={currentSymbolData.ask}
-              /> */}
-      {/* </div>
-
-          </div>
-          <div className={`flex w-full lg:w-72 shrink-0 p-3 border-l flex-col min-h-[160px] min-w-0 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-            <MarketWatchlist
-              onSymbolSelect={(item) => setSelectedSymbol(item)}
-              selectedSymbol={selectedSymbol} />
-          </div>
-        </div>
-      </div> */}
-
       <div className={`h-screen flex flex-col overflow-hidden relative ${isLight ? 'bg-slate-100 text-slate-900' : 'bg-slate-950 text-slate-100'}`}>
         {/* Left Sidebar - Tools (overlaps header, full height, highest z-index) */}
         <div className='absolute left-0 top-0 bottom-0 z-50'>
-          <LeftSidebar />
+          <LeftSidebar
+            AccountId={accountId}
+            UserName={selectedChallenge?.platform === 'MT5' ? selectedChallenge?.platformEmail : undefined}
+            UserId={user?.userId}
+          />
         </div>
 
         {/* Top Bar - Starts after sidebar */}
@@ -441,6 +593,9 @@ const MT5TradingArea = ({
             onToggleMarketWatch={() => setShowMarketWatch(prev => !prev)}
             onToggleBuySell={handleToggleBuySell}
             buySellPanelOpen={showBuySellPanel}
+            onMove={onMove}
+
+
           />
         </div>
 
@@ -454,8 +609,8 @@ const MT5TradingArea = ({
               {/* Center - Chart Area */}
               <Chart
                 ref={chartAreaRef}
-                bidPrice={currentSymbolData.bid}
-                askPrice={currentSymbolData.ask}
+                bidPrice={realTimeBidPrice ?? currentSymbolData.bid}
+                askPrice={realTimeAskPrice ?? currentSymbolData.ask}
                 showBuySellPanel={showBuySellPanel}
                 onBuyClick={handleBuyClick}
                 onSellClick={handleSellClick}
@@ -498,40 +653,27 @@ const MT5TradingArea = ({
             >
               <div className='absolute inset-x-0 top-1/2 -translate-y-1/2 h-3 group-hover:bg-sky-500/20' />
             </div>
-
-            {/* Bottom Panel - Account & Orders */}
-            {/* <AccountPanel
-              accountSummary={accountSummary}
-              orders={orders}
-              height={bottomPanelHeight}
-            /> */}
           </div>
         </div>
-
-        {/* Market Execution Side Panel - Slides from behind left sidebar, overlaps chart */}
-        {isOrderModalOpen && (
-          <>
-            {/* Overlay backdrop when panel is open - behind panel but over chart */}
-            <div
-              className='fixed inset-0  z-30'
-              onClick={() => setIsOrderModalOpen(false)}
+        <div
+          className='absolute top-10 left-12 w-80 z-40 pointer-events-none'
+          style={{
+            transition: 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1)',
+            transform: isOrderModalOpen ? 'translateX(0)' : 'translateX(-110%)',
+          }}
+        >
+          <div className='pointer-events-auto' onClick={(e) => e.stopPropagation()}>
+            <MarketExecutionModal
+              isOpen={isOrderModalOpen}
+              onClose={() => setIsOrderModalOpen(false)}
+              orderType={orderType}
+              bidPrice={realTimeBidPrice ?? currentSymbolData.bid}
+              askPrice={realTimeAskPrice ?? currentSymbolData.ask}
+              onExecuteTrade={handleExecuteTrade}
+              userAccountId={accountId}
             />
-
-            {/* Panel - Fully interactive, not blocked by backdrop */}
-            <div
-              className='fixed left-65 top-10 w-96 max-w-sm z-40 transition-transform duration-300 ease-in-out pointer-events-auto'
-              onClick={(e) => e.stopPropagation()}
-            >
-              <MarketExecutionModal
-                isOpen={isOrderModalOpen}
-                onClose={() => setIsOrderModalOpen(false)}
-                orderType={orderType}
-                bidPrice={currentSymbolData.bid}
-                askPrice={currentSymbolData.ask}
-              />
-            </div>
-          </>
-        )}
+          </div>
+        </div>
       </div>
     </>
   );
