@@ -34,6 +34,8 @@ export class BinanceMarketService {
     'H1': '1h',
     'H4': '4h',
     'D1': '1d',
+    'W1': '1w',
+    'MN': '1M',
   };
 
   // Cache for candles: key = `binance:candles:{symbol}:{tf}`, value = { data, timestamp, ttl }

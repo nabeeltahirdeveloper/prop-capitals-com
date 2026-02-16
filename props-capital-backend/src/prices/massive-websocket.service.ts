@@ -437,6 +437,8 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
       'H1': { multiplier: 1, timespan: 'hour' },
       'H4': { multiplier: 4, timespan: 'hour' },
       'D1': { multiplier: 1, timespan: 'day' },
+      'W1': { multiplier: 1, timespan: 'week' },
+      'MN': { multiplier: 1, timespan: 'month' },
     };
 
     return timeframeMap[timeframe] || { multiplier: 5, timespan: 'minute' };
@@ -465,12 +467,18 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
       case 'day':
         daysBack = limit * multiplier + 2;
         break;
+      case 'week':
+        daysBack = limit * 7 * multiplier + 7;
+        break;
+      case 'month':
+        daysBack = limit * 30 * multiplier + 30;
+        break;
       default:
         daysBack = 7;
     }
 
     // Cap at reasonable limits
-    if (daysBack > 365) daysBack = 365;
+    if (daysBack > 3650) daysBack = 3650;
 
     const fromDate = new Date(now);
     fromDate.setDate(fromDate.getDate() - daysBack);

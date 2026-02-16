@@ -10,7 +10,7 @@ import { io } from 'socket.io-client';
 import TradingPanel from '../trading/TradingPanel';
 import { Card } from '../ui/card';
 import { useTranslation } from "../../contexts/LanguageContext";
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '../ui/use-toast';
 import {
   Chart,
@@ -62,7 +62,7 @@ const MT5TradingArea = ({
   const { user } = useAuth()
   const { toast } = useToast();
 
-
+  const navigate = useNavigate()
 
   const accountId = selectedChallenge?.id;
   const accountStatus = selectedChallenge?.status;
@@ -96,8 +96,16 @@ const MT5TradingArea = ({
 
   console.log("MT5", userAccounts)
   console.log("USER:", user);
-console.log("USER ID:", user?.id);
-console.log("ACCOUNTS:", userAccounts);
+  console.log("USER ID:", user?.id);
+  console.log("ACCOUNTS:", userAccounts);
+
+
+  //move on Ecnomic calendar page 
+
+
+  const onMove = () => {
+    navigate("/traderdashboard/calendar")
+  }
 
 
   // Platform authentication state
@@ -345,19 +353,23 @@ console.log("ACCOUNTS:", userAccounts);
   const handleToggleBuySell = () => setShowBuySellPanel((prev) => !prev);
 
   const handleZoomIn = () => {
-    console.log('Zoom in');
+    chartAreaRef.current?.zoomIn?.();
   };
 
   const handleZoomOut = () => {
-    console.log('Zoom out');
+    chartAreaRef.current?.zoomOut?.();
   };
 
   const handleDownloadChartPNG = () => {
-    console.log('Download chart');
+    chartAreaRef.current?.downloadChartAsPNG?.();
   };
 
   const handleToggleFullscreen = () => {
-    console.log('Toggle fullscreen');
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen?.();
+    } else {
+      document.exitFullscreen?.();
+    }
   };
 
   const isLight = theme === 'light'
@@ -581,6 +593,7 @@ console.log("ACCOUNTS:", userAccounts);
             onToggleMarketWatch={() => setShowMarketWatch(prev => !prev)}
             onToggleBuySell={handleToggleBuySell}
             buySellPanelOpen={showBuySellPanel}
+            onMove={onMove}
 
 
           />
