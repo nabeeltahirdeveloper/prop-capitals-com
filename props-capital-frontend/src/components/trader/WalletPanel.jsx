@@ -1,3 +1,9 @@
+// ============================================
+// WALLET FEATURE DISABLED - 2026-02-16
+// Reason: Feature not ready for production
+// TODO: Re-enable when spot trading is live
+// ============================================
+
 import React, { useState, useMemo } from 'react';
 import { TrendingUp, Wallet, ShoppingCart } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';

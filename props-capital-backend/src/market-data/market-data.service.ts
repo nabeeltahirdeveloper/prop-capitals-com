@@ -57,7 +57,7 @@ export class MarketDataService {
     'BNB/USD': 'binancecoin',
     'AVAX/USD': 'avalanche-2',
     'DOT/USD': 'polkadot',
-    'MATIC/USD': 'matic-network',
+  //  'MATIC/USD': 'matic-network',
     'LINK/USD': 'chainlink',
   };
 

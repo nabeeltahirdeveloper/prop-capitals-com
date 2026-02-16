@@ -57,7 +57,7 @@ export const useTrading = () => {
 };
 
 export const TradingProvider = ({ children }) => {
-  const [selectedSymbol, setSelectedSymbol] = useState("CADJPY");
+  const [selectedSymbol, setSelectedSymbol] = useState("BTCUSDT");
   const [selectedTimeframe, setSelectedTimeframe] = useState("M1");
 
   const [symbols, setSymbols] = useState([]);

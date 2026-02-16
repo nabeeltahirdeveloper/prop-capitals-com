@@ -358,7 +358,7 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
     const { from, to } = this.calculateDateRange(limit, multiplier, timespan);
 
     // Build API URL
-    const url = `https://api.massive.com/v2/aggs/ticker/${massiveTicker}/range/${multiplier}/${timespan}/${from}/${to}?adjusted=true&sort=asc&limit=${limit}`;
+    const url = `https://api.massive.com/v2/aggs/ticker/${massiveTicker}/range/${multiplier}/${timespan}/${from}/${to}?adjusted=true&sort=desc&limit=${limit}`;
 
     // Make request with timeout
     const controller = new AbortController();
@@ -395,6 +395,8 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
       //   close: bar.c,
       //   volume: bar.v || 0,
       // }));
+      // API returns desc order (newest first) so we get today's candles within the limit
+      // Reverse to ascending for the chart
       const candles: Candlestick[] = data.results.map((bar: any) => ({
         time: Math.floor(bar.t / 1000),   // ✅ seconds (lightweight-charts standard)
         open: bar.o,
@@ -402,8 +404,7 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
         low: bar.l,
         close: bar.c,
         volume: bar.v || 0,
-      }));
-
+      })).reverse();
 
       this.logger.debug(`[Massive REST] Fetched ${candles.length} candles for ${symbol} ${timeframe}`);
       return candles;

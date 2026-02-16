@@ -46,7 +46,8 @@ export const getMarketHistory = async (symbol, timeframe = 'M5', limit = 100) =>
                    normalized.includes('SOL') || normalized.includes('XRP') ||
                    normalized.includes('ADA') || normalized.includes('DOGE') ||
                    normalized.includes('BNB') || normalized.includes('AVAX') ||
-                   normalized.includes('DOT') || normalized.includes('MATIC') ||
+                   normalized.includes('DOT') ||
+                   // normalized.includes('MATIC') ||
                    normalized.includes('LINK');
 
   if (isCrypto) {

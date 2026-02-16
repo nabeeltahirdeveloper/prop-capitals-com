@@ -21,7 +21,7 @@ export class BinanceMarketService {
     'BNB/USD': 'BNBUSDT',
     'AVAX/USD': 'AVAXUSDT',
     'DOT/USD': 'DOTUSDT',
-    'MATIC/USD': 'MATICUSDT',
+   // 'MATIC/USD': 'MATICUSDT',
     'LINK/USD': 'LINKUSDT',
   };
 

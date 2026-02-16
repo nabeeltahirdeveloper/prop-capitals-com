@@ -24,7 +24,7 @@ export class BinanceWebSocketService implements OnModuleInit, OnModuleDestroy {
     'bnbusdt@bookTicker',
     'avaxusdt@bookTicker',
     'dotusdt@bookTicker',
-    'maticusdt@bookTicker',
+ //   'maticusdt@bookTicker',
     'linkusdt@bookTicker',
   ];
 
@@ -94,7 +94,7 @@ export class BinanceWebSocketService implements OnModuleInit, OnModuleDestroy {
           'BNBUSDT': 'BNB/USD',
           'AVAXUSDT': 'AVAX/USD',
           'DOTUSDT': 'DOT/USD',
-          'MATICUSDT': 'MATIC/USD',
+       //   'MATICUSDT': 'MATIC/USD',
           'LINKUSDT': 'LINK/USD',
       };
       

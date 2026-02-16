@@ -9,7 +9,7 @@ export function getInstrumentType(symbol) {
   const upperSymbol = symbol.toUpperCase();
   
   // Crypto symbols
-  const cryptoSymbols = ['BTC', 'ETH', 'XRP', 'SOL', 'ADA', 'DOGE', 'BNB', 'MATIC', 'DOT', 'LINK', 'AVAX', 'UNI', 'ATOM', 'LTC', 'BCH', 'XLM', 'ALGO', 'VET', 'FIL', 'TRX', 'ETC', 'THETA', 'EOS', 'AAVE', 'MKR', 'COMP', 'SUSHI', 'SNX', 'YFI', 'CRV'];
+  const cryptoSymbols = ['BTC', 'ETH', 'XRP', 'SOL', 'ADA', 'DOGE', 'BNB',  'DOT', 'LINK', 'AVAX', 'UNI', 'ATOM', 'LTC', 'BCH', 'XLM', 'ALGO', 'VET', 'FIL', 'TRX', 'ETC', 'THETA', 'EOS', 'AAVE', 'MKR', 'COMP', 'SUSHI', 'SNX', 'YFI', 'CRV'];
   const isCrypto = cryptoSymbols.some(crypto => upperSymbol.includes(crypto));
   if (isCrypto) return 'CRYPTO';
   

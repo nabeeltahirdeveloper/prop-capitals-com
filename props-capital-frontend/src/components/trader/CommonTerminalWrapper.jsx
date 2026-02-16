@@ -24,7 +24,7 @@ import { createPendingOrder } from '@/api/pending-orders';
 import { Card } from '../ui/card';
 import { cn } from '@/lib/utils';
 import MarketExecutionModal from './MarketExecutionModal';
-import WalletPanel from './WalletPanel';
+// WALLET FEATURE DISABLED - 2026-02-16: import WalletPanel from './WalletPanel';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Badge } from '../ui/badge';
 import { Calendar } from '../ui/calendar';
@@ -89,7 +89,8 @@ const isCryptoSymbol = (symbol) => {
   return s.includes('BTC') || s.includes('ETH') || s.includes('SOL') ||
     s.includes('XRP') || s.includes('ADA') || s.includes('DOGE') ||
     s.includes('BNB') || s.includes('AVAX') || s.includes('DOT') ||
-    s.includes('MATIC') || s.includes('LINK') || s.endsWith('USDT');
+    //s.includes('MATIC') 
+     s.includes('LINK') || s.endsWith('USDT');
 };
 
 const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeProp = null }) => {
@@ -115,7 +116,7 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
   const [modifyTP, setModifyTP] = useState('');
   const [modifySL, setModifySL] = useState('');
   const [showBuySellPanel, setShowBuySellPanel] = useState(false);
-  const [selectedSymbol, setSelectedSymbol] = useState(null);
+  const [selectedSymbol, setSelectedSymbol] = useState('BTCUSDT');
   const priceTickThrottleRef = useRef({});
   const activeEquityBaselineRef = useRef(null);
   const profitBarPeakRef = useRef(0);
@@ -752,12 +753,13 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
     return result;
   })();
 
-  const spotPositionsCount = openPositions.filter((t) => t.positionType === 'SPOT').length;
+  // WALLET FEATURE DISABLED - 2026-02-16
+  // const spotPositionsCount = openPositions.filter((t) => t.positionType === 'SPOT').length;
   const tabs = [
     { id: 'positions', label: 'Positions', count: openPositions.length },
     { id: 'pending', label: 'Pending', count: activePendingOrders.length },
     { id: 'history', label: 'History', count: closedTrades.length },
-    { id: 'wallet', label: 'Wallet', count: spotPositionsCount },
+    // { id: 'wallet', label: 'Wallet', count: spotPositionsCount }, // WALLET FEATURE DISABLED
   ];
 
   const thStyle = { padding: '8px 12px', fontWeight: 500, fontSize: 12, whiteSpace: 'nowrap' };
@@ -1049,7 +1051,7 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
             )
           )}
 
-          {/* ── WALLET TAB ── */}
+          {/* ── WALLET TAB - DISABLED 2026-02-16 ──
           {selectedTab === 'wallet' && (
             <WalletPanel
               accountId={selectedAccountId}
@@ -1065,6 +1067,7 @@ const CommonTerminalWrapper = ({ children, selectedChallenge: selectedChallengeP
               }}
             />
           )}
+          ── END WALLET TAB ── */}
         </div>
       </div>
 

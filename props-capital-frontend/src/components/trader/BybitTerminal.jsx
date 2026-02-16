@@ -26,7 +26,7 @@ const ALL_SYMBOLS = [
   { symbol: 'ADAUSDT', base: 'ADA', quote: 'USDT', label: 'ADA/USDT', type: 'crypto' },
   { symbol: 'AVAXUSDT', base: 'AVAX', quote: 'USDT', label: 'AVAX/USDT', type: 'crypto' },
   { symbol: 'DOTUSDT', base: 'DOT', quote: 'USDT', label: 'DOT/USDT', type: 'crypto' },
-  { symbol: 'MATICUSDT', base: 'MATIC', quote: 'USDT', label: 'MATIC/USDT', type: 'crypto' },
+ // { symbol: 'MATICUSDT', base: 'MATIC', quote: 'USDT', label: 'MATIC/USDT', type: 'crypto' },
   { symbol: 'LINKUSDT', base: 'LINK', quote: 'USDT', label: 'LINK/USDT', type: 'crypto' },
   // Forex Major Pairs
   { symbol: 'EURUSD', base: 'EUR', quote: 'USD', label: 'EUR/USD', type: 'forex' },
@@ -494,7 +494,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
             style={{ background: symbolDropdownOpen ? C.card : 'transparent' }}
           >
             <span style={{ fontSize: 16, fontWeight: 700, color: C.textP }}>{symbolInfo.label}</span>
-            <span style={{ fontSize: 11, color: C.textS, background: C.card, padding: '2px 6px', borderRadius: 3 }}>{isCrypto ? 'Perpetual' : 'Spot'}</span>
+            <span style={{ fontSize: 11, color: C.textS, background: C.card, padding: '2px 6px', borderRadius: 3 }}>Perpetual</span>
             <ChevronDown size={14} style={{ color: C.textS, transform: symbolDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
           </button>
 
@@ -636,7 +636,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                 </div>
                 <div>
                   <div style={{ fontSize: 18, fontWeight: 700, color: C.textP }}>{symbolInfo.label}</div>
-                  <div style={{ fontSize: 12, color: C.textS }}>{isCrypto ? 'Perpetual Contract' : symbolInfo.type === 'forex' && symbolInfo.base === 'XAU' ? 'Spot Metal' : 'Forex Spot'}</div>
+                  <div style={{ fontSize: 12, color: C.textS }}>{isCrypto ? 'Perpetual Contract' : symbolInfo.type === 'forex' && symbolInfo.base === 'XAU' ? 'Perpetual Metal' : 'Forex Perpetual'}</div>
                 </div>
               </div>
 
@@ -744,12 +744,12 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                 <div className="space-y-2">
                   {[
                     { label: 'Symbol', value: symbolInfo.label },
-                    { label: 'Type', value: isCrypto ? 'USDT Perpetual' : 'Spot' },
+                    { label: 'Type', value: isCrypto ? 'USDT Perpetual' : 'Perpetual' },
                     { label: 'Base Currency', value: symbolInfo.base },
                     { label: 'Quote Currency', value: symbolInfo.quote },
                     { label: 'Contract Size', value: isCrypto ? `1 ${symbolInfo.base}` : '100,000 units' },
                     { label: 'Tick Size', value: isCrypto ? (currentMid >= 1000 ? '0.01' : currentMid >= 1 ? '0.0001' : '0.000001') : (currentMid >= 100 ? '0.001' : '0.00001') },
-                    { label: 'Margin', value: 'Spot (No Leverage)' },
+                    { label: 'Margin', value: 'Perpetual (No Leverage)' },
                     { label: 'Trading Hours', value: isCrypto ? '24/7' : 'Mon-Fri, 00:00-24:00 UTC' },
                   ].map((row) => (
                     <div key={row.label} className="flex justify-between items-center py-1" style={{ fontSize: 12, borderBottom: `1px solid ${C.border}` }}>
@@ -786,7 +786,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                             { label: 'Size', value: `${pos.volume?.toFixed(isCrypto ? 6 : 3)} ${isCrypto ? symbolInfo.base : 'Lots'}` },
                             { label: 'Entry Price', value: formatPrice(pos.openPrice) },
                             { label: 'Mark Price', value: formatPrice(exitP) },
-                            { label: 'Mode', value: 'Spot' },
+                            { label: 'Mode', value: 'Perpetual' },
                             ...(pos.stopLoss ? [{ label: 'Stop Loss', value: formatPrice(pos.stopLoss) }] : []),
                             ...(pos.takeProfit ? [{ label: 'Take Profit', value: formatPrice(pos.takeProfit) }] : []),
                           ].map((row) => (
@@ -989,10 +989,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
               style={{ fontSize: 12, fontWeight: 600, color: tradeMode === 'cfd' ? C.textP : C.textS, borderBottom: tradeMode === 'cfd' ? `2px solid ${C.yellow}` : '2px solid transparent' }}>
               CFD
             </button>
-            <button onClick={() => setTradeMode('spot')} className="py-2 mr-4"
+            {/* <button onClick={() => setTradeMode('spot')} className="py-2 mr-4"
               style={{ fontSize: 12, fontWeight: 600, color: tradeMode === 'spot' ? C.textP : C.textS, borderBottom: tradeMode === 'spot' ? `2px solid ${C.yellow}` : '2px solid transparent' }}>
               Spot
-            </button>
+            </button> */}
           </div>
 
           {/* ── SPOT PANEL ── */}
