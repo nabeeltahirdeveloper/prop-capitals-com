@@ -3,6 +3,7 @@ import {
   adminGetRiskOverview,
   adminGetAllViolations,
   adminUpdateAccountStatus,
+  adminGetAccount,
 } from "@/api/admin";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "../../../props-capital-frontend/src/contexts/LanguageContext";
@@ -20,6 +21,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   AlertTriangle,
   Shield,
   TrendingDown,
@@ -29,14 +36,17 @@ import {
   Eye,
   Lock,
   XCircle,
+  Loader2,
 } from "lucide-react";
-import { Link } from "react-router-dom";
-import { createPageUrl } from "../../../props-capital-frontend/src/utils";
+import { format } from "date-fns";
+import StatusBadge from "../../../props-capital-frontend/src/components/shared/StatusBadge";
 
 export default function AdminRiskMonitor() {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [riskFilter, setRiskFilter] = useState("all");
+  const [selectedAccountId, setSelectedAccountId] = useState(null);
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const {
@@ -48,6 +58,27 @@ export default function AdminRiskMonitor() {
     queryFn: adminGetRiskOverview,
     refetchInterval: 30000, // Refresh every 30 seconds
   });
+
+  const {
+    data: accountDetails,
+    isLoading: isLoadingDetails,
+    error: accountDetailsError,
+  } = useQuery({
+    queryKey: ["admin-account-details", selectedAccountId],
+    queryFn: () => adminGetAccount(selectedAccountId),
+    enabled: !!selectedAccountId && isDetailsDialogOpen,
+    retry: 1,
+  });
+
+  const handleViewDetails = (accountId) => {
+    setSelectedAccountId(accountId);
+    setIsDetailsDialogOpen(true);
+  };
+
+  const handleCloseDetails = () => {
+    setIsDetailsDialogOpen(false);
+    setSelectedAccountId(null);
+  };
 
   const { data: violations = [] } = useQuery({
     queryKey: ["risk-violations"],
@@ -392,17 +423,14 @@ export default function AdminRiskMonitor() {
                     </TableCell>
                     <TableCell className="py-2 sm:py-4 px-2 sm:px-4">
                       <div className="flex gap-1 sm:gap-2">
-                        <Link
-                          to={createPageUrl(`AccountDetails?id=${account.id}`)}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-muted-foreground hover:text-foreground h-7 w-7 sm:h-8 sm:w-8 p-0"
+                          onClick={() => handleViewDetails(account.id)}
                         >
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-muted-foreground hover:text-foreground h-7 w-7 sm:h-8 sm:w-8 p-0"
-                          >
-                            <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                          </Button>
-                        </Link>
+                          <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        </Button>
                         {riskLevel === "critical" && (
                           <>
                             <Button
@@ -490,6 +518,309 @@ export default function AdminRiskMonitor() {
           )}
         </div>
       </Card>
+
+      {/* Account Details Dialog - same as AdminAccounts */}
+      <Dialog open={isDetailsDialogOpen} onOpenChange={handleCloseDetails}>
+        <DialogContent
+          className="
+            bg-card border-border
+            w-[95vw] sm:w-full sm:max-w-3xl
+            max-h-[85vh] overflow-y-auto
+            p-4 sm:p-6
+          "
+        >
+          <DialogHeader>
+            <DialogTitle className="text-foreground text-base sm:text-lg md:text-xl">
+              {t("admin.accounts.dialog.title", {
+                defaultValue: "Account Details",
+              })}
+            </DialogTitle>
+          </DialogHeader>
+          {isLoadingDetails ? (
+            <div className="flex items-center justify-center py-6 sm:py-8">
+              <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-amber-500" />
+            </div>
+          ) : accountDetails ? (
+            <div className="space-y-4 sm:space-y-6 mt-3 sm:mt-4">
+              {/* Account Header */}
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4 pb-3 sm:pb-4 border-b border-border text-center sm:text-left">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-[#0a0d12] text-lg sm:text-2xl font-bold flex-shrink-0">
+                  {accountDetails.brokerLogin?.[0]?.toUpperCase() ||
+                    accountDetails.id?.[0]?.toUpperCase() ||
+                    "A"}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground truncate">
+                    {accountDetails.brokerLogin ||
+                      accountDetails.id ||
+                      "Account"}
+                  </h3>
+                  <p className="text-muted-foreground text-xs sm:text-sm break-all">
+                    {accountDetails.user?.email || "N/A"}
+                  </p>
+                  <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-1.5 sm:mt-2">
+                    <StatusBadge
+                      status={
+                        accountDetails.phase?.toLowerCase() ||
+                        accountDetails.phase
+                      }
+                    />
+                    <StatusBadge
+                      status={
+                        accountDetails.status?.toLowerCase() ||
+                        accountDetails.status
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Account Information */}
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.accountId", {
+                      defaultValue: "Account ID",
+                    })}
+                  </p>
+                  <p className="text-foreground font-mono text-xs break-all">
+                    {accountDetails.id?.slice(0, 8) || "N/A"}...
+                  </p>
+                </div>
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.brokerLogin", {
+                      defaultValue: "Broker Login",
+                    })}
+                  </p>
+                  <p className="text-foreground text-xs sm:text-sm">
+                    {accountDetails.brokerLogin || "N/A"}
+                  </p>
+                </div>
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.platform", {
+                      defaultValue: "Platform",
+                    })}
+                  </p>
+                  <p className="text-foreground text-xs sm:text-sm">
+                    {accountDetails.challenge?.platform || "N/A"}
+                  </p>
+                </div>
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.challenge", {
+                      defaultValue: "Challenge",
+                    })}
+                  </p>
+                  <p className="text-foreground text-xs sm:text-sm truncate">
+                    {accountDetails.challenge?.name || "N/A"}
+                  </p>
+                </div>
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.trader", {
+                      defaultValue: "Trader",
+                    })}
+                  </p>
+                  <p className="text-foreground text-xs sm:text-sm truncate">
+                    {accountDetails.user?.email || "N/A"}
+                  </p>
+                </div>
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.phase", {
+                      defaultValue: "Phase",
+                    })}
+                  </p>
+                  <StatusBadge
+                    status={
+                      accountDetails.phase?.toLowerCase() ||
+                      accountDetails.phase
+                    }
+                  />
+                </div>
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.status", {
+                      defaultValue: "Status",
+                    })}
+                  </p>
+                  <StatusBadge
+                    status={
+                      accountDetails.status?.toLowerCase() ||
+                      accountDetails.status
+                    }
+                  />
+                </div>
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.created", {
+                      defaultValue: "Created",
+                    })}
+                  </p>
+                  <p className="text-foreground text-xs sm:text-sm">
+                    {accountDetails.createdAt
+                      ? format(
+                          new Date(accountDetails.createdAt),
+                          "MMM d, yyyy",
+                        )
+                      : "N/A"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Balance Information */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 p-3 sm:p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl">
+                <div>
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.initialBalance", {
+                      defaultValue: "Initial Balance",
+                    })}
+                  </p>
+                  <p className="text-foreground font-bold text-sm sm:text-lg">
+                    ${accountDetails.initialBalance?.toLocaleString() || "0"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.currentBalance", {
+                      defaultValue: "Current Balance",
+                    })}
+                  </p>
+                  <p className="text-foreground font-bold text-sm sm:text-lg">
+                    ${accountDetails.balance?.toLocaleString() || "0"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.equity", {
+                      defaultValue: "Equity",
+                    })}
+                  </p>
+                  <p className="text-foreground font-bold text-sm sm:text-lg">
+                    ${accountDetails.equity?.toLocaleString() || "0"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.profit", {
+                      defaultValue: "Profit/Loss",
+                    })}
+                  </p>
+                  {accountDetails.initialBalance > 0 &&
+                    (() => {
+                      const profit =
+                        accountDetails.equity - accountDetails.initialBalance ||
+                        0;
+                      const profitPercent =
+                        accountDetails.initialBalance > 0
+                          ? (profit / accountDetails.initialBalance) * 100
+                          : 0;
+                      return (
+                        <p
+                          className={`font-bold text-sm sm:text-lg ${
+                            profit >= 0 ? "text-emerald-500" : "text-red-500"
+                          }`}
+                        >
+                          {profit >= 0 ? "+" : ""}
+                          {profitPercent.toFixed(2)}%
+                        </p>
+                      );
+                    })()}
+                </div>
+              </div>
+
+              {/* Statistics */}
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 text-center border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.totalTrades", {
+                      defaultValue: "Trades",
+                    })}
+                  </p>
+                  <p className="text-foreground font-bold text-base sm:text-lg">
+                    {accountDetails.trades?.length || 0}
+                  </p>
+                </div>
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 text-center border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.violations", {
+                      defaultValue: "Violations",
+                    })}
+                  </p>
+                  <p className="text-foreground font-bold text-base sm:text-lg">
+                    {accountDetails.violations?.length || 0}
+                  </p>
+                </div>
+                <div className="bg-muted/50 rounded-xl p-2.5 sm:p-3 text-center border border-border">
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.phaseTransitions", {
+                      defaultValue: "Transitions",
+                    })}
+                  </p>
+                  <p className="text-foreground font-bold text-base sm:text-lg">
+                    {accountDetails.phaseHistory?.length || 0}
+                  </p>
+                </div>
+              </div>
+
+              {/* Recent Violations */}
+              {accountDetails.violations &&
+                accountDetails.violations.length > 0 && (
+                  <div>
+                    <p className="text-xs sm:text-sm text-muted-foreground mb-2">
+                      {t("admin.accounts.dialog.recentViolations", {
+                        defaultValue: "Recent Violations",
+                      })}
+                    </p>
+                    <div className="space-y-2">
+                      {accountDetails.violations
+                        .slice(0, 3)
+                        .map((violation) => (
+                          <div
+                            key={violation.id}
+                            className="p-2.5 sm:p-3 bg-red-500/10 border border-red-500/20 rounded-xl"
+                          >
+                            <p className="text-foreground text-xs sm:text-sm font-medium">
+                              {violation.type}
+                            </p>
+                            <p className="text-muted-foreground text-xs mt-1 line-clamp-2">
+                              {violation.message}
+                            </p>
+                            <p className="text-muted-foreground/70 text-xs mt-1">
+                              {format(
+                                new Date(violation.createdAt),
+                                "MMM d, yyyy HH:mm",
+                              )}
+                            </p>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+            </div>
+          ) : accountDetailsError ? (
+            <div className="text-center py-6 sm:py-8">
+              <p className="text-red-500 mb-2 text-sm">
+                {t("admin.accounts.dialog.error", {
+                  defaultValue: "Error loading account details",
+                })}
+              </p>
+              <p className="text-muted-foreground text-xs sm:text-sm">
+                {accountDetailsError.message ||
+                  "Failed to load account details"}
+              </p>
+            </div>
+          ) : (
+            <div className="text-center py-6 sm:py-8 text-muted-foreground text-sm">
+              {t("admin.accounts.dialog.noDetails", {
+                defaultValue: "No account details available",
+              })}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
