@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiPatch } from '@/lib/api';
+import { apiGet, apiPost, apiPatch } from "@/lib/api";
 
 /**
  * Create a new pending order
@@ -13,7 +13,7 @@ import { apiGet, apiPost, apiPatch } from '@/lib/api';
  * @param {number} [data.takeProfit] - Optional take profit
  */
 export const createPendingOrder = async (data) => {
-  return apiPost('/pending-orders', data);
+  return apiPost("/pending-orders", data);
 };
 
 /**

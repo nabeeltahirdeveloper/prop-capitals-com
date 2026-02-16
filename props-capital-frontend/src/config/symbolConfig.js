@@ -51,7 +51,7 @@ export const SYMBOL_CONFIG = {
   XRPUSDT: { type: 'crypto', session: CRYPTO_SESSION, sessionTZ: CRYPTO_TZ, priceMode: 'last' },
   DOGEUSDT: { type: 'crypto', session: CRYPTO_SESSION, sessionTZ: CRYPTO_TZ, priceMode: 'last' },
   DOTUSDT: { type: 'crypto', session: CRYPTO_SESSION, sessionTZ: CRYPTO_TZ, priceMode: 'last' },
-  MATICUSDT: { type: 'crypto', session: CRYPTO_SESSION, sessionTZ: CRYPTO_TZ, priceMode: 'last' },
+ // MATICUSDT: { type: 'crypto', session: CRYPTO_SESSION, sessionTZ: CRYPTO_TZ, priceMode: 'last' },
   LINKUSDT: { type: 'crypto', session: CRYPTO_SESSION, sessionTZ: CRYPTO_TZ, priceMode: 'last' },
 };
 

@@ -68,7 +68,9 @@ const PT5Terminal = ({
     }
     const spread = Math.max(0, priceData.ask - priceData.bid);
     return {
-      ...(typeof selectedSymbol === "object" ? selectedSymbol : { symbol: symbolKey }),
+      ...(typeof selectedSymbol === "object"
+        ? selectedSymbol
+        : { symbol: symbolKey }),
       symbol: symbolKey,
       bid: priceData.bid,
       ask: priceData.ask,
