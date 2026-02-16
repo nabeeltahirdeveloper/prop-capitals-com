@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { Loader2, Globe, Calendar, TrendingUp, Info, ExternalLink, History, BarChart3 } from 'lucide-react';
+import { Loader2, Globe, Calendar, TrendingUp, Info, History, BarChart3 } from 'lucide-react';
 
 const EventDetailModal = ({
   isOpen,
@@ -228,42 +228,6 @@ const EventDetailModal = ({
                   </div>
                 )}
               </div>
-
-              {/* Source */}
-              {eventDetail.source && (
-                <div
-                  className={`rounded-xl p-4 ${
-                    isDark ? 'bg-white/5' : 'bg-slate-50'
-                  }`}
-                >
-                  <h4
-                    className={`text-sm font-semibold mb-2 ${
-                      isDark ? 'text-white' : 'text-slate-900'
-                    }`}
-                  >
-                    Source
-                  </h4>
-                  {eventDetail.sourceUrl ? (
-                    <a
-                      href={eventDetail.sourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`text-sm flex items-center gap-1 ${
-                        isDark
-                          ? 'text-amber-400 hover:text-amber-300'
-                          : 'text-amber-600 hover:text-amber-700'
-                      }`}
-                    >
-                      {eventDetail.source}
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  ) : (
-                    <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-slate-600'}`}>
-                      {eventDetail.source}
-                    </p>
-                  )}
-                </div>
-              )}
 
               {/* Unit */}
               {eventDetail.unit && (

@@ -12,6 +12,11 @@ export class PendingOrdersService {
   /**
    * Create a new pending order (limit/stop order)
    */
+  private static readonly SPOT_SYMBOLS = [
+    'BTCUSDT','ETHUSDT','SOLUSDT','XRPUSDT','DOGEUSDT',
+    'BNBUSDT','ADAUSDT','AVAXUSDT','DOTUSDT','MATICUSDT','LINKUSDT',
+  ];
+
   async createPendingOrder(data: {
     tradingAccountId: string;
     symbol: string;
@@ -21,6 +26,7 @@ export class PendingOrdersService {
     price: number;
     stopLoss?: number;
     takeProfit?: number;
+    positionType?: string;
   }) {
     // Verify trading account exists
     const account = await this.prisma.tradingAccount.findUnique({
@@ -29,6 +35,16 @@ export class PendingOrdersService {
 
     if (!account) {
       throw new NotFoundException('Trading account not found');
+    }
+
+    const positionType = data.positionType === 'SPOT' ? 'SPOT' : 'CFD';
+
+    // Spot-specific validation
+    if (positionType === 'SPOT') {
+      const sym = String(data.symbol || '').toUpperCase().replace('/', '');
+      if (!PendingOrdersService.SPOT_SYMBOLS.includes(sym)) {
+        throw new BadRequestException(`Symbol ${data.symbol} is not available for spot trading.`);
+      }
     }
 
     // Block pending order creation when account is locked/disqualified/inactive
@@ -54,7 +70,8 @@ export class PendingOrdersService {
         stopLoss: data.stopLoss ?? null,
         takeProfit: data.takeProfit ?? null,
         status: 'PENDING',
-      },
+        positionType,
+      } as any,
     });
 
     return pendingOrder;

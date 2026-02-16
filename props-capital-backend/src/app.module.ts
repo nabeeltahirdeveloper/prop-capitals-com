@@ -37,6 +37,7 @@ import { ExternalApiModule } from './external-api/external-api.module';
 import { CommonModule } from './common/common.module';
 import { ContactModule } from './contact/contact.module';
 import { ChatModule } from './chat/chat.module';
+import { WalletsModule } from './wallets/wallets.module';
 
 @Module({
   imports: [
@@ -115,6 +116,8 @@ import { ChatModule } from './chat/chat.module';
     ContactModule,
 
     ChatModule,
+
+    WalletsModule,
   ],
 })
 export class AppModule {}

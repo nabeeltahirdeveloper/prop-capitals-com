@@ -167,6 +167,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   const [symbolDropdownOpen, setSymbolDropdownOpen] = useState(false);
   const [symbolSearch, setSymbolSearch] = useState('');
   const dropdownRef = useRef(null);
+  const [tradeMode, setTradeMode] = useState('cfd');
 
   const { selectedSymbol, setSelectedSymbol, selectedTimeframe, setSelectedTimeframe, chartType, setChartType } = useTrading();
   const pricesRef = useRef({});
@@ -982,14 +983,58 @@ const BybitTradingArea = ({ selectedChallenge }) => {
             <span style={{ fontSize: 14, fontWeight: 700, color: C.textP }}>Trade</span>
           </div>
 
-          {/* Spot mode */}
+          {/* CFD / Spot mode toggle */}
           <div className="flex px-4 shrink-0" style={{ borderBottom: `1px solid ${C.border}` }}>
-            <button className="py-2 mr-4"
-              style={{ fontSize: 12, fontWeight: 600, color: C.textP, borderBottom: `2px solid ${C.yellow}` }}>
+            <button onClick={() => setTradeMode('cfd')} className="py-2 mr-4"
+              style={{ fontSize: 12, fontWeight: 600, color: tradeMode === 'cfd' ? C.textP : C.textS, borderBottom: tradeMode === 'cfd' ? `2px solid ${C.yellow}` : '2px solid transparent' }}>
+              CFD
+            </button>
+            <button onClick={() => setTradeMode('spot')} className="py-2 mr-4"
+              style={{ fontSize: 12, fontWeight: 600, color: tradeMode === 'spot' ? C.textP : C.textS, borderBottom: tradeMode === 'spot' ? `2px solid ${C.yellow}` : '2px solid transparent' }}>
               Spot
             </button>
           </div>
 
+          {/* ── SPOT PANEL ── */}
+          {tradeMode === 'spot' && (
+            <div className="flex-1 flex flex-col items-center justify-center p-6 gap-5">
+              {/* Wallet icon circle */}
+              <div style={{ width: 56, height: 56, borderRadius: '50%', background: C.yellowDim, border: `1px solid ${C.yellow}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: 24 }}>💼</span>
+              </div>
+
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: C.textP, marginBottom: 6 }}>Spot Trading</div>
+                <p style={{ fontSize: 12, color: C.textS, lineHeight: 1.7, maxWidth: 200 }}>
+                  Buy and manage crypto assets from the <strong style={{ color: C.yellow }}>Wallet</strong> tab in the panel below.
+                </p>
+              </div>
+
+              <div style={{ background: C.card, borderRadius: 8, border: `1px solid ${C.border}`, padding: '10px 14px', width: '100%' }}>
+                {[
+                  { label: 'Mode', value: 'Spot (No Leverage)' },
+                  { label: 'Order Types', value: 'Market & Limit' },
+                  { label: 'Available', value: `${formatNum(balance)} USDT` },
+                ].map((row) => (
+                  <div key={row.label} className="flex justify-between" style={{ fontSize: 11, paddingBottom: 4, marginBottom: 4, borderBottom: `1px solid ${C.border}` }}>
+                    <span style={{ color: C.textS }}>{row.label}</span>
+                    <span style={{ color: C.textP, fontFamily: 'monospace' }}>{row.value}</span>
+                  </div>
+                ))}
+                <div className="flex justify-between" style={{ fontSize: 11 }}>
+                  <span style={{ color: C.textS }}>Assets</span>
+                  <span style={{ color: C.textP, fontFamily: 'monospace' }}>11 crypto pairs</span>
+                </div>
+              </div>
+
+              <div style={{ fontSize: 11, color: C.textT, textAlign: 'center', lineHeight: 1.6 }}>
+                Scroll down to the <span style={{ color: C.yellow, fontWeight: 600 }}>Wallet</span> tab to buy, sell, and track your spot positions.
+              </div>
+            </div>
+          )}
+
+          {/* ── CFD PANEL ── */}
+          {tradeMode === 'cfd' && (
           <div className="flex-1 overflow-y-auto">
             <div className="p-4 space-y-3">
               {/* Buy / Sell toggle */}
@@ -1121,6 +1166,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
               </button>
             </div>
           </div>
+          )}
         </div>
         </SectionErrorBoundary>
       </div>

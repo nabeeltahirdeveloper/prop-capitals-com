@@ -15,9 +15,15 @@ export class TradesService {
     
   ) {}
 
+  private static readonly SPOT_SYMBOLS = [
+    'BTCUSDT','ETHUSDT','SOLUSDT','XRPUSDT','DOGEUSDT',
+    'BNBUSDT','ADAUSDT','AVAXUSDT','DOTUSDT','MATICUSDT','LINKUSDT',
+  ];
+
   // Create trade and trigger evaluation engine
   async createTrade(data: any) {
     const { accountId, profit, openPrice, closePrice, volume, symbol, stopLoss, takeProfit } = data;
+    const positionType: string = data.positionType === 'SPOT' ? 'SPOT' : 'CFD';
     const account = await this.prisma.tradingAccount.findUnique({
       where: { id: accountId },
       include: {
@@ -43,10 +49,19 @@ export class TradesService {
       throw new BadRequestException('Account is not active for trading.');
     }
 
+    // Spot-specific validation
+    if (positionType === 'SPOT') {
+      const sym = String(symbol || '').toUpperCase().replace('/', '');
+      if (!TradesService.SPOT_SYMBOLS.includes(sym)) {
+        throw new BadRequestException(`Symbol ${symbol} is not available for spot trading.`);
+      }
+      data.leverage = 1;
+    }
+
     // Enforce margin availability to prevent opening unlimited max-size positions.
     // Existing trades default to 1:100 for reserved margin calculation.
     if (closePrice === undefined || closePrice === null) {
-      const requestedLeverage = Number(data?.leverage);
+      const requestedLeverage = positionType === 'SPOT' ? 1 : Number(data?.leverage);
       const effectiveLeverage = Number.isFinite(requestedLeverage) && requestedLeverage > 0 ? requestedLeverage : 1;
       const isNewCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|MATIC|LINK|USDT/i.test(String(symbol || ''));
       const newContractSize = isNewCrypto ? 1 : 100000;
@@ -86,7 +101,8 @@ export class TradesService {
         profit: profit || 0,
         openedAt: new Date(),
         closedAt: closePrice ? new Date() : null,
-      },
+        positionType,
+      } as any,
     });
 
     // 2️⃣ Update balance/equity (simple: balance += profit)
