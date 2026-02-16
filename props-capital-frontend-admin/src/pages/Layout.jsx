@@ -511,7 +511,9 @@ export default function Layout({ children, currentPageName }) {
                         }
                         setOpenSubmenu(isSubmenuOpen ? null : item.name);
                       }}
-                      className={`w-full flex items-center justify-between transition-all ${sidebarCollapsed ? "px-2 justify-center" : "px-3"} py-2.5 rounded-xl ${
+                      className={`w-full flex items-center transition-all ${
+                        sidebarCollapsed ? "justify-center px-2" : "justify-between px-3"
+                      } py-2.5 rounded-xl ${
                         isAnyChildActive
                           ? "bg-amber-500/10 text-foreground border border-amber-500/40"
                           : "text-muted-foreground hover:text-foreground hover:bg-accent"
