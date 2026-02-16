@@ -1,21 +1,23 @@
-import React from 'react';
-import { useChallenges } from '@/contexts/ChallengesContext';
-import CommonTerminalWrapper from './CommonTerminalWrapper';
-import MT5TradingArea from './MT5TradingArea';
-import BybitTerminal from './BybitTerminal';
-import TradeLockerComingSoon from './TradeLockerComingSoon';
-import PT5Terminal from './PT5Terminal';
-import { TradingProvider } from '@nabeeltahirdeveloper/chart-sdk'
-
+import React, { useEffect, useState } from "react";
+import { useChallenges } from "@/contexts/ChallengesContext";
+import CommonTerminalWrapper from "./CommonTerminalWrapper";
+import MT5TradingArea from "./MT5TradingArea";
+import BybitTerminal from "./BybitTerminal";
+import TradeLockerComingSoon from "./TradeLockerComingSoon";
+import PT5Terminal from "./PT5Terminal";
+import { TradingProvider } from "@nabeeltahirdeveloper/chart-sdk";
 
 const MT5Terminal = () => {
   const { selectedChallenge } = useChallenges();
-  const MT5_API_URL = import.meta.env.VITE_MT5_API_URL || 'https://dev-api.prop-capitals.com';
+  // MT5 backend URL - use env variable for local testing
+  const MT5_API_URL =
+    import.meta.env.VITE_MT5_API_URL || "https://dev-api.prop-capitals.com";
 
   const endpoints = {
-    candles: '/market-data/history',
-    symbols: '/market-data/prices',
-    // No 'trades' key — SDK uses accountId-aware URL internally via accountId prop
+    candles: "/market-data/history", // Historical candles endpoint
+    symbols: "/market-data/prices?symbols", // Symbols list (query param allowed)
+    trades: "/trades", // Trades endpoint (adjust if different)
+    account: "/api/v1/user/account", // Account endpoint (adjust if different)
   };
 
   return (
@@ -30,8 +32,6 @@ const MT5Terminal = () => {
     </CommonTerminalWrapper>
   );
 };
-
-
 
 const BybitTerminalWrapper = () => {
   const { selectedChallenge } = useChallenges();
@@ -55,16 +55,16 @@ const PT5TerminalWrapper = () => {
 const TradingTerminal = () => {
   const { selectedChallenge } = useChallenges();
 
-  const platform = (selectedChallenge?.platform || 'mt5').toLowerCase();
+  const platform = (selectedChallenge?.platform || "mt5").toLowerCase();
 
   switch (platform) {
-    case 'tradelocker':
+    case "tradelocker":
       return <TradeLockerComingSoon />;
-    case 'bybit':
+    case "bybit":
       return <BybitTerminalWrapper />;
-    case 'pt5':
+    case "pt5":
       return <PT5TerminalWrapper />;
-    case 'mt5':
+    case "mt5":
     default:
       return <MT5Terminal />;
   }

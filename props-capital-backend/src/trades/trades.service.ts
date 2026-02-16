@@ -17,7 +17,9 @@ export class TradesService {
 
   private static readonly SPOT_SYMBOLS = [
     'BTCUSDT','ETHUSDT','SOLUSDT','XRPUSDT','DOGEUSDT',
-    'BNBUSDT','ADAUSDT','AVAXUSDT','DOTUSDT','MATICUSDT','LINKUSDT',
+    'BNBUSDT','ADAUSDT','AVAXUSDT','DOTUSDT',
+    //'MATICUSDT',
+    'LINKUSDT',
   ];
 
   // Create trade and trigger evaluation engine
@@ -63,14 +65,14 @@ export class TradesService {
     if (closePrice === undefined || closePrice === null) {
       const requestedLeverage = positionType === 'SPOT' ? 1 : Number(data?.leverage);
       const effectiveLeverage = Number.isFinite(requestedLeverage) && requestedLeverage > 0 ? requestedLeverage : 1;
-      const isNewCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|MATIC|LINK|USDT/i.test(String(symbol || ''));
+      const isNewCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|LINK|USDT/i.test(String(symbol || ''));
       const newContractSize = isNewCrypto ? 1 : 100000;
       const requiredMargin = (Number(volume) * newContractSize * Number(openPrice)) / effectiveLeverage;
 
       const usedMargin = (account.trades || [])
         .filter((t: any) => t.closePrice === null)
         .reduce((sum: number, t: any) => {
-          const isCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|MATIC|LINK|USDT/i.test(String(t.symbol || ''));
+          const isCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|LINK|USDT/i.test(String(t.symbol || ''));
           const contractSize = isCrypto ? 1 : 100000;
           const existingLeverage = Number((t as any)?.leverage);
           const effectiveExistingLeverage = Number.isFinite(existingLeverage) && existingLeverage > 0 ? existingLeverage : 1;
@@ -234,7 +236,7 @@ export class TradesService {
           symbolUpper.includes('BNB') ||
           symbolUpper.includes('AVAX') ||
           symbolUpper.includes('DOT') ||
-          symbolUpper.includes('MATIC') ||
+      //    symbolUpper.includes('MATIC') ||
           symbolUpper.includes('LINK');
         const contractSize = isCrypto ? 1 : 100000;
         const priceDiff =

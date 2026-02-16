@@ -163,7 +163,11 @@ const initialSymbols = [
   },
 ];
 
-export default function MarketWatchlist({ onSymbolSelect, selectedSymbol, headless = false }) {
+export default function MarketWatchlist({
+  onSymbolSelect,
+  selectedSymbol,
+  headless = false,
+}) {
   const { t } = useTranslation();
   const {
     prices: unifiedPrices,
@@ -182,11 +186,7 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol, headle
   const [isLoading, setIsLoading] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
 
-  const { isDark } = useTraderTheme()
-
-
-
-
+  const { isDark } = useTraderTheme();
 
   // Handle manual retry
   const handleRetry = () => {
@@ -318,7 +318,9 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol, headle
               <span
                 className={[
                   "h-1.5 w-1.5 rounded-full",
-                  connectionStatus === "connected" ? "bg-emerald-500" : "bg-red-500",
+                  connectionStatus === "connected"
+                    ? "bg-emerald-500"
+                    : "bg-red-500",
                 ].join(" ")}
               />
               {connectionStatus === "connected" ? "LIVE" : "OFFLINE"}
@@ -401,96 +403,97 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol, headle
 
           {/* Symbols List - Full Scrollable Area */}
           <div className="flex-1 overflow-y-auto custom-pro-scrollbar min-h-0">
-        <div className="divide-y divide-border/40">
-          {filteredSymbols.map((item, idx) => {
-            const selected = selectedSymbol?.symbol === item.symbol;
+            <div className="divide-y divide-border/40">
+              {filteredSymbols.map((item, idx) => {
+                const selected = selectedSymbol?.symbol === item.symbol;
 
-            return (
-              <div
-                key={item.symbol}
-                onClick={() => onSymbolSelect?.(item)}
-                className={[
-                  "px-3 py-2 flex items-center cursor-pointer group",
-                  "transition-colors",
-                  !selected && (idx % 2 === 1 ? "bg-muted/[0.10]" : "bg-transparent"),
-                  selected
-                    ? "bg-emerald-500/8 border-l-2 border-emerald-500"
-                    : "hover:bg-muted/30",
-                ].join(" ")}
-              >
-                <div className="flex-1 min-w-0 flex items-center gap-2 overflow-hidden">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleFavorite(item.symbol);
-                    }}
-                    className="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity"
-                    aria-label="favorite"
-                  >
-                    <Star
-                      className={[
-                        "w-3 h-3",
-                        favorites.includes(item.symbol)
-                          ? "text-amber-400 fill-amber-400"
-                          : "text-muted-foreground/70",
-                      ].join(" ")}
-                    />
-                  </button>
-
-                  <div className="min-w-0 flex items-center gap-2">
-                    <span
-                      className={[
-                        "text-[11px] font-black tracking-tight whitespace-nowrap",
-                        selected ? "text-emerald-600" : "text-foreground",
-                      ].join(" ")}
-                    >
-                      {item.symbol}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 text-right pr-1">
+                return (
                   <div
+                    key={item.symbol}
+                    onClick={() => onSymbolSelect?.(item)}
                     className={[
-                      "w-14 font-mono text-[11px] font-black tabular-nums",
-                      item.direction === "up"
-                        ? "text-emerald-500"
-                        : item.direction === "down"
-                        ? "text-red-500"
-                        : "text-muted-foreground",
+                      "px-3 py-2 flex items-center cursor-pointer group",
+                      "transition-colors",
+                      !selected &&
+                        (idx % 2 === 1 ? "bg-muted/[0.10]" : "bg-transparent"),
+                      selected
+                        ? "bg-emerald-500/8 border-l-2 border-emerald-500"
+                        : "hover:bg-muted/30",
                     ].join(" ")}
                   >
-                    {formatPrice(item.bid, item.symbol)}
-                  </div>
+                    <div className="flex-1 min-w-0 flex items-center gap-2 overflow-hidden">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavorite(item.symbol);
+                        }}
+                        className="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity"
+                        aria-label="favorite"
+                      >
+                        <Star
+                          className={[
+                            "w-3 h-3",
+                            favorites.includes(item.symbol)
+                              ? "text-amber-400 fill-amber-400"
+                              : "text-muted-foreground/70",
+                          ].join(" ")}
+                        />
+                      </button>
 
-                  <div
-                    className={[
-                      "w-14 font-mono text-[11px] font-black tabular-nums",
-                      item.direction === "up"
-                        ? "text-emerald-500"
-                        : item.direction === "down"
-                        ? "text-red-500"
-                        : "text-muted-foreground",
-                    ].join(" ")}
-                  >
-                    {formatPrice(item.ask, item.symbol)}
+                      <div className="min-w-0 flex items-center gap-2">
+                        <span
+                          className={[
+                            "text-[11px] font-black tracking-tight whitespace-nowrap",
+                            selected ? "text-emerald-600" : "text-foreground",
+                          ].join(" ")}
+                        >
+                          {item.symbol}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 text-right pr-1">
+                      <div
+                        className={[
+                          "w-14 font-mono text-[11px] font-black tabular-nums",
+                          item.direction === "up"
+                            ? "text-emerald-500"
+                            : item.direction === "down"
+                              ? "text-red-500"
+                              : "text-muted-foreground",
+                        ].join(" ")}
+                      >
+                        {formatPrice(item.bid, item.symbol)}
+                      </div>
+
+                      <div
+                        className={[
+                          "w-14 font-mono text-[11px] font-black tabular-nums",
+                          item.direction === "up"
+                            ? "text-emerald-500"
+                            : item.direction === "down"
+                              ? "text-red-500"
+                              : "text-muted-foreground",
+                        ].join(" ")}
+                      >
+                        {formatPrice(item.ask, item.symbol)}
+                      </div>
+                    </div>
                   </div>
+                );
+              })}
+
+              {filteredSymbols.length === 0 && (
+                <div className="py-10 text-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                  No results found
                 </div>
-              </div>
-            );
-          })}
-
-          {filteredSymbols.length === 0 && (
-            <div className="py-10 text-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
-              No results found
+              )}
             </div>
-          )}
           </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
 
   if (headless) {
     return (

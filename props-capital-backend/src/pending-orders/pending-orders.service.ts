@@ -14,7 +14,9 @@ export class PendingOrdersService {
    */
   private static readonly SPOT_SYMBOLS = [
     'BTCUSDT','ETHUSDT','SOLUSDT','XRPUSDT','DOGEUSDT',
-    'BNBUSDT','ADAUSDT','AVAXUSDT','DOTUSDT','MATICUSDT','LINKUSDT',
+    'BNBUSDT','ADAUSDT','AVAXUSDT','DOTUSDT',
+    //'MATICUSDT',
+    'LINKUSDT',
   ];
 
   async createPendingOrder(data: {

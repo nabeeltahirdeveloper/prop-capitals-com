@@ -1,14 +1,14 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getUserAccounts } from '@/api/accounts';
-import { useAuth } from '@/contexts/AuthContext';
-import { useTraderAccountsStore } from '@/lib/stores/trader-accounts.store';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { getUserAccounts } from "@/api/accounts";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTraderAccountsStore } from "@/lib/stores/trader-accounts.store";
 
 const ChallengesContext = createContext();
 
 export const useChallenges = () => {
   const context = useContext(ChallengesContext);
   if (!context) {
-    throw new Error('useChallenges must be used within a ChallengesProvider');
+    throw new Error("useChallenges must be used within a ChallengesProvider");
   }
   return context;
 };
@@ -16,17 +16,17 @@ export const useChallenges = () => {
 // Mock challenges data - in production this would come from API
 const mockChallenges = [
   {
-    id: 'ch-001',
-    accountId: '#5214',
-    type: '2-step',
+    id: "ch-001",
+    accountId: "#5214",
+    type: "2-step",
     accountSize: 100000,
     currentBalance: 102847.53,
     equity: 102847.53,
     phase: 1,
-    status: 'active',
-    platform: 'mt5',
-    server: 'PropCapitals-Live',
-    createdAt: '2025-01-15',
+    status: "active",
+    platform: "mt5",
+    server: "PropCapitals-Live",
+    createdAt: "2025-01-15",
     tradingDays: { current: 3, required: 5 },
     rules: {
       profitTarget: 8,
@@ -45,17 +45,17 @@ const mockChallenges = [
     profitSplit: null, // Not funded yet
   },
   {
-    id: 'ch-002',
-    accountId: '#5298',
-    type: '1-step',
+    id: "ch-002",
+    accountId: "#5298",
+    type: "1-step",
     accountSize: 50000,
-    currentBalance: 54250.00,
-    equity: 54125.00,
-    phase: 'funded',
-    status: 'active',
-    platform: 'mt5',
-    server: 'PropCapitals-Live',
-    createdAt: '2024-12-01',
+    currentBalance: 54250.0,
+    equity: 54125.0,
+    phase: "funded",
+    status: "active",
+    platform: "mt5",
+    server: "PropCapitals-Live",
+    createdAt: "2024-12-01",
     tradingDays: { current: 12, required: 5 },
     rules: {
       profitTarget: 10,
@@ -76,17 +76,17 @@ const mockChallenges = [
     totalPaidOut: 2500,
   },
   {
-    id: 'ch-003',
-    accountId: '#5312',
-    type: '2-step',
+    id: "ch-003",
+    accountId: "#5312",
+    type: "2-step",
     accountSize: 200000,
-    currentBalance: 198500.00,
-    equity: 198500.00,
+    currentBalance: 198500.0,
+    equity: 198500.0,
     phase: 1,
-    status: 'failed',
-    platform: 'mt5',
-    server: 'PropCapitals-Live',
-    createdAt: '2025-01-10',
+    status: "failed",
+    platform: "mt5",
+    server: "PropCapitals-Live",
+    createdAt: "2025-01-10",
     tradingDays: { current: 4, required: 5 },
     rules: {
       profitTarget: 8,
@@ -103,20 +103,20 @@ const mockChallenges = [
       avgRR: 0.8,
     },
     profitSplit: null,
-    failReason: 'Daily loss limit exceeded',
+    failReason: "Daily loss limit exceeded",
   },
   {
-    id: 'ch-004',
-    accountId: '#5356',
-    type: '2-step',
+    id: "ch-004",
+    accountId: "#5356",
+    type: "2-step",
     accountSize: 100000,
-    currentBalance: 108500.00,
-    equity: 108500.00,
+    currentBalance: 108500.0,
+    equity: 108500.0,
     phase: 2,
-    status: 'active',
-    platform: 'mt5',
-    server: 'PropCapitals-Live',
-    createdAt: '2024-11-20',
+    status: "active",
+    platform: "mt5",
+    server: "PropCapitals-Live",
+    createdAt: "2024-11-20",
     tradingDays: { current: 8, required: 5 },
     rules: {
       profitTarget: 5, // Phase 2 has lower target
@@ -135,17 +135,17 @@ const mockChallenges = [
     profitSplit: null,
   },
   {
-    id: 'ch-005',
-    accountId: '#5401',
-    type: '1-step',
+    id: "ch-005",
+    accountId: "#5401",
+    type: "1-step",
     accountSize: 50000,
-    currentBalance: 51200.00,
-    equity: 51200.00,
+    currentBalance: 51200.0,
+    equity: 51200.0,
     phase: 1,
-    status: 'active',
-    platform: 'bybit',
-    server: 'Bybit-Live',
-    createdAt: '2025-02-01',
+    status: "active",
+    platform: "bybit",
+    server: "Bybit-Live",
+    createdAt: "2025-02-01",
     tradingDays: { current: 2, required: 5 },
     rules: {
       profitTarget: 10,
@@ -164,17 +164,17 @@ const mockChallenges = [
     profitSplit: null,
   },
   {
-    id: 'ch-006',
-    accountId: '#5402',
-    type: '2-step',
+    id: "ch-006",
+    accountId: "#5402",
+    type: "2-step",
     accountSize: 100000,
-    currentBalance: 103500.00,
-    equity: 103500.00,
+    currentBalance: 103500.0,
+    equity: 103500.0,
     phase: 1,
-    status: 'active',
-    platform: 'pt5',
-    server: 'PT5-Demo',
-    createdAt: '2025-02-05',
+    status: "active",
+    platform: "pt5",
+    server: "PT5-Demo",
+    createdAt: "2025-02-05",
     tradingDays: { current: 1, required: 5 },
     rules: {
       profitTarget: 8,
@@ -193,17 +193,17 @@ const mockChallenges = [
     profitSplit: null,
   },
   {
-    id: 'ch-007',
-    accountId: '#5403',
-    type: '1-step',
+    id: "ch-007",
+    accountId: "#5403",
+    type: "1-step",
     accountSize: 25000,
-    currentBalance: 25000.00,
-    equity: 25000.00,
+    currentBalance: 25000.0,
+    equity: 25000.0,
     phase: 1,
-    status: 'active',
-    platform: 'tradelocker',
-    server: 'TradeLocker-Demo',
-    createdAt: '2025-02-08',
+    status: "active",
+    platform: "tradelocker",
+    server: "TradeLocker-Demo",
+    createdAt: "2025-02-08",
     tradingDays: { current: 0, required: 5 },
     rules: {
       profitTarget: 10,
@@ -225,9 +225,9 @@ const mockChallenges = [
 
 // Challenge type configurations
 export const challengeTypes = {
-  '1-step': {
-    name: '1-Step Evaluation',
-    phases: ['Evaluation', 'Funded'],
+  "1-step": {
+    name: "1-Step Evaluation",
+    phases: ["Evaluation", "Funded"],
     rules: {
       profitTarget: 10,
       maxDailyLoss: 5,
@@ -237,9 +237,9 @@ export const challengeTypes = {
     profitSplit: 80,
     scalingAvailable: true,
   },
-  '2-step': {
-    name: '2-Step Evaluation',
-    phases: ['Phase 1', 'Phase 2', 'Funded'],
+  "2-step": {
+    name: "2-Step Evaluation",
+    phases: ["Phase 1", "Phase 2", "Funded"],
     rules: {
       phase1: {
         profitTarget: 8,
@@ -264,16 +264,16 @@ export const ChallengesProvider = ({ children }) => {
   const [challenges, setChallenges] = useState([]);
   const [loading, setLoading] = useState(true);
   const selectedChallengeId = useTraderAccountsStore((state) =>
-    user?.userId ? state.selectedChallengeIds?.[user.userId] : null
+    user?.userId ? state.selectedChallengeIds?.[user.userId] : null,
   );
   const setStoredSelectedChallengeId = useTraderAccountsStore(
-    (state) => state.setSelectedChallengeId
+    (state) => state.setSelectedChallengeId,
   );
 
   // Fetch real user accounts from backend
   useEffect(() => {
     const fetchUserChallenges = async () => {
-      if (status !== 'authenticated' || !user?.userId) {
+      if (status !== "authenticated" || !user?.userId) {
         setChallenges([]);
         setLoading(false);
         return;
@@ -285,31 +285,42 @@ export const ChallengesProvider = ({ children }) => {
 
         if (Array.isArray(accounts) && accounts.length > 0) {
           // Transform backend accounts to challenge format
-          const transformedChallenges = accounts.map(account => {
+          const transformedChallenges = accounts.map((account) => {
             const challenge = account.challenge || {};
-            const phaseLabel = account.phase === 'PHASE1' ? 1 : account.phase === 'PHASE2' ? 2 : 'funded';
-            const challengeType = challenge.challengeType === 'one_phase' ? '1-step' : '2-step';
+            const phaseLabel =
+              account.phase === "PHASE1"
+                ? 1
+                : account.phase === "PHASE2"
+                  ? 2
+                  : "funded";
+            const challengeType =
+              challenge.challengeType === "one_phase" ? "1-step" : "2-step";
 
-            const backendStatus = String(account.status || '').toUpperCase();
+            const backendStatus = String(account.status || "").toUpperCase();
             const uiStatus =
-              backendStatus === 'ACTIVE'
-                ? 'active'
-                : (backendStatus === 'DISQUALIFIED' || backendStatus === 'FAILED')
-                  ? 'failed'
-                  : 'inactive';
-            
+              backendStatus === "ACTIVE"
+                ? "active"
+                : backendStatus === "DISQUALIFIED" || backendStatus === "FAILED"
+                  ? "failed"
+                  : "inactive";
+
             // Use backend values (single source of truth — monotonic metrics)
             const initialBalance = account.initialBalance || 1;
             const maxEquity = account.maxEquityToDate || initialBalance;
             const minEquityOverall = account.minEquityOverall || initialBalance;
             const minEquityToday = account.minEquityToday || initialBalance;
             const todayStart = account.todayStartEquity || initialBalance;
-            const tradingDaysCurrent = Number.isFinite(account.tradingDaysCount) ? account.tradingDaysCount : 0;
+            const tradingDaysCurrent = Number.isFinite(account.tradingDaysCount)
+              ? account.tradingDaysCount
+              : 0;
             const tradingDaysRequired = challenge.minTradingDays || 5;
 
-            const currentProfit = ((maxEquity - initialBalance) / initialBalance) * 100;
-            const currentDrawdown = ((initialBalance - minEquityOverall) / initialBalance) * 100;
-            const currentDailyLoss = ((todayStart - minEquityToday) / todayStart) * 100;
+            const currentProfit =
+              ((maxEquity - initialBalance) / initialBalance) * 100;
+            const currentDrawdown =
+              ((initialBalance - minEquityOverall) / initialBalance) * 100;
+            const currentDailyLoss =
+              ((todayStart - minEquityToday) / todayStart) * 100;
 
             return {
               id: account.id,
@@ -321,15 +332,23 @@ export const ChallengesProvider = ({ children }) => {
               phase: phaseLabel,
               status: uiStatus,
               backendStatus,
-              platform: (account.platform || challenge.platform || 'MT5').toLowerCase(),
-              server: 'PropCapitals-Live',
+              platform: (
+                account.platform ||
+                challenge.platform ||
+                "MT5"
+              ).toLowerCase(),
+              server: "PropCapitals-Live",
               createdAt: account.createdAt,
               tradingDays: {
                 current: tradingDaysCurrent,
-                required: tradingDaysRequired
+                required: tradingDaysRequired,
               },
               rules: {
-                profitTarget: phaseLabel === 1 ? challenge.phase1TargetPercent : challenge.phase2TargetPercent || challenge.phase1TargetPercent,
+                profitTarget:
+                  phaseLabel === 1
+                    ? challenge.phase1TargetPercent
+                    : challenge.phase2TargetPercent ||
+                      challenge.phase1TargetPercent,
                 maxDailyLoss: challenge.dailyDrawdownPercent || 5,
                 maxTotalDrawdown: challenge.overallDrawdownPercent || 10,
                 minTradingDays: tradingDaysRequired,
@@ -342,27 +361,34 @@ export const ChallengesProvider = ({ children }) => {
                 winRate: account.winRate || 0,
                 avgRR: account.avgRR || 0,
               },
-              profitSplit: phaseLabel === 'funded' ? challenge.profitSplit : null,
-              payoutEligible: phaseLabel === 'funded' && backendStatus === 'ACTIVE',
+              profitSplit:
+                phaseLabel === "funded" ? challenge.profitSplit : null,
+              payoutEligible:
+                phaseLabel === "funded" && backendStatus === "ACTIVE",
               totalPaidOut: 0,
             };
           });
 
           setChallenges(transformedChallenges);
           const storedSelectedChallengeId =
-            useTraderAccountsStore.getState().selectedChallengeIds?.[user.userId];
+            useTraderAccountsStore.getState().selectedChallengeIds?.[
+              user.userId
+            ];
           const hasStoredSelection = transformedChallenges.some(
-            (challenge) => challenge.id === storedSelectedChallengeId
+            (challenge) => challenge.id === storedSelectedChallengeId,
           );
 
           if (!hasStoredSelection) {
-            setStoredSelectedChallengeId(user.userId, transformedChallenges[0].id);
+            setStoredSelectedChallengeId(
+              user.userId,
+              transformedChallenges[0].id,
+            );
           }
         } else {
           setChallenges([]);
         }
       } catch (error) {
-        console.error('Error fetching user challenges:', error);
+        console.error("Error fetching user challenges:", error);
         setChallenges([]);
       } finally {
         setLoading(false);
@@ -372,7 +398,8 @@ export const ChallengesProvider = ({ children }) => {
     fetchUserChallenges();
   }, [user?.userId, status, setStoredSelectedChallengeId]);
 
-  const selectedChallenge = challenges.find(c => c.id === selectedChallengeId) || challenges[0];
+  const selectedChallenge =
+    challenges.find((c) => c.id === selectedChallengeId) || challenges[0];
 
   const selectChallenge = (challengeId) => {
     if (!user?.userId || !challengeId) return;
@@ -381,44 +408,52 @@ export const ChallengesProvider = ({ children }) => {
 
   // Update challenge balance (for demo payout flow)
   const updateChallengePlatform = (challengeId, platform) => {
-    setChallenges(prev => prev.map(challenge =>
-      challenge.id === challengeId
-        ? { ...challenge, platform }
-        : challenge
-    ));
+    setChallenges((prev) =>
+      prev.map((challenge) =>
+        challenge.id === challengeId ? { ...challenge, platform } : challenge,
+      ),
+    );
   };
 
   const updateChallengeBalance = (challengeId, newBalance) => {
-    setChallenges(prev => prev.map(challenge =>
-      challenge.id === challengeId
-        ? {
-          ...challenge,
-          currentBalance: newBalance,
-          equity: newBalance,
-          stats: {
-            ...challenge.stats,
-            currentProfit: ((newBalance - challenge.accountSize) / challenge.accountSize) * 100
-          }
-        }
-        : challenge
-    ));
+    setChallenges((prev) =>
+      prev.map((challenge) =>
+        challenge.id === challengeId
+          ? {
+              ...challenge,
+              currentBalance: newBalance,
+              equity: newBalance,
+              stats: {
+                ...challenge.stats,
+                currentProfit:
+                  ((newBalance - challenge.accountSize) /
+                    challenge.accountSize) *
+                  100,
+              },
+            }
+          : challenge,
+      ),
+    );
   };
 
-  const getActiveChallenges = () => challenges.filter(c => c.status === 'active');
-  const getFailedChallenges = () => challenges.filter(c => c.status === 'failed');
-  const getFundedChallenges = () => challenges.filter(c => c.phase === 'funded' && c.status === 'active');
+  const getActiveChallenges = () =>
+    challenges.filter((c) => c.status === "active");
+  const getFailedChallenges = () =>
+    challenges.filter((c) => c.status === "failed");
+  const getFundedChallenges = () =>
+    challenges.filter((c) => c.phase === "funded" && c.status === "active");
 
   const getChallengeStatusColor = (challenge) => {
-    if (challenge.status === 'failed') return 'red';
-    if (challenge.phase === 'funded') return 'emerald';
-    return 'amber';
+    if (challenge.status === "failed") return "red";
+    if (challenge.phase === "funded") return "emerald";
+    return "amber";
   };
 
   const getChallengePhaseLabel = (challenge) => {
-    if (challenge.status === 'failed') return 'Failed';
-    if (challenge.phase === 'funded') return 'Funded';
-    if (challenge.type === '1-step') {
-      return 'Evaluation';
+    if (challenge.status === "failed") return "Failed";
+    if (challenge.phase === "funded") return "Funded";
+    if (challenge.type === "1-step") {
+      return "Evaluation";
     }
     return `Phase ${challenge.phase}`;
   };
@@ -426,54 +461,73 @@ export const ChallengesProvider = ({ children }) => {
   const getRuleCompliance = (challenge) => {
     const { stats, rules } = challenge;
     const tradingDaysCurrent = challenge?.tradingDays?.current || 0;
-    const tradingDaysRequired = challenge?.tradingDays?.required || rules?.minTradingDays || 5;
+    const tradingDaysRequired =
+      challenge?.tradingDays?.required || rules?.minTradingDays || 5;
     return {
       profitTarget: {
         current: stats.currentProfit,
         target: rules.profitTarget,
-        status: stats.currentProfit >= rules.profitTarget ? 'passed' : 'in-progress',
-        percentage: Math.min((stats.currentProfit / rules.profitTarget) * 100, 100),
+        status:
+          stats.currentProfit >= rules.profitTarget ? "passed" : "in-progress",
+        percentage: Math.min(
+          (stats.currentProfit / rules.profitTarget) * 100,
+          100,
+        ),
       },
       dailyLoss: {
         current: stats.currentDailyLoss,
         limit: rules.maxDailyLoss,
-        status: stats.currentDailyLoss >= rules.maxDailyLoss ? 'violated' :
-          stats.currentDailyLoss >= rules.maxDailyLoss * 0.8 ? 'warning' : 'safe',
+        status:
+          stats.currentDailyLoss >= rules.maxDailyLoss
+            ? "violated"
+            : stats.currentDailyLoss >= rules.maxDailyLoss * 0.8
+              ? "warning"
+              : "safe",
         percentage: (stats.currentDailyLoss / rules.maxDailyLoss) * 100,
       },
       totalDrawdown: {
         current: stats.currentDrawdown,
         limit: rules.maxTotalDrawdown,
-        status: stats.currentDrawdown >= rules.maxTotalDrawdown ? 'violated' :
-          stats.currentDrawdown >= rules.maxTotalDrawdown * 0.8 ? 'warning' : 'safe',
+        status:
+          stats.currentDrawdown >= rules.maxTotalDrawdown
+            ? "violated"
+            : stats.currentDrawdown >= rules.maxTotalDrawdown * 0.8
+              ? "warning"
+              : "safe",
         percentage: (stats.currentDrawdown / rules.maxTotalDrawdown) * 100,
       },
       tradingDays: {
         current: tradingDaysCurrent,
         required: tradingDaysRequired,
-        status: tradingDaysCurrent >= tradingDaysRequired ? 'passed' : 'in-progress',
-        percentage: Math.min((tradingDaysCurrent / tradingDaysRequired) * 100, 100),
+        status:
+          tradingDaysCurrent >= tradingDaysRequired ? "passed" : "in-progress",
+        percentage: Math.min(
+          (tradingDaysCurrent / tradingDaysRequired) * 100,
+          100,
+        ),
       },
     };
   };
 
   return (
-    <ChallengesContext.Provider value={{
-      challenges,
-      selectedChallenge,
-      selectedChallengeId,
-      selectChallenge,
-      updateChallengePlatform,
-      updateChallengeBalance,
-      getActiveChallenges,
-      getFailedChallenges,
-      getFundedChallenges,
-      getChallengeStatusColor,
-      getChallengePhaseLabel,
-      getRuleCompliance,
-      challengeTypes,
-      loading,
-    }}>
+    <ChallengesContext.Provider
+      value={{
+        challenges,
+        selectedChallenge,
+        selectedChallengeId,
+        selectChallenge,
+        updateChallengePlatform,
+        updateChallengeBalance,
+        getActiveChallenges,
+        getFailedChallenges,
+        getFundedChallenges,
+        getChallengeStatusColor,
+        getChallengePhaseLabel,
+        getRuleCompliance,
+        challengeTypes,
+        loading,
+      }}
+    >
       {children}
     </ChallengesContext.Provider>
   );

@@ -108,7 +108,7 @@ const Navbar = () => {
             )}
             <Link to="/signup">
               <Button className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-6 h-10 font-bold shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 transition-all">
-                Get Funded
+                Dashboard
               </Button>
             </Link>
           </div>
@@ -177,7 +177,7 @@ const Navbar = () => {
             )}
             <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
               <Button className="bg-gradient-to-r from-amber-400 to-amber-500 text-[#0a0d12] rounded-full px-6 py-3 h-auto font-bold mt-2 w-full">
-                Get Funded
+                Dashboard
               </Button>
             </Link>
           </div>
