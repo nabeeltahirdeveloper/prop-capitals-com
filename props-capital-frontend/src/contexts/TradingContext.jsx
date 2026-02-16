@@ -13,7 +13,13 @@ import { getAccountTrades } from "@/api/trades";
 import { getUnifiedPrices } from "@/api/market-data";
 import socket from "@/lib/socket";
 
-const defaultAccountSummary = { balance: 0, equity: 0, margin: 0, freeMargin: 0, level: "0" };
+const defaultAccountSummary = {
+  balance: 0,
+  equity: 0,
+  margin: 0,
+  freeMargin: 0,
+  level: "0",
+};
 const noop = () => {};
 const defaultTradingContext = {
   selectedSymbol: "EUR/USD",
@@ -103,7 +109,8 @@ export const TradingProvider = ({ children }) => {
           return;
         }
         const accounts = await getUserAccounts(user.userId);
-        const account = Array.isArray(accounts) && accounts.length > 0 ? accounts[0] : null;
+        const account =
+          Array.isArray(accounts) && accounts.length > 0 ? accounts[0] : null;
         if (!account?.id) {
           setOrders([]);
           return;
@@ -145,12 +152,19 @@ export const TradingProvider = ({ children }) => {
   // Profit calc (stable)
   // ---------------------------------------
   const calculateRealTimeProfit = useCallback((order, currentPrice) => {
-    if (!currentPrice || !order.price || isNaN(currentPrice) || isNaN(order.price)) {
+    if (
+      !currentPrice ||
+      !order.price ||
+      isNaN(currentPrice) ||
+      isNaN(order.price)
+    ) {
       return order.profit || 0;
     }
 
     const priceDiff =
-      order.type === "BUY" ? currentPrice - order.price : order.price - currentPrice;
+      order.type === "BUY"
+        ? currentPrice - order.price
+        : order.price - currentPrice;
 
     return priceDiff * order.volume;
   }, []);
@@ -169,13 +183,15 @@ export const TradingProvider = ({ children }) => {
         const user = await getCurrentUser();
         if (!user?.userId) return;
         const accounts = await getUserAccounts(user.userId);
-        const account = Array.isArray(accounts) && accounts.length > 0 ? accounts[0] : null;
+        const account =
+          Array.isArray(accounts) && accounts.length > 0 ? accounts[0] : null;
         if (!account?.id) return;
         resolvedAccountId = account.id;
       }
 
       const summary = await getAccountSummary(resolvedAccountId);
-      const balance = summary?.balance != null ? parseFloat(summary.balance) : NaN;
+      const balance =
+        summary?.balance != null ? parseFloat(summary.balance) : NaN;
       if (!isNaN(balance)) setUserBalance(balance);
     } catch (error) {
       console.error("❌ Error fetching user balance:", error?.message || error);
@@ -245,7 +261,9 @@ export const TradingProvider = ({ children }) => {
         if (fetchedSymbols.length > 0) {
           const normalized = selectedSymbol.replace("/", "");
           const exists = fetchedSymbols.find(
-            (s) => (s.symbol && s.symbol.replace("/", "") === normalized) || s.symbol === selectedSymbol
+            (s) =>
+              (s.symbol && s.symbol.replace("/", "") === normalized) ||
+              s.symbol === selectedSymbol,
           );
           if (!exists) setSelectedSymbol(fetchedSymbols[0].symbol);
         }
@@ -276,7 +294,7 @@ export const TradingProvider = ({ children }) => {
       prev.map((s) => {
         const u = localUpdates.get(s.symbol);
         return u ? { ...s, ...u } : s;
-      })
+      }),
     );
 
     // 2) update orders profit ONCE
@@ -292,7 +310,8 @@ export const TradingProvider = ({ children }) => {
             ? parseFloat(u.bid || 0)
             : parseFloat(u.ask || 0);
 
-        if (!currentPrice || isNaN(currentPrice) || currentPrice <= 0) return order;
+        if (!currentPrice || isNaN(currentPrice) || currentPrice <= 0)
+          return order;
 
         const newProfit = calculateRealTimeProfit(order, currentPrice);
         if (newProfit === order.profit) return order;
@@ -347,12 +366,13 @@ export const TradingProvider = ({ children }) => {
       // optional UI notification (backend: profit, closeReason)
       if (window.notify) {
         const profitLoss = data.profitLoss ?? data.profit ?? 0;
-        const profitText = profitLoss >= 0 ? `+${profitLoss.toFixed(2)}` : profitLoss.toFixed(2);
+        const profitText =
+          profitLoss >= 0 ? `+${profitLoss.toFixed(2)}` : profitLoss.toFixed(2);
         const symbol = data.symbol || "Trade";
         const reason = data.reason ?? data.closeReason ?? "Closed";
         window.notify(
           `Trade Closed: ${reason} | ${symbol} | P/L: ${profitText} USD`,
-          profitLoss >= 0 ? "success" : "error"
+          profitLoss >= 0 ? "success" : "error",
         );
       }
 
@@ -478,8 +498,10 @@ export const TradingProvider = ({ children }) => {
       chartType,
       chartLocked,
       theme,
-    ]
+    ],
   );
 
-  return <TradingContext.Provider value={value}>{children}</TradingContext.Provider>;
+  return (
+    <TradingContext.Provider value={value}>{children}</TradingContext.Provider>
+  );
 };

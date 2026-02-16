@@ -3,8 +3,12 @@
  * Handles candle validation, normalization, deduplication, and outlier detection
  */
 
-import { normalizeTime, normalizeCandleTimes, validateTimeOrdering, alignToTimeframe } from './timeEngine';
-import { getSymbolConfig, isForexSymbol } from '../config/symbolConfig';
+import {
+  normalizeTime,
+  normalizeCandleTimes,
+  alignToTimeframe,
+} from "./timeEngine";
+import { getSymbolConfig } from "../config/symbolConfig";
 
 /**
  * Validates a single candle object
@@ -12,7 +16,7 @@ import { getSymbolConfig, isForexSymbol } from '../config/symbolConfig';
  * @returns {boolean} True if candle is valid
  */
 function isValidCandle(candle) {
-  if (!candle || typeof candle !== 'object') return false;
+  if (!candle || typeof candle !== "object") return false;
 
   const { time, open, high, low, close, volume } = candle;
 
@@ -20,13 +24,16 @@ function isValidCandle(candle) {
   if (normalizeTime(time) == null) return false;
 
   // OHLC must be numbers
-  if (typeof open !== 'number' || !Number.isFinite(open)) return false;
-  if (typeof high !== 'number' || !Number.isFinite(high)) return false;
-  if (typeof low !== 'number' || !Number.isFinite(low)) return false;
-  if (typeof close !== 'number' || !Number.isFinite(close)) return false;
+  if (typeof open !== "number" || !Number.isFinite(open)) return false;
+  if (typeof high !== "number" || !Number.isFinite(high)) return false;
+  if (typeof low !== "number" || !Number.isFinite(low)) return false;
+  if (typeof close !== "number" || !Number.isFinite(close)) return false;
 
   // Volume must be non-negative number
-  if (volume != null && (typeof volume !== 'number' || volume < 0 || !Number.isFinite(volume))) {
+  if (
+    volume != null &&
+    (typeof volume !== "number" || volume < 0 || !Number.isFinite(volume))
+  ) {
     return false;
   }
 
@@ -68,7 +75,7 @@ function normalizeCandlePrices(candle) {
     high,
     low,
     close,
-    volume: candle.volume != null ? Math.round(candle.volume) : candle.volume
+    volume: candle.volume != null ? Math.round(candle.volume) : candle.volume,
   };
 }
 
@@ -82,7 +89,7 @@ function mergeDuplicateTimes(candles) {
 
   const timeMap = new Map();
 
-  candles.forEach(candle => {
+  candles.forEach((candle) => {
     const time = normalizeTime(candle.time);
     if (time == null) return;
 
@@ -96,7 +103,7 @@ function mergeDuplicateTimes(candles) {
         high: Math.max(existing.high, candle.high),
         low: Math.min(existing.low, candle.low),
         close: candle.close, // Keep latest
-        volume: (existing.volume || 0) + (candle.volume || 0)
+        volume: (existing.volume || 0) + (candle.volume || 0),
       });
     } else {
       timeMap.set(time, { ...candle, time });
@@ -113,18 +120,18 @@ function mergeDuplicateTimes(candles) {
  * @param {string} method - 'percentile' or 'zscore'
  * @returns {Array} Candles with outliers clamped (no removals)
  */
-function clampOutliers(candles, method = 'percentile') {
+function clampOutliers(candles, method = "percentile") {
   if (!Array.isArray(candles) || candles.length < 3) return candles;
 
   // Extract close prices for outlier detection
-  const prices = candles.map(c => c.close).filter(p => Number.isFinite(p));
+  const prices = candles.map((c) => c.close).filter((p) => Number.isFinite(p));
   if (prices.length < 3) return candles;
 
   // Calculate bounds (same as before)
   const sorted = [...prices].sort((a, b) => a - b);
   let lowerBound, upperBound;
 
-  if (method === 'percentile') {
+  if (method === "percentile") {
     // IQR method: bounds for Q1 - 1.5*IQR to Q3 + 1.5*IQR
     const q1Index = Math.floor(sorted.length * 0.25);
     const q3Index = Math.floor(sorted.length * 0.75);
@@ -136,7 +143,8 @@ function clampOutliers(candles, method = 'percentile') {
   } else {
     // Z-score method: bounds for |z| > 3
     const mean = prices.reduce((a, b) => a + b, 0) / prices.length;
-    const variance = prices.reduce((sum, p) => sum + Math.pow(p - mean, 2), 0) / prices.length;
+    const variance =
+      prices.reduce((sum, p) => sum + Math.pow(p - mean, 2), 0) / prices.length;
     const stdDev = Math.sqrt(variance);
 
     if (stdDev === 0) return candles; // No variation
@@ -160,10 +168,10 @@ function clampOutliers(candles, method = 'percentile') {
       // Clamp OHLC to previous close, but preserve time continuity
       return {
         ...candle,
-        open: prevClose,  // Start from previous close
+        open: prevClose, // Start from previous close
         high: Math.max(prevClose, candle.high), // Keep high if reasonable
-        low: Math.min(prevClose, candle.low),   // Keep low if reasonable
-        close: prevClose  // End at previous close (flat candle)
+        low: Math.min(prevClose, candle.low), // Keep low if reasonable
+        close: prevClose, // End at previous close (flat candle)
       };
     }
 
@@ -202,7 +210,9 @@ function fillGaps(candles, timeframeSeconds) {
         const gapHours = (gap / 3600).toFixed(1);
         const maxGapHours = (maxGapToFill / 3600).toFixed(1);
         if (import.meta.env?.DEV) {
-          console.warn(`⚠️ Gap too large to fill: ${gapHours}h (${Math.round(gap / 60)} minutes) - max: ${maxGapHours}h. Gap from ${new Date(currentTime * 1000).toISOString()} to ${new Date(nextTime * 1000).toISOString()}`);
+          console.warn(
+            `⚠️ Gap too large to fill: ${gapHours}h (${Math.round(gap / 60)} minutes) - max: ${maxGapHours}h. Gap from ${new Date(currentTime * 1000).toISOString()} to ${new Date(nextTime * 1000).toISOString()}`,
+          );
         }
       }
 
@@ -222,15 +232,15 @@ function fillGaps(candles, timeframeSeconds) {
           const alignedTime = alignToTimeframe(fillTime, timeframeSeconds);
 
           // Check for duplicate times (shouldn't happen, but safety check)
-          const isDuplicate = filled.some(c => c.time === alignedTime);
+          const isDuplicate = filled.some((c) => c.time === alignedTime);
           if (!isDuplicate) {
             filled.push({
               time: alignedTime,
-              open: lastCandle.close,   // Start from last close
-              high: lastCandle.close,   // Flat candle
-              low: lastCandle.close,     // Flat candle
-              close: lastCandle.close,  // End at same price
-              volume: 0                  // No volume (placeholder)
+              open: lastCandle.close, // Start from last close
+              high: lastCandle.close, // Flat candle
+              low: lastCandle.close, // Flat candle
+              close: lastCandle.close, // End at same price
+              volume: 0, // No volume (placeholder)
             });
             placeholderCount++;
           }
@@ -240,8 +250,11 @@ function fillGaps(candles, timeframeSeconds) {
 
         // If we hit max placeholders, add one final placeholder at the gap end
         if (fillTime < nextTime && placeholderCount >= maxPlaceholders) {
-          const finalTime = alignToTimeframe(nextTime - timeframeSeconds, timeframeSeconds);
-          const isDuplicate = filled.some(c => c.time === finalTime);
+          const finalTime = alignToTimeframe(
+            nextTime - timeframeSeconds,
+            timeframeSeconds,
+          );
+          const isDuplicate = filled.some((c) => c.time === finalTime);
           if (!isDuplicate) {
             filled.push({
               time: finalTime,
@@ -249,7 +262,7 @@ function fillGaps(candles, timeframeSeconds) {
               high: lastCandle.close,
               low: lastCandle.close,
               close: lastCandle.close,
-              volume: 0
+              volume: 0,
             });
           }
         }
@@ -280,12 +293,12 @@ function fillGaps(candles, timeframeSeconds) {
  * @returns {number} Seconds
  */
 export function timeframeToSeconds(timeframe) {
-  if (!timeframe || typeof timeframe !== 'string') return 60; // Default 1 minute
+  if (!timeframe || typeof timeframe !== "string") return 60; // Default 1 minute
 
   const upperTimeframe = timeframe.toUpperCase();
 
   // Special case: MN for month
-  if (upperTimeframe === 'MN') {
+  if (upperTimeframe === "MN") {
     return 2592000; // ~30 days
   }
 
@@ -296,10 +309,10 @@ export function timeframeToSeconds(timeframe) {
     const value = parseInt(match[2], 10);
 
     const multipliers = {
-      'M': 60,           // minutes (M1 = 1 minute, M5 = 5 minutes)
-      'H': 3600,         // hours (H1 = 1 hour, H4 = 4 hours)
-      'D': 86400,        // days (D1 = 1 day)
-      'W': 604800        // weeks (W1 = 1 week)
+      M: 60, // minutes (M1 = 1 minute, M5 = 5 minutes)
+      H: 3600, // hours (H1 = 1 hour, H4 = 4 hours)
+      D: 86400, // days (D1 = 1 day)
+      W: 604800, // weeks (W1 = 1 week)
     };
 
     return value * (multipliers[unit] || 60);
@@ -312,11 +325,11 @@ export function timeframeToSeconds(timeframe) {
     const unit = match[2].toLowerCase();
 
     const multipliers = {
-      'm': 60,           // minutes
-      'h': 3600,         // hours
-      'd': 86400,        // days
-      'w': 604800,       // weeks
-      'y': 31536000      // years
+      m: 60, // minutes
+      h: 3600, // hours
+      d: 86400, // days
+      w: 604800, // weeks
+      y: 31536000, // years
     };
 
     return value * (multipliers[unit] || 60);
@@ -334,23 +347,32 @@ export function timeframeToSeconds(timeframe) {
  */
 export function processCandles(rawCandles, symbol, timeframe) {
   if (!Array.isArray(rawCandles) || rawCandles.length === 0) {
-    return { candles: [], stats: { original: 0, processed: 0, duplicates: 0, outliers: 0, gaps: [] } };
+    return {
+      candles: [],
+      stats: {
+        original: 0,
+        processed: 0,
+        duplicates: 0,
+        outliers: 0,
+        gaps: [],
+      },
+    };
   }
 
   const symbolConfig = getSymbolConfig(symbol);
   const timeframeSeconds = timeframeToSeconds(timeframe);
 
   // Step 1: Normalize times and align to timeframe bucket
-  const normalizedCandles = normalizeCandleTimes(rawCandles).map(candle => ({
+  const normalizedCandles = normalizeCandleTimes(rawCandles).map((candle) => ({
     ...candle,
-    time: alignToTimeframe(candle.time, timeframeSeconds)
+    time: alignToTimeframe(candle.time, timeframeSeconds),
   }));
 
   // Step 2: Validate candles
-  const validCandles = normalizedCandles.filter(c => isValidCandle(c));
+  const validCandles = normalizedCandles.filter((c) => isValidCandle(c));
 
   // Step 3: Normalize prices (round to 5 decimals, maintain relationships)
-  const priceNormalized = validCandles.map(c => normalizeCandlePrices(c));
+  const priceNormalized = validCandles.map((c) => normalizeCandlePrices(c));
 
   // Step 4: Merge duplicates (same time)
   const deduplicated = mergeDuplicateTimes(priceNormalized);
@@ -365,14 +387,19 @@ export function processCandles(rawCandles, symbol, timeframe) {
   });
 
   // Step 7: Clamp outliers instead of removing (preserve continuity - MT5/TradingView style)
-  const clamped = ordered.length > 10 ? clampOutliers(ordered, 'percentile') : ordered;
+  const clamped =
+    ordered.length > 10 ? clampOutliers(ordered, "percentile") : ordered;
 
   // Step 8: Final deduplication check (safety)
   const finalCandles = mergeDuplicateTimes(clamped);
   finalCandles.sort((a, b) => a.time - b.time);
 
   // Step 9: Fill gaps with placeholder candles (cover the gap - MT5/TradingView style)
-  const filledCandles = fillGaps(finalCandles, timeframeSeconds);
+  // Forex should keep real market-closed gaps (weekends) so the frontend can compress rendering without fake candles.
+  const shouldFillGaps = symbolConfig.type !== "forex";
+  const filledCandles = shouldFillGaps
+    ? fillGaps(finalCandles, timeframeSeconds)
+    : finalCandles;
 
   // Step 10: Detect significant gaps (> 2x timeframe) for logging
   const gaps = [];
@@ -385,7 +412,7 @@ export function processCandles(rawCandles, symbol, timeframe) {
         gapSeconds: gap,
         gapMinutes: Math.round(gap / 60),
         fromDate: new Date(filledCandles[i - 1].time * 1000).toISOString(),
-        toDate: new Date(filledCandles[i].time * 1000).toISOString()
+        toDate: new Date(filledCandles[i].time * 1000).toISOString(),
       });
     }
   }
@@ -404,7 +431,7 @@ export function processCandles(rawCandles, symbol, timeframe) {
     outliers: outlierClampedCount, // Changed: now shows clamped count, not removed count
     gaps: gaps,
     filledGaps: filledCandles.length - finalCandles.length,
-    symbolConfig
+    symbolConfig,
   };
 
   // Logging (dev only)
@@ -413,22 +440,145 @@ export function processCandles(rawCandles, symbol, timeframe) {
     if (filledCandles.length > 0) {
       const first = filledCandles[0];
       const last = filledCandles[filledCandles.length - 1];
-      console.log(`📊 First candle:`, { time: first.time, date: new Date(first.time * 1000).toISOString(), OHLC: { open: first.open, high: first.high, low: first.low, close: first.close } });
-      console.log(`📊 Last candle:`, { time: last.time, date: new Date(last.time * 1000).toISOString(), OHLC: { open: last.open, high: last.high, low: last.low, close: last.close } });
+      console.log(`📊 First candle:`, {
+        time: first.time,
+        date: new Date(first.time * 1000).toISOString(),
+        OHLC: {
+          open: first.open,
+          high: first.high,
+          low: first.low,
+          close: first.close,
+        },
+      });
+      console.log(`📊 Last candle:`, {
+        time: last.time,
+        date: new Date(last.time * 1000).toISOString(),
+        OHLC: {
+          open: last.open,
+          high: last.high,
+          low: last.low,
+          close: last.close,
+        },
+      });
     }
 
     // Log gap information
     if (stats.filledGaps > 0) {
-      console.log(`✅ Filled ${stats.filledGaps} placeholder candles to cover gaps in ${symbol}@${timeframe}`);
+      console.log(
+        `✅ Filled ${stats.filledGaps} placeholder candles to cover gaps in ${symbol}@${timeframe}`,
+      );
     }
     if (gaps.length > 0) {
-      console.log(`⚠️ Remaining gaps detected in ${symbol}@${timeframe} (after filling):`, gaps);
-      const maxGap = gaps.reduce((max, g) => g.gapSeconds > max.gapSeconds ? g : max, gaps[0]);
-      console.log(`📊 Max remaining gap: ${maxGap.gapMinutes} minutes at ${maxGap.fromDate} → ${maxGap.toDate}`);
+      console.log(
+        `⚠️ Remaining gaps detected in ${symbol}@${timeframe} (after filling):`,
+        gaps,
+      );
+      const maxGap = gaps.reduce(
+        (max, g) => (g.gapSeconds > max.gapSeconds ? g : max),
+        gaps[0],
+      );
+      console.log(
+        `📊 Max remaining gap: ${maxGap.gapMinutes} minutes at ${maxGap.fromDate} → ${maxGap.toDate}`,
+      );
     }
   }
 
   return { candles: filledCandles, stats };
+}
+
+/**
+ * Compress forex candle time to sequential logical indices (1..N) for chart rendering.
+ * Real timestamps are preserved in returned maps for formatting/tooltips.
+ * @param {Array} candles - Array of candles with real epoch seconds in `time`
+ * @returns {Object} { compressedCandles, indexToRealTimeMap, realTimeToIndexMap, lastIndex }
+ */
+export function compressForexCandles(candles) {
+  const sorted = Array.isArray(candles)
+    ? [...candles]
+        .filter((c) => normalizeTime(c?.time) != null)
+        .sort((a, b) => normalizeTime(a.time) - normalizeTime(b.time))
+    : [];
+
+  const compressedCandles = [];
+  const indexToRealTimeMap = new Map();
+  const realTimeToIndexMap = new Map();
+  let lastIndex = 0;
+
+  for (const candle of sorted) {
+    const realTime = normalizeTime(candle.time);
+    if (realTime == null) continue;
+
+    const existingIndex = realTimeToIndexMap.get(realTime);
+    const logicalIndex = existingIndex ?? lastIndex + 1;
+
+    if (existingIndex == null) {
+      lastIndex = logicalIndex;
+      realTimeToIndexMap.set(realTime, logicalIndex);
+      indexToRealTimeMap.set(logicalIndex, realTime);
+    }
+
+    compressedCandles.push({
+      ...candle,
+      time: logicalIndex,
+    });
+  }
+
+  return {
+    compressedCandles,
+    indexToRealTimeMap,
+    realTimeToIndexMap,
+    lastIndex,
+  };
+}
+
+/**
+ * Format compressed logical time index to display string using real timestamp map.
+ * Falls back to index string if map entry is missing.
+ * @param {number|Object} indexOrTime - Logical index or BusinessDay-like object
+ * @param {Map<number, number>} indexToRealTimeMap - logical index -> real epoch seconds
+ * @param {number} tickMarkType - Lightweight-charts tick mark type
+ * @param {string} locale - Locale
+ * @returns {string}
+ */
+export function formatCompressedTime(
+  indexOrTime,
+  indexToRealTimeMap,
+  tickMarkType = 1,
+  locale = "en",
+) {
+  let logicalIndex = null;
+  if (typeof indexOrTime === "number" && Number.isFinite(indexOrTime)) {
+    logicalIndex = Math.floor(indexOrTime);
+  } else if (
+    indexOrTime &&
+    typeof indexOrTime === "object" &&
+    "year" in indexOrTime &&
+    "month" in indexOrTime &&
+    "day" in indexOrTime
+  ) {
+    const d = new Date(
+      Date.UTC(indexOrTime.year, indexOrTime.month - 1, indexOrTime.day),
+    );
+    logicalIndex = Number.isFinite(d.getTime())
+      ? Math.floor(d.getTime() / 1000)
+      : null;
+  }
+
+  if (logicalIndex == null) return "";
+
+  const realTime = indexToRealTimeMap?.get(logicalIndex);
+  if (realTime == null) return String(logicalIndex);
+
+  const d = new Date(realTime * 1000);
+  if (Number.isNaN(d.getTime())) return String(logicalIndex);
+
+  const pad = (n) => String(n).padStart(2, "0");
+  const h = d.getUTCHours();
+  const m = d.getUTCMinutes();
+  if (tickMarkType === 2)
+    return `${pad(d.getUTCDate())} ${d.toLocaleDateString(locale || "en", { month: "short" })}`;
+  if (tickMarkType === 1) return `${pad(h)}:${pad(m)}`;
+  return `${pad(h)}:${pad(m)}`;
 }
 
 /**
@@ -438,7 +588,7 @@ export function processCandles(rawCandles, symbol, timeframe) {
  * @param {string} timeframe - Timeframe (e.g., '1m', '5m') - defaults to '1m' if not provided
  * @returns {Object|null} Processed candle or null if invalid
  */
-export function processSingleCandle(candle, symbol, timeframe = '1m') {
+export function processSingleCandle(candle, symbol, timeframe = "1m") {
   if (!candle || !symbol) return null;
 
   // Validate candle
@@ -455,7 +605,7 @@ export function processSingleCandle(candle, symbol, timeframe = '1m') {
   // Normalize prices
   const normalized = normalizeCandlePrices({
     ...candle,
-    time: alignedTime
+    time: alignedTime,
   });
 
   return normalized;

@@ -88,7 +88,9 @@ export function PriceProvider({ children, currentPathname = null }) {
         upper,
         compact,
         compactUsd,
-        compact.length === 6 ? `${compact.slice(0, 3)}/${compact.slice(3)}` : null,
+        compact.length === 6
+          ? `${compact.slice(0, 3)}/${compact.slice(3)}`
+          : null,
         compactUsd.length === 6
           ? `${compactUsd.slice(0, 3)}/${compactUsd.slice(3)}`
           : null,
@@ -101,7 +103,7 @@ export function PriceProvider({ children, currentPathname = null }) {
       }
       return null;
     },
-    [prices]
+    [prices],
   );
 
   /**
@@ -111,7 +113,7 @@ export function PriceProvider({ children, currentPathname = null }) {
     // Exponential backoff: 2s, 4s, 8s, 16s, 30s (capped)
     const delay = Math.min(
       BASE_BACKOFF_MS * Math.pow(2, attempts),
-      MAX_BACKOFF_MS
+      MAX_BACKOFF_MS,
     );
     return delay;
   }, []);
@@ -207,7 +209,7 @@ export function PriceProvider({ children, currentPathname = null }) {
                 priceData.symbol,
                 priceData.bid,
                 priceData.ask,
-                priceData.timestamp || Date.now()
+                priceData.timestamp || Date.now(),
               );
               if (updated) {
                 updateCount++;
@@ -251,7 +253,7 @@ export function PriceProvider({ children, currentPathname = null }) {
         return false; // Failure
       }
     },
-    [updatePrice]
+    [updatePrice],
   );
 
   /**
@@ -300,7 +302,7 @@ export function PriceProvider({ children, currentPathname = null }) {
         authStatus === "authenticated"
       ) {
         console.log(
-          `[PriceContext] Not on a price-required page (${pathname}), disconnecting forex WebSocket`
+          `[PriceContext] Not on a price-required page (${pathname}), disconnecting forex WebSocket`,
         );
       }
       return;
@@ -320,7 +322,7 @@ export function PriceProvider({ children, currentPathname = null }) {
     if (!token) {
       if (process.env.NODE_ENV !== "production") {
         console.log(
-          "[PriceContext] No auth token, skipping forex WebSocket connection"
+          "[PriceContext] No auth token, skipping forex WebSocket connection",
         );
       }
       return;
@@ -354,7 +356,7 @@ export function PriceProvider({ children, currentPathname = null }) {
           priceData.symbol,
           priceData.bid,
           priceData.ask,
-          priceData.timestamp || Date.now()
+          priceData.timestamp || Date.now(),
         );
 
         // Mark that we received a WebSocket update
@@ -368,7 +370,7 @@ export function PriceProvider({ children, currentPathname = null }) {
       if (process.env.NODE_ENV !== "production") {
         console.log(
           "[PriceContext] Forex WebSocket subscription confirmed:",
-          data
+          data,
         );
       }
     });
@@ -383,7 +385,7 @@ export function PriceProvider({ children, currentPathname = null }) {
       if (process.env.NODE_ENV !== "production") {
         console.warn(
           "[PriceContext] Forex WebSocket connection error:",
-          error.message
+          error.message,
         );
       }
     });
@@ -463,7 +465,7 @@ export function PriceProvider({ children, currentPathname = null }) {
       ) {
         if (process.env.NODE_ENV !== "production") {
           console.log(
-            "[PriceContext] Authentication status or page changed, stopping polling"
+            "[PriceContext] Authentication status or page changed, stopping polling",
           );
         }
         return;
@@ -494,15 +496,16 @@ export function PriceProvider({ children, currentPathname = null }) {
           nextPollDelay = getBackoffDelay(currentAttempts);
           if (process.env.NODE_ENV !== "production") {
             console.log(
-              `[PriceContext] Retry ${currentAttempts + 1
-              }/${MAX_RECONNECT_ATTEMPTS} in ${nextPollDelay}ms`
+              `[PriceContext] Retry ${
+                currentAttempts + 1
+              }/${MAX_RECONNECT_ATTEMPTS} in ${nextPollDelay}ms`,
             );
           }
         } else {
           // Stop polling after max attempts - require manual retry
           if (process.env.NODE_ENV !== "production") {
             console.log(
-              `[PriceContext] Max retry attempts reached. Manual retry required.`
+              `[PriceContext] Max retry attempts reached. Manual retry required.`,
             );
           }
           return; // Don't schedule next poll
@@ -564,7 +567,7 @@ export function PriceProvider({ children, currentPathname = null }) {
           return priceData.bid;
       }
     },
-    [resolvePriceData]
+    [resolvePriceData],
   );
 
   /**
@@ -622,7 +625,7 @@ export function PriceProviderWithRouter({ children }) {
     // Fallback if useLocation fails (shouldn't happen if inside Router)
     console.warn(
       "[PriceProviderWithRouter] useLocation failed, using fallback:",
-      error
+      error,
     );
     return <PriceProvider currentPathname={null}>{children}</PriceProvider>;
   }
