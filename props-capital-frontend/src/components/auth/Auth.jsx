@@ -31,6 +31,7 @@ const Auth = () => {
   const [otp, setOtp] = useState('');
   const [resendAvailableAt, setResendAvailableAt] = useState(null);
 
+  const [rememberMe, setRememberMe] = useState(true);
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [signupData, setSignupData] = useState({
     firstName: '',
@@ -90,7 +91,7 @@ const Auth = () => {
     },
     onSuccess: async (data) => {
       // Use the login function from AuthContext to handle token and user data
-      login(data.accessToken, data.user);
+      login(data.accessToken, data.user, rememberMe);
 
       // Redirect to trader dashboard
       navigate(createPageUrl('TraderDashboard'));
@@ -311,7 +312,12 @@ const Auth = () => {
 
               <div className="flex items-center justify-between">
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" className={`w-4 h-4 rounded text-amber-500 focus:ring-amber-500/50 ${isDark ? 'border-white/20 bg-[#0a0d12]' : 'border-slate-300 bg-white'}`} />
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className={`w-4 h-4 rounded text-amber-500 focus:ring-amber-500/50 ${isDark ? 'border-white/20 bg-[#0a0d12]' : 'border-slate-300 bg-white'}`}
+                  />
                   <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Remember me</span>
                 </label>
                 <Link to="/forgot-password" className="text-amber-500 text-sm hover:text-amber-400 transition-colors">

@@ -36,6 +36,7 @@ import TradingRulesPage from "./TradingRulesPage.jsx"
 import AffiliatePage from "./AffiliatePage.jsx"
 import RiskDisclosurePage from "./RiskDisclosurePage.jsx"
 import RefundPage from "./RefundPage.jsx"
+import ForgotPassword from "./ForgotPassword.jsx";
 import CheckoutPage from "./CheckoutPage.jsx";
 import CheckoutSuccessPage from "./CheckoutSuccessPage.jsx";
 // Dashboard
@@ -160,6 +161,7 @@ function PagesContent() {
               <Route path="/Privacy" element={<Privacy />} />
               <Route path="/risk-disclosure" element={<RiskDisclosurePage />} />
               <Route path="/refund-policy" element={<RefundPage />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route
                 path="/SignIn"
                 element={
