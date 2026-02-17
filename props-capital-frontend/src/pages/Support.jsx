@@ -62,7 +62,7 @@ export default function Support() {
     queryFn: async () => {
       if (!user?.userId) return [];
       try {
-        return await getUserTickets(user.userId);
+        return await getUserTickets();
       } catch (error) {
         console.error("Failed to fetch tickets:", error);
         return [];
@@ -113,7 +113,6 @@ export default function Support() {
     if (!user?.userId) return;
 
     createTicketMutation.mutate({
-      userId: user.userId,
       subject: ticketForm.subject,
       message: ticketForm.message,
       category: ticketForm.category?.toUpperCase(),
