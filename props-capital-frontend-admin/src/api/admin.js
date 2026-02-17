@@ -275,6 +275,29 @@ export const adminGetTradeById = async (tradeId) => {
 };
 
 // ============================================================================
+// Admin Coupons
+// ============================================================================
+export const adminGetAllCoupons = async () => {
+  return apiGet("/admin/coupons");
+};
+
+export const adminGetCoupon = async (id) => {
+  return apiGet(`/admin/coupons/${id}`);
+};
+
+export const adminCreateCoupon = async (data) => {
+  return apiPost("/admin/coupons", data);
+};
+
+export const adminUpdateCoupon = async (id, data) => {
+  return apiPatch(`/admin/coupons/${id}`, data);
+};
+
+export const adminDeleteCoupon = async (id) => {
+  return apiDelete(`/admin/coupons/${id}`);
+};
+
+// ============================================================================
 // Admin Broker Servers
 // ============================================================================
 export const adminGetAllBrokerServers = async () => {

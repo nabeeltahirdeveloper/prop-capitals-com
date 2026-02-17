@@ -5,7 +5,7 @@ import {
   adminGetPaymentStatistics,
   adminRefundPayment,
 } from "@/api/admin";
-import { useTranslation } from "../../../props-capital-frontend/src/contexts/LanguageContext";
+import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,9 +25,9 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import DataTable from "../../../props-capital-frontend/src/components/shared/DataTable";
-import StatusBadge from "../../../props-capital-frontend/src/components/shared/StatusBadge";
-import StatsCard from "../../../props-capital-frontend/src/components/shared/StatsCard";
+import DataTable from "@/components/shared/DataTable";
+import StatusBadge from "@/components/shared/StatusBadge";
+import StatsCard from "@/components/shared/StatsCard";
 import {
   Search,
   DollarSign,

@@ -6,7 +6,7 @@ import {
   adminUpdateChallenge,
   adminDeleteChallenge,
 } from "@/api/admin";
-import { useTranslation } from "../../../props-capital-frontend/src/contexts/LanguageContext";
+import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

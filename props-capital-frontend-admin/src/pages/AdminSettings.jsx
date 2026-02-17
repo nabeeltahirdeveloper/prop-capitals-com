@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminGetAllSettings, adminUpdateSettingsGroup } from "@/api/admin";
-import { useTranslation } from "../../../props-capital-frontend/src/contexts/LanguageContext";
+import { useTranslation } from "../contexts/LanguageContext";
 import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
