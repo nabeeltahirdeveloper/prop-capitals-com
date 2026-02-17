@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowRight, Check, TrendingUp, Shield, Zap, Target, Award, DollarSign, BarChart3 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -333,10 +334,12 @@ const HowItWorksPage = () => {
           <p className={`text-base lg:text-lg mb-6 lg:mb-8 max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
             Join thousands of traders who have already proven their skills and are now trading with Prop Capitals funding.
           </p>
-          <Button className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-8 lg:px-10 py-5 lg:py-7 h-auto text-lg lg:text-xl font-bold shadow-xl shadow-amber-500/25 group">
-            Get Funded Now
-            <ArrowRight className="ml-2 w-5 h-5 lg:w-6 lg:h-6 transition-transform group-hover:translate-x-1" />
-          </Button>
+          <Link to="/Challenges">
+            <Button className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-8 lg:px-10 py-5 lg:py-7 h-auto text-lg lg:text-xl font-bold shadow-xl shadow-amber-500/25 group">
+              Get Funded Now
+              <ArrowRight className="ml-2 w-5 h-5 lg:w-6 lg:h-6 transition-transform group-hover:translate-x-1" />
+            </Button>
+          </Link>
         </div>
       </section>
     </div>

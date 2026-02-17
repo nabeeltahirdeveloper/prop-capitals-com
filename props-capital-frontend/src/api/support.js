@@ -5,8 +5,8 @@ export const createSupportTicket = async (data) => {
   return apiPost('/support-tickets', data);
 };
 
-export const getUserTickets = async (userId) => {
-  return apiGet(`/support-tickets/user/${userId}`);
+export const getUserTickets = async () => {
+  return apiGet('/support-tickets/me');
 };
 
 export const getTicket = async (id) => {

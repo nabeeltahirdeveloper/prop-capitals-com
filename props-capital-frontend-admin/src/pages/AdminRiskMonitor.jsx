@@ -6,7 +6,7 @@ import {
   adminGetAccount,
 } from "@/api/admin";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useTranslation } from "../../../props-capital-frontend/src/contexts/LanguageContext";
+import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -39,7 +39,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { format } from "date-fns";
-import StatusBadge from "../../../props-capital-frontend/src/components/shared/StatusBadge";
+import StatusBadge from "@/components/shared/StatusBadge";
 
 export default function AdminRiskMonitor() {
   const { t } = useTranslation();

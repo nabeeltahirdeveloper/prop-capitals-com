@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import DataTable from "../../../props-capital-frontend/src/components/shared/DataTable";
+import DataTable from "@/components/shared/DataTable";
 import {
   Plus,
   Trash2,

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { adminGetAllViolations } from "@/api/admin";
-import { useTranslation } from "../../../props-capital-frontend/src/contexts/LanguageContext";
+import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,8 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import DataTable from "../../../props-capital-frontend/src/components/shared/DataTable";
-import StatsCard from "../../../props-capital-frontend/src/components/shared/StatsCard";
+import DataTable from "@/components/shared/DataTable";
+import StatsCard from "@/components/shared/StatsCard";
 import {
   Search,
   AlertTriangle,

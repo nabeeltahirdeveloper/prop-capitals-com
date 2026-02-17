@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminGetAllSettings, adminUpdateSettingsGroup } from "@/api/admin";
-import { useTranslation } from "../../../props-capital-frontend/src/contexts/LanguageContext";
+import { useTranslation } from "../contexts/LanguageContext";
 import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Settings,
@@ -290,13 +289,26 @@ export default function AdminSettings() {
                     {t("admin.settings.general.maintenanceModeDesc")}
                   </p>
                 </div>
-                <Switch
-                  checked={localGeneral.maintenance_mode || false}
-                  onCheckedChange={(v) =>
-                    setLocalGeneral({ ...localGeneral, maintenance_mode: v })
-                  }
-                  disabled={isLoading}
-                />
+                <div
+                  className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
+                    localGeneral.maintenance_mode
+                      ? "bg-amber-500"
+                      : "bg-slate-600"
+                  } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
+                  onClick={() => {
+                    if (isLoading) return;
+                    const v = !localGeneral.maintenance_mode;
+                    setLocalGeneral({ ...localGeneral, maintenance_mode: v });
+                  }}
+                >
+                  <div
+                    className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                      localGeneral.maintenance_mode
+                        ? "right-0.5 sm:right-1"
+                        : "left-0.5 sm:left-1"
+                    }`}
+                  />
+                </div>
               </div>
             </div>
           </Card>
@@ -408,13 +420,24 @@ export default function AdminSettings() {
                     {t("admin.settings.payments.stripeDesc")}
                   </p>
                 </div>
-                <Switch
-                  checked={localPayment.stripe_enabled || false}
-                  onCheckedChange={(v) =>
-                    setLocalPayment({ ...localPayment, stripe_enabled: v })
-                  }
-                  disabled={isLoading}
-                />
+                <div
+                  className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
+                    localPayment.stripe_enabled ? "bg-amber-500" : "bg-slate-600"
+                  } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
+                  onClick={() => {
+                    if (isLoading) return;
+                    const v = !localPayment.stripe_enabled;
+                    setLocalPayment({ ...localPayment, stripe_enabled: v });
+                  }}
+                >
+                  <div
+                    className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                      localPayment.stripe_enabled
+                        ? "right-0.5 sm:right-1"
+                        : "left-0.5 sm:left-1"
+                    }`}
+                  />
+                </div>
               </div>
               {localPayment.stripe_enabled && (
                 <div className="space-y-1.5 sm:space-y-2 pl-2 sm:pl-4">
@@ -448,13 +471,24 @@ export default function AdminSettings() {
                     {t("admin.settings.payments.paypalDesc")}
                   </p>
                 </div>
-                <Switch
-                  checked={localPayment.paypal_enabled || false}
-                  onCheckedChange={(v) =>
-                    setLocalPayment({ ...localPayment, paypal_enabled: v })
-                  }
-                  disabled={isLoading}
-                />
+                <div
+                  className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
+                    localPayment.paypal_enabled ? "bg-amber-500" : "bg-slate-600"
+                  } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
+                  onClick={() => {
+                    if (isLoading) return;
+                    const v = !localPayment.paypal_enabled;
+                    setLocalPayment({ ...localPayment, paypal_enabled: v });
+                  }}
+                >
+                  <div
+                    className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                      localPayment.paypal_enabled
+                        ? "right-0.5 sm:right-1"
+                        : "left-0.5 sm:left-1"
+                    }`}
+                  />
+                </div>
               </div>
 
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-muted/60 rounded-lg gap-3">
@@ -466,13 +500,24 @@ export default function AdminSettings() {
                     {t("admin.settings.payments.cryptocurrencyDesc")}
                   </p>
                 </div>
-                <Switch
-                  checked={localPayment.crypto_enabled || false}
-                  onCheckedChange={(v) =>
-                    setLocalPayment({ ...localPayment, crypto_enabled: v })
-                  }
-                  disabled={isLoading}
-                />
+                <div
+                  className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
+                    localPayment.crypto_enabled ? "bg-amber-500" : "bg-slate-600"
+                  } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
+                  onClick={() => {
+                    if (isLoading) return;
+                    const v = !localPayment.crypto_enabled;
+                    setLocalPayment({ ...localPayment, crypto_enabled: v });
+                  }}
+                >
+                  <div
+                    className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                      localPayment.crypto_enabled
+                        ? "right-0.5 sm:right-1"
+                        : "left-0.5 sm:left-1"
+                    }`}
+                  />
+                </div>
               </div>
             </div>
           </Card>
@@ -510,16 +555,29 @@ export default function AdminSettings() {
                       {t(`admin.settings.integrations.${platform.descKey}`)}
                     </p>
                   </div>
-                  <Switch
-                    checked={localIntegration[platform.key] || false}
-                    onCheckedChange={(v) =>
+                  <div
+                    className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
+                      localIntegration[platform.key]
+                        ? "bg-amber-500"
+                        : "bg-slate-600"
+                    } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
+                    onClick={() => {
+                      if (isLoading) return;
+                      const v = !localIntegration[platform.key];
                       setLocalIntegration({
                         ...localIntegration,
                         [platform.key]: v,
-                      })
-                    }
-                    disabled={isLoading}
-                  />
+                      });
+                    }}
+                  >
+                    <div
+                      className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                        localIntegration[platform.key]
+                          ? "right-0.5 sm:right-1"
+                          : "left-0.5 sm:left-1"
+                      }`}
+                    />
+                  </div>
                 </div>
               ))}
             </div>

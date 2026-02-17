@@ -6,7 +6,7 @@ import {
   adminUpdateAccountPhase,
   adminGetAccount,
 } from "@/api/admin";
-import { useTranslation } from "../../../props-capital-frontend/src/contexts/LanguageContext";
+import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,8 +30,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import DataTable from "../../../props-capital-frontend/src/components/shared/DataTable";
-import StatusBadge from "../../../props-capital-frontend/src/components/shared/StatusBadge";
+import DataTable from "@/components/shared/DataTable";
+import StatusBadge from "@/components/shared/StatusBadge";
 import {
   Search,
   Filter,

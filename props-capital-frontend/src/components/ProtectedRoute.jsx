@@ -33,6 +33,7 @@ export default function ProtectedRoute({ allowedRoles = [] }) {
     if (!hasAccess) {
       // Clear token and redirect to sign in (this shouldn't happen if sign-in validation works)
       localStorage.removeItem('token');
+      sessionStorage.removeItem('token');
       return <Navigate to={createPageUrl('SignIn')} replace />;
     }
   }
