@@ -5,10 +5,6 @@ import { TicketCategory, TicketPriority } from '@prisma/client';
 export class CreateSupportTicketDto {
   @IsString()
   @IsNotEmpty()
-  userId: string;
-
-  @IsString()
-  @IsNotEmpty()
   subject: string;
 
   @IsString()
