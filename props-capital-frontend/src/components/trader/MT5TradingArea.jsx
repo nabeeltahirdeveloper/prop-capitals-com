@@ -18,7 +18,8 @@ import {
   TopBar,
   LeftSidebar,
   MarketExecutionModal,
-  MarketWatch
+  MarketWatch,
+  BuySellPanel,
 } from '@nabeeltahirdeveloper/chart-sdk'
 import MT5Login from './MT5Login';
 import { usePlatformTokensStore } from '@/lib/stores/platform-tokens.store';
@@ -386,19 +387,17 @@ const MT5TradingArea = ({
   // Market Execution Modal state (Professional Trading Terminal - Side Panel)
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
   const [orderType, setOrderType] = useState('BUY')
+  const [modalInitialVolume, setModalInitialVolume] = useState(null)
 
-
-
-
-  const handleBuyClick = (orderType) => {
-    console.log('🟢 Buy clicked, opening panel...', orderType)
+  const handleBuyClick = (orderData) => {
     setOrderType('BUY')
+    setModalInitialVolume(orderData?.volume ?? null)
     setIsOrderModalOpen(true)
   }
 
-  const handleSellClick = (orderType) => {
-    console.log('🔴 Sell clicked, opening panel...', orderType)
+  const handleSellClick = (orderData) => {
     setOrderType('SELL')
+    setModalInitialVolume(orderData?.volume ?? null)
     setIsOrderModalOpen(true)
   }
 
@@ -603,15 +602,15 @@ const MT5TradingArea = ({
         <div className='flex-1 flex overflow-hidden pl-12'>
 
           {/* Right side: chart + market watch + bottom account panel */}
-          <div className='flex-1 flex flex-col overflow-hidden'>
+          <div className='flex-1 flex flex-col relative'>
             {/* Center row: chart + market watch */}
-            <div className='flex-1 flex overflow-hidden'>
+            <div className='flex-1 flex overflow-hidden relative'>
               {/* Center - Chart Area */}
               <Chart
                 ref={chartAreaRef}
                 bidPrice={realTimeBidPrice ?? currentSymbolData.bid}
                 askPrice={realTimeAskPrice ?? currentSymbolData.ask}
-                showBuySellPanel={showBuySellPanel}
+                showBuySellPanel={false}
                 onBuyClick={handleBuyClick}
                 onSellClick={handleSellClick}
               />
@@ -640,7 +639,20 @@ const MT5TradingArea = ({
                   />
                 </>
               )}
-            </div>
+
+              {/* BuySellPanel — floats at top-left of chart canvas, always above modal */}
+              {showBuySellPanel && (
+                <div className='absolute top-6 left-4 z-[99] pointer-events-auto'>
+                  <BuySellPanel
+                    bidPrice={realTimeBidPrice ?? currentSymbolData.bid}
+                    askPrice={realTimeAskPrice ?? currentSymbolData.ask}
+                    onBuyClick={handleBuyClick}
+                    onSellClick={handleSellClick}
+                  />
+                </div>
+              )}
+
+            </div>{/* end flex-1 flex overflow-hidden relative (chart row) */}
 
             {/* Bottom Resize Handle */}
             <div
@@ -649,32 +661,36 @@ const MT5TradingArea = ({
                 e.preventDefault()
                 setIsBottomResizing(true)
               }}
-              className={`h-1  ${isLight ? 'bg-gray-300' : 'bg-[#101821]'} hover:bg-sky-700 cursor-row-resize transition-colors relative group`}
+              className={`h-1 ${isLight ? 'bg-gray-300' : 'bg-[#101821]'} hover:bg-sky-700 cursor-row-resize transition-colors relative group`}
             >
               <div className='absolute inset-x-0 top-1/2 -translate-y-1/2 h-3 group-hover:bg-sky-500/20' />
             </div>
-          </div>
-        </div>
-        <div
-          className='absolute top-10 left-12 w-80 z-40 pointer-events-none'
-          style={{
-            transition: 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1)',
-            transform: isOrderModalOpen ? 'translateX(0)' : 'translateX(-110%)',
-          }}
-        >
-          <div className='pointer-events-auto' onClick={(e) => e.stopPropagation()}>
-            <MarketExecutionModal
-              isOpen={isOrderModalOpen}
-              onClose={() => setIsOrderModalOpen(false)}
-              orderType={orderType}
-              bidPrice={realTimeBidPrice ?? currentSymbolData.bid}
-              askPrice={realTimeAskPrice ?? currentSymbolData.ask}
-              onExecuteTrade={handleExecuteTrade}
-              userAccountId={accountId}
-            />
-          </div>
-        </div>
-      </div>
+
+            {/* Market Execution Modal — at COLUMN level so z-[998] beats LeftSidebar z-50 */}
+            <div
+              className='absolute top-0 left-0 w-80 z-[99] pointer-events-none h-full'
+              style={{
+                transition: 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1)',
+                transform: isOrderModalOpen ? 'translateX(0)' : 'translateX(-110%)',
+              }}
+            >
+              <div className='pointer-events-auto h-full' onClick={(e) => e.stopPropagation()}>
+                <MarketExecutionModal
+                  isOpen={isOrderModalOpen}
+                  onClose={() => { setIsOrderModalOpen(false); setModalInitialVolume(null); }}
+                  orderType={orderType}
+                  bidPrice={realTimeBidPrice ?? currentSymbolData.bid}
+                  askPrice={realTimeAskPrice ?? currentSymbolData.ask}
+                  onExecuteTrade={handleExecuteTrade}
+                  userAccountId={accountId}
+                  initialVolume={modalInitialVolume}
+                />
+              </div>
+            </div>
+
+          </div>{/* end flex-1 flex flex-col relative (column) */}
+        </div>{/* end flex-1 flex overflow-hidden pl-12 (main content) */}
+      </div>{/* end h-screen flex flex-col root */}
     </>
   );
 };
