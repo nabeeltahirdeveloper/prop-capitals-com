@@ -1,17 +1,23 @@
-import React, { useState, useRef, useCallback, useEffect, useContext } from 'react';
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  useContext,
+} from "react";
 // import { useTrading } from '@/contexts/TradingContext';
-import { usePrices } from '@/contexts/PriceContext';
-import { alignToTimeframe } from '@/utils/timeEngine';
-import { timeframeToSeconds } from '@/utils/candleEngine';
-import { io } from 'socket.io-client';
+import { usePrices } from "@/contexts/PriceContext";
+import { alignToTimeframe } from "@/utils/timeEngine";
+import { timeframeToSeconds } from "@/utils/candleEngine";
+import { io } from "socket.io-client";
 // import TopBar from '../trading/Topbar';
 // import LeftSidebar from '../trading/LeftSidebar';
 // import MarketExecutionModal from './MarketExecutionModal';
-import TradingPanel from '../trading/TradingPanel';
-import { Card } from '../ui/card';
+import TradingPanel from "../trading/TradingPanel";
+import { Card } from "../ui/card";
 import { useTranslation } from "../../contexts/LanguageContext";
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useToast } from '../ui/use-toast';
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useToast } from "../ui/use-toast";
 import {
   Chart,
   useTrading,
@@ -20,15 +26,14 @@ import {
   MarketExecutionModal,
   MarketWatch,
   BuySellPanel,
-} from '@nabeeltahirdeveloper/chart-sdk'
-import MT5Login from './MT5Login';
-import { usePlatformTokensStore } from '@/lib/stores/platform-tokens.store';
-import { processPlatformLogin, resetPlatformPassword } from '@/api/auth';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { createTrade } from '@/api/trades';
-import { getAccountSummary, getUserAccounts } from '@/api/accounts';
-import { useAuth } from '@/contexts/AuthContext';
-
+} from "@nabeeltahirdeveloper/chart-sdk";
+import MT5Login from "./MT5Login";
+import { usePlatformTokensStore } from "@/lib/stores/platform-tokens.store";
+import { processPlatformLogin, resetPlatformPassword } from "@/api/auth";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { createTrade } from "@/api/trades";
+import { getAccountSummary, getUserAccounts } from "@/api/accounts";
+import { useAuth } from "@/contexts/AuthContext";
 
 const MT5TradingArea = ({
   selectedChallenge,
@@ -57,33 +62,33 @@ const MT5TradingArea = ({
     currentSymbolData,
     chartType,
     setChartType,
-    theme
-  } = useTrading()
+    theme,
+  } = useTrading();
   const { t } = useTranslation();
-  const { user } = useAuth()
+  const { user } = useAuth();
   const { toast } = useToast();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const accountId = selectedChallenge?.id;
   const accountStatus = selectedChallenge?.status;
-  const normalizedAccountStatus = String(accountStatus || '').toLowerCase();
+  const normalizedAccountStatus = String(accountStatus || "").toLowerCase();
   const isAccountLocked =
-    normalizedAccountStatus === 'failed' ||
-    normalizedAccountStatus === 'inactive' ||
-    normalizedAccountStatus === 'daily_locked' ||
-    normalizedAccountStatus === 'disqualified' ||
-    normalizedAccountStatus === 'closed' ||
-    normalizedAccountStatus === 'paused';
+    normalizedAccountStatus === "failed" ||
+    normalizedAccountStatus === "inactive" ||
+    normalizedAccountStatus === "daily_locked" ||
+    normalizedAccountStatus === "disqualified" ||
+    normalizedAccountStatus === "closed" ||
+    normalizedAccountStatus === "paused";
   const { data: accountSummaryData } = useQuery({
-    queryKey: ['accountSummary', accountId],
+    queryKey: ["accountSummary", accountId],
     queryFn: () => getAccountSummary(accountId),
     enabled: !!accountId,
     refetchInterval: 3000,
   });
   const balance = Number.isFinite(accountSummaryData?.account?.balance)
     ? accountSummaryData.account.balance
-    : (selectedChallenge?.currentBalance || 0);
+    : selectedChallenge?.currentBalance || 0;
 
   // WebSocket connection for real-time candle updates
   const candlesSocketRef = useRef(null);
@@ -93,33 +98,34 @@ const MT5TradingArea = ({
     queryKey: ["userAccounts", user?.userId],
     queryFn: async () => getUserAccounts(user?.userId),
     enabled: !!user?.userId,
-  })
+  });
 
-  console.log("MT5", userAccounts)
-  console.log("USER:", user);
-  console.log("USER ID:", user?.id);
-  console.log("ACCOUNTS:", userAccounts);
+  // console.log("MT5", userAccounts)
+  // console.log("USER:", user);
+  // console.log("USER ID:", user?.id);
+  // console.log("ACCOUNTS:", userAccounts);
 
-
-  //move on Ecnomic calendar page 
-
+  //move on Ecnomic calendar page
 
   const onMove = () => {
-    navigate("/traderdashboard/calendar")
-  }
-
+    navigate("/traderdashboard/calendar");
+  };
 
   // Platform authentication state
   // const accountId = selectedChallenge?.id;
-  const getPlatformToken = usePlatformTokensStore((state) => state.getPlatfromToken);
-  const setPlatformToken = usePlatformTokensStore((state) => state.setPlatfromToken);
+  const getPlatformToken = usePlatformTokensStore(
+    (state) => state.getPlatfromToken,
+  );
+  const setPlatformToken = usePlatformTokensStore(
+    (state) => state.setPlatfromToken,
+  );
   const platformToken = getPlatformToken(accountId);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   // Handle MT5 platform login
   const handlePlatformLogin = async (email, password) => {
     if (!accountId) {
-      toast({ title: 'No account selected', variant: 'destructive' });
+      toast({ title: "No account selected", variant: "destructive" });
       return;
     }
     setIsLoggingIn(true);
@@ -128,13 +134,13 @@ const MT5TradingArea = ({
       if (response?.platformToken) {
         setPlatformToken(accountId, response.platformToken);
         console.log(accountId, response);
-        toast({ title: 'Successfully connected to MT5' });
+        toast({ title: "Successfully connected to MT5" });
       }
     } catch (error) {
       toast({
-        title: 'Login failed',
+        title: "Login failed",
         description: error.response?.data?.message || error.message,
-        variant: 'destructive'
+        variant: "destructive",
       });
     } finally {
       setIsLoggingIn(false);
@@ -144,18 +150,18 @@ const MT5TradingArea = ({
   // Handle password reset
   const handlePasswordReset = async () => {
     if (!accountId) {
-      toast({ title: 'No account selected', variant: 'destructive' });
+      toast({ title: "No account selected", variant: "destructive" });
       return;
     }
     setIsResettingPassword(true);
     try {
       await resetPlatformPassword(accountId);
-      toast({ title: 'Password reset email sent' });
+      toast({ title: "Password reset email sent" });
     } catch (error) {
       toast({
-        title: 'Reset failed',
+        title: "Reset failed",
         description: error.response?.data?.message || error.message,
-        variant: 'destructive'
+        variant: "destructive",
       });
     } finally {
       setIsResettingPassword(false);
@@ -164,19 +170,25 @@ const MT5TradingArea = ({
 
   // All hooks must be declared before any early return (Rules of Hooks)
   const [showBuySellPanelLocal, setShowBuySellPanelLocal] = useState(false);
-  const showBuySellPanel = setShowBuySellPanelProp !== undefined ? showBuySellPanelProp : showBuySellPanelLocal;
-  const setShowBuySellPanel = setShowBuySellPanelProp !== undefined ? setShowBuySellPanelProp : setShowBuySellPanelLocal;
+  const showBuySellPanel =
+    setShowBuySellPanelProp !== undefined
+      ? showBuySellPanelProp
+      : showBuySellPanelLocal;
+  const setShowBuySellPanel =
+    setShowBuySellPanelProp !== undefined
+      ? setShowBuySellPanelProp
+      : setShowBuySellPanelLocal;
   const [selectedSymbolLocal, setSelectedSymbolLocal] = useState(null);
   const [modalInitialOrderType, setModalInitialOrderType] = useState(null); // 'buy' | 'sell' | null when opening from chart/topbar
   const pricesRef = useRef({});
 
   // Chart Buy/Sell should open our modal (connected to handleExecuteTrade), not the chart's internal modal
   const handleChartBuyClick = useCallback(() => {
-    setModalInitialOrderType('BUY');
+    setModalInitialOrderType("BUY");
     setShowBuySellPanel(true);
   }, [setShowBuySellPanel]);
   const handleChartSellClick = useCallback(() => {
-    setModalInitialOrderType('SELL');
+    setModalInitialOrderType("SELL");
     setShowBuySellPanel(true);
   }, [setShowBuySellPanel]);
 
@@ -190,7 +202,7 @@ const MT5TradingArea = ({
     if (!unifiedPrices || Object.keys(unifiedPrices).length === 0) return;
 
     // Update SDK symbols with live prices from MT5 PriceContext
-    setSymbols(prev =>
+    setSymbols((prev) =>
       prev.map((s) => {
         const livePrice = unifiedPrices[s.symbol];
         if (!livePrice) return s;
@@ -204,7 +216,7 @@ const MT5TradingArea = ({
         };
 
         return next;
-      })
+      }),
     );
   }, [unifiedPrices, setSymbols]);
 
@@ -216,7 +228,10 @@ const MT5TradingArea = ({
 
   // Derive real-time bid/ask reactively from PriceContext (no polling loop)
   useEffect(() => {
-    const symbolStr = typeof selectedSymbol === 'object' ? selectedSymbol?.symbol : selectedSymbol;
+    const symbolStr =
+      typeof selectedSymbol === "object"
+        ? selectedSymbol?.symbol
+        : selectedSymbol;
     if (!symbolStr) return;
 
     const live = unifiedPrices[symbolStr];
@@ -233,24 +248,25 @@ const MT5TradingArea = ({
   useEffect(() => {
     if (!selectedSymbol || !selectedTimeframe) return;
 
-    const WEBSOCKET_URL = import.meta.env.VITE_WEBSOCKET_URL || 'http://localhost:5002';
+    const WEBSOCKET_URL =
+      import.meta.env.VITE_WEBSOCKET_URL || "ws://localhost:5002";
     const symbolStr = selectedSymbol.symbol || selectedSymbol;
-    const timeframeStr = selectedTimeframe || 'M1';
+    const timeframeStr = selectedTimeframe || "M1";
 
     // Get auth token
     const getAuthToken = () => {
       return (
-        localStorage.getItem('token') ||
-        localStorage.getItem('accessToken') ||
-        localStorage.getItem('authToken') ||
-        localStorage.getItem('jwt_token')
+        localStorage.getItem("token") ||
+        localStorage.getItem("accessToken") ||
+        localStorage.getItem("authToken") ||
+        localStorage.getItem("jwt_token")
       );
     };
 
     // Connect to candles WebSocket (root namespace)
     const socket = io(WEBSOCKET_URL, {
       auth: (cb) => cb({ token: getAuthToken() }),
-      transports: ['websocket', 'polling'],
+      transports: ["websocket", "polling"],
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
@@ -259,34 +275,47 @@ const MT5TradingArea = ({
 
     candlesSocketRef.current = socket;
 
-    socket.on('connect', () => {
-      console.log('[MT5TradingArea] ✅ Connected to candles WebSocket');
+    socket.on("connect", () => {
+      console.log("[MT5TradingArea] ✅ Connected to candles WebSocket");
       // Subscribe to candle updates for current symbol/timeframe
       // Backend automatically sends updates based on client subscriptions
     });
 
-    socket.on('disconnect', (reason) => {
-      console.log('[MT5TradingArea] ❌ Candles WebSocket disconnected:', reason);
+    socket.on("disconnect", (reason) => {
+      console.log(
+        "[MT5TradingArea] ❌ Candles WebSocket disconnected:",
+        reason,
+      );
     });
 
-    socket.on('connect_error', (error) => {
-      console.error('[MT5TradingArea] 🔌 Candles WebSocket connection error:', error.message);
+    socket.on("connect_error", (error) => {
+      console.error(
+        "[MT5TradingArea] 🔌 Candles WebSocket connection error:",
+        error.message,
+      );
     });
 
     // Listen for candleUpdate events from backend
-    socket.on('candleUpdate', (data) => {
+    socket.on("candleUpdate", (data) => {
       try {
         // Backend sends: { symbol, timeframe, candle: { time, open, high, low, close, volume } }
         if (!data || !data.candle || !data.symbol || !data.timeframe) {
-          console.warn('[MT5TradingArea] Invalid candleUpdate data:', data);
+          console.warn("[MT5TradingArea] Invalid candleUpdate data:", data);
           return;
         }
 
         // Check if this update is for current symbol/timeframe
-        const normalizedSymbol = (data.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-        const currentSymbolNormalized = (symbolStr || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const normalizedSymbol = (data.symbol || "")
+          .toUpperCase()
+          .replace(/[^A-Z0-9]/g, "");
+        const currentSymbolNormalized = (symbolStr || "")
+          .toUpperCase()
+          .replace(/[^A-Z0-9]/g, "");
 
-        if (normalizedSymbol !== currentSymbolNormalized || data.timeframe !== timeframeStr) {
+        if (
+          normalizedSymbol !== currentSymbolNormalized ||
+          data.timeframe !== timeframeStr
+        ) {
           // Not for current symbol/timeframe, ignore
           return;
         }
@@ -308,7 +337,7 @@ const MT5TradingArea = ({
         // Note: SDK Chart component should automatically update when candles are updated in SDK's context
         // If SDK doesn't support this, we may need to manually update the chart through ref methods
 
-        console.log('[MT5TradingArea] 📊 Received candleUpdate:', {
+        console.log("[MT5TradingArea] 📊 Received candleUpdate:", {
           symbol: data.symbol,
           timeframe: data.timeframe,
           candle: {
@@ -323,9 +352,8 @@ const MT5TradingArea = ({
         // TODO: Update SDK Chart component with this candle
         // This depends on SDK's API - check SDK documentation for updateCandle or similar method
         // For now, we'll log it and let SDK Chart handle it if it listens to WebSocket internally
-
       } catch (error) {
-        console.error('[MT5TradingArea] Error processing candleUpdate:', error);
+        console.error("[MT5TradingArea] Error processing candleUpdate:", error);
       }
     });
 
@@ -338,13 +366,14 @@ const MT5TradingArea = ({
   }, [selectedSymbol, selectedTimeframe]);
 
   // Enrich selected symbol with real-time price data
-  const enrichedSelectedSymbol = selectedSymbol && unifiedPrices[selectedSymbol.symbol]
-    ? {
-      ...selectedSymbol,
-      bid: unifiedPrices[selectedSymbol.symbol].bid,
-      ask: unifiedPrices[selectedSymbol.symbol].ask,
-    }
-    : selectedSymbol;
+  const enrichedSelectedSymbol =
+    selectedSymbol && unifiedPrices[selectedSymbol.symbol]
+      ? {
+          ...selectedSymbol,
+          bid: unifiedPrices[selectedSymbol.symbol].bid,
+          ask: unifiedPrices[selectedSymbol.symbol].ask,
+        }
+      : selectedSymbol;
 
   const handlePriceUpdate = useCallback((symbolName, price) => {
     pricesRef.current[symbolName] = price;
@@ -373,178 +402,207 @@ const MT5TradingArea = ({
     }
   };
 
-  const isLight = theme === 'light'
-  const [marketWatchWidth, setMarketWatchWidth] = useState(500) // Right symbols panel width (default: thoda sa left/chhota)
-  const [isResizing, setIsResizing] = useState(false)
-  const resizeRef = useRef(null)
-  const resizeStartX = useRef(0)
-  const resizeStartWidth = useRef(200)
+  const isLight = theme === "light";
+  const [marketWatchWidth, setMarketWatchWidth] = useState(500); // Right symbols panel width (default: thoda sa left/chhota)
+  const [isResizing, setIsResizing] = useState(false);
+  const resizeRef = useRef(null);
+  const resizeStartX = useRef(0);
+  const resizeStartWidth = useRef(200);
 
-  const [isBottomResizing, setIsBottomResizing] = useState(false)
-  const bottomResizeRef = useRef(null)
-  const chartAreaRef = useRef(null)
+  const [isBottomResizing, setIsBottomResizing] = useState(false);
+  const bottomResizeRef = useRef(null);
+  const chartAreaRef = useRef(null);
 
   // Market Execution Modal state (Professional Trading Terminal - Side Panel)
-  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
-  const [orderType, setOrderType] = useState('BUY')
-  const [modalInitialVolume, setModalInitialVolume] = useState(null)
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [orderType, setOrderType] = useState("BUY");
+  const [modalInitialVolume, setModalInitialVolume] = useState(null);
 
   const handleBuyClick = (orderData) => {
-    setOrderType('BUY')
-    setModalInitialVolume(orderData?.volume ?? null)
-    setIsOrderModalOpen(true)
-  }
+    setOrderType("BUY");
+    setModalInitialVolume(orderData?.volume ?? null);
+    setIsOrderModalOpen(true);
+  };
 
   const handleSellClick = (orderData) => {
-    setOrderType('SELL')
-    setModalInitialVolume(orderData?.volume ?? null)
-    setIsOrderModalOpen(true)
-  }
+    setOrderType("SELL");
+    setModalInitialVolume(orderData?.volume ?? null);
+    setIsOrderModalOpen(true);
+  };
 
   // Handle right sidebar (Market Watch) horizontal resize
   useEffect(() => {
     const handleMouseMove = (e) => {
-      if (!isResizing) return
+      if (!isResizing) return;
 
       // Calculate delta from start position
-      const deltaX = resizeStartX.current - e.clientX // Negative when dragging left (making panel smaller)
-      const newWidth = resizeStartWidth.current + deltaX
+      const deltaX = resizeStartX.current - e.clientX; // Negative when dragging left (making panel smaller)
+      const newWidth = resizeStartWidth.current + deltaX;
 
       // Min width: 120px, Max width: 600px
-      const clampedWidth = Math.min(Math.max(newWidth, 120), 600)
-      setMarketWatchWidth(clampedWidth)
-    }
+      const clampedWidth = Math.min(Math.max(newWidth, 120), 600);
+      setMarketWatchWidth(clampedWidth);
+    };
 
     const handleMouseUp = () => {
-      setIsResizing(false)
-      resizeStartX.current = 0
-      resizeStartWidth.current = marketWatchWidth
-    }
+      setIsResizing(false);
+      resizeStartX.current = 0;
+      resizeStartWidth.current = marketWatchWidth;
+    };
 
     if (isResizing) {
-      document.addEventListener('mousemove', handleMouseMove)
-      document.addEventListener('mouseup', handleMouseUp)
-      document.body.style.cursor = 'col-resize'
-      document.body.style.userSelect = 'none'
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+      document.body.style.cursor = "col-resize";
+      document.body.style.userSelect = "none";
     }
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleMouseUp)
-      document.body.style.cursor = ''
-      document.body.style.userSelect = ''
-    }
-  }, [isResizing, marketWatchWidth])
-
-
-
-
-
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+  }, [isResizing, marketWatchWidth]);
 
   // Handle bottom panel (Account & Orders) vertical resize
   useEffect(() => {
     const handleMouseMove = (e) => {
-      if (!isBottomResizing) return
+      if (!isBottomResizing) return;
 
-      const container = bottomResizeRef.current?.parentElement
-      if (!container) return
+      const container = bottomResizeRef.current?.parentElement;
+      if (!container) return;
 
-      const containerRect = container.getBoundingClientRect()
-      const newHeight = containerRect.bottom - e.clientY
+      const containerRect = container.getBoundingClientRect();
+      const newHeight = containerRect.bottom - e.clientY;
 
       // Min height: 120px, Max height: 400px
-      const clampedHeight = Math.min(Math.max(newHeight, 120), 400)
-      setBottomPanelHeight(clampedHeight)
-    }
+      const clampedHeight = Math.min(Math.max(newHeight, 120), 400);
+      setBottomPanelHeight(clampedHeight);
+    };
 
     const handleMouseUp = () => {
-      setIsBottomResizing(false)
-    }
+      setIsBottomResizing(false);
+    };
 
     if (isBottomResizing) {
-      document.addEventListener('mousemove', handleMouseMove)
-      document.addEventListener('mouseup', handleMouseUp)
-      document.body.style.cursor = 'row-resize'
-      document.body.style.userSelect = 'none'
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+      document.body.style.cursor = "row-resize";
+      document.body.style.userSelect = "none";
     }
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleMouseUp)
-      document.body.style.cursor = ''
-      document.body.style.userSelect = ''
-    }
-  }, [isBottomResizing])
-
-
-
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+  }, [isBottomResizing]);
 
   // Professional trade execution: optimistic update → API call → sync or rollback
-  const handleExecuteTrade = useCallback(async (trade) => {
-    if (isAccountLocked) {
-      toast({ title: t("terminal.tradeFailed"), description: 'Account is locked.', variant: 'destructive' });
-      return;
-    }
-    if (!accountId) {
-      toast({ title: t("terminal.tradeFailed"), description: 'No account selected.', variant: 'destructive' });
-      return;
-    }
+  const handleExecuteTrade = useCallback(
+    async (trade) => {
+      if (isAccountLocked) {
+        toast({
+          title: t("terminal.tradeFailed"),
+          description: "Account is locked.",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (!accountId) {
+        toast({
+          title: t("terminal.tradeFailed"),
+          description: "No account selected.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    const symbolStr = typeof selectedSymbol === 'object' ? selectedSymbol?.symbol : selectedSymbol;
-    const tradeType = String(trade.type || '').toUpperCase();
-    const volume = parseFloat(trade.lotSize) || 0.01;
-    const openPrice = parseFloat(trade.entryPrice) || 0;
+      const symbolStr =
+        typeof selectedSymbol === "object"
+          ? selectedSymbol?.symbol
+          : selectedSymbol;
+      const tradeType = String(trade.type || "").toUpperCase();
+      const volume = parseFloat(trade.lotSize) || 0.01;
+      const openPrice = parseFloat(trade.entryPrice) || 0;
 
-    if (!openPrice) {
-      toast({ title: t("terminal.tradeFailed"), description: 'No price available.', variant: 'destructive' });
-      return;
-    }
+      if (!openPrice) {
+        toast({
+          title: t("terminal.tradeFailed"),
+          description: "No price available.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    // Optimistic order — shown immediately in the positions panel
-    const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const optimisticOrder = {
-      id: tempId,
-      ticket: tempId.substring(5, 13),
-      symbol: trade.symbol || symbolStr,
-      type: tradeType,
-      volume,
-      price: openPrice,
-      stopLoss: trade.stopLoss ? parseFloat(trade.stopLoss) : null,
-      takeProfit: trade.takeProfit ? parseFloat(trade.takeProfit) : null,
-      comment: trade.comment || '',
-      status: 'OPEN',
-      swap: 0,
-      profit: 0,
-      profitCurrency: 'USD',
-      time: new Date().toLocaleTimeString(),
-      openAt: new Date().toISOString(),
-      closeAt: null,
-    };
-    setOrders((prev) => [...prev, optimisticOrder]);
-
-    try {
-      await createTrade({
-        accountId,
+      // Optimistic order — shown immediately in the positions panel
+      const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const optimisticOrder = {
+        id: tempId,
+        ticket: tempId.substring(5, 13),
         symbol: trade.symbol || symbolStr,
         type: tradeType,
         volume,
-        openPrice,
-        leverage: 100,
+        price: openPrice,
         stopLoss: trade.stopLoss ? parseFloat(trade.stopLoss) : null,
         takeProfit: trade.takeProfit ? parseFloat(trade.takeProfit) : null,
-      });
+        comment: trade.comment || "",
+        status: "OPEN",
+        swap: 0,
+        profit: 0,
+        profitCurrency: "USD",
+        time: new Date().toLocaleTimeString(),
+        openAt: new Date().toISOString(),
+        closeAt: null,
+      };
+      setOrders((prev) => [...prev, optimisticOrder]);
 
-      // Sync real data from backend (replaces optimistic order)
-      await fetchOrders();
-      queryClient.invalidateQueries({ queryKey: ['accountSummary', accountId] });
-      toast({ title: 'Order Placed', description: `${tradeType} ${volume} ${trade.symbol || symbolStr}` });
-    } catch (err) {
-      // Rollback optimistic order on failure
-      setOrders((prev) => prev.filter((o) => o.id !== tempId));
-      const msg = err?.message || err?.response?.data?.message || 'Trade failed';
-      toast({ title: 'Order Failed', description: msg, variant: 'destructive' });
-    }
-  }, [accountId, isAccountLocked, selectedSymbol, setOrders, fetchOrders, queryClient, toast, t]);
+      try {
+        await createTrade({
+          accountId,
+          symbol: trade.symbol || symbolStr,
+          type: tradeType,
+          volume,
+          openPrice,
+          leverage: 100,
+          stopLoss: trade.stopLoss ? parseFloat(trade.stopLoss) : null,
+          takeProfit: trade.takeProfit ? parseFloat(trade.takeProfit) : null,
+        });
+
+        // Sync real data from backend (replaces optimistic order)
+        await fetchOrders();
+        queryClient.invalidateQueries({
+          queryKey: ["accountSummary", accountId],
+        });
+        toast({
+          title: "Order Placed",
+          description: `${tradeType} ${volume} ${trade.symbol || symbolStr}`,
+        });
+      } catch (err) {
+        // Rollback optimistic order on failure
+        setOrders((prev) => prev.filter((o) => o.id !== tempId));
+        const msg =
+          err?.message || err?.response?.data?.message || "Trade failed";
+        toast({
+          title: "Order Failed",
+          description: msg,
+          variant: "destructive",
+        });
+      }
+    },
+    [
+      accountId,
+      isAccountLocked,
+      selectedSymbol,
+      setOrders,
+      fetchOrders,
+      queryClient,
+      toast,
+      t,
+    ],
+  );
 
   // If no platform token, show login screen (after all hooks)
   if (!platformToken) {
@@ -560,23 +618,30 @@ const MT5TradingArea = ({
   }
 
   const positions = positionsFromParent;
-  const accountBalance = accountBalanceFromParent ?? selectedChallenge?.currentBalance ?? 100000;
+  const accountBalance =
+    accountBalanceFromParent ?? selectedChallenge?.currentBalance ?? 100000;
   const showMarketWatch = true;
 
   return (
     <>
-      <div className={`h-screen flex flex-col overflow-hidden relative ${isLight ? 'bg-slate-100 text-slate-900' : 'bg-slate-950 text-slate-100'}`}>
+      <div
+        className={`h-screen flex flex-col overflow-hidden relative ${isLight ? "bg-slate-100 text-slate-900" : "bg-slate-950 text-slate-100"}`}
+      >
         {/* Left Sidebar - Tools (overlaps header, full height, highest z-index) */}
-        <div className='absolute left-0 top-0 bottom-0 z-50'>
+        <div className="absolute left-0 top-0 bottom-0 z-50">
           <LeftSidebar
             AccountId={accountId}
-            UserName={selectedChallenge?.platform === 'MT5' ? selectedChallenge?.platformEmail : undefined}
+            UserName={
+              selectedChallenge?.platform === "MT5"
+                ? selectedChallenge?.platformEmail
+                : undefined
+            }
             UserId={user?.userId}
           />
         </div>
 
         {/* Top Bar - Starts after sidebar */}
-        <div className='pl-12'>
+        <div className="pl-12">
           <TopBar
             selectedSymbol={selectedSymbol}
             selectedTimeframe={selectedTimeframe}
@@ -589,22 +654,19 @@ const MT5TradingArea = ({
             onDownloadChartPNG={handleDownloadChartPNG}
             onToggleFullscreen={handleToggleFullscreen}
             marketWatchOpen={showMarketWatch}
-            onToggleMarketWatch={() => setShowMarketWatch(prev => !prev)}
+            onToggleMarketWatch={() => setShowMarketWatch((prev) => !prev)}
             onToggleBuySell={handleToggleBuySell}
             buySellPanelOpen={showBuySellPanel}
             onMove={onMove}
-
-
           />
         </div>
 
         {/* Main Content Area – tools bar full-height, chart + market watch + bottom panel on right */}
-        <div className='flex-1 flex overflow-hidden pl-12'>
-
+        <div className="flex-1 flex overflow-hidden pl-12">
           {/* Right side: chart + market watch + bottom account panel */}
-          <div className='flex-1 flex flex-col relative'>
+          <div className="flex-1 flex flex-col relative">
             {/* Center row: chart + market watch */}
-            <div className='flex-1 flex overflow-hidden relative'>
+            <div className="flex-1 flex overflow-hidden relative">
               {/* Center - Chart Area */}
               <Chart
                 ref={chartAreaRef}
@@ -621,14 +683,14 @@ const MT5TradingArea = ({
                   <div
                     ref={resizeRef}
                     onMouseDown={(e) => {
-                      e.preventDefault()
-                      resizeStartX.current = e.clientX
-                      resizeStartWidth.current = marketWatchWidth
-                      setIsResizing(true)
+                      e.preventDefault();
+                      resizeStartX.current = e.clientX;
+                      resizeStartWidth.current = marketWatchWidth;
+                      setIsResizing(true);
                     }}
-                    className={`w-1 ${isLight ? 'bg-gray-300' : 'bg-[#101821]'} hover:bg-sky-700 cursor-col-resize transition-colors relative group`}
+                    className={`w-1 ${isLight ? "bg-gray-300" : "bg-[#101821]"} hover:bg-sky-700 cursor-col-resize transition-colors relative group`}
                   >
-                    <div className='absolute inset-y-0 left-1/2  group-hover:bg-white' />
+                    <div className="absolute inset-y-0 left-1/2  group-hover:bg-white" />
                   </div>
                   <MarketWatch
                     width={marketWatchWidth}
@@ -642,7 +704,7 @@ const MT5TradingArea = ({
 
               {/* BuySellPanel — floats at top-left of chart canvas, always above modal */}
               {showBuySellPanel && (
-                <div className='absolute top-6 left-4 z-[99] pointer-events-auto'>
+                <div className="absolute top-6 left-4 z-[99] pointer-events-auto">
                   <BuySellPanel
                     bidPrice={realTimeBidPrice ?? currentSymbolData.bid}
                     askPrice={realTimeAskPrice ?? currentSymbolData.ask}
@@ -651,33 +713,41 @@ const MT5TradingArea = ({
                   />
                 </div>
               )}
-
-            </div>{/* end flex-1 flex overflow-hidden relative (chart row) */}
+            </div>
+            {/* end flex-1 flex overflow-hidden relative (chart row) */}
 
             {/* Bottom Resize Handle */}
             <div
               ref={bottomResizeRef}
               onMouseDown={(e) => {
-                e.preventDefault()
-                setIsBottomResizing(true)
+                e.preventDefault();
+                setIsBottomResizing(true);
               }}
-              className={`h-1 ${isLight ? 'bg-gray-300' : 'bg-[#101821]'} hover:bg-sky-700 cursor-row-resize transition-colors relative group`}
+              className={`h-1 ${isLight ? "bg-gray-300" : "bg-[#101821]"} hover:bg-sky-700 cursor-row-resize transition-colors relative group`}
             >
-              <div className='absolute inset-x-0 top-1/2 -translate-y-1/2 h-3 group-hover:bg-sky-500/20' />
+              <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-3 group-hover:bg-sky-500/20" />
             </div>
 
             {/* Market Execution Modal — at COLUMN level so z-[998] beats LeftSidebar z-50 */}
             <div
-              className='absolute top-0 left-0 w-80 z-[99] pointer-events-none h-full'
+              className="absolute top-0 left-0 w-80 z-[99] pointer-events-none h-full"
               style={{
-                transition: 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1)',
-                transform: isOrderModalOpen ? 'translateX(0)' : 'translateX(-110%)',
+                transition: "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+                transform: isOrderModalOpen
+                  ? "translateX(0)"
+                  : "translateX(-110%)",
               }}
             >
-              <div className='pointer-events-auto h-full' onClick={(e) => e.stopPropagation()}>
+              <div
+                className="pointer-events-auto h-full"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <MarketExecutionModal
                   isOpen={isOrderModalOpen}
-                  onClose={() => { setIsOrderModalOpen(false); setModalInitialVolume(null); }}
+                  onClose={() => {
+                    setIsOrderModalOpen(false);
+                    setModalInitialVolume(null);
+                  }}
                   orderType={orderType}
                   bidPrice={realTimeBidPrice ?? currentSymbolData.bid}
                   askPrice={realTimeAskPrice ?? currentSymbolData.ask}
@@ -687,10 +757,12 @@ const MT5TradingArea = ({
                 />
               </div>
             </div>
-
-          </div>{/* end flex-1 flex flex-col relative (column) */}
-        </div>{/* end flex-1 flex overflow-hidden pl-12 (main content) */}
-      </div>{/* end h-screen flex flex-col root */}
+          </div>
+          {/* end flex-1 flex flex-col relative (column) */}
+        </div>
+        {/* end flex-1 flex overflow-hidden pl-12 (main content) */}
+      </div>
+      {/* end h-screen flex flex-col root */}
     </>
   );
 };
