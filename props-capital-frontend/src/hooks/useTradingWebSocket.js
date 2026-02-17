@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { io, Socket } from "socket.io-client";
 
 const WEBSOCKET_URL =
-  import.meta.env.VITE_WEBSOCKET_URL || "http://localhost:5002";
+  import.meta.env.VITE_WEBSOCKET_URL || "https://dev-api.prop-capitals.com";
 
 /**
  * Custom hook to manage WebSocket connection for trading events
