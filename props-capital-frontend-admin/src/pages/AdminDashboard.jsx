@@ -276,9 +276,9 @@ export default function AdminDashboard() {
   // Show global loading state
   if (overviewLoading && accountsLoading && violationsLoading && revenueLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
-        <span className="ml-3 text-white">Loading dashboard...</span>
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+        <span className="ml-3 text-muted-foreground font-medium">Loading dashboard...</span>
       </div>
     );
   }
