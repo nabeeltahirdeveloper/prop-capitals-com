@@ -24,7 +24,7 @@ interface CandleSubscription {
  */
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: true, // Allow all origins in development
     credentials: true,
   },
   // No namespace specified = root namespace (/)
