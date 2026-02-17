@@ -1,5 +1,5 @@
 import React from 'react';
-import { Monitor, Smartphone, Globe, Zap } from 'lucide-react';
+import { Monitor, Globe, Zap } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 
 
@@ -58,9 +58,8 @@ const PlatformsSection = () => {
         <div className={`mt-12 rounded-2xl p-6 lg:p-8 border ${
           isDark ? 'bg-[#12161d] border-white/10' : 'bg-slate-50 border-slate-200'
         }`}>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             <FeatureItem isDark={isDark} icon={Monitor} label="Web Platform" value="Trade from any browser" />
-            <FeatureItem isDark={isDark} icon={Smartphone} label="Mobile Apps" value="iOS and Android" />
             <FeatureItem isDark={isDark} icon={Globe} label="100+ Instruments" value="Forex, Crypto, Indices" />
             <FeatureItem isDark={isDark} icon={Zap} label="0.0 Pip Spreads" value="Institutional pricing" />
           </div>
@@ -71,7 +70,7 @@ const PlatformsSection = () => {
 };
 
 const PlatformCard = ({ isDark, name, logo, color, description, features, isProprietary }) => (
-  <div className={`rounded-2xl p-6 border transition-all duration-300 group hover:-translate-y-2 relative overflow-hidden ${
+  <div className={`rounded-2xl p-6 border transition-all duration-300 group hover:-translate-y-2 relative overflow-visible ${
     isProprietary 
       ? isDark 
         ? 'border-amber-500/50 hover:border-amber-400 bg-[#12161d]' 
@@ -81,7 +80,7 @@ const PlatformCard = ({ isDark, name, logo, color, description, features, isProp
         : 'border-slate-200 hover:border-amber-300 bg-white shadow-sm'
   }`}>
     {isProprietary && (
-      <div className="absolute -top-1 -right-8 bg-gradient-to-r from-amber-400 to-amber-600 text-[#0a0d12] text-[10px] font-bold px-8 py-1 rotate-45">
+      <div className="absolute top-2 -right-9 bg-gradient-to-r from-amber-400 to-amber-600 text-[#0a0d12] text-xs font-bold px-10 py-1.5 rotate-45 whitespace-nowrap">
         NEW
       </div>
     )}
@@ -119,3 +118,4 @@ const FeatureItem = ({ isDark, icon: Icon, label, value }) => (
 );
 
 export default PlatformsSection;
+

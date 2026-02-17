@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Check, ArrowRight, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { challengeTypes, accountSizes } from './data/mockData';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 
 const ChallengesSection = () => {
   const { isDark } = useTheme();
+  const { user } = useAuth();
   const [selectedSize, setSelectedSize] = useState(3);
 
   return (
@@ -140,16 +143,18 @@ const ChallengesSection = () => {
               </div>
 
               {/* CTA Button */}
-              <Button 
-                className={`w-full rounded-full py-5 sm:py-6 h-auto text-sm sm:text-base font-bold transition-all group ${
-                  challenge.popular 
-                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] shadow-lg shadow-amber-500/25' 
-                    : isDark ? 'bg-white hover:bg-gray-100 text-[#0a0d12]' : 'bg-slate-900 hover:bg-slate-800 text-white'
-                }`}
-              >
-                Get Started
-                <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1" />
-              </Button>
+              <Link to={user ? "/dashboard" : "/signup"} className="block">
+                <Button 
+                  className={`w-full rounded-full py-5 sm:py-6 h-auto text-sm sm:text-base font-bold transition-all group ${
+                    challenge.popular 
+                      ? 'bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] shadow-lg shadow-amber-500/25' 
+                      : isDark ? 'bg-white hover:bg-gray-100 text-[#0a0d12]' : 'bg-slate-900 hover:bg-slate-800 text-white'
+                  }`}
+                >
+                  Get Started
+                  <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </Link>
             </div>
           ))}
         </div>
@@ -159,3 +164,4 @@ const ChallengesSection = () => {
 };
 
 export default ChallengesSection;
+
