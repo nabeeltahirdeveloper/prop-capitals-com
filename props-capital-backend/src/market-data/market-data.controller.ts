@@ -100,8 +100,8 @@ export class MarketDataController {
       throw new BadRequestException('Symbol parameter is required');
     }
     
-    const limitNum = Math.min(parseInt(limit, 10) || 100, 1000); // Cap at 1000
-    const validTimeframes = ['M1', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1'];
+    const limitNum = Math.min(parseInt(limit, 10) || 100, 5000); // Cap at 5000
+    const validTimeframes = ['M1', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1', 'W1', 'MN'];
     const tf = validTimeframes.includes(timeframe) ? timeframe : 'M5';
     
     return this.marketDataService.getHistory(symbol, tf, limitNum);

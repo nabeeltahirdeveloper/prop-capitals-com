@@ -13,16 +13,20 @@ const MT5Terminal = () => {
   const MT5_API_URL =
     import.meta.env.VITE_MT5_API_URL || "https://dev-api.prop-capitals.com";
 
-  // MT5 ke endpoints
   const endpoints = {
     candles: "/market-data/history", // Historical candles endpoint
     symbols: "/market-data/prices?symbols", // Symbols list (query param allowed)
     trades: "/trades", // Trades endpoint (adjust if different)
     account: "/api/v1/user/account", // Account endpoint (adjust if different)
   };
+
   return (
     <CommonTerminalWrapper>
-      <TradingProvider baseUrl={MT5_API_URL} endpoints={endpoints}>
+      <TradingProvider
+        baseUrl={MT5_API_URL}
+        endpoints={endpoints}
+        accountId={selectedChallenge?.id}
+      >
         <MT5TradingArea selectedChallenge={selectedChallenge} />
       </TradingProvider>
     </CommonTerminalWrapper>

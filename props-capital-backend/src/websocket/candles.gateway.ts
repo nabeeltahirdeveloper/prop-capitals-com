@@ -44,6 +44,9 @@ export class CandlesGateway
   // Candle update interval (1 second for real-time updates)
   private candleUpdateInterval: NodeJS.Timeout | null = null;
 
+  // Track OHLC state per symbol+timeframe so WS candles have real bodies
+  private candleStateMap = new Map<string, { open: number; high: number; low: number; candleTime: number }>();
+
   constructor(
     private jwtService: JwtService,
     @Inject(forwardRef(() => MarketDataService))
@@ -277,12 +280,24 @@ export class CandlesGateway
       // Calculate the current candle's start time based on timeframe
       const candleTime = this.getCandleStartTime(now, timeframe);
 
-      // Create a simple candle from current price
+      // Track OHLC state so candles have real bodies instead of flat dashes
+      const key = `${symbol}_${timeframe}`;
+      const existing = this.candleStateMap.get(key);
+      if (!existing || existing.candleTime !== candleTime) {
+        // New candle period — reset state
+        this.candleStateMap.set(key, { open: price, high: price, low: price, candleTime });
+      } else {
+        // Same candle period — expand high/low
+        existing.high = Math.max(existing.high, price);
+        existing.low = Math.min(existing.low, price);
+      }
+      const state = this.candleStateMap.get(key)!;
+
       return {
-        time: candleTime, // Use aligned candle time, not raw timestamp
-        open: price,
-        high: price,
-        low: price,
+        time: candleTime,
+        open: state.open,
+        high: state.high,
+        low: state.low,
         close: price,
         volume: 0,
       };
