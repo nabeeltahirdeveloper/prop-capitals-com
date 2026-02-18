@@ -416,10 +416,10 @@ const AccountOverview = () => {
             <div className="relative h-48">
               {/* Current balance badge */}
               <div className="absolute top-2 right-2 z-10 px-3 py-1 rounded-lg text-sm font-bold bg-emerald-500/20 text-emerald-500">
-                ${selectedChallenge.currentBalance.toLocaleString()}
+                ${Math.floor(selectedChallenge.currentBalance).toLocaleString()}
               </div>
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={equityCurveData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                <AreaChart data={equityCurveData} margin={{ top: 40, right: 8, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="balanceGrad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
