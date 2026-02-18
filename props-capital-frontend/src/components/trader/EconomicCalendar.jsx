@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
 import EventDetailModal from './EventDetailModal';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5101';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 
 async function fetchCalendarMonth(monthYYYYMM) {
   const res = await fetch(`${API_BASE}/economic-calendar?month=${encodeURIComponent(monthYYYYMM)}`);
@@ -57,6 +57,17 @@ const EconomicCalendar = () => {
   const [selectedDay, setSelectedDay] = useState(null);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  // Measure calendar panel height so the events panel matches it exactly
+  const calendarPanelRef = useRef(null);
+  const [calendarHeight, setCalendarHeight] = useState(null);
+  useEffect(() => {
+    const el = calendarPanelRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setCalendarHeight(el.offsetHeight));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   // Event detail modal state
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -213,9 +224,9 @@ const EconomicCalendar = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:items-start">
         {/* Calendar */}
-        <div className={`lg:col-span-2 rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
+        <div ref={calendarPanelRef} className={`lg:col-span-2 rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           {/* Month Navigation */}
           <div className="flex items-center justify-between mb-6">
             <button onClick={prevMonth} className={`p-2 rounded-lg transition-all ${isDark ? 'hover:bg-white/10 text-gray-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-slate-900'}`}>
@@ -295,14 +306,17 @@ const EconomicCalendar = () => {
         </div>
 
         {/* Events List */}
-        <div className={`rounded-2xl border p-6 flex flex-col ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
+        <div
+          className={`rounded-2xl border p-6 flex flex-col overflow-hidden ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}
+          style={calendarHeight ? { height: calendarHeight } : {}}
+        >
           <h3 className={`font-bold text-lg mb-4 flex-shrink-0 ${isDark ? 'text-white' : 'text-slate-900'}`}>
             {selectedDay ? `Events - Day ${selectedDay}` : 'Select a day'}
           </h3>
 
           <div className="space-y-3 flex-1 overflow-y-auto min-h-0">
             {loading && (
-              <p className={`text-center py-8 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
+              <p className={`text-center py-8 ${isDark ? 'text-gray-500' : 'text-amber-500'}`}>
                 Loading...
               </p>
             )}

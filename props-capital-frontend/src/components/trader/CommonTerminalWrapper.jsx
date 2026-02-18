@@ -885,7 +885,7 @@ const CommonTerminalWrapper = ({
 
   const cardClass = `rounded-2xl border ${isDark ? "bg-[#12161d] border-white/5" : "bg-white border-slate-200"}`;
   const textClass = isDark ? "text-white" : "text-slate-900";
-  const mutedClass = isDark ? "text-gray-400" : "text-slate-500";
+  const mutedClass = isDark ? "text-gray-400" : "text-amber-500";
   const borderColor = isDark ? "border-white/10" : "border-slate-200";
   const bgMuted = isDark ? "bg-[#0a0d12]" : "bg-slate-50";
   const green = "#0ecb81";
