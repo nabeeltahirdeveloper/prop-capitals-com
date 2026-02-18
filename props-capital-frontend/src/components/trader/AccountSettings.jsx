@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin, Shield, Bell, Key, Save, Loader2 } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Shield, Bell, Key, Save, Loader2, ChevronDown } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from '@/components/ui/button';
 import { useTraderTheme } from './TraderPanelLayout';
@@ -9,7 +9,6 @@ import {
   updateProfile,
   changePassword,
   updateNotificationPreferences,
-  uploadVerificationDocument,
 } from '@/api/profile';
 
 const AccountSettings = () => {
@@ -42,75 +41,55 @@ const AccountSettings = () => {
     emailNotifications: true,
   });
 
-  const { data: user, isLoading, error } = useQuery({
+  const { data: user, isLoading } = useQuery({
     queryKey: ['user', 'me'],
     queryFn: getCurrentUser,
     retry: false,
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: 30000,
   });
 
   useEffect(() => {
     if (user) {
       setProfile({
-        ...profile,
-        firstName: user?.profile?.firstName || '-',
-        lastName: user?.profile?.lastName || '-',
-        email: user?.email || '-',
-        phone: user?.profile?.phone || '-',
-        country: user?.profile?.country || '-',
-        lotSize: user?.profile?.lotSize,
-        leverage: user?.profile?.leverage,
-        theme: user?.profile?.theme,
+        isEdit: false,
+        firstName: user?.profile?.firstName || '',
+        lastName: user?.profile?.lastName || '',
+        email: user?.email || '',
+        phone: user?.profile?.phone || '',
+        country: user?.profile?.country || '',
+        lotSize: user?.profile?.lotSize ?? '',
+        leverage: user?.profile?.leverage || '1:100',
+        theme: user?.profile?.theme || 'dark',
       });
 
       if (user.notificationPreference) {
-        setNotificationPrefs(user.notificationPreference);
+        setNotificationPrefs({ ...user.notificationPreference, isEdit: false });
       }
     }
   }, [user]);
 
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProfile(prev => ({
-      ...prev,
-      [name]: value,
-      isEdit: true
-    }));
+    setProfile(prev => ({ ...prev, [name]: value, isEdit: true }));
   };
 
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
-    setPassword(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setPassword(prev => ({ ...prev, [name]: value }));
   };
 
   const handleNotificationPrefChange = (key) => {
-    setNotificationPrefs(prev => ({
-      ...prev,
-      [key]: !prev[key],
-      isEdit: true
-    }));
+    setNotificationPrefs(prev => ({ ...prev, [key]: !prev[key], isEdit: true }));
   };
 
   const updateProfileMutation = useMutation({
     mutationFn: updateProfile,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
-      toast({
-        title: "Profile updated successfully",
-        description: "Your profile has been updated successfully.",
-        variant: "default",
-      });
+      toast({ title: "Profile updated successfully", variant: "default" });
     },
     onError: (error) => {
-      toast({
-        title: "Failed to save profile",
-        description: error.message || 'Failed to save profile',
-        variant: "destructive",
-      });
+      toast({ title: "Failed to save profile", description: error.message || 'Failed to save profile', variant: "destructive" });
     },
   });
 
@@ -118,18 +97,10 @@ const AccountSettings = () => {
     mutationFn: ({ currentPassword, newPassword }) => changePassword(currentPassword, newPassword),
     onSuccess: () => {
       setPassword({ currentPassword: '', newPassword: '', confirmNewPassword: '' });
-      toast({
-        title: "Password changed successfully",
-        description: "Your password has been changed successfully.",
-        variant: "default",
-      });
+      toast({ title: "Password changed successfully", variant: "default" });
     },
     onError: (error) => {
-      toast({
-        title: "Failed to change password",
-        description: error.message || 'Failed to change password',
-        variant: "destructive",
-      });
+      toast({ title: "Failed to change password", description: error.message || 'Failed to change password', variant: "destructive" });
     },
   });
 
@@ -137,77 +108,77 @@ const AccountSettings = () => {
     mutationFn: updateNotificationPreferences,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
-      toast({
-        title: "Notification preferences updated successfully",
-        description: "Your notification preferences have been updated successfully.",
-        variant: "default",
-      });
+      toast({ title: "Notification preferences updated", variant: "default" });
     },
     onError: (error) => {
-      toast({
-        title: "Failed to update notification preferences",
-        description: error.message || 'Failed to update notification preferences',
-        variant: "destructive",
-      });
+      toast({ title: "Failed to update notifications", description: error.message || 'Failed to update notification preferences', variant: "destructive" });
     },
   });
 
-
-  const updateProfileMutationHandler = () => {
-    updateProfileMutation.mutate({
-      firstName: profile.firstName,
-      lastName: profile.lastName,
-      phone: profile.phone,
-      country: profile.country,
-      lotSize: profile.lotSize,
-      leverage: profile.leverage,
-      theme: profile.theme,
-    });
-  }
-
-  const changePasswordMutationHandler = () => {
-    if (password.newPassword !== password.confirmNewPassword) {
-      toast({
-        title: "Passwords do not match",
-        description: "Please make sure your new password and confirmation match.",
-        variant: "destructive",
-      });
-      return;
-    }
-    changePasswordMutation.mutate(password);
-  }
-
-  const updateNotificationPrefsMutationHandler = () => {
-    updateNotificationPrefsMutation.mutate({
-      tradeNotifications: notificationPrefs.tradeNotifications,
-      accountAlerts: notificationPrefs.accountAlerts,
-      payoutUpdates: notificationPrefs.payoutUpdates,
-      challengeUpdates: notificationPrefs.challengeUpdates,
-      marketingEmails: notificationPrefs.marketingEmails,
-      emailNotifications: notificationPrefs.emailNotifications,
-    });
-  }
-
-
-
   const onSaveHandler = () => {
     if (profile.isEdit) {
-      updateProfileMutationHandler();
+      updateProfileMutation.mutate({
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        phone: profile.phone,
+        country: profile.country,
+        lotSize: profile.lotSize,
+        leverage: profile.leverage,
+        theme: profile.theme,
+      });
     }
 
     if (password.currentPassword && password.newPassword && password.confirmNewPassword) {
-      changePasswordMutationHandler();
+      if (password.newPassword !== password.confirmNewPassword) {
+        toast({ title: "Passwords do not match", description: "Your new password and confirmation do not match.", variant: "destructive" });
+        return;
+      }
+      changePasswordMutation.mutate(password);
     }
 
     if (notificationPrefs.isEdit) {
-      updateNotificationPrefsMutationHandler();
+      updateNotificationPrefsMutation.mutate({
+        tradeNotifications: notificationPrefs.tradeNotifications,
+        accountAlerts: notificationPrefs.accountAlerts,
+        payoutUpdates: notificationPrefs.payoutUpdates,
+        challengeUpdates: notificationPrefs.challengeUpdates,
+        marketingEmails: notificationPrefs.marketingEmails,
+        emailNotifications: notificationPrefs.emailNotifications,
+      });
     }
-
-  }
-
-
+  };
 
   const isSaving = updateProfileMutation.isPending || changePasswordMutation.isPending || updateNotificationPrefsMutation.isPending;
+
+  // Reusable styled input class
+  const inputCls = `w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 border ${
+    isDark
+      ? 'bg-[#0d1117] border-white/10 text-white placeholder-white/30'
+      : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'
+  }`;
+
+  // Reusable styled select wrapper + class
+  const SelectField = ({ name, value, onChange, children }) => (
+    <div className="relative">
+      <select
+        name={name}
+        value={value}
+        onChange={onChange}
+        className={`w-full appearance-none rounded-xl px-4 pr-10 py-3 focus:outline-none focus:border-amber-500/50 border cursor-pointer ${
+          isDark
+            ? 'bg-[#0d1117] border-white/10 text-white'
+            : 'bg-slate-50 border-slate-200 text-slate-900'
+        }`}
+      >
+        {children}
+      </select>
+      <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${isDark ? 'text-gray-400' : 'text-slate-500'}`} />
+    </div>
+  );
+
+  const labelCls = `text-sm block mb-1 ${isDark ? 'text-gray-400' : 'text-slate-500'}`;
+
+  const cardCls = `rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`;
 
   return (
     <div className="space-y-6">
@@ -215,8 +186,99 @@ const AccountSettings = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
+        {/* Personal Information */}
+        <div className={cardCls}>
+          <h3 className={`font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            <User className="w-5 h-5 text-amber-500" />
+            Personal Information
+          </h3>
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelCls}>First Name</label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={profile.firstName}
+                  onChange={handleInputChange}
+                  placeholder="First name"
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label className={labelCls}>Last Name</label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={profile.lastName}
+                  onChange={handleInputChange}
+                  placeholder="Last name"
+                  className={inputCls}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className={labelCls}>Email Address</label>
+              <div className="relative">
+                <Mail className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
+                <input
+                  type="email"
+                  value={profile.email}
+                  readOnly
+                  className={`w-full rounded-xl pl-9 pr-4 py-3 border opacity-60 cursor-not-allowed ${
+                    isDark
+                      ? 'bg-white/5 border-white/10 text-white'
+                      : 'bg-slate-100 border-slate-200 text-slate-900'
+                  }`}
+                />
+              </div>
+              <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>Email cannot be changed</p>
+            </div>
+
+            <div>
+              <label className={labelCls}>Phone Number</label>
+              <div className="relative">
+                <Phone className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
+                <input
+                  type="tel"
+                  name="phone"
+                  value={profile.phone}
+                  onChange={handleInputChange}
+                  placeholder="+1 234 567 8900"
+                  className={`w-full rounded-xl pl-9 pr-4 py-3 focus:outline-none focus:border-amber-500/50 border ${
+                    isDark
+                      ? 'bg-[#0d1117] border-white/10 text-white placeholder-white/30'
+                      : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'
+                  }`}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className={labelCls}>Country</label>
+              <div className="relative">
+                <MapPin className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
+                <input
+                  type="text"
+                  name="country"
+                  value={profile.country}
+                  onChange={handleInputChange}
+                  placeholder="e.g. United States"
+                  className={`w-full rounded-xl pl-9 pr-4 py-3 focus:outline-none focus:border-amber-500/50 border ${
+                    isDark
+                      ? 'bg-[#0d1117] border-white/10 text-white placeholder-white/30'
+                      : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'
+                  }`}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Security Settings */}
-        <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
+        <div className={cardCls}>
           <h3 className={`font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
             <Shield className="w-5 h-5 text-amber-500" />
             Security
@@ -224,39 +286,45 @@ const AccountSettings = () => {
 
           <div className="space-y-4">
             <div>
-              <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Current Password</label>
-              <input type="password" name="currentPassword" value={password.currentPassword} onChange={handlePasswordChange} placeholder="••••••••" className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
-                }`} />
+              <label className={labelCls}>Current Password</label>
+              <input
+                type="password"
+                name="currentPassword"
+                value={password.currentPassword}
+                onChange={handlePasswordChange}
+                placeholder="••••••••"
+                className={inputCls}
+              />
             </div>
 
             <div>
-              <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>New Password</label>
-              <input type="password" name="newPassword" value={password.newPassword} onChange={handlePasswordChange} placeholder="••••••••" className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
-                }`} />
+              <label className={labelCls}>New Password</label>
+              <input
+                type="password"
+                name="newPassword"
+                value={password.newPassword}
+                onChange={handlePasswordChange}
+                placeholder="••••••••"
+                className={inputCls}
+              />
             </div>
 
             <div>
-              <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Confirm New Password</label>
-              <input type="password" name="confirmNewPassword" value={password.confirmNewPassword} onChange={handlePasswordChange} placeholder="••••••••" className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
-                }`} />
+              <label className={labelCls}>Confirm New Password</label>
+              <input
+                type="password"
+                name="confirmNewPassword"
+                value={password.confirmNewPassword}
+                onChange={handlePasswordChange}
+                placeholder="••••••••"
+                className={inputCls}
+              />
             </div>
-
-            {/* <div className={`pt-4 border-t ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>Two-Factor Authentication</p>
-                  <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Add an extra layer of security</p>
-                </div>
-                <button className="px-4 py-2 bg-emerald-500/10 text-emerald-500 rounded-lg text-sm font-medium hover:bg-emerald-500/20 transition-all">
-                  Enable
-                </button>
-              </div>
-            </div>*/}
           </div>
         </div>
 
         {/* Trading Preferences */}
-        <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
+        <div className={cardCls}>
           <h3 className={`font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
             <Key className="w-5 h-5 text-amber-500" />
             Trading Preferences
@@ -264,47 +332,40 @@ const AccountSettings = () => {
 
           <div className="space-y-4">
             <div>
-              <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Default Lot Size</label>
+              <label className={labelCls}>Default Lot Size</label>
               <input
-                type="text"
+                type="number"
                 name="lotSize"
                 value={profile.lotSize}
                 onChange={handleInputChange}
-                className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'}`}
+                step="0.01"
+                min="0.01"
+                placeholder="0.01"
+                className={inputCls}
               />
             </div>
 
             <div>
-              <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Default Leverage</label>
-              <select
-                name="leverage"
-                value={profile.leverage}
-                onChange={handleInputChange}
-                className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'}`}
-              >
+              <label className={labelCls}>Default Leverage</label>
+              <SelectField name="leverage" value={profile.leverage} onChange={handleInputChange}>
                 <option value="1:100">1:100</option>
                 <option value="1:50">1:50</option>
                 <option value="1:30">1:30</option>
-              </select>
+              </SelectField>
             </div>
 
             <div>
-              <label className={`text-sm block mb-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Chart Theme</label>
-              <select
-                name="theme"
-                value={profile.theme}
-                onChange={handleInputChange}
-                className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'}`}
-              >
+              <label className={labelCls}>Chart Theme</label>
+              <SelectField name="theme" value={profile.theme} onChange={handleInputChange}>
                 <option value="dark">Dark</option>
                 <option value="light">Light</option>
-              </select>
+              </SelectField>
             </div>
           </div>
         </div>
 
         {/* Notification Preferences */}
-        <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
+        <div className={cardCls}>
           <h3 className={`font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
             <Bell className="w-5 h-5 text-amber-500" />
             Notifications
@@ -317,26 +378,27 @@ const AccountSettings = () => {
               { key: 'accountAlerts', label: 'Account Alerts', desc: 'Critical alerts via SMS' },
               { key: 'payoutUpdates', label: 'Payout Updates', desc: 'Receive weekly performance reports' },
               { key: 'challengeUpdates', label: 'Challenge Updates', desc: 'Receive updates about your challenges' },
-              { key: "marketingEmails", label: "Marketing Emails", desc: "Receive marketing emails" }
-            ].map((item, i) => (
-              <div key={i} className="flex items-center justify-between">
+              { key: 'marketingEmails', label: 'Marketing Emails', desc: 'Receive marketing emails' },
+            ].map((item) => (
+              <div key={item.key} className="flex items-center justify-between">
                 <div>
                   <p className={`font-medium text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{item.label}</p>
+                  <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{item.desc}</p>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
+                <label className="relative inline-flex items-center cursor-pointer ml-4 flex-shrink-0">
                   <input
                     type="checkbox"
                     checked={notificationPrefs[item.key] || false}
                     onChange={() => handleNotificationPrefChange(item.key)}
                     className="sr-only peer"
                   />
-                  <div className={`w-11 h-6 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500 ${isDark ? 'bg-white/10' : 'bg-slate-200'
-                    }`}></div>
+                  <div className={`w-11 h-6 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500 ${isDark ? 'bg-white/10' : 'bg-slate-200'}`} />
                 </label>
               </div>
             ))}
           </div>
         </div>
+
       </div>
 
       {/* Save Button */}
