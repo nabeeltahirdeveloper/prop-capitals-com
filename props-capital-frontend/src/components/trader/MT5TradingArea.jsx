@@ -266,7 +266,7 @@ const MT5TradingArea = ({
     // Connect to candles WebSocket (root namespace)
     const socket = io(WEBSOCKET_URL, {
       auth: (cb) => cb({ token: getAuthToken() }),
-      transports: ["websocket", "polling"],
+      transports: [ "polling", "websocket"],
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
