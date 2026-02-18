@@ -138,6 +138,7 @@ export const TradingProvider = ({ children }) => {
         openAt: trade.openedAt,
         closeAt: trade.closedAt ?? null,
         closePrice: trade.closePrice ?? null,
+        closeReason: trade.closeReason ?? null,
       }));
       setOrders(fetchedOrders);
     } catch (error) {
@@ -302,6 +303,9 @@ export const TradingProvider = ({ children }) => {
       let changed = false;
 
       const next = prev.map((order) => {
+        // Only update real-time profit for open positions; closed orders have a fixed P/L from DB
+        if (order.status !== "OPEN") return order;
+
         const u = localUpdates.get(order.symbol);
         if (!u) return order;
 
