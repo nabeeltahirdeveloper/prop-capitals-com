@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   TrendingUp,
   TrendingDown,
   Clock,
   Download,
   Search,
-  Loader2
+  Loader2,
+  RefreshCw
 } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
 import { useTrading } from '@/contexts/TradingContext';
+import { useChallenges } from '@/contexts/ChallengesContext';
 
 const formatDateTime = (dateStr) => {
   if (!dateStr) return '-';
@@ -48,9 +50,25 @@ const escapeCsv = (val) => `"${String(val ?? '').replace(/"/g, '""')}"`;
 
 const OrdersPage = () => {
   const { isDark } = useTraderTheme();
-  const { orders, ordersLoading } = useTrading();
+  const { orders, ordersLoading, fetchOrders } = useTrading();
+  const { selectedChallengeId } = useChallenges();
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Refresh orders when this page mounts or the account changes.
+  // Only fetch once we have the account ID — avoids fetching the wrong account.
+  useEffect(() => {
+    if (selectedChallengeId) {
+      fetchOrders(selectedChallengeId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedChallengeId]);
+
+  const handleRefresh = useCallback(() => {
+    if (selectedChallengeId) {
+      fetchOrders(selectedChallengeId);
+    }
+  }, [fetchOrders, selectedChallengeId]);
 
   const filteredOrders = orders.filter(order => {
     if (activeTab === 'open') return order.status === 'OPEN';
@@ -106,14 +124,24 @@ const OrdersPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Orders</h2>
-        <button
-          onClick={handleExport}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'
-            }`}
-        >
-          <Download className="w-4 h-4" />
-          <span className="text-sm font-medium">Export</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleRefresh}
+            disabled={ordersLoading}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'} disabled:opacity-50`}
+          >
+            <RefreshCw className={`w-4 h-4 ${ordersLoading ? 'animate-spin' : ''}`} />
+            <span className="text-sm font-medium">Refresh</span>
+          </button>
+          <button
+            onClick={handleExport}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'
+              }`}
+          >
+            <Download className="w-4 h-4" />
+            <span className="text-sm font-medium">Export</span>
+          </button>
+        </div>
       </div>
 
       {/* Stats Cards */}
