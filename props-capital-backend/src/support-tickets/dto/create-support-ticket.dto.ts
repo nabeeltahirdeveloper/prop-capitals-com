@@ -3,6 +3,11 @@ import { Transform } from 'class-transformer';
 import { TicketCategory, TicketPriority } from '@prisma/client';
 
 export class CreateSupportTicketDto {
+  // Accept userId from body as a fallback for clients that pass it explicitly
+  @IsOptional()
+  @IsString()
+  userId?: string;
+
   @IsString()
   @IsNotEmpty()
   subject: string;
