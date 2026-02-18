@@ -229,13 +229,13 @@ export default function AdminSettings() {
               <Link className="w-4 h-4 mr-2 flex-shrink-0" />
               {t("admin.settings.tabs.integrations")}
             </TabsTrigger>
-            <TabsTrigger
+            {/* <TabsTrigger
               value="email"
               className="data-[state=active]:bg-card text-muted-foreground data-[state=active]:text-foreground text-xs sm:text-sm px-3 sm:px-4 py-2"
             >
               <Mail className="w-4 h-4 mr-2 flex-shrink-0" />
               {t("admin.settings.tabs.email")}
-            </TabsTrigger>
+            </TabsTrigger> */}
           </TabsList>
         </div>
 
@@ -422,7 +422,9 @@ export default function AdminSettings() {
                 </div>
                 <div
                   className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
-                    localPayment.stripe_enabled ? "bg-amber-500" : "bg-slate-600"
+                    localPayment.stripe_enabled
+                      ? "bg-amber-500"
+                      : "bg-slate-600"
                   } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
                   onClick={() => {
                     if (isLoading) return;
@@ -454,7 +456,7 @@ export default function AdminSettings() {
                       })
                     }
                     placeholder={t(
-                      "admin.settings.payments.stripeApiKeyPlaceholder"
+                      "admin.settings.payments.stripeApiKeyPlaceholder",
                     )}
                     className="bg-muted border-border text-foreground text-sm"
                     disabled={isLoading}
@@ -473,7 +475,9 @@ export default function AdminSettings() {
                 </div>
                 <div
                   className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
-                    localPayment.paypal_enabled ? "bg-amber-500" : "bg-slate-600"
+                    localPayment.paypal_enabled
+                      ? "bg-amber-500"
+                      : "bg-slate-600"
                   } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
                   onClick={() => {
                     if (isLoading) return;
@@ -502,7 +506,9 @@ export default function AdminSettings() {
                 </div>
                 <div
                   className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
-                    localPayment.crypto_enabled ? "bg-amber-500" : "bg-slate-600"
+                    localPayment.crypto_enabled
+                      ? "bg-amber-500"
+                      : "bg-slate-600"
                   } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
                   onClick={() => {
                     if (isLoading) return;

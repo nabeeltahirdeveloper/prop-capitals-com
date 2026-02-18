@@ -112,13 +112,14 @@ export default function AdminUsers() {
           console.error("Failed to update user role:", error);
           // You could add a toast notification here
         },
-      }
+      },
     );
   };
 
   // Map backend users to frontend format
   const mappedUsers = usersData.map((user) => {
     const profile = user.profile || {};
+    knk;
     const fullName =
       `${profile.firstName || ""} ${profile.lastName || ""}`.trim() || "User";
     const roleMap = {
@@ -197,10 +198,7 @@ export default function AdminUsers() {
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent
-            align="end"
-            className="bg-card border-border"
-          >
+          <DropdownMenuContent align="end" className="bg-card border-border">
             <DropdownMenuItem
               className="
         cursor-pointer
@@ -308,7 +306,7 @@ export default function AdminUsers() {
                 displayUsers.filter(
                   (u) =>
                     new Date(u.created_date) >
-                    new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+                    new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
                 ).length
               }
             </p>
@@ -415,7 +413,7 @@ export default function AdminUsers() {
                     {t(
                       `admin.users.roles.${
                         userDetails.role === "ADMIN" ? "admin" : "user"
-                      }`
+                      }`,
                     )}
                   </span>
                 </div>
@@ -440,7 +438,7 @@ export default function AdminUsers() {
                     {t(
                       `admin.users.roles.${
                         userDetails.role === "ADMIN" ? "admin" : "user"
-                      }`
+                      }`,
                     )}
                   </p>
                 </div>
@@ -475,7 +473,7 @@ export default function AdminUsers() {
                     {userDetails.createdAt
                       ? format(
                           new Date(userDetails.createdAt),
-                          "MMM d, yyyy HH:mm"
+                          "MMM d, yyyy HH:mm",
                         )
                       : "N/A"}
                   </p>

@@ -138,13 +138,18 @@ export default function Layout({ children, currentPageName }) {
     onSuccess: (_, id) => {
       queryClient.setQueryData(
         ["notifications", currentUser?.userId],
-        (oldData = []) => oldData.map((n) => (n.id === id ? { ...n, read: true } : n)),
+        (oldData = []) =>
+          oldData.map((n) => (n.id === id ? { ...n, read: true } : n)),
       );
-      queryClient.invalidateQueries({ queryKey: ["notifications", currentUser?.userId] });
+      queryClient.invalidateQueries({
+        queryKey: ["notifications", currentUser?.userId],
+      });
     },
     onError: (error) => {
       console.error("Failed to mark notification as read:", error);
-      queryClient.invalidateQueries({ queryKey: ["notifications", currentUser?.userId] });
+      queryClient.invalidateQueries({
+        queryKey: ["notifications", currentUser?.userId],
+      });
     },
   });
 
@@ -189,12 +194,24 @@ export default function Layout({ children, currentPageName }) {
 
   const traderNavItems = useMemo(
     () => [
-      { name: t("nav.dashboard"), icon: LayoutDashboard, page: "TraderDashboard" },
-      { name: t("nav.tradingTerminal"), icon: Activity, page: "TradingTerminal" },
+      {
+        name: t("nav.dashboard"),
+        icon: LayoutDashboard,
+        page: "TraderDashboard",
+      },
+      {
+        name: t("nav.tradingTerminal"),
+        icon: Activity,
+        page: "TradingTerminal",
+      },
       { name: t("nav.buyChallenge"), icon: Award, page: "TraderBuyChallenge" },
       { name: t("nav.myAccounts"), icon: TrendingUp, page: "MyAccounts" },
       { name: t("nav.accountDetails"), icon: FileText, page: "AccountDetails" },
-      { name: t("nav.challengeProgress"), icon: Target, page: "ChallengeProgress" },
+      {
+        name: t("nav.challengeProgress"),
+        icon: Target,
+        page: "ChallengeProgress",
+      },
       { name: t("nav.ruleCompliance"), icon: Shield, page: "RuleCompliance" },
       { name: t("nav.tradeHistory"), icon: FileText, page: "TradeHistory" },
       { name: t("nav.analytics"), icon: BarChart3, page: "Analytics" },
@@ -208,12 +225,20 @@ export default function Layout({ children, currentPageName }) {
 
   const adminNavItems = useMemo(
     () => [
-      { name: t("nav.overview"), icon: LayoutDashboard, page: "AdminDashboard" },
+      {
+        name: t("nav.overview"),
+        icon: LayoutDashboard,
+        page: "AdminDashboard",
+      },
       { name: t("nav.users"), icon: Users, page: "AdminUsers" },
       { name: t("nav.challenges"), icon: Award, page: "AdminChallenges" },
       { name: t("nav.accounts"), icon: TrendingUp, page: "AdminAccounts" },
       { name: t("nav.riskMonitor"), icon: Activity, page: "AdminRiskMonitor" },
-      { name: t("nav.brokerServers"), icon: Server, page: "AdminBrokerServers" },
+      {
+        name: t("nav.brokerServers"),
+        icon: Server,
+        page: "AdminBrokerServers",
+      },
       { name: t("nav.scaling"), icon: Zap, page: "AdminScaling" },
       { name: t("nav.payments"), icon: CreditCard, page: "AdminPayments" },
       { name: t("nav.payouts"), icon: Wallet, page: "AdminPayouts" },
@@ -245,7 +270,10 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     let activeSubmenu = null;
     navItems.forEach((item) => {
-      if (item.children && item.children.some((child) => child.page === currentPageName)) {
+      if (
+        item.children &&
+        item.children.some((child) => child.page === currentPageName)
+      ) {
         activeSubmenu = item.name;
       }
     });
@@ -261,7 +289,9 @@ export default function Layout({ children, currentPageName }) {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground font-medium">{t("common.loading")}</p>
+          <p className="text-muted-foreground font-medium">
+            {t("common.loading")}
+          </p>
         </div>
       </div>
     );
@@ -272,37 +302,63 @@ export default function Layout({ children, currentPageName }) {
   if (isPublicPage) {
     return (
       <div className="min-h-screen bg-slate-950">
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800">
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800  ">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
-              <Link to={createPageUrl("Home")} className="flex items-center gap-2">
+              <Link
+                to={createPageUrl("Home")}
+                className="flex items-center gap-2"
+              >
                 <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
-                <span className="text-lg sm:text-xl font-bold text-white">Prop Capitals</span>
+                <span className="text-lg sm:text-xl font-bold text-white">
+                  Prop Capitals
+                </span>
               </Link>
 
               {/* Desktop nav should start from lg+, but hide on XL screens */}
               <div className="hidden lg:flex xl:hidden items-center gap-6 lg:gap-8">
-                <Link to={createPageUrl("Home")} className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors">
+                <Link
+                  to={createPageUrl("Home")}
+                  className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors"
+                >
                   {t("nav.home")}
                 </Link>
-                <Link to={createPageUrl("Challenges")} className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors">
+                <Link
+                  to={createPageUrl("Challenges")}
+                  className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors"
+                >
                   {t("nav.challenges")}
                 </Link>
-                <Link to={createPageUrl("HowItWorks")} className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors">
+                <Link
+                  to={createPageUrl("HowItWorks")}
+                  className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors"
+                >
                   {t("nav.howItWorks")}
                 </Link>
-                <Link to={createPageUrl("ScalingPlan")} className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors">
+                <Link
+                  to={createPageUrl("ScalingPlan")}
+                  className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors"
+                >
                   {t("nav.scaling")}
                 </Link>
-                <Link to={createPageUrl("Rules")} className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors">
+                <Link
+                  to={createPageUrl("Rules")}
+                  className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors"
+                >
                   {t("nav.rules")}
                 </Link>
-                <Link to={createPageUrl("FAQ")} className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors">
+                <Link
+                  to={createPageUrl("FAQ")}
+                  className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors"
+                >
                   {t("nav.faq")}
                 </Link>
-                <Link to={createPageUrl("Contact")} className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors">
+                <Link
+                  to={createPageUrl("Contact")}
+                  className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors"
+                >
                   {t("nav.contact")}
                 </Link>
               </div>
@@ -315,7 +371,8 @@ export default function Layout({ children, currentPageName }) {
                 {currentUser ? (
                   <Link
                     to={createPageUrl(
-                      currentUser.role === "ADMIN" || currentUser.role === "admin"
+                      currentUser.role === "ADMIN" ||
+                        currentUser.role === "admin"
                         ? "AdminDashboard"
                         : "TraderDashboard",
                     )}
@@ -329,8 +386,15 @@ export default function Layout({ children, currentPageName }) {
                   </Link>
                 ) : (
                   <>
-                    <Link to={createPageUrl("SignIn")} className="hidden sm:block">
-                      <Button variant="ghost" size="sm" className="text-slate-300 hover:text-black text-xs sm:text-sm">
+                    <Link
+                      to={createPageUrl("SignIn")}
+                      className="hidden sm:block"
+                    >
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-slate-300 hover:text-black text-xs sm:text-sm"
+                      >
                         {t("nav.login")}
                       </Button>
                     </Link>
@@ -359,17 +423,29 @@ export default function Layout({ children, currentPageName }) {
 
         {sidebarOpen && (
           <>
-            <div className="fixed inset-0 bg-black/50 z-50 " onClick={() => setSidebarOpen(false)} />
+            <div
+              className="fixed inset-0 bg-black/50 z-50 "
+              onClick={() => setSidebarOpen(false)}
+            />
             <div className="fixed top-0 right-0 bottom-0 w-72 bg-slate-900 z-50  overflow-y-auto">
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-between p-4 border-b border-slate-800">
-                  <Link to={createPageUrl("Home")} className="flex items-center gap-2" onClick={() => setSidebarOpen(false)}>
+                  <Link
+                    to={createPageUrl("Home")}
+                    className="flex items-center gap-2"
+                    onClick={() => setSidebarOpen(false)}
+                  >
                     <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
                       <TrendingUp className="w-6 h-6 text-white" />
                     </div>
-                    <span className="text-xl font-bold text-white">Prop Capitals</span>
+                    <span className="text-xl font-bold text-white">
+                      Prop Capitals
+                    </span>
                   </Link>
-                  <button onClick={() => setSidebarOpen(false)} className="text-slate-400 hover:text-white">
+                  <button
+                    onClick={() => setSidebarOpen(false)}
+                    className="text-slate-400 hover:text-white"
+                  >
                     <X className="w-6 h-6" />
                   </button>
                 </div>
@@ -400,8 +476,14 @@ export default function Layout({ children, currentPageName }) {
                     <LanguageSwitcher />
                   </div>
                   {!currentUser && (
-                    <Link to={createPageUrl("SignIn")} onClick={() => setSidebarOpen(false)}>
-                      <Button variant="outline" className="w-full border-slate-700 text-black">
+                    <Link
+                      to={createPageUrl("SignIn")}
+                      onClick={() => setSidebarOpen(false)}
+                    >
+                      <Button
+                        variant="outline"
+                        className="w-full border-slate-700 text-black"
+                      >
                         {t("nav.login")}
                       </Button>
                     </Link>
@@ -420,7 +502,6 @@ export default function Layout({ children, currentPageName }) {
   // Protected layout (responsive + collapsible sidebar)
   return (
     <div className="min-h-screen bg-background flex w-full overflow-x-hidden">
-
       {/* Sidebar — group for hover-to-show toggle */}
       <aside
         className={`group fixed inset-y-0 left-0 z-50 bg-sidebar border-r border-sidebar-border transform transition-[width,transform] duration-300 ease-in-out
@@ -435,7 +516,9 @@ export default function Layout({ children, currentPageName }) {
             type="button"
             onClick={() => setSidebarCollapsed((v) => !v)}
             className="hidden lg:flex absolute -right-4 top-1/2 -translate-y-1/2 z-[60] h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:bg-amber-50 hover:text-[#d97706] hover:border-[#d97706] shadow-sm transition-all duration-200 focus:outline-none"
-            aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-label={
+              sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
+            }
             title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {sidebarCollapsed ? (
@@ -446,16 +529,18 @@ export default function Layout({ children, currentPageName }) {
           </button>
 
           {/* Logo + controls */}
-          <div className={`flex items-center justify-between h-16 shrink-0 border-b border-sidebar-border transition-all ${sidebarCollapsed ? "px-2" : "px-4"}`}>
+          <div
+            className={`flex items-center justify-center h-16 shrink-0 border-b border-sidebar-border transition-all ${sidebarCollapsed ? "px-2" : "px-4"}`}
+          >
             <Link
               to={createPageUrl("AdminDashboard")}
               onClick={() => setSidebarOpen(false)}
-              className={`flex items-center min-w-0 transition-all ${sidebarCollapsed ? "justify-center" : "gap-2"}`}
+              className={`flex items-center  min-w-0 transition-all ${sidebarCollapsed ? "justify-center" : "gap-2"}`}
               title="Admin Dashboard"
             >
-                <div className="w-10 h-10 shrink-0 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center text-[#0a0d12] font-black">
-                  PC
-                </div>
+              <div className="w-10 h-10 shrink-0 mx-auto bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center text-[#0a0d12] font-black ">
+                PC
+              </div>
               {!sidebarCollapsed && (
                 <span className="text-xl font-bold truncate text-sidebar-foreground">
                   PROP<span className="text-amber-500">CAPITALS</span>
@@ -474,7 +559,9 @@ export default function Layout({ children, currentPageName }) {
           </div>
 
           {/* Navigation */}
-          <nav className={`flex-1 py-6 space-y-1 overflow-y-auto overflow-x-hidden transition-all ${sidebarCollapsed ? "px-2" : "px-4"}`}>
+          <nav
+            className={`flex-1 py-6 space-y-1 overflow-y-auto overflow-x-hidden transition-all ${sidebarCollapsed ? "px-2" : "px-4"}`}
+          >
             {showAdminMenu && !sidebarCollapsed && (
               <div className="mb-4 px-2">
                 <Badge className="bg-amber-500/20 text-black-400 border-amber-500/30">
@@ -497,7 +584,9 @@ export default function Layout({ children, currentPageName }) {
 
               if (item.children) {
                 const isSubmenuOpen = openSubmenu === item.name;
-                const isAnyChildActive = item.children.some((child) => child.page === currentPageName);
+                const isAnyChildActive = item.children.some(
+                  (child) => child.page === currentPageName,
+                );
 
                 return (
                   <div key={`submenu-${item.name}`} className="space-y-1">
@@ -512,7 +601,9 @@ export default function Layout({ children, currentPageName }) {
                         setOpenSubmenu(isSubmenuOpen ? null : item.name);
                       }}
                       className={`w-full flex items-center transition-all ${
-                        sidebarCollapsed ? "justify-center px-2" : "justify-between px-3"
+                        sidebarCollapsed
+                          ? "justify-center px-2"
+                          : "justify-between px-3"
                       } py-2.5 rounded-xl ${
                         isAnyChildActive
                           ? "bg-amber-500/10 text-foreground border border-amber-500/40"
@@ -521,9 +612,17 @@ export default function Layout({ children, currentPageName }) {
                         }`}
                       title={sidebarCollapsed ? item.name : undefined}
                     >
-                      <div className={`flex items-center transition-all ${sidebarCollapsed ? "justify-center" : "gap-3"}`}>
-                        <item.icon className={`w-5 h-5 shrink-0 ${isAnyChildActive ? "text-amber-500" : ""}`} />
-                        {!sidebarCollapsed && <span className="font-medium truncate">{item.name}</span>}
+                      <div
+                        className={`flex items-center transition-all ${sidebarCollapsed ? "justify-center" : "gap-3"}`}
+                      >
+                        <item.icon
+                          className={`w-5 h-5 shrink-0 ${isAnyChildActive ? "text-amber-500" : ""}`}
+                        />
+                        {!sidebarCollapsed && (
+                          <span className="font-medium truncate">
+                            {item.name}
+                          </span>
+                        )}
                       </div>
 
                       {!sidebarCollapsed && (
@@ -547,8 +646,14 @@ export default function Layout({ children, currentPageName }) {
                                   : "text-muted-foreground hover:text-foreground hover:bg-accent"
                               }`}
                             >
-                              {child.icon && <child.icon className={`w-4 h-4 shrink-0 ${isChildActive ? "text-amber-500" : ""}`} />}
-                              <span className="text-sm font-medium">{child.name}</span>
+                              {child.icon && (
+                                <child.icon
+                                  className={`w-4 h-4 shrink-0 ${isChildActive ? "text-amber-500" : ""}`}
+                                />
+                              )}
+                              <span className="text-sm font-medium">
+                                {child.name}
+                              </span>
                             </Link>
                           );
                         })}
@@ -561,7 +666,10 @@ export default function Layout({ children, currentPageName }) {
               const isActive = currentPageName === item.page;
 
               const handleClick = (e) => {
-                if (currentPageName === "TradingTerminal" && item.page !== "TradingTerminal") {
+                if (
+                  currentPageName === "TradingTerminal" &&
+                  item.page !== "TradingTerminal"
+                ) {
                   e.preventDefault();
                   e.stopPropagation();
                   window.location.href = createPageUrl(item.page);
@@ -584,22 +692,32 @@ export default function Layout({ children, currentPageName }) {
                       : "text-muted-foreground hover:text-foreground hover:bg-accent"
                   }`}
                 >
-                  <item.icon className={`w-5 h-5 shrink-0 ${isActive ? "text-amber-500" : ""}`} />
-                  {!sidebarCollapsed && <span className="font-medium truncate min-w-0">{item.name}</span>}
+                  <item.icon
+                    className={`w-5 h-5 shrink-0 ${isActive ? "text-amber-500" : ""}`}
+                  />
+                  {!sidebarCollapsed && (
+                    <span className="font-medium truncate min-w-0">
+                      {item.name}
+                    </span>
+                  )}
                 </Link>
               );
             })}
           </nav>
 
           {/* User Section */}
-          <div className={`border-t border-sidebar-border transition-all ${sidebarCollapsed ? "p-2" : "p-4"}`}>
+          <div
+            className={`border-t border-sidebar-border transition-all ${sidebarCollapsed ? "p-2" : "p-4"}`}
+          >
             <div
               className={`flex items-center transition-all ${
                 sidebarCollapsed ? "justify-center" : "gap-3 px-3"
               } py-2`}
             >
               <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-[#0a0d12] font-bold">
-                {currentUser?.profile?.firstName?.[0] || currentUser?.email?.[0] || "U"}
+                {currentUser?.profile?.firstName?.[0] ||
+                  currentUser?.email?.[0] ||
+                  "U"}
               </div>
 
               {!sidebarCollapsed && (
@@ -607,7 +725,9 @@ export default function Layout({ children, currentPageName }) {
                   <p className="text-sm font-medium text-foreground truncate">
                     {currentUser?.profile?.firstName || t("nav.user")}
                   </p>
-                  <p className="text-xs text-muted-foreground truncate">{currentUser?.email}</p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {currentUser?.email}
+                  </p>
                 </div>
               )}
             </div>
@@ -637,7 +757,11 @@ export default function Layout({ children, currentPageName }) {
               className="flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
               aria-label="Toggle theme"
             >
-              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              {isDark ? (
+                <Sun className="w-5 h-5" />
+              ) : (
+                <Moon className="w-5 h-5" />
+              )}
             </button>
             <LanguageSwitcher />
 
@@ -651,13 +775,16 @@ export default function Layout({ children, currentPageName }) {
                 >
                   <Bell className="w-10 h-10" strokeWidth={2.4} />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center font-semibold">
+                    <span className="absolute -top-3 -right-3 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center font-semibold">
                       {unreadCount}
                     </span>
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80 bg-card border-border">
+              <DropdownMenuContent
+                align="end"
+                className="w-80 bg-card border-border"
+              >
                 <div className="p-4 border-b border-border">
                   <h3 className="font-semibold">{t("notifications.title")}</h3>
                 </div>
@@ -676,7 +803,9 @@ export default function Layout({ children, currentPageName }) {
                       <div className="flex items-start justify-between gap-3 w-full">
                         <div className="flex-1 min-w-0">
                           <p className="font-medium">{notif.title}</p>
-                          <p className="text-sm text-muted-foreground">{notif.message}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {notif.message}
+                          </p>
                         </div>
                         <Button
                           variant="ghost"
@@ -700,15 +829,23 @@ export default function Layout({ children, currentPageName }) {
             {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2 text-foreground hover:bg-accent">
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-2 text-foreground hover:bg-accent"
+                >
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-[#0a0d12] font-bold text-sm">
-                    {currentUser?.profile?.firstName?.[0] || currentUser?.email?.[0] || "U"}
+                    {currentUser?.profile?.firstName?.[0] ||
+                      currentUser?.email?.[0] ||
+                      "U"}
                   </div>
                   <ChevronDown className="w-4 h-4 text-muted-foreground data-[state=open]:text-foreground" />
                 </Button>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent align="end" className="w-56 bg-card border-border">
+              <DropdownMenuContent
+                align="end"
+                className="w-56 bg-card border-border"
+              >
                 <DropdownMenuItem
                   asChild
                   className="cursor-pointer focus:bg-accent data-[highlighted]:bg-accent"
@@ -720,7 +857,9 @@ export default function Layout({ children, currentPageName }) {
                       if (currentPageName === "TradingTerminal") {
                         e.preventDefault();
                         e.stopPropagation();
-                        window.location.href = createPageUrl(isAdmin ? "AdminProfile" : "Profile");
+                        window.location.href = createPageUrl(
+                          isAdmin ? "AdminProfile" : "Profile",
+                        );
                       }
                     }}
                   >
@@ -746,7 +885,9 @@ export default function Layout({ children, currentPageName }) {
           </div>
         </header>
 
-        <main className="p-4 lg:p-8 bg-background min-h-screen">{children}</main>
+        <main className="p-4 lg:p-8 bg-background min-h-screen">
+          {children}
+        </main>
       </div>
 
       {/* Mobile overlay: backdrop with blur */}
