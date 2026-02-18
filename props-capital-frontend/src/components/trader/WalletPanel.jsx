@@ -10,6 +10,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createTrade, updateTrade } from '@/api/trades';
 import { createPendingOrder } from '@/api/pending-orders';
 import { useToast } from '@/components/ui/use-toast';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const SPOT_SYMBOLS = [
   'BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'DOGEUSDT',
@@ -292,11 +299,18 @@ export default function WalletPanel({
                 {/* Asset */}
                 <div>
                   <label className={`text-xs ${muted} mb-1 block`}>Asset</label>
-                  <select value={orderSymbol} onChange={(e) => setOrderSymbol(e.target.value)} className={selectClass}>
-                    {SPOT_SYMBOLS.map((s) => (
-                      <option key={s} value={s}>{s.replace('USDT', '')} — {SYMBOL_LABELS[s] || s}</option>
-                    ))}
-                  </select>
+                  <Select value={orderSymbol} onValueChange={setOrderSymbol}>
+                    <SelectTrigger className={`h-auto py-2 px-3 rounded-lg border text-sm pr-8 focus:ring-1 focus:ring-amber-500 focus:outline-none ${isDark ? 'bg-[#0a0d12] border-white/10 text-white data-[state=open]:border-amber-500/50' : 'bg-slate-50 border-slate-200 text-slate-900'}`}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className={isDark ? 'bg-[#1a1f2a] border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'}>
+                      {SPOT_SYMBOLS.map((s) => (
+                        <SelectItem key={s} value={s} className={isDark ? 'text-white focus:bg-amber-500/20 focus:text-amber-400' : 'text-slate-900 focus:bg-amber-50 focus:text-amber-700'}>
+                          {s.replace('USDT', '')} — {SYMBOL_LABELS[s] || s}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className={`text-xs ${muted}`}>
@@ -341,18 +355,18 @@ export default function WalletPanel({
                   <>
                     <div>
                       <label className={`text-xs ${muted} mb-1 block`}>Asset</label>
-                      <select
-                        value={sellAsset}
-                        onChange={(e) => { setSellAsset(e.target.value); setSellQty(''); }}
-                        className={selectClass}
-                      >
-                        <option value="">— Select asset —</option>
-                        {holdings.map((h) => (
-                          <option key={h.asset} value={h.asset}>
-                            {h.asset} — {h.totalQty.toFixed(6)} available
-                          </option>
-                        ))}
-                      </select>
+                      <Select value={sellAsset} onValueChange={(val) => { setSellAsset(val); setSellQty(''); }}>
+                        <SelectTrigger className={`h-auto py-2 px-3 rounded-lg border text-sm pr-8 focus:ring-1 focus:ring-amber-500 focus:outline-none ${isDark ? 'bg-[#0a0d12] border-white/10 text-white data-[state=open]:border-amber-500/50' : 'bg-slate-50 border-slate-200 text-slate-900'}`}>
+                          <SelectValue placeholder="— Select asset —" />
+                        </SelectTrigger>
+                        <SelectContent className={isDark ? 'bg-[#1a1f2a] border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'}>
+                          {holdings.map((h) => (
+                            <SelectItem key={h.asset} value={h.asset} className={isDark ? 'text-white focus:bg-amber-500/20 focus:text-amber-400' : 'text-slate-900 focus:bg-amber-50 focus:text-amber-700'}>
+                              {h.asset} — {h.totalQty.toFixed(6)} available
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     {sellHolding && (

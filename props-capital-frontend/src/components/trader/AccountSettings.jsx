@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin, Shield, Bell, Key, Save, Loader2, ChevronDown } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Shield, Bell, Key, Save, Loader2 } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from '@/components/ui/button';
 import { useTraderTheme } from './TraderPanelLayout';
@@ -10,6 +10,13 @@ import {
   changePassword,
   updateNotificationPreferences,
 } from '@/api/profile';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const AccountSettings = () => {
   const { toast } = useToast();
@@ -157,23 +164,32 @@ const AccountSettings = () => {
       : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'
   }`;
 
-  // Reusable styled select wrapper + class
-  const SelectField = ({ name, value, onChange, children }) => (
-    <div className="relative">
-      <select
-        name={name}
-        value={value}
-        onChange={onChange}
-        className={`w-full appearance-none rounded-xl px-4 pr-10 py-3 focus:outline-none focus:border-amber-500/50 border cursor-pointer ${
+  // Reusable styled select wrapper using Radix Select
+  const SelectField = ({ value, onValueChange, options }) => (
+    <Select value={value} onValueChange={onValueChange}>
+      <SelectTrigger
+        className={`w-full px-4 py-3 h-auto rounded-xl border pr-3 focus:outline-none focus:border-amber-500/50 focus:ring-0 ${
           isDark
-            ? 'bg-[#0d1117] border-white/10 text-white'
+            ? 'bg-[#0d1117] border-white/10 text-white data-[state=open]:border-amber-500/50'
             : 'bg-slate-50 border-slate-200 text-slate-900'
         }`}
       >
-        {children}
-      </select>
-      <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${isDark ? 'text-gray-400' : 'text-slate-500'}`} />
-    </div>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent
+        className={isDark ? 'bg-[#1a1f2a] border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'}
+      >
+        {options.map((opt) => (
+          <SelectItem
+            key={opt.value}
+            value={opt.value}
+            className={isDark ? 'text-white focus:bg-amber-500/20 focus:text-amber-400' : 'text-slate-900 focus:bg-amber-50 focus:text-amber-700'}
+          >
+            {opt.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 
   const labelCls = `text-sm block mb-1 ${isDark ? 'text-gray-400' : 'text-slate-500'}`;
@@ -347,19 +363,27 @@ const AccountSettings = () => {
 
             <div>
               <label className={labelCls}>Default Leverage</label>
-              <SelectField name="leverage" value={profile.leverage} onChange={handleInputChange}>
-                <option value="1:100">1:100</option>
-                <option value="1:50">1:50</option>
-                <option value="1:30">1:30</option>
-              </SelectField>
+              <SelectField
+                value={profile.leverage}
+                onValueChange={(val) => setProfile(prev => ({ ...prev, leverage: val, isEdit: true }))}
+                options={[
+                  { value: '1:100', label: '1:100' },
+                  { value: '1:50', label: '1:50' },
+                  { value: '1:30', label: '1:30' },
+                ]}
+              />
             </div>
 
             <div>
               <label className={labelCls}>Chart Theme</label>
-              <SelectField name="theme" value={profile.theme} onChange={handleInputChange}>
-                <option value="dark">Dark</option>
-                <option value="light">Light</option>
-              </SelectField>
+              <SelectField
+                value={profile.theme}
+                onValueChange={(val) => setProfile(prev => ({ ...prev, theme: val, isEdit: true }))}
+                options={[
+                  { value: 'dark', label: 'Dark' },
+                  { value: 'light', label: 'Light' },
+                ]}
+              />
             </div>
           </div>
         </div>
