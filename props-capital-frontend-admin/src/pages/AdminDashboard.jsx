@@ -101,7 +101,7 @@ export default function AdminDashboard() {
           if (!item || !item.date) return null;
 
           const dateObj = new Date(item.date);
-          
+
           if (isNaN(dateObj.getTime())) {
             console.warn("Invalid date in revenue chart:", item.date);
             return null;
@@ -124,41 +124,43 @@ export default function AdminDashboard() {
   const recentAccounts = React.useMemo(() => {
     if (!Array.isArray(recentAccountsData)) return [];
 
-    return recentAccountsData.map((account) => {
-      try {
-        const challenge = account?.challenge || {};
-        const statusMap = {
-          ACTIVE: "active",
-          PAUSED: "paused",
-          CLOSED: "closed",
-        };
-        const phaseMap = {
-          PHASE1: "phase1",
-          PHASE2: "phase2",
-          FUNDED: "funded",
-          FAILED: "failed",
-        };
+    return recentAccountsData
+      .map((account) => {
+        try {
+          const challenge = account?.challenge || {};
+          const statusMap = {
+            ACTIVE: "active",
+            PAUSED: "paused",
+            CLOSED: "closed",
+          };
+          const phaseMap = {
+            PHASE1: "phase1",
+            PHASE2: "phase2",
+            FUNDED: "funded",
+            FAILED: "failed",
+          };
 
-        return {
-          id: account?.id || "",
-          account_number:
-            account?.brokerLogin || account?.id?.slice(0, 8) || "N/A",
-          platform: challenge?.platform || "MT5",
-          status:
-            statusMap[account?.status] ||
-            account?.status?.toLowerCase() ||
-            "active",
-          current_phase:
-            phaseMap[account?.phase] ||
-            account?.phase?.toLowerCase() ||
-            "phase1",
-          created_date: account?.createdAt || null,
-        };
-      } catch (error) {
-        console.error("Error mapping account:", account, error);
-        return null;
-      }
-    }).filter(Boolean);
+          return {
+            id: account?.id || "",
+            account_number:
+              account?.brokerLogin || account?.id?.slice(0, 8) || "N/A",
+            platform: challenge?.platform || "MT5",
+            status:
+              statusMap[account?.status] ||
+              account?.status?.toLowerCase() ||
+              "active",
+            current_phase:
+              phaseMap[account?.phase] ||
+              account?.phase?.toLowerCase() ||
+              "phase1",
+            created_date: account?.createdAt || null,
+          };
+        } catch (error) {
+          console.error("Error mapping account:", account, error);
+          return null;
+        }
+      })
+      .filter(Boolean);
   }, [recentAccountsData]);
 
   // SAFE: Helper function to extract percentage from message
@@ -176,27 +178,29 @@ export default function AdminDashboard() {
   const recentViolations = React.useMemo(() => {
     if (!Array.isArray(recentViolationsData)) return [];
 
-    return recentViolationsData.map((violation) => {
-      try {
-        const violationType = violation?.type?.toLowerCase() || "unknown";
-        const threshold = extractPercentage(violation?.message) || 5;
-        
-        return {
-          id: violation?.id || "",
-          type: violationType,
-          description:
-            violation?.message ||
-            t(`admin.dashboard.violations.${violationType}.description`, {
-              defaultValue: `${violation?.type || "Unknown"} violation`,
-            }),
-          threshold: threshold,
-          created_date: violation?.createdAt || null,
-        };
-      } catch (error) {
-        console.error("Error mapping violation:", violation, error);
-        return null;
-      }
-    }).filter(Boolean);
+    return recentViolationsData
+      .map((violation) => {
+        try {
+          const violationType = violation?.type?.toLowerCase() || "unknown";
+          const threshold = extractPercentage(violation?.message) || 5;
+
+          return {
+            id: violation?.id || "",
+            type: violationType,
+            description:
+              violation?.message ||
+              t(`admin.dashboard.violations.${violationType}.description`, {
+                defaultValue: `${violation?.type || "Unknown"} violation`,
+              }),
+            threshold: threshold,
+            created_date: violation?.createdAt || null,
+          };
+        } catch (error) {
+          console.error("Error mapping violation:", violation, error);
+          return null;
+        }
+      })
+      .filter(Boolean);
   }, [recentViolationsData, t]);
 
   const displayRecentAccounts = recentAccounts;
@@ -274,11 +278,18 @@ export default function AdminDashboard() {
   ];
 
   // Show global loading state
-  if (overviewLoading && accountsLoading && violationsLoading && revenueLoading) {
+  if (
+    overviewLoading &&
+    accountsLoading &&
+    violationsLoading &&
+    revenueLoading
+  ) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
-        <span className="ml-3 text-muted-foreground font-medium">Loading dashboard...</span>
+        <span className="ml-3 text-muted-foreground font-medium">
+          Loading dashboard...
+        </span>
       </div>
     );
   }
@@ -288,7 +299,9 @@ export default function AdminDashboard() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <AlertTriangle className="w-12 h-12 text-red-500 mb-4" />
-        <h2 className="text-xl font-bold text-foreground mb-2">Failed to Load Dashboard</h2>
+        <h2 className="text-xl font-bold text-foreground mb-2">
+          Failed to Load Dashboard
+        </h2>
         <p className="text-muted-foreground mb-4">
           {overviewErrorObj?.message || "An unexpected error occurred"}
         </p>
@@ -403,7 +416,7 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
-        
+
         {revenueLoading ? (
           <div className="h-[300px] flex items-center justify-center">
             <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
@@ -421,11 +434,23 @@ export default function AdminDashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={revenueData}>
                 <defs>
-                  <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient
+                    id="revenueGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
                     <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
                     <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                   </linearGradient>
-                  <linearGradient id="payoutGradient" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient
+                    id="payoutGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
                     <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3} />
                     <stop offset="95%" stopColor="#a855f7" stopOpacity={0} />
                   </linearGradient>
@@ -518,7 +543,7 @@ export default function AdminDashboard() {
             </div>
           )}
         </Card>
-
+        fekndc
         {/* Recent Violations */}
         <Card className="bg-card border-border p-4 sm:p-6">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
@@ -560,7 +585,7 @@ export default function AdminDashboard() {
       {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <Link to={createPageUrl("AdminUsers")}>
-        <Card className="bg-card border-border p-3 sm:p-4 hover:border-emerald-500/50 transition-colors cursor-pointer h-full">
+          <Card className="bg-card border-border p-3 sm:p-4 hover:border-emerald-500/50 transition-colors cursor-pointer h-full">
             <div className="flex items-center gap-2 sm:gap-3">
               <Users className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 flex-shrink-0" />
               <span className="text-foreground font-medium text-xs sm:text-sm">
@@ -570,7 +595,7 @@ export default function AdminDashboard() {
           </Card>
         </Link>
         <Link to={createPageUrl("AdminChallenges")}>
-        <Card className="bg-card border-border p-3 sm:p-4 hover:border-cyan-500/50 transition-colors cursor-pointer h-full">
+          <Card className="bg-card border-border p-3 sm:p-4 hover:border-cyan-500/50 transition-colors cursor-pointer h-full">
             <div className="flex items-center gap-2 sm:gap-3">
               <Award className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400 flex-shrink-0" />
               <span className="text-foreground font-medium text-xs sm:text-sm">
@@ -580,7 +605,7 @@ export default function AdminDashboard() {
           </Card>
         </Link>
         <Link to={createPageUrl("AdminPayouts")}>
-        <Card className="bg-card border-border p-3 sm:p-4 hover:border-purple-500/50 transition-colors cursor-pointer h-full">
+          <Card className="bg-card border-border p-3 sm:p-4 hover:border-purple-500/50 transition-colors cursor-pointer h-full">
             <div className="flex items-center gap-2 sm:gap-3">
               <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400 flex-shrink-0" />
               <span className="text-foreground font-medium text-xs sm:text-sm">
@@ -590,7 +615,7 @@ export default function AdminDashboard() {
           </Card>
         </Link>
         <Link to={createPageUrl("AdminSettings")}>
-        <Card className="bg-card border-border p-3 sm:p-4 hover:border-amber-500/50 transition-colors cursor-pointer h-full">
+          <Card className="bg-card border-border p-3 sm:p-4 hover:border-amber-500/50 transition-colors cursor-pointer h-full">
             <div className="flex items-center gap-2 sm:gap-3">
               <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 flex-shrink-0" />
               <span className="text-foreground font-medium text-xs sm:text-sm">
