@@ -7,7 +7,7 @@
 | Item | Detail |
 |------|--------|
 | **File** | `src/lib/socket.js` |
-| **URL** | `VITE_API_URL` (e.g. `https://dev-api.prop-capitals.com`) |
+| **URL** | `VITE_API_URL` (e.g. `https://api-dev.prop-capitals.com`) |
 | **Namespace** | `/trading` |
 | **Auth** | JWT in `auth: { token }` (localStorage: `token` / `accessToken` / `jwt_token`) |
 | **Connect kab** | `autoConnect: false` → token milte hi `tryConnect()` (page load + `storage` event). Login ke baad `reconnectSocketWithToken()` (AuthContext) bulaata hai. |

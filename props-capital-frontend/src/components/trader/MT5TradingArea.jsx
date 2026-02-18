@@ -249,7 +249,7 @@ const MT5TradingArea = ({
     if (!selectedSymbol || !selectedTimeframe) return;
 
     const WEBSOCKET_URL =
-      import.meta.env.VITE_WEBSOCKET_URL || "https://dev-api.prop-capitals.com";
+      import.meta.env.VITE_WEBSOCKET_URL || "https://api-dev.prop-capitals.com";
     const symbolStr = selectedSymbol.symbol || selectedSymbol;
     const timeframeStr = selectedTimeframe || "M1";
 
