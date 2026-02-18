@@ -304,7 +304,7 @@ const TraderPanelLayoutInner = () => {
             className={`h-16 flex items-center justify-between px-4 border-b ${isDark ? "border-white/5" : "border-slate-200"}`}
           >
             <Link
-              to="/traderdashboard"
+              to="/"
               className="flex items-center gap-3"
               onClick={handleNavClick}
             >
