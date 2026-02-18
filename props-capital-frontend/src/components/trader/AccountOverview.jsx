@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   TrendingUp,
   TrendingDown,
@@ -6,68 +6,22 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
-  DollarSign,
   Activity,
   ArrowRight,
   Shield,
   Zap,
   Award,
   AlertCircle,
-  BarChart3,
-  X,
-  Calendar,
   Check
 } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
 import { useChallenges, challengeTypes } from '@/contexts/ChallengesContext';
 import { usePlatformTokensStore } from '@/lib/stores/platform-tokens.store';
-
-// Generate demo chart data
-const generateChartData = (startBalance, currentBalance) => {
-  const data = [];
-  let value = startBalance;
-  const target = currentBalance;
-  for (let i = 0; i < 30; i++) {
-    const progress = i / 29;
-    value = startBalance + (target - startBalance) * progress + (Math.random() - 0.5) * (startBalance * 0.01);
-    data.push({ day: i + 1, value: Math.max(startBalance * 0.9, value) });
-  }
-  data[data.length - 1].value = currentBalance;
-  return data;
-};
-
-// Generate trade calendar data
-const generateCalendarData = () => {
-  const data = [];
-  for (let i = 1; i <= 28; i++) {
-    const hasTraded = Math.random() > 0.4;
-    if (hasTraded) {
-      const profit = (Math.random() - 0.35) * 2000;
-      data.push({ day: i, profit: Math.round(profit * 100) / 100, trades: Math.floor(Math.random() * 10) + 1 });
-    } else {
-      data.push({ day: i, profit: 0, trades: 0 });
-    }
-  }
-  return data;
-};
-
-const calendarData = generateCalendarData();
-
-// Static orders data for clicked calendar day
-const calendarOrders = {
-  1: [
-    { id: 'ORD-1-1', symbol: 'EUR/USD', type: 'buy', lots: '0.30', openTime: '09:15', closeTime: '11:30', profit: 125.50 },
-    { id: 'ORD-1-2', symbol: 'GBP/USD', type: 'sell', lots: '0.20', openTime: '14:22', closeTime: '16:45', profit: -45.00 },
-  ],
-  2: [
-    { id: 'ORD-2-1', symbol: 'USD/JPY', type: 'buy', lots: '0.50', openTime: '08:00', closeTime: '12:15', profit: 310.00 },
-  ],
-  3: [
-    { id: 'ORD-3-1', symbol: 'EUR/USD', type: 'buy', lots: '0.25', openTime: '10:30', closeTime: '14:00', profit: 88.75 },
-    { id: 'ORD-3-2', symbol: 'AUD/USD', type: 'sell', lots: '0.40', openTime: '15:00', closeTime: '17:30', profit: 156.20 },
-    { id: 'ORD-3-3', symbol: 'NZD/USD', type: 'buy', lots: '0.15', openTime: '09:45', closeTime: '11:20', profit: -28.50 },
-  ],
-};
+import { useQuery } from '@tanstack/react-query';
+import { getCurrentUser } from '@/api/auth';
+import { getAnalytics } from '@/api/accounts';
+import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
+import { dayjs } from '@/lib/utils';
 
 // ComplianceIndicator moved outside to prevent re-renders
 const ComplianceIndicator = ({ label, data, icon: Icon, type = 'progress', isDark }) => {
@@ -120,7 +74,6 @@ const ComplianceIndicator = ({ label, data, icon: Icon, type = 'progress', isDar
 
 const AccountOverview = () => {
   const { isDark } = useTraderTheme();
-  const [selectedDay, setSelectedDay] = useState(null);
   const {
     challenges,
     selectedChallenge,
@@ -131,6 +84,17 @@ const AccountOverview = () => {
     loading
   } = useChallenges();
   const pinnedAccounts = usePlatformTokensStore((state) => state.pinnedAccounts || []);
+
+  const { data: user } = useQuery({
+    queryKey: ['user', 'me'],
+    queryFn: getCurrentUser,
+  });
+
+  const { data: analytics, isLoading: isLoadingAnalytics } = useQuery({
+    queryKey: ['analytics', user?.userId, selectedChallenge?.id],
+    queryFn: () => getAnalytics(user.userId, selectedChallenge.accountId),
+    enabled: !!user?.userId && !!selectedChallenge?.accountId,
+  });
 
   if (loading) {
     return (
@@ -149,10 +113,29 @@ const AccountOverview = () => {
     return <div className={`text-center py-12 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>No challenges found. Buy a challenge to get started!</div>;
   }
 
-  const chartData = generateChartData(selectedChallenge.accountSize, selectedChallenge.currentBalance);
+  const compliance = getRuleCompliance(selectedChallenge);
   const profitAmount = selectedChallenge.currentBalance - selectedChallenge.accountSize;
   const profitPercent = (profitAmount / selectedChallenge.accountSize) * 100;
-  const compliance = getRuleCompliance(selectedChallenge);
+
+  const equityCurveData = analytics?.equityCurve || [];
+
+  // Build calendar grid for current month from dailyPnL API data
+  const now = dayjs();
+  const daysInMonth = now.daysInMonth();
+  const currentMonthStr = now.format('MMM'); // e.g. "Feb"
+  const pnlByDay = {};
+  (analytics?.dailyPnL || []).forEach(({ date, pnl }) => {
+    // date format: "Feb 18" — only include entries for current month
+    const [mon, dayStr] = date.split(' ');
+    if (mon === currentMonthStr) {
+      pnlByDay[parseInt(dayStr, 10)] = pnl;
+    }
+  });
+  const calendarData = Array.from({ length: daysInMonth }, (_, i) => {
+    const day = i + 1;
+    const profit = pnlByDay[day] ?? 0;
+    return { day, profit, trades: profit !== 0 ? 1 : 0 };
+  });
   const pinnedChallenges = pinnedAccounts
     .map((id) => challenges.find((challenge) => challenge.id === id))
     .filter(Boolean)
@@ -240,7 +223,7 @@ const AccountOverview = () => {
                 </div>
 
                 <div className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                  {challenge.accountId} • {challenge.platform}
+                  #{challenge.accountId?.slice(0, 4)} • {challenge.platform}
                 </div>
 
                 {/* Progress mini bar */}
@@ -270,7 +253,7 @@ const AccountOverview = () => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Platform ID</p>
-              <p className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedChallenge.accountId}</p>
+              <p className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedChallenge.accountId?.slice(0, 4)}</p>
             </div>
             <div>
               <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Platform</p>
@@ -412,8 +395,8 @@ const AccountOverview = () => {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Account Balance Chart */}
-        <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
-          <div className="flex items-center justify-between mb-6">
+        <div className={`rounded-2xl border p-6 flex flex-col ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
+          <div className="flex items-center justify-between mb-4">
             <h3 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>Account Balance</h3>
             <div className={`flex items-center gap-2 ${profitPercent >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
               {profitPercent >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
@@ -421,68 +404,79 @@ const AccountOverview = () => {
             </div>
           </div>
 
-          {/* Simple SVG Chart */}
-          <div className="relative h-48">
-            <svg viewBox="0 0 400 150" className="w-full h-full">
-              <defs>
-                <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor={profitPercent >= 0 ? "rgb(16, 185, 129)" : "rgb(239, 68, 68)"} stopOpacity="0.3" />
-                  <stop offset="100%" stopColor={profitPercent >= 0 ? "rgb(16, 185, 129)" : "rgb(239, 68, 68)"} stopOpacity="0" />
-                </linearGradient>
-              </defs>
-
-              {/* Grid lines */}
-              {[0, 1, 2, 3].map((i) => (
-                <line key={i} x1="0" y1={i * 50} x2="400" y2={i * 50} stroke={isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"} strokeWidth="1" />
-              ))}
-
-              {/* Area */}
-              <path
-                d={`M 0 150 ${chartData.map((d, i) => `L ${(i / (chartData.length - 1)) * 400} ${150 - ((d.value - selectedChallenge.accountSize * 0.9) / (selectedChallenge.accountSize * 0.2)) * 150}`).join(' ')} L 400 150 Z`}
-                fill="url(#chartGradient)"
-              />
-
-              {/* Line */}
-              <path
-                d={`M ${chartData.map((d, i) => `${(i / (chartData.length - 1)) * 400} ${150 - ((d.value - selectedChallenge.accountSize * 0.9) / (selectedChallenge.accountSize * 0.2)) * 150}`).join(' L ')}`}
-                fill="none"
-                stroke={profitPercent >= 0 ? "rgb(16, 185, 129)" : "rgb(239, 68, 68)"}
-                strokeWidth="2"
-              />
-            </svg>
-
-            {/* Current Value Badge */}
-            <div className={`absolute top-4 right-4 px-3 py-1 rounded-lg text-sm font-bold ${profitPercent >= 0 ? 'bg-emerald-500/20 text-emerald-500' : 'bg-red-500/20 text-red-500'
-              }`}>
-              ${selectedChallenge.currentBalance.toLocaleString()}
+          {isLoadingAnalytics ? (
+            <div className="flex items-center justify-center h-48">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" />
             </div>
-          </div>
+          ) : equityCurveData.length === 0 ? (
+            <div className="flex-1 flex items-center justify-center">
+              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>No equity data yet</p>
+            </div>
+          ) : (
+            <div className="relative h-48">
+              {/* Current balance badge */}
+              <div className="absolute top-2 right-2 z-10 px-3 py-1 rounded-lg text-sm font-bold bg-emerald-500/20 text-emerald-500">
+                ${selectedChallenge.currentBalance.toLocaleString()}
+              </div>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={equityCurveData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="balanceGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="equityGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <Tooltip
+                    contentStyle={{ backgroundColor: isDark ? '#1a1f2e' : '#fff', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
+                    labelStyle={{ color: isDark ? '#9ca3af' : '#64748b' }}
+                    itemStyle={{ color: '#fff' }}
+                    formatter={(value, name) => [`$${Number(value).toLocaleString()}`, name === 'balance' ? 'Balance' : 'Equity']}
+                  />
+                  <Area type="monotone" dataKey="balance" stroke="#3b82f6" strokeWidth={2} fill="url(#balanceGrad)" dot={false} />
+                  <Area type="monotone" dataKey="equity" stroke="#10b981" strokeWidth={2} fill="url(#equityGrad)" dot={false} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </div>
 
         {/* Trade Calendar */}
         <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           <div className="flex items-center justify-between mb-6">
             <h3 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>Trade Calendar</h3>
-            <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Click a day to view details</p>
+            <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{dayjs().format('MMMM YYYY')}</p>
           </div>
 
           {/* Calendar Grid */}
+          {isLoadingAnalytics ? (
+            <div className="flex items-center justify-center h-40">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" />
+            </div>
+          ) : (
           <div className="grid grid-cols-7 gap-1">
             {/* Day headers */}
             {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
               <div key={day} className={`text-center text-xs py-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{day}</div>
             ))}
 
-            {/* Calendar days - clickable */}
+            {/* Offset empty cells so day 1 lands on the correct weekday */}
+            {Array.from({ length: (dayjs().startOf('month').day() + 6) % 7 }).map((_, i) => (
+              <div key={`offset-${i}`} />
+            ))}
+
+            {/* Calendar days */}
             {calendarData.map((day) => (
-              <button
+              <div
                 key={day.day}
-                onClick={() => day.trades > 0 && setSelectedDay(day)}
-                className={`aspect-square rounded-lg flex flex-col items-center justify-center text-xs font-medium transition-all ${day.trades > 0
+                className={`aspect-square rounded-lg flex flex-col items-center justify-center text-xs font-medium ${day.trades > 0
                   ? day.profit >= 0
-                    ? 'bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500/30 cursor-pointer'
-                    : 'bg-red-500/20 text-red-500 hover:bg-red-500/30 cursor-pointer'
-                  : isDark ? 'bg-white/5 text-gray-600 cursor-default' : 'bg-slate-100 text-slate-400 cursor-default'
+                    ? 'bg-emerald-500/20 text-emerald-500'
+                    : 'bg-red-500/20 text-red-500'
+                  : isDark ? 'bg-white/5 text-gray-600' : 'bg-slate-100 text-slate-400'
                   }`}
               >
                 <span className={`text-[10px] ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{day.day}</span>
@@ -491,9 +485,10 @@ const AccountOverview = () => {
                     {day.profit >= 0 ? '+' : ''}{day.profit.toFixed(0)}
                   </span>
                 )}
-              </button>
+              </div>
             ))}
           </div>
+          )}
 
           {/* Calendar Footer */}
           <div className={`flex items-center justify-between mt-4 pt-4 border-t text-sm ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
@@ -512,84 +507,6 @@ const AccountOverview = () => {
           </div>
         </div>
       </div>
-
-      {/* Day Details Modal */}
-      {selectedDay && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedDay(null)}>
-          <div className={`w-full max-w-2xl rounded-2xl border max-h-[80vh] overflow-hidden ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`} onClick={e => e.stopPropagation()}>
-            {/* Modal Header */}
-            <div className={`p-4 border-b flex items-center justify-between ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
-              <div className="flex items-center gap-3">
-                <Calendar className={`w-5 h-5 ${isDark ? 'text-amber-500' : 'text-amber-600'}`} />
-                <h3 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  Day {selectedDay.day} - Trading Activity
-                </h3>
-              </div>
-              <button
-                onClick={() => setSelectedDay(null)}
-                className={`p-2 rounded-lg transition-all ${isDark ? 'hover:bg-white/10 text-gray-400' : 'hover:bg-slate-100 text-slate-500'}`}
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Summary Stats */}
-            <div className={`p-4 border-b ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
-              <div className="grid grid-cols-3 gap-4">
-                <div className={`p-3 rounded-xl ${isDark ? 'bg-white/5' : 'bg-slate-50'}`}>
-                  <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Total Trades</p>
-                  <p className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedDay.trades}</p>
-                </div>
-                <div className={`p-3 rounded-xl ${isDark ? 'bg-white/5' : 'bg-slate-50'}`}>
-                  <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Day P/L</p>
-                  <p className={`text-xl font-bold ${selectedDay.profit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                    {selectedDay.profit >= 0 ? '+' : ''}${selectedDay.profit.toFixed(2)}
-                  </p>
-                </div>
-                <div className={`p-3 rounded-xl ${isDark ? 'bg-white/5' : 'bg-slate-50'}`}>
-                  <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Win Rate</p>
-                  <p className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    {selectedDay.trades > 0 ? `${Math.min(50 + selectedDay.day * 2, 80)}%` : '0%'}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Orders List */}
-            <div className="overflow-y-auto max-h-[400px] p-4">
-              <p className={`font-semibold mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>Orders</p>
-              {(calendarOrders[selectedDay.day] || []).length > 0 ? (
-                <div className="space-y-2">
-                  {(calendarOrders[selectedDay.day] || []).map((order) => (
-                    <div key={order.id} className={`p-3 rounded-xl ${isDark ? 'bg-white/5' : 'bg-slate-50'}`}>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{order.symbol}</span>
-                          <span className={`px-2 py-0.5 rounded text-xs font-bold ${order.type === 'buy' ? 'bg-emerald-500/20 text-emerald-500' : 'bg-red-500/20 text-red-500'
-                            }`}>
-                            {order.type.toUpperCase()}
-                          </span>
-                          <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{order.lots} lots</span>
-                        </div>
-                        <span className={`font-bold ${order.profit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                          {order.profit >= 0 ? '+' : ''}${order.profit.toFixed(2)}
-                        </span>
-                      </div>
-                      <div className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                        {order.openTime} - {order.closeTime}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className={`text-center py-8 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                  No detailed order data available for this day
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Bottom Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

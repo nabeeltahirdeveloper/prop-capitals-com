@@ -489,14 +489,14 @@ const TraderPanelLayoutInner = () => {
                       <h1
                         className={`font-bold text-base sm:hidden ${isDark ? "text-white" : "text-slate-900"}`}
                       >
-                        {`Account ${selectedChallenge.accountId}`}
+                        {`Account #${selectedChallenge.accountId.substring(0, 4)}`}
                       </h1>
                       <div className="hidden sm:flex flex-col gap-1">
                         <div className="flex items-center gap-2">
                           <h1
                             className={`font-bold text-xl ${isDark ? "text-white" : "text-slate-900"}`}
                           >
-                            {`Account ${selectedChallenge.accountId}`}
+                            {`Account #${selectedChallenge.accountId.substring(0, 4)}`}
                           </h1>
                           <span
                             className={`px-2 py-1 text-xs font-medium rounded ${isDark ? "bg-white/10 text-gray-300" : "bg-slate-100 text-slate-700"}`}
@@ -596,7 +596,7 @@ const TraderPanelLayoutInner = () => {
                                   <span
                                     className={`text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}
                                   >
-                                    Account {challenge.accountId}
+                                    Account #{challenge.accountId.substr(0, 4)}
                                   </span>
                                   <span
                                     className={`px-2 py-0.5 text-xs font-medium rounded ${
