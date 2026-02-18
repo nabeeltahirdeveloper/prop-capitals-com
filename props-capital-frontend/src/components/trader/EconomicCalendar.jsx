@@ -295,12 +295,12 @@ const EconomicCalendar = () => {
         </div>
 
         {/* Events List */}
-        <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
-          <h3 className={`font-bold text-lg mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+        <div className={`rounded-2xl border p-6 flex flex-col ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
+          <h3 className={`font-bold text-lg mb-4 flex-shrink-0 ${isDark ? 'text-white' : 'text-slate-900'}`}>
             {selectedDay ? `Events - Day ${selectedDay}` : 'Select a day'}
           </h3>
 
-          <div className="space-y-3 max-h-[500px] overflow-y-auto">
+          <div className="space-y-3 flex-1 overflow-y-auto min-h-0">
             {loading && (
               <p className={`text-center py-8 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
                 Loading...

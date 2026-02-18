@@ -25,7 +25,7 @@ const ChatSupport = () => {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  const BACKEND_URL = import.meta.env.VITE_API_URL || 'https://dev-api.prop-capitals.com';
+  const BACKEND_URL = import.meta.env.VITE_API_URL || 'https://api-dev.prop-capitals.com';
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -156,7 +156,7 @@ const ChatSupport = () => {
       {!isOpen && (
         <button
           onClick={openChat}
-          className="fixed bottom-4 right-4 sm:right-6 w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 transition-all hover:scale-110 z-[9999]"
+          className="fixed bottom-4 right-4 sm:right-6 w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 transition-all hover:scale-110 z-[9999]"
           data-testid="chat-toggle-button"
         >
           <MessageCircle className="w-7 h-7 text-[#0a0d12]" />
@@ -344,19 +344,19 @@ const ChatSupport = () => {
                       <>
                         <button
                           onClick={() => handleQuickReply("What challenges do you offer?")}
-                          className="text-xs bg-amber-500/10 text-amber-500 px-2.5 py-1.5 rounded-full hover:bg-amber-500/20 transition-colors border border-amber-500/20"
+                          className={`text-xs px-2.5 py-1.5 rounded-full transition-colors border font-medium ${isDark ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 hover:bg-amber-500/30' : 'bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100'}`}
                         >
                           Challenges
                         </button>
                         <button
                           onClick={() => handleQuickReply("How do payouts work?")}
-                          className="text-xs bg-amber-500/10 text-amber-500 px-2.5 py-1.5 rounded-full hover:bg-amber-500/20 transition-colors border border-amber-500/20"
+                          className={`text-xs px-2.5 py-1.5 rounded-full transition-colors border font-medium ${isDark ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 hover:bg-amber-500/30' : 'bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100'}`}
                         >
                           Payouts
                         </button>
                         <button
                           onClick={() => handleQuickReply("Trading rules?")}
-                          className="text-xs bg-amber-500/10 text-amber-500 px-2.5 py-1.5 rounded-full hover:bg-amber-500/20 transition-colors border border-amber-500/20"
+                          className={`text-xs px-2.5 py-1.5 rounded-full transition-colors border font-medium ${isDark ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 hover:bg-amber-500/30' : 'bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100'}`}
                         >
                           Rules
                         </button>

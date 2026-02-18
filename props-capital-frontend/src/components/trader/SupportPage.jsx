@@ -77,9 +77,17 @@ const SupportPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!user?.userId) return;
+    if (!user) {
+      toast({
+        title: "Not authenticated",
+        description: "Please sign in to submit a support ticket.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     createTicketMutation.mutate({
+      userId: user.userId,
       subject: ticketForm.subject.trim(),
       message: ticketForm.message.trim(),
       category: ticketForm.category?.toUpperCase(),

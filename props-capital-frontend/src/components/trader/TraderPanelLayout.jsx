@@ -295,7 +295,7 @@ const TraderPanelLayoutInner = () => {
 
         {/* Sidebar */}
         <aside
-          className={`fixed left-0 top-0 h-full border-r z-50 transition-all duration-300 ${
+          className={`fixed left-0 top-0 h-full flex flex-col border-r z-50 transition-all duration-300 ${
             isDark ? "bg-[#12161d] border-white/5" : "bg-white border-slate-200"
           } ${sidebarCollapsed ? "w-20" : "w-64"} ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
         >
@@ -349,7 +349,7 @@ const TraderPanelLayoutInner = () => {
           </div>
 
           {/* Navigation */}
-          <nav className="px-3 py-2 overflow-y-auto flex-1">
+          <nav className="px-3 py-2 overflow-y-auto flex-1 min-h-0">
             {/* Main Navigation */}
             <div className="mb-6">
               <p
