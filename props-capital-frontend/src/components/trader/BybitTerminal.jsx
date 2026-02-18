@@ -15,6 +15,7 @@ import { getAccountTrades, createTrade } from "@/api/trades";
 import { createPendingOrder } from "@/api/pending-orders";
 import { getCurrentPrice } from "@/api/market-data";
 import { getAccountSummary } from "@/api/accounts";
+import { isCryptoSymbol } from "@/config/symbolConfig";
 import { useToast } from "@/components/ui/use-toast";
 import { useTraderTheme } from "./TraderPanelLayout";
 import TradingChart from "../trading/TradingChart";
@@ -470,6 +471,17 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     const t = Array.isArray(tradesData) ? tradesData : [];
     return t.filter((x) => !x.closedAt);
   }, [tradesData]);
+  const usedMargin = useMemo(() => {
+    return openPositions.reduce((sum, position) => {
+      const vol = Number(position.volume);
+      const price = Number(position.openPrice);
+      const lev = Number(position.leverage) || 1;
+      if (!Number.isFinite(vol) || vol <= 0 || !Number.isFinite(price) || price <= 0) return sum;
+      const cs = isCryptoSymbol(position.symbol) ? 1 : 100000;
+      return sum + (vol * cs * price) / lev;
+    }, 0);
+  }, [openPositions]);
+  const availableBalance = Math.max(0, balance - usedMargin);
   const recentTrades = useMemo(() => {
     const list = Array.isArray(tradesData) ? tradesData : [];
     return list
@@ -651,11 +663,11 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   const handleSlider = useCallback(
     (pct) => {
       setSliderPct(pct);
-      if (!balance || !effectivePrice || effectivePrice === 0) return;
-      const maxQty = balance / (effectivePrice * contractSize);
+      if (!availableBalance || !effectivePrice || effectivePrice === 0) return;
+      const maxQty = availableBalance / (effectivePrice * contractSize);
       setQuantity(((maxQty * pct) / 100).toFixed(6));
     },
-    [balance, effectivePrice, contractSize],
+    [availableBalance, effectivePrice, contractSize],
   );
 
   /* ── Symbol switching ── */
@@ -2484,7 +2496,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                         fontFamily: "monospace",
                       }}
                     >
-                      {balance > 0 ? formatNum(balance) : "--"} USDT
+                      {balance > 0 ? formatNum(availableBalance) : "--"} USDT
                     </span>
                   </div>
 
@@ -2750,7 +2762,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       <span style={{ color: C.textS }}>Max. buying amount</span>
                       <span style={{ color: C.textP, fontFamily: "monospace" }}>
                         {balance > 0 && effectivePrice > 0
-                          ? (balance / (effectivePrice * contractSize)).toFixed(
+                          ? (availableBalance / (effectivePrice * contractSize)).toFixed(
                               isCrypto ? 6 : 2,
                             )
                           : "--"}{" "}
