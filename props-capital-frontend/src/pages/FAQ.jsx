@@ -3,6 +3,7 @@ import { ChevronDown, Search, MessageCircle, Mail, Send } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useChatSupportStore } from '@/lib/stores/chat-support.store';
 
 const faqCategories = [
   { id: 'general', name: 'General', count: 8 },
@@ -147,6 +148,7 @@ const faqData = {
 
 const FAQ = () => {
   const { isDark } = useTheme();
+  const openChat = useChatSupportStore((state) => state.openChat);
   const [activeCategory, setActiveCategory] = useState('general');
   const [openQuestion, setOpenQuestion] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -280,18 +282,36 @@ const FAQ = () => {
               Our support team is available 24/7 to help you with any questions or concerns.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-8 py-6 h-auto font-bold w-full sm:w-auto">
+              <Button
+                onClick={openChat}
+                className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-8 py-6 h-auto font-bold w-full sm:w-auto"
+              >
                 <MessageCircle className="w-5 h-5 mr-2" />
                 Live Chat
               </Button>
-              <Button variant="outline" className={`rounded-full px-8 py-6 h-auto font-medium w-full sm:w-auto ${
-                isDark 
-                  ? 'border-white/20 text-white hover:bg-white/5' 
-                  : 'border-slate-300 text-slate-700 hover:bg-slate-100'
-              }`}>
-                <Mail className="w-5 h-5 mr-2" />
-                Email Support
-              </Button>
+                <Button 
+                onClick={() => window.location.href = '/contact'}
+                  variant="outline" className={`rounded-full px-8 py-6 h-auto font-medium w-full sm:w-auto ${
+                  isDark
+                    ? 'border-white/20 text-white hover:bg-white/5'
+                    : 'border-slate-300 text-slate-700 hover:bg-slate-100'
+                }`}>
+                  <Send className="w-5 h-5 mr-2" />
+                  Contact Form
+                </Button>
+              
+              <a href="mailto:support@prop-capitals.com">
+                <Button 
+                  onClick={() => window.location.href = '/contact'}
+                  variant="outline" className={`rounded-full px-8 py-6 h-auto font-medium w-full sm:w-auto ${
+                  isDark
+                    ? 'border-white/20 text-white hover:bg-white/5'
+                    : 'border-slate-300 text-slate-700 hover:bg-slate-100'
+                }`}>
+                  <Mail className="w-5 h-5 mr-2" />
+                  Email Support
+                </Button>
+              </a>
             </div>
             <p className={`text-sm mt-6 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
               Average response time: <span className="text-emerald-400 font-semibold">Under 60 seconds</span>

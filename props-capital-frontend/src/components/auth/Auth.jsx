@@ -31,6 +31,7 @@ const Auth = () => {
   const [otp, setOtp] = useState('');
   const [resendAvailableAt, setResendAvailableAt] = useState(null);
 
+  const [rememberMe, setRememberMe] = useState(true);
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [signupData, setSignupData] = useState({
     firstName: '',
@@ -90,7 +91,7 @@ const Auth = () => {
     },
     onSuccess: async (data) => {
       // Use the login function from AuthContext to handle token and user data
-      login(data.accessToken, data.user);
+      login(data.accessToken, data.user, rememberMe);
 
       // Redirect to trader dashboard
       navigate(createPageUrl('TraderDashboard'));
@@ -311,7 +312,12 @@ const Auth = () => {
 
               <div className="flex items-center justify-between">
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" className={`w-4 h-4 rounded text-amber-500 focus:ring-amber-500/50 ${isDark ? 'border-white/20 bg-[#0a0d12]' : 'border-slate-300 bg-white'}`} />
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className={`w-4 h-4 rounded text-amber-500 focus:ring-amber-500/50 ${isDark ? 'border-white/20 bg-[#0a0d12]' : 'border-slate-300 bg-white'}`}
+                  />
                   <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Remember me</span>
                 </label>
                 <Link to="/forgot-password" className="text-amber-500 text-sm hover:text-amber-400 transition-colors">
@@ -444,12 +450,11 @@ const Auth = () => {
                         value={signupData.confirmPassword}
                         onChange={handleSignupChange}
                         required
-                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none transition-colors ${signupData.confirmPassword && signupData.password !== signupData.confirmPassword
-                          ? 'border-red-500/50'
-                          : isDark
+                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none transition-colors ${
+                          isDark
                             ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500 focus:border-amber-500/50'
                             : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:border-amber-500/50'
-                          }`}
+                        } ${signupData.confirmPassword && signupData.password !== signupData.confirmPassword ? '!border-red-500' : ''}`}
                         placeholder="Confirm your password"
                       />
                     </div>
@@ -502,12 +507,12 @@ const Auth = () => {
                         containerClassName="justify-center"
                       >
                         <InputOTPGroup>
-                          <InputOTPSlot index={0} className={isDark ? "border-white/10 text-white" : ""} />
-                          <InputOTPSlot index={1} className={isDark ? "border-white/10 text-white" : ""} />
-                          <InputOTPSlot index={2} className={isDark ? "border-white/10 text-white" : ""} />
-                          <InputOTPSlot index={3} className={isDark ? "border-white/10 text-white" : ""} />
-                          <InputOTPSlot index={4} className={isDark ? "border-white/10 text-white" : ""} />
-                          <InputOTPSlot index={5} className={isDark ? "border-white/10 text-white" : ""} />
+                          <InputOTPSlot index={0} />
+                          <InputOTPSlot index={1} />
+                          <InputOTPSlot index={2} />
+                          <InputOTPSlot index={3} />
+                          <InputOTPSlot index={4} />
+                          <InputOTPSlot index={5} />
                         </InputOTPGroup>
                       </InputOTP>
                     </div>

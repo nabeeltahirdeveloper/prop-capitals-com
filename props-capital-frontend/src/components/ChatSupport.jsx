@@ -1,11 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User, Minimize2, Maximize2, Loader2, UserCheck } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useChatSupportStore } from '@/lib/stores/chat-support.store';
 
 const ChatSupport = () => {
   const { isDark } = useTheme();
-  const [isOpen, setIsOpen] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false);
+  const isOpen = useChatSupportStore((state) => state.isOpen);
+  const isMinimized = useChatSupportStore((state) => state.isMinimized);
+  const openChat = useChatSupportStore((state) => state.openChat);
+  const closeChat = useChatSupportStore((state) => state.closeChat);
+  const toggleMinimized = useChatSupportStore((state) => state.toggleMinimized);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([
     {
@@ -21,7 +25,7 @@ const ChatSupport = () => {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+  const BACKEND_URL = import.meta.env.VITE_API_URL || 'https://api-dev.prop-capitals.com';
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -151,7 +155,7 @@ const ChatSupport = () => {
       {/* Chat Toggle Button */}
       {!isOpen && (
         <button
-          onClick={() => setIsOpen(true)}
+          onClick={openChat}
           className="fixed bottom-4 right-4 sm:right-6 w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 transition-all hover:scale-110 z-[9999]"
           data-testid="chat-toggle-button"
         >
@@ -195,14 +199,14 @@ const ChatSupport = () => {
             </div>
             <div className="flex items-center gap-1">
               <button
-                onClick={() => setIsMinimized(!isMinimized)}
+                onClick={toggleMinimized}
                 className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-white/10 text-gray-400' : 'hover:bg-slate-100 text-slate-500'}`}
                 data-testid="chat-minimize-button"
               >
                 {isMinimized ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
               </button>
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={closeChat}
                 className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-white/10 text-gray-400' : 'hover:bg-slate-100 text-slate-500'}`}
                 data-testid="chat-close-button"
               >

@@ -5,8 +5,8 @@ import {
   adminCreateCoupon,
   adminUpdateCoupon,
   adminDeleteCoupon,
-} from "../../../props-capital-frontend/src/api/admin";
-import { useTranslation } from "../../../props-capital-frontend/src/contexts/LanguageContext";
+} from "@/api/admin";
+import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import DataTable from "../../../props-capital-frontend/src/components/shared/DataTable";
+import DataTable from "@/components/shared/DataTable";
 import { Plus, Pencil, Trash2, Copy, Check } from "lucide-react";
 import { format } from "date-fns";
 
@@ -447,7 +447,6 @@ export default function AdminCoupons() {
           data={coupons}
           isLoading={isLoading}
           emptyMessage={t("admin.coupons.emptyMessage")}
-          variant="light"
         />
       </Card>
     </div>

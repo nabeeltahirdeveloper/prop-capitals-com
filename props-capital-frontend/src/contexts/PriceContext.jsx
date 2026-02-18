@@ -15,7 +15,7 @@ import { useLocation } from "react-router-dom";
 const PriceContext = createContext(undefined);
 
 const WEBSOCKET_URL =
-  import.meta.env.VITE_WEBSOCKET_URL || "http://localhost:5002";
+  import.meta.env.VITE_WEBSOCKET_URL || "https://api-dev.prop-capitals.com";
 
 // Unified price polling interval: 1000ms for smooth updates
 const POLL_INTERVAL = 1000;
@@ -75,6 +75,37 @@ export function PriceProvider({ children, currentPathname = null }) {
   const authStatusRef = useRef(authStatus); // Track current auth status for polling checks
   const locationRef = useRef(getCurrentPathname()); // Track current location for polling checks
 
+  const resolvePriceData = useCallback(
+    (symbol) => {
+      if (!symbol) return null;
+
+      const raw = String(symbol).trim();
+      const upper = raw.toUpperCase();
+      const compact = upper.replace(/[^A-Z]/g, "");
+      const compactUsd = compact.replace(/USDT$/, "USD");
+      const candidates = [
+        raw,
+        upper,
+        compact,
+        compactUsd,
+        compact.length === 6
+          ? `${compact.slice(0, 3)}/${compact.slice(3)}`
+          : null,
+        compactUsd.length === 6
+          ? `${compactUsd.slice(0, 3)}/${compactUsd.slice(3)}`
+          : null,
+        compact.endsWith("USDT") ? `${compact.slice(0, -4)}/USDT` : null,
+        compact.endsWith("USDT") ? `${compact.slice(0, -4)}/USD` : null,
+      ].filter(Boolean);
+
+      for (const key of candidates) {
+        if (prices[key]) return prices[key];
+      }
+      return null;
+    },
+    [prices],
+  );
+
   /**
    * Calculate exponential backoff delay
    */
@@ -82,7 +113,7 @@ export function PriceProvider({ children, currentPathname = null }) {
     // Exponential backoff: 2s, 4s, 8s, 16s, 30s (capped)
     const delay = Math.min(
       BASE_BACKOFF_MS * Math.pow(2, attempts),
-      MAX_BACKOFF_MS
+      MAX_BACKOFF_MS,
     );
     return delay;
   }, []);
@@ -178,7 +209,7 @@ export function PriceProvider({ children, currentPathname = null }) {
                 priceData.symbol,
                 priceData.bid,
                 priceData.ask,
-                priceData.timestamp || Date.now()
+                priceData.timestamp || Date.now(),
               );
               if (updated) {
                 updateCount++;
@@ -222,7 +253,7 @@ export function PriceProvider({ children, currentPathname = null }) {
         return false; // Failure
       }
     },
-    [updatePrice]
+    [updatePrice],
   );
 
   /**
@@ -271,7 +302,7 @@ export function PriceProvider({ children, currentPathname = null }) {
         authStatus === "authenticated"
       ) {
         console.log(
-          `[PriceContext] Not on a price-required page (${pathname}), disconnecting forex WebSocket`
+          `[PriceContext] Not on a price-required page (${pathname}), disconnecting forex WebSocket`,
         );
       }
       return;
@@ -291,7 +322,7 @@ export function PriceProvider({ children, currentPathname = null }) {
     if (!token) {
       if (process.env.NODE_ENV !== "production") {
         console.log(
-          "[PriceContext] No auth token, skipping forex WebSocket connection"
+          "[PriceContext] No auth token, skipping forex WebSocket connection",
         );
       }
       return;
@@ -325,7 +356,7 @@ export function PriceProvider({ children, currentPathname = null }) {
           priceData.symbol,
           priceData.bid,
           priceData.ask,
-          priceData.timestamp || Date.now()
+          priceData.timestamp || Date.now(),
         );
 
         // Mark that we received a WebSocket update
@@ -339,7 +370,7 @@ export function PriceProvider({ children, currentPathname = null }) {
       if (process.env.NODE_ENV !== "production") {
         console.log(
           "[PriceContext] Forex WebSocket subscription confirmed:",
-          data
+          data,
         );
       }
     });
@@ -354,7 +385,7 @@ export function PriceProvider({ children, currentPathname = null }) {
       if (process.env.NODE_ENV !== "production") {
         console.warn(
           "[PriceContext] Forex WebSocket connection error:",
-          error.message
+          error.message,
         );
       }
     });
@@ -408,17 +439,17 @@ export function PriceProvider({ children, currentPathname = null }) {
         backoffTimeoutRef.current = null;
       }
 
-      if (process.env.NODE_ENV !== "production") {
-        if (authStatus !== "authenticated") {
-          console.log(
-            "[PriceContext] User not authenticated, skipping price polling"
-          );
-        } else if (!isPriceRequiredPage(pathname)) {
-          // console.log(
-          //   `[PriceContext] Not on a price-required page (${pathname}), skipping price polling`
-          // );
-        }
-      }
+      // if (process.env.NODE_ENV !== "production") {
+      //   if (authStatus !== "authenticated") {
+      //     console.log(
+      //       "[PriceContext] User not authenticated, skipping price polling"
+      //     );
+      //   } else if (!isPriceRequiredPage(pathname)) {
+      //     // console.log(
+      //     //   `[PriceContext] Not on a price-required page (${pathname}), skipping price polling`
+      //     // );
+      //   }
+      // }
       return;
     }
 
@@ -434,7 +465,7 @@ export function PriceProvider({ children, currentPathname = null }) {
       ) {
         if (process.env.NODE_ENV !== "production") {
           console.log(
-            "[PriceContext] Authentication status or page changed, stopping polling"
+            "[PriceContext] Authentication status or page changed, stopping polling",
           );
         }
         return;
@@ -465,15 +496,16 @@ export function PriceProvider({ children, currentPathname = null }) {
           nextPollDelay = getBackoffDelay(currentAttempts);
           if (process.env.NODE_ENV !== "production") {
             console.log(
-              `[PriceContext] Retry ${currentAttempts + 1
-              }/${MAX_RECONNECT_ATTEMPTS} in ${nextPollDelay}ms`
+              `[PriceContext] Retry ${
+                currentAttempts + 1
+              }/${MAX_RECONNECT_ATTEMPTS} in ${nextPollDelay}ms`,
             );
           }
         } else {
           // Stop polling after max attempts - require manual retry
           if (process.env.NODE_ENV !== "production") {
             console.log(
-              `[PriceContext] Max retry attempts reached. Manual retry required.`
+              `[PriceContext] Max retry attempts reached. Manual retry required.`,
             );
           }
           return; // Don't schedule next poll
@@ -521,7 +553,7 @@ export function PriceProvider({ children, currentPathname = null }) {
    */
   const getPrice = useCallback(
     (symbol, side = "bid") => {
-      const priceData = prices[symbol];
+      const priceData = resolvePriceData(symbol);
       if (!priceData) return null;
 
       switch (side) {
@@ -535,7 +567,7 @@ export function PriceProvider({ children, currentPathname = null }) {
           return priceData.bid;
       }
     },
-    [prices]
+    [resolvePriceData],
   );
 
   /**
@@ -593,7 +625,7 @@ export function PriceProviderWithRouter({ children }) {
     // Fallback if useLocation fails (shouldn't happen if inside Router)
     console.warn(
       "[PriceProviderWithRouter] useLocation failed, using fallback:",
-      error
+      error,
     );
     return <PriceProvider currentPathname={null}>{children}</PriceProvider>;
   }

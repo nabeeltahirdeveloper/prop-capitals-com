@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -126,6 +126,8 @@ export default function CRMLeads() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [importing, setImporting] = useState(false);
   const fileInputRef = React.useRef(null);
+  const fromDateRef = useRef(null);
+  const toDateRef = useRef(null);
 
   // Fetch leads from backend
   useEffect(() => {
@@ -503,12 +505,14 @@ export default function CRMLeads() {
             key={status}
             className={`bg-card border p-3 sm:p-4 cursor-pointer transition-all ${
               activeStatusCard === status
-                ? 'border-[#d97706] bg-amber-50'
-                : 'border-border hover:border-amber-200'
+                ? 'border-[#d97706] ring-2 ring-amber-500/20'
+                : 'border-border hover:border-amber-500/50'
             }`}
             onClick={() => setActiveStatusCard(status)}
           >
-            <p className="text-xl sm:text-2xl font-bold text-foreground mb-1">
+            <p className={`text-xl sm:text-2xl font-bold mb-1 ${
+              activeStatusCard === status ? 'text-amber-500' : 'text-foreground'
+            }`}>
               {count}
             </p>
             <p className="text-xs sm:text-sm text-muted-foreground capitalize">
@@ -567,29 +571,36 @@ export default function CRMLeads() {
               <SelectItem value="agent">By Agent</SelectItem>
             </SelectContent>
           </Select>
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1 sm:w-[150px]">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                type="date"
-                placeholder="From Date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                className="pl-10 bg-muted border-border text-foreground"
-              />
-            </div>
-            <ArrowRight className="w-4 h-4 text-muted-foreground" />
-            <div className="relative flex-1 sm:w-[150px]">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                type="date"
-                placeholder="To Date"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-                className="pl-10 bg-muted border-border text-foreground"
-              />
-            </div>
-          </div>
+          {/* Date Range Filters */}
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <div className="relative w-full sm:w-40">
+                            <Calendar
+                                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground hover:text-foreground cursor-pointer z-10"
+                                onClick={() => fromDateRef.current?.showPicker()}
+                            />
+                            <Input
+                                ref={fromDateRef}
+                                type="date"
+                                value={fromDate}
+                                onChange={(e) => setFromDate(e.target.value)}
+                                className="pl-10 bg-muted border-border text-foreground text-xs h-9 no-calendar-icon"
+                            />
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                        <div className="relative w-full sm:w-40">
+                            <Calendar
+                                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground hover:text-foreground cursor-pointer z-10"
+                                onClick={() => toDateRef.current?.showPicker()}
+                            />
+                            <Input
+                                ref={toDateRef}
+                                type="date"
+                                value={toDate}
+                                onChange={(e) => setToDate(e.target.value)}
+                                className="pl-10 bg-muted border-border text-foreground text-xs h-9 no-calendar-icon"
+                            />
+                        </div>
+                    </div>
         </div>
       </Card>
 

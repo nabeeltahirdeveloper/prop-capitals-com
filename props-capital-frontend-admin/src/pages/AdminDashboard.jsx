@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { createPageUrl } from "../../../props-capital-frontend/src/utils";
+import { createPageUrl } from "../utils";
 import { useQuery } from "@tanstack/react-query";
 import {
   adminGetDashboardOverview,
@@ -8,12 +8,12 @@ import {
   adminGetRecentViolations,
   adminGetRevenueChart,
 } from "@/api/admin";
-import { useTranslation } from "../../../props-capital-frontend/src/contexts/LanguageContext";
+import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import StatsCard from "../../../props-capital-frontend/src/components/shared/StatsCard";
-import StatusBadge from "../../../props-capital-frontend/src/components/shared/StatusBadge";
-import DataTable from "../../../props-capital-frontend/src/components/shared/DataTable";
+import StatsCard from "@/components/shared/StatsCard";
+import StatusBadge from "@/components/shared/StatusBadge";
+import DataTable from "@/components/shared/DataTable";
 import {
   Users,
   TrendingUp,
@@ -276,9 +276,9 @@ export default function AdminDashboard() {
   // Show global loading state
   if (overviewLoading && accountsLoading && violationsLoading && revenueLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
-        <span className="ml-3 text-white">Loading dashboard...</span>
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+        <span className="ml-3 text-muted-foreground font-medium">Loading dashboard...</span>
       </div>
     );
   }
@@ -514,7 +514,6 @@ export default function AdminDashboard() {
                 columns={accountColumns}
                 data={displayRecentAccounts}
                 emptyMessage={t("admin.dashboard.noDataFound")}
-                variant="light"
               />
             </div>
           )}
@@ -552,7 +551,6 @@ export default function AdminDashboard() {
                 columns={violationColumns}
                 data={displayRecentViolations}
                 emptyMessage={t("admin.dashboard.noDataFound")}
-                variant="light"
               />
             </div>
           )}

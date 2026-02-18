@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminGetAllSupportTickets, adminGetSupportStatistics, adminUpdateTicketStatus } from '@/api/admin';
-import { useTranslation } from '../../../props-capital-frontend/src/contexts/LanguageContext';
+import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,9 +19,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import DataTable from '../../../props-capital-frontend/src/components/shared/DataTable';
-import StatusBadge from '../../../props-capital-frontend/src/components/shared/StatusBadge';
-import StatsCard from '../../../props-capital-frontend/src/components/shared/StatsCard';
+import DataTable from "@/components/shared/DataTable";
+import StatusBadge from "@/components/shared/StatusBadge";
+import StatsCard from "@/components/shared/StatsCard";
 import {
   Search,
   MessageCircle,
@@ -129,8 +129,8 @@ export default function AdminSupport() {
 
   const priorityColors = {
     low: 'bg-muted text-muted-foreground border border-border',
-    medium: 'bg-amber-50 text-[#d97706] border border-amber-200',
-    high: 'bg-red-50 text-red-600 border border-red-200',
+    medium: 'bg-amber-50 text-[#d97706] border border-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:border-amber-700',
+    high: 'bg-red-50 text-red-600 border border-red-200 dark:bg-red-950/60 dark:text-red-400 dark:border-red-800',
   };
 
   const columns = [
@@ -294,7 +294,6 @@ export default function AdminSupport() {
           data={filteredTickets}
           isLoading={isLoading}
           emptyMessage={t('admin.support.emptyMessage')}
-          variant="light"
         />
       </Card>
 

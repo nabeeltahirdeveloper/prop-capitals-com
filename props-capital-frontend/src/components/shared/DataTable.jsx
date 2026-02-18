@@ -15,33 +15,18 @@ export default function DataTable({
   isLoading,
   emptyMessage = "No data found",
   onRowClick,
-  variant = "dark",
 }) {
-  const isLight = variant === "light";
-
   if (isLoading) {
     return (
-      <div
-        className={`rounded-xl border ${
-          isLight ? "border-border" : "border-slate-800"
-        } overflow-hidden`}
-      >
+      <div className="rounded-xl border border-slate-300 dark:border-slate-700 overflow-hidden bg-white dark:bg-transparent">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow
-                className={
-                  isLight
-                    ? "bg-slate-100 border-b border-border"
-                    : "bg-slate-800/50 border-slate-700"
-                }
-              >
+              <TableRow className="bg-slate-200 dark:bg-slate-800/50 border-b border-slate-300 dark:border-slate-700 [&_tr]:hover:bg-transparent">
                 {columns.map((col, i) => (
                   <TableHead
                     key={i}
-                    className={`font-medium whitespace-nowrap text-xs sm:text-sm ${
-                      isLight ? "text-slate-500" : "text-slate-400"
-                    }`}
+                    className="font-semibold whitespace-nowrap text-xs sm:text-sm text-slate-800 dark:text-slate-400"
                   >
                     {col.header}
                   </TableHead>
@@ -50,17 +35,10 @@ export default function DataTable({
             </TableHeader>
             <TableBody>
               {[...Array(5)].map((_, i) => (
-                <TableRow
-                  key={i}
-                  className={isLight ? "border-border" : "border-slate-800"}
-                >
+                <TableRow key={i} className="border-slate-200 dark:border-slate-700">
                   {columns.map((_, j) => (
                     <TableCell key={j}>
-                      <Skeleton
-                        className={`h-4 w-full ${
-                          isLight ? "bg-muted" : "bg-slate-800"
-                        }`}
-                      />
+                      <Skeleton className="h-4 w-full bg-slate-200 dark:bg-slate-800" />
                     </TableCell>
                   ))}
                 </TableRow>
@@ -74,16 +52,8 @@ export default function DataTable({
 
   if (!data || data.length === 0) {
     return (
-      <div
-        className={`rounded-xl border p-8 sm:p-12 text-center ${
-          isLight ? "border-border" : "border-slate-800"
-        }`}
-      >
-        <p
-          className={`text-sm sm:text-base ${
-            isLight ? "text-muted-foreground" : "text-slate-400"
-          }`}
-        >
+      <div className="rounded-xl border border-slate-300 dark:border-slate-700 p-8 sm:p-12 text-center bg-white dark:bg-transparent">
+        <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
           {emptyMessage}
         </p>
       </div>
@@ -91,27 +61,15 @@ export default function DataTable({
   }
 
   return (
-    <div
-      className={`rounded-xl border overflow-hidden ${
-        isLight ? "border-border" : "border-slate-800"
-      }`}
-    >
+    <div className="rounded-xl border border-slate-300 dark:border-slate-700 overflow-hidden bg-white dark:bg-transparent">
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow
-              className={
-                isLight
-                  ? "bg-slate-100 border-b border-border"
-                  : "bg-slate-800/50 border-slate-700 hover:bg-slate-800/50"
-              }
-            >
+            <TableRow className="bg-slate-200 dark:bg-slate-800/50 border-b border-slate-300 dark:border-slate-700 [&_tr]:hover:bg-transparent">
               {columns.map((col, i) => (
                 <TableHead
                   key={i}
-                  className={`font-medium whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 ${
-                    isLight ? "text-slate-500" : "text-slate-400"
-                  }`}
+                  className="font-semibold whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 text-slate-800 dark:text-slate-400"
                 >
                   {col.header}
                 </TableHead>
@@ -123,23 +81,12 @@ export default function DataTable({
               <TableRow
                 key={row.id || i}
                 onClick={() => onRowClick?.(row)}
-                className={`
-        ${isLight ? "border-border" : "border-slate-800"}
-        ${onRowClick ? "cursor-pointer" : ""}
-        ${
-          isLight
-            ? "hover:bg-slate-100/80"
-            : "hover:bg-slate-700/60"
-        }
-        transition-colors
-      `}
+                className={`border-slate-200 dark:border-slate-700 ${onRowClick ? "cursor-pointer" : ""} hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors`}
               >
                 {columns.map((col, j) => (
                   <TableCell
                     key={j}
-                    className={`whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 ${
-                      isLight ? "text-slate-700" : "text-slate-300"
-                    }`}
+                    className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 text-slate-800 dark:text-slate-300"
                   >
                     {col.cell ? col.cell(row) : row[col.accessorKey]}
                   </TableCell>

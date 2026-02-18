@@ -14,7 +14,14 @@ const InputOTP = React.forwardRef(({ className, containerClassName, ...props }, 
 InputOTP.displayName = "InputOTP"
 
 const InputOTPGroup = React.forwardRef(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("flex items-center text-white", className)} {...props} />
+  <div
+    ref={ref}
+    className={cn(
+      "flex items-center text-slate-900 dark:text-white",
+      className
+    )}
+    {...props}
+  />
 ))
 InputOTPGroup.displayName = "InputOTPGroup"
 
@@ -26,8 +33,8 @@ const InputOTPSlot = React.forwardRef(({ index, className, ...props }, ref) => {
     (<div
       ref={ref}
       className={cn(
-        "relative flex h-9 w-9 items-center justify-center border-y border-r border-input text-sm text-white shadow-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md",
-        isActive && "z-10 ring-1 ring-ring",
+        "relative flex h-9 w-9 items-center justify-center border-y border-r border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 text-slate-900 dark:text-white text-sm shadow-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md",
+        isActive && "z-10 ring-2 ring-amber-500 dark:ring-amber-400 ring-offset-2 dark:ring-offset-[#0a0d12]",
         className
       )}
       {...props}>
@@ -35,7 +42,7 @@ const InputOTPSlot = React.forwardRef(({ index, className, ...props }, ref) => {
       {hasFakeCaret && (
         <div
           className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="h-4 w-px animate-caret-blink bg-white duration-1000" />
+          <div className="h-4 w-px animate-caret-blink bg-slate-900 dark:bg-white duration-1000" />
         </div>
       )}
     </div>)

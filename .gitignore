@@ -5,6 +5,7 @@ package-lock.json
 .AppleDouble
 .LSOverride
 ._*
+.claude*
 
 # Editor Configuration  Files
 .zed

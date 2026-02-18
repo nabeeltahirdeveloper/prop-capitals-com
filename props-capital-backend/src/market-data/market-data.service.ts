@@ -57,7 +57,7 @@ export class MarketDataService {
     'BNB/USD': 'binancecoin',
     'AVAX/USD': 'avalanche-2',
     'DOT/USD': 'polkadot',
-    'MATIC/USD': 'matic-network',
+  //  'MATIC/USD': 'matic-network',
     'LINK/USD': 'chainlink',
   };
 
@@ -80,17 +80,31 @@ export class MarketDataService {
     return symbol in this.CRYPTO_SYMBOLS;
   }
 
+  private normalizeSymbol(symbol: string): string {
+    if (!symbol) return symbol;
+    const s = String(symbol).toUpperCase();
+    if (s.includes('/')) return s;
+    if (s.endsWith('USDT')) return `${s.replace(/USDT$/, '')}/USD`;
+    if (s.length >= 6 && /^[A-Z]+$/.test(s)) return `${s.slice(0, 3)}/${s.slice(3)}`;
+    return s;
+  }
+
+  private getErrorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : 'Unknown error';
+  }
+
   /**
    * Get Current Price (WebSocket Optimized)
    */
   async getCurrentPrice(symbol: string) {
+    const normalizedSymbol = this.normalizeSymbol(symbol);
     try {
       // 1. FOREX (Massive WS)
-      if (this.isForexSymbol(symbol)) {
-        const wsPrice = this.massiveWebSocketService.getPrice(symbol);
+      if (this.isForexSymbol(normalizedSymbol)) {
+        const wsPrice = this.massiveWebSocketService.getPrice(normalizedSymbol);
         if (wsPrice) {
           return {
-            symbol,
+            symbol: normalizedSymbol,
             price: wsPrice.bid,
             bid: wsPrice.bid,
             ask: wsPrice.ask,
@@ -99,16 +113,16 @@ export class MarketDataService {
         }
         // Fallback to PricesService (Cached REST) if WS is warming up
         const all = await this.pricesService.getAllPrices();
-        const data = all.forex.find((f) => f.symbol === symbol);
+        const data = all.forex.find((f) => f.symbol === normalizedSymbol);
         if (data) return { ...data, price: data.bid, timestamp: all.timestamp };
       }
 
       // 2. CRYPTO (Binance WS)
-      if (this.isCryptoSymbol(symbol)) {
-        const wsPrice = this.binanceWebSocketService.getPrice(symbol);
+      if (this.isCryptoSymbol(normalizedSymbol)) {
+        const wsPrice = this.binanceWebSocketService.getPrice(normalizedSymbol);
         if (wsPrice && this.binanceWebSocketService.isWSConnected()) {
           return {
-            symbol,
+            symbol: normalizedSymbol,
             price: wsPrice.bid,
             bid: wsPrice.bid,
             ask: wsPrice.ask,
@@ -116,13 +130,13 @@ export class MarketDataService {
           };
         }
         const all = await this.pricesService.getAllPrices();
-        const data = all.crypto.find((c) => c.symbol === symbol);
+        const data = all.crypto.find((c) => c.symbol === normalizedSymbol);
         if (data) return { ...data, price: data.bid, timestamp: all.timestamp };
       }
 
-      throw new NotFoundException(`Symbol ${symbol} not available`);
+      throw new NotFoundException(`Symbol ${normalizedSymbol} not available`);
     } catch (e) {
-      this.logger.warn(`Price fetch failed for ${symbol}: ${e.message}`);
+      this.logger.warn(`Price fetch failed for ${normalizedSymbol}: ${this.getErrorMessage(e)}`);
       throw e;
     }
   }
@@ -175,25 +189,26 @@ export class MarketDataService {
     timeframe: string = 'M5',
     limit: number = 100,
   ): Promise<Candlestick[]> {
+    const normalizedSymbol = this.normalizeSymbol(symbol);
     try {
       // Check cache first
-      const cacheKey = `${symbol}:${timeframe}:${limit}`;
+      const cacheKey = `${normalizedSymbol}:${timeframe}:${limit}`;
       const cached = this.candleCache.get(cacheKey);
       if (cached && Date.now() - cached.timestamp < this.CANDLE_CACHE_TTL) {
         return cached.candles;
       }
 
-      if (this.isForexSymbol(symbol)) {
+      if (this.isForexSymbol(normalizedSymbol)) {
         // Check circuit breaker
         if (this.isCircuitBreakerOpen()) {
-          this.logger.debug(`Circuit breaker open, using synthetic data for ${symbol}`);
-          return this.getSyntheticCandles(symbol, timeframe, limit);
+          this.logger.debug(`Circuit breaker open, using synthetic data for ${normalizedSymbol}`);
+          return this.getSyntheticCandles(normalizedSymbol, timeframe, limit);
         }
 
         // Try to fetch real historical data
         try {
           const candles = await this.massiveWebSocketService.getHistory(
-            symbol,
+            normalizedSymbol,
             timeframe,
             limit,
           );
@@ -213,19 +228,19 @@ export class MarketDataService {
           // API returned empty - use synthetic fallback
           this.logger.debug(`No historical data for ${symbol}, using synthetic fallback`);
           this.recordApiFailure();
-          return this.getSyntheticCandles(symbol, timeframe, limit);
+          return this.getSyntheticCandles(normalizedSymbol, timeframe, limit);
 
         } catch (apiError) {
-          this.logger.warn(`Historical API error for ${symbol}: ${apiError.message}`);
+          this.logger.warn(`Historical API error for ${normalizedSymbol}: ${this.getErrorMessage(apiError)}`);
           this.recordApiFailure();
-          return this.getSyntheticCandles(symbol, timeframe, limit);
+          return this.getSyntheticCandles(normalizedSymbol, timeframe, limit);
         }
       }
 
-      if (this.isCryptoSymbol(symbol)) {
+      if (this.isCryptoSymbol(normalizedSymbol)) {
         // ✅ Binance Real History (more reliable)
         const candles = await this.binanceMarketService.getCryptoCandles(
-          symbol,
+          normalizedSymbol,
           timeframe,
           limit,
         );
@@ -234,10 +249,10 @@ export class MarketDataService {
 
       return [];
     } catch (error) {
-      this.logger.error(`History failed for ${symbol}: ${error.message}`);
+      this.logger.error(`History failed for ${normalizedSymbol}: ${this.getErrorMessage(error)}`);
       // Last resort: return synthetic candles
-      if (this.isForexSymbol(symbol)) {
-        return this.getSyntheticCandles(symbol, timeframe, limit);
+      if (this.isForexSymbol(normalizedSymbol)) {
+        return this.getSyntheticCandles(normalizedSymbol, timeframe, limit);
       }
       return [];
     }
@@ -407,7 +422,7 @@ export class MarketDataService {
   async getUnifiedPrices(symbolList: string[] = []) {
     const targetSymbols =
       symbolList.length > 0
-        ? symbolList
+        ? symbolList.map((s) => this.normalizeSymbol(s))
         : [...this.FOREX_SYMBOLS, ...Object.keys(this.CRYPTO_SYMBOLS)];
 
     const promises = targetSymbols.map(async (symbol) => {

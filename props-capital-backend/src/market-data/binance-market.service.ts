@@ -9,7 +9,6 @@ export class BinanceMarketService {
 
   constructor(private readonly httpService: ResilientHttpService) {}
 
-
   // Symbol mapping: frontend format -> Binance format
   private readonly SYMBOL_MAP: { [key: string]: string } = {
     'BTC/USD': 'BTCUSDT',
@@ -21,7 +20,7 @@ export class BinanceMarketService {
     'BNB/USD': 'BNBUSDT',
     'AVAX/USD': 'AVAXUSDT',
     'DOT/USD': 'DOTUSDT',
-    'MATIC/USD': 'MATICUSDT',
+    // 'MATIC/USD': 'MATICUSDT',
     'LINK/USD': 'LINKUSDT',
   };
 
@@ -34,26 +33,32 @@ export class BinanceMarketService {
     'H1': '1h',
     'H4': '4h',
     'D1': '1d',
+    'W1': '1w',
+    'MN': '1M',
   };
 
   // Cache for candles: key = `binance:candles:{symbol}:{tf}`, value = { data, timestamp, ttl }
-  private candlesCache: Map<string, { data: Candlestick[]; timestamp: number; ttl: number }> = new Map();
-  
+  private candlesCache: Map<
+    string,
+    { data: Candlestick[]; timestamp: number; ttl: number }
+  > = new Map();
+
   // Cache for ticker quotes: key = `binance:quotes`, value = { data, timestamp, ttl }
-  private quotesCache: { data: any[]; timestamp: number; ttl: number } | null = null;
-  
+  private quotesCache: { data: any[]; timestamp: number; ttl: number } | null =
+    null;
+
   // Rate limit tracking
   private rateLimitUntil: number = 0;
 
   // Cache TTL based on timeframe (in milliseconds)
   private readonly CACHE_TTL: { [key: string]: number } = {
-    'M1': 30000,   // 30 seconds
-    'M5': 30000,   // 30 seconds
-    'M15': 60000,  // 60 seconds
-    'M30': 60000,  // 60 seconds
-    'H1': 120000,  // 120 seconds
-    'H4': 120000,  // 120 seconds
-    'D1': 120000,  // 120 seconds
+    M1: 30000, // 30 seconds
+    M5: 30000, // 30 seconds
+    M15: 60000, // 60 seconds
+    M30: 60000, // 60 seconds
+    H1: 120000, // 120 seconds
+    H4: 120000, // 120 seconds
+    D1: 120000, // 120 seconds
   };
 
   /**
@@ -62,7 +67,9 @@ export class BinanceMarketService {
   private convertSymbolToBinance(symbol: string): string {
     const binanceSymbol = this.SYMBOL_MAP[symbol];
     if (!binanceSymbol) {
-      throw new NotFoundException(`Symbol ${symbol} is not supported for Binance candles`);
+      throw new NotFoundException(
+        `Symbol ${symbol} is not supported for Binance candles`,
+      );
     }
     return binanceSymbol;
   }
@@ -81,7 +88,9 @@ export class BinanceMarketService {
   /**
    * Check if cached data is still valid
    */
-  private isCacheValid(cache: { data: Candlestick[]; timestamp: number; ttl: number } | undefined): boolean {
+  private isCacheValid(
+    cache: { data: Candlestick[]; timestamp: number; ttl: number } | undefined,
+  ): boolean {
     if (!cache) return false;
     const now = Date.now();
     return now - cache.timestamp < cache.ttl;
@@ -96,16 +105,20 @@ export class BinanceMarketService {
     limit: number = 500,
   ): Promise<Candlestick[]> {
     const url = `${this.BINANCE_API}/klines?symbol=${binanceSymbol}&interval=${binanceInterval}&limit=${limit}`;
-    
+
     this.logger.debug(`[Binance] Fetching candles: ${url}`);
 
     try {
       const response = await fetch(url);
-      
+
       if (!response.ok) {
         const errorText = await response.text();
-        this.logger.error(`[Binance] API error: ${response.status} ${response.statusText} - ${errorText}`);
-        throw new Error(`Binance API error: ${response.statusText} (${response.status})`);
+        this.logger.error(
+          `[Binance] API error: ${response.status} ${response.statusText} - ${errorText}`,
+        );
+        throw new Error(
+          `Binance API error: ${response.statusText} (${response.status})`,
+        );
       }
 
       const data = await response.json();
@@ -133,12 +146,18 @@ export class BinanceMarketService {
         };
       });
 
-      this.logger.debug(`[Binance] Fetched ${candles.length} candles for ${binanceSymbol} ${binanceInterval}`);
-      
+      this.logger.debug(
+        `[Binance] Fetched ${candles.length} candles for ${binanceSymbol} ${binanceInterval}`,
+      );
+
       // Validate candles (ensure no flat candles)
-      const flatCandles = candles.filter(c => c.open === c.high && c.high === c.low && c.low === c.close);
+      const flatCandles = candles.filter(
+        (c) => c.open === c.high && c.high === c.low && c.low === c.close,
+      );
       if (flatCandles.length > 0) {
-        this.logger.warn(`[Binance] WARNING: ${flatCandles.length} flat candles detected (this should not happen with real Binance data)`);
+        this.logger.warn(
+          `[Binance] WARNING: ${flatCandles.length} flat candles detected (this should not happen with real Binance data)`,
+        );
       }
 
       return candles;
@@ -167,20 +186,32 @@ export class BinanceMarketService {
     // Check cache
     const cached = this.candlesCache.get(cacheKey);
     if (cached && this.isCacheValid(cached)) {
-      this.logger.debug(`[Binance] Cache hit for ${symbol} ${timeframe} (${cached.data.length} candles)`);
+      this.logger.debug(
+        `[Binance] Cache hit for ${symbol} ${timeframe} (${cached.data.length} candles)`,
+      );
       return cached.data.slice(-limit);
     }
 
     // Fetch from Binance
-    this.logger.log(`[Binance] Fetching fresh candles for ${symbol} (${binanceSymbol}) ${timeframe} (${binanceInterval})`);
-    const candles = await this.fetchCandlesFromBinance(binanceSymbol, binanceInterval, limit);
+    this.logger.log(
+      `[Binance] Fetching fresh candles for ${symbol} (${binanceSymbol}) ${timeframe} (${binanceInterval})`,
+    );
+    const candles = await this.fetchCandlesFromBinance(
+      binanceSymbol,
+      binanceInterval,
+      limit,
+    );
 
     // Validate we got real candles
     if (candles.length === 0) {
-      this.logger.warn(`[Binance] No candles returned for ${symbol} ${timeframe}`);
+      this.logger.warn(
+        `[Binance] No candles returned for ${symbol} ${timeframe}`,
+      );
       // Return stale cache if available
       if (cached) {
-        this.logger.warn(`[Binance] Returning stale cache (${cached.data.length} candles)`);
+        this.logger.warn(
+          `[Binance] Returning stale cache (${cached.data.length} candles)`,
+        );
         return cached.data.slice(-limit);
       }
       return [];
@@ -193,7 +224,9 @@ export class BinanceMarketService {
       ttl: cacheTTL,
     });
 
-    this.logger.log(`[Binance] Cached ${candles.length} candles for ${symbol} ${timeframe} (TTL: ${cacheTTL}ms)`);
+    this.logger.log(
+      `[Binance] Cached ${candles.length} candles for ${symbol} ${timeframe} (TTL: ${cacheTTL}ms)`,
+    );
 
     return candles.slice(-limit);
   }
@@ -203,19 +236,21 @@ export class BinanceMarketService {
    * Returns bid, ask, priceChangePercent, lastPrice
    * Uses caching and rate limit protection
    */
-  async getCryptoQuotes(symbols: string[]): Promise<Array<{
-    symbol: string;
-    binanceSymbol: string;
-    bid: number;
-    ask: number;
-    lastPrice: number;
-    priceChangePercent: number;
-  }>> {
+  async getCryptoQuotes(symbols: string[]): Promise<
+    Array<{
+      symbol: string;
+      binanceSymbol: string;
+      bid: number;
+      ask: number;
+      lastPrice: number;
+      priceChangePercent: number;
+    }>
+  > {
     try {
       // Convert frontend symbols to Binance symbols
       const binanceSymbols = symbols
-        .map(s => ({ frontend: s, binance: this.SYMBOL_MAP[s] }))
-        .filter(s => s.binance); // Only include supported symbols
+        .map((s) => ({ frontend: s, binance: this.SYMBOL_MAP[s] }))
+        .filter((s) => s.binance); // Only include supported symbols
 
       if (binanceSymbols.length === 0) {
         return [];
@@ -225,11 +260,18 @@ export class BinanceMarketService {
       const now = Date.now();
       if (now < this.rateLimitUntil) {
         const waitTime = Math.ceil((this.rateLimitUntil - now) / 1000);
-        this.logger.warn(`[Binance] Rate limited, waiting ${waitTime} seconds. Using cached data if available.`);
-        
+        this.logger.warn(
+          `[Binance] Rate limited, waiting ${waitTime} seconds. Using cached data if available.`,
+        );
+
         // Return cached data if available
-        if (this.quotesCache && (now - this.quotesCache.timestamp < this.quotesCache.ttl * 2)) {
-          this.logger.debug('[Binance] Returning stale cached quotes due to rate limit');
+        if (
+          this.quotesCache &&
+          now - this.quotesCache.timestamp < this.quotesCache.ttl * 2
+        ) {
+          this.logger.debug(
+            '[Binance] Returning stale cached quotes due to rate limit',
+          );
           const allTickers = this.quotesCache.data;
           return this.mapTickersToQuotes(binanceSymbols, allTickers);
         }
@@ -238,7 +280,7 @@ export class BinanceMarketService {
 
       // Check cache (5 second TTL for quotes)
       const CACHE_TTL = 5000; // 5 seconds
-      if (this.quotesCache && (now - this.quotesCache.timestamp < CACHE_TTL)) {
+      if (this.quotesCache && now - this.quotesCache.timestamp < CACHE_TTL) {
         this.logger.debug('[Binance] Using cached quotes');
         return this.mapTickersToQuotes(binanceSymbols, this.quotesCache.data);
       }
@@ -247,38 +289,55 @@ export class BinanceMarketService {
       // Using /ticker/bookTicker endpoint (weight 1) for bid/ask, but we need 24hr for change%
       // Actually, we need /ticker/24hr for change%, so use that but cache aggressively
       const url = `${this.BINANCE_API}/ticker/24hr`;
-      this.logger.debug(`[Binance] Fetching tickers for ${binanceSymbols.length} symbols`);
+      this.logger.debug(
+        `[Binance] Fetching tickers for ${binanceSymbols.length} symbols`,
+      );
 
       const response = await fetch(url);
-      
+
       if (!response.ok) {
         const errorText = await response.text();
         const errorData = errorText ? JSON.parse(errorText) : {};
-        
+
         // Handle rate limiting
-        if (response.status === 418 || response.status === 429 || (errorData.code === -1003)) {
+        if (
+          response.status === 418 ||
+          response.status === 429 ||
+          errorData.code === -1003
+        ) {
           // Extract ban time from error message if available
           const banMatch = errorText.match(/banned until (\d+)/);
           if (banMatch) {
             this.rateLimitUntil = parseInt(banMatch[1]);
             const waitTime = Math.ceil((this.rateLimitUntil - now) / 1000);
-            this.logger.warn(`[Binance] Rate limited until ${new Date(this.rateLimitUntil).toISOString()} (${waitTime} seconds). Using cached data.`);
+            this.logger.warn(
+              `[Binance] Rate limited until ${new Date(this.rateLimitUntil).toISOString()} (${waitTime} seconds). Using cached data.`,
+            );
           } else {
             // Default ban time: 60 seconds
             this.rateLimitUntil = now + 60000;
-            this.logger.warn(`[Binance] Rate limited, defaulting to 60 second ban. Using cached data.`);
+            this.logger.warn(
+              `[Binance] Rate limited, defaulting to 60 second ban. Using cached data.`,
+            );
           }
-          
+
           // Return cached data if available (even if stale)
           if (this.quotesCache) {
-            this.logger.debug('[Binance] Returning cached quotes due to rate limit');
-            return this.mapTickersToQuotes(binanceSymbols, this.quotesCache.data);
+            this.logger.debug(
+              '[Binance] Returning cached quotes due to rate limit',
+            );
+            return this.mapTickersToQuotes(
+              binanceSymbols,
+              this.quotesCache.data,
+            );
           }
-          
+
           throw new Error(`Binance rate limited - please wait`);
         }
-        
-        this.logger.error(`[Binance] Ticker API error: ${response.status} ${response.statusText} - ${errorText}`);
+
+        this.logger.error(
+          `[Binance] Ticker API error: ${response.status} ${response.statusText} - ${errorText}`,
+        );
         throw new Error(`Binance API error: ${response.statusText}`);
       }
 
@@ -286,7 +345,7 @@ export class BinanceMarketService {
       this.rateLimitUntil = 0;
 
       const allTickers: any[] = await response.json();
-      
+
       // Update cache
       this.quotesCache = {
         data: allTickers,
@@ -298,14 +357,18 @@ export class BinanceMarketService {
     } catch (error) {
       // If we have cached data, return it even on error
       if (this.quotesCache) {
-        this.logger.warn(`[Binance] Error fetching quotes, using cached data: ${error.message}`);
+        this.logger.warn(
+          `[Binance] Error fetching quotes, using cached data: ${error.message}`,
+        );
         const binanceSymbols = symbols
-          .map(s => ({ frontend: s, binance: this.SYMBOL_MAP[s] }))
-          .filter(s => s.binance);
+          .map((s) => ({ frontend: s, binance: this.SYMBOL_MAP[s] }))
+          .filter((s) => s.binance);
         return this.mapTickersToQuotes(binanceSymbols, this.quotesCache.data);
       }
-      
-      this.logger.error(`[Binance] Failed to fetch crypto quotes: ${error.message}`);
+
+      this.logger.error(
+        `[Binance] Failed to fetch crypto quotes: ${error.message}`,
+      );
       throw error;
     }
   }
@@ -313,7 +376,10 @@ export class BinanceMarketService {
   /**
    * Helper to map Binance tickers to our quote format
    */
-  private mapTickersToQuotes(binanceSymbols: Array<{ frontend: string; binance: string }>, allTickers: any[]): Array<{
+  private mapTickersToQuotes(
+    binanceSymbols: Array<{ frontend: string; binance: string }>,
+    allTickers: any[],
+  ): Array<{
     symbol: string;
     binanceSymbol: string;
     bid: number;
@@ -324,9 +390,11 @@ export class BinanceMarketService {
     const quotes = binanceSymbols
       .map(({ frontend, binance }) => {
         const ticker = allTickers.find((t: any) => t.symbol === binance);
-        
+
         if (!ticker) {
-          this.logger.warn(`[Binance] No ticker data found for ${frontend} (${binance})`);
+          this.logger.warn(
+            `[Binance] No ticker data found for ${frontend} (${binance})`,
+          );
           return null;
         }
 
@@ -341,14 +409,14 @@ export class BinanceMarketService {
           priceChangePercent: parseFloat(ticker.priceChangePercent || '0'),
         };
       })
-      .filter(q => q !== null) as Array<{
-        symbol: string;
-        binanceSymbol: string;
-        bid: number;
-        ask: number;
-        lastPrice: number;
-        priceChangePercent: number;
-      }>;
+      .filter((q) => q !== null) as Array<{
+      symbol: string;
+      binanceSymbol: string;
+      bid: number;
+      ask: number;
+      lastPrice: number;
+      priceChangePercent: number;
+    }>;
 
     this.logger.debug(`[Binance] Mapped quotes for ${quotes.length} symbols`);
     return quotes;
@@ -362,4 +430,3 @@ export class BinanceMarketService {
     this.logger.log('[Binance] Cache cleared');
   }
 }
-

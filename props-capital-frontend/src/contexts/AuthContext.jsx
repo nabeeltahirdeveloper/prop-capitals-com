@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
   const queryClient = useQueryClient();
   const [token, setToken] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('token');
+      return localStorage.getItem('token') || sessionStorage.getItem('token');
     }
     return null;
   });
@@ -37,8 +37,14 @@ export const AuthProvider = ({ children }) => {
     refetchOnWindowFocus: false,
   });
 
-  const login = useCallback((newToken, userData) => {
-    localStorage.setItem('token', newToken);
+  const login = useCallback((newToken, userData, rememberMe = true) => {
+    if (rememberMe) {
+      localStorage.setItem('token', newToken);
+      sessionStorage.removeItem('token');
+    } else {
+      sessionStorage.setItem('token', newToken);
+      localStorage.removeItem('token');
+    }
     setToken(newToken);
     if (userData) {
       queryClient.setQueryData(['user', 'me'], userData);
@@ -49,6 +55,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = useCallback(() => {
     localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     setToken(null);
     queryClient.setQueryData(['user', 'me'], null);
     queryClient.removeQueries({ queryKey: ['user', 'me'] });

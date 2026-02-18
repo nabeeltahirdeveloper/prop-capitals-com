@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { adminGetAllViolations } from "@/api/admin";
-import { useTranslation } from "../../../props-capital-frontend/src/contexts/LanguageContext";
+import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,8 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import DataTable from "../../../props-capital-frontend/src/components/shared/DataTable";
-import StatsCard from "../../../props-capital-frontend/src/components/shared/StatsCard";
+import DataTable from "@/components/shared/DataTable";
+import StatsCard from "@/components/shared/StatsCard";
 import {
   Search,
   AlertTriangle,
@@ -191,8 +191,8 @@ export default function AdminViolations() {
         <span
           className={`px-2 py-1 rounded-full text-xs font-medium border ${
             row.is_fatal
-              ? "bg-red-50 text-red-600 border-red-200"
-              : "bg-amber-50 text-[#d97706] border-amber-200"
+              ? "bg-red-50 text-red-600 border-red-200 dark:bg-red-950/60 dark:text-red-400 dark:border-red-800"
+              : "bg-amber-50 text-[#d97706] border-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:border-amber-700"
           }`}
         >
           {row.is_fatal
@@ -316,7 +316,6 @@ export default function AdminViolations() {
           data={filteredViolations}
           isLoading={isLoading}
           emptyMessage={t("admin.violations.emptyMessage")}
-          variant="light"
         />
 
         {/* Pagination */}

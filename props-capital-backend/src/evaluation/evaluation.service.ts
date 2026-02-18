@@ -121,17 +121,33 @@ export class EvaluationService {
     const dailyLossViolated = (account as any).dailyLossViolated ?? false;
 
     if (drawdownViolated || account.status === ('DISQUALIFIED' as TradingAccountStatus)) {
+      const positionsClosed = account.trades.length > 0
+        ? await this.autoCloseAllPositionsWithPrices(
+            accountId,
+            account.trades,
+            accountPriceCache,
+            'Max Drawdown Violated',
+          )
+        : 0;
       return {
         statusChanged: false,
-        positionsClosed: 0,
+        positionsClosed,
         accountStatus: 'DISQUALIFIED',
       };
     }
 
     if (dailyLossViolated || account.status === ('DAILY_LOCKED' as TradingAccountStatus)) {
+      const positionsClosed = account.trades.length > 0
+        ? await this.autoCloseAllPositionsWithPrices(
+            accountId,
+            account.trades,
+            accountPriceCache,
+            'Daily Loss Limit Violated',
+          )
+        : 0;
       return {
         statusChanged: false,
-        positionsClosed: 0,
+        positionsClosed,
         accountStatus: 'DAILY_LOCKED',
       };
     }
@@ -427,6 +443,80 @@ export class EvaluationService {
         
         statusChanged = true;
         violationType = 'DISQUALIFIED';
+      }
+    }
+
+    // Phase progression from PEAK profit should also work on live ticks.
+    // This allows maxEquityToDate reached intra-trade to count immediately.
+    if (
+      account.status === TradingAccountStatus.ACTIVE &&
+      !statusChanged &&
+      maxEquityChanged
+    ) {
+      const tradingDaysTrades = await this.prisma.trade.findMany({
+        where: { tradingAccountId: accountId },
+        select: { openedAt: true },
+      });
+      const tradingDaysCompleted = new Set(
+        tradingDaysTrades
+          .filter((t) => t.openedAt)
+          .map((t) => t.openedAt.toISOString().substring(0, 10)),
+      ).size;
+
+      if (
+        account.phase === TradingPhase.PHASE1 &&
+        ruleOutputs.profitPercent >= challenge.phase1TargetPercent &&
+        tradingDaysCompleted >= challenge.minTradingDays
+      ) {
+        await this.prisma.tradingAccount.update({
+          where: { id: accountId },
+          data: { phase: TradingPhase.PHASE2 },
+        });
+
+        await this.prisma.phaseTransition.create({
+          data: {
+            tradingAccountId: accountId,
+            fromPhase: TradingPhase.PHASE1,
+            toPhase: TradingPhase.PHASE2,
+          },
+        });
+
+        if (account.userId) {
+          await this.notificationsService.create(
+            account.userId,
+            'Phase 1 Completed!',
+            `Congratulations! You have successfully completed Phase 1 of your $${challenge.accountSize.toLocaleString()} challenge. Proceed to Phase 2 to continue.`,
+            NotificationType.SUCCESS,
+            NotificationCategory.CHALLENGE,
+          );
+        }
+      } else if (
+        account.phase === TradingPhase.PHASE2 &&
+        ruleOutputs.profitPercent >= challenge.phase2TargetPercent &&
+        tradingDaysCompleted >= challenge.minTradingDays
+      ) {
+        await this.prisma.tradingAccount.update({
+          where: { id: accountId },
+          data: { phase: TradingPhase.FUNDED },
+        });
+
+        await this.prisma.phaseTransition.create({
+          data: {
+            tradingAccountId: accountId,
+            fromPhase: TradingPhase.PHASE2,
+            toPhase: TradingPhase.FUNDED,
+          },
+        });
+
+        if (account.userId) {
+          await this.notificationsService.create(
+            account.userId,
+            'Phase 2 Completed!',
+            `Congratulations! You have successfully completed Phase 2 of your $${challenge.accountSize.toLocaleString()} challenge. Your account is now funded!`,
+            NotificationType.SUCCESS,
+            NotificationCategory.CHALLENGE,
+          );
+        }
       }
     }
 
@@ -972,6 +1062,9 @@ export class EvaluationService {
 
     // If already disqualified, skip evaluation entirely
     if (drawdownViolated || account.status === ('DISQUALIFIED' as TradingAccountStatus)) {
+      if (account.trades.length > 0) {
+        await this.autoCloseAllPositions(accountId, 'Max Drawdown Violated');
+      }
       // Return default outputs indicating violation
       const { challenge } = account;
       return {
@@ -991,6 +1084,9 @@ export class EvaluationService {
 
     // If already daily locked, skip evaluation
     if (dailyLossViolated || account.status === ('DAILY_LOCKED' as TradingAccountStatus)) {
+      if (account.trades.length > 0) {
+        await this.autoCloseAllPositions(accountId, 'Daily Loss Limit Violated');
+      }
       // Return default outputs indicating daily violation
       const { challenge } = account;
       return {
@@ -1162,7 +1258,18 @@ export class EvaluationService {
           this.logger.debug(`[Auto-Close] Successfully closed trade ${trade.id} (${trade.symbol})`);
         } catch (error) {
           this.logger.error(`[Auto-Close] Failed to auto-close trade ${trade.id}:`, error);
-          // Continue with other trades even if one fails
+          // Fallback: force-close at openPrice to guarantee risk lock consistency
+          try {
+            await this.tradesService.updateTrade(trade.id, {
+              closePrice: trade.openPrice,
+              profit: 0,
+              closedAt: new Date(),
+              closeReason: 'RISK_AUTO_CLOSE_FALLBACK',
+            });
+            this.logger.warn(`[Auto-Close] Fallback close applied for trade ${trade.id} (${trade.symbol}) at open price`);
+          } catch (fallbackError) {
+            this.logger.error(`[Auto-Close] Fallback close also failed for trade ${trade.id}:`, fallbackError);
+          }
         }
       })
     );

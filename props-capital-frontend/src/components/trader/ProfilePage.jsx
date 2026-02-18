@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   User,
   Mail,
   Phone,
   MapPin,
   Calendar,
-  Shield,
   CheckCircle,
   Edit3,
   Camera,
   Save,
   X,
   Globe,
-  Building,
   Loader2
 } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
@@ -43,6 +41,8 @@ const ProfilePage = () => {
   const [editedProfile, setEditedProfile] = useState({ ...profile });
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const avatarInputRef = useRef(null);
+  const [profileImage, setProfileImage] = useState('');
 
   const { data: user, isLoading, error } = useQuery({
     queryKey: ['user', 'me'],
@@ -53,6 +53,14 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (user) {
+      const userKey = user.id || user.userId || user.email;
+      const savedAvatar = userKey ? localStorage.getItem(`profile-avatar-${userKey}`) : null;
+      const serverAvatar =
+        user.profile?.avatarUrl ||
+        user.profile?.profilePicture ||
+        user.profile?.profileImage ||
+        user.profile?.photoUrl ||
+        '';
       const joinDate = user.profile?.joinDate || user.createdAt;
       setProfile({
         firstName: user.profile?.firstName || '-',
@@ -66,6 +74,7 @@ const ProfilePage = () => {
         tradingExperience: user.profile?.tradingExperience || '-',
         preferredPlatform: user.profile?.preferredPlatform || '-',
       });
+      setProfileImage(savedAvatar || serverAvatar || '');
     }
   }, [user]);
 
@@ -103,6 +112,61 @@ const ProfilePage = () => {
     setIsEditing(false);
   };
 
+  const getInitial = (name) => {
+    const trimmed = (name || '').trim();
+    if (!trimmed || trimmed === '-') return '';
+    return trimmed.charAt(0).toUpperCase();
+  };
+
+  const handleAvatarClick = () => {
+    avatarInputRef.current?.click();
+  };
+
+  const handleAvatarChange = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: 'Invalid file',
+        description: 'Please select an image file.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const maxSizeInBytes = 5 * 1024 * 1024;
+    if (file.size > maxSizeInBytes) {
+      toast({
+        title: 'File too large',
+        description: 'Please upload an image smaller than 5MB.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const imageData = typeof reader.result === 'string' ? reader.result : '';
+      if (!imageData) return;
+
+      setProfileImage(imageData);
+
+      const userKey = user?.id || user?.userId || user?.email;
+      if (userKey) {
+        localStorage.setItem(`profile-avatar-${userKey}`, imageData);
+      }
+
+      toast({
+        title: 'Profile picture updated',
+        description: 'Your new profile picture is now visible.',
+        variant: 'success',
+      });
+    };
+    reader.readAsDataURL(file);
+    event.target.value = '';
+  };
+
   const stats = [
     { label: 'Challenges Completed', value: user?.totalCompletedChallenges || 0, color: 'emerald' },
     { label: 'Total Payouts', value: user?.totalPayouts ? `$${user.totalPayouts.toLocaleString()}` : '$0', color: 'amber' },
@@ -117,13 +181,31 @@ const ProfilePage = () => {
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
           {/* Avatar */}
           <div className="relative">
-            <div className="w-24 h-24 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center text-[#0a0d12] font-black text-3xl">
-              {profile.firstName[0]}{profile.lastName[0]}
+            <div className="w-24 h-24 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center text-[#0a0d12] font-black text-3xl overflow-hidden">
+              {profileImage ? (
+                <img
+                  src={profileImage}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                `${getInitial(profile.firstName)}${getInitial(profile.lastName)}` || 'U'
+              )}
             </div>
-            <button className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10 hover:bg-white/20' : 'bg-slate-100 hover:bg-slate-200'
+            <button
+              type="button"
+              onClick={handleAvatarClick}
+              className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10 hover:bg-white/20' : 'bg-slate-100 hover:bg-slate-200'
               } transition-all`}>
               <Camera className={`w-4 h-4 ${isDark ? 'text-gray-400' : 'text-slate-500'}`} />
             </button>
+            <input
+              ref={avatarInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              className="hidden"
+            />
           </div>
 
           {/* Info */}
@@ -354,7 +436,7 @@ const ProfilePage = () => {
       )}
 
       {/* Security Section */}
-      <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
+      {/* <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
         <div className="flex items-center gap-2 mb-4">
           <Shield className={`w-5 h-5 ${isDark ? 'text-gray-400' : 'text-slate-500'}`} />
           <h2 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Security</h2>
@@ -373,7 +455,7 @@ const ProfilePage = () => {
             Enabled
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

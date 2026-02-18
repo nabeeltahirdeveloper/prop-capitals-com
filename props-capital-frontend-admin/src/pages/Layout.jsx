@@ -16,6 +16,7 @@ import {
   Bell,
   Menu,
   X,
+  Briefcase,
   LogOut,
   ChevronDown,
   ChevronLeft,
@@ -218,12 +219,12 @@ export default function Layout({ children, currentPageName }) {
       { name: t("nav.payouts"), icon: Wallet, page: "AdminPayouts" },
       {
         name: "CRM",
-        icon: UserPlus,
+        icon: Briefcase,
         children: [
-          { name: "CRM Leads", icon: UserPlus, page: "CRMLeads" },
-          { name: "Pipeline", icon: Target, page: "CRMPipeline" },
-          { name: "FTD Report", icon: DollarSign, page: "CRMFTDReport" },
-          { name: "Calendar", icon: Calendar, page: "CRMCalendar" },
+          { name: "CRM Leads", page: "CRMLeads" },
+          { name: "Pipeline", page: "CRMPipeline" },
+          { name: "FTD Report", page: "CRMFTDReport" },
+          { name: "Calendar", page: "CRMCalendar" },
         ],
       },
       { name: t("nav.coupons"), icon: Zap, page: "AdminCoupons" },
@@ -257,10 +258,10 @@ export default function Layout({ children, currentPageName }) {
   const isProtectedPage = !isPublicPage && !isNoLayoutPage;
   if (isProtectedPage && status === "checking") {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-400">{t("common.loading")}</p>
+          <div className="w-16 h-16 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground font-medium">{t("common.loading")}</p>
         </div>
       </div>
     );
@@ -510,7 +511,9 @@ export default function Layout({ children, currentPageName }) {
                         }
                         setOpenSubmenu(isSubmenuOpen ? null : item.name);
                       }}
-                      className={`w-full flex items-center justify-between transition-all ${sidebarCollapsed ? "px-2 justify-center" : "px-3"} py-2.5 rounded-xl ${
+                      className={`w-full flex items-center transition-all ${
+                        sidebarCollapsed ? "justify-center px-2" : "justify-between px-3"
+                      } py-2.5 rounded-xl ${
                         isAnyChildActive
                           ? "bg-amber-500/10 text-foreground border border-amber-500/40"
                           : "text-muted-foreground hover:text-foreground hover:bg-accent"
@@ -544,7 +547,7 @@ export default function Layout({ children, currentPageName }) {
                                   : "text-muted-foreground hover:text-foreground hover:bg-accent"
                               }`}
                             >
-                              <child.icon className={`w-4 h-4 ${isChildActive ? "text-amber-500" : ""}`} />
+                              {child.icon && <child.icon className={`w-4 h-4 shrink-0 ${isChildActive ? "text-amber-500" : ""}`} />}
                               <span className="text-sm font-medium">{child.name}</span>
                             </Link>
                           );

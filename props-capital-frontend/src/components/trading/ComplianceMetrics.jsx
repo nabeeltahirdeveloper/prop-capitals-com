@@ -1,82 +1,105 @@
-import React from 'react';
-import { Target, AlertTriangle, Shield } from 'lucide-react';
-import { useTraderTheme } from '../trader/TraderPanelLayout';
+import React from "react";
+import { Target, AlertTriangle, Shield } from "lucide-react";
+import { useTraderTheme } from "../trader/TraderPanelLayout";
 
 const ComplianceMetrics = ({ compliance, challenge }) => {
   const { isDark } = useTraderTheme();
-  
+
   if (!compliance || !challenge) return null;
 
-  const cardClass = `rounded-2xl border ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`;
-  const textClass = isDark ? 'text-white' : 'text-slate-900';
-  const mutedClass = isDark ? 'text-gray-400' : 'text-slate-500';
+  const cardClass = `rounded-2xl border ${isDark ? "bg-[#12161d] border-white/5" : "bg-white border-slate-200"}`;
+  const textClass = isDark ? "text-white" : "text-slate-900";
+  const mutedClass = isDark ? "text-gray-400" : "text-slate-500";
 
   const metrics = [
     {
-      id: 'profitTarget',
+      id: "profitTarget",
       icon: Target,
-      label: 'Profit Target',
+      label: "Profit Target",
       current: compliance.profitTarget?.current || 0,
-      target: compliance.profitTarget?.target || challenge.rules?.profitTarget || 0,
+      target:
+        compliance.profitTarget?.target || challenge.rules?.profitTarget || 0,
       percentage: compliance.profitTarget?.percentage || 0,
-      status: compliance.profitTarget?.status || 'in-progress',
-      color: 'amber',
-      suffix: '%',
+      status: compliance.profitTarget?.status || "in-progress",
+      color: "amber",
+      suffix: "%",
     },
     {
-      id: 'dailyLoss',
+      id: "dailyLoss",
       icon: AlertTriangle,
-      label: 'Daily Loss Limit',
+      label: "Daily Loss Limit",
       current: compliance.dailyLoss?.current || 0,
       target: compliance.dailyLoss?.limit || challenge.rules?.maxDailyLoss || 5,
       percentage: compliance.dailyLoss?.percentage || 0,
-      status: compliance.dailyLoss?.status || 'safe',
-      color: 'emerald',
-      suffix: '%',
+      status: compliance.dailyLoss?.status || "safe",
+      color: "emerald",
+      suffix: "%",
     },
     {
-      id: 'totalDrawdown',
+      id: "totalDrawdown",
       icon: Shield,
-      label: 'Overall Drawdown',
+      label: "Overall Drawdown",
       current: compliance.totalDrawdown?.current || 0,
-      target: compliance.totalDrawdown?.limit || challenge.rules?.maxTotalDrawdown || 10,
+      target:
+        compliance.totalDrawdown?.limit ||
+        challenge.rules?.maxTotalDrawdown ||
+        10,
       percentage: compliance.totalDrawdown?.percentage || 0,
-      status: compliance.totalDrawdown?.status || 'safe',
-      color: 'emerald',
-      suffix: '%',
+      status: compliance.totalDrawdown?.status || "safe",
+      color: "emerald",
+      suffix: "%",
     },
   ];
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'passed':
-        return 'emerald';
-      case 'warning':
-        return 'amber';
-      case 'violated':
-        return 'red';
-      case 'safe':
-        return 'emerald';
-      case 'in-progress':
+      case "passed":
+        return "emerald";
+      case "warning":
+        return "amber";
+      case "violated":
+        return "red";
+      case "safe":
+        return "emerald";
+      case "in-progress":
       default:
-        return 'blue';
+        return "blue";
     }
   };
 
   const getStatusLabel = (status) => {
     switch (status) {
-      case 'passed':
-        return 'PASSED';
-      case 'warning':
-        return 'WARNING';
-      case 'violated':
-        return 'VIOLATED';
-      case 'safe':
-        return 'SAFE';
-      case 'in-progress':
+      case "passed":
+        return "PASSED";
+      case "warning":
+        return "WARNING";
+      case "violated":
+        return "VIOLATED";
+      case "safe":
+        return "SAFE";
+      case "in-progress":
       default:
-        return 'IN PROGRESS';
+        return "IN PROGRESS";
     }
+  };
+
+  const colorClasses = {
+    emerald: {
+      badge: "bg-emerald-500/20 text-emerald-500",
+      bar: "bg-emerald-500",
+    },
+    amber: {
+      badge: "bg-amber-500/20 text-amber-500",
+      bar: "bg-amber-500",
+    },
+    red: {
+      badge: "bg-red-500/20 text-red-500",
+      bar: "bg-red-500",
+    },
+    blue: {
+      badge: "bg-blue-500/20 text-blue-500",
+      bar: "bg-blue-500",
+    },
   };
 
   return (
@@ -84,37 +107,53 @@ const ComplianceMetrics = ({ compliance, challenge }) => {
       {metrics.map((metric) => {
         const statusColor = getStatusColor(metric.status);
         const statusLabel = getStatusLabel(metric.status);
+        const style = colorClasses[statusColor] || colorClasses.blue;
 
         return (
-          <div key={metric.id} className={cardClass + ' p-3 sm:p-4'}>
+          <div key={metric.id} className={cardClass + " p-3 sm:p-4"}>
             <div className="flex items-center justify-between mb-2 sm:mb-3">
               <div className="flex items-center gap-2">
-                <metric.icon className={`w-4 h-4 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
-                <span className={`text-xs sm:text-sm font-medium ${textClass}`}>{metric.label}</span>
+                <metric.icon
+                  className={`w-4 h-4 ${isDark ? "text-gray-500" : "text-slate-400"}`}
+                />
+                <span className={`text-xs sm:text-sm font-medium ${textClass}`}>
+                  {metric.label}
+                </span>
               </div>
               <span
-                className={`text-[10px] sm:text-xs font-bold px-2 py-1 rounded-lg bg-${statusColor}-500/20 text-${statusColor}-500`}
+                className={`text-[10px] sm:text-xs font-bold px-2 py-1 rounded-lg ${style.badge}`}
               >
                 {statusLabel}
               </span>
             </div>
 
             {/* Progress bar */}
-            <div className={`h-2 rounded-full overflow-hidden mb-2 ${isDark ? 'bg-white/5' : 'bg-slate-200'}`}>
+            <div
+              className={`h-2 rounded-full overflow-hidden mb-2 ${isDark ? "bg-white/5" : "bg-slate-200"}`}
+            >
               <div
-                className={`h-full rounded-full transition-all bg-${metric.color}-500`}
+                className={`h-full rounded-full transition-all ${style.bar}`}
                 style={{ width: `${Math.min(metric.percentage, 100)}%` }}
               />
             </div>
 
             <div className="flex items-end justify-between">
               <div>
-                <span className={`text-lg sm:text-2xl font-bold font-mono ${textClass}`}>
-                  {metric.current.toFixed(2)}{metric.suffix}
+                <span
+                  className={`text-lg sm:text-2xl font-bold font-mono ${textClass}`}
+                >
+                  {metric.current.toFixed(2)}
+                  {metric.suffix}
                 </span>
-                <span className={`text-xs sm:text-sm ${mutedClass}`}> / {metric.target}{metric.suffix}</span>
+                <span className={`text-xs sm:text-sm ${mutedClass}`}>
+                  {" "}
+                  / {metric.target}
+                  {metric.suffix}
+                </span>
               </div>
-              <span className={`text-xs sm:text-sm font-medium ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
+              <span
+                className={`text-xs sm:text-sm font-medium ${isDark ? "text-gray-500" : "text-slate-500"}`}
+              >
                 {metric.percentage.toFixed(0)}%
               </span>
             </div>

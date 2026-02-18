@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useTranslation } from "../../../props-capital-frontend/src/contexts/LanguageContext";
+import { useTranslation } from "../contexts/LanguageContext";
 import {
   adminGetAllBrokerServers,
   adminCreateBrokerServer,
   adminDeleteBrokerServer,
   adminTestBrokerServerConnection,
-} from "../../../props-capital-frontend/src/api/admin";
+} from "@/api/admin";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

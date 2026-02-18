@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiGet, apiPost } from "@/lib/api";
-import { useTranslation } from "../../../props-capital-frontend/src/contexts/LanguageContext";
+import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -170,27 +170,27 @@ export default function AdminScaling() {
     <div className="overflow-x-auto">
       <Table>
         <TableHeader>
-          <TableRow className="border-border bg-slate-100">
-            <TableHead className="text-slate-500 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+          <TableRow className="border-slate-200 dark:border-border bg-slate-200 dark:bg-muted/50 [&_tr]:hover:bg-transparent">
+            <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
               {t("admin.scaling.table.trader")}
             </TableHead>
-            <TableHead className="text-slate-500 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+            <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
               {t("admin.scaling.table.currentToNew")}
             </TableHead>
-            <TableHead className="text-slate-500 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+            <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
               {t("admin.scaling.table.profitSplit")}
             </TableHead>
-            <TableHead className="text-slate-500 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+            <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
               {t("admin.scaling.table.profitAchieved")}
             </TableHead>
-            <TableHead className="text-slate-500 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+            <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
               {t("admin.scaling.table.payoutCycles")}
             </TableHead>
-            <TableHead className="text-slate-500 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+            <TableHead className="text-slate-800 dark:text-muted-foreground font-semibold text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
               {t("admin.scaling.table.status")}
             </TableHead>
             {showActions && (
-              <TableHead className="text-slate-500 text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+              <TableHead className="text-muted-foreground text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
                 {t("admin.scaling.table.actions")}
               </TableHead>
             )}
@@ -200,7 +200,7 @@ export default function AdminScaling() {
           {data.map((request) => (
             <TableRow
               key={request.id}
-              className="border-border hover:bg-slate-100"
+              className="border-slate-200 dark:border-border hover:bg-slate-50 dark:hover:bg-muted/50"
             >
               <TableCell className="px-2 sm:px-4 py-3">
                 <div>
@@ -345,7 +345,7 @@ export default function AdminScaling() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-        <Card className="bg-gradient-to-r from-[#fef3c7] to-[#fffbeb] border-amber-500/40 p-3 sm:p-4">
+        <Card className="bg-card border-border p-3 sm:p-4">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-amber-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
               <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-[#d97706]" />
@@ -361,7 +361,7 @@ export default function AdminScaling() {
           </div>
         </Card>
 
-        <Card className="bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-500/30 p-3 sm:p-4">
+        <Card className="bg-card border-border p-3 sm:p-4">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
               <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
@@ -377,7 +377,7 @@ export default function AdminScaling() {
           </div>
         </Card>
 
-        <Card className="bg-gradient-to-r from-emerald-50 to-green-50 border-emerald-500/30 p-3 sm:p-4 sm:col-span-2 lg:col-span-1">
+        <Card className="bg-card border-border p-3 sm:p-4 sm:col-span-2 lg:col-span-1">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
               <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />

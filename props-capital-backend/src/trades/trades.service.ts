@@ -15,16 +15,23 @@ export class TradesService {
     
   ) {}
 
+  private static readonly SPOT_SYMBOLS = [
+    'BTCUSDT','ETHUSDT','SOLUSDT','XRPUSDT','DOGEUSDT',
+    'BNBUSDT','ADAUSDT','AVAXUSDT','DOTUSDT',
+    //'MATICUSDT',
+    'LINKUSDT',
+  ];
+
   // Create trade and trigger evaluation engine
   async createTrade(data: any) {
     const { accountId, profit, openPrice, closePrice, volume, symbol, stopLoss, takeProfit } = data;
-console.log(data)
+    const positionType: string = data.positionType === 'SPOT' ? 'SPOT' : 'CFD';
     const account = await this.prisma.tradingAccount.findUnique({
       where: { id: accountId },
       include: {
         challenge: true,
         trades: {
-          select: { openedAt: true },
+          select: { openedAt: true, closePrice: true, symbol: true, volume: true, openPrice: true },
         },
       },
     });
@@ -44,6 +51,44 @@ console.log(data)
       throw new BadRequestException('Account is not active for trading.');
     }
 
+    // Spot-specific validation
+    if (positionType === 'SPOT') {
+      const sym = String(symbol || '').toUpperCase().replace('/', '');
+      if (!TradesService.SPOT_SYMBOLS.includes(sym)) {
+        throw new BadRequestException(`Symbol ${symbol} is not available for spot trading.`);
+      }
+      data.leverage = 1;
+    }
+
+    // Enforce margin availability to prevent opening unlimited max-size positions.
+    // Existing trades default to 1:100 for reserved margin calculation.
+    if (closePrice === undefined || closePrice === null) {
+      const requestedLeverage = positionType === 'SPOT' ? 1 : Number(data?.leverage);
+      const effectiveLeverage = Number.isFinite(requestedLeverage) && requestedLeverage > 0 ? requestedLeverage : 1;
+      const isNewCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|LINK|USDT/i.test(String(symbol || ''));
+      const newContractSize = isNewCrypto ? 1 : 100000;
+      const requiredMargin = (Number(volume) * newContractSize * Number(openPrice)) / effectiveLeverage;
+
+      const usedMargin = (account.trades || [])
+        .filter((t: any) => t.closePrice === null)
+        .reduce((sum: number, t: any) => {
+          const isCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|LINK|USDT/i.test(String(t.symbol || ''));
+          const contractSize = isCrypto ? 1 : 100000;
+          const existingLeverage = Number((t as any)?.leverage);
+          const effectiveExistingLeverage = Number.isFinite(existingLeverage) && existingLeverage > 0 ? existingLeverage : 1;
+          return sum + ((Number(t.volume) * contractSize * Number(t.openPrice)) / effectiveExistingLeverage);
+        }, 0);
+
+      const currentBalance = Number(account.balance ?? account.initialBalance ?? 0);
+      const availableMargin = Math.max(0, currentBalance - usedMargin);
+      if (!Number.isFinite(requiredMargin) || requiredMargin <= 0) {
+        throw new BadRequestException('Invalid margin requirements for requested trade.');
+      }
+      if (requiredMargin > availableMargin) {
+        throw new BadRequestException(`Insufficient margin. Required ${requiredMargin.toFixed(2)}, available ${availableMargin.toFixed(2)}.`);
+      }
+    }
+
     // 1️⃣ Store trade
     const trade = await this.prisma.trade.create({
       data: {
@@ -58,7 +103,8 @@ console.log(data)
         profit: profit || 0,
         openedAt: new Date(),
         closedAt: closePrice ? new Date() : null,
-      },
+        positionType,
+      } as any,
     });
 
     // 2️⃣ Update balance/equity (simple: balance += profit)
@@ -176,7 +222,29 @@ console.log(data)
       }
       updateData.closePrice = closePrice;
       updateData.closedAt = new Date();
-      updateData.profit = profit !== undefined ? profit : trade.profit;
+      if (profit !== undefined) {
+        updateData.profit = profit;
+      } else {
+        const symbolUpper = String(trade.symbol || '').toUpperCase();
+        const isCrypto =
+          symbolUpper.includes('BTC') ||
+          symbolUpper.includes('ETH') ||
+          symbolUpper.includes('SOL') ||
+          symbolUpper.includes('XRP') ||
+          symbolUpper.includes('ADA') ||
+          symbolUpper.includes('DOGE') ||
+          symbolUpper.includes('BNB') ||
+          symbolUpper.includes('AVAX') ||
+          symbolUpper.includes('DOT') ||
+      //    symbolUpper.includes('MATIC') ||
+          symbolUpper.includes('LINK');
+        const contractSize = isCrypto ? 1 : 100000;
+        const priceDiff =
+          trade.type === 'BUY'
+            ? closePrice - trade.openPrice
+            : trade.openPrice - closePrice;
+        updateData.profit = priceDiff * (trade.volume || 0) * contractSize;
+      }
     }
 
     // Allow updating stopLoss and takeProfit for open trades
@@ -227,15 +295,49 @@ console.log(data)
 
     // 2️⃣ Update balance/equity only when closing the trade
     if (closePrice !== undefined) {
-      const profitToAdd = profit !== undefined ? profit : updatedTrade.profit;
-      const newBalance = (account.balance ?? account.initialBalance) + profitToAdd;
+      const profitToAdd = updatedTrade.profit ?? 0;
+      const previousBalance = account.balance ?? account.initialBalance;
+      const newBalance = previousBalance + profitToAdd;
+
+      const nextEquity = newBalance;
+
+      const accountUpdateData: any = {
+        balance: newBalance,
+        equity: nextEquity,
+      };
+
+      const initialBalance = account.initialBalance ?? newBalance;
+      const currentMaxEquity = (account as any).maxEquityToDate ?? initialBalance;
+      if (nextEquity > currentMaxEquity) {
+        accountUpdateData.maxEquityToDate = nextEquity;
+      }
+
+      const today = new Date().toISOString().substring(0, 10);
+      const lastReset = (account as any).lastDailyReset;
+      const lastResetDate = lastReset
+        ? new Date(lastReset).toISOString().substring(0, 10)
+        : null;
+
+      if (lastResetDate !== today) {
+        // New day baseline initialization for drawdown tracking.
+        accountUpdateData.todayStartEquity = nextEquity;
+        accountUpdateData.minEquityToday = nextEquity;
+        accountUpdateData.lastDailyReset = new Date();
+      } else {
+        const currentMinToday = (account as any).minEquityToday ?? nextEquity;
+        if (nextEquity < currentMinToday) {
+          accountUpdateData.minEquityToday = nextEquity;
+        }
+      }
+
+      const currentMinOverall = (account as any).minEquityOverall ?? initialBalance;
+      if (nextEquity < currentMinOverall) {
+        accountUpdateData.minEquityOverall = nextEquity;
+      }
 
       await this.prisma.tradingAccount.update({
         where: { id: account.id },
-        data: {
-          balance: newBalance,
-          equity: newBalance,
-        },
+        data: accountUpdateData,
       });
 
       // 3️⃣ Run evaluation engine when trade is closed

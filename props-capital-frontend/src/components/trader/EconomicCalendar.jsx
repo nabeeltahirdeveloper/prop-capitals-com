@@ -1,13 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
+import EventDetailModal from './EventDetailModal';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5101';
 
 async function fetchCalendarMonth(monthYYYYMM) {
-  const res = await fetch(`/api/economic-calendar?month=${encodeURIComponent(monthYYYYMM)}`);
+  const res = await fetch(`${API_BASE}/economic-calendar?month=${encodeURIComponent(monthYYYYMM)}`);
   if (!res.ok) throw new Error(`Calendar fetch failed: ${res.status}`);
-  return res.json(); // { month, events: [...] }
-}
+  return res.json();
+} 
 
 function monthKeyUTC(dateObj) {
   const y = dateObj.getUTCFullYear();
@@ -56,6 +58,11 @@ const EconomicCalendar = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // Event detail modal state
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [eventDetail, setEventDetail] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState(null);
 
   const month = monthKeyUTC(currentMonth);
 
@@ -81,6 +88,49 @@ const EconomicCalendar = () => {
     return () => { alive = false; };
   }, [month]);
 
+  // Handle event click to fetch and show details
+  const handleEventClick = async (event) => {
+    if (!event.url) {
+      // No detail page available for this event
+      setSelectedEvent(event);
+      setEventDetail(null);
+      setDetailError(null);
+      return;
+    }
+
+    setSelectedEvent(event);
+    setDetailLoading(true);
+    setDetailError(null);
+    setEventDetail(null);
+
+    try {
+      const path = new URL(event.url).pathname;
+      const res = await fetch(
+        `${API_BASE}/economic-calendar/event?path=${encodeURIComponent(path)}`
+      );
+
+      if (!res.ok) {
+        throw new Error(
+          res.status === 404
+            ? 'Event details not found'
+            : `Failed to fetch details (${res.status})`
+        );
+      }
+
+      const data = await res.json();
+      setEventDetail(data);
+    } catch (err) {
+      setDetailError(err.message || 'Failed to load event details');
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setSelectedEvent(null);
+    setEventDetail(null);
+    setDetailError(null);
+  };
 
   // ✅ Step 5: group events by UTC day
   const eventsByDay = useMemo(() => {
@@ -267,7 +317,15 @@ const EconomicCalendar = () => {
               const impact = impactToKey(event.importance);
 
               return (
-                <div key={event.id} className={`rounded-xl p-4 ${isDark ? 'bg-white/5' : 'bg-slate-50'}`}>
+                <button
+                  key={event.id}
+                  onClick={() => handleEventClick(event)}
+                  className={`w-full text-left rounded-xl p-4 transition-all ${
+                    isDark
+                      ? 'bg-white/5 hover:bg-white/10'
+                      : 'bg-slate-50 hover:bg-slate-100'
+                  }`}
+                >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-2">
                       {impact && <span className={`w-2 h-2 rounded-full ${impactColors[impact]}`}></span>}
@@ -298,12 +356,23 @@ const EconomicCalendar = () => {
                       )}
                     </div>
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
         </div>
       </div>
+
+      {/* Event Detail Modal */}
+      <EventDetailModal
+        isOpen={!!selectedEvent}
+        onClose={handleCloseModal}
+        event={selectedEvent}
+        eventDetail={eventDetail}
+        loading={detailLoading}
+        error={detailError}
+        isDark={isDark}
+      />
     </div>
   );
 };

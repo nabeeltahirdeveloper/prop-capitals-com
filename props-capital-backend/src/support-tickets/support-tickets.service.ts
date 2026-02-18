@@ -5,16 +5,21 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSupportTicketDto } from './dto/create-support-ticket.dto';
-import { TicketCategory, TicketPriority, TicketStatus } from '@prisma/client';
+import {
+  TicketCategory,
+  TicketPriority,
+  TicketStatus,
+  UserRole,
+} from '@prisma/client';
 
 @Injectable()
 export class SupportTicketsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(dto: CreateSupportTicketDto) {
+  async create(userId: string, dto: CreateSupportTicketDto) {
     return this.prisma.supportTicket.create({
       data: {
-        userId: dto.userId,
+        userId,
         subject: dto.subject,
         message: dto.message,
         category: dto.category || TicketCategory.OTHER,
@@ -35,6 +40,20 @@ export class SupportTicketsService {
     const ticket = await this.prisma.supportTicket.findUnique({
       where: { id },
     });
+    if (!ticket) throw new NotFoundException('Support ticket not found');
+    return ticket;
+  }
+
+  async getOneForUser(id: string, requesterUserId: string, requesterRole: UserRole) {
+    const where =
+      requesterRole === UserRole.ADMIN
+        ? { id }
+        : {
+            id,
+            userId: requesterUserId,
+          };
+
+    const ticket = await this.prisma.supportTicket.findFirst({ where });
     if (!ticket) throw new NotFoundException('Support ticket not found');
     return ticket;
   }
