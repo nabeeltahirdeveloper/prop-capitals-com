@@ -117,13 +117,6 @@ const TraderPanelLayoutInner = () => {
         email,
         theme,
       });
-
-      // Sync user's saved theme preference with the global ThemeContext
-      if (theme === "light" && isDark) {
-        globalToggleTheme();
-      } else if (theme !== "light" && !isDark) {
-        globalToggleTheme();
-      }
     }
   }, [user]);
 
