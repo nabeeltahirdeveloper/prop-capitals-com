@@ -63,16 +63,16 @@ const ProfilePage = () => {
         '';
       const joinDate = user.profile?.joinDate || user.createdAt;
       setProfile({
-        firstName: user.profile?.firstName || '-',
-        lastName: user.profile?.lastName || '-',
-        email: user.email || '-',
-        phone: user.profile?.phone || '-',
-        city: user.profile?.city || '-',
-        country: user.profile?.country || '-',
-        timezone: user.profile?.timezone || '-',
-        joinDate: joinDate ? formatDate(joinDate) : '-',
-        tradingExperience: user.profile?.tradingExperience || '-',
-        preferredPlatform: user.profile?.preferredPlatform || '-',
+        firstName: user.profile?.firstName || '',
+        lastName: user.profile?.lastName || '',
+        email: user.email || '',
+        phone: user.profile?.phone || '',
+        city: user.profile?.city || '',
+        country: user.profile?.country || '',
+        timezone: user.profile?.timezone || '',
+        joinDate: joinDate ? formatDate(joinDate) : '',
+        tradingExperience: user.profile?.tradingExperience || '',
+        preferredPlatform: user.profile?.preferredPlatform || '',
       });
       setProfileImage(savedAvatar || serverAvatar || '');
     }
@@ -87,6 +87,10 @@ const ProfilePage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
       setIsEditing(false);
+      toast({
+        title: 'Profile updated',
+        description: 'Your changes have been saved successfully.',
+      });
     },
     onError: (error) => {
       toast({
@@ -98,13 +102,13 @@ const ProfilePage = () => {
   });
 
   const handleSave = () => {
-    updateProfileMutation.mutate({
-      firstName: editedProfile.firstName,
-      lastName: editedProfile.lastName,
-      phone: editedProfile.phone,
-      country: editedProfile.country,
-      city: editedProfile.city
+    const payload = {};
+    const fields = ['firstName', 'lastName', 'phone', 'country', 'city', 'timezone'];
+    fields.forEach((key) => {
+      const val = (editedProfile[key] || '').trim();
+      if (val) payload[key] = val;
     });
+    updateProfileMutation.mutate(payload);
   };
 
   const handleCancel = () => {
@@ -167,12 +171,30 @@ const ProfilePage = () => {
     event.target.value = '';
   };
 
+  const isVerified = user?.verificationDocuments?.some((doc) => doc.status === 'APPROVED') ?? false;
+
   const stats = [
-    { label: 'Challenges Completed', value: user?.totalCompletedChallenges || 0, color: 'emerald' },
-    { label: 'Total Payouts', value: user?.totalPayouts ? `$${user.totalPayouts.toLocaleString()}` : '$0', color: 'amber' },
-    { label: 'Win Rate', value: `${user?.winRate || 0}%`, color: 'blue' },
+    { label: 'Challenges Completed', value: user?.totalCompletedChallenges ?? 0, color: 'emerald' },
+    { label: 'Total Payouts', value: user?.totalPayouts ? `$${Number(user.totalPayouts).toLocaleString()}` : '$0', color: 'amber' },
+    { label: 'Win Rate', value: `${user?.winRate ?? 0}%`, color: 'blue' },
     { label: 'Member Since', value: user?.createdAt ? formatDate(user.createdAt) : '-', color: 'purple' },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={`rounded-2xl border p-6 text-center ${isDark ? 'bg-[#12161d] border-white/5 text-gray-400' : 'bg-white border-slate-200 text-slate-500'}`}>
+        Failed to load profile. Please refresh the page.
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6" data-testid="profile-page">
@@ -212,29 +234,35 @@ const ProfilePage = () => {
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-1">
               <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {profile.firstName} {profile.lastName}
+                {[profile.firstName, profile.lastName].filter(Boolean).join(' ') || 'Unknown User'}
               </h1>
-              <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-xs font-medium rounded">
-                <CheckCircle className="w-3 h-3" />
-                Verified
-              </span>
+              {isVerified && (
+                <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-xs font-medium rounded">
+                  <CheckCircle className="w-3 h-3" />
+                  Verified
+                </span>
+              )}
             </div>
             <p className={`${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{profile.email}</p>
             <div className="flex items-center gap-4 mt-3">
-              <span className={`flex items-center gap-1 text-sm ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                <MapPin className="w-4 h-4" />
-                {profile.city}, {profile.country}
-              </span>
-              <span className={`flex items-center gap-1 text-sm ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                <Calendar className="w-4 h-4" />
-                Joined {profile.joinDate}
-              </span>
+              {(profile.city || profile.country) && (
+                <span className={`flex items-center gap-1 text-sm ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
+                  <MapPin className="w-4 h-4" />
+                  {[profile.city, profile.country].filter(Boolean).join(', ')}
+                </span>
+              )}
+              {profile.joinDate && (
+                <span className={`flex items-center gap-1 text-sm ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
+                  <Calendar className="w-4 h-4" />
+                  Joined {profile.joinDate}
+                </span>
+              )}
             </div>
           </div>
 
           {/* Edit Button */}
           <button
-            onClick={() => setIsEditing(!isEditing)}
+            onClick={() => isEditing ? handleCancel() : setIsEditing(true)}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all ${isEditing
               ? 'bg-red-500/10 text-red-500 hover:bg-red-500/20'
               : isDark
@@ -290,7 +318,7 @@ const ProfilePage = () => {
                       } focus:outline-none focus:ring-2 focus:ring-amber-500/20`}
                   />
                 ) : (
-                  <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.firstName}</p>
+                  <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.firstName || '-'}</p>
                 )}
               </div>
               <div>
@@ -306,7 +334,7 @@ const ProfilePage = () => {
                       } focus:outline-none focus:ring-2 focus:ring-amber-500/20`}
                   />
                 ) : (
-                  <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.lastName}</p>
+                  <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.lastName || '-'}</p>
                 )}
               </div>
             </div>
@@ -315,7 +343,7 @@ const ProfilePage = () => {
               <label className={`block text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
                 <Mail className="w-4 h-4 inline mr-1" /> Email Address
               </label>
-              <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.email}</p>
+              <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.email || '-'}</p>
               <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
                 Email cannot be changed. Contact support if needed.
               </p>
@@ -336,7 +364,7 @@ const ProfilePage = () => {
                     } focus:outline-none focus:ring-2 focus:ring-amber-500/20`}
                 />
               ) : (
-                <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.phone}</p>
+                <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.phone || '-'}</p>
               )}
             </div>
           </div>
@@ -364,7 +392,7 @@ const ProfilePage = () => {
                       } focus:outline-none focus:ring-2 focus:ring-amber-500/20`}
                   />
                 ) : (
-                  <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.country}</p>
+                  <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.country || '-'}</p>
                 )}
               </div>
               <div>
@@ -380,25 +408,40 @@ const ProfilePage = () => {
                       } focus:outline-none focus:ring-2 focus:ring-amber-500/20`}
                   />
                 ) : (
-                  <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.city}</p>
+                  <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.city || '-'}</p>
                 )}
               </div>
             </div>
 
             <div>
               <label className={`block text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Timezone</label>
-              <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.timezone}</p>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editedProfile.timezone}
+                  placeholder="e.g. UTC+5, America/New_York"
+                  onChange={(e) => setEditedProfile({ ...editedProfile, timezone: e.target.value })}
+                  className={`w-full px-4 py-2.5 rounded-xl border ${isDark
+                    ? 'bg-white/5 border-white/10 text-white focus:border-amber-500'
+                    : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-amber-500'
+                    } focus:outline-none focus:ring-2 focus:ring-amber-500/20`}
+                />
+              ) : (
+                <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.timezone || '-'}</p>
+              )}
             </div>
 
-            <div>
+            {/* Trading Experience — not yet supported by backend schema */}
+            {/* <div>
               <label className={`block text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Trading Experience</label>
-              <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.tradingExperience}</p>
-            </div>
+              <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.tradingExperience || '-'}</p>
+            </div> */}
 
-            <div>
+            {/* Preferred Platform — not yet supported by backend schema */}
+            {/* <div>
               <label className={`block text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Preferred Platform</label>
-              <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.preferredPlatform}</p>
-            </div>
+              <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.preferredPlatform || '-'}</p>
+            </div> */}
           </div>
         </div>
       </div>
