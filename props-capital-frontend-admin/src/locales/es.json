@@ -436,7 +436,11 @@
     "challengeUpdates": "Actualizaciones de desafíos",
     "challengeUpdatesDesc": "Actualizaciones de progreso y cambios de fase",
     "marketingEmails": "Correos de marketing",
-    "marketingEmailsDesc": "Noticias, promociones y ofertas especiales"
+    "marketingEmailsDesc": "Noticias, promociones y ofertas especiales",
+    "notif": "Notifications",
+    "personal": "Personal",
+    "sec": "Security",
+    "verify": "Verify"
   },
   "support": {
     "title": "Soporte",
@@ -1070,7 +1074,8 @@
       "ask": "Ask",
       "chg": "Chg%",
       "updated": "Actualizado",
-      "retry": "Reintentar"
+      "retry": "Reintentar",
+      "reconnecting": "Reconnecting"
     },
     "positions": {
       "title": "Posiciones abiertas",
@@ -1103,7 +1108,9 @@
       "exit": "Salida",
       "autoClosed": "Cerrado automáticamente",
       "breach": "Infracción",
-      "breachPnL": "PnL al infringir (al límite)"
+      "breachPnL": "PnL al infringir (al límite)",
+      "finalFill": "Final Fill",
+      "finalFillPnL": "Final Fill P/L"
     },
     "accountMetrics": {
       "balance": "Saldo",
@@ -1178,7 +1185,8 @@
     "website": "Sitio web",
     "logout": "Cerrar sesión",
     "user": "Usuario",
-    "adminPanel": "Panel de administrador"
+    "adminPanel": "Panel de administrador",
+    "coupons": "Coupons"
   },
   "status": {
     "active": "Activo",
@@ -1273,6 +1281,17 @@
           "type": "Desconocido",
           "description": "Infracción desconocida"
         }
+      },
+      "messages": {
+        "loading": "Loading dashboard...",
+        "loadFailedTitle": "Failed to Load Dashboard",
+        "unexpectedError": "An unexpected error occurred",
+        "reload": "Reload Dashboard",
+        "liveUpdates": "Live updates every 10s. Last refresh: {{time}}",
+        "chartLoadFailed": "Failed to load chart data",
+        "noRevenueData": "No revenue data available",
+        "accountsLoadFailed": "Failed to load accounts",
+        "violationsLoadFailed": "Failed to load violations"
       }
     },
     "users": {
@@ -1329,7 +1348,8 @@
         "active": "Activas",
         "passed": "Aprobadas",
         "funded": "Financiadas",
-        "failed": "Fallidas"
+        "failed": "Fallidas",
+        "phase2": "Phase 2"
       },
       "searchPlaceholder": "Buscar por número de cuenta o correo...",
       "filter": {
@@ -1343,7 +1363,11 @@
         "failed": "Fallidas",
         "suspended": "Suspendidas",
         "phase1": "Fase 1",
-        "phase2": "Fase 2"
+        "phase2": "Fase 2",
+        "closed": "Closed",
+        "dailyLocked": "Daily Locked",
+        "disqualified": "Disqualified",
+        "paused": "Paused"
       },
       "table": {
         "account": "Cuenta",
@@ -1359,7 +1383,9 @@
         "forcePass": "Forzar aprobación",
         "forceFail": "Forzar fallo",
         "resetAccount": "Restablecer cuenta",
-        "moveToFunded": "Mover a financiada"
+        "moveToFunded": "Mover a financiada",
+        "pause": "Pause Account",
+        "resume": "Resume Account"
       },
       "dialog": {
         "title": "Detalles de la cuenta",
@@ -1731,6 +1757,10 @@
         "title": "Infracciones recientes",
         "noViolations": "No hay infracciones recientes",
         "account": "Cuenta"
+      },
+      "severity": {
+        "fatal": "Fatal",
+        "warning": "Warning"
       }
     },
     "brokerServers": {
@@ -1750,7 +1780,8 @@
         "managerPassword": "Contraseña del manager",
         "apiKey": "API Key / Client ID",
         "apiSecret": "API Secret",
-        "demoServer": "Servidor demo"
+        "demoServer": "Servidor demo",
+        "description": "Configure a new broker server connection for trading accounts."
       },
       "platforms": {
         "mt4": "MetaTrader 4",
@@ -1769,7 +1800,8 @@
       "card": {
         "platform": "Plataforma",
         "timezone": "Zona horaria",
-        "lastSync": "Última sincronización"
+        "lastSync": "Última sincronización",
+        "accounts": "Linked Accounts"
       },
       "actions": {
         "test": "Probar"
@@ -1777,6 +1809,21 @@
       "empty": {
         "title": "No hay servidores de bróker",
         "description": "Añade tu primer servidor de bróker para comenzar a crear cuentas de trading"
+      },
+      "confirmDelete": "Are you sure you want to delete this broker server?",
+      "error": {
+        "description": "An error occurred while loading broker servers",
+        "retry": "Retry",
+        "title": "Failed to Load Broker Servers"
+      },
+      "toast": {
+        "connectionError": "Failed to test connection",
+        "connectionFailed": "Connection test failed",
+        "connectionSuccess": "Connection test successful",
+        "createError": "Failed to add broker server",
+        "createSuccess": "Broker server added successfully",
+        "deleteError": "Failed to delete broker server",
+        "deleteSuccess": "Broker server deleted successfully"
       }
     },
     "scaling": {
@@ -1888,7 +1935,8 @@
       "deleteErrorTitle": "No se puede eliminar el desafío",
       "deleteErrorMessage": "Este desafío no se puede eliminar",
       "deleteErrorDesc": "No se puede eliminar porque está vinculado a cuentas de trading existentes",
-      "understand": "Entendido"
+      "understand": "Entendido",
+      "noChallenges": "No challenges available"
     }
   },
   "signIn": {
@@ -1908,8 +1956,12 @@
     "fundsProtected": "Tus fondos están protegidos",
     "securityDescription": "Opera con tranquilidad. Nuestra plataforma utiliza seguridad de nivel bancario para proteger tu cuenta y tus datos de trading.",
     "errors": {
-      "invalidCredentials": "El correo electrónico o la contraseña no son correctos"
-    }
+      "invalidCredentials": "El correo electrónico o la contraseña no son correctos",
+      "adminPortalOnly": "This is the Admin portal. Please use the Trader portal to sign in.",
+      "adminCredentialsRequired": "Access denied. Admin credentials required."
+    },
+    "adminSubtitle": "Sign in to access the admin dashboard",
+    "adminAccessOnly": "Admin access only. Contact your system administrator for credentials."
   },
   "signUp": {
     "title": "Crear cuenta",

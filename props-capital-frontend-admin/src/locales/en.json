@@ -1221,6 +1221,17 @@
     "dashboard": {
       "title": "Admin Dashboard",
       "subtitle": "Overview of platform performance and activity",
+      "messages": {
+        "loading": "Loading dashboard...",
+        "loadFailedTitle": "Failed to Load Dashboard",
+        "unexpectedError": "An unexpected error occurred",
+        "reload": "Reload Dashboard",
+        "liveUpdates": "Live updates every 10s. Last refresh: {{time}}",
+        "chartLoadFailed": "Failed to load chart data",
+        "noRevenueData": "No revenue data available",
+        "accountsLoadFailed": "Failed to load accounts",
+        "violationsLoadFailed": "Failed to load violations"
+      },
       "stats": {
         "totalTraders": "Total Traders",
         "activeChallenges": "Active Challenges",
@@ -1968,6 +1979,8 @@
   "signIn": {
     "title": "Welcome back",
     "subtitle": "Sign in to your trading account",
+    "adminSubtitle": "Sign in to access the admin dashboard",
+    "adminAccessOnly": "Admin access only. Contact your system administrator for credentials.",
     "email": "Email",
     "emailPlaceholder": "Enter your email",
     "password": "Password",
@@ -1982,7 +1995,9 @@
     "fundsProtected": "Your funds are protected",
     "securityDescription": "Trade with confidence. Our platform uses bank-level security to protect your account and trading data.",
     "errors": {
-      "invalidCredentials": "Invalid email or password"
+      "invalidCredentials": "Invalid email or password",
+      "adminPortalOnly": "This is the Admin portal. Please use the Trader portal to sign in.",
+      "adminCredentialsRequired": "Access denied. Admin credentials required."
     }
   },
   "signUp": {

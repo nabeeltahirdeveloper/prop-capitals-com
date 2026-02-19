@@ -363,7 +363,7 @@ export default function AdminDashboard() {
       <div className="flex items-center justify-center min-h-screen bg-background">
         <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
         <span className="ml-3 text-muted-foreground font-medium">
-          Loading dashboard...
+          {t("admin.dashboard.messages.loading")}
         </span>
       </div>
     );
@@ -375,13 +375,14 @@ export default function AdminDashboard() {
       <div className="flex flex-col items-center justify-center min-h-screen">
         <AlertTriangle className="w-12 h-12 text-red-500 mb-4" />
         <h2 className="text-xl font-bold text-foreground mb-2">
-          Failed to Load Dashboard
+          {t("admin.dashboard.messages.loadFailedTitle")}
         </h2>
         <p className="text-muted-foreground mb-4">
-          {overviewErrorObj?.message || "An unexpected error occurred"}
+          {overviewErrorObj?.message ||
+            t("admin.dashboard.messages.unexpectedError")}
         </p>
         <Button onClick={() => window.location.reload()}>
-          Reload Dashboard
+          {t("admin.dashboard.messages.reload")}
         </Button>
       </div>
     );
@@ -409,7 +410,9 @@ export default function AdminDashboard() {
           {t("admin.dashboard.subtitle")}
         </p>
         <p className="text-xs text-muted-foreground">
-          Live updates every 10s. Last refresh: {lastUpdatedLabel}
+          {t("admin.dashboard.messages.liveUpdates", {
+            time: lastUpdatedLabel,
+          })}
         </p>
       </div>
 
@@ -501,11 +504,15 @@ export default function AdminDashboard() {
           </div>
         ) : revenueError ? (
           <div className="h-[300px] flex items-center justify-center">
-            <p className="text-muted-foreground">Failed to load chart data</p>
+            <p className="text-muted-foreground">
+              {t("admin.dashboard.messages.chartLoadFailed")}
+            </p>
           </div>
         ) : revenueData.length === 0 ? (
           <div className="h-[300px] flex items-center justify-center">
-            <p className="text-muted-foreground">No revenue data available</p>
+            <p className="text-muted-foreground">
+              {t("admin.dashboard.messages.noRevenueData")}
+            </p>
           </div>
         ) : (
           <div className="h-[200px] sm:h-[250px] md:h-[300px]">
@@ -622,7 +629,7 @@ export default function AdminDashboard() {
             </div>
           ) : accountsError ? (
             <p className="text-center text-muted-foreground py-8">
-              Failed to load accounts
+              {t("admin.dashboard.messages.accountsLoadFailed")}
             </p>
           ) : (
             <div className="overflow-x-auto no-scrollbar">
@@ -659,7 +666,7 @@ export default function AdminDashboard() {
             </div>
           ) : violationsError ? (
             <p className="text-center text-muted-foreground py-8">
-              Failed to load violations
+              {t("admin.dashboard.messages.violationsLoadFailed")}
             </p>
           ) : (
             <div className="overflow-x-auto no-scrollbar">
