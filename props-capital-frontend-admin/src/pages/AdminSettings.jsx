@@ -169,7 +169,7 @@ export default function AdminSettings() {
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
           {saved && (
-            <span className="text-emerald-500 flex items-center gap-2 justify-center text-sm">
+            <span className="text-amber-500 flex items-center gap-2 justify-center text-sm">
               <CheckCircle className="w-4 h-4" />
               {t("admin.settings.settingsSaved")}
             </span>

@@ -45,7 +45,7 @@ const STATUS_COLUMNS = [
     { id: 'QUALIFIED', title: 'Qualified', color: 'cyan', icon: TrendingUp },
     { id: 'CALLBACK', title: 'Callback', color: 'yellow', icon: Calendar },
     { id: 'FOLLOW_UP', title: 'Follow Up', color: 'orange', icon: TrendingUp },
-    { id: 'CONVERTED', title: 'Converted', color: 'emerald', icon: TrendingUp },
+    { id: 'CONVERTED', title: 'Converted', color: 'amber', icon: TrendingUp },
     { id: 'LOST', title: 'Lost', color: 'red', icon: X },
 ];
 
@@ -55,7 +55,7 @@ const STATUS_COLORS = {
     QUALIFIED: 'border-cyan-500/50 bg-cyan-500/10 text-cyan-400',
     CALLBACK: 'border-yellow-500/50 bg-yellow-500/10 text-yellow-400',
     FOLLOW_UP: 'border-orange-500/50 bg-orange-500/10 text-orange-400',
-    CONVERTED: 'border-emerald-500/50 bg-emerald-500/10 text-emerald-400',
+    CONVERTED: 'border-amber-500/50 bg-amber-500/10 text-amber-400',
     LOST: 'border-red-500/50 bg-red-500/10 text-red-400',
 };
 
@@ -355,7 +355,7 @@ export default function CRMPipeline() {
                                 return (
                                     <div key={column.id} className="w-[320px] flex flex-col gap-3 h-full">
                                         {/* Column Header */}
-                                        <div className={`p-4 rounded-xl border-t-4 bg-card border border-border shrink-0 ${column.color === 'blue' ? 'border-t-blue-500' : column.color === 'purple' ? 'border-t-purple-500' : column.color === 'cyan' ? 'border-t-cyan-500' : column.color === 'yellow' ? 'border-t-yellow-500' : column.color === 'orange' ? 'border-t-orange-500' : column.color === 'emerald' ? 'border-t-emerald-500' : 'border-t-red-500'}`}>
+                                        <div className={`p-4 rounded-xl border-t-4 bg-card border border-border shrink-0 ${column.color === 'blue' ? 'border-t-blue-500' : column.color === 'purple' ? 'border-t-purple-500' : column.color === 'cyan' ? 'border-t-cyan-500' : column.color === 'yellow' ? 'border-t-yellow-500' : column.color === 'orange' ? 'border-t-orange-500' : column.color === 'amber' ? 'border-t-amber-500' : 'border-t-red-500'}`}>
                                             <div className="flex items-center justify-between mb-1">
                                                 <div className="flex items-center gap-2">
                                                     <div className={`p-1.5 rounded-lg ${STATUS_COLORS[column.id]}`}>
@@ -400,7 +400,7 @@ export default function CRMPipeline() {
                                                                         )}
 
                                                                         <div className="flex items-start gap-3">
-                                                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shrink-0 ${column.color === 'blue' ? 'bg-blue-600' : column.color === 'purple' ? 'bg-purple-600' : column.color === 'cyan' ? 'bg-cyan-600' : column.color === 'yellow' ? 'bg-yellow-600' : column.color === 'orange' ? 'bg-orange-600' : column.color === 'emerald' ? 'bg-emerald-600' : 'bg-red-600'}`}>
+                                                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shrink-0 ${column.color === 'blue' ? 'bg-blue-600' : column.color === 'purple' ? 'bg-purple-600' : column.color === 'cyan' ? 'bg-cyan-600' : column.color === 'yellow' ? 'bg-yellow-600' : column.color === 'orange' ? 'bg-orange-600' : column.color === 'amber' ? 'bg-amber-600' : 'bg-red-600'}`}>
                                                                                 {lead.name[0]}
                                                                             </div>
                                                                             <div className="flex-1 min-w-0">
@@ -408,7 +408,7 @@ export default function CRMPipeline() {
                                                                                     <h4 className="text-sm font-semibold text-foreground truncate group-hover:text-[#d97706] transition-colors uppercase tracking-tight">
                                                                                         {lead.name}
                                                                                     </h4>
-                                                                                    <div className={`w-2 h-2 rounded-full ${lead.onlineStatus === 'ONLINE' ? 'bg-emerald-500' : 'bg-muted-foreground/40'}`} />
+                                                                                    <div className={`w-2 h-2 rounded-full ${lead.onlineStatus === 'ONLINE' ? 'bg-amber-500' : 'bg-muted-foreground/40'}`} />
                                                                                 </div>
                                                                                 <div className="flex items-center gap-1.5 mt-1 text-[11px] text-muted-foreground">
                                                                                     <Globe className="w-3 h-3" />
@@ -677,7 +677,7 @@ export default function CRMPipeline() {
 
     function leadOnlineStatusColor(status) {
         return status === 'ONLINE'
-            ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
+            ? 'bg-amber-50 text-amber-600 border-amber-200'
             : 'bg-muted text-muted-foreground border-border';
     }
 

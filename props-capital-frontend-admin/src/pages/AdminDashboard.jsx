@@ -403,7 +403,7 @@ export default function AdminDashboard() {
           </h3>
           <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm">
             <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-500" />
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-amber-500" />
               <span className="text-muted-foreground">
                 {t("admin.dashboard.chart.revenue")}
               </span>
@@ -419,7 +419,7 @@ export default function AdminDashboard() {
 
         {revenueLoading ? (
           <div className="h-[300px] flex items-center justify-center">
-            <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+            <Loader2 className="w-6 h-6 animate-spin text-amber-500" />
           </div>
         ) : revenueError ? (
           <div className="h-[300px] flex items-center justify-center">
@@ -527,7 +527,7 @@ export default function AdminDashboard() {
           </div>
           {accountsLoading ? (
             <div className="flex justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+              <Loader2 className="w-6 h-6 animate-spin text-amber-500" />
             </div>
           ) : accountsError ? (
             <p className="text-center text-muted-foreground py-8">
@@ -543,7 +543,7 @@ export default function AdminDashboard() {
             </div>
           )}
         </Card>
-        fekndc
+      
         {/* Recent Violations */}
         <Card className="bg-card border-border p-4 sm:p-6">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
@@ -564,7 +564,7 @@ export default function AdminDashboard() {
           </div>
           {violationsLoading ? (
             <div className="flex justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+              <Loader2 className="w-6 h-6 animate-spin text-amber-500" />
             </div>
           ) : violationsError ? (
             <p className="text-center text-muted-foreground py-8">
@@ -585,9 +585,9 @@ export default function AdminDashboard() {
       {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <Link to={createPageUrl("AdminUsers")}>
-          <Card className="bg-card border-border p-3 sm:p-4 hover:border-emerald-500/50 transition-colors cursor-pointer h-full">
+          <Card className="bg-card border-border p-3 sm:p-4 hover:border-amber-500/50 transition-colors cursor-pointer h-full">
             <div className="flex items-center gap-2 sm:gap-3">
-              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 flex-shrink-0" />
+              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 flex-shrink-0" />
               <span className="text-foreground font-medium text-xs sm:text-sm">
                 {t("admin.dashboard.quickActions.manageUsers")}
               </span>

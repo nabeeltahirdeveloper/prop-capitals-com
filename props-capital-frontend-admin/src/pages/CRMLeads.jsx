@@ -401,7 +401,7 @@ export default function CRMLeads() {
       qualified: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
       callback: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
       followup: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-      converted: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+      converted: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
       lost: 'bg-red-500/20 text-red-400 border-red-500/30',
     };
     return colors[status] || 'bg-slate-500/20 text-slate-400 border-slate-500/30';
@@ -894,8 +894,8 @@ export default function CRMLeads() {
                 </div>
 
                 {/* FTD Info Section - Editable */}
-                <div className="p-4 bg-muted/60 rounded-lg border-2 border-emerald-500/50 relative">
-                  <span className="absolute top-2 right-2 px-2 py-1 bg-emerald-50 text-emerald-600 text-xs font-medium rounded-full border border-emerald-200">
+                <div className="p-4 bg-muted/60 rounded-lg border-2 border-amber-500/50 relative">
+                  <span className="absolute top-2 right-2 px-2 py-1 bg-amber-50 text-amber-600 text-xs font-medium rounded-full border border-amber-200">
                     FTD INFO
                   </span>
                   <h3 className="text-lg font-semibold text-foreground mb-4">
@@ -974,7 +974,7 @@ export default function CRMLeads() {
                             Age
                           </label>
                         </div>
-                        <span className="px-2 py-1 bg-emerald-50 text-emerald-600 text-xs font-medium rounded-full border border-emerald-200">
+                        <span className="px-2 py-1 bg-amber-50 text-amber-600 text-xs font-medium rounded-full border border-amber-200">
                           EDITABLE
                         </span>
                       </div>
@@ -995,7 +995,7 @@ export default function CRMLeads() {
                             Salary
                           </label>
                         </div>
-                        <span className="px-2 py-1 bg-emerald-50 text-emerald-600 text-xs font-medium rounded-full border border-emerald-200">
+                        <span className="px-2 py-1 bg-amber-50 text-amber-600 text-xs font-medium rounded-full border border-amber-200">
                           EDITABLE
                         </span>
                       </div>
@@ -1016,7 +1016,7 @@ export default function CRMLeads() {
                             Job Industry
                           </label>
                         </div>
-                        <span className="px-2 py-1 bg-emerald-50 text-emerald-600 text-xs font-medium rounded-full border border-emerald-200">
+                        <span className="px-2 py-1 bg-amber-50 text-amber-600 text-xs font-medium rounded-full border border-amber-200">
                           EDITABLE
                         </span>
                       </div>
@@ -1037,7 +1037,7 @@ export default function CRMLeads() {
                             Work Title
                           </label>
                         </div>
-                        <span className="px-2 py-1 bg-emerald-50 text-emerald-600 text-xs font-medium rounded-full border border-emerald-200">
+                        <span className="px-2 py-1 bg-amber-50 text-amber-600 text-xs font-medium rounded-full border border-amber-200">
                           EDITABLE
                         </span>
                       </div>
@@ -1076,7 +1076,7 @@ export default function CRMLeads() {
                   </h3>
                   <div className="grid grid-cols-2 gap-4">
                     <Button
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white h-12"
+                      className="bg-amber-500 hover:bg-amber-600 text-white h-12"
                       onClick={() => handleQuickAction('CALL')}
                     >
                       <Phone className="w-4 h-4 mr-2" />
@@ -1090,7 +1090,7 @@ export default function CRMLeads() {
                       Send Email
                     </Button>
                     <Button
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white h-12"
+                      className="bg-amber-500 hover:bg-amber-600 text-white h-12"
                       onClick={() => handleQuickAction('WHATSAPP')}
                     >
                       <Send className="w-4 h-4 mr-2" />
