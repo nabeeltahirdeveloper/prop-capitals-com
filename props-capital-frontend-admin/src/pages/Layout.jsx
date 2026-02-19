@@ -243,13 +243,13 @@ export default function Layout({ children, currentPageName }) {
       { name: t("nav.payments"), icon: CreditCard, page: "AdminPayments" },
       { name: t("nav.payouts"), icon: Wallet, page: "AdminPayouts" },
       {
-        name: "CRM",
+        name: t("nav.crm"),
         icon: Briefcase,
         children: [
-          { name: "CRM Leads", page: "CRMLeads" },
-          { name: "Pipeline", page: "CRMPipeline" },
-          { name: "FTD Report", page: "CRMFTDReport" },
-          { name: "Calendar", page: "CRMCalendar" },
+          { name: t("nav.crmLeads"), page: "CRMLeads" },
+          { name: t("nav.pipeline"), page: "CRMPipeline" },
+          { name: t("nav.ftdReport"), page: "CRMFTDReport" },
+          { name: t("nav.calendar"), page: "CRMCalendar" },
         ],
       },
       { name: t("nav.coupons"), icon: Zap, page: "AdminCoupons" },

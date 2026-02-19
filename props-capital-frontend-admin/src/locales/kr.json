@@ -1186,7 +1186,12 @@
     "logout": "로그아웃",
     "user": "사용자",
     "adminPanel": "관리자 패널",
-    "coupons": "Coupons"
+    "coupons": "쿠폰",
+    "crm": "CRM",
+    "crmLeads": "CRM 리드",
+    "pipeline": "Pipeline",
+    "ftdReport": "FTD Report",
+    "calendar": "Calendar"
   },
   "status": {
     "active": "활성",
@@ -1228,7 +1233,8 @@
         "payouts": "지급",
         "fundedAccounts": "자금 지원 계정",
         "violationsToday": "오늘의 위반",
-        "changeThisMonth": "이번 달 +{{percent}}%"
+        "changeThisMonth": "이번 달 +{{percent}}%",
+        "changeThisMonthNeutral": "이번 달 {{percent}}%"
       },
       "chart": {
         "title": "수익 및 지급(최근 30일)",
@@ -1283,11 +1289,11 @@
         }
       },
       "messages": {
-        "loading": "Loading dashboard...",
+        "loading": "대시보드 불러오는 중...",
         "loadFailedTitle": "Failed to Load Dashboard",
         "unexpectedError": "An unexpected error occurred",
         "reload": "Reload Dashboard",
-        "liveUpdates": "Live updates every 10s. Last refresh: {{time}}",
+        "liveUpdates": "10초마다 실시간 업데이트. 마지막 새로고침: {{time}}",
         "chartLoadFailed": "Failed to load chart data",
         "noRevenueData": "No revenue data available",
         "accountsLoadFailed": "Failed to load accounts",

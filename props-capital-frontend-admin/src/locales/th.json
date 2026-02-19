@@ -1186,7 +1186,12 @@
     "website": "เว็บไซต์",
     "logout": "ออกจากระบบ",
     "user": "ผู้ใช้",
-    "adminPanel": "แผงควบคุมผู้ดูแลระบบ"
+    "adminPanel": "แผงควบคุมผู้ดูแลระบบ",
+    "crm": "CRM",
+    "crmLeads": "ลีด CRM",
+    "pipeline": "ไปป์ไลน์",
+    "ftdReport": "รายงาน FTD",
+    "calendar": "ปฏิทิน"
   },
   "status": {
     "active": "ใช้งาน",
@@ -1228,7 +1233,8 @@
         "payouts": "การจ่ายเงิน",
         "fundedAccounts": "บัญชีที่ได้รับเงินทุน",
         "violationsToday": "การละเมิดวันนี้",
-        "changeThisMonth": "+{{percent}}% เดือนนี้"
+        "changeThisMonth": "+{{percent}}% เดือนนี้",
+        "changeThisMonthNeutral": "{{percent}}% เดือนนี้"
       },
       "chart": {
         "title": "รายได้และการจ่ายเงิน (30 วันล่าสุด)",
@@ -1283,15 +1289,15 @@
         }
       },
       "messages": {
-        "loading": "Loading dashboard...",
-        "loadFailedTitle": "Failed to Load Dashboard",
-        "unexpectedError": "An unexpected error occurred",
-        "reload": "Reload Dashboard",
-        "liveUpdates": "Live updates every 10s. Last refresh: {{time}}",
-        "chartLoadFailed": "Failed to load chart data",
-        "noRevenueData": "No revenue data available",
-        "accountsLoadFailed": "Failed to load accounts",
-        "violationsLoadFailed": "Failed to load violations"
+        "loading": "กำลังโหลดแดชบอร์ด...",
+        "loadFailedTitle": "โหลดแดชบอร์ดไม่สำเร็จ",
+        "unexpectedError": "เกิดข้อผิดพลาดที่ไม่คาดคิด",
+        "reload": "โหลดแดชบอร์ดใหม่",
+        "liveUpdates": "อัปเดตสดทุก 10 วินาที รีเฟรชล่าสุด: {{time}}",
+        "chartLoadFailed": "โหลดข้อมูลกราฟไม่สำเร็จ",
+        "noRevenueData": "ไม่มีข้อมูลรายได้",
+        "accountsLoadFailed": "โหลดบัญชีไม่สำเร็จ",
+        "violationsLoadFailed": "โหลดรายการละเมิดไม่สำเร็จ"
       }
     },
     "users": {

@@ -1186,7 +1186,12 @@
     "logout": "Выйти",
     "user": "Пользователь",
     "adminPanel": "Панель администратора",
-    "coupons": "Coupons"
+    "coupons": "Купоны",
+    "crm": "CRM",
+    "crmLeads": "CRM Лиды",
+    "pipeline": "Pipeline",
+    "ftdReport": "FTD Report",
+    "calendar": "Calendar"
   },
   "status": {
     "active": "Активен",
@@ -1228,7 +1233,8 @@
         "payouts": "Выплаты",
         "fundedAccounts": "Финансируемые аккаунты",
         "violationsToday": "Нарушения сегодня",
-        "changeThisMonth": "В этом месяце +{{percent}}%"
+        "changeThisMonth": "В этом месяце +{{percent}}%",
+        "changeThisMonthNeutral": "{{percent}}% в этом месяце"
       },
       "chart": {
         "title": "Выручка и выплаты (последние 30 дней)",
@@ -1283,11 +1289,11 @@
         }
       },
       "messages": {
-        "loading": "Loading dashboard...",
+        "loading": "Загрузка панели администратора...",
         "loadFailedTitle": "Failed to Load Dashboard",
         "unexpectedError": "An unexpected error occurred",
         "reload": "Reload Dashboard",
-        "liveUpdates": "Live updates every 10s. Last refresh: {{time}}",
+        "liveUpdates": "Обновление каждые 10 сек. Последнее обновление: {{time}}",
         "chartLoadFailed": "Failed to load chart data",
         "noRevenueData": "No revenue data available",
         "accountsLoadFailed": "Failed to load accounts",

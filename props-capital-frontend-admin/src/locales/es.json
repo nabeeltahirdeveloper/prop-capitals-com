@@ -1186,7 +1186,12 @@
     "logout": "Cerrar sesión",
     "user": "Usuario",
     "adminPanel": "Panel de administrador",
-    "coupons": "Coupons"
+    "coupons": "Cupones",
+    "crm": "CRM",
+    "crmLeads": "Leads CRM",
+    "pipeline": "Canalizaci?n",
+    "ftdReport": "Informe FTD",
+    "calendar": "Calendario"
   },
   "status": {
     "active": "Activo",
@@ -1228,7 +1233,8 @@
         "payouts": "Pagos",
         "fundedAccounts": "Cuentas financiadas",
         "violationsToday": "Infracciones de hoy",
-        "changeThisMonth": "Este mes +{{percent}}%"
+        "changeThisMonth": "Este mes +{{percent}}%",
+        "changeThisMonthNeutral": "{{percent}}% este mes"
       },
       "chart": {
         "title": "Ingresos y pagos (últimos 30 días)",
@@ -1283,15 +1289,15 @@
         }
       },
       "messages": {
-        "loading": "Loading dashboard...",
-        "loadFailedTitle": "Failed to Load Dashboard",
-        "unexpectedError": "An unexpected error occurred",
-        "reload": "Reload Dashboard",
-        "liveUpdates": "Live updates every 10s. Last refresh: {{time}}",
-        "chartLoadFailed": "Failed to load chart data",
-        "noRevenueData": "No revenue data available",
-        "accountsLoadFailed": "Failed to load accounts",
-        "violationsLoadFailed": "Failed to load violations"
+        "loading": "Cargando panel...",
+        "loadFailedTitle": "No se pudo cargar el panel",
+        "unexpectedError": "Ocurri? un error inesperado",
+        "reload": "Recargar panel",
+        "liveUpdates": "Actualizaciones en vivo cada 10 s. ?ltima actualizaci?n: {{time}}",
+        "chartLoadFailed": "No se pudieron cargar los datos del gr?fico",
+        "noRevenueData": "No hay datos de ingresos disponibles",
+        "accountsLoadFailed": "No se pudieron cargar las cuentas",
+        "violationsLoadFailed": "No se pudieron cargar las infracciones"
       }
     },
     "users": {
