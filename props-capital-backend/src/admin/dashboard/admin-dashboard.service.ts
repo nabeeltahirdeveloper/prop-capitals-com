@@ -409,7 +409,11 @@ export class AdminDashboardService {
    * Calculate percentage change with safety checks
    */
   private calculatePercentChange(current: number, previous: number): number {
-    if (!previous || previous === 0) return 0;
+    if (!previous || previous === 0) {
+      if (current > 0) return 100;
+      if (current < 0) return -100;
+      return 0;
+    }
     if (!current && current !== 0) return 0;
 
     const percent = ((current - previous) / previous) * 100;

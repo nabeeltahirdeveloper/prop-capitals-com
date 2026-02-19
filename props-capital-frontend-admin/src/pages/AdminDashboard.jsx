@@ -38,6 +38,21 @@ import { format } from "date-fns";
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
+  const formatChangePercentLabel = React.useCallback(
+    (value) => {
+      const numeric = Number(value);
+      if (!Number.isFinite(numeric)) return undefined;
+      const rounded = Math.round(numeric * 10) / 10;
+      const normalized = Number.isInteger(rounded)
+        ? String(rounded)
+        : rounded.toFixed(1);
+      const signed = rounded > 0 ? `+${normalized}` : normalized;
+      return t("admin.dashboard.stats.changeThisMonthNeutral", {
+        percent: signed,
+      });
+    },
+    [t],
+  );
 
   // Get dashboard overview stats with error/loading states
   const {
@@ -49,11 +64,12 @@ export default function AdminDashboard() {
   } = useQuery({
     queryKey: ["admin-dashboard-overview"],
     queryFn: adminGetDashboardOverview,
-    refetchInterval: 10000,
+    refetchInterval: 5000,
     refetchIntervalInBackground: true,
     refetchOnWindowFocus: true,
+    refetchOnMount: true,
     retry: 2,
-    staleTime: 5000,
+    staleTime: 2000,
   });
 
   // Get recent accounts with error/loading states
@@ -94,10 +110,11 @@ export default function AdminDashboard() {
     queryKey: ["admin-dashboard-revenue-chart"],
     queryFn: adminGetRevenueChart,
     retry: 1,
-    refetchInterval: 10000,
+    refetchInterval: 5000,
     refetchIntervalInBackground: true,
     refetchOnWindowFocus: true,
-    staleTime: 5000,
+    refetchOnMount: true,
+    staleTime: 2000,
   });
 
   // SAFE: Map revenue chart data with comprehensive error handling
@@ -158,7 +175,6 @@ export default function AdminDashboard() {
   );
   const chartMax = Math.max(maxRevenue, maxPayouts, 1000);
   const paddedChartMax = chartMax * 1.15;
-  const hasPayoutData = maxPayouts > 0;
   const formatCurrencyTick = (value) => {
     const num = Number(value) || 0;
     if (Math.abs(num) >= 1000) {
@@ -423,13 +439,7 @@ export default function AdminDashboard() {
           value={overview.totalTraders ?? overview.totalUsers ?? 0}
           icon={Users}
           gradient="from-[#020617] to-[#020617]"
-          change={
-            overview.usersChangePercent !== undefined
-              ? t("admin.dashboard.stats.changeThisMonth", {
-                  percent: Math.round(overview.usersChangePercent),
-                })
-              : undefined
-          }
+          change={formatChangePercentLabel(overview.usersChangePercent)}
           changeType={
             (overview.usersChangePercent || 0) >= 0 ? "positive" : "negative"
           }
@@ -445,13 +455,7 @@ export default function AdminDashboard() {
           value={`$${(overview.totalRevenue || 0).toLocaleString()}`}
           icon={DollarSign}
           gradient="from-[#15803d] to-[#22c55e]"
-          change={
-            overview.revenueChangePercent !== undefined
-              ? t("admin.dashboard.stats.changeThisMonth", {
-                  percent: Math.round(overview.revenueChangePercent),
-                })
-              : undefined
-          }
+          change={formatChangePercentLabel(overview.revenueChangePercent)}
           changeType={
             (overview.revenueChangePercent || 0) >= 0 ? "positive" : "negative"
           }
@@ -529,8 +533,8 @@ export default function AdminDashboard() {
                     x2="0"
                     y2="1"
                   >
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.03} />
                   </linearGradient>
                   <linearGradient
                     id="payoutGradient"
@@ -539,8 +543,8 @@ export default function AdminDashboard() {
                     x2="0"
                     y2="1"
                   >
-                    <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#a855f7" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#a855f7" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="#a855f7" stopOpacity={0.03} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
@@ -579,25 +583,21 @@ export default function AdminDashboard() {
                   }}
                 />
                 <Area
-                  type="linear"
+                  type="monotone"
                   dataKey="revenue"
-                  stroke="#10b981"
+                  stroke="#f59e0b"
                   fill="url(#revenueGradient)"
                   strokeWidth={2}
                   dot={false}
-                  activeDot={{ r: 4 }}
                 />
-                {hasPayoutData && (
-                  <Area
-                    type="linear"
-                    dataKey="payouts"
-                    stroke="#a855f7"
-                    fill="url(#payoutGradient)"
-                    strokeWidth={2}
-                    dot={false}
-                    activeDot={{ r: 4 }}
-                  />
-                )}
+                <Area
+                  type="monotone"
+                  dataKey="payouts"
+                  stroke="#a855f7"
+                  fill="url(#payoutGradient)"
+                  strokeWidth={2}
+                  dot={false}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>

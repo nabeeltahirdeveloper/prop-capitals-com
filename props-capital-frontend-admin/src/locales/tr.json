@@ -1186,7 +1186,12 @@
     "logout": "Çıkış",
     "user": "Kullanıcı",
     "adminPanel": "Yönetici paneli",
-    "coupons": "Coupons"
+    "coupons": "Kuponlar",
+    "crm": "CRM",
+    "crmLeads": "CRM Leadleri",
+    "pipeline": "Pipeline",
+    "ftdReport": "FTD Raporu",
+    "calendar": "Takvim"
   },
   "status": {
     "active": "Aktif",
@@ -1228,7 +1233,8 @@
         "payouts": "Ödemeler",
         "fundedAccounts": "Fonlanan hesaplar",
         "violationsToday": "Bugünkü ihlaller",
-        "changeThisMonth": "Bu ay +{{percent}}%"
+        "changeThisMonth": "Bu ay +{{percent}}%",
+        "changeThisMonthNeutral": "Bu ay {{percent}}%"
       },
       "chart": {
         "title": "Gelir ve ödemeler (son 30 gün)",
@@ -1283,15 +1289,15 @@
         }
       },
       "messages": {
-        "loading": "Loading dashboard...",
-        "loadFailedTitle": "Failed to Load Dashboard",
-        "unexpectedError": "An unexpected error occurred",
-        "reload": "Reload Dashboard",
-        "liveUpdates": "Live updates every 10s. Last refresh: {{time}}",
-        "chartLoadFailed": "Failed to load chart data",
-        "noRevenueData": "No revenue data available",
-        "accountsLoadFailed": "Failed to load accounts",
-        "violationsLoadFailed": "Failed to load violations"
+        "loading": "Y?netici paneli y?kleniyor...",
+        "loadFailedTitle": "Y?netici paneli y?klenemedi",
+        "unexpectedError": "Beklenmeyen bir hata olu?tu",
+        "reload": "Paneli Yeniden Y?kle",
+        "liveUpdates": "Her 10 saniyede canl? g?ncelleme. Son yenileme: {{time}}",
+        "chartLoadFailed": "Grafik verileri y?klenemedi",
+        "noRevenueData": "Gelir verisi bulunmuyor",
+        "accountsLoadFailed": "Hesaplar y?klenemedi",
+        "violationsLoadFailed": "?hlaller y?klenemedi"
       }
     },
     "users": {

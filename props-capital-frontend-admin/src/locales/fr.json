@@ -1186,7 +1186,12 @@
     "logout": "Déconnexion",
     "user": "Utilisateur",
     "adminPanel": "Panneau d’administration",
-    "coupons": "Coupons"
+    "coupons": "Coupons",
+    "crm": "CRM",
+    "crmLeads": "Prospects CRM",
+    "pipeline": "Pipeline",
+    "ftdReport": "Rapport FTD",
+    "calendar": "Calendrier"
   },
   "status": {
     "active": "Actif",
@@ -1228,7 +1233,8 @@
         "payouts": "Paiements",
         "fundedAccounts": "Comptes financés",
         "violationsToday": "Infractions aujourd’hui",
-        "changeThisMonth": "Ce mois-ci +{{percent}}%"
+        "changeThisMonth": "Ce mois-ci +{{percent}}%",
+        "changeThisMonthNeutral": "{{percent}}% ce mois-ci"
       },
       "chart": {
         "title": "Revenus et paiements (30 derniers jours)",
@@ -1283,15 +1289,15 @@
         }
       },
       "messages": {
-        "loading": "Loading dashboard...",
-        "loadFailedTitle": "Failed to Load Dashboard",
-        "unexpectedError": "An unexpected error occurred",
-        "reload": "Reload Dashboard",
-        "liveUpdates": "Live updates every 10s. Last refresh: {{time}}",
-        "chartLoadFailed": "Failed to load chart data",
-        "noRevenueData": "No revenue data available",
-        "accountsLoadFailed": "Failed to load accounts",
-        "violationsLoadFailed": "Failed to load violations"
+        "loading": "Chargement du tableau de bord...",
+        "loadFailedTitle": "?chec du chargement du tableau de bord",
+        "unexpectedError": "Une erreur inattendue est survenue",
+        "reload": "Recharger le tableau de bord",
+        "liveUpdates": "Mise ? jour en direct toutes les 10 s. Derni?re actualisation : {{time}}",
+        "chartLoadFailed": "Impossible de charger les donn?es du graphique",
+        "noRevenueData": "Aucune donn?e de revenus disponible",
+        "accountsLoadFailed": "Impossible de charger les comptes",
+        "violationsLoadFailed": "Impossible de charger les violations"
       }
     },
     "users": {

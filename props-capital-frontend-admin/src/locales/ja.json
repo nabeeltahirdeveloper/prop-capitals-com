@@ -1186,7 +1186,12 @@
     "logout": "ログアウト",
     "user": "ユーザー",
     "adminPanel": "管理者パネル",
-    "coupons": "Coupons"
+    "coupons": "クーポン",
+    "crm": "CRM",
+    "crmLeads": "CRMリード",
+    "pipeline": "Pipeline",
+    "ftdReport": "FTD Report",
+    "calendar": "Calendar"
   },
   "status": {
     "active": "有効",
@@ -1228,7 +1233,8 @@
         "payouts": "支払い",
         "fundedAccounts": "資金提供アカウント",
         "violationsToday": "本日の違反",
-        "changeThisMonth": "今月 +{{percent}}%"
+        "changeThisMonth": "今月 +{{percent}}%",
+        "changeThisMonthNeutral": "今月 {{percent}}%"
       },
       "chart": {
         "title": "収益と支払い（直近30日）",
@@ -1283,11 +1289,11 @@
         }
       },
       "messages": {
-        "loading": "Loading dashboard...",
+        "loading": "ダッシュボードを読み込み中...",
         "loadFailedTitle": "Failed to Load Dashboard",
         "unexpectedError": "An unexpected error occurred",
         "reload": "Reload Dashboard",
-        "liveUpdates": "Live updates every 10s. Last refresh: {{time}}",
+        "liveUpdates": "10秒ごとにライブ更新。最終更新: {{time}}",
         "chartLoadFailed": "Failed to load chart data",
         "noRevenueData": "No revenue data available",
         "accountsLoadFailed": "Failed to load accounts",
