@@ -2,6 +2,7 @@ import React from 'react';
 import { Monitor, Target, BookOpen, TrendingUp, ChevronRight, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
+import { Link } from 'react-router-dom';
 
 const educationData = [
   {
@@ -76,10 +77,12 @@ const EducationSection = () => {
               ))}
             </div>
 
-            <Button className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-6 py-5 h-auto font-bold shadow-lg shadow-amber-500/25">
-              <Play className="mr-2 w-5 h-5" />
-              Watch Preview
-            </Button>
+            <Link to="/watch-demo">
+              <Button className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-6 py-5 h-auto font-bold shadow-lg shadow-amber-500/25">
+                <Play className="mr-2 w-5 h-5" />
+                Watch Preview
+              </Button>
+            </Link>
           </div>
 
           {/* Education Cards */}

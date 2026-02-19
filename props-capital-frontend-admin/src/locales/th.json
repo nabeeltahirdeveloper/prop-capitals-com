@@ -1074,7 +1074,8 @@
       "ask": "ราคาซื้อ",
       "chg": "Chg%",
       "updated": "อัปเดต",
-      "retry": "ลองอีกครั้ง"
+      "retry": "ลองอีกครั้ง",
+      "reconnecting": "Reconnecting"
     },
     "positions": {
       "title": "ตำแหน่งที่เปิดอยู่",
@@ -1107,7 +1108,9 @@
       "exit": "ออก",
       "autoClosed": "ปิดอัตโนมัติ",
       "breach": "การละเมิดกฎ",
-      "breachPnL": "PnL ตอนละเมิดกฎ (ที่ขีดจำกัด)"
+      "breachPnL": "PnL ตอนละเมิดกฎ (ที่ขีดจำกัด)",
+      "finalFill": "Final Fill",
+      "finalFillPnL": "Final Fill P/L"
     },
     "accountMetrics": {
       "balance": "ยอดเงิน",
@@ -1183,7 +1186,12 @@
     "website": "เว็บไซต์",
     "logout": "ออกจากระบบ",
     "user": "ผู้ใช้",
-    "adminPanel": "แผงควบคุมผู้ดูแลระบบ"
+    "adminPanel": "แผงควบคุมผู้ดูแลระบบ",
+    "crm": "CRM",
+    "crmLeads": "ลีด CRM",
+    "pipeline": "ไปป์ไลน์",
+    "ftdReport": "รายงาน FTD",
+    "calendar": "ปฏิทิน"
   },
   "status": {
     "active": "ใช้งาน",
@@ -1225,7 +1233,8 @@
         "payouts": "การจ่ายเงิน",
         "fundedAccounts": "บัญชีที่ได้รับเงินทุน",
         "violationsToday": "การละเมิดวันนี้",
-        "changeThisMonth": "+{{percent}}% เดือนนี้"
+        "changeThisMonth": "+{{percent}}% เดือนนี้",
+        "changeThisMonthNeutral": "{{percent}}% เดือนนี้"
       },
       "chart": {
         "title": "รายได้และการจ่ายเงิน (30 วันล่าสุด)",
@@ -1278,6 +1287,17 @@
           "type": "ไม่ทราบ",
           "description": "การละเมิดที่ไม่ทราบ"
         }
+      },
+      "messages": {
+        "loading": "กำลังโหลดแดชบอร์ด...",
+        "loadFailedTitle": "โหลดแดชบอร์ดไม่สำเร็จ",
+        "unexpectedError": "เกิดข้อผิดพลาดที่ไม่คาดคิด",
+        "reload": "โหลดแดชบอร์ดใหม่",
+        "liveUpdates": "อัปเดตสดทุก 10 วินาที รีเฟรชล่าสุด: {{time}}",
+        "chartLoadFailed": "โหลดข้อมูลกราฟไม่สำเร็จ",
+        "noRevenueData": "ไม่มีข้อมูลรายได้",
+        "accountsLoadFailed": "โหลดบัญชีไม่สำเร็จ",
+        "violationsLoadFailed": "โหลดรายการละเมิดไม่สำเร็จ"
       }
     },
     "users": {
@@ -1334,7 +1354,8 @@
         "active": "ใช้งานอยู่",
         "passed": "ผ่าน",
         "funded": "ได้รับเงินทุน",
-        "failed": "ล้มเหลว"
+        "failed": "ล้มเหลว",
+        "phase2": "Phase 2"
       },
       "searchPlaceholder": "ค้นหาตามหมายเลขบัญชีหรืออีเมล...",
       "filter": {
@@ -1348,7 +1369,11 @@
         "failed": "ล้มเหลว",
         "suspended": "ระงับ",
         "phase1": "เฟส 1",
-        "phase2": "เฟส 2"
+        "phase2": "เฟส 2",
+        "closed": "Closed",
+        "dailyLocked": "Daily Locked",
+        "disqualified": "Disqualified",
+        "paused": "Paused"
       },
       "table": {
         "account": "บัญชี",
@@ -1364,7 +1389,9 @@
         "forcePass": "บังคับผ่าน",
         "forceFail": "บังคับล้มเหลว",
         "resetAccount": "รีเซ็ตบัญชี",
-        "moveToFunded": "ย้ายไปยังเงินทุน"
+        "moveToFunded": "ย้ายไปยังเงินทุน",
+        "pause": "Pause Account",
+        "resume": "Resume Account"
       },
       "dialog": {
         "title": "รายละเอียดบัญชี",
@@ -1736,6 +1763,10 @@
         "title": "การละเมิดล่าสุด",
         "noViolations": "ไม่มีการละเมิดล่าสุด",
         "account": "บัญชี"
+      },
+      "severity": {
+        "fatal": "Fatal",
+        "warning": "Warning"
       }
     },
     "brokerServers": {
@@ -1755,7 +1786,8 @@
         "managerPassword": "รหัสผ่านผู้จัดการ",
         "apiKey": "API Key / Client ID",
         "apiSecret": "API Secret",
-        "demoServer": "เซิร์ฟเวอร์เดโม"
+        "demoServer": "เซิร์ฟเวอร์เดโม",
+        "description": "Configure a new broker server connection for trading accounts."
       },
       "platforms": {
         "mt4": "MetaTrader 4",
@@ -1774,7 +1806,8 @@
       "card": {
         "platform": "แพลตฟอร์ม",
         "timezone": "เขตเวลา",
-        "lastSync": "ซิงค์ล่าสุด"
+        "lastSync": "ซิงค์ล่าสุด",
+        "accounts": "Linked Accounts"
       },
       "actions": {
         "test": "ทดสอบ"
@@ -1782,6 +1815,21 @@
       "empty": {
         "title": "ไม่มีเซิร์ฟเวอร์โบรกเกอร์",
         "description": "เพิ่มเซิร์ฟเวอร์โบรกเกอร์แรกของคุณเพื่อเริ่มสร้างบัญชีการเทรด"
+      },
+      "confirmDelete": "Are you sure you want to delete this broker server?",
+      "error": {
+        "description": "An error occurred while loading broker servers",
+        "retry": "Retry",
+        "title": "Failed to Load Broker Servers"
+      },
+      "toast": {
+        "connectionError": "Failed to test connection",
+        "connectionFailed": "Connection test failed",
+        "connectionSuccess": "Connection test successful",
+        "createError": "Failed to add broker server",
+        "createSuccess": "Broker server added successfully",
+        "deleteError": "Failed to delete broker server",
+        "deleteSuccess": "Broker server deleted successfully"
       }
     },
     "scaling": {
@@ -1893,7 +1941,8 @@
       "deleteErrorTitle": "ไม่สามารถลบความท้าทาย",
       "deleteErrorMessage": "ไม่สามารถลบความท้าทายนี้ได้",
       "deleteErrorDesc": "ไม่สามารถลบความท้าทายได้เนื่องจากเชื่อมโยงกับบัญชีการเทรดที่มีอยู่",
-      "understand": "เข้าใจแล้ว"
+      "understand": "เข้าใจแล้ว",
+      "noChallenges": "No challenges available"
     }
   },
   "signIn": {
@@ -1913,8 +1962,12 @@
     "fundsProtected": "เงินทุนของคุณได้รับการปกป้อง",
     "securityDescription": "เทรดด้วยความมั่นใจ แพลตฟอร์มของเราใช้ความปลอดภัยระดับธนาคารเพื่อปกป้องบัญชีและข้อมูลการเทรดของคุณ",
     "errors": {
-      "invalidCredentials": "อีเมลหรือรหัสผ่านไม่ถูกต้อง"
-    }
+      "invalidCredentials": "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
+      "adminPortalOnly": "This is the Admin portal. Please use the Trader portal to sign in.",
+      "adminCredentialsRequired": "Access denied. Admin credentials required."
+    },
+    "adminSubtitle": "Sign in to access the admin dashboard",
+    "adminAccessOnly": "Admin access only. Contact your system administrator for credentials."
   },
   "signUp": {
     "title": "สร้างบัญชีของคุณ",

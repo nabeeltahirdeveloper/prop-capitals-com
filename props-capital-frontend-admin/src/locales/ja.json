@@ -436,7 +436,11 @@
     "challengeUpdates": "チャレンジ更新",
     "challengeUpdatesDesc": "進捗およびフェーズ変更の更新",
     "marketingEmails": "マーケティングメール",
-    "marketingEmailsDesc": "ニュース、プロモーション、特別オファー"
+    "marketingEmailsDesc": "ニュース、プロモーション、特別オファー",
+    "notif": "Notifications",
+    "personal": "Personal",
+    "sec": "Security",
+    "verify": "Verify"
   },
   "support": {
     "title": "サポート",
@@ -1070,7 +1074,8 @@
       "ask": "Ask",
       "chg": "Chg%",
       "updated": "更新",
-      "retry": "再試行"
+      "retry": "再試行",
+      "reconnecting": "Reconnecting"
     },
     "positions": {
       "title": "未決済ポジション",
@@ -1103,7 +1108,9 @@
       "exit": "エグジット",
       "autoClosed": "自動クローズ",
       "breach": "ルール違反",
-      "breachPnL": "違反時のPnL（上限時）"
+      "breachPnL": "違反時のPnL（上限時）",
+      "finalFill": "Final Fill",
+      "finalFillPnL": "Final Fill P/L"
     },
     "accountMetrics": {
       "balance": "残高",
@@ -1178,7 +1185,13 @@
     "website": "ウェブサイト",
     "logout": "ログアウト",
     "user": "ユーザー",
-    "adminPanel": "管理者パネル"
+    "adminPanel": "管理者パネル",
+    "coupons": "クーポン",
+    "crm": "CRM",
+    "crmLeads": "CRMリード",
+    "pipeline": "Pipeline",
+    "ftdReport": "FTD Report",
+    "calendar": "Calendar"
   },
   "status": {
     "active": "有効",
@@ -1220,7 +1233,8 @@
         "payouts": "支払い",
         "fundedAccounts": "資金提供アカウント",
         "violationsToday": "本日の違反",
-        "changeThisMonth": "今月 +{{percent}}%"
+        "changeThisMonth": "今月 +{{percent}}%",
+        "changeThisMonthNeutral": "今月 {{percent}}%"
       },
       "chart": {
         "title": "収益と支払い（直近30日）",
@@ -1273,6 +1287,17 @@
           "type": "不明",
           "description": "不明な違反"
         }
+      },
+      "messages": {
+        "loading": "ダッシュボードを読み込み中...",
+        "loadFailedTitle": "Failed to Load Dashboard",
+        "unexpectedError": "An unexpected error occurred",
+        "reload": "Reload Dashboard",
+        "liveUpdates": "10秒ごとにライブ更新。最終更新: {{time}}",
+        "chartLoadFailed": "Failed to load chart data",
+        "noRevenueData": "No revenue data available",
+        "accountsLoadFailed": "Failed to load accounts",
+        "violationsLoadFailed": "Failed to load violations"
       }
     },
     "users": {
@@ -1329,7 +1354,8 @@
         "active": "進行中",
         "passed": "合格",
         "funded": "資金提供済み",
-        "failed": "失敗"
+        "failed": "失敗",
+        "phase2": "Phase 2"
       },
       "searchPlaceholder": "口座番号またはメールで検索...",
       "filter": {
@@ -1343,7 +1369,11 @@
         "failed": "失敗",
         "suspended": "停止",
         "phase1": "フェーズ 1",
-        "phase2": "フェーズ 2"
+        "phase2": "フェーズ 2",
+        "closed": "Closed",
+        "dailyLocked": "Daily Locked",
+        "disqualified": "Disqualified",
+        "paused": "Paused"
       },
       "table": {
         "account": "アカウント",
@@ -1359,7 +1389,9 @@
         "forcePass": "強制合格",
         "forceFail": "強制失敗",
         "resetAccount": "アカウントをリセット",
-        "moveToFunded": "資金提供へ移行"
+        "moveToFunded": "資金提供へ移行",
+        "pause": "Pause Account",
+        "resume": "Resume Account"
       },
       "dialog": {
         "title": "アカウント詳細",
@@ -1731,6 +1763,10 @@
         "title": "最近の違反",
         "noViolations": "最近の違反はありません",
         "account": "アカウント"
+      },
+      "severity": {
+        "fatal": "Fatal",
+        "warning": "Warning"
       }
     },
     "brokerServers": {
@@ -1750,7 +1786,8 @@
         "managerPassword": "マネージャーパスワード",
         "apiKey": "API Key / Client ID",
         "apiSecret": "API Secret",
-        "demoServer": "デモサーバー"
+        "demoServer": "デモサーバー",
+        "description": "Configure a new broker server connection for trading accounts."
       },
       "platforms": {
         "mt4": "MetaTrader 4",
@@ -1769,7 +1806,8 @@
       "card": {
         "platform": "プラットフォーム",
         "timezone": "タイムゾーン",
-        "lastSync": "最終同期"
+        "lastSync": "最終同期",
+        "accounts": "Linked Accounts"
       },
       "actions": {
         "test": "テスト"
@@ -1777,6 +1815,21 @@
       "empty": {
         "title": "ブローカーサーバーがありません",
         "description": "最初のブローカーサーバーを追加して取引アカウント作成を開始しましょう"
+      },
+      "confirmDelete": "Are you sure you want to delete this broker server?",
+      "error": {
+        "description": "An error occurred while loading broker servers",
+        "retry": "Retry",
+        "title": "Failed to Load Broker Servers"
+      },
+      "toast": {
+        "connectionError": "Failed to test connection",
+        "connectionFailed": "Connection test failed",
+        "connectionSuccess": "Connection test successful",
+        "createError": "Failed to add broker server",
+        "createSuccess": "Broker server added successfully",
+        "deleteError": "Failed to delete broker server",
+        "deleteSuccess": "Broker server deleted successfully"
       }
     },
     "scaling": {
@@ -1888,7 +1941,8 @@
       "deleteErrorTitle": "チャレンジを削除できません",
       "deleteErrorMessage": "このチャレンジは削除できません",
       "deleteErrorDesc": "既存の取引アカウントに紐づいているため削除できません",
-      "understand": "了解"
+      "understand": "了解",
+      "noChallenges": "No challenges available"
     }
   },
   "signIn": {
@@ -1908,8 +1962,12 @@
     "fundsProtected": "資金は保護されています",
     "securityDescription": "安心して取引できます。当社のプラットフォームは銀行レベルのセキュリティで、アカウントと取引データを保護します。",
     "errors": {
-      "invalidCredentials": "メールアドレスまたはパスワードが正しくありません"
-    }
+      "invalidCredentials": "メールアドレスまたはパスワードが正しくありません",
+      "adminPortalOnly": "This is the Admin portal. Please use the Trader portal to sign in.",
+      "adminCredentialsRequired": "Access denied. Admin credentials required."
+    },
+    "adminSubtitle": "Sign in to access the admin dashboard",
+    "adminAccessOnly": "Admin access only. Contact your system administrator for credentials."
   },
   "signUp": {
     "title": "アカウントを作成",

@@ -3,7 +3,7 @@ import React, {
   useRef,
   useCallback,
   useEffect,
-  useContext,
+  useMemo,
 } from "react";
 // import { useTrading } from '@/contexts/TradingContext';
 import { usePrices } from "@/contexts/PriceContext";
@@ -15,7 +15,6 @@ import { io } from "socket.io-client";
 // import MarketExecutionModal from './MarketExecutionModal';
 import TradingPanel from "../trading/TradingPanel";
 import { Card } from "../ui/card";
-import { useTranslation } from "../../contexts/LanguageContext";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "../ui/use-toast";
 import {
@@ -26,19 +25,26 @@ import {
   MarketExecutionModal,
   MarketWatch,
   BuySellPanel,
+  AccountPanel,
 } from "@nabeeltahirdeveloper/chart-sdk";
 import MT5Login from "./MT5Login";
 import { usePlatformTokensStore } from "@/lib/stores/platform-tokens.store";
 import { processPlatformLogin, resetPlatformPassword } from "@/api/auth";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createTrade } from "@/api/trades";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAccountSummary, getUserAccounts } from "@/api/accounts";
+import {
+  getAccountTrades,
+  updateTrade,
+  modifyPosition,
+} from "@/api/trades";
+import { mt5Engine } from "@/trading/engines/mt5Engine";
 import { useAuth } from "@/contexts/AuthContext";
 
 const MT5TradingArea = ({
   selectedChallenge,
   positions: positionsFromParent = [],
   onExecuteTrade,
+  tradingEngine,
   showBuySellPanel: showBuySellPanelProp,
   setShowBuySellPanel: setShowBuySellPanelProp,
   accountBalance: accountBalanceFromParent,
@@ -55,44 +61,79 @@ const MT5TradingArea = ({
     symbols,
     setSymbols,
     symbolsLoading,
-    accountSummary,
-    orders,
     setOrders,
-    fetchOrders,
     currentSymbolData,
     chartType,
     setChartType,
     theme,
   } = useTrading();
-  const { t } = useTranslation();
   const { user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const navigate = useNavigate();
 
   const accountId = selectedChallenge?.id;
-  const accountStatus = selectedChallenge?.status;
-  const normalizedAccountStatus = String(accountStatus || "").toLowerCase();
-  const isAccountLocked =
-    normalizedAccountStatus === "failed" ||
-    normalizedAccountStatus === "inactive" ||
-    normalizedAccountStatus === "daily_locked" ||
-    normalizedAccountStatus === "disqualified" ||
-    normalizedAccountStatus === "closed" ||
-    normalizedAccountStatus === "paused";
+
+  /* ── Own data queries (self-contained, no dependency on CommonTerminalWrapper props) ── */
   const { data: accountSummaryData } = useQuery({
     queryKey: ["accountSummary", accountId],
     queryFn: () => getAccountSummary(accountId),
     enabled: !!accountId,
     refetchInterval: 3000,
   });
+
+  const { data: tradesData } = useQuery({
+    queryKey: ["trades", accountId],
+    queryFn: () => getAccountTrades(accountId),
+    enabled: !!accountId,
+    refetchInterval: 3000,
+  });
+
+  /* ── Close trade mutation ── */
+  const closePositionMutation = useMutation({
+    mutationFn: ({ tradeId, closePrice }) =>
+      updateTrade(tradeId, { closePrice }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["trades", accountId] });
+      queryClient.invalidateQueries({ queryKey: ["accountSummary", accountId] });
+      toast({ title: "Position closed" });
+    },
+    onError: (e) =>
+      toast({
+        title: "Close failed",
+        description: e?.response?.data?.message || e.message,
+        variant: "destructive",
+      }),
+  });
+
+  /* ── Modify TP/SL mutation ── */
+  const modifyTPSLMutation = useMutation({
+    mutationFn: ({ tradeId, stopLoss, takeProfit }) =>
+      modifyPosition(tradeId, { stopLoss, takeProfit }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["trades", accountId] });
+      toast({ title: "Position modified" });
+    },
+    onError: (e) =>
+      toast({
+        title: "Modify failed",
+        description: e?.response?.data?.message || e.message,
+        variant: "destructive",
+      }),
+  });
+
+  /* ── Modify TP/SL dialog state ── */
+  const [modifyTPSLTrade, setModifyTPSLTrade] = useState(null);
+  const [modifyTP, setModifyTP] = useState("");
+  const [modifySL, setModifySL] = useState("");
+
   const balance = Number.isFinite(accountSummaryData?.account?.balance)
     ? accountSummaryData.account.balance
     : selectedChallenge?.currentBalance || 0;
 
   // WebSocket connection for real-time candle updates
   const candlesSocketRef = useRef(null);
-  const queryClient = useQueryClient();
 
   const { data: userAccounts } = useQuery({
     queryKey: ["userAccounts", user?.userId],
@@ -193,6 +234,98 @@ const MT5TradingArea = ({
   }, [setShowBuySellPanel]);
 
   const { prices: unifiedPrices, getPrice: getUnifiedPrice } = usePrices();
+  const [showMarketWatch, setShowMarketWatch] = useState(true);
+
+  const normalizeType = useCallback(
+    (value) =>
+      String(value || "BUY").toUpperCase() === "SELL" ? "SELL" : "BUY",
+    [],
+  );
+
+  /* ── Own open positions from own query (fallback: positionsFromParent) ── */
+  const ownOpenPositions = useMemo(() => {
+    const raw = Array.isArray(tradesData) ? tradesData : [];
+    return raw.filter((t) => !t.closedAt && t.closePrice === null);
+  }, [tradesData]);
+
+  /* Source: prefer own query, fallback to parent prop */
+  const activePositionsSource =
+    ownOpenPositions.length > 0 ? ownOpenPositions : positionsFromParent || [];
+
+  const sdkOrdersFromBackend = useMemo(() => {
+    return activePositionsSource.map((position) => {
+      const symbol = position?.symbol;
+      const type = normalizeType(position?.type);
+      const openPrice = Number(position?.openPrice ?? position?.price ?? 0);
+      const volume = Number(position?.volume ?? 0);
+      const live = symbol ? unifiedPrices?.[symbol] : null;
+      const exitPrice = type === "BUY" ? Number(live?.bid) : Number(live?.ask);
+      // Use mt5Engine directly for correct XAU/XAG/Forex contract sizes
+      const liveProfit =
+        Number.isFinite(exitPrice) && exitPrice > 0
+          ? mt5Engine.calculatePnL({ symbol, type, volume, openPrice, currentPrice: exitPrice })
+          : Number(position?.profit || 0);
+
+      return {
+        id: position?.id,
+        ticket: String(position?.id || "").substring(0, 8),
+        symbol,
+        type,
+        volume,
+        price: openPrice,
+        openPrice,
+        stopLoss: position?.stopLoss ?? null,
+        takeProfit: position?.takeProfit ?? null,
+        comment: position?.comment || "",
+        status: "OPEN",
+        swap: Number(position?.swap || 0),
+        profit: Number.isFinite(liveProfit) ? liveProfit : 0,
+        livePnL: Number.isFinite(liveProfit) ? liveProfit : 0,
+        currentPrice: Number.isFinite(exitPrice) && exitPrice > 0 ? exitPrice : null,
+        profitCurrency: "USD",
+        time: new Date(
+          position?.openedAt ||
+            position?.openAt ||
+            position?.createdAt ||
+            Date.now(),
+        ).toLocaleTimeString(),
+        openAt:
+          position?.openedAt ||
+          position?.openAt ||
+          position?.createdAt ||
+          null,
+        closeAt: null,
+      };
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activePositionsSource, normalizeType, unifiedPrices]);
+
+  const lastSyncSignatureRef = useRef("");
+  useEffect(() => {
+    if (!setOrders) return;
+    const signature = JSON.stringify(
+      sdkOrdersFromBackend.map((o) => [
+        o.id,
+        o.symbol,
+        o.type,
+        o.volume,
+        o.price,
+        o.stopLoss,
+        o.takeProfit,
+        o.profit,
+      ]),
+    );
+    if (signature === lastSyncSignatureRef.current) return;
+    lastSyncSignatureRef.current = signature;
+
+    setOrders((prev) => {
+      const optimistic = (prev || []).filter((o) =>
+        String(o?.id || "").startsWith("temp_"),
+      );
+      if (optimistic.length === 0) return sdkOrdersFromBackend;
+      return [...sdkOrdersFromBackend, ...optimistic];
+    });
+  }, [sdkOrdersFromBackend, setOrders]);
 
   // Bridge: MT5 live prices → SDK TradingContext symbols update
   // Jab MT5 PriceContext se live prices aayen, SDK ke symbols mein update karo
@@ -249,7 +382,7 @@ const MT5TradingArea = ({
     if (!selectedSymbol || !selectedTimeframe) return;
 
     const WEBSOCKET_URL =
-      import.meta.env.VITE_WEBSOCKET_URL || "https://api-dev.prop-capitals.com";
+      import.meta.env.VITE_WEBSOCKET_URL || "http://localhost:5002";
     const symbolStr = selectedSymbol.symbol || selectedSymbol;
     const timeframeStr = selectedTimeframe || "M1";
 
@@ -452,8 +585,40 @@ const MT5TradingArea = ({
   const resizeStartWidth = useRef(200);
 
   const [isBottomResizing, setIsBottomResizing] = useState(false);
+  const [bottomPanelHeight, setBottomPanelHeight] = useState(200);
   const bottomResizeRef = useRef(null);
   const chartAreaRef = useRef(null);
+
+  /* ── Close position handler (passed to AccountPanel) ── */
+  const handleClosePosition = useCallback(
+    (tradeId) => {
+      const pos = sdkOrdersFromBackend.find((p) => p.id === tradeId);
+      if (!pos) return;
+      const symbolStr = pos.symbol;
+      const live = unifiedPrices?.[symbolStr];
+      const closePrice =
+        pos.type === "BUY"
+          ? Number(live?.bid || pos.currentPrice || pos.openPrice)
+          : Number(live?.ask || pos.currentPrice || pos.openPrice);
+      if (!closePrice || closePrice <= 0) {
+        toast({ title: "No price available to close", variant: "destructive" });
+        return;
+      }
+      closePositionMutation.mutate({ tradeId, closePrice });
+    },
+    [sdkOrdersFromBackend, unifiedPrices, closePositionMutation, toast],
+  );
+
+  /* ── Modify TP/SL submit handler ── */
+  const handleModifyTPSLSubmit = useCallback(() => {
+    if (!modifyTPSLTrade) return;
+    const sl = modifySL !== "" ? parseFloat(modifySL) : null;
+    const tp = modifyTP !== "" ? parseFloat(modifyTP) : null;
+    modifyTPSLMutation.mutate(
+      { tradeId: modifyTPSLTrade.id, stopLoss: sl, takeProfit: tp },
+      { onSuccess: () => setModifyTPSLTrade(null) },
+    );
+  }, [modifyTPSLTrade, modifySL, modifyTP, modifyTPSLMutation]);
 
   // Market Execution Modal state (Professional Trading Terminal - Side Panel)
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
@@ -542,110 +707,6 @@ const MT5TradingArea = ({
     };
   }, [isBottomResizing]);
 
-  // Professional trade execution: optimistic update → API call → sync or rollback
-  const handleExecuteTrade = useCallback(
-    async (trade) => {
-      if (isAccountLocked) {
-        toast({
-          title: t("terminal.tradeFailed"),
-          description: "Account is locked.",
-          variant: "destructive",
-        });
-        return;
-      }
-      if (!accountId) {
-        toast({
-          title: t("terminal.tradeFailed"),
-          description: "No account selected.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const symbolStr =
-        typeof selectedSymbol === "object"
-          ? selectedSymbol?.symbol
-          : selectedSymbol;
-      const tradeType = String(trade.type || "").toUpperCase();
-      const volume = parseFloat(trade.lotSize) || 0.01;
-      const openPrice = parseFloat(trade.entryPrice) || 0;
-
-      if (!openPrice) {
-        toast({
-          title: t("terminal.tradeFailed"),
-          description: "No price available.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Optimistic order — shown immediately in the positions panel
-      const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      const optimisticOrder = {
-        id: tempId,
-        ticket: tempId.substring(5, 13),
-        symbol: trade.symbol || symbolStr,
-        type: tradeType,
-        volume,
-        price: openPrice,
-        stopLoss: trade.stopLoss ? parseFloat(trade.stopLoss) : null,
-        takeProfit: trade.takeProfit ? parseFloat(trade.takeProfit) : null,
-        comment: trade.comment || "",
-        status: "OPEN",
-        swap: 0,
-        profit: 0,
-        profitCurrency: "USD",
-        time: new Date().toLocaleTimeString(),
-        openAt: new Date().toISOString(),
-        closeAt: null,
-      };
-      setOrders((prev) => [...prev, optimisticOrder]);
-
-      try {
-        await createTrade({
-          accountId,
-          symbol: trade.symbol || symbolStr,
-          type: tradeType,
-          volume,
-          openPrice,
-          leverage: 100,
-          stopLoss: trade.stopLoss ? parseFloat(trade.stopLoss) : null,
-          takeProfit: trade.takeProfit ? parseFloat(trade.takeProfit) : null,
-        });
-
-        // Sync real data from backend (replaces optimistic order)
-        await fetchOrders();
-        queryClient.invalidateQueries({
-          queryKey: ["accountSummary", accountId],
-        });
-        toast({
-          title: "Order Placed",
-          description: `${tradeType} ${volume} ${trade.symbol || symbolStr}`,
-        });
-      } catch (err) {
-        // Rollback optimistic order on failure
-        setOrders((prev) => prev.filter((o) => o.id !== tempId));
-        const msg =
-          err?.message || err?.response?.data?.message || "Trade failed";
-        toast({
-          title: "Order Failed",
-          description: msg,
-          variant: "destructive",
-        });
-      }
-    },
-    [
-      accountId,
-      isAccountLocked,
-      selectedSymbol,
-      setOrders,
-      fetchOrders,
-      queryClient,
-      toast,
-      t,
-    ],
-  );
-
   // If no platform token, show login screen (after all hooks)
   if (!platformToken) {
     return (
@@ -658,11 +719,6 @@ const MT5TradingArea = ({
       />
     );
   }
-
-  const positions = positionsFromParent;
-  const accountBalance =
-    accountBalanceFromParent ?? selectedChallenge?.currentBalance ?? 100000;
-  const showMarketWatch = true;
 
   return (
     <>
@@ -770,6 +826,33 @@ const MT5TradingArea = ({
               <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-3 group-hover:bg-sky-500/20" />
             </div>
 
+            {/* MT5 Bottom Panel — Positions + Account Summary */}
+            <AccountPanel
+              height={bottomPanelHeight}
+              accountSummary={{
+                balance,
+                equity: balance + sdkOrdersFromBackend.reduce((s, p) => s + (p.livePnL || 0), 0),
+                margin: sdkOrdersFromBackend.reduce(
+                  (s, p) => s + mt5Engine.calculateRequiredMargin({ symbol: p.symbol, volume: p.volume, price: p.openPrice }),
+                  0,
+                ),
+                freeMargin:
+                  balance +
+                  sdkOrdersFromBackend.reduce((s, p) => s + (p.livePnL || 0), 0) -
+                  sdkOrdersFromBackend.reduce(
+                    (s, p) => s + mt5Engine.calculateRequiredMargin({ symbol: p.symbol, volume: p.volume, price: p.openPrice }),
+                    0,
+                  ),
+              }}
+              orders={sdkOrdersFromBackend}
+              onClose={handleClosePosition}
+              onModify={(trade) => {
+                setModifyTPSLTrade(trade);
+                setModifyTP(trade.takeProfit ? String(trade.takeProfit) : "");
+                setModifySL(trade.stopLoss ? String(trade.stopLoss) : "");
+              }}
+            />
+
             {/* Market Execution Modal — at COLUMN level so z-[998] beats LeftSidebar z-50 */}
             <div
               className="absolute top-0 left-0 w-80 z-[99] pointer-events-none h-full"
@@ -793,9 +876,12 @@ const MT5TradingArea = ({
                   orderType={orderType}
                   bidPrice={realTimeBidPrice ?? currentSymbolData.bid}
                   askPrice={realTimeAskPrice ?? currentSymbolData.ask}
-                  onExecuteTrade={handleExecuteTrade}
+                  onExecuteTrade={onExecuteTrade}
                   userAccountId={accountId}
                   initialVolume={modalInitialVolume}
+                  disableOptimistic={true}
+                  forceParentExecution={true}
+                  tradingEngine={tradingEngine}
                 />
               </div>
             </div>
@@ -805,6 +891,54 @@ const MT5TradingArea = ({
         {/* end flex-1 flex overflow-hidden pl-12 (main content) */}
       </div>
       {/* end h-screen flex flex-col root */}
+
+      {/* Modify TP/SL Dialog */}
+      {modifyTPSLTrade && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60">
+          <div className={`rounded-lg p-6 w-80 shadow-xl ${isLight ? "bg-white" : "bg-[#1a2332] border border-[#2a3a4a]"}`}>
+            <h3 className={`text-sm font-semibold mb-4 ${isLight ? "text-slate-800" : "text-slate-100"}`}>
+              Modify {modifyTPSLTrade.symbol} {modifyTPSLTrade.type}
+            </h3>
+            <div className="space-y-3">
+              <div>
+                <label className={`text-xs mb-1 block ${isLight ? "text-slate-500" : "text-slate-400"}`}>Stop Loss</label>
+                <input
+                  type="number"
+                  value={modifySL}
+                  onChange={(e) => setModifySL(e.target.value)}
+                  placeholder="0.00000"
+                  className={`w-full px-3 py-2 rounded text-sm font-mono ${isLight ? "bg-slate-100 border border-slate-300 text-slate-800" : "bg-[#0f172a] border border-[#2a3a4a] text-slate-200"}`}
+                />
+              </div>
+              <div>
+                <label className={`text-xs mb-1 block ${isLight ? "text-slate-500" : "text-slate-400"}`}>Take Profit</label>
+                <input
+                  type="number"
+                  value={modifyTP}
+                  onChange={(e) => setModifyTP(e.target.value)}
+                  placeholder="0.00000"
+                  className={`w-full px-3 py-2 rounded text-sm font-mono ${isLight ? "bg-slate-100 border border-slate-300 text-slate-800" : "bg-[#0f172a] border border-[#2a3a4a] text-slate-200"}`}
+                />
+              </div>
+            </div>
+            <div className="flex gap-2 mt-4">
+              <button
+                onClick={handleModifyTPSLSubmit}
+                disabled={modifyTPSLMutation.isPending}
+                className="flex-1 py-2 rounded text-sm font-semibold bg-sky-600 hover:bg-sky-500 text-white disabled:opacity-50"
+              >
+                {modifyTPSLMutation.isPending ? "Saving…" : "Save"}
+              </button>
+              <button
+                onClick={() => setModifyTPSLTrade(null)}
+                className={`flex-1 py-2 rounded text-sm font-semibold ${isLight ? "bg-slate-200 hover:bg-slate-300 text-slate-700" : "bg-[#2a3a4a] hover:bg-[#3a4a5a] text-slate-200"}`}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

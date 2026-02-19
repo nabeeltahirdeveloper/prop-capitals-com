@@ -117,13 +117,6 @@ const TraderPanelLayoutInner = () => {
         email,
         theme,
       });
-
-      // Sync user's saved theme preference with the global ThemeContext
-      if (theme === "light" && isDark) {
-        globalToggleTheme();
-      } else if (theme !== "light" && !isDark) {
-        globalToggleTheme();
-      }
     }
   }, [user]);
 
@@ -295,7 +288,7 @@ const TraderPanelLayoutInner = () => {
 
         {/* Sidebar */}
         <aside
-          className={`fixed left-0 top-0 h-full border-r z-50 transition-all duration-300 ${
+          className={`fixed left-0 top-0 h-full flex flex-col border-r z-50 transition-all duration-300 ${
             isDark ? "bg-[#12161d] border-white/5" : "bg-white border-slate-200"
           } ${sidebarCollapsed ? "w-20" : "w-64"} ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
         >
@@ -304,7 +297,7 @@ const TraderPanelLayoutInner = () => {
             className={`h-16 flex items-center justify-between px-4 border-b ${isDark ? "border-white/5" : "border-slate-200"}`}
           >
             <Link
-              to="/traderdashboard"
+              to="/"
               className="flex items-center gap-3"
               onClick={handleNavClick}
             >
@@ -349,7 +342,7 @@ const TraderPanelLayoutInner = () => {
           </div>
 
           {/* Navigation */}
-          <nav className="px-3 py-2 overflow-y-auto flex-1">
+          <nav className="px-3 py-2 overflow-y-auto flex-1 min-h-0">
             {/* Main Navigation */}
             <div className="mb-6">
               <p
@@ -489,14 +482,14 @@ const TraderPanelLayoutInner = () => {
                       <h1
                         className={`font-bold text-base sm:hidden ${isDark ? "text-white" : "text-slate-900"}`}
                       >
-                        {`Account ${selectedChallenge.accountId}`}
+                        {`Account #${selectedChallenge.accountId.substring(0, 4)}`}
                       </h1>
                       <div className="hidden sm:flex flex-col gap-1">
                         <div className="flex items-center gap-2">
                           <h1
                             className={`font-bold text-xl ${isDark ? "text-white" : "text-slate-900"}`}
                           >
-                            {`Account ${selectedChallenge.accountId}`}
+                            {`Account #${selectedChallenge.accountId.substring(0, 4)}`}
                           </h1>
                           <span
                             className={`px-2 py-1 text-xs font-medium rounded ${isDark ? "bg-white/10 text-gray-300" : "bg-slate-100 text-slate-700"}`}
@@ -596,7 +589,7 @@ const TraderPanelLayoutInner = () => {
                                   <span
                                     className={`text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}
                                   >
-                                    Account {challenge.accountId}
+                                    Account #{challenge.accountId.substr(0, 4)}
                                   </span>
                                   <span
                                     className={`px-2 py-0.5 text-xs font-medium rounded ${

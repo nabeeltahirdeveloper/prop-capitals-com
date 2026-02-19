@@ -21,15 +21,15 @@ const MT5Terminal = () => {
   };
 
   return (
-    <CommonTerminalWrapper>
-      <TradingProvider
-        baseUrl={MT5_API_URL}
-        endpoints={endpoints}
-        accountId={selectedChallenge?.id}
-      >
+    <TradingProvider
+      baseUrl={MT5_API_URL}
+      endpoints={endpoints}
+      accountId={selectedChallenge?.id}
+    >
+      <CommonTerminalWrapper>
         <MT5TradingArea selectedChallenge={selectedChallenge} />
-      </TradingProvider>
-    </CommonTerminalWrapper>
+      </CommonTerminalWrapper>
+    </TradingProvider>
   );
 };
 

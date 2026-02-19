@@ -1186,7 +1186,12 @@
     "website": "Website",
     "logout": "Logout",
     "user": "User",
-    "adminPanel": "Admin Panel"
+    "adminPanel": "Admin Panel",
+    "crm": "CRM",
+    "crmLeads": "CRM Leads",
+    "pipeline": "Pipeline",
+    "ftdReport": "FTD Report",
+    "calendar": "Calendar"
   },
   "status": {
     "active": "Active",
@@ -1221,6 +1226,17 @@
     "dashboard": {
       "title": "Admin Dashboard",
       "subtitle": "Overview of platform performance and activity",
+      "messages": {
+        "loading": "Loading dashboard...",
+        "loadFailedTitle": "Failed to Load Dashboard",
+        "unexpectedError": "An unexpected error occurred",
+        "reload": "Reload Dashboard",
+        "liveUpdates": "Live updates every 10s. Last refresh: {{time}}",
+        "chartLoadFailed": "Failed to load chart data",
+        "noRevenueData": "No revenue data available",
+        "accountsLoadFailed": "Failed to load accounts",
+        "violationsLoadFailed": "Failed to load violations"
+      },
       "stats": {
         "totalTraders": "Total Traders",
         "activeChallenges": "Active Challenges",
@@ -1228,7 +1244,8 @@
         "payouts": "Payouts",
         "fundedAccounts": "Funded Accounts",
         "violationsToday": "Violations Today",
-        "changeThisMonth": "+{{percent}}% this month"
+        "changeThisMonth": "+{{percent}}% this month",
+        "changeThisMonthNeutral": "{{percent}}% this month"
       },
       "chart": {
         "title": "Revenue & Payouts (Last 30 Days)",
@@ -1398,9 +1415,8 @@
     },
     "riskMonitor": {
       "title": "Risk Monitor",
-      "subtitle": "Real-time monitoring of trading account risk levels",
+      "subtitle": "Real-time account risk monitoring",
       "refresh": "Refresh",
-      "searchPlaceholder": "Search by account number or trader ID...",
       "riskLevels": {
         "critical": "Critical Risk",
         "high": "High Risk",
@@ -1413,6 +1429,7 @@
         "medium": "Medium",
         "low": "Low"
       },
+      "searchPlaceholder": "Search by account number or trader...",
       "table": {
         "account": "Account",
         "balance": "Balance",
@@ -1422,18 +1439,18 @@
         "riskLevel": "Risk Level",
         "actions": "Actions"
       },
+      "confirmations": {
+        "emergencyClose": "Are you sure you want to close all positions for this account?",
+        "lockAccount": "Are you sure you want to lock this account?"
+      },
       "recentViolations": {
         "title": "Recent Violations",
-        "account": "Account",
-        "noViolations": "No recent violations"
+        "noViolations": "No recent violations",
+        "account": "Account"
       },
       "severity": {
         "fatal": "Fatal",
         "warning": "Warning"
-      },
-      "confirmations": {
-        "emergencyClose": "Are you sure you want to pause this account? This will prevent further trading.",
-        "lockAccount": "Are you sure you want to lock this account? This will pause all trading activity."
       }
     },
     "payouts": {
@@ -1749,46 +1766,6 @@
         "editTemplate": "Edit Template"
       }
     },
-    "riskMonitor": {
-      "title": "Risk Monitor",
-      "subtitle": "Real-time account risk monitoring",
-      "refresh": "Refresh",
-      "riskLevels": {
-        "critical": "Critical Risk",
-        "high": "High Risk",
-        "medium": "Medium Risk",
-        "low": "Low Risk"
-      },
-      "riskBadges": {
-        "critical": "Critical",
-        "high": "High",
-        "medium": "Medium",
-        "low": "Low"
-      },
-      "searchPlaceholder": "Search by account number or trader...",
-      "table": {
-        "account": "Account",
-        "balance": "Balance",
-        "equity": "Equity",
-        "dailyDD": "Daily DD",
-        "maxDD": "Max DD",
-        "riskLevel": "Risk Level",
-        "actions": "Actions"
-      },
-      "confirmations": {
-        "emergencyClose": "Are you sure you want to close all positions for this account?",
-        "lockAccount": "Are you sure you want to lock this account?"
-      },
-      "recentViolations": {
-        "title": "Recent Violations",
-        "noViolations": "No recent violations",
-        "account": "Account"
-      },
-      "severity": {
-        "fatal": "Fatal",
-        "warning": "Warning"
-      }
-    },
     "brokerServers": {
       "title": "Broker Servers",
       "subtitle": "Manage trading platform connections",
@@ -1968,6 +1945,8 @@
   "signIn": {
     "title": "Welcome back",
     "subtitle": "Sign in to your trading account",
+    "adminSubtitle": "Sign in to access the admin dashboard",
+    "adminAccessOnly": "Admin access only. Contact your system administrator for credentials.",
     "email": "Email",
     "emailPlaceholder": "Enter your email",
     "password": "Password",
@@ -1982,7 +1961,9 @@
     "fundsProtected": "Your funds are protected",
     "securityDescription": "Trade with confidence. Our platform uses bank-level security to protect your account and trading data.",
     "errors": {
-      "invalidCredentials": "Invalid email or password"
+      "invalidCredentials": "Invalid email or password",
+      "adminPortalOnly": "This is the Admin portal. Please use the Trader portal to sign in.",
+      "adminCredentialsRequired": "Access denied. Admin credentials required."
     }
   },
   "signUp": {

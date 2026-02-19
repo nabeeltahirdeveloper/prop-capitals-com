@@ -8,6 +8,7 @@ import {
   UseGuards,
   Req,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { UserRole } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt.guard';
@@ -26,8 +27,11 @@ export class SupportTicketsController {
   @Post()
 
   async create(@Req() req: any, @Body() dto: CreateSupportTicketDto) {
-
-    return this.supportTicketsService.create(req.user.userId, dto);
+    const userId = req.user?.userId || req.user?.sub || dto.userId;
+    if (!userId) {
+      throw new BadRequestException('Unable to identify user. Please sign in again.');
+    }
+    return this.supportTicketsService.create(userId, dto);
 
   }
 
