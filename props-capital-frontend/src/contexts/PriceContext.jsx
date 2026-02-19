@@ -15,7 +15,7 @@ import { useLocation } from "react-router-dom";
 const PriceContext = createContext(undefined);
 
 const WEBSOCKET_URL =
-  import.meta.env.VITE_WEBSOCKET_URL || "http://localhost:5002";
+  import.meta.env.VITE_WEBSOCKET_URL || "https://api-dev.prop-capitals.com";
 
 // Unified price polling interval: 1000ms for smooth updates
 const POLL_INTERVAL = 1000;
