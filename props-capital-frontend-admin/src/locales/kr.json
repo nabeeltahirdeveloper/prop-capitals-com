@@ -436,7 +436,11 @@
     "challengeUpdates": "챌린지 업데이트",
     "challengeUpdatesDesc": "진행 상황 및 단계 변경 알림",
     "marketingEmails": "마케팅 이메일",
-    "marketingEmailsDesc": "뉴스, 프로모션 및 특별 혜택"
+    "marketingEmailsDesc": "뉴스, 프로모션 및 특별 혜택",
+    "notif": "Notifications",
+    "personal": "Personal",
+    "sec": "Security",
+    "verify": "Verify"
   },
   "support": {
     "title": "지원",
@@ -1070,7 +1074,8 @@
       "ask": "Ask",
       "chg": "Chg%",
       "updated": "업데이트",
-      "retry": "재시도"
+      "retry": "재시도",
+      "reconnecting": "Reconnecting"
     },
     "positions": {
       "title": "미결 포지션",
@@ -1103,7 +1108,9 @@
       "exit": "청산",
       "autoClosed": "자동 청산",
       "breach": "규칙 위반",
-      "breachPnL": "위반 시 PnL(한도 도달)"
+      "breachPnL": "위반 시 PnL(한도 도달)",
+      "finalFill": "Final Fill",
+      "finalFillPnL": "Final Fill P/L"
     },
     "accountMetrics": {
       "balance": "잔액",
@@ -1178,7 +1185,8 @@
     "website": "웹사이트",
     "logout": "로그아웃",
     "user": "사용자",
-    "adminPanel": "관리자 패널"
+    "adminPanel": "관리자 패널",
+    "coupons": "Coupons"
   },
   "status": {
     "active": "활성",
@@ -1273,6 +1281,17 @@
           "type": "알 수 없음",
           "description": "알 수 없는 위반"
         }
+      },
+      "messages": {
+        "loading": "Loading dashboard...",
+        "loadFailedTitle": "Failed to Load Dashboard",
+        "unexpectedError": "An unexpected error occurred",
+        "reload": "Reload Dashboard",
+        "liveUpdates": "Live updates every 10s. Last refresh: {{time}}",
+        "chartLoadFailed": "Failed to load chart data",
+        "noRevenueData": "No revenue data available",
+        "accountsLoadFailed": "Failed to load accounts",
+        "violationsLoadFailed": "Failed to load violations"
       }
     },
     "users": {
@@ -1329,7 +1348,8 @@
         "active": "진행 중",
         "passed": "통과",
         "funded": "자금 지원 완료",
-        "failed": "실패"
+        "failed": "실패",
+        "phase2": "Phase 2"
       },
       "searchPlaceholder": "계정 번호 또는 이메일로 검색...",
       "filter": {
@@ -1343,7 +1363,11 @@
         "failed": "실패",
         "suspended": "정지",
         "phase1": "1단계",
-        "phase2": "2단계"
+        "phase2": "2단계",
+        "closed": "Closed",
+        "dailyLocked": "Daily Locked",
+        "disqualified": "Disqualified",
+        "paused": "Paused"
       },
       "table": {
         "account": "계정",
@@ -1359,7 +1383,9 @@
         "forcePass": "강제 통과",
         "forceFail": "강제 실패",
         "resetAccount": "계정 리셋",
-        "moveToFunded": "자금 지원으로 이동"
+        "moveToFunded": "자금 지원으로 이동",
+        "pause": "Pause Account",
+        "resume": "Resume Account"
       },
       "dialog": {
         "title": "계정 상세",
@@ -1731,6 +1757,10 @@
         "title": "최근 위반",
         "noViolations": "최근 위반이 없습니다",
         "account": "계정"
+      },
+      "severity": {
+        "fatal": "Fatal",
+        "warning": "Warning"
       }
     },
     "brokerServers": {
@@ -1750,7 +1780,8 @@
         "managerPassword": "매니저 비밀번호",
         "apiKey": "API Key / Client ID",
         "apiSecret": "API Secret",
-        "demoServer": "데모 서버"
+        "demoServer": "데모 서버",
+        "description": "Configure a new broker server connection for trading accounts."
       },
       "platforms": {
         "mt4": "MetaTrader 4",
@@ -1769,7 +1800,8 @@
       "card": {
         "platform": "플랫폼",
         "timezone": "타임존",
-        "lastSync": "마지막 동기화"
+        "lastSync": "마지막 동기화",
+        "accounts": "Linked Accounts"
       },
       "actions": {
         "test": "테스트"
@@ -1777,6 +1809,21 @@
       "empty": {
         "title": "브로커 서버가 없습니다",
         "description": "첫 브로커 서버를 추가하여 거래 계정 생성을 시작하세요"
+      },
+      "confirmDelete": "Are you sure you want to delete this broker server?",
+      "error": {
+        "description": "An error occurred while loading broker servers",
+        "retry": "Retry",
+        "title": "Failed to Load Broker Servers"
+      },
+      "toast": {
+        "connectionError": "Failed to test connection",
+        "connectionFailed": "Connection test failed",
+        "connectionSuccess": "Connection test successful",
+        "createError": "Failed to add broker server",
+        "createSuccess": "Broker server added successfully",
+        "deleteError": "Failed to delete broker server",
+        "deleteSuccess": "Broker server deleted successfully"
       }
     },
     "scaling": {
@@ -1888,7 +1935,8 @@
       "deleteErrorTitle": "챌린지를 삭제할 수 없습니다",
       "deleteErrorMessage": "이 챌린지는 삭제할 수 없습니다",
       "deleteErrorDesc": "기존 거래 계정과 연결되어 있어 삭제할 수 없습니다",
-      "understand": "확인"
+      "understand": "확인",
+      "noChallenges": "No challenges available"
     }
   },
   "signIn": {
@@ -1908,8 +1956,12 @@
     "fundsProtected": "자금은 보호됩니다",
     "securityDescription": "안심하고 거래하세요. 당사 플랫폼은 은행 수준의 보안으로 계정과 거래 데이터를 보호합니다.",
     "errors": {
-      "invalidCredentials": "이메일 주소 또는 비밀번호가 올바르지 않습니다"
-    }
+      "invalidCredentials": "이메일 주소 또는 비밀번호가 올바르지 않습니다",
+      "adminPortalOnly": "This is the Admin portal. Please use the Trader portal to sign in.",
+      "adminCredentialsRequired": "Access denied. Admin credentials required."
+    },
+    "adminSubtitle": "Sign in to access the admin dashboard",
+    "adminAccessOnly": "Admin access only. Contact your system administrator for credentials."
   },
   "signUp": {
     "title": "계정 만들기",

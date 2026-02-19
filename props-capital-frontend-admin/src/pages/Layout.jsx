@@ -309,7 +309,7 @@ export default function Layout({ children, currentPageName }) {
                 to={createPageUrl("Home")}
                 className="flex items-center gap-2"
               >
-                <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-cyan-500 rounded-xl flex items-center justify-center">
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-lg sm:text-xl font-bold text-white">
@@ -379,7 +379,7 @@ export default function Layout({ children, currentPageName }) {
                   >
                     <Button
                       size="sm"
-                      className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white text-xs sm:text-sm px-3 sm:px-4"
+                      className="bg-gradient-to-r from-amber-500 to-cyan-500 hover:from-amber-600 hover:to-cyan-600 text-white text-xs sm:text-sm px-3 sm:px-4"
                     >
                       {t("nav.dashboard")}
                     </Button>
@@ -401,7 +401,7 @@ export default function Layout({ children, currentPageName }) {
                     <Link to={createPageUrl("SignUp")}>
                       <Button
                         size="sm"
-                        className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white text-xs sm:text-sm px-3 sm:px-4"
+                        className="bg-gradient-to-r from-amber-500 to-cyan-500 hover:from-amber-600 hover:to-cyan-600 text-white text-xs sm:text-sm px-3 sm:px-4"
                       >
                         {t("nav.getStarted")}
                       </Button>
@@ -435,7 +435,7 @@ export default function Layout({ children, currentPageName }) {
                     className="flex items-center gap-2"
                     onClick={() => setSidebarOpen(false)}
                   >
-                    <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-cyan-500 rounded-xl flex items-center justify-center">
                       <TrendingUp className="w-6 h-6 text-white" />
                     </div>
                     <span className="text-xl font-bold text-white">
@@ -530,19 +530,19 @@ export default function Layout({ children, currentPageName }) {
 
           {/* Logo + controls */}
           <div
-            className={`flex items-center justify-center h-16 shrink-0 border-b border-sidebar-border transition-all ${sidebarCollapsed ? "px-2" : "px-4"}`}
+            className={`flex items-center h-16 shrink-0 border-b border-sidebar-border transition-all ${sidebarCollapsed ? "justify-center px-2" : "justify-between px-4 lg:justify-start"}`}
           >
             <Link
               to={createPageUrl("AdminDashboard")}
               onClick={() => setSidebarOpen(false)}
-              className={`flex items-center  min-w-0 transition-all ${sidebarCollapsed ? "justify-center" : "gap-2"}`}
+              className={`flex items-center min-w-0 transition-all ${sidebarCollapsed ? "justify-center" : "gap-2 flex-1 min-w-0 lg:flex-none"}`}
               title="Admin Dashboard"
             >
               <div className="w-10 h-10 shrink-0 mx-auto bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center text-[#0a0d12] font-black ">
                 PC
               </div>
               {!sidebarCollapsed && (
-                <span className="text-xl font-bold truncate text-sidebar-foreground">
+                <span className="min-w-0 block truncate text-base font-bold text-sidebar-foreground lg:text-xl">
                   PROP<span className="text-amber-500">CAPITALS</span>
                 </span>
               )}
@@ -551,7 +551,7 @@ export default function Layout({ children, currentPageName }) {
             {/* Mobile: close button */}
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+              className="lg:hidden ml-2 shrink-0 flex items-center justify-center w-9 h-9 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500/50"
               aria-label="Close menu"
             >
               <X className="w-5 h-5" />
@@ -783,7 +783,8 @@ export default function Layout({ children, currentPageName }) {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className="w-80 bg-card border-border"
+                collisionPadding={8}
+                className="w-[min(20rem,calc(100vw-1rem))] max-w-[calc(100vw-1rem)] bg-card border-border"
               >
                 <div className="p-4 border-b border-border">
                   <h3 className="font-semibold">{t("notifications.title")}</h3>

@@ -119,7 +119,6 @@ export default function AdminUsers() {
   // Map backend users to frontend format
   const mappedUsers = usersData.map((user) => {
     const profile = user.profile || {};
-    knk;
     const fullName =
       `${profile.firstName || ""} ${profile.lastName || ""}`.trim() || "User";
     const roleMap = {
@@ -171,7 +170,7 @@ export default function AdminUsers() {
           className={`px-2 py-1 rounded-full text-xs font-medium ${
             row.role === "admin"
               ? "bg-amber-500/10 text-amber-600 border border-amber-200"
-              : "bg-emerald-500/10 text-emerald-600 border border-emerald-200"
+              : "bg-amber-500/10 text-amber-600 border border-amber-200"
           }`}
         >
           {t(`admin.users.roles.${row.role}`)}
@@ -277,7 +276,7 @@ export default function AdminUsers() {
           {isLoading ? (
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
-            <p className="text-xl sm:text-2xl font-bold text-emerald-400">
+            <p className="text-xl sm:text-2xl font-bold text-amber-400">
               {displayUsers.filter((u) => u.role === "user").length}
             </p>
           )}
@@ -379,7 +378,7 @@ export default function AdminUsers() {
 
           {isLoadingDetails ? (
             <div className="flex items-center justify-center py-6 sm:py-8">
-              <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-emerald-400" />
+              <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-amber-400" />
             </div>
           ) : userDetails ? (
             <div className="space-y-4 sm:space-y-6 mt-3 sm:mt-4">
@@ -407,7 +406,7 @@ export default function AdminUsers() {
                     className={`inline-block mt-1.5 sm:mt-2 px-2 py-0.5 sm:py-1 rounded-full text-xs font-medium ${
                       userDetails.role === "ADMIN"
                         ? "bg-amber-500/10 text-amber-600 border border-amber-200"
-                        : "bg-emerald-500/10 text-emerald-600 border border-emerald-200"
+                        : "bg-amber-500/10 text-amber-600 border border-amber-200"
                     }`}
                   >
                     {t(
