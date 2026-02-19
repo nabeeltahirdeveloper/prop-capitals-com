@@ -1,5 +1,6 @@
 import { Injectable, Logger, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { UserRole } from '@prisma/client';
 
 /**
  * FIXED Admin Dashboard Service
@@ -35,6 +36,7 @@ export class AdminDashboardService {
       // Use Promise.allSettled to prevent one failure from blocking all stats
       const [
         totalUsers,
+        totalTraders,
         totalRevenue,
         currentMonthRevenue,
         lastMonthRevenue,
@@ -47,6 +49,10 @@ export class AdminDashboardService {
       ] = await Promise.allSettled([
         // Total users
         this.prisma.user.count(),
+        // Total traders only
+        this.prisma.user.count({
+          where: { role: UserRole.TRADER },
+        }),
 
         // Total revenue (all succeeded payments)
         this.prisma.payment.aggregate({
@@ -89,6 +95,7 @@ export class AdminDashboardService {
       // Extract values with fallbacks
       const stats = {
         totalUsers: totalUsers.status === 'fulfilled' ? totalUsers.value : 0,
+        totalTraders: totalTraders.status === 'fulfilled' ? totalTraders.value : 0,
         totalRevenue:
           totalRevenue.status === 'fulfilled'
             ? Number(totalRevenue.value._sum.amount || 0)
@@ -247,11 +254,18 @@ export class AdminDashboardService {
         this.prisma.payout.findMany({
           where: {
             status: 'PAID',
-            createdAt: { gte: thirtyDaysAgo },
+            OR: [
+              { processedAt: { gte: thirtyDaysAgo } },
+              {
+                processedAt: null,
+                createdAt: { gte: thirtyDaysAgo },
+              },
+            ],
           },
           select: {
             amount: true,
             createdAt: true,
+            processedAt: true,
           },
         }),
       ]);
@@ -267,8 +281,9 @@ export class AdminDashboardService {
 
       const payoutMap = new Map<string, number>();
       payouts.forEach((p) => {
-        if (p.createdAt && p.amount !== null && p.amount !== undefined) {
-          const dateKey = p.createdAt.toISOString().substring(0, 10);
+        const payoutDate = p.processedAt ?? p.createdAt;
+        if (payoutDate && p.amount !== null && p.amount !== undefined) {
+          const dateKey = payoutDate.toISOString().substring(0, 10);
           payoutMap.set(dateKey, (payoutMap.get(dateKey) || 0) + Number(p.amount));
         }
       });

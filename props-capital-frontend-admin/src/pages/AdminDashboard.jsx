@@ -45,12 +45,15 @@ export default function AdminDashboard() {
     isLoading: overviewLoading,
     isError: overviewError,
     error: overviewErrorObj,
+    dataUpdatedAt: overviewUpdatedAt,
   } = useQuery({
     queryKey: ["admin-dashboard-overview"],
     queryFn: adminGetDashboardOverview,
-    refetchInterval: 30000,
+    refetchInterval: 10000,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
     retry: 2,
-    staleTime: 10000,
+    staleTime: 5000,
   });
 
   // Get recent accounts with error/loading states
@@ -61,7 +64,9 @@ export default function AdminDashboard() {
   } = useQuery({
     queryKey: ["admin-dashboard-recent-accounts"],
     queryFn: adminGetRecentAccounts,
-    refetchInterval: 30000,
+    refetchInterval: 15000,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
     retry: 2,
   });
 
@@ -73,7 +78,9 @@ export default function AdminDashboard() {
   } = useQuery({
     queryKey: ["admin-dashboard-recent-violations"],
     queryFn: adminGetRecentViolations,
-    refetchInterval: 30000,
+    refetchInterval: 15000,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
     retry: 2,
   });
 
@@ -82,11 +89,15 @@ export default function AdminDashboard() {
     data: revenueChartData = [],
     isLoading: revenueLoading,
     isError: revenueError,
+    dataUpdatedAt: revenueUpdatedAt,
   } = useQuery({
     queryKey: ["admin-dashboard-revenue-chart"],
     queryFn: adminGetRevenueChart,
     retry: 1,
-    refetchInterval: 60000,
+    refetchInterval: 10000,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
+    staleTime: 5000,
   });
 
   // SAFE: Map revenue chart data with comprehensive error handling
@@ -95,20 +106,36 @@ export default function AdminDashboard() {
       return [];
     }
 
+    const monthShort = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
     return revenueChartData
       .map((item) => {
         try {
           if (!item || !item.date) return null;
 
-          const dateObj = new Date(item.date);
-
-          if (isNaN(dateObj.getTime())) {
-            console.warn("Invalid date in revenue chart:", item.date);
-            return null;
-          }
+          const parts = String(item.date).split("-");
+          if (parts.length !== 3) return null;
+          const year = Number(parts[0]);
+          const month = Number(parts[1]);
+          const day = Number(parts[2]);
+          if (!year || !month || !day || month < 1 || month > 12) return null;
 
           return {
-            date: format(dateObj, "MMM d"),
+            date: `${monthShort[month - 1]} ${day}`,
+            sortKey: `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
             revenue: Number(item.revenue) || 0,
             payouts: Number(item.payouts) || 0,
           };
@@ -117,8 +144,56 @@ export default function AdminDashboard() {
           return null;
         }
       })
-      .filter(Boolean);
+      .filter(Boolean)
+      .sort((a, b) => a.sortKey.localeCompare(b.sortKey));
   }, [revenueChartData]);
+
+  const maxRevenue = React.useMemo(
+    () => Math.max(...revenueData.map((d) => d.revenue), 0),
+    [revenueData],
+  );
+  const maxPayouts = React.useMemo(
+    () => Math.max(...revenueData.map((d) => d.payouts), 0),
+    [revenueData],
+  );
+  const chartMax = Math.max(maxRevenue, maxPayouts, 1000);
+  const paddedChartMax = chartMax * 1.15;
+  const hasPayoutData = maxPayouts > 0;
+  const formatCurrencyTick = (value) => {
+    const num = Number(value) || 0;
+    if (Math.abs(num) >= 1000) {
+      return `$${(num / 1000).toFixed(0)}k`;
+    }
+    return `$${num.toFixed(0)}`;
+  };
+  const getNiceStep = (maxValue, segments = 4) => {
+    const rawStep = maxValue / segments;
+    const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep || 1)));
+    const normalized = rawStep / magnitude;
+    let niceNormalized = 1;
+    if (normalized > 1 && normalized <= 2) niceNormalized = 2;
+    else if (normalized > 2 && normalized <= 5) niceNormalized = 5;
+    else if (normalized > 5) niceNormalized = 10;
+    return niceNormalized * magnitude;
+  };
+  const yAxisStep = getNiceStep(paddedChartMax, 4);
+  const yAxisTicks = React.useMemo(
+    () => Array.from({ length: 5 }, (_, i) => i * yAxisStep),
+    [yAxisStep],
+  );
+  const yAxisMax = yAxisStep * 4;
+  const xAxisInterval = React.useMemo(
+    () => Math.max(0, Math.ceil(revenueData.length / 8) - 1),
+    [revenueData.length],
+  );
+  const lastUpdatedAt = Math.max(overviewUpdatedAt || 0, revenueUpdatedAt || 0);
+  const lastUpdatedLabel = lastUpdatedAt
+    ? new Date(lastUpdatedAt).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      })
+    : "--:--:--";
 
   // SAFE: Map backend accounts to frontend format with null safety
   const recentAccounts = React.useMemo(() => {
@@ -330,8 +405,11 @@ export default function AdminDashboard() {
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">
           {t("admin.dashboard.title")}
         </h1>
-        <p className="text-sm sm:text-base text-muted-foreground">
+        <p className="text-sm sm:text-base text-muted-foreground mb-1">
           {t("admin.dashboard.subtitle")}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Live updates every 10s. Last refresh: {lastUpdatedLabel}
         </p>
       </div>
 
@@ -339,7 +417,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4">
         <StatsCard
           title={t("admin.dashboard.stats.totalTraders")}
-          value={overview.totalUsers || 0}
+          value={overview.totalTraders ?? overview.totalUsers ?? 0}
           icon={Users}
           gradient="from-[#020617] to-[#020617]"
           change={
@@ -432,7 +510,10 @@ export default function AdminDashboard() {
         ) : (
           <div className="h-[200px] sm:h-[250px] md:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={revenueData}>
+              <AreaChart
+                data={revenueData}
+                margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+              >
                 <defs>
                   <linearGradient
                     id="revenueGradient"
@@ -460,13 +541,17 @@ export default function AdminDashboard() {
                   dataKey="date"
                   stroke="#64748b"
                   tick={{ fill: "#64748b", fontSize: 10 }}
-                  interval="preserveStartEnd"
+                  interval={xAxisInterval}
+                  minTickGap={18}
                 />
                 <YAxis
                   stroke="#64748b"
                   tick={{ fill: "#64748b", fontSize: 10 }}
-                  tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                  tickFormatter={formatCurrencyTick}
                   width={45}
+                  ticks={yAxisTicks}
+                  domain={[0, yAxisMax]}
+                  allowDecimals={false}
                 />
                 <Tooltip
                   contentStyle={{
@@ -487,19 +572,25 @@ export default function AdminDashboard() {
                   }}
                 />
                 <Area
-                  type="monotone"
+                  type="linear"
                   dataKey="revenue"
                   stroke="#10b981"
                   fill="url(#revenueGradient)"
                   strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4 }}
                 />
-                <Area
-                  type="monotone"
-                  dataKey="payouts"
-                  stroke="#a855f7"
-                  fill="url(#payoutGradient)"
-                  strokeWidth={2}
-                />
+                {hasPayoutData && (
+                  <Area
+                    type="linear"
+                    dataKey="payouts"
+                    stroke="#a855f7"
+                    fill="url(#payoutGradient)"
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 4 }}
+                  />
+                )}
               </AreaChart>
             </ResponsiveContainer>
           </div>
