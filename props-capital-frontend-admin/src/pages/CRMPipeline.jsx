@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -13,12 +13,10 @@ import {
 import {
     Dialog,
     DialogContent,
-    DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
 import {
     Search,
-    Plus,
     Phone,
     Mail,
     Globe,
@@ -29,13 +27,10 @@ import {
     User,
     TrendingUp,
     Loader2,
-    Filter,
-    MoreVertical,
-    Flag,
     ArrowRight
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { apiGet, apiPatch, apiPost } from '@/lib/api';
+import { apiGet, apiPatch } from '@/lib/api';
 import { useToast } from '@/components/ui/use-toast';
 
 // Status configurations with colors and icons
@@ -89,6 +84,7 @@ const transformLead = (lead) => ({
 });
 
 export default function CRMPipeline() {
+    const { t } = useTranslation();
     const { toast } = useToast();
     const [loading, setLoading] = useState(true);
     const [leadsByStatus, setLeadsByStatus] = useState(
@@ -109,8 +105,6 @@ export default function CRMPipeline() {
 
     // Lead details editing state
     const [editableFields, setEditableFields] = useState({});
-    const [updatingLead, setUpdatingLead] = useState(false);
-    const [newNote, setNewNote] = useState('');
 
     const fetchLeadsForColumn = useCallback(async (status, skip = 0, isRefreshing = false) => {
         try {
@@ -162,7 +156,7 @@ export default function CRMPipeline() {
             refreshAllColumns();
         }, 500);
         return () => clearTimeout(timeoutId);
-    }, [searchQuery, fromDate, toDate]);
+    }, [refreshAllColumns]);
 
     const handleScroll = (e, status) => {
         const { scrollTop, scrollHeight, clientHeight } = e.target;
@@ -200,14 +194,14 @@ export default function CRMPipeline() {
             setUpdatingStatus(draggableId);
             await apiPatch(`/crm/leads/${draggableId}`, { leadStatus: destStatus });
             toast({
-                title: 'Status Updated',
-                description: `Lead moved to ${destStatus}`,
+                title: t('crm.pipeline.statusUpdated'),
+                description: t('crm.pipeline.movedTo', { status: t(`crm.columns.${destStatus.toLowerCase()}`) }),
             });
         } catch (error) {
             console.error('Error updating status:', error);
             toast({
-                title: 'Error',
-                description: 'Failed to update lead status. Reverting...',
+                title: t('common.error'),
+                description: t('crm.pipeline.updateError'),
                 variant: 'destructive',
             });
             refreshAllColumns(); // Revert on failure
@@ -244,44 +238,8 @@ export default function CRMPipeline() {
                 convertedAt: transformed.convertedAt ? new Date(transformed.convertedAt).toISOString().split('T')[0] : '',
             });
             setIsLeadModalOpen(true);
-        } catch (error) {
-            toast({ title: 'Error', description: 'Failed to load lead details', variant: 'destructive' });
-        }
-    };
-
-    const handleUpdateLead = async () => {
-        if (!selectedLead) return;
-        try {
-            setUpdatingLead(true);
-            const updateData = { ...editableFields };
-            if (updateData.ftdAmount) updateData.ftdAmount = parseFloat(updateData.ftdAmount);
-            if (updateData.age) updateData.age = parseInt(updateData.age);
-
-            await apiPatch(`/crm/leads/${selectedLead.id}`, updateData);
-            toast({ title: 'Success', description: 'Lead updated successfully' });
-            setIsLeadModalOpen(false);
-            refreshAllColumns();
-        } catch (error) {
-            toast({ title: 'Error', description: error.message || 'Failed to update lead', variant: 'destructive' });
-        } finally {
-            setUpdatingLead(false);
-        }
-    };
-
-    const handleAddNote = async () => {
-        if (!selectedLead || !newNote.trim()) return;
-        try {
-            await apiPost(`/crm/leads/${selectedLead.id}/activities`, {
-                activityType: 'NOTE',
-                notes: newNote,
-            });
-            toast({ title: 'Success', description: 'Note added successfully' });
-            setNewNote('');
-            // Refresh lead details
-            const fullLead = await apiGet(`/crm/leads/${selectedLead.id}`);
-            setSelectedLead(transformLead(fullLead));
-        } catch (error) {
-            toast({ title: 'Error', description: 'Failed to add note', variant: 'destructive' });
+        } catch {
+            toast({ title: t('common.error'), description: t('crm.pipeline.loadError'), variant: 'destructive' });
         }
     };
 
@@ -290,15 +248,15 @@ export default function CRMPipeline() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shrink-0">
                 <div>
-                    <h1 className="text-2xl font-bold text-foreground">Sales Pipeline</h1>
-                    <p className="text-muted-foreground">Track and manage leads through stages</p>
+                    <h1 className="text-2xl font-bold text-foreground">{t('crm.pipeline.title')}</h1>
+                    <p className="text-muted-foreground">{t('crm.pipeline.subtitle')}</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                     {/* Search */}
                     <div className="relative w-full sm:w-64">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input
-                            placeholder="Search leads..."
+                            placeholder={t('crm.pipeline.search')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground"
@@ -341,8 +299,8 @@ export default function CRMPipeline() {
             {loading ? (
                 <div className="flex-1 flex items-center justify-center">
                     <div className="text-center">
-                        <Loader2 className="w-12 h-12 animate-spin text-[#d97706] mx-auto mb-4" />
-                        <p className="text-muted-foreground">Loading Pipeline...</p>
+                        <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
+                        <p className="text-muted-foreground">{t('crm.pipeline.loading')}</p>
                     </div>
                 </div>
             ) : (
@@ -362,7 +320,7 @@ export default function CRMPipeline() {
                                                         <column.icon className="w-4 h-4" />
                                                     </div>
                                                     <h3 className="font-bold text-foreground text-sm uppercase tracking-wider">
-                                                        {column.title}
+                                                        {t(`crm.columns.${column.id.toLowerCase() === 'follow_up' ? 'followUp' : column.id.toLowerCase()}`)}
                                                     </h3>
                                                 </div>
                                                 <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded text-xs font-bold">
@@ -395,7 +353,7 @@ export default function CRMPipeline() {
                                                                     >
                                                                         {updatingStatus === lead.id && (
                                                                             <div className="absolute inset-0 bg-muted/70 rounded-xl flex items-center justify-center z-10">
-                                                                                <Loader2 className="w-5 h-5 animate-spin text-[#d97706]" />
+                                                                                <Loader2 className="w-5 h-5 animate-spin text-primary" />
                                                                             </div>
                                                                         )}
 
@@ -405,14 +363,14 @@ export default function CRMPipeline() {
                                                                             </div>
                                                                             <div className="flex-1 min-w-0">
                                                                                 <div className="flex items-center justify-between gap-2">
-                                                                                    <h4 className="text-sm font-semibold text-foreground truncate group-hover:text-[#d97706] transition-colors uppercase tracking-tight">
+                                                                                    <h4 className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors uppercase tracking-tight">
                                                                                         {lead.name}
                                                                                     </h4>
                                                                                     <div className={`w-2 h-2 rounded-full ${lead.onlineStatus === 'ONLINE' ? 'bg-amber-500' : 'bg-muted-foreground/40'}`} />
                                                                                 </div>
                                                                                 <div className="flex items-center gap-1.5 mt-1 text-[11px] text-muted-foreground">
                                                                                     <Globe className="w-3 h-3" />
-                                                                                    <span className="truncate">{lead.country || 'Unknown'}</span>
+                                                                                    <span className="truncate">{lead.country || t('common.unknown')}</span>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -428,7 +386,7 @@ export default function CRMPipeline() {
                                                                                     <span>{lead.leadReceived ? format(new Date(lead.leadReceived), 'MMM d, yy') : '-'}</span>
                                                                                 </div>
                                                                                 <div className="px-1.5 py-0.5 rounded bg-muted text-foreground text-[10px] font-medium">
-                                                                                    {lead.source || 'Direct'}
+                                                                                    {lead.source || t('crm.pipeline.direct')}
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -439,7 +397,7 @@ export default function CRMPipeline() {
                                                         {provided.placeholder}
                                                         {colState.loading && (
                                                             <div className="py-4 text-center">
-                                                                <Loader2 className="w-6 h-6 animate-spin text-[#d97706] mx-auto" />
+                                                                <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto" />
                                                             </div>
                                                         )}
                                                     </div>
@@ -476,7 +434,9 @@ export default function CRMPipeline() {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Button variant="outline" size="sm" className="border-border text-foreground hover:bg-accent" onClick={() => setIsLeadModalOpen(false)}>Close</Button>
+                                    <Button variant="outline" size="sm" className="border-border text-foreground hover:bg-accent" onClick={() => setIsLeadModalOpen(false)}>
+                                        {t('crm.modal.close')}
+                                    </Button>
                                 </div>
                             </div>
 
@@ -487,14 +447,14 @@ export default function CRMPipeline() {
                                     <div className="space-y-6">
                                         {/* Basic Info */}
                                         <div className="space-y-4">
-                                            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Basic Information</h3>
+                                            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t('crm.modal.basicInfo')}</h3>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div className="space-y-1.5">
-                                                    <label className="text-xs text-muted-foreground">Full Name</label>
+                                                    <label className="text-xs text-muted-foreground">{t('crm.modal.fullName')}</label>
                                                     <Input value={editableFields.personName} readOnly className="bg-muted border-border text-muted-foreground" />
                                                 </div>
                                                 <div className="space-y-1.5">
-                                                    <label className="text-xs text-muted-foreground">Email Address</label>
+                                                    <label className="text-xs text-muted-foreground">{t('crm.modal.email')}</label>
                                                     <div className="relative">
                                                         <Input type={showSensitive.email ? "text" : "password"} value={editableFields.email} readOnly className="bg-muted border-border pr-10 text-muted-foreground" />
                                                         <button className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowSensitive({ ...showSensitive, email: !showSensitive.email })}>
@@ -503,7 +463,7 @@ export default function CRMPipeline() {
                                                     </div>
                                                 </div>
                                                 <div className="space-y-1.5">
-                                                    <label className="text-xs text-muted-foreground">Phone Number</label>
+                                                    <label className="text-xs text-muted-foreground">{t('crm.modal.phone')}</label>
                                                     <div className="relative">
                                                         <Input type={showSensitive.phone ? "text" : "password"} value={editableFields.phoneNumber} readOnly className="bg-muted border-border pr-10 text-muted-foreground" />
                                                         <button className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowSensitive({ ...showSensitive, phone: !showSensitive.phone })}>
@@ -512,7 +472,7 @@ export default function CRMPipeline() {
                                                     </div>
                                                 </div>
                                                 <div className="space-y-1.5">
-                                                    <label className="text-xs text-muted-foreground">Country</label>
+                                                    <label className="text-xs text-muted-foreground">{t('crm.modal.country')}</label>
                                                     <Input value={editableFields.country} readOnly className="bg-muted border-border text-muted-foreground" />
                                                 </div>
                                             </div>
@@ -520,30 +480,34 @@ export default function CRMPipeline() {
 
                                         {/* Status & Assignment */}
                                         <div className="space-y-4">
-                                            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Status & Assignment</h3>
+                                            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t('crm.modal.statusAssignment')}</h3>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div className="space-y-1.5">
-                                                <label className="text-xs text-muted-foreground">Status</label>
+                                                    <label className="text-xs text-muted-foreground">{t('crm.modal.status')}</label>
                                                     <Select value={editableFields.leadStatus} disabled>
                                                         <SelectTrigger className="bg-muted border-border text-muted-foreground">
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                         <SelectContent className="bg-card border-border text-foreground">
-                                                            {STATUS_COLUMNS.map(col => <SelectItem key={col.id} value={col.id}>{col.title}</SelectItem>)}
+                                                            {STATUS_COLUMNS.map(col => (
+                                                                <SelectItem key={col.id} value={col.id}>
+                                                                    {t(`crm.columns.${col.id.toLowerCase() === 'follow_up' ? 'followUp' : col.id.toLowerCase()}`)}
+                                                                </SelectItem>
+                                                            ))}
                                                         </SelectContent>
                                                     </Select>
                                                 </div>
                                                 <div className="space-y-1.5">
-                                                    <label className="text-xs text-muted-foreground">Priority</label>
+                                                    <label className="text-xs text-muted-foreground">{t('crm.modal.priority')}</label>
                                                     <Select value={editableFields.priority} disabled>
                                                         <SelectTrigger className="bg-muted border-border text-muted-foreground">
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                         <SelectContent className="bg-card border-border text-foreground">
-                                                            <SelectItem value="LOW">Low</SelectItem>
-                                                            <SelectItem value="MEDIUM">Medium</SelectItem>
-                                                            <SelectItem value="HIGH">High</SelectItem>
-                                                            <SelectItem value="URGENT">Urgent</SelectItem>
+                                                            <SelectItem value="LOW">{t('crm.priority.low')}</SelectItem>
+                                                            <SelectItem value="MEDIUM">{t('crm.priority.medium')}</SelectItem>
+                                                            <SelectItem value="HIGH">{t('crm.priority.high')}</SelectItem>
+                                                            <SelectItem value="URGENT">{t('crm.priority.urgent')}</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                 </div>
@@ -552,22 +516,22 @@ export default function CRMPipeline() {
 
                                         {/* Additional Information */}
                                         <div className="space-y-4">
-                                            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Additional Information</h3>
+                                            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t('crm.modal.additionalInfo')}</h3>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div className="space-y-1.5">
-                                                    <label className="text-xs text-muted-foreground">Age</label>
+                                                    <label className="text-xs text-muted-foreground">{t('crm.modal.age')}</label>
                                                     <Input type="number" value={editableFields.age} readOnly className="bg-muted border-border text-muted-foreground" />
                                                 </div>
                                                 <div className="space-y-1.5">
-                                                    <label className="text-xs text-muted-foreground">Salary Range</label>
+                                                    <label className="text-xs text-muted-foreground">{t('crm.modal.salary')}</label>
                                                     <Input value={editableFields.salary} readOnly className="bg-muted border-border text-muted-foreground" />
                                                 </div>
                                                 <div className="space-y-1.5">
-                                                    <label className="text-xs text-muted-foreground">Job Industry</label>
+                                                    <label className="text-xs text-muted-foreground">{t('crm.modal.industry')}</label>
                                                     <Input value={editableFields.jobIndustry} readOnly className="bg-muted border-border text-muted-foreground" />
                                                 </div>
                                                 <div className="space-y-1.5">
-                                                    <label className="text-xs text-muted-foreground">Work Title</label>
+                                                    <label className="text-xs text-muted-foreground">{t('crm.modal.workTitle')}</label>
                                                     <Input value={editableFields.workTitle} readOnly className="bg-muted border-border text-muted-foreground" />
                                                 </div>
                                             </div>
@@ -575,27 +539,27 @@ export default function CRMPipeline() {
 
                                         {/* FTD Info */}
                                         <div className="space-y-4">
-                                            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">FTD Information</h3>
+                                            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t('crm.modal.ftdInfo')}</h3>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-xl bg-muted border border-border">
                                                 <div className="space-y-1.5">
-                                                    <label className="text-xs text-muted-foreground">Deposit Amount ($)</label>
+                                                    <label className="text-xs text-muted-foreground">{t('crm.modal.deposit')}</label>
                                                     <Input type="number" value={editableFields.ftdAmount} readOnly className="bg-card border-border text-muted-foreground" />
                                                 </div>
                                                 <div className="space-y-1.5">
-                                                    <label className="text-xs text-muted-foreground">Payment Method</label>
+                                                    <label className="text-xs text-muted-foreground">{t('crm.modal.paymentMethod')}</label>
                                                     <Select value={editableFields.paymentMethod} disabled>
                                                         <SelectTrigger className="bg-card border-border text-muted-foreground">
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                         <SelectContent className="bg-card border-border text-foreground">
-                                                            <SelectItem value="CARD">Card</SelectItem>
-                                                            <SelectItem value="BANK_TRANSFER">Bank Transfer</SelectItem>
-                                                            <SelectItem value="CRYPTO">Crypto</SelectItem>
+                                                            <SelectItem value="CARD">{t('crm.payment.card')}</SelectItem>
+                                                            <SelectItem value="BANK_TRANSFER">{t('crm.payment.bankTransfer')}</SelectItem>
+                                                            <SelectItem value="CRYPTO">{t('crm.payment.crypto')}</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                 </div>
                                                 <div className="space-y-1.5">
-                                                    <label className="text-xs text-muted-foreground">Payment Provider</label>
+                                                    <label className="text-xs text-muted-foreground">{t('crm.modal.paymentProvider')}</label>
                                                     <Select value={editableFields.paymentProvider} disabled>
                                                         <SelectTrigger className="bg-card border-border text-xs text-left text-muted-foreground">
                                                             <SelectValue />
@@ -613,11 +577,11 @@ export default function CRMPipeline() {
                                                     </Select>
                                                 </div>
                                                 <div className="space-y-1.5">
-                                                    <label className="text-xs text-muted-foreground">Converted Date</label>
+                                                    <label className="text-xs text-muted-foreground">{t('crm.modal.convertedDate')}</label>
                                                     <Input type="date" value={editableFields.convertedAt} readOnly className="bg-card border-border text-muted-foreground" />
                                                 </div>
                                                 <div className="col-span-2 space-y-1.5">
-                                                    <label className="text-xs text-muted-foreground">Funnel Name</label>
+                                                    <label className="text-xs text-muted-foreground">{t('crm.modal.funnelName')}</label>
                                                     <Input value={editableFields.funnelName} readOnly className="bg-card border-border text-muted-foreground" />
                                                 </div>
                                             </div>
@@ -626,10 +590,10 @@ export default function CRMPipeline() {
 
                                     {/* Right Side: Timeline/Notes */}
                                     <div className="flex flex-col h-full space-y-4">
-                                        <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Activity Timeline</h3>
+                                        <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t('crm.modal.timeline')}</h3>
                                         <div className="flex-1 bg-muted border border-border rounded-xl p-4 overflow-y-auto max-h-[600px] space-y-4 custom-scrollbar">
                                             {selectedLead.activities?.length === 0 ? (
-                                                <p className="text-center text-muted-foreground text-sm py-8">No activities recorded yet</p>
+                                                <p className="text-center text-muted-foreground text-sm py-8">{t('crm.modal.noActivities')}</p>
                                             ) : (
                                                 [...selectedLead.activities].reverse().map((activity, idx) => (
                                                     <div key={idx} className="relative pl-6 pb-4 border-l-2 border-slate-800 last:pb-0">
@@ -638,7 +602,7 @@ export default function CRMPipeline() {
                                                             <span className="text-[10px] font-bold text-slate-500">{format(new Date(activity.createdAt), 'MMM d, HH:mm')}</span>
                                                             <span className="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400 font-bold">{activity.activityType}</span>
                                                         </div>
-                                                        <p className="text-sm text-slate-300">{activity.notes || 'No description provided'}</p>
+                                                        <p className="text-sm text-slate-300">{activity.notes || t('crm.modal.noDescription')}</p>
                                                     </div>
                                                 ))
                                             )}
@@ -686,23 +650,9 @@ export default function CRMPipeline() {
             case 'CALL': return 'bg-blue-500';
             case 'EMAIL': return 'bg-sky-500';
             case 'NOTE': return 'bg-muted-foreground';
-            case 'STATUS_CHANGE': return 'bg-[#d97706]';
+            case 'STATUS_CHANGE': return 'bg-primary';
             default: return 'bg-muted-foreground';
         }
     }
 
-    async function logQuickActivity(type) {
-        if (!selectedLead) return;
-        try {
-            await apiPost(`/crm/leads/${selectedLead.id}/activities`, {
-                activityType: type,
-                notes: `${type} attempt made via Pipeline Quick Actions`
-            });
-            toast({ title: 'Activity Logged', description: `${type} recorded` });
-            const fullLead = await apiGet(`/crm/leads/${selectedLead.id}`);
-            setSelectedLead(transformLead(fullLead));
-        } catch (error) {
-            toast({ title: 'Error', description: 'Failed to log activity', variant: 'destructive' });
-        }
-    }
 }

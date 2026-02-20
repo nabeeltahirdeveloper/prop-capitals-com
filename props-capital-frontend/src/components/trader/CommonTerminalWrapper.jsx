@@ -46,6 +46,7 @@ import { createPendingOrder } from "@/api/pending-orders";
 import { Card } from "../ui/card";
 import { cn } from "@/lib/utils";
 import MarketExecutionModal from "./MarketExecutionModal";
+import { getTradingEngineForPlatform } from "@/trading/engines/TradingEngine";
 // WALLET FEATURE DISABLED - 2026-02-16: import WalletPanel from './WalletPanel';
 import {
   Select,
@@ -115,25 +116,6 @@ const formatPrice = (price) => {
   return price.toFixed(6);
 };
 
-const isCryptoSymbol = (symbol) => {
-  if (!symbol) return false;
-  const s = symbol.toUpperCase();
-  return (
-    s.includes("BTC") ||
-    s.includes("ETH") ||
-    s.includes("SOL") ||
-    s.includes("XRP") ||
-    s.includes("ADA") ||
-    s.includes("DOGE") ||
-    s.includes("BNB") ||
-    s.includes("AVAX") ||
-    s.includes("DOT") ||
-    //s.includes('MATIC')
-    s.includes("LINK") ||
-    s.endsWith("USDT")
-  );
-};
-
 const CommonTerminalWrapper = ({
   children,
   selectedChallenge: selectedChallengeProp = null,
@@ -152,6 +134,11 @@ const CommonTerminalWrapper = ({
   } = useChallenges();
   const selectedChallenge =
     selectedChallengeProp || selectedChallengeFromContext;
+  const platformKey = String(selectedChallenge?.platform || "mt5").toLowerCase();
+  const tradingEngine = useMemo(
+    () => getTradingEngineForPlatform(platformKey),
+    [platformKey],
+  );
 
   const [selectedTab, setSelectedTab] = useState("positions");
   const [violationModal, setViolationModal] = useState(null);
@@ -264,28 +251,24 @@ const CommonTerminalWrapper = ({
 
   /* ── PnL calculation helper ── */
   const calculateTradePnL = useCallback((trade, currentPrice) => {
-    if (!currentPrice || !trade.openPrice) return 0;
-    const priceDiff =
-      trade.type === "BUY"
-        ? currentPrice - trade.openPrice
-        : trade.openPrice - currentPrice;
-    if (isCryptoSymbol(trade.symbol)) return priceDiff * (trade.volume || 0);
-    return priceDiff * (trade.volume || 0) * 100000;
-  }, []);
+    return tradingEngine.calculatePnL({
+      symbol: trade?.symbol,
+      type: String(trade?.type || "BUY").toUpperCase(),
+      volume: Number(trade?.volume),
+      openPrice: Number(trade?.openPrice),
+      currentPrice: Number(currentPrice),
+    });
+  }, [tradingEngine]);
   const calculateRequiredMargin = useCallback(
     (symbol, volume, price, leverage = 100) => {
-      if (
-        !Number.isFinite(volume) ||
-        volume <= 0 ||
-        !Number.isFinite(price) ||
-        price <= 0
-      )
-        return 0;
-      const contractSize = isCryptoSymbol(symbol) ? 1 : 100000;
-      const effectiveLeverage = Number(leverage) <= 0 ? 1 : Number(leverage);
-      return (volume * contractSize * price) / effectiveLeverage;
+      return tradingEngine.calculateRequiredMargin({
+        symbol,
+        volume: Number(volume),
+        price: Number(price),
+        leverage: Number(leverage),
+      });
     },
-    [],
+    [tradingEngine],
   );
 
   /* ── Get exit price for a position ── */
@@ -686,8 +669,11 @@ const CommonTerminalWrapper = ({
       }
       const volume = parseFloat(trade?.volume ?? trade?.lotSize);
       const openPrice = parseFloat(trade?.openPrice ?? trade?.entryPrice);
+      const rawOrderType = String(trade?.orderType || "").toLowerCase();
       const isPendingOrder =
-        String(trade?.orderType || "").toLowerCase() !== "market";
+        rawOrderType === "limit" ||
+        rawOrderType === "stop" ||
+        rawOrderType === "stop_limit";
 
       if (
         !trade?.symbol ||
@@ -772,9 +758,7 @@ const CommonTerminalWrapper = ({
             return;
           }
 
-          const rawOrderType = String(
-            trade?.orderType || "limit",
-          ).toLowerCase();
+          const rawOrderType = String(trade?.orderType || "limit").toLowerCase();
           const mappedOrderType =
             rawOrderType === "stop"
               ? "STOP"
@@ -1198,6 +1182,7 @@ const CommonTerminalWrapper = ({
                 account,
                 selectedSymbol: enrichedSelectedSymbol,
                 setSelectedSymbol: setSelectedSymbol,
+                tradingEngine,
               })
             : child,
         )}

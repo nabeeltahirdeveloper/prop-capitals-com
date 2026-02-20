@@ -11,7 +11,7 @@ const MT5Terminal = () => {
   const { selectedChallenge } = useChallenges();
   // MT5 backend URL - use env variable for local testing
   const MT5_API_URL =
-    import.meta.env.VITE_WEBSOCKET_URL || "http://localhost:5002";
+    import.meta.env.VITE_WEBSOCKET_URL || "https://api-dev.prop-capitals.com";
 
   const endpoints = {
     candles: "/market-data/history", // Historical candles endpoint
@@ -21,15 +21,15 @@ const MT5Terminal = () => {
   };
 
   return (
-    <CommonTerminalWrapper>
-      <TradingProvider
-        baseUrl={MT5_API_URL}
-        endpoints={endpoints}
-        accountId={selectedChallenge?.id}
-      >
+    <TradingProvider
+      baseUrl={MT5_API_URL}
+      endpoints={endpoints}
+      accountId={selectedChallenge?.id}
+    >
+      <CommonTerminalWrapper>
         <MT5TradingArea selectedChallenge={selectedChallenge} />
-      </TradingProvider>
-    </CommonTerminalWrapper>
+      </CommonTerminalWrapper>
+    </TradingProvider>
   );
 };
 

@@ -1,8 +1,20 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 
 import { AdminCouponsService } from './admin-coupons.service';
+import { JwtAuthGuard } from '../../auth/jwt.guard';
+import { AdminRoleGuard } from '../../auth/admin-role.guard';
 
 @Controller('admin/coupons')
+@UseGuards(JwtAuthGuard, AdminRoleGuard)
 
 export class AdminCouponsController {
 
