@@ -1,4 +1,4 @@
-import axios from "axios";
+https://api-dev.prop-capitals.comimport axios from "axios";
 
 // Create axios instance with base URL from environment variable
 const api = axios.create({

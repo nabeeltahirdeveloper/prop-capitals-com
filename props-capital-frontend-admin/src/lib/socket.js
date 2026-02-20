@@ -1,4 +1,4 @@
-import { io } from 'socket.io-client';
+https://api-dev.prop-capitals.comimport { io } from 'socket.io-client';
 
 const getAuthToken = () => {
   return (
