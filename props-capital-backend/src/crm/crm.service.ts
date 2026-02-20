@@ -300,7 +300,7 @@ export class CrmService {
       funnel_name: 'funnelName',
       sub_parameters: 'subParameters',
     };
-    console.log(fieldMap);
+
     for (let i = 1; i < lines.length; i++) {
       const values = this.parseCSVLine(lines[i]);
       const leadData: any = {};
