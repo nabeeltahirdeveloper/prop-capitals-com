@@ -1697,6 +1697,7 @@
         "stripeApiKeyPlaceholder": "sk_live_...",
         "paypal": "PayPal",
         "paypalDesc": "Принимать оплату через PayPal",
+        "paypalClientId": "ID клиента PayPal",
         "cryptocurrency": "Криптовалюта",
         "cryptocurrencyDesc": "Принимать оплату в BTC, ETH, USDT"
       },

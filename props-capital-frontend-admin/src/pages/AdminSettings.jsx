@@ -302,10 +302,10 @@ export default function AdminSettings() {
                   }}
                 >
                   <div
-                    className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                    className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all ${
                       localGeneral.maintenance_mode
-                        ? "right-0.5 sm:right-1"
-                        : "left-0.5 sm:left-1"
+                        ? "right-0.5 sm:right-0.5"
+                        : "left-0.5 sm:left-0.5"
                     }`}
                   />
                 </div>
@@ -433,10 +433,10 @@ export default function AdminSettings() {
                   }}
                 >
                   <div
-                    className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                    className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all ${
                       localPayment.stripe_enabled
-                        ? "right-0.5 sm:right-1"
-                        : "left-0.5 sm:left-1"
+                        ? "right-0.5 sm:right-0.5"
+                        : "left-0.5 sm:left-0.5"
                     }`}
                   />
                 </div>
@@ -486,14 +486,34 @@ export default function AdminSettings() {
                   }}
                 >
                   <div
-                    className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                    className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all ${
                       localPayment.paypal_enabled
-                        ? "right-0.5 sm:right-1"
-                        : "left-0.5 sm:left-1"
+                        ? "right-0.5 sm:right-0.5"
+                        : "left-0.5 sm:left-0.5"
                     }`}
                   />
                 </div>
               </div>
+              {localPayment.paypal_enabled && (
+                <div className="space-y-1.5 sm:space-y-2 pl-2 sm:pl-4">
+                  <Label className="text-muted-foreground text-xs sm:text-sm">
+                    {t("admin.settings.payments.paypalClientId", { defaultValue: "PayPal Client ID" })}
+                  </Label>
+                  <Input
+                    type="password"
+                    value={localPayment.paypal_client_id || ""}
+                    onChange={(e) =>
+                      setLocalPayment({
+                        ...localPayment,
+                        paypal_client_id: e.target.value,
+                      })
+                    }
+                    placeholder="Enter PayPal Client ID"
+                    className="bg-muted border-border text-foreground text-sm"
+                    disabled={isLoading}
+                  />
+                </div>
+              )}
 
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-muted/60 rounded-lg gap-3">
                 <div className="min-w-0">
@@ -517,10 +537,10 @@ export default function AdminSettings() {
                   }}
                 >
                   <div
-                    className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                    className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all ${
                       localPayment.crypto_enabled
-                        ? "right-0.5 sm:right-1"
-                        : "left-0.5 sm:left-1"
+                        ? "right-0.5 sm:right-0.5"
+                        : "left-0.5 sm:left-0.5"
                     }`}
                   />
                 </div>
@@ -577,10 +597,10 @@ export default function AdminSettings() {
                     }}
                   >
                     <div
-                      className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                      className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all ${
                         localIntegration[platform.key]
-                          ? "right-0.5 sm:right-1"
-                          : "left-0.5 sm:left-1"
+                          ? "right-0.5 sm:right-0.5"
+                          : "left-0.5 sm:left-0.5"
                       }`}
                     />
                   </div>

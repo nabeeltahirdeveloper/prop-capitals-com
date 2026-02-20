@@ -1697,6 +1697,7 @@
         "stripeApiKeyPlaceholder": "sk_live_...",
         "paypal": "PayPal",
         "paypalDesc": "PayPal ödemelerini kabul et",
+        "paypalClientId": "PayPal Müşteri Kimliği",
         "cryptocurrency": "Kripto para",
         "cryptocurrencyDesc": "BTC, ETH, USDT ile ödemeleri kabul et"
       },

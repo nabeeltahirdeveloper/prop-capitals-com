@@ -1708,6 +1708,7 @@
         "stripeApiKeyPlaceholder": "sk_live_...",
         "paypal": "PayPal",
         "paypalDesc": "รับการชำระเงินผ่าน PayPal",
+        "paypalClientId": "PayPal Client ID",
         "cryptocurrency": "สกุลเงินดิจิทัล",
         "cryptocurrencyDesc": "รับการชำระเงินด้วย BTC, ETH, USDT"
       },

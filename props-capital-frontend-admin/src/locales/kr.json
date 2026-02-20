@@ -1697,6 +1697,7 @@
         "stripeApiKeyPlaceholder": "sk_live_...",
         "paypal": "PayPal",
         "paypalDesc": "PayPal 결제를 받습니다",
+        "paypalClientId": "PayPal 클라이언트 ID",
         "cryptocurrency": "암호화폐",
         "cryptocurrencyDesc": "BTC, ETH, USDT로 결제를 받습니다"
       },
