@@ -58,7 +58,7 @@ export function useTradingWebSocket({
 
     const socket = io(`${WEBSOCKET_URL}/trading`, {
       auth: { token },
-      transports: ["websocket", "polling"],
+      transports: ["polling", "websocket"],
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,

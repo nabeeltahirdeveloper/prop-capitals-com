@@ -300,7 +300,7 @@ export function PriceProvider({ children, currentPathname = null }) {
     // Connect to forex prices WebSocket
     const socket = io(`${WEBSOCKET_URL}/forex-prices`, {
       auth: { token },
-      transports: ["websocket", "polling"],
+      transports: ["polling", "websocket"],
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
