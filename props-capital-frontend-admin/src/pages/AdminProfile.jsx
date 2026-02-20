@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getCurrentUser } from "@/api/auth";
 import {
@@ -23,9 +23,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   User,
-  Mail,
-  Phone,
-  MapPin,
   Shield,
   Bell,
   Key,
@@ -112,9 +109,18 @@ export default function AdminProfile() {
       queryClient.invalidateQueries({ queryKey: ["user", "me"] });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
+      toast({
+        title: t("common.success"),
+        description: t("profile.changesSaved"),
+      });
     },
     onError: (error) => {
       console.error("Failed to save profile:", error);
+      toast({
+        title: t("common.error"),
+        description: error?.response?.data?.message || t("profile.loadError"),
+        variant: "destructive",
+      });
     },
   });
 
@@ -159,7 +165,7 @@ export default function AdminProfile() {
     onError: (error) => {
       console.error("Failed to update notification preferences:", error);
       toast({
-        title: t("profile.notificationUpdateFailed"),
+        title: t("common.error"),
         description: t("profile.notificationUpdateError"),
         variant: "destructive",
       });

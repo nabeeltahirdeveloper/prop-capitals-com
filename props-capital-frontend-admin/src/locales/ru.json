@@ -3,7 +3,10 @@
     "loading": "Загрузка...",
     "url": "URL",
     "dismiss": "Закрыть",
-    "allPlatforms": "Все платформы"
+    "allPlatforms": "Все платформы",
+    "unknown": "Неизвестно",
+    "error": "Ошибка",
+    "success": "Успех"
   },
   "home": {
     "hero": {
@@ -1607,7 +1610,22 @@
         "inactive": "Неактивен"
       },
       "noExpiry": "Без срока действия",
-      "emptyMessage": "Купоны не найдены"
+      "emptyMessage": "Купоны не найдены",
+      "messages": {
+        "copySuccess": "Coupon code copied",
+        "copyError": "Failed to copy coupon code",
+        "createSuccess": "Coupon created successfully",
+        "updateSuccess": "Coupon updated successfully",
+        "deleteSuccess": "Coupon deleted successfully",
+        "saveError": "Failed to save coupon",
+        "deleteError": "Failed to delete coupon"
+      },
+      "validation": {
+        "codeRequired": "Coupon code is required",
+        "discountRequired": "Discount value must be greater than 0",
+        "discountRangePercent": "Percentage discount cannot exceed 100",
+        "maxUsesInvalid": "Max uses must be at least 1"
+      }
     },
     "support": {
       "title": "Тикеты поддержки",
@@ -1735,7 +1753,8 @@
         "payoutApproved": "Вывод одобрен",
         "payoutApprovedDesc": "Отправляется при одобрении вывода",
         "editTemplate": "Редактировать шаблон"
-      }
+      },
+      "saveError": "Failed to save settings"
     },
     "riskMonitor": {
       "title": "Мониторинг рисков",
@@ -2984,7 +3003,19 @@
       "call": "Звонок",
       "email": "Email",
       "whatsapp": "WhatsApp",
-      "telegram_activity": "Telegram"
+      "telegram_activity": "Telegram",
+      "toast": {
+        "fetchError": "Failed to fetch leads",
+        "loadError": "Failed to load lead details",
+        "updateSuccess": "Lead updated successfully",
+        "updateError": "Failed to update lead",
+        "activityLogged": "Activity logged: {{type}}",
+        "activityError": "Failed to log activity",
+        "importSuccess": "Imported {{created}} of {{total}} leads",
+        "importError": "Failed to import CSV",
+        "noteAdded": "Note added successfully",
+        "noteError": "Failed to add note"
+      }
     },
     "status": {
       "all": "Все",
@@ -3017,6 +3048,141 @@
       "neteller": "Neteller",
       "binancePay": "Binance Pay",
       "coinbase": "Coinbase"
+    },
+    "pipeline": {
+      "title": "Воронка Продаж",
+      "subtitle": "Отслеживайте и управляйте лидами по этапам",
+      "search": "Поиск лидов...",
+      "loading": "Загрузка воронки...",
+      "statusUpdated": "Статус обновлен",
+      "movedTo": "Лид перемещен в {{status}}",
+      "updateError": "Не удалось обновить статус. Отмена...",
+      "loadError": "Не удалось загрузить данные",
+      "updateSuccess": "Данные лида успешно обновлены",
+      "updateFailed": "Ошибка при обновлении данных",
+      "noteAdded": "Заметка успешно добавлена",
+      "noteFailed": "Не удалось добавить заметку",
+      "activityLogged": "Активность зафиксирована",
+      "activityRecorded": "{{type}} зафиксирован(а)",
+      "direct": "Прямой",
+      "quickActionNote": "Попытка {{type}}, сделанная через быстрые действия воронки",
+      "activityFailed": "Не удалось записать активность"
+    },
+    "columns": {
+      "new": "Новые лиды",
+      "contacted": "Установлен контакт",
+      "qualified": "Квалифицирован",
+      "callback": "Перезвонить",
+      "followUp": "Последующие действия",
+      "converted": "Конвертирован",
+      "lost": "Утерян"
+    },
+    "modal": {
+      "close": "Закрыть",
+      "basicInfo": "Основная информация",
+      "fullName": "Полное имя",
+      "email": "Электронная почта",
+      "phone": "Номер телефона",
+      "country": "Страна",
+      "statusAssignment": "Статус и назначение",
+      "status": "Статус",
+      "priority": "Приоритет",
+      "additionalInfo": "Дополнительная информация",
+      "age": "Возраст",
+      "salary": "Уровень дохода",
+      "industry": "Отрасль",
+      "workTitle": "Должность",
+      "ftdInfo": "Информация о FTD",
+      "deposit": "Сумма депозита ($)",
+      "paymentMethod": "Способ оплаты",
+      "paymentProvider": "Платежный шлюз",
+      "convertedDate": "Дата конвертации",
+      "funnelName": "Название воронки",
+      "timeline": "История активности",
+      "noActivities": "История активности пуста",
+      "noDescription": "Описание не предоставлено"
+    },
+    "ftdReport": {
+      "title": "FTD Report",
+      "subtitle": "First Time Deposit tracking from converted leads",
+      "totalFtd": "Total FTD",
+      "totalDeposits": "Total Deposits",
+      "avgFtdAmount": "Avg FTD Amount",
+      "activeAgents": "Active Agents",
+      "searchPlaceholder": "Search by name, email, or country...",
+      "allAgents": "All Agents",
+      "tableTitle": "First Time Deposits",
+      "leadName": "Lead Name",
+      "email": "Email",
+      "phone": "Phone",
+      "country": "Country",
+      "depositAmount": "Deposit Amount",
+      "convertedDate": "Converted Date",
+      "status": "Status",
+      "converted": "Converted",
+      "agent": "Agent",
+      "paymentMethod": "Payment Method",
+      "paymentProvider": "Payment Provider",
+      "source": "Source",
+      "affiliateId": "Affiliate ID",
+      "funnelName": "Funnel Name",
+      "ftdTime": "FTD Time",
+      "subParameters": "Sub Parameters",
+      "na": "N/A",
+      "unassigned": "Unassigned",
+      "loading": "Loading FTD data...",
+      "noData": "No first time deposits found.",
+      "showing": "Showing {{count}} First Time Deposits",
+      "loadError": "Failed to load FTD report data"
+    },
+    "crmCalendar": {
+      "title": "Календарь продаж",
+      "subtitle": "Ваши запланированные встречи",
+      "scheduleMeeting": "Запланировать встречу",
+      "searchPlaceholder": "Поиск встреч, клиентов или агентов...",
+      "allTypes": "Все типы",
+      "call": "Звонок",
+      "meeting": "Встреча",
+      "other": "Другое",
+      "allStatus": "Все статусы",
+      "scheduled": "Запланировано",
+      "completed": "Завершено",
+      "cancelled": "Отменено",
+      "totalMeetings": "Всего встреч",
+      "today": "Сегодня",
+      "calls": "Звонки",
+      "meetings": "Встречи",
+      "calendarView": "Вид календаря",
+      "listView": "Вид списка",
+      "todaysSchedule": "Расписание на сегодня",
+      "noMeetings": "Нет запланированных встреч",
+      "scheduleOneNow": "Запланировать сейчас",
+      "scheduleNewMeeting": "Запланировать новую встречу",
+      "meetingTitle": "Заголовок встречи",
+      "clientName": "Имя клиента",
+      "date": "Дата",
+      "time": "Время",
+      "duration": "Длительность (минуты)",
+      "type": "Тип",
+      "cancel": "Отмена",
+      "loading": "Загрузка расписания...",
+      "errorRequiredFields": "Пожалуйста, заполните все обязательные поля",
+      "successScheduled": "Встреча успешно запланирована",
+      "dateTime": "Дата и время",
+      "status": "Статус",
+      "placeholderTitle": "напр., Последующий звонок",
+      "placeholderClient": "Введите имя клиента",
+      "weekdays": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      },
+      "moreCount": "+ {{count}} more",
+      "minShort": "min"
     }
   }
 }

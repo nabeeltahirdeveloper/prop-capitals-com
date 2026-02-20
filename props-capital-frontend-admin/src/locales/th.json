@@ -3,7 +3,10 @@
     "loading": "กำลังโหลด...",
     "url": "URL",
     "dismiss": "ปิด",
-    "allPlatforms": "ทุกแพลตฟอร์ม"
+    "allPlatforms": "ทุกแพลตฟอร์ม",
+    "unknown": "ไม่ทราบ",
+    "error": "ข้อผิดพลาด",
+    "success": "สำเร็จ"
   },
   "home": {
     "hero": {
@@ -1607,7 +1610,22 @@
         "inactive": "ไม่ใช้งาน"
       },
       "noExpiry": "ไม่มีวันหมดอายุ",
-      "emptyMessage": "ไม่พบคูปอง"
+      "emptyMessage": "ไม่พบคูปอง",
+      "messages": {
+        "copySuccess": "Coupon code copied",
+        "copyError": "Failed to copy coupon code",
+        "createSuccess": "Coupon created successfully",
+        "updateSuccess": "Coupon updated successfully",
+        "deleteSuccess": "Coupon deleted successfully",
+        "saveError": "Failed to save coupon",
+        "deleteError": "Failed to delete coupon"
+      },
+      "validation": {
+        "codeRequired": "Coupon code is required",
+        "discountRequired": "Discount value must be greater than 0",
+        "discountRangePercent": "Percentage discount cannot exceed 100",
+        "maxUsesInvalid": "Max uses must be at least 1"
+      }
     },
     "support": {
       "title": "ตั๋วสนับสนุน",
@@ -1746,7 +1764,8 @@
         "payoutApproved": "อนุมัติการจ่ายเงิน",
         "payoutApprovedDesc": "ส่งเมื่ออนุมัติการจ่ายเงิน",
         "editTemplate": "แก้ไขเทมเพลต"
-      }
+      },
+      "saveError": "Failed to save settings"
     },
     "riskMonitor": {
       "title": "การตรวจสอบความเสี่ยง",
@@ -2995,7 +3014,19 @@
       "call": "โทร",
       "email": "อีเมล",
       "whatsapp": "WhatsApp",
-      "telegram_activity": "Telegram"
+      "telegram_activity": "Telegram",
+      "toast": {
+        "fetchError": "Failed to fetch leads",
+        "loadError": "Failed to load lead details",
+        "updateSuccess": "Lead updated successfully",
+        "updateError": "Failed to update lead",
+        "activityLogged": "Activity logged: {{type}}",
+        "activityError": "Failed to log activity",
+        "importSuccess": "Imported {{created}} of {{total}} leads",
+        "importError": "Failed to import CSV",
+        "noteAdded": "Note added successfully",
+        "noteError": "Failed to add note"
+      }
     },
     "status": {
       "all": "ทั้งหมด",
@@ -3028,6 +3059,141 @@
       "neteller": "Neteller",
       "binancePay": "Binance Pay",
       "coinbase": "Coinbase"
+    },
+    "pipeline": {
+      "title": "ไปป์ไลน์การขาย",
+      "subtitle": "ติดตามและจัดการลูกค้ามุ่งหวังตามขั้นตอน",
+      "search": "ค้นหาลูกค้ามุ่งหวัง...",
+      "loading": "กำลังโหลดไปป์ไลน์...",
+      "statusUpdated": "อัปเดตสถานะแล้ว",
+      "movedTo": "ย้ายลูกค้ามุ่งหวังไปยัง {{status}} แล้ว",
+      "updateError": "ไม่สามารถอัปเดตสถานะได้ กำลังเปลี่ยนกลับ...",
+      "loadError": "ไม่สามารถโหลดรายละเอียดได้",
+      "updateSuccess": "อัปเดตข้อมูลลูกค้ามุ่งหวังสำเร็จ",
+      "updateFailed": "ไม่สามารถอัปเดตข้อมูลลูกค้ามุ่งหวังได้",
+      "noteAdded": "เพิ่มบันทึกสำเร็จ",
+      "noteFailed": "ไม่สามารถเพิ่มบันทึกได้",
+      "activityLogged": "บันทึกกิจกรรมแล้ว",
+      "activityRecorded": "บันทึก {{type}} แล้ว",
+      "direct": "โดยตรง",
+      "quickActionNote": "พยายาม {{type}} ผ่านการดำเนินการด่วนของไปป์ไลน์",
+      "activityFailed": "บันทึกกิจกรรมไม่สำเร็จ"
+    },
+    "columns": {
+      "new": "ลูกค้ามุ่งหวังใหม่",
+      "contacted": "ติดต่อแล้ว",
+      "qualified": "ผ่านคุณสมบัติ",
+      "callback": "โทรกลับ",
+      "followUp": "ติดตามผล",
+      "converted": "เปลี่ยนเป็นลูกค้า",
+      "lost": "สูญเสีย"
+    },
+    "modal": {
+      "close": "ปิด",
+      "basicInfo": "ข้อมูลพื้นฐาน",
+      "fullName": "ชื่อ-นามสกุล",
+      "email": "ที่อยู่อีเมล",
+      "phone": "เบอร์โทรศัพท์",
+      "country": "ประเทศ",
+      "statusAssignment": "สถานะและการมอบหมาย",
+      "status": "สถานะ",
+      "priority": "ลำดับความสำคัญ",
+      "additionalInfo": "ข้อมูลเพิ่มเติม",
+      "age": "อายุ",
+      "salary": "ช่วงเงินเดือน",
+      "industry": "อุตสาหกรรม",
+      "workTitle": "ตำแหน่งงาน",
+      "ftdInfo": "ข้อมูล FTD",
+      "deposit": "จำนวนเงินฝาก ($)",
+      "paymentMethod": "วิธีการชำระเงิน",
+      "paymentProvider": "ผู้ให้บริการชำระเงิน",
+      "convertedDate": "วันที่เปลี่ยนเป็นลูกค้า",
+      "funnelName": "ชื่อฟันネル",
+      "timeline": "ไทม์ไลน์กิจกรรม",
+      "noActivities": "ยังไม่มีการบันทึกกิจกรรม",
+      "noDescription": "ไม่มีการระบุคำอธิบาย"
+    },
+    "ftdReport": {
+      "title": "FTD Report",
+      "subtitle": "First Time Deposit tracking from converted leads",
+      "totalFtd": "Total FTD",
+      "totalDeposits": "Total Deposits",
+      "avgFtdAmount": "Avg FTD Amount",
+      "activeAgents": "Active Agents",
+      "searchPlaceholder": "Search by name, email, or country...",
+      "allAgents": "All Agents",
+      "tableTitle": "First Time Deposits",
+      "leadName": "Lead Name",
+      "email": "Email",
+      "phone": "Phone",
+      "country": "Country",
+      "depositAmount": "Deposit Amount",
+      "convertedDate": "Converted Date",
+      "status": "Status",
+      "converted": "Converted",
+      "agent": "Agent",
+      "paymentMethod": "Payment Method",
+      "paymentProvider": "Payment Provider",
+      "source": "Source",
+      "affiliateId": "Affiliate ID",
+      "funnelName": "Funnel Name",
+      "ftdTime": "FTD Time",
+      "subParameters": "Sub Parameters",
+      "na": "N/A",
+      "unassigned": "Unassigned",
+      "loading": "Loading FTD data...",
+      "noData": "No first time deposits found.",
+      "showing": "Showing {{count}} First Time Deposits",
+      "loadError": "Failed to load FTD report data"
+    },
+    "crmCalendar": {
+      "title": "ปฏิทินการขาย",
+      "subtitle": "การประชุมที่กำหนดไว้ของคุณ",
+      "scheduleMeeting": "กำหนดการประชุม",
+      "searchPlaceholder": "ค้นหาการประชุม ลูกค้า หรือตัวแทน...",
+      "allTypes": "ทุกประเภท",
+      "call": "โทร",
+      "meeting": "การประชุม",
+      "other": "อื่นๆ",
+      "allStatus": "ทุกสถานะ",
+      "scheduled": "กำหนดไว้แล้ว",
+      "completed": "เสร็จสิ้น",
+      "cancelled": "ยกเลิกแล้ว",
+      "totalMeetings": "การประชุมทั้งหมด",
+      "today": "วันนี้",
+      "calls": "การโทร",
+      "meetings": "การประชุม",
+      "calendarView": "มุมมองปฏิทิน",
+      "listView": "มุมมองรายการ",
+      "todaysSchedule": "ตารางงานวันนี้",
+      "noMeetings": "ไม่มีการประชุมที่กำหนดไว้",
+      "scheduleOneNow": "กำหนดตารางเวลาตอนนี้",
+      "scheduleNewMeeting": "กำหนดการประชุมใหม่",
+      "meetingTitle": "หัวข้อการประชุม",
+      "clientName": "ชื่อลูกค้า",
+      "date": "วันที่",
+      "time": "เวลา",
+      "duration": "ระยะเวลา (นาที)",
+      "type": "ประเภท",
+      "cancel": "ยกเลิก",
+      "loading": "กำลังโหลดตารางเวลาของคุณ...",
+      "errorRequiredFields": "โปรดกรอกข้อมูลในช่องที่จำเป็นให้ครบถ้วน",
+      "successScheduled": "กำหนดการประชุมสำเร็จแล้ว",
+      "dateTime": "วันที่และเวลา",
+      "status": "สถานะ",
+      "placeholderTitle": "เช่น โทรติดตามผล",
+      "placeholderClient": "ป้อนชื่อลูกค้า",
+      "weekdays": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      },
+      "moreCount": "+ {{count}} more",
+      "minShort": "min"
     }
   }
 }

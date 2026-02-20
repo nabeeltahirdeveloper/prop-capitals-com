@@ -3,7 +3,10 @@
     "loading": "Yükleniyor...",
     "url": "URL",
     "dismiss": "Kapat",
-    "allPlatforms": "Tüm platformlar"
+    "allPlatforms": "Tüm platformlar",
+    "unknown": "Bilinmiyor",
+    "error": "Hata",
+    "success": "Başarılı"
   },
   "home": {
     "hero": {
@@ -1607,7 +1610,22 @@
         "inactive": "Pasif"
       },
       "noExpiry": "Süresiz",
-      "emptyMessage": "Kupon bulunamadı"
+      "emptyMessage": "Kupon bulunamadı",
+      "messages": {
+        "copySuccess": "Coupon code copied",
+        "copyError": "Failed to copy coupon code",
+        "createSuccess": "Coupon created successfully",
+        "updateSuccess": "Coupon updated successfully",
+        "deleteSuccess": "Coupon deleted successfully",
+        "saveError": "Failed to save coupon",
+        "deleteError": "Failed to delete coupon"
+      },
+      "validation": {
+        "codeRequired": "Coupon code is required",
+        "discountRequired": "Discount value must be greater than 0",
+        "discountRangePercent": "Percentage discount cannot exceed 100",
+        "maxUsesInvalid": "Max uses must be at least 1"
+      }
     },
     "support": {
       "title": "Destek talepleri",
@@ -1735,7 +1753,8 @@
         "payoutApproved": "Çekim onaylandı",
         "payoutApprovedDesc": "Çekim onaylandığında gönderilir",
         "editTemplate": "Şablonu düzenle"
-      }
+      },
+      "saveError": "Failed to save settings"
     },
     "riskMonitor": {
       "title": "Risk izleme",
@@ -2984,7 +3003,19 @@
       "call": "Arama",
       "email": "E-posta",
       "whatsapp": "WhatsApp",
-      "telegram_activity": "Telegram"
+      "telegram_activity": "Telegram",
+      "toast": {
+        "fetchError": "Failed to fetch leads",
+        "loadError": "Failed to load lead details",
+        "updateSuccess": "Lead updated successfully",
+        "updateError": "Failed to update lead",
+        "activityLogged": "Activity logged: {{type}}",
+        "activityError": "Failed to log activity",
+        "importSuccess": "Imported {{created}} of {{total}} leads",
+        "importError": "Failed to import CSV",
+        "noteAdded": "Note added successfully",
+        "noteError": "Failed to add note"
+      }
     },
     "status": {
       "all": "Tümü",
@@ -3017,6 +3048,141 @@
       "neteller": "Neteller",
       "binancePay": "Binance Pay",
       "coinbase": "Coinbase"
+    },
+    "pipeline": {
+      "title": "Satış Hunisi",
+      "subtitle": "Adayları aşamalar üzerinden takip edin ve yönetin",
+      "search": "Aday ara...",
+      "loading": "Huni Yükleniyor...",
+      "statusUpdated": "Durum Güncellendi",
+      "movedTo": "Aday {{status}} aşamasına taşındı",
+      "updateError": "Durum güncellenemedi. Geri alınıyor...",
+      "loadError": "Detaylar yüklenemedi",
+      "updateSuccess": "Aday başarıyla güncellendi",
+      "updateFailed": "Aday güncellenemedi",
+      "noteAdded": "Not başarıyla eklendi",
+      "noteFailed": "Not eklenemedi",
+      "activityLogged": "Aktivite Kaydedildi",
+      "activityRecorded": "{{type}} kaydedildi",
+      "direct": "Doğrudan",
+      "quickActionNote": "Pipeline Hızlı İşlemleri aracılığıyla {{type}} denemesi yapıldı",
+      "activityFailed": "Aktivite kaydedilemedi"
+    },
+    "columns": {
+      "new": "Yeni Adaylar",
+      "contacted": "İletişime Geçildi",
+      "qualified": "Kalifiye",
+      "callback": "Geri Arama",
+      "followUp": "Takip",
+      "converted": "Dönüştü",
+      "lost": "Kaybedildi"
+    },
+    "modal": {
+      "close": "Kapat",
+      "basicInfo": "Temel Bilgiler",
+      "fullName": "Ad Soyad",
+      "email": "E-posta Adresi",
+      "phone": "Telefon Numarası",
+      "country": "Ülke",
+      "statusAssignment": "Durum ve Atama",
+      "status": "Durum",
+      "priority": "Öncelik",
+      "additionalInfo": "Ek Bilgiler",
+      "age": "Yaş",
+      "salary": "Maaş Aralığı",
+      "industry": "Sektör",
+      "workTitle": "Unvan",
+      "ftdInfo": "FTD Bilgileri",
+      "deposit": "Yatırım Tutarı ($)",
+      "paymentMethod": "Ödeme Yöntemi",
+      "paymentProvider": "Ödeme Sağlayıcısı",
+      "convertedDate": "Dönüşüm Tarihi",
+      "funnelName": "Huni Adı",
+      "timeline": "Aktivite Zaman Çizelgesi",
+      "noActivities": "Henüz aktivite kaydedilmedi",
+      "noDescription": "Açıklama girilmedi"
+    },
+    "ftdReport": {
+      "title": "FTD Report",
+      "subtitle": "First Time Deposit tracking from converted leads",
+      "totalFtd": "Total FTD",
+      "totalDeposits": "Total Deposits",
+      "avgFtdAmount": "Avg FTD Amount",
+      "activeAgents": "Active Agents",
+      "searchPlaceholder": "Search by name, email, or country...",
+      "allAgents": "All Agents",
+      "tableTitle": "First Time Deposits",
+      "leadName": "Lead Name",
+      "email": "Email",
+      "phone": "Phone",
+      "country": "Country",
+      "depositAmount": "Deposit Amount",
+      "convertedDate": "Converted Date",
+      "status": "Status",
+      "converted": "Converted",
+      "agent": "Agent",
+      "paymentMethod": "Payment Method",
+      "paymentProvider": "Payment Provider",
+      "source": "Source",
+      "affiliateId": "Affiliate ID",
+      "funnelName": "Funnel Name",
+      "ftdTime": "FTD Time",
+      "subParameters": "Sub Parameters",
+      "na": "N/A",
+      "unassigned": "Unassigned",
+      "loading": "Loading FTD data...",
+      "noData": "No first time deposits found.",
+      "showing": "Showing {{count}} First Time Deposits",
+      "loadError": "Failed to load FTD report data"
+    },
+    "crmCalendar": {
+      "title": "Satış Takvimi",
+      "subtitle": "Planlanmış toplantılarınız",
+      "scheduleMeeting": "Toplantı Planla",
+      "searchPlaceholder": "Toplantı, müşteri veya temsilci ara...",
+      "allTypes": "Tüm Türler",
+      "call": "Arama",
+      "meeting": "Toplantı",
+      "other": "Diğer",
+      "allStatus": "Tüm Durumlar",
+      "scheduled": "Planlandı",
+      "completed": "Tamamlandı",
+      "cancelled": "İptal Edildi",
+      "totalMeetings": "Toplam Toplantı",
+      "today": "Bugün",
+      "calls": "Aramalar",
+      "meetings": "Toplantılar",
+      "calendarView": "Takvim Görünümü",
+      "listView": "Liste Görünümü",
+      "todaysSchedule": "Bugünkü Program",
+      "noMeetings": "Planlanmış toplantı yok",
+      "scheduleOneNow": "Şimdi bir tane planla",
+      "scheduleNewMeeting": "Yeni Toplantı Planla",
+      "meetingTitle": "Toplantı Başlığı",
+      "clientName": "Müşteri Adı",
+      "date": "Tarih",
+      "time": "Saat",
+      "duration": "Süre (dakika)",
+      "type": "Tür",
+      "cancel": "İptal",
+      "loading": "Programınız yükleniyor...",
+      "errorRequiredFields": "Lütfen tüm zorunlu alanları doldurun",
+      "successScheduled": "Toplantı başarıyla planlandı",
+      "dateTime": "Tarih ve Saat",
+      "status": "Durum",
+      "placeholderTitle": "örneğin, Takip Araması",
+      "placeholderClient": "Müşteri adını girin",
+      "weekdays": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      },
+      "moreCount": "+ {{count}} more",
+      "minShort": "min"
     }
   }
 }

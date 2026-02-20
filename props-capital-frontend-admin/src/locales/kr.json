@@ -3,7 +3,10 @@
     "loading": "로딩 중...",
     "url": "URL",
     "dismiss": "닫기",
-    "allPlatforms": "모든 플랫폼"
+    "allPlatforms": "모든 플랫폼",
+    "unknown": "알 수 없음",
+    "error": "에러",
+    "success": "성공"
   },
   "home": {
     "hero": {
@@ -1607,7 +1610,22 @@
         "inactive": "비활성"
       },
       "noExpiry": "유효기간 없음",
-      "emptyMessage": "쿠폰을 찾을 수 없습니다"
+      "emptyMessage": "쿠폰을 찾을 수 없습니다",
+      "messages": {
+        "copySuccess": "Coupon code copied",
+        "copyError": "Failed to copy coupon code",
+        "createSuccess": "Coupon created successfully",
+        "updateSuccess": "Coupon updated successfully",
+        "deleteSuccess": "Coupon deleted successfully",
+        "saveError": "Failed to save coupon",
+        "deleteError": "Failed to delete coupon"
+      },
+      "validation": {
+        "codeRequired": "Coupon code is required",
+        "discountRequired": "Discount value must be greater than 0",
+        "discountRangePercent": "Percentage discount cannot exceed 100",
+        "maxUsesInvalid": "Max uses must be at least 1"
+      }
     },
     "support": {
       "title": "지원 티켓",
@@ -1735,7 +1753,8 @@
         "payoutApproved": "출금 승인",
         "payoutApprovedDesc": "출금이 승인되었을 때 전송",
         "editTemplate": "템플릿 편집"
-      }
+      },
+      "saveError": "Failed to save settings"
     },
     "riskMonitor": {
       "title": "리스크 모니터링",
@@ -2984,7 +3003,19 @@
       "call": "전화",
       "email": "이메일",
       "whatsapp": "WhatsApp",
-      "telegram_activity": "Telegram"
+      "telegram_activity": "Telegram",
+      "toast": {
+        "fetchError": "Failed to fetch leads",
+        "loadError": "Failed to load lead details",
+        "updateSuccess": "Lead updated successfully",
+        "updateError": "Failed to update lead",
+        "activityLogged": "Activity logged: {{type}}",
+        "activityError": "Failed to log activity",
+        "importSuccess": "Imported {{created}} of {{total}} leads",
+        "importError": "Failed to import CSV",
+        "noteAdded": "Note added successfully",
+        "noteError": "Failed to add note"
+      }
     },
     "status": {
       "all": "전체",
@@ -3017,6 +3048,141 @@
       "neteller": "Neteller",
       "binancePay": "Binance Pay",
       "coinbase": "Coinbase"
+    },
+    "pipeline": {
+      "title": "영업 파이프라인",
+      "subtitle": "단계별 리드 추적 및 관리",
+      "search": "리드 검색...",
+      "loading": "파이프라인 로딩 중...",
+      "statusUpdated": "상태 업데이트 완료",
+      "movedTo": "리드가 {{status}} 단계로 이동되었습니다",
+      "updateError": "상태 업데이트 실패. 복구 중...",
+      "loadError": "상태 세부 정보를 불러오지 못했습니다",
+      "updateSuccess": "리드가 성공적으로 업데이트되었습니다",
+      "updateFailed": "리드 업데이트에 실패했습니다",
+      "noteAdded": "인원이 성공적으로 추가되었습니다",
+      "noteFailed": "메모 추가에 실패했습니다",
+      "activityLogged": "활동이 기록되었습니다",
+      "activityRecorded": "{{type}} 활동이 기록되었습니다",
+      "direct": "직접",
+      "quickActionNote": "파이프라인 퀵 액션을 통해 {{type}} 시도됨",
+      "activityFailed": "활동 기록 실패"
+    },
+    "columns": {
+      "new": "신규 리드",
+      "contacted": "연락 완료",
+      "qualified": "검증된 리드",
+      "callback": "콜백 대기",
+      "followUp": "후속 조치",
+      "converted": "전환 완료",
+      "lost": "손실"
+    },
+    "modal": {
+      "close": "닫기",
+      "basicInfo": "기본 정보",
+      "fullName": "성함",
+      "email": "이메일 주소",
+      "phone": "전화번호",
+      "country": "국가",
+      "statusAssignment": "상태 및 배정",
+      "status": "상태",
+      "priority": "우선순위",
+      "additionalInfo": "추가 정보",
+      "age": "연령",
+      "salary": "급여 범위",
+      "industry": "직종",
+      "workTitle": "직함",
+      "ftdInfo": "FTD 정보",
+      "deposit": "입금액 ($)",
+      "paymentMethod": "결제 방식",
+      "paymentProvider": "결제 제공업체",
+      "convertedDate": "전환일",
+      "funnelName": "퍼널명",
+      "timeline": "활동 타임라인",
+      "noActivities": "기록된 활동이 없습니다",
+      "noDescription": "설명이 없습니다"
+    },
+    "ftdReport": {
+      "title": "FTD Report",
+      "subtitle": "First Time Deposit tracking from converted leads",
+      "totalFtd": "Total FTD",
+      "totalDeposits": "Total Deposits",
+      "avgFtdAmount": "Avg FTD Amount",
+      "activeAgents": "Active Agents",
+      "searchPlaceholder": "Search by name, email, or country...",
+      "allAgents": "All Agents",
+      "tableTitle": "First Time Deposits",
+      "leadName": "Lead Name",
+      "email": "Email",
+      "phone": "Phone",
+      "country": "Country",
+      "depositAmount": "Deposit Amount",
+      "convertedDate": "Converted Date",
+      "status": "Status",
+      "converted": "Converted",
+      "agent": "Agent",
+      "paymentMethod": "Payment Method",
+      "paymentProvider": "Payment Provider",
+      "source": "Source",
+      "affiliateId": "Affiliate ID",
+      "funnelName": "Funnel Name",
+      "ftdTime": "FTD Time",
+      "subParameters": "Sub Parameters",
+      "na": "N/A",
+      "unassigned": "Unassigned",
+      "loading": "Loading FTD data...",
+      "noData": "No first time deposits found.",
+      "showing": "Showing {{count}} First Time Deposits",
+      "loadError": "Failed to load FTD report data"
+    },
+    "crmCalendar": {
+      "title": "영업 캘린더",
+      "subtitle": "예정된 회의",
+      "scheduleMeeting": "회의 일정 잡기",
+      "searchPlaceholder": "회의, 고객 또는 상담원 검색...",
+      "allTypes": "모든 유형",
+      "call": "전화",
+      "meeting": "회의",
+      "other": "기타",
+      "allStatus": "모든 상태",
+      "scheduled": "예정됨",
+      "completed": "완료됨",
+      "cancelled": "취소됨",
+      "totalMeetings": "총 회의 수",
+      "today": "오늘",
+      "calls": "전화",
+      "meetings": "회의",
+      "calendarView": "캘린더 보기",
+      "listView": "목록 보기",
+      "todaysSchedule": "오늘의 일정",
+      "noMeetings": "예정된 회의가 없습니다",
+      "scheduleOneNow": "지금 일정 잡기",
+      "scheduleNewMeeting": "새 회의 일정 잡기",
+      "meetingTitle": "회의 제목",
+      "clientName": "고객 이름",
+      "date": "날짜",
+      "time": "시간",
+      "duration": "소요 시간(분)",
+      "type": "유형",
+      "cancel": "취소",
+      "loading": "일정을 불러오는 중...",
+      "errorRequiredFields": "모든 필수 항목을 입력해 주세요",
+      "successScheduled": "회의 일정이 성공적으로 잡혔습니다",
+      "dateTime": "날짜 및 시간",
+      "status": "상태",
+      "placeholderTitle": "예: 후속 전화",
+      "placeholderClient": "고객 이름 입력",
+      "weekdays": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      },
+      "moreCount": "+ {{count}} more",
+      "minShort": "min"
     }
   }
 }

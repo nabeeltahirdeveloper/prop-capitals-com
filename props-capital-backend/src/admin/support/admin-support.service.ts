@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { TicketStatus } from '@prisma/client';
 
@@ -46,11 +46,17 @@ export class AdminSupportService {
     const ticket = await this.prisma.supportTicket.findUnique({ where: { id } });
     if (!ticket) throw new NotFoundException('Support ticket not found');
 
-    const updateData: any = { status: status as TicketStatus };
+    const normalizedStatus = status?.toUpperCase();
+    if (!Object.values(TicketStatus).includes(normalizedStatus as TicketStatus)) {
+      throw new BadRequestException('Invalid ticket status');
+    }
+
+    const updateData: any = { status: normalizedStatus as TicketStatus };
 
     if (adminReply !== undefined && adminReply !== null) {
-      updateData.adminReply = adminReply;
-      updateData.repliedAt = new Date();
+      const trimmedReply = adminReply.trim();
+      updateData.adminReply = trimmedReply || null;
+      updateData.repliedAt = trimmedReply ? new Date() : null;
     }
 
     return this.prisma.supportTicket.update({

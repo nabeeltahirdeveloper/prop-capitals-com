@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Card } from '@/components/ui/card';
@@ -24,24 +24,19 @@ import {
   List,
   GripVertical,
   Phone,
-  MessageCircle,
   Mail,
   Globe,
   Eye,
   EyeOff,
   Calendar,
   ArrowRight,
-  X,
   Send,
-  CheckCircle2,
-  Clock,
   User,
   DollarSign,
   Building,
   Briefcase,
   TrendingUp,
   Check,
-  Edit,
   Upload,
   FileText,
   Loader2
@@ -129,40 +124,12 @@ export default function CRMLeads() {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [importing, setImporting] = useState(false);
-  const fileInputRef = React.useRef(null);
+  const fileInputRef = useRef(null);
   const fromDateRef = useRef(null);
   const toDateRef = useRef(null);
 
   // Fetch leads from backend
-  useEffect(() => {
-    fetchLeads();
-    fetchStats();
-  }, [activeStatusCard, fromDate, toDate]);
-
-  // Handle search with debounce
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      fetchLeads();
-    }, 500);
-    return () => clearTimeout(timeoutId);
-  }, [searchQuery]);
-
-
-  // Helper function to convert frontend status to backend enum value
-  const mapStatusToBackend = (status) => {
-    const statusMap = {
-      'new': 'NEW',
-      'contacted': 'CONTACTED',
-      'qualified': 'QUALIFIED',
-      'callback': 'CALLBACK',
-      'followup': 'FOLLOW_UP', // Map followup to FOLLOW_UP
-      'converted': 'CONVERTED',
-      'lost': 'LOST',
-    };
-    return statusMap[status.toLowerCase()] || status.toUpperCase();
-  };
-
-  const fetchLeads = async () => {
+  const fetchLeads = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
@@ -185,16 +152,16 @@ export default function CRMLeads() {
     } catch (error) {
       console.error('Error fetching leads:', error);
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to fetch leads',
+        title: t('common.error'),
+        description: error?.message || t('crm.leads.toast.fetchError'),
         variant: 'destructive',
       });
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeStatusCard, fromDate, toDate, searchQuery, t, toast]);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       const stats = await apiGet('/crm/leads/stats');
       setSummaryStats({
@@ -210,10 +177,42 @@ export default function CRMLeads() {
     } catch (error) {
       console.error('Error fetching stats:', error);
     }
+  }, []);
+
+  useEffect(() => {
+    fetchLeads();
+    fetchStats();
+  }, [fetchLeads, fetchStats]);
+
+  // Handle search with debounce
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchLeads();
+    }, 500);
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, fetchLeads]);
+
+
+  // Helper function to convert frontend status to backend enum value
+  const mapStatusToBackend = (status) => {
+    const statusMap = {
+      'new': 'NEW',
+      'contacted': 'CONTACTED',
+      'qualified': 'QUALIFIED',
+      'callback': 'CALLBACK',
+      'followup': 'FOLLOW_UP', // Map followup to FOLLOW_UP
+      'converted': 'CONVERTED',
+      'lost': 'LOST',
+    };
+    return statusMap[status.toLowerCase()] || status.toUpperCase();
   };
 
   // Filter leads (client-side filtering for search)
   const filteredLeads = leads.filter(lead => {
+    if (statusFilter !== 'all' && lead.status !== statusFilter) return false;
+    if (categoryFilter === 'source' && !lead.source) return false;
+    if (categoryFilter === 'agent' && (!lead.agent || lead.agent === '-')) return false;
+
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
     return lead.name.toLowerCase().includes(query) ||
@@ -250,8 +249,8 @@ export default function CRMLeads() {
     } catch (error) {
       console.error('Error fetching lead details:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to load lead details',
+        title: t('common.error'),
+        description: t('crm.leads.toast.loadError'),
         variant: 'destructive',
       });
     }
@@ -286,8 +285,8 @@ export default function CRMLeads() {
       await apiPatch(`/crm/leads/${selectedLead.id}`, updateData);
 
       toast({
-        title: 'Success',
-        description: 'Lead updated successfully',
+        title: t('common.success'),
+        description: t('crm.leads.toast.updateSuccess'),
       });
 
       // Refresh leads and close modal
@@ -297,8 +296,8 @@ export default function CRMLeads() {
     } catch (error) {
       console.error('Error updating lead:', error);
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to update lead',
+        title: t('common.error'),
+        description: error?.message || t('crm.leads.toast.updateError'),
         variant: 'destructive',
       });
     } finally {
@@ -320,8 +319,8 @@ export default function CRMLeads() {
       });
 
       toast({
-        title: 'Success',
-        description: `Activity logged: ${actionType}`,
+        title: t('common.success'),
+        description: t('crm.leads.toast.activityLogged', { type: actionType }),
       });
 
       // Refresh lead details
@@ -332,8 +331,8 @@ export default function CRMLeads() {
     } catch (error) {
       console.error('Error logging activity:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to log activity',
+        title: t('common.error'),
+        description: t('crm.leads.toast.activityError'),
         variant: 'destructive',
       });
     }
@@ -356,8 +355,8 @@ export default function CRMLeads() {
       });
 
       toast({
-        title: 'Success',
-        description: `Imported ${response.data.created} of ${response.data.total} leads`,
+        title: t('common.success'),
+        description: t('crm.leads.toast.importSuccess', { created: response.data.created, total: response.data.total }),
       });
 
       setIsImportModalOpen(false);
@@ -367,8 +366,8 @@ export default function CRMLeads() {
     } catch (error) {
       console.error('Error importing CSV:', error);
       toast({
-        title: 'Error',
-        description: error.message || 'Failed to import CSV',
+        title: t('common.error'),
+        description: error?.message || t('crm.leads.toast.importError'),
         variant: 'destructive',
       });
     } finally {
@@ -387,8 +386,8 @@ export default function CRMLeads() {
       });
 
       toast({
-        title: 'Success',
-        description: 'Note added successfully',
+        title: t('common.success'),
+        description: t('crm.leads.toast.noteAdded'),
       });
 
       setNewNote('');
@@ -399,8 +398,8 @@ export default function CRMLeads() {
     } catch (error) {
       console.error('Error adding note:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to add note',
+        title: t('common.error'),
+        description: t('crm.leads.toast.noteError'),
         variant: 'destructive',
       });
     }
@@ -437,14 +436,6 @@ export default function CRMLeads() {
     const cleaned = phone.replace(/\D/g, '');
     return '*******' + cleaned.slice(-4);
   };
-
-  // Mask email
-  const maskEmail = (email) => {
-    if (!email) return '';
-    const [name, domain] = email.split('@');
-    return name.slice(0, 3) + '*****@' + domain;
-  };
-
 
   return (
     <div className="space-y-6">
@@ -556,9 +547,7 @@ export default function CRMLeads() {
 
           <Select value={statusFilter} onValueChange={(value) => {
             setStatusFilter(value);
-            if (value !== 'all') {
-              setActiveStatusCard(value);
-            }
+            setActiveStatusCard(value === 'all' ? 'all' : value);
           }}>
             <SelectTrigger className="w-full sm:w-[150px] bg-muted border-border text-foreground">
               <SelectValue placeholder={t('crm.leads.allStatus')} />
@@ -1189,7 +1178,7 @@ export default function CRMLeads() {
                       placeholder={t('crm.leads.addNote')}
                       value={newNote}
                       onChange={(e) => setNewNote(e.target.value)}
-                      onKeyPress={(e) => {
+                      onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           handleAddNote();
                         }

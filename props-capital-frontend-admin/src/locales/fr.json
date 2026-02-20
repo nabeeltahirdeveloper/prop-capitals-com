@@ -3,7 +3,10 @@
     "loading": "Chargement...",
     "url": "URL",
     "dismiss": "Fermer",
-    "allPlatforms": "Toutes les plateformes"
+    "allPlatforms": "Toutes les plateformes",
+    "unknown": "Inconnu",
+    "error": "Erreur",
+    "success": "Succès"
   },
   "home": {
     "hero": {
@@ -1607,7 +1610,22 @@
         "inactive": "Inactif"
       },
       "noExpiry": "Sans expiration",
-      "emptyMessage": "Aucun coupon trouvé"
+      "emptyMessage": "Aucun coupon trouvé",
+      "messages": {
+        "copySuccess": "Coupon code copied",
+        "copyError": "Failed to copy coupon code",
+        "createSuccess": "Coupon created successfully",
+        "updateSuccess": "Coupon updated successfully",
+        "deleteSuccess": "Coupon deleted successfully",
+        "saveError": "Failed to save coupon",
+        "deleteError": "Failed to delete coupon"
+      },
+      "validation": {
+        "codeRequired": "Coupon code is required",
+        "discountRequired": "Discount value must be greater than 0",
+        "discountRangePercent": "Percentage discount cannot exceed 100",
+        "maxUsesInvalid": "Max uses must be at least 1"
+      }
     },
     "support": {
       "title": "Tickets de support",
@@ -1735,7 +1753,8 @@
         "payoutApproved": "Retrait approuvé",
         "payoutApprovedDesc": "Envoyé lorsqu’un retrait est approuvé",
         "editTemplate": "Modifier le modèle"
-      }
+      },
+      "saveError": "Failed to save settings"
     },
     "riskMonitor": {
       "title": "Surveillance des risques",
@@ -2984,7 +3003,19 @@
       "call": "Appel",
       "email": "Email",
       "whatsapp": "WhatsApp",
-      "telegram_activity": "Telegram"
+      "telegram_activity": "Telegram",
+      "toast": {
+        "fetchError": "Failed to fetch leads",
+        "loadError": "Failed to load lead details",
+        "updateSuccess": "Lead updated successfully",
+        "updateError": "Failed to update lead",
+        "activityLogged": "Activity logged: {{type}}",
+        "activityError": "Failed to log activity",
+        "importSuccess": "Imported {{created}} of {{total}} leads",
+        "importError": "Failed to import CSV",
+        "noteAdded": "Note added successfully",
+        "noteError": "Failed to add note"
+      }
     },
     "status": {
       "all": "Tous",
@@ -3017,6 +3048,141 @@
       "neteller": "Neteller",
       "binancePay": "Binance Pay",
       "coinbase": "Coinbase"
+    },
+    "pipeline": {
+      "title": "Pipeline des Ventes",
+      "subtitle": "Suivre et gérer les prospects par étapes",
+      "search": "Rechercher des prospects...",
+      "loading": "Chargement du Pipeline...",
+      "statusUpdated": "Statut Mis à Jour",
+      "movedTo": "Prospect déplacé vers {{status}}",
+      "updateError": "Échec de la mise à jour du statut. Annulation...",
+      "loadError": "Échec du chargement des détails",
+      "updateSuccess": "Prospect mis à jour avec succès",
+      "updateFailed": "Échec de la mise à jour du prospect",
+      "noteAdded": "Note ajoutée avec succès",
+      "noteFailed": "Échec de l'ajout de la note",
+      "activityLogged": "Activité Enregistrée",
+      "activityRecorded": "{{type}} enregistré",
+      "direct": "Direct",
+      "quickActionNote": "Tentative de {{type}} effectuée via les actions rapides du pipeline",
+      "activityFailed": "Échec de l'enregistrement de l'activité"
+    },
+    "columns": {
+      "new": "Nouveaux Prospects",
+      "contacted": "Contacté",
+      "qualified": "Qualifié",
+      "callback": "Rappel",
+      "followUp": "Suivi",
+      "converted": "Converti",
+      "lost": "Perdu"
+    },
+    "modal": {
+      "close": "Fermer",
+      "basicInfo": "Informations de Base",
+      "fullName": "Nom Complet",
+      "email": "Adresse E-mail",
+      "phone": "Numéro de Téléphone",
+      "country": "Pays",
+      "statusAssignment": "Statut et Affectation",
+      "status": "Statut",
+      "priority": "Priorité",
+      "additionalInfo": "Informations Complémentaires",
+      "age": "Âge",
+      "salary": "Tranche de Salaire",
+      "industry": "Secteur d'Activité",
+      "workTitle": "Poste",
+      "ftdInfo": "Informations FTD",
+      "deposit": "Montant du Dépôt ($)",
+      "paymentMethod": "Mode de Paiement",
+      "paymentProvider": "Fournisseur de Paiement",
+      "convertedDate": "Date de Conversion",
+      "funnelName": "Nom du Tunnel",
+      "timeline": "Chronologie de l'Activité",
+      "noActivities": "Aucune activité enregistrée",
+      "noDescription": "Aucune description fournie"
+    },
+    "ftdReport": {
+      "title": "FTD Report",
+      "subtitle": "First Time Deposit tracking from converted leads",
+      "totalFtd": "Total FTD",
+      "totalDeposits": "Total Deposits",
+      "avgFtdAmount": "Avg FTD Amount",
+      "activeAgents": "Active Agents",
+      "searchPlaceholder": "Search by name, email, or country...",
+      "allAgents": "All Agents",
+      "tableTitle": "First Time Deposits",
+      "leadName": "Lead Name",
+      "email": "Email",
+      "phone": "Phone",
+      "country": "Country",
+      "depositAmount": "Deposit Amount",
+      "convertedDate": "Converted Date",
+      "status": "Status",
+      "converted": "Converted",
+      "agent": "Agent",
+      "paymentMethod": "Payment Method",
+      "paymentProvider": "Payment Provider",
+      "source": "Source",
+      "affiliateId": "Affiliate ID",
+      "funnelName": "Funnel Name",
+      "ftdTime": "FTD Time",
+      "subParameters": "Sub Parameters",
+      "na": "N/A",
+      "unassigned": "Unassigned",
+      "loading": "Loading FTD data...",
+      "noData": "No first time deposits found.",
+      "showing": "Showing {{count}} First Time Deposits",
+      "loadError": "Failed to load FTD report data"
+    },
+    "crmCalendar": {
+      "title": "Calendrier des Ventes",
+      "subtitle": "Vos réunions planifiées",
+      "scheduleMeeting": "Planifier une Réunion",
+      "searchPlaceholder": "Rechercher des réunions, des clients ou des agents...",
+      "allTypes": "Tous les Types",
+      "call": "Appel",
+      "meeting": "Réunion",
+      "other": "Autre",
+      "allStatus": "Tous les Statuts",
+      "scheduled": "Planifié",
+      "completed": "Terminé",
+      "cancelled": "Annulé",
+      "totalMeetings": "Total des Réunions",
+      "today": "Aujourd'hui",
+      "calls": "Appels",
+      "meetings": "Réunions",
+      "calendarView": "Vue Calendrier",
+      "listView": "Vue Liste",
+      "todaysSchedule": "Programme d'Aujourd'hui",
+      "noMeetings": "Aucune réunion planifiée",
+      "scheduleOneNow": "En planifier une maintenant",
+      "scheduleNewMeeting": "Planifier une Nouvelle Réunion",
+      "meetingTitle": "Titre de la Réunion",
+      "clientName": "Nom du Client",
+      "date": "Date",
+      "time": "Heure",
+      "duration": "Durée (minutes)",
+      "type": "Type",
+      "cancel": "Annuler",
+      "loading": "Chargement de votre programme...",
+      "errorRequiredFields": "Veuillez remplir tous les champs obligatoires",
+      "successScheduled": "Réunion planifiée avec succès",
+      "dateTime": "Date & Heure",
+      "status": "Statut",
+      "placeholderTitle": "ex: Appel de suivi",
+      "placeholderClient": "Entrez le nom du client",
+      "weekdays": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      },
+      "moreCount": "+ {{count}} more",
+      "minShort": "min"
     }
   }
 }

@@ -3,7 +3,10 @@
     "loading": "Loading...",
     "dismiss": "Dismiss",
     "url": "URL",
-    "allPlatforms": "all platforms"
+    "allPlatforms": "all platforms",
+    "unknown": "Unknown",
+    "error": "Error",
+    "success": "Success"
   },
   "home": {
     "hero": {
@@ -1644,7 +1647,22 @@
         "inactive": "Inactive"
       },
       "noExpiry": "No expiry",
-      "emptyMessage": "No coupons found"
+      "emptyMessage": "No coupons found",
+      "messages": {
+        "copySuccess": "Coupon code copied",
+        "copyError": "Failed to copy coupon code",
+        "createSuccess": "Coupon created successfully",
+        "updateSuccess": "Coupon updated successfully",
+        "deleteSuccess": "Coupon deleted successfully",
+        "saveError": "Failed to save coupon",
+        "deleteError": "Failed to delete coupon"
+      },
+      "validation": {
+        "codeRequired": "Coupon code is required",
+        "discountRequired": "Discount value must be greater than 0",
+        "discountRangePercent": "Percentage discount cannot exceed 100",
+        "maxUsesInvalid": "Max uses must be at least 1"
+      }
     },
     "support": {
       "title": "Support Tickets",
@@ -1776,7 +1794,8 @@
         "payoutApproved": "Payout Approved",
         "payoutApprovedDesc": "Sent when a payout is approved",
         "editTemplate": "Edit Template"
-      }
+      },
+      "saveError": "Failed to save settings"
     },
     "brokerServers": {
       "title": "Broker Servers",
@@ -2985,7 +3004,19 @@
       "call": "Call",
       "email": "Email",
       "whatsapp": "WhatsApp",
-      "telegram_activity": "Telegram"
+      "telegram_activity": "Telegram",
+      "toast": {
+        "fetchError": "Failed to fetch leads",
+        "loadError": "Failed to load lead details",
+        "updateSuccess": "Lead updated successfully",
+        "updateError": "Failed to update lead",
+        "activityLogged": "Activity logged: {{type}}",
+        "activityError": "Failed to log activity",
+        "importSuccess": "Imported {{created}} of {{total}} leads",
+        "importError": "Failed to import CSV",
+        "noteAdded": "Note added successfully",
+        "noteError": "Failed to add note"
+      }
     },
     "status": {
       "all": "All",
@@ -3018,6 +3049,141 @@
       "neteller": "Neteller",
       "binancePay": "Binance Pay",
       "coinbase": "Coinbase"
+    },
+    "pipeline": {
+      "title": "Sales Pipeline",
+      "subtitle": "Track and manage leads through stages",
+      "search": "Search leads...",
+      "loading": "Loading Pipeline...",
+      "statusUpdated": "Status Updated",
+      "movedTo": "Lead moved to {{status}}",
+      "updateError": "Failed to update lead status. Reverting...",
+      "loadError": "Failed to load lead details",
+      "updateSuccess": "Lead updated successfully",
+      "updateFailed": "Failed to update lead",
+      "noteAdded": "Note added successfully",
+      "noteFailed": "Failed to add note",
+      "activityLogged": "Activity Logged",
+      "activityRecorded": "{{type}} recorded",
+      "direct": "Direct",
+      "quickActionNote": "{{type}} attempt made via Pipeline Quick Actions",
+      "activityFailed": "Failed to log activity"
+    },
+    "columns": {
+      "new": "New Leads",
+      "contacted": "Contacted",
+      "qualified": "Qualified",
+      "callback": "Callback",
+      "followUp": "Follow Up",
+      "converted": "Converted",
+      "lost": "Lost"
+    },
+    "modal": {
+      "close": "Close",
+      "basicInfo": "Basic Information",
+      "fullName": "Full Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "country": "Country",
+      "statusAssignment": "Status & Assignment",
+      "status": "Status",
+      "priority": "Priority",
+      "additionalInfo": "Additional Information",
+      "age": "Age",
+      "salary": "Salary Range",
+      "industry": "Job Industry",
+      "workTitle": "Work Title",
+      "ftdInfo": "FTD Information",
+      "deposit": "Deposit Amount ($)",
+      "paymentMethod": "Payment Method",
+      "paymentProvider": "Payment Provider",
+      "convertedDate": "Converted Date",
+      "funnelName": "Funnel Name",
+      "timeline": "Activity Timeline",
+      "noActivities": "No activities recorded yet",
+      "noDescription": "No description provided"
+    },
+    "ftdReport": {
+      "title": "FTD Report",
+      "subtitle": "First Time Deposit tracking from converted leads",
+      "totalFtd": "Total FTD",
+      "totalDeposits": "Total Deposits",
+      "avgFtdAmount": "Avg FTD Amount",
+      "activeAgents": "Active Agents",
+      "searchPlaceholder": "Search by name, email, or country...",
+      "allAgents": "All Agents",
+      "tableTitle": "First Time Deposits",
+      "leadName": "Lead Name",
+      "email": "Email",
+      "phone": "Phone",
+      "country": "Country",
+      "depositAmount": "Deposit Amount",
+      "convertedDate": "Converted Date",
+      "status": "Status",
+      "converted": "Converted",
+      "agent": "Agent",
+      "paymentMethod": "Payment Method",
+      "paymentProvider": "Payment Provider",
+      "source": "Source",
+      "affiliateId": "Affiliate ID",
+      "funnelName": "Funnel Name",
+      "ftdTime": "FTD Time",
+      "subParameters": "Sub Parameters",
+      "na": "N/A",
+      "unassigned": "Unassigned",
+      "loading": "Loading FTD data...",
+      "noData": "No first time deposits found.",
+      "showing": "Showing {{count}} First Time Deposits",
+      "loadError": "Failed to load FTD report data"
+    },
+    "crmCalendar": {
+      "title": "Sales Calendar",
+      "subtitle": "Your scheduled meetings",
+      "scheduleMeeting": "Schedule Meeting",
+      "searchPlaceholder": "Search meetings, clients, or agents...",
+      "allTypes": "All Types",
+      "call": "Call",
+      "meeting": "Meeting",
+      "other": "Other",
+      "allStatus": "All Status",
+      "scheduled": "Scheduled",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "totalMeetings": "Total Meetings",
+      "today": "Today",
+      "calls": "Calls",
+      "meetings": "Meetings",
+      "calendarView": "Calendar View",
+      "listView": "List View",
+      "todaysSchedule": "Today's Schedule",
+      "noMeetings": "No meetings scheduled",
+      "scheduleOneNow": "Schedule one now",
+      "scheduleNewMeeting": "Schedule New Meeting",
+      "meetingTitle": "Meeting Title",
+      "clientName": "Client Name",
+      "date": "Date",
+      "time": "Time",
+      "duration": "Duration (minutes)",
+      "type": "Type",
+      "cancel": "Cancel",
+      "loading": "Loading your schedule...",
+      "errorRequiredFields": "Please fill in all required fields",
+      "successScheduled": "Meeting scheduled successfully",
+      "dateTime": "Date & Time",
+      "status": "Status",
+      "placeholderTitle": "e.g., Follow-up Call",
+      "placeholderClient": "Enter client name",
+      "weekdays": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      },
+      "moreCount": "+ {{count}} more",
+      "minShort": "min"
     }
   }
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminGetAllSettings, adminUpdateSettingsGroup } from "@/api/admin";
 import { useTranslation } from "../contexts/LanguageContext";
@@ -6,7 +6,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -14,8 +13,6 @@ import {
   Palette,
   CreditCard,
   Link,
-  Mail,
-  Shield,
   Save,
   CheckCircle,
   Loader2,
@@ -120,8 +117,8 @@ export default function AdminSettings() {
     },
     onError: (error) => {
       toast({
-        title: "Error",
-        description: error.message || "Failed to save settings",
+        title: t("common.error"),
+        description: error?.message || t("admin.settings.saveError"),
         variant: "destructive",
       });
     },

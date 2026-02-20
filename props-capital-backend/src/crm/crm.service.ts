@@ -486,8 +486,56 @@ export class CrmService {
     skip?: number;
     take?: number;
   }) {
+    const where = this.buildFtdWhere(filters);
+
+    return this.prisma.lead.findMany({
+      where,
+      skip: filters?.skip,
+      take: filters?.take,
+      orderBy: { convertedAt: 'desc' },
+    });
+  }
+
+  async getFtdStats(filters?: {
+    search?: string;
+    agent?: string;
+    fromDate?: string;
+    toDate?: string;
+  }) {
+    const where = this.buildFtdWhere(filters);
+
+    const ftdLeads = await this.prisma.lead.findMany({ where });
+
+    const totalFtd = ftdLeads.length;
+    const totalDeposits = ftdLeads.reduce(
+      (sum, lead) => sum + (lead.ftdAmount || 0),
+      0,
+    );
+    const avgFtdAmount = totalFtd > 0 ? totalDeposits / totalFtd : 0;
+
+    const activeAgents = new Set(
+      ftdLeads
+        .map((l) => l.assignedAgent)
+        .filter((a) => a !== null && a !== undefined && a !== ''),
+    ).size;
+
+    return {
+      totalFtd,
+      totalDeposits,
+      avgFtdAmount,
+      activeAgents,
+    };
+  }
+
+  private buildFtdWhere(filters?: {
+    search?: string;
+    agent?: string;
+    fromDate?: string;
+    toDate?: string;
+  }) {
     const where: any = {
       leadStatus: LeadStatus.CONVERTED,
+      ftdAmount: { gt: 0 },
     };
 
     if (filters?.search) {
@@ -523,69 +571,7 @@ export class CrmService {
       }
     }
 
-    return this.prisma.lead.findMany({
-      where,
-      skip: filters?.skip,
-      take: filters?.take,
-      orderBy: { convertedAt: 'desc' },
-    });
-  }
-
-  async getFtdStats(filters?: {
-    agent?: string;
-    fromDate?: string;
-    toDate?: string;
-  }) {
-    const where: any = {
-      leadStatus: LeadStatus.CONVERTED,
-    };
-
-    if (filters?.agent && filters.agent !== 'all') {
-      where.assignedAgent = filters.agent;
-    }
-
-    if (filters?.fromDate || filters?.toDate) {
-      where.convertedAt = {};
-      if (filters?.fromDate) {
-        const d = new Date(filters.fromDate);
-        if (
-          typeof filters.fromDate === 'string' &&
-          filters.fromDate.length <= 10
-        ) {
-          d.setHours(0, 0, 0, 0);
-        }
-        where.convertedAt.gte = d;
-      }
-      if (filters?.toDate) {
-        const d = new Date(filters.toDate);
-        if (typeof filters.toDate === 'string' && filters.toDate.length <= 10) {
-          d.setHours(23, 59, 59, 999);
-        }
-        where.convertedAt.lte = d;
-      }
-    }
-
-    const ftdLeads = await this.prisma.lead.findMany({ where });
-
-    const totalFtd = ftdLeads.length;
-    const totalDeposits = ftdLeads.reduce(
-      (sum, lead) => sum + (lead.ftdAmount || 0),
-      0,
-    );
-    const avgFtdAmount = totalFtd > 0 ? totalDeposits / totalFtd : 0;
-
-    const activeAgents = new Set(
-      ftdLeads
-        .map((l) => l.assignedAgent)
-        .filter((a) => a !== null && a !== undefined && a !== ''),
-    ).size;
-
-    return {
-      totalFtd,
-      totalDeposits,
-      avgFtdAmount,
-      activeAgents,
-    };
+    return where;
   }
 
   async getAllMeetings(filters?: {
@@ -639,24 +625,35 @@ export class CrmService {
     });
   }
 
-  async getMeetingStats(filters?: any) {
-    const allMeetings = await this.prisma.cRMMeeting.findMany();
+  async getMeetingStats() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
 
-    const todayMeetings = allMeetings.filter((m) => {
-      const d = new Date(m.startTime);
-      return d >= today && d < tomorrow;
-    });
+    const [totalMeetings, todayMeetings, calls, meetings] = await Promise.all([
+      this.prisma.cRMMeeting.count(),
+      this.prisma.cRMMeeting.count({
+        where: {
+          startTime: {
+            gte: today,
+            lt: tomorrow,
+          },
+        },
+      }),
+      this.prisma.cRMMeeting.count({
+        where: { type: { equals: 'Call', mode: 'insensitive' } },
+      }),
+      this.prisma.cRMMeeting.count({
+        where: { type: { equals: 'Meeting', mode: 'insensitive' } },
+      }),
+    ]);
 
     return {
-      totalMeetings: allMeetings.length,
-      today: todayMeetings.length,
-      calls: allMeetings.filter((m) => m.type?.toLowerCase() === 'call').length,
-      meetings: allMeetings.filter((m) => m.type?.toLowerCase() === 'meeting')
-        .length,
+      totalMeetings,
+      today: todayMeetings,
+      calls,
+      meetings,
     };
   }
 
