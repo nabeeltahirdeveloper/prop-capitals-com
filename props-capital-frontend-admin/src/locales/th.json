@@ -440,7 +440,14 @@
     "personal": "ข้อมูลส่วนตัว",
     "sec": "ความปลอดภัย",
     "verify": "ยืนยัน",
-    "notif": "แจ้งเตือน"
+    "notif": "การแจ้งเตือน",
+    "passwordChangedDesc": "อัปเดตรหัสผ่านของคุณสำเร็จแล้ว",
+    "passwordChangeFailed": "เปลี่ยนรหัสผ่านล้มเหลว",
+    "passwordChangeError": "เกิดข้อผิดพลาดขณะเปลี่ยนรหัสผ่านของคุณ",
+    "validationError": "ข้อผิดพลาดการตรวจสอบความถูกต้อง",
+    "notificationUpdateError": "อัปเดตการตั้งค่าการแจ้งเตือนล้มเหลว",
+    "notificationsUpdated": "อัปเดตการแจ้งเตือนแล้ว",
+    "notificationsUpdatedDesc": "บันทึกการตั้งค่าการแจ้งเตือนของคุณแล้ว"
   },
   "support": {
     "title": "ฝ่ายสนับสนุน",

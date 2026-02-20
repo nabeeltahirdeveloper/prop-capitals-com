@@ -18,6 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/use-toast";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -37,6 +38,7 @@ import {
 
 export default function AdminProfile() {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const [saved, setSaved] = useState(false);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
@@ -127,11 +129,19 @@ export default function AdminProfile() {
         newPassword: "",
         confirmPassword: "",
       });
-      alert(t("profile.passwordChanged") || "Password changed successfully");
+      toast({
+        title: t("profile.passwordChanged"),
+        description: t("profile.passwordChangedDesc"),
+        variant: "default",
+      });
     },
     onError: (error) => {
       console.error("Failed to change password:", error);
-      alert(error.response?.data?.message || "Failed to change password");
+      toast({
+        title: t("profile.passwordChangeFailed"),
+        description: error.response?.data?.message || t("profile.passwordChangeError"),
+        variant: "destructive",
+      });
     },
   });
 
@@ -140,6 +150,19 @@ export default function AdminProfile() {
     mutationFn: updateNotificationPreferences,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user", "me"] });
+      toast({
+        title: t("profile.notificationsUpdated"),
+        description: t("profile.notificationsUpdatedDesc"),
+        variant: "default",
+      });
+    },
+    onError: (error) => {
+      console.error("Failed to update notification preferences:", error);
+      toast({
+        title: t("profile.notificationUpdateFailed"),
+        description: t("profile.notificationUpdateError"),
+        variant: "destructive",
+      });
     },
   });
 
@@ -149,14 +172,19 @@ export default function AdminProfile() {
 
   const handlePasswordChange = () => {
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      alert(t("profile.passwordsDoNotMatch") || "Passwords do not match");
+      toast({
+        title: t("profile.validationError"),
+        description: t("profile.passwordsDoNotMatch"),
+        variant: "destructive",
+      });
       return;
     }
     if (passwordForm.newPassword.length < 8) {
-      alert(
-        t("profile.passwordTooShort") ||
-          "Password must be at least 8 characters"
-      );
+      toast({
+        title: t("profile.validationError"),
+        description: t("profile.passwordTooShort"),
+        variant: "destructive",
+      });
       return;
     }
     changePasswordMutation.mutate({
@@ -174,7 +202,7 @@ export default function AdminProfile() {
   if (isLoading) {
     return (
       <div className="max-w-4xl mx-auto flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -182,7 +210,7 @@ export default function AdminProfile() {
   if (error) {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg">
+        <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-lg">
           {t("profile.loadError")}
         </div>
       </div>
@@ -219,7 +247,7 @@ export default function AdminProfile() {
       {/* Profile Card */}
       <Card className="bg-card border-border p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-4 sm:gap-6 text-center sm:text-left">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#d97706] to-[#d97706] flex items-center justify-center text-white text-3xl font-bold flex-shrink-0">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground text-3xl font-bold flex-shrink-0">
             {initials}
           </div>
           <div className="min-w-0">
@@ -230,7 +258,7 @@ export default function AdminProfile() {
               {user?.email}
             </p>
             <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
-              <span className="px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium text-[#d97706] border border-amber-200">
+              <span className="px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium text-primary border border-primary/20">
                 {t("profile.admin")}
               </span>
             </div>
@@ -242,21 +270,21 @@ export default function AdminProfile() {
         <TabsList className="bg-muted border border-border h-auto p-1 grid grid-cols-1 sm:grid-cols-3 gap-1">
           <TabsTrigger
             value="personal"
-            className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-card text-muted-foreground data-[state=active]:text-foreground text-xs sm:text-sm"
+            className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm text-muted-foreground transition-all text-xs sm:text-sm"
           >
             <User className="w-4 h-4 mr-2 flex-shrink-0" />
             {t("profile.personalInfo")}
           </TabsTrigger>
           <TabsTrigger
             value="security"
-            className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-card text-muted-foreground data-[state=active]:text-foreground text-xs sm:text-sm"
+            className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm text-muted-foreground transition-all text-xs sm:text-sm"
           >
             <Shield className="w-4 h-4 mr-2 flex-shrink-0" />
             {t("profile.security")}
           </TabsTrigger>
           <TabsTrigger
             value="notifications"
-            className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-card text-muted-foreground data-[state=active]:text-foreground text-xs sm:text-sm"
+            className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm text-muted-foreground transition-all text-xs sm:text-sm"
           >
             <Bell className="w-4 h-4 mr-2 flex-shrink-0" />
             {t("profile.notifications")}
@@ -361,7 +389,7 @@ export default function AdminProfile() {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mt-6 sm:mt-8">
               <Button
                 onClick={handleSave}
-                className="bg-gradient-to-r from-[#d97706] to-[#d97706] hover:from-amber-600 hover:to-amber-600 h-10 sm:h-11 text-sm text-white"
+                className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/90 h-10 sm:h-11 text-sm text-primary-foreground"
                 disabled={updateProfileMutation.isPending}
               >
                 {updateProfileMutation.isPending ? (
@@ -377,7 +405,7 @@ export default function AdminProfile() {
                 )}
               </Button>
               {saved && (
-                <span className="text-amber-500 flex items-center justify-center gap-2 text-sm">
+                <span className="text-primary flex items-center justify-center gap-2 text-sm">
                   <CheckCircle className="w-4 h-4" />
                   {t("profile.changesSaved")}
                 </span>
@@ -529,7 +557,7 @@ export default function AdminProfile() {
                       </div>
                       <Button
                         onClick={handlePasswordChange}
-                        className="w-full bg-gradient-to-r from-[#d97706] to-[#d97706] hover:from-amber-600 hover:to-amber-600 text-white"
+                        className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/90 text-primary-foreground"
                         disabled={changePasswordMutation.isPending}
                       >
                         {changePasswordMutation.isPending ? (
@@ -597,8 +625,8 @@ export default function AdminProfile() {
                   <div
                     className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
                       notificationPrefs[item.key]
-                        ? "bg-amber-500"
-                        : "bg-slate-600"
+                        ? "bg-primary"
+                        : "bg-muted-foreground/30"
                     }`}
                     onClick={() => handleNotificationToggle(item.key)}
                   >

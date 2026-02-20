@@ -440,7 +440,14 @@
     "personal": "Personal",
     "sec": "Security",
     "verify": "Verify",
-    "notif": "Notifications"
+    "notif": "Notifications",
+    "passwordChangedDesc": "Your password has been successfully updated.",
+    "passwordChangeFailed": "Password Change Failed",
+    "passwordChangeError": "An error occurred while changing your password.",
+    "validationError": "Validation Error",
+    "notificationUpdateError": "Failed to update notification preferences.",
+    "notificationsUpdated": "Notifications Updated",
+    "notificationsUpdatedDesc": "Your notification preferences have been saved."
   },
   "support": {
     "title": "Support",

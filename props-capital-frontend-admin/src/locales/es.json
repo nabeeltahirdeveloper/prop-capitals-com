@@ -438,6 +438,13 @@
     "marketingEmails": "Correos de marketing",
     "marketingEmailsDesc": "Noticias, promociones y ofertas especiales",
     "notif": "Notifications",
+    "passwordChangedDesc": "Su contraseña ha sido actualizada exitosamente.",
+    "passwordChangeFailed": "Error al cambiar la contraseña",
+    "passwordChangeError": "Ocurrió un error al cambiar su contraseña.",
+    "validationError": "Error de validación",
+    "notificationUpdateError": "Error al actualizar las preferencias de notificación.",
+    "notificationsUpdated": "Notificaciones actualizadas",
+    "notificationsUpdatedDesc": "Sus preferencias de notificación han sido guardadas.",
     "personal": "Personal",
     "sec": "Security",
     "verify": "Verify"
