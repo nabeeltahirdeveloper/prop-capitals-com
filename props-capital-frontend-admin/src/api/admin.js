@@ -236,8 +236,12 @@ export const adminGetSupportStatistics = async () => {
   return apiGet("/admin/support/tickets/statistics");
 };
 
-export const adminUpdateTicketStatus = async (id, status) => {
-  return apiPatch(`/admin/support/tickets/${id}/status`, { status });
+export const adminUpdateTicketStatus = async (id, status, adminReply) => {
+  const body = { status };
+  if (adminReply !== undefined && adminReply !== null && adminReply.trim() !== '') {
+    body.adminReply = adminReply.trim();
+  }
+  return apiPatch(`/admin/support/tickets/${id}/status`, body);
 };
 
 // ============================================================================
