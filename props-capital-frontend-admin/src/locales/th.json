@@ -1643,14 +1643,25 @@
       },
       "actions": {
         "take": "รับ",
-        "resolve": "แก้ไข"
+        "resolve": "แก้ไข",
+        "close": "ปิด"
       },
       "dialog": {
         "from": "จาก",
+        "submitted": "ส่งแล้วเมื่อ",
+        "userMessage": "ข้อความจากผู้ใช้",
+        "previousReply": "การตอบกลับก่อนหน้าของผู้ดูแลระบบ",
+        "sendNewReply": "ส่งคำตอบใหม่",
         "writeResponse": "เขียนคำตอบของคุณ...",
         "close": "ปิด",
         "sending": "กำลังส่ง...",
         "sendAndResolve": "ส่งและแก้ไข"
+      },
+      "toast": {
+        "successTitle": "สำเร็จ",
+        "errorTitle": "ข้อผิดพลาด",
+        "replySent": "ส่งคำตอบและแก้ไขตั๋วแล้ว",
+        "statusUpdated": "อัปเดตสถานะตั๋วสำเร็จแล้ว"
       },
       "emptyMessage": "ไม่พบตั๋ว",
       "subjects": {

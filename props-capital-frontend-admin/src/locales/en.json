@@ -1650,6 +1650,7 @@
         "avgResponse": "Avg Response"
       },
       "searchPlaceholder": "Search by email or subject...",
+      "emptyMessage": "No tickets found",
       "filter": {
         "status": "Status",
         "allStatus": "All Status",
@@ -1680,22 +1681,25 @@
       },
       "actions": {
         "take": "Take",
-        "resolve": "Resolve"
+        "resolve": "Resolve",
+        "close": "Close"
       },
       "dialog": {
         "from": "From",
+        "submitted": "Submitted",
+        "userMessage": "User Message",
+        "previousReply": "Previous Admin Reply",
+        "sendNewReply": "Send New Reply",
         "writeResponse": "Write your response...",
         "close": "Close",
         "sending": "Sending...",
         "sendAndResolve": "Send & Resolve"
       },
-      "emptyMessage": "No tickets found",
-      "subjects": {
-        "unableToLoginMT5": "Unable to login to MT5",
-        "payoutRequestTakingTooLong": "Payout request taking too long",
-        "questionAboutScalingPlan": "Question about scaling plan",
-        "refundRequest": "Refund request",
-        "challengeRulesClarification": "Challenge rules clarification"
+      "toast": {
+        "successTitle": "Success",
+        "errorTitle": "Error",
+        "replySent": "Reply sent and ticket resolved.",
+        "statusUpdated": "Ticket status updated successfully."
       }
     },
     "settings": {

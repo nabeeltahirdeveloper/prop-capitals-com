@@ -1643,14 +1643,25 @@
       },
       "actions": {
         "take": "Asignarme",
-        "resolve": "Resolver"
+        "resolve": "Resolver",
+        "close": "Cerrar"
       },
       "dialog": {
         "from": "De",
+        "submitted": "Enviado",
+        "userMessage": "Mensaje del usuario",
+        "previousReply": "Respuesta previa del administrador",
+        "sendNewReply": "Enviar nueva respuesta",
         "writeResponse": "Escribe una respuesta...",
         "close": "Cerrar",
         "sending": "Enviando...",
         "sendAndResolve": "Enviar y resolver"
+      },
+      "toast": {
+        "successTitle": "Éxito",
+        "errorTitle": "Error",
+        "replySent": "Respuesta enviada y ticket resuelto.",
+        "statusUpdated": "Estado del ticket actualizado con éxito."
       },
       "emptyMessage": "No se encontraron tickets",
       "subjects": {
