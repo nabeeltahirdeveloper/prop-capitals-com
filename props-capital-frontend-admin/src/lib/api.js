@@ -1,8 +1,8 @@
-https://api-dev.prop-capitals.comimport axios from "axios";
+import axios from "axios";
 
 // Create axios instance with base URL from environment variable
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5002",
+  baseURL: import.meta.env.VITE_API_URL || "https://api-dev.prop-capitals.com",
 });
 
 // Request interceptor: automatically attach JWT token from localStorage

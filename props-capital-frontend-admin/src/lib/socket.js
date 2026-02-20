@@ -1,4 +1,4 @@
-https://api-dev.prop-capitals.comimport { io } from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 const getAuthToken = () => {
   return (
@@ -8,7 +8,7 @@ const getAuthToken = () => {
   );
 };
 
-const socket = io('http://localhost:5002/trading', {
+const socket = io('https://api-dev.prop-capitals.com/trading', {
   auth: {
     token: getAuthToken(),
   },
