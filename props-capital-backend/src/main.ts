@@ -26,7 +26,13 @@ async function bootstrap() {
     origin: true, // Allow all origins in development
     credentials: true,
   });
-  console.log('Server is running on port 5101');
-  await app.listen(process.env.PORT || 5101);
+
+  // Custom adapter — fixes socket.io /socket.io/ 404 error
+  // app.useWebSocketAdapter(new SocketIoAdapter(app));
+
+  const port = process.env.PORT || 5002;
+  await app.listen(port);
+  console.log(`✅ Server running on http://localhost:${port}`);
+  console.log(`✅ Socket.IO ready at ws://localhost:${port}`);
 }
 bootstrap();
