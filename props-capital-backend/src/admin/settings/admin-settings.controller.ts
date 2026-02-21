@@ -1,8 +1,12 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards } from '@nestjs/common';
 
 import { AdminSettingsService } from './admin-settings.service';
 
+import { JwtAuthGuard } from '../../auth/jwt.guard';
+import { AdminRoleGuard } from '../../auth/admin-role.guard';
+
 @Controller('admin/settings')
+@UseGuards(JwtAuthGuard, AdminRoleGuard)
 
 export class AdminSettingsController {
 
@@ -48,6 +52,14 @@ export class AdminSettingsController {
 
   }
 
+  @Patch('group/:group')
+
+  bulkUpdate(@Param('group') group: string, @Body() body: Record<string, any>) {
+
+    return this.settingsService.bulkUpdate(group, body);
+
+  }
+
   @Patch(':key')
 
   update(@Param('key') key: string, @Body() body: any) {
@@ -64,13 +76,7 @@ export class AdminSettingsController {
 
   }
 
-  @Patch('group/:group')
 
-  bulkUpdate(@Param('group') group: string, @Body() body: Record<string, any>) {
-
-    return this.settingsService.bulkUpdate(group, body);
-
-  }
 
 }
 

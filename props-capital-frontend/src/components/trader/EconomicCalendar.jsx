@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
 import EventDetailModal from './EventDetailModal';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://api-dev.prop-capitals.com';
 
 async function fetchCalendarMonth(monthYYYYMM) {
   const res = await fetch(`${API_BASE}/economic-calendar?month=${encodeURIComponent(monthYYYYMM)}`);

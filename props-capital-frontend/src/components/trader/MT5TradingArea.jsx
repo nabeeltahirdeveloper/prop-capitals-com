@@ -382,7 +382,7 @@ const MT5TradingArea = ({
     if (!selectedSymbol || !selectedTimeframe) return;
 
     const WEBSOCKET_URL =
-      import.meta.env.VITE_WEBSOCKET_URL || "http://localhost:5002";
+      import.meta.env.VITE_WEBSOCKET_URL || "https://api-dev.prop-capitals.com";
     const symbolStr = selectedSymbol.symbol || selectedSymbol;
     const timeframeStr = selectedTimeframe || "M1";
 
@@ -399,7 +399,7 @@ const MT5TradingArea = ({
     // Connect to candles WebSocket (root namespace)
     const socket = io(WEBSOCKET_URL, {
       auth: (cb) => cb({ token: getAuthToken() }),
-      transports: [ "polling", "websocket"],
+      transports: [ "websocket", "polling"],
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
@@ -420,31 +420,7 @@ const MT5TradingArea = ({
         reason,
       );
     });
-    console.error("HTTPS SOCKET", WEBSOCKET_URL, "socket status:", socket?.connected);
-    console.error("socket auth:", socket?.auth);
-    console.error("socket transport:", socket?.transport);
-    console.error("socket reconnection:", socket?.reconnection);
-    console.error("socket reconnectionDelay:", socket?.reconnectionDelay);
-    console.error("socket reconnectionDelayMax:", socket?.reconnectionDelayMax);
-    console.error("socket reconnectionAttempts:", socket?.reconnectionAttempts);
-    console.error("socket transports:", socket?.transports);
-    console.error("socket path:", socket?.path);
-    console.error("socket query:", socket?.query);
-    console.error("socket headers:", socket?.headers);
-    console.error("socket autoConnect:", socket?.autoConnect);
-    console.error("socket forceNew:", socket?.forceNew);
-    console.error("socket withCredentials:", socket?.withCredentials);
-    console.error("socket timeout:", socket?.timeout);
-    console.error("socket timeoutInterval:", socket?.timeoutInterval);
-    console.error("socket timeoutGracePeriod:", socket?.timeoutGracePeriod);
-    console.error("socket connected:", socket?.connected);
-    console.error("socket disconnected:", socket?.disconnected);
-    console.error("socket reconnecting:", socket?.reconnecting);
-    console.error("socket reconnectingAttempts:", socket?.reconnectingAttempts);
-    console.error("socket reconnectingDelay:", socket?.reconnectingDelay);
-    console.error("socket reconnectingDelayMax:", socket?.reconnectingDelayMax);
-    console.error("socket reconnectingAttempts:", socket?.reconnectingAttempts);
-    console.error("socket reconnectingDelay:", socket?.reconnectingDelay);
+    
     socket.on("connect_error", (error) => {
       console.error(
         "[MT5TradingArea] 🔌 Candles WebSocket connection error:",

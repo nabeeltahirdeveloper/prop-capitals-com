@@ -8,17 +8,34 @@ const getAuthToken = () => {
   );
 };
 
-const socket = io('http://localhost:5002/trading', {
-  auth: {
-    token: getAuthToken(),
-  },
-  autoConnect: true,
+const socket = io('https://api-dev.prop-capitals.com/trading', {
+  path: '/socket.io',
+  auth: (cb) => cb({ token: getAuthToken() }),
+  autoConnect: false,
   reconnection: true,
   reconnectionDelay: 1000,
   reconnectionDelayMax: 5000,
   reconnectionAttempts: 5,
   transports: ['websocket', 'polling'],
 });
+
+function tryConnect() {
+  if (getAuthToken() && !socket.connected) socket.connect();
+}
+if (typeof window !== 'undefined') {
+  tryConnect();
+  window.addEventListener('storage', (e) => {
+    if ((e.key === 'accessToken' || e.key === 'token') && e.newValue) tryConnect();
+  });
+}
+
+export function reconnectSocketWithToken() {
+  socket.auth = (cb) => cb({ token: getAuthToken() });
+  if (getAuthToken()) {
+    if (!socket.connected) socket.connect();
+    else socket.disconnect().connect();
+  }
+}
 
 socket.on('connect', () => {
   console.log('✅ Connected to trading WebSocket');

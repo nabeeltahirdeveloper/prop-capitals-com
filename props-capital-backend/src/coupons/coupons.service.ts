@@ -10,9 +10,11 @@ export class CouponsService {
       return { valid: false, message: 'Coupon code is required' };
     }
 
+    const normalizedCode = code.trim().toUpperCase();
+
     // Try uppercase first (new standard), then exact match for legacy coupons
     let coupon = await this.prisma.coupon.findUnique({
-      where: { code: code.toUpperCase() },
+      where: { code: normalizedCode },
     });
 
     // Fallback: try exact match for legacy coupons with mixed case
@@ -53,7 +55,7 @@ export class CouponsService {
 
   async getCouponByCode(code: string) {
     return this.prisma.coupon.findUnique({
-      where: { code: code.toUpperCase() },
+      where: { code: code.trim().toUpperCase() },
     });
   }
 }
