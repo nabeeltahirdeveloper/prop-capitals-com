@@ -74,37 +74,28 @@ export class CandlesGateway
   }
 
   async handleConnection(client: Socket, ...args: any[]) {
-    try {
-      const token = client.handshake.auth?.token || client.handshake.query?.token;
-
-      if (!token) {
-        this.logger.warn(`❌ Client ${client.id} connection rejected: No token provided`);
-        client.disconnect();
-        return;
+    // Candle data is public market data — no auth required.
+    // Optionally attach user identity if a valid JWT is provided, but never reject.
+    const token = client.handshake.auth?.token || client.handshake.query?.token;
+    if (token) {
+      try {
+        const payload = await this.jwtService.verifyAsync(token, {
+          secret: process.env.JWT_SECRET || 'your-secret-key-here',
+        });
+        const userId = payload.sub || payload.userId;
+        if (userId) {
+          client.data.userId = userId;
+          client.data.email = payload.email;
+        }
+      } catch {
+        // Invalid token — still allow connection, just don't attach user data
       }
-
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_SECRET || 'your-secret-key-here',
-      });
-
-      const userId = payload.sub || payload.userId;
-      if (!payload || !userId) {
-        this.logger.warn(`❌ Client ${client.id} connection rejected: Invalid token`);
-        client.disconnect();
-        return;
-      }
-
-      client.data.userId = userId;
-      client.data.email = payload.email;
-
-      // Initialize subscriptions map for this client
-      this.subscriptions.set(client.id, new Map());
-
-      this.logger.log(`✅ Client connected: ${client.id} (User: ${payload.email})`);
-    } catch (error) {
-      this.logger.error(`❌ Client ${client.id} connection error: ${error.message}`);
-      client.disconnect();
     }
+
+    // Initialize subscriptions map for this client
+    this.subscriptions.set(client.id, new Map());
+
+    this.logger.log(`✅ Candles client connected: ${client.id} (User: ${client.data.email ?? 'anonymous'})`);
   }
 
   handleDisconnect(client: Socket) {
