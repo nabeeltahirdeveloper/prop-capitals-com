@@ -9,7 +9,6 @@ import React, {
 import { usePrices } from "@/contexts/PriceContext";
 import { alignToTimeframe } from "@/utils/timeEngine";
 import { timeframeToSeconds } from "@/utils/candleEngine";
-import { io } from "socket.io-client";
 // import TopBar from '../trading/Topbar';
 // import LeftSidebar from '../trading/LeftSidebar';
 // import MarketExecutionModal from './MarketExecutionModal';
@@ -132,8 +131,7 @@ const MT5TradingArea = ({
     ? accountSummaryData.account.balance
     : selectedChallenge?.currentBalance || 0;
 
-  // WebSocket connection for real-time candle updates
-  const candlesSocketRef = useRef(null);
+  // Candle updates are handled internally by the SDK's ChartArea via socketService
 
   const { data: userAccounts } = useQuery({
     queryKey: ["userAccounts", user?.userId],
@@ -376,169 +374,6 @@ const MT5TradingArea = ({
     if (Number.isFinite(bidNum) && bidNum > 0) setRealTimeBidPrice(bidNum);
     if (Number.isFinite(askNum) && askNum > 0) setRealTimeAskPrice(askNum);
   }, [unifiedPrices, selectedSymbol]);
-
-  // WebSocket listener for real-time candle updates from backend
-  useEffect(() => {
-    if (!selectedSymbol || !selectedTimeframe) return;
-
-    const WEBSOCKET_URL =
-      import.meta.env.VITE_WEBSOCKET_URL || "https://api-dev.prop-capitals.com";
-    const symbolStr = selectedSymbol.symbol || selectedSymbol;
-    const timeframeStr = selectedTimeframe || "M1";
-
-    // Get auth token
-    const getAuthToken = () => {
-      return (
-        localStorage.getItem("token") ||
-        localStorage.getItem("accessToken") ||
-        localStorage.getItem("authToken") ||
-        localStorage.getItem("jwt_token")
-      );
-    };
-
-    // Connect to candles WebSocket (root namespace)
-    const socket = io(WEBSOCKET_URL, {
-      auth: (cb) => cb({ token: getAuthToken() }),
-      transports: [ "websocket", "polling"],
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      reconnectionAttempts: 10,
-    });
-
-    candlesSocketRef.current = socket;
-
-    socket.on("connect", () => {
-      console.log("[MT5TradingArea] ✅ Connected to candles WebSocket");
-      // Subscribe to candle updates for current symbol/timeframe
-      // Backend automatically sends updates based on client subscriptions
-    });
-
-    socket.on("disconnect", (reason) => {
-      console.log(
-        "[MT5TradingArea] ❌ Candles WebSocket disconnected:",
-        reason,
-      );
-    });
-    console.error("HTTPS SOCKET", WEBSOCKET_URL, "socket status:", socket?.connected);
-    console.error("socket auth:", socket?.auth);
-    console.error("socket transport:", socket?.transport);
-    console.error("socket reconnection:", socket?.reconnection);
-    console.error("socket reconnectionDelay:", socket?.reconnectionDelay);
-    console.error("socket reconnectionDelayMax:", socket?.reconnectionDelayMax);
-    console.error("socket reconnectionAttempts:", socket?.reconnectionAttempts);
-    console.error("socket transports:", socket?.transports);
-    console.error("socket path:", socket?.path);
-    console.error("socket query:", socket?.query);
-    console.error("socket headers:", socket?.headers);
-    console.error("socket autoConnect:", socket?.autoConnect);
-    console.error("socket forceNew:", socket?.forceNew);
-    console.error("socket withCredentials:", socket?.withCredentials);
-    console.error("socket timeout:", socket?.timeout);
-    console.error("socket timeoutInterval:", socket?.timeoutInterval);
-    console.error("socket timeoutGracePeriod:", socket?.timeoutGracePeriod);
-    console.error("socket connected:", socket?.connected);
-    console.error("socket disconnected:", socket?.disconnected);
-    console.error("socket reconnecting:", socket?.reconnecting);
-    console.error("socket reconnectingAttempts:", socket?.reconnectingAttempts);
-    console.error("socket reconnectingDelay:", socket?.reconnectingDelay);
-    console.error("socket reconnectingDelayMax:", socket?.reconnectingDelayMax);
-    console.error("socket reconnectingAttempts:", socket?.reconnectingAttempts);
-    console.error("socket reconnectingDelay:", socket?.reconnectingDelay);
-    socket.on("connect_error", (error) => {
-      console.error(
-        "[MT5TradingArea] 🔌 Candles WebSocket connection error:",
-        error.message,
-        // socket URL
-        socket?.url,
-        socket?.auth,
-        socket?.transport,
-        socket?.reconnection,
-        socket?.reconnectionDelay,
-        socket?.reconnectionDelayMax,
-        socket?.reconnectionAttempts,
-        socket?.transports,
-        socket?.path,
-        socket?.query,
-        socket?.headers,
-        socket?.autoConnect,
-        socket?.forceNew,
-        socket?.withCredentials,
-        socket?.timeout,
-        socket?.timeoutInterval,
-        socket?.timeoutGracePeriod,
-      );
-    });
-
-    // Listen for candleUpdate events from backend
-    socket.on("candleUpdate", (data) => {
-      try {
-        // Backend sends: { symbol, timeframe, candle: { time, open, high, low, close, volume } }
-        if (!data || !data.candle || !data.symbol || !data.timeframe) {
-          console.warn("[MT5TradingArea] Invalid candleUpdate data:", data);
-          return;
-        }
-
-        // Check if this update is for current symbol/timeframe
-        const normalizedSymbol = (data.symbol || "")
-          .toUpperCase()
-          .replace(/[^A-Z0-9]/g, "");
-        const currentSymbolNormalized = (symbolStr || "")
-          .toUpperCase()
-          .replace(/[^A-Z0-9]/g, "");
-
-        if (
-          normalizedSymbol !== currentSymbolNormalized ||
-          data.timeframe !== timeframeStr
-        ) {
-          // Not for current symbol/timeframe, ignore
-          return;
-        }
-
-        const candle = data.candle;
-
-        // Convert time from milliseconds to seconds if needed (lightweight-charts uses seconds)
-        let candleTime = candle.time;
-        if (candleTime > 1e10) {
-          // Time is in milliseconds, convert to seconds
-          candleTime = Math.floor(candleTime / 1000);
-        }
-
-        // Update SDK Chart component with new candle
-        // Since SDK Chart is a black box, we need to check if SDK provides a method to update candles
-        // For now, we'll try to update through SDK's context if available
-        // If SDK Chart component has a ref method to update candles, we can use that
-
-        // Note: SDK Chart component should automatically update when candles are updated in SDK's context
-        // If SDK doesn't support this, we may need to manually update the chart through ref methods
-
-        console.log("[MT5TradingArea] 📊 Received candleUpdate:", {
-          symbol: data.symbol,
-          timeframe: data.timeframe,
-          candle: {
-            time: candleTime,
-            open: candle.open,
-            high: candle.high,
-            low: candle.low,
-            close: candle.close,
-          },
-        });
-
-        // TODO: Update SDK Chart component with this candle
-        // This depends on SDK's API - check SDK documentation for updateCandle or similar method
-        // For now, we'll log it and let SDK Chart handle it if it listens to WebSocket internally
-      } catch (error) {
-        console.error("[MT5TradingArea] Error processing candleUpdate:", error);
-      }
-    });
-
-    return () => {
-      if (socket && socket.connected) {
-        socket.disconnect();
-      }
-      candlesSocketRef.current = null;
-    };
-  }, [selectedSymbol, selectedTimeframe]);
 
   // Enrich selected symbol with real-time price data
   const enrichedSelectedSymbol =
