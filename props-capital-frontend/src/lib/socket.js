@@ -8,7 +8,7 @@ const getAuthToken = () => {
   );
 };
 
-const baseUrl = import.meta.env.VITE_WEBSOCKET_URL || 'https://api-dev.prop-capitals.com';
+const baseUrl = import.meta.env.VITE_WEBSOCKET_URL || 'http://localhost:5002';
 // Backend gateway is on namespace /trading – connect there with JWT
 const socket = io(`${baseUrl}/trading`, {
   path: '/socket.io',

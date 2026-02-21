@@ -22,16 +22,20 @@ interface CandleSubscription {
  * Handles real-time candle updates for SDK
  * Root namespace (default - no namespace specified = root namespace)
  */
-@WebSocketGateway({
+@WebSocketGateway(0, {
+  // port 0 = attach to the same HTTP server (port 5002), not a standalone server on port 80
   cors: {
-    origin: true, // Allow all origins in development
-    credentials: true,
+    origin: true,
+    credentials: false, // false because client uses JWT in auth payload, not cookies
   },
-  // No namespace specified = root namespace (/)
-  // This is the default behavior for Socket.IO
+  // No namespace = root namespace (/)
 })
 export class CandlesGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, OnModuleDestroy
+  implements
+    OnGatewayInit,
+    OnGatewayConnection,
+    OnGatewayDisconnect,
+    OnModuleDestroy
 {
   @WebSocketServer()
   server: Server;
@@ -45,7 +49,10 @@ export class CandlesGateway
   private candleUpdateInterval: NodeJS.Timeout | null = null;
 
   // Track OHLC state per symbol+timeframe so WS candles have real bodies
-  private candleStateMap = new Map<string, { open: number; high: number; low: number; candleTime: number }>();
+  private candleStateMap = new Map<
+    string,
+    { open: number; high: number; low: number; candleTime: number }
+  >();
 
   constructor(
     private jwtService: JwtService,
@@ -56,12 +63,16 @@ export class CandlesGateway
   ) {
     this.logger.log('🔧 CandlesGateway constructor called');
     if (!this.marketDataService) {
-      this.logger.error('❌ MarketDataService is null! Dependency injection failed!');
+      this.logger.error(
+        '❌ MarketDataService is null! Dependency injection failed!',
+      );
     } else {
       this.logger.log('✅ MarketDataService injected successfully');
     }
     if (!this.pricesService) {
-      this.logger.error('❌ PricesService is null! Dependency injection failed!');
+      this.logger.error(
+        '❌ PricesService is null! Dependency injection failed!',
+      );
     } else {
       this.logger.log('✅ PricesService injected successfully');
     }
@@ -74,42 +85,39 @@ export class CandlesGateway
   }
 
   async handleConnection(client: Socket, ...args: any[]) {
-    try {
-      const token = client.handshake.auth?.token || client.handshake.query?.token;
+    // Allow all connections — candle data is public
+    // Initialize subscriptions map for this client immediately
+    this.subscriptions.set(client.id, new Map());
 
-      if (!token) {
-        this.logger.warn(`❌ Client ${client.id} connection rejected: No token provided`);
-        client.disconnect();
-        return;
+    const token =
+      client.handshake.auth?.token || client.handshake.query?.token;
+
+    if (token) {
+      try {
+        const payload = await this.jwtService.verifyAsync(token, {
+          secret: process.env.JWT_SECRET || 'your-secret-key-here',
+        });
+        const userId = payload.sub || payload.userId;
+        client.data.userId = userId;
+        client.data.email = payload.email;
+        this.logger.log(
+          `✅ Client connected: ${client.id} (User: ${payload.email})`,
+        );
+      } catch {
+        this.logger.warn(
+          `⚠️ Client ${client.id} connected with invalid/expired token`,
+        );
       }
-
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_SECRET || 'your-secret-key-here',
-      });
-
-      const userId = payload.sub || payload.userId;
-      if (!payload || !userId) {
-        this.logger.warn(`❌ Client ${client.id} connection rejected: Invalid token`);
-        client.disconnect();
-        return;
-      }
-
-      client.data.userId = userId;
-      client.data.email = payload.email;
-
-      // Initialize subscriptions map for this client
-      this.subscriptions.set(client.id, new Map());
-
-      this.logger.log(`✅ Client connected: ${client.id} (User: ${payload.email})`);
-    } catch (error) {
-      this.logger.error(`❌ Client ${client.id} connection error: ${error.message}`);
-      client.disconnect();
+    } else {
+      this.logger.log(`✅ Client connected: ${client.id} (unauthenticated)`);
     }
   }
 
   handleDisconnect(client: Socket) {
     const userId = client.data?.userId;
-    this.logger.log(`🔌 Client disconnected: ${client.id} (User: ${userId || 'unknown'})`);
+    this.logger.log(
+      `🔌 Client disconnected: ${client.id} (User: ${userId || 'unknown'})`,
+    );
 
     // Clean up subscriptions
     this.subscriptions.delete(client.id);
@@ -125,20 +133,27 @@ export class CandlesGateway
   ) {
     const { symbol, timeframe } = payload;
 
-    this.logger.log(`📡 [CANDLES] subscribeCandles received from ${client.id}:`, {
-      symbol,
-      timeframe,
-      payload,
-    });
+    this.logger.log(
+      `📡 [CANDLES] subscribeCandles received from ${client.id}:`,
+      {
+        symbol,
+        timeframe,
+        payload,
+      },
+    );
 
     if (!symbol || !timeframe) {
-      this.logger.warn(`⚠️ Client ${client.id} attempted to subscribe without symbol/timeframe`);
+      this.logger.warn(
+        `⚠️ Client ${client.id} attempted to subscribe without symbol/timeframe`,
+      );
       return;
     }
 
     let clientSubs = this.subscriptions.get(client.id);
     if (!clientSubs) {
-      this.logger.warn(`⚠️ Client ${client.id} subscriptions map not found - initializing...`);
+      this.logger.warn(
+        `⚠️ Client ${client.id} subscriptions map not found - initializing...`,
+      );
       // Initialize if missing (shouldn't happen, but safety check)
       clientSubs = new Map();
       this.subscriptions.set(client.id, clientSubs);
@@ -150,7 +165,9 @@ export class CandlesGateway
       timeframe,
     });
 
-    this.logger.log(`✅ [CANDLES] Client ${client.id} subscribed to candles: ${symbol}@${timeframe}`);
+    this.logger.log(
+      `✅ [CANDLES] Client ${client.id} subscribed to candles: ${symbol}@${timeframe}`,
+    );
 
     // Send confirmation
     client.emit('subscription:confirmed', {
@@ -182,7 +199,9 @@ export class CandlesGateway
     const key = `${symbol}_${timeframe}`;
     clientSubs.delete(key);
 
-    this.logger.log(`📡 Client ${client.id} unsubscribed from candles: ${symbol}@${timeframe}`);
+    this.logger.log(
+      `📡 Client ${client.id} unsubscribed from candles: ${symbol}@${timeframe}`,
+    );
   }
 
   /**
@@ -214,7 +233,9 @@ export class CandlesGateway
     let allPrices: any;
     try {
       allPrices = await this.pricesService.getAllPrices();
-      this.logger.debug(`📊 Got prices from /prices API: ${Object.keys(allPrices.forex || {}).length} forex, ${Object.keys(allPrices.crypto || {}).length} crypto`);
+      this.logger.debug(
+        `📊 Got prices from /prices API: ${Object.keys(allPrices.forex || {}).length} forex, ${Object.keys(allPrices.crypto || {}).length} crypto`,
+      );
     } catch (error) {
       this.logger.error(`❌ Error getting prices: ${error.message}`);
       return;
@@ -231,8 +252,12 @@ export class CandlesGateway
         // This ensures we always emit candles with current/future timestamps
         const promise = Promise.resolve()
           .then(() => {
-            const candle = this.buildCandleFromPrice(symbol, timeframe, allPrices);
-            
+            const candle = this.buildCandleFromPrice(
+              symbol,
+              timeframe,
+              allPrices,
+            );
+
             if (candle) {
               // Emit candle update to this client
               this.emitCandleUpdate(clientId, symbol, timeframe, candle);
@@ -257,13 +282,21 @@ export class CandlesGateway
   /**
    * Build candle from current price (fallback when no history available)
    */
-  private buildCandleFromPrice(symbol: string, timeframe: string, allPrices: any): any {
+  private buildCandleFromPrice(
+    symbol: string,
+    timeframe: string,
+    allPrices: any,
+  ): any {
     try {
       // Find price in forex or crypto arrays
       const forexPrice = allPrices.forex?.find((f: any) => f.symbol === symbol);
-      const cryptoPrice = allPrices.crypto?.find((c: any) => c.symbol === symbol);
-      const priceData = forexPrice || cryptoPrice;
-
+      const cryptoPrice = allPrices.crypto?.find(
+        (c: any) => c.symbol === symbol,
+      );
+      const metalsPrice = allPrices.metals?.find(
+        (m: any) => m.symbol === symbol,
+      );
+      const priceData = forexPrice || cryptoPrice || metalsPrice;
       if (!priceData) {
         this.logger.debug(`⚠️ No price data found for ${symbol} in prices API`);
         return null;
@@ -285,7 +318,12 @@ export class CandlesGateway
       const existing = this.candleStateMap.get(key);
       if (!existing || existing.candleTime !== candleTime) {
         // New candle period — reset state
-        this.candleStateMap.set(key, { open: price, high: price, low: price, candleTime });
+        this.candleStateMap.set(key, {
+          open: price,
+          high: price,
+          low: price,
+          candleTime,
+        });
       } else {
         // Same candle period — expand high/low
         existing.high = Math.max(existing.high, price);
@@ -302,7 +340,9 @@ export class CandlesGateway
         volume: 0,
       };
     } catch (error) {
-      this.logger.error(`❌ Error building candle from price for ${symbol}: ${error.message}`);
+      this.logger.error(
+        `❌ Error building candle from price for ${symbol}: ${error.message}`,
+      );
       return null;
     }
   }
@@ -312,15 +352,15 @@ export class CandlesGateway
    */
   private getCandleStartTime(timestamp: number, timeframe: string): number {
     const intervals = {
-      'M1': 60000,        // 1 minute
-      'M5': 300000,       // 5 minutes
-      'M15': 900000,      // 15 minutes
-      'M30': 1800000,     // 30 minutes
-      'H1': 3600000,      // 1 hour
-      'H4': 14400000,     // 4 hours
-      'D1': 86400000,     // 1 day
-      'W1': 604800000,    // 1 week
-      'MN': 2592000000,   // 30 days (approximate month)
+      M1: 60000, // 1 minute
+      M5: 300000, // 5 minutes
+      M15: 900000, // 15 minutes
+      M30: 1800000, // 30 minutes
+      H1: 3600000, // 1 hour
+      H4: 14400000, // 4 hours
+      D1: 86400000, // 1 day
+      W1: 604800000, // 1 week
+      MN: 2592000000, // 30 days (approximate month)
     };
 
     const interval = intervals[timeframe] || intervals['M1'];
@@ -334,11 +374,20 @@ export class CandlesGateway
     clientId: string,
     symbol: string,
     timeframe: string,
-    candle: { time: number; open: number; high: number; low: number; close: number; volume: number },
+    candle: {
+      time: number;
+      open: number;
+      high: number;
+      low: number;
+      close: number;
+      volume: number;
+    },
   ) {
     const client = this.server.sockets.sockets.get(clientId);
     if (!client || !client.connected) {
-      this.logger.debug(`⚠️ Client ${clientId} not connected, skipping candle emit`);
+      this.logger.debug(
+        `⚠️ Client ${clientId} not connected, skipping candle emit`,
+      );
       return;
     }
 
@@ -356,12 +405,15 @@ export class CandlesGateway
     };
 
     // Log every emit for debugging (can be reduced later)
-    this.logger.log(`📤 [CANDLES] Emitting candleUpdate to ${clientId}: ${symbol}@${timeframe}`, {
-      time: candle.time,
-      close: candle.close,
-      high: candle.high,
-      low: candle.low,
-    });
+    this.logger.log(
+      `📤 [CANDLES] Emitting candleUpdate to ${clientId}: ${symbol}@${timeframe}`,
+      {
+        time: candle.time,
+        close: candle.close,
+        high: candle.high,
+        low: candle.low,
+      },
+    );
 
     client.emit('candleUpdate', candleData);
   }

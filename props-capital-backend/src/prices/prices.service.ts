@@ -185,6 +185,22 @@ export class PricesService {
         change: 0,
       };
     });
+    // Metals Formatting (XAU/USD, XAG/USD)
+    const metalSymbols = ['XAU/USD', 'XAG/USD'];
+    const formattedMetals = metalSymbols
+      .map((symbol) => {
+        const price = this.massiveWebSocketService.getPrice(symbol);
+        if (!price) return null;
+        return {
+          symbol,
+          category: 'metals',
+          bid: price.bid,
+          ask: price.ask,
+          spread: symbol.includes('XAU') ? 0.5 : 0.03,
+          change: 0,
+        };
+      })
+      .filter(Boolean);
 
     // Crypto Formatting
     const formattedCrypto = Object.entries(cryptoPrices)
@@ -212,6 +228,7 @@ export class PricesService {
     return {
       forex: formattedForex,
       crypto: formattedCrypto,
+      metals: formattedMetals,
       timestamp: new Date().toISOString(),
     };
   }

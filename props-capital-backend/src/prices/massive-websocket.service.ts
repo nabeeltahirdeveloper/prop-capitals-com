@@ -323,8 +323,8 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
       this.massivePairs.forEach((symbol) => {
         const current = this.priceCache.get(symbol);
         if (current) {
-          // Random walk: +/- 0.05% movement
-          const changePercent = (Math.random() - 0.5) * 0.001;
+          // Random walk: +/- 1% movement for visible candle bodies
+          const changePercent = (Math.random() - 0.5) * 0.02;
           const newBid = current.bid * (1 + changePercent);
           const spread = symbol.includes('JPY')
             ? 0.02

@@ -135,6 +135,7 @@ const CommonTerminalWrapper = ({
   const selectedChallenge =
     selectedChallengeProp || selectedChallengeFromContext;
   const platformKey = String(selectedChallenge?.platform || "mt5").toLowerCase();
+  console.log(platformKey)
   const tradingEngine = useMemo(
     () => getTradingEngineForPlatform(platformKey),
     [platformKey],

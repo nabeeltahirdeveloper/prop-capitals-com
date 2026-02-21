@@ -9,6 +9,7 @@ import { TradingProvider } from "@nabeeltahirdeveloper/chart-sdk";
 
 const MT5Terminal = () => {
   const { selectedChallenge } = useChallenges();
+  console.log("Selected Challenge", selectedChallenge);
   // MT5 backend URL - use env variable for local testing
   const MT5_API_URL =
     import.meta.env.VITE_WEBSOCKET_URL || "https://api-dev.prop-capitals.com";
