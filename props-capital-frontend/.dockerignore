@@ -1,0 +1,25 @@
+# Dependencies — installed fresh inside the image
+node_modules
+
+# Build output — generated inside the image
+dist
+
+# Environment files — VITE vars are injected as build ARGs, not .env files
+.env
+.env.*
+.env.local
+.env.*.local
+
+# IDE / OS noise
+.vscode
+.idea
+.DS_Store
+*.log
+
+# Git
+.git
+.gitignore
+
+# Docker files
+Dockerfile
+.dockerignore

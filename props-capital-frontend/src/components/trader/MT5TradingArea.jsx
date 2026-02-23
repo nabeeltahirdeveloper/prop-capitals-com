@@ -425,24 +425,6 @@ const MT5TradingArea = ({
       console.error(
         "[MT5TradingArea] 🔌 Candles WebSocket connection error:",
         error.message,
-        // socket URL
-        socket?.url,
-        socket?.auth,
-        socket?.transport,
-        socket?.reconnection,
-        socket?.reconnectionDelay,
-        socket?.reconnectionDelayMax,
-        socket?.reconnectionAttempts,
-        socket?.transports,
-        socket?.path,
-        socket?.query,
-        socket?.headers,
-        socket?.autoConnect,
-        socket?.forceNew,
-        socket?.withCredentials,
-        socket?.timeout,
-        socket?.timeoutInterval,
-        socket?.timeoutGracePeriod,
       );
     });
 

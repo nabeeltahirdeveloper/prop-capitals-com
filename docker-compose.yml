@@ -1,0 +1,122 @@
+# ═════════════════════════════════════════════════════════════════════════════
+#  Props Capital — Docker Compose
+#
+#  Services
+#  ─────────
+#  backend   NestJS API           → http://localhost:5101
+#  frontend  React trader app     → http://localhost:3000
+#  admin     React admin panel    → http://localhost:3001
+#
+#  Quick start
+#  ───────────
+#  1. cp .env.example .env          ← fill in your secrets
+#  2. docker compose up --build     ← first run (builds all images)
+#  3. docker compose up             ← subsequent runs (fast, no rebuild)
+#
+#  Rebuild a single service after code changes
+#  ────────────────────────────────────────────
+#  docker compose up --build backend
+#
+#  View logs
+#  ─────────
+#  docker compose logs -f backend
+#  docker compose logs -f frontend
+#  docker compose logs -f admin
+#
+#  NOTE: VITE_* variables are baked into the JS bundle at BUILD time.
+#  If you change them you must rebuild the frontend images:
+#    docker compose up --build frontend admin
+# ═════════════════════════════════════════════════════════════════════════════
+
+services:
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Backend — NestJS + Prisma
+  # ──────────────────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./props-capital-backend
+      dockerfile: Dockerfile
+    container_name: props-capital-backend
+    restart: unless-stopped
+    ports:
+      - "${PORT:-5101}:5101"
+    environment:
+      # ── Database ────────────────────────────────────────────────────────────
+      DATABASE_URL:         ${DATABASE_URL}
+      # ── Auth ────────────────────────────────────────────────────────────────
+      JWT_SECRET:           ${JWT_SECRET}
+      JWT_EXPIRES_IN:       ${JWT_EXPIRES_IN:-1d}
+      # ── App ─────────────────────────────────────────────────────────────────
+      PORT:                 5101
+      NODE_ENV:             ${NODE_ENV:-production}
+      # ── Email (SendGrid) ────────────────────────────────────────────────────
+      SENDGRID_API_KEY:     ${SENDGRID_API_KEY}
+      SENDGRID_FROM:        ${SENDGRID_FROM}
+      EMAIL_ENABLED:        ${EMAIL_ENABLED:-true}
+      EMAIL_TIMEOUT_MS:     ${EMAIL_TIMEOUT_MS:-10000}
+      DISABLE_EMAIL:        ${DISABLE_EMAIL:-false}
+      # ── Market data ─────────────────────────────────────────────────────────
+      TWELVE_DATA_API_KEY:  ${TWELVE_DATA_API_KEY}
+      MASSIVE_API_KEY:      ${MASSIVE_API_KEY}
+      MASSIVE_WS_URL:       ${MASSIVE_WS_URL:-wss://socket.massive.com/forex}
+      # ── AI ──────────────────────────────────────────────────────────────────
+      OPENAI_API_KEY:       ${OPENAI_API_KEY}
+    healthcheck:
+      # Pings the NestJS root to confirm the process is up and accepting traffic
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:5101 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - props-capital-network
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Frontend — Vite/React served by Nginx
+  # ──────────────────────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./props-capital-frontend
+      dockerfile: Dockerfile
+      args:
+        # These become window.__env__ equivalents baked into the JS bundle.
+        # Change → rebuild: docker compose up --build frontend
+        VITE_API_URL:        ${VITE_API_URL:-http://localhost:5101}
+        VITE_WEBSOCKET_URL:  ${VITE_WEBSOCKET_URL:-http://localhost:5101}
+        VITE_MT5_API_URL:    ${VITE_MT5_API_URL:-http://localhost:5101}
+    container_name: props-capital-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - props-capital-network
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Admin — Vite/React served by Nginx
+  # ──────────────────────────────────────────────────────────────────────────
+  admin:
+    build:
+      context: ./props-capital-frontend-admin
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL:        ${VITE_API_URL:-http://localhost:5101}
+        VITE_WEBSOCKET_URL:  ${VITE_WEBSOCKET_URL:-http://localhost:5101}
+        VITE_MT5_API_URL:    ${VITE_MT5_API_URL:-http://localhost:5101}
+    container_name: props-capital-admin
+    restart: unless-stopped
+    ports:
+      - "3001:80"
+    depends_on:
+      - backend
+    networks:
+      - props-capital-network
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Shared bridge network — all services can reach each other by container name
+# ─────────────────────────────────────────────────────────────────────────────
+networks:
+  props-capital-network:
+    driver: bridge
