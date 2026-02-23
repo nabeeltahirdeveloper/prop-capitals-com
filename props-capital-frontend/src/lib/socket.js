@@ -1,62 +1,47 @@
-import { io } from 'socket.io-client';
+import { io } from "socket.io-client";
+import { baseSocketOptions, getAuthToken, getRealtimeBaseUrl } from "@/lib/realtime";
 
-const getAuthToken = () => {
-  return (
-    localStorage.getItem('token') ||
-    localStorage.getItem('accessToken') ||
-    localStorage.getItem('jwt_token')
-  );
-};
+const baseUrl = getRealtimeBaseUrl();
 
-const baseUrl = import.meta.env.VITE_WEBSOCKET_URL || 'https://dev-api.prop-capitals.com';
-// Backend gateway is on namespace /trading – connect there with JWT
+// Trading events gateway namespace
 const socket = io(`${baseUrl}/trading`, {
-  path: '/socket.io',
+  ...baseSocketOptions,
   auth: (cb) => cb({ token: getAuthToken() }),
   autoConnect: false,
-  reconnection: true,
-  reconnectionDelay: 1000,
-  reconnectionDelayMax: 5000,
   reconnectionAttempts: 10,
-  transports: ['websocket', 'polling'],
 });
 
-// Connect only when token exists (avoids "Invalid token" before login)
 function tryConnect() {
   if (getAuthToken() && !socket.connected) socket.connect();
 }
-if (typeof window !== 'undefined') {
+
+if (typeof window !== "undefined") {
   tryConnect();
-  window.addEventListener('storage', (e) => {
-    if (e.key === 'token' && e.newValue) tryConnect();
+  window.addEventListener("storage", (e) => {
+    if (["token", "accessToken", "authToken", "jwt_token"].includes(e.key) && e.newValue) {
+      tryConnect();
+    }
   });
 }
 
 export function reconnectSocketWithToken() {
   socket.auth = (cb) => cb({ token: getAuthToken() });
-  if (getAuthToken()) {
-    if (!socket.connected) socket.connect();
-    else socket.disconnect().connect();
-  }
+  if (!getAuthToken()) return;
+  if (!socket.connected) socket.connect();
+  else socket.disconnect().connect();
 }
 
-socket.on('connect', () => {
-  console.log('✅ Connected to trading WebSocket');
-  console.log('📡 Socket ID:', socket.id);
+socket.on("connect", () => {
+  console.log("[socket] connected to /trading:", socket.id);
 });
 
-socket.on('disconnect', (reason) => {
-  console.log('❌ Disconnected:', reason);
+socket.on("disconnect", (reason) => {
+  console.log("[socket] disconnected:", reason);
 });
 
-socket.on('connect_error', (error) => {
-  console.error('🔌 Connection error:', error.message);
-  const token = getAuthToken();
-  if (!token) {
-    console.error('❌ No token found - make sure you are logged in');
-  }
+socket.on("connect_error", (error) => {
+  console.error("[socket] connection error:", error.message);
 });
 
-// ✅ ONLY default export (no named export)
 export default socket;
 export { socket };

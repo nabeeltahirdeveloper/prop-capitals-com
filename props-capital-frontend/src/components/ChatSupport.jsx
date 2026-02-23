@@ -25,7 +25,7 @@ const ChatSupport = () => {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  const BACKEND_URL = import.meta.env.VITE_API_URL || 'https://dev-api.prop-capitals.com';
+  const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
