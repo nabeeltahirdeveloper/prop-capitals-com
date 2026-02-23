@@ -263,6 +263,10 @@ const MT5TradingArea = ({
       );
     };
 
+    // #region agent log
+    const tokenForLog = getAuthToken();
+    fetch('http://127.0.0.1:7718/ingest/4d92c47f-44a6-4394-954a-da3f7a6d4e37', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'd59405' }, body: JSON.stringify({ sessionId: 'd59405', runId: 'run1', hypothesisId: 'H4', location: 'MT5TradingArea.jsx:candles-socket', message: 'MT5TradingArea connecting to candles', data: { url: WEBSOCKET_URL, hasToken: !!tokenForLog }, timestamp: Date.now() }) }).catch(() => {});
+    // #endregion
     // Connect to candles WebSocket (root namespace)
     const socket = io(WEBSOCKET_URL, {
       auth: (cb) => cb({ token: getAuthToken() }),

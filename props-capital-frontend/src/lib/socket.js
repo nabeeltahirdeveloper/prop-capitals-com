@@ -4,6 +4,7 @@ const getAuthToken = () => {
   return (
     localStorage.getItem('token') ||
     localStorage.getItem('accessToken') ||
+    localStorage.getItem('authToken') ||
     localStorage.getItem('jwt_token')
   );
 };

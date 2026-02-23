@@ -65,10 +65,8 @@ export class TradingEventsGateway
         return;
       }
 
-      // Verify JWT token (auth module uses sub for user id)
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_SECRET || 'your-secret-key-here',
-      });
+      // Verify JWT token (uses same JWT_SECRET as AuthModule via WebsocketModule)
+      const payload = await this.jwtService.verifyAsync(token);
 
       // JWT payload uses 'sub' for user ID (standard JWT claim)
       const userId = payload.sub || payload.userId;
