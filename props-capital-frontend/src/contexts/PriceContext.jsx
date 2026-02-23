@@ -10,12 +10,13 @@ import { getUnifiedPrices } from "@/api/market-data";
 import { io } from "socket.io-client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation } from "react-router-dom";
+import { baseSocketOptions, getAuthToken, getRealtimeBaseUrl } from "@/lib/realtime";
 
 // Create context with a default value to help with debugging
 const PriceContext = createContext(undefined);
 
-const WEBSOCKET_URL =
-  import.meta.env.VITE_WEBSOCKET_URL || "https://dev-api.prop-capitals.com";
+const WEBSOCKET_URL = getRealtimeBaseUrl();
+const ENABLE_FOREX_WS = import.meta.env.VITE_ENABLE_FOREX_WS === "true";
 
 // Unified price polling interval: 1000ms for smooth updates
 const POLL_INTERVAL = 1000;
@@ -285,6 +286,14 @@ export function PriceProvider({ children, currentPathname = null }) {
    * Only connects when on a page that requires prices
    */
   useEffect(() => {
+    if (!ENABLE_FOREX_WS) {
+      if (forexSocketRef.current) {
+        forexSocketRef.current.disconnect();
+        forexSocketRef.current = null;
+      }
+      return;
+    }
+
     const pathname = getCurrentPathname();
     const shouldConnect =
       authStatus === "authenticated" && isPriceRequiredPage(pathname);
@@ -308,16 +317,6 @@ export function PriceProvider({ children, currentPathname = null }) {
       return;
     }
 
-    const getAuthToken = () => {
-      try {
-        return (
-          localStorage.getItem("token") || localStorage.getItem("authToken")
-        );
-      } catch (error) {
-        return null;
-      }
-    };
-
     const token = getAuthToken();
     if (!token) {
       if (process.env.NODE_ENV !== "production") {
@@ -330,12 +329,9 @@ export function PriceProvider({ children, currentPathname = null }) {
 
     // Connect to forex prices WebSocket
     const socket = io(`${WEBSOCKET_URL}/forex-prices`, {
+      ...baseSocketOptions,
       auth: { token },
-      transports: ["websocket", "polling"],
-      reconnection: true,
       reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
     });
 
     forexSocketRef.current = socket;

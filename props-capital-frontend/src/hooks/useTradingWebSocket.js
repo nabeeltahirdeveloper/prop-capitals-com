@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { io, Socket } from "socket.io-client";
+import { io } from "socket.io-client";
+import { baseSocketOptions, getAuthToken, getRealtimeBaseUrl } from "@/lib/realtime";
 
-const WEBSOCKET_URL =
-  import.meta.env.VITE_WEBSOCKET_URL || "https://dev-api.prop-capitals.com";
+const WEBSOCKET_URL = getRealtimeBaseUrl();
 
 /**
  * Custom hook to manage WebSocket connection for trading events
@@ -19,26 +19,6 @@ export function useTradingWebSocket({
   const socketRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
   const subscribedAccountRef = useRef(null);
-
-  // Get auth token from localStorage
-  const getAuthToken = useCallback(() => {
-    try {
-      // Try 'accessToken' first (common), then 'token', then others
-      const token =
-        localStorage.getItem("accessToken") ||
-        localStorage.getItem("token") ||
-        localStorage.getItem("authToken") ||
-        localStorage.getItem("jwt_token");
-      if (!token) {
-        console.warn("[WebSocket] No auth token found in localStorage");
-        return null;
-      }
-      return token;
-    } catch (error) {
-      console.error("[WebSocket] Error getting auth token:", error);
-      return null;
-    }
-  }, []);
 
   // Connect to WebSocket server
   const connect = useCallback(() => {
@@ -57,12 +37,9 @@ export function useTradingWebSocket({
     setConnectionStatus("connecting");
 
     const socket = io(`${WEBSOCKET_URL}/trading`, {
+      ...baseSocketOptions,
       auth: { token },
-      transports: ["websocket", "polling"],
-      reconnection: true,
       reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
     });
 
     // Connection events
@@ -147,7 +124,7 @@ export function useTradingWebSocket({
     });
 
     socketRef.current = socket;
-  }, [getAuthToken, onPositionClosed, onAccountStatusChange, onAccountUpdate]);
+  }, [onPositionClosed, onAccountStatusChange, onAccountUpdate]);
 
   // Update subscribedAccountRef when accountId changes and handle subscription
   useEffect(() => {

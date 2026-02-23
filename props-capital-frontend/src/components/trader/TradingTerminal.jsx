@@ -5,13 +5,16 @@ import MT5TradingArea from "./MT5TradingArea";
 import BybitTerminal from "./BybitTerminal";
 import TradeLockerComingSoon from "./TradeLockerComingSoon";
 import PT5Terminal from "./PT5Terminal";
-import { TradingProvider } from "@nabeeltahirdeveloper/chart-sdk";
+import { TradingProvider, setSocketBaseUrl } from "@nabeeltahirdeveloper/chart-sdk";
+import { getRealtimeBaseUrl } from "@/lib/realtime";
 
 const MT5Terminal = () => {
   const { selectedChallenge } = useChallenges();
   // MT5 backend URL - use env variable for local testing
-  const MT5_API_URL =
-    import.meta.env.VITE_WEBSOCKET_URL || "https://dev-api.prop-capitals.com";
+  const MT5_API_URL = getRealtimeBaseUrl();
+  useEffect(() => {
+    setSocketBaseUrl(MT5_API_URL);
+  }, [MT5_API_URL]);
 
   const endpoints = {
     candles: "/market-data/history", // Historical candles endpoint

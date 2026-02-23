@@ -10,6 +10,7 @@ import { usePrices } from "@/contexts/PriceContext";
 import { alignToTimeframe } from "@/utils/timeEngine";
 import { timeframeToSeconds } from "@/utils/candleEngine";
 import { io } from "socket.io-client";
+import { baseSocketOptions, getAuthToken, getRealtimeBaseUrl } from "@/lib/realtime";
 // import TopBar from '../trading/Topbar';
 // import LeftSidebar from '../trading/LeftSidebar';
 // import MarketExecutionModal from './MarketExecutionModal';
@@ -248,28 +249,16 @@ const MT5TradingArea = ({
   useEffect(() => {
     if (!selectedSymbol || !selectedTimeframe) return;
 
-    const WEBSOCKET_URL =
-      import.meta.env.VITE_WEBSOCKET_URL || "https://dev-api.prop-capitals.com";
+    const WEBSOCKET_URL = getRealtimeBaseUrl();
     const symbolStr = selectedSymbol.symbol || selectedSymbol;
     const timeframeStr = selectedTimeframe || "M1";
-
-    // Get auth token
-    const getAuthToken = () => {
-      return (
-        localStorage.getItem("token") ||
-        localStorage.getItem("accessToken") ||
-        localStorage.getItem("authToken") ||
-        localStorage.getItem("jwt_token")
-      );
-    };
+    const token = getAuthToken();
+    if (!token) return;
 
     // Connect to candles WebSocket (root namespace)
     const socket = io(WEBSOCKET_URL, {
-      auth: (cb) => cb({ token: getAuthToken() }),
-      transports: ["websocket", "polling"],
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
+      ...baseSocketOptions,
+      auth: { token },
       reconnectionAttempts: 10,
     });
 
@@ -277,8 +266,10 @@ const MT5TradingArea = ({
 
     socket.on("connect", () => {
       console.log("[MT5TradingArea] ✅ Connected to candles WebSocket");
-      // Subscribe to candle updates for current symbol/timeframe
-      // Backend automatically sends updates based on client subscriptions
+      socket.emit("subscribeCandles", {
+        symbol: symbolStr,
+        timeframe: timeframeStr,
+      });
     });
 
     socket.on("disconnect", (reason) => {
@@ -359,6 +350,10 @@ const MT5TradingArea = ({
 
     return () => {
       if (socket && socket.connected) {
+        socket.emit("unsubscribeCandles", {
+          symbol: symbolStr,
+          timeframe: timeframeStr,
+        });
         socket.disconnect();
       }
       candlesSocketRef.current = null;
