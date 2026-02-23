@@ -399,7 +399,8 @@ const MT5TradingArea = ({
     // Connect to candles WebSocket (root namespace)
     const socket = io(WEBSOCKET_URL, {
       auth: (cb) => cb({ token: getAuthToken() }),
-      transports: [ "websocket", "polling"],
+      // polling-first: works through nginx proxies and Windows firewall
+      transports: ["polling", "websocket"],
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
@@ -410,9 +411,15 @@ const MT5TradingArea = ({
 
     socket.on("connect", () => {
       console.log("[MT5TradingArea] ✅ Connected to candles WebSocket");
-      // Subscribe to candle updates for current symbol/timeframe
-      // Backend automatically sends updates based on client subscriptions
+      // Subscribe to candle updates for the current symbol/timeframe
+      socket.emit("subscribeCandles", { symbol: symbolStr, timeframe: timeframeStr });
+      console.log(`[MT5TradingArea] 📡 Subscribed to candles: ${symbolStr}@${timeframeStr}`);
     });
+
+    // If already connected, subscribe immediately (symbol/timeframe change without reconnect)
+    if (socket.connected) {
+      socket.emit("subscribeCandles", { symbol: symbolStr, timeframe: timeframeStr });
+    }
 
     socket.on("disconnect", (reason) => {
       console.log(

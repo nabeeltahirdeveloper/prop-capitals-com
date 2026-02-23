@@ -1,226 +1,112 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { io, Socket } from "socket.io-client";
-
-const WEBSOCKET_URL =
-  import.meta.env.VITE_WEBSOCKET_URL || "https://api-dev.prop-capitals.com";
+import socket, { reconnectSocketWithToken } from "@/lib/socket";
 
 /**
- * Custom hook to manage WebSocket connection for trading events
- * Provides real-time updates for position closures and account status changes
+ * Custom hook to manage WebSocket connection for trading events.
+ * Uses the shared singleton socket from lib/socket.js to avoid duplicate connections.
  */
 export function useTradingWebSocket({
   accountId,
   onPositionClosed,
   onAccountStatusChange,
   onAccountUpdate,
-}) { // Updated hook signature
-  const [isConnected, setIsConnected] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState("disconnected"); // 'disconnected', 'connecting', 'connected', 'reconnecting'
-  const socketRef = useRef(null);
-  const reconnectTimeoutRef = useRef(null);
+}) {
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [connectionStatus, setConnectionStatus] = useState(
+    socket.connected ? "connected" : "disconnected"
+  );
   const subscribedAccountRef = useRef(null);
 
-  // Get auth token from localStorage
-  const getAuthToken = useCallback(() => {
-    try {
-      // Try 'accessToken' first (common), then 'token', then others
-      const token =
-        localStorage.getItem("accessToken") ||
-        localStorage.getItem("token") ||
-        localStorage.getItem("authToken") ||
-        localStorage.getItem("jwt_token");
-      if (!token) {
-        console.warn("[WebSocket] No auth token found in localStorage");
-        return null;
-      }
-      return token;
-    } catch (error) {
-      console.error("[WebSocket] Error getting auth token:", error);
-      return null;
-    }
-  }, []);
+  // Keep callback refs up to date without re-registering listeners on every render
+  const onPositionClosedRef = useRef(onPositionClosed);
+  const onAccountStatusChangeRef = useRef(onAccountStatusChange);
+  const onAccountUpdateRef = useRef(onAccountUpdate);
 
-  // Connect to WebSocket server
-  const connect = useCallback(() => {
-    const token = getAuthToken();
-    if (!token) {
-      console.warn("[WebSocket] Cannot connect without auth token");
-      return;
-    }
+  useEffect(() => { onPositionClosedRef.current = onPositionClosed; }, [onPositionClosed]);
+  useEffect(() => { onAccountStatusChangeRef.current = onAccountStatusChange; }, [onAccountStatusChange]);
+  useEffect(() => { onAccountUpdateRef.current = onAccountUpdate; }, [onAccountUpdate]);
 
-    if (socketRef.current?.connected) {
-      console.log("[WebSocket] Already connected");
-      return;
-    }
-
-    console.log("[WebSocket] Connecting to", WEBSOCKET_URL);
-    setConnectionStatus("connecting");
-
-    const socket = io(`${WEBSOCKET_URL}/trading`, {
-      auth: { token },
-      transports: ["websocket", "polling"],
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-    });
-
-    // Connection events
-    socket.on("connect", () => {
-      console.log("[WebSocket] Connected:", socket.id);
+  // Register listeners once on mount, clean up on unmount
+  useEffect(() => {
+    const onConnect = () => {
       setIsConnected(true);
       setConnectionStatus("connected");
-
-      // Subscribe to account updates if accountId is set
-      // Use subscribedAccountRef to get current accountId value
+      // Resubscribe to account after reconnect
       const currentAccountId = subscribedAccountRef.current;
-      if (currentAccountId && socket.connected) {
+      if (currentAccountId) {
         socket.emit("subscribe:account", { accountId: currentAccountId });
-        console.log("[WebSocket] Auto-subscribed to account on connect:", currentAccountId);
       }
-    });
+    };
 
-    socket.on("disconnect", (reason) => {
-      console.log("[WebSocket] Disconnected:", reason);
+    const onDisconnect = () => {
       setIsConnected(false);
       setConnectionStatus("disconnected");
-      // Don't clear subscribedAccountRef here - we want to resubscribe on reconnect
-    });
+    };
 
-    socket.on("connect_error", (error) => {
-      console.error("[WebSocket] Connection error:", error.message);
+    const onConnectError = () => {
       setIsConnected(false);
       setConnectionStatus("reconnecting");
-    });
+    };
 
-    socket.on("reconnect_attempt", (attemptNumber) => {
-      console.log(`[WebSocket] Reconnection attempt ${attemptNumber}`);
-      setConnectionStatus("reconnecting");
-    });
+    const onPositionClosedHandler = (event) => {
+      if (onPositionClosedRef.current) onPositionClosedRef.current(event);
+    };
 
-    socket.on("reconnect", (attemptNumber) => {
-      console.log(`[WebSocket] Reconnected after ${attemptNumber} attempts`);
+    const onAccountStatusChangedHandler = (event) => {
+      if (onAccountStatusChangeRef.current) onAccountStatusChangeRef.current(event);
+    };
+
+    const onAccountUpdateHandler = (event) => {
+      if (onAccountUpdateRef.current) onAccountUpdateRef.current(event);
+    };
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("connect_error", onConnectError);
+    socket.on("position:closed", onPositionClosedHandler);
+    socket.on("account:status-changed", onAccountStatusChangedHandler);
+    socket.on("account:update", onAccountUpdateHandler);
+
+    // Sync initial connected state
+    if (socket.connected) {
       setIsConnected(true);
       setConnectionStatus("connected");
+    }
 
-      // Resubscribe to account after reconnection
-      const currentAccountId = subscribedAccountRef.current;
-      if (currentAccountId && socketRef.current?.connected) {
-        socketRef.current.emit("subscribe:account", { accountId: currentAccountId });
-        console.log("[WebSocket] Resubscribed to account after reconnect:", currentAccountId);
-      }
-    });
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("connect_error", onConnectError);
+      socket.off("position:closed", onPositionClosedHandler);
+      socket.off("account:status-changed", onAccountStatusChangedHandler);
+      socket.off("account:update", onAccountUpdateHandler);
+    };
+  }, []); // Empty deps — listeners registered once, callbacks accessed via refs
 
-    socket.on("reconnect_failed", () => {
-      console.error("[WebSocket] Reconnection failed after all attempts");
-      setIsConnected(false);
-      setConnectionStatus("disconnected");
-    });
-
-    // Subscription confirmation
-    socket.on("subscription:confirmed", (data) => {
-      console.log("[WebSocket] Subscription confirmed:", data);
-    });
-
-    // Position closed event
-    socket.on("position:closed", (event) => {
-      console.log("[WebSocket] Position closed:", event);
-      if (onPositionClosed) {
-        onPositionClosed(event);
-      }
-    });
-
-    // Account status change event
-    socket.on("account:status-changed", (event) => {
-      console.log("[WebSocket] Account status changed:", event);
-      if (onAccountStatusChange) {
-        onAccountStatusChange(event);
-      }
-    });
-
-    // Account update event (for trading days, balance, equity)
-    socket.on("account:update", (event) => {
-      console.log("[WebSocket] Account update:", event);
-      if (onAccountUpdate) {
-        onAccountUpdate(event);
-      }
-    });
-
-    socketRef.current = socket;
-  }, [getAuthToken, onPositionClosed, onAccountStatusChange, onAccountUpdate]);
-
-  // Update subscribedAccountRef when accountId changes and handle subscription
+  // Handle account subscription when accountId changes
   useEffect(() => {
     if (!accountId) {
       subscribedAccountRef.current = null;
       return;
     }
 
-    // Update ref immediately so connect() can use it
     const prevAccountId = subscribedAccountRef.current;
     subscribedAccountRef.current = accountId;
 
-    // Only handle subscription if socket is connected
-    if (!socketRef.current?.connected) {
-      // Socket will auto-subscribe on connect using the ref
-      return;
-    }
+    if (!socket.connected) return; // Will auto-subscribe on connect via ref
 
-    // If already subscribed to this account, skip
-    if (prevAccountId === accountId) {
-      return;
-    }
+    if (prevAccountId === accountId) return;
 
-    // Unsubscribe from previous account
     if (prevAccountId) {
-      console.log(
-        "[WebSocket] Unsubscribing from account:",
-        prevAccountId
-      );
-      socketRef.current.emit("unsubscribe:account", {
-        accountId: prevAccountId,
-      });
+      socket.emit("unsubscribe:account", { accountId: prevAccountId });
     }
 
-    // Subscribe to new account
-    console.log("[WebSocket] Subscribing to account:", accountId);
-    socketRef.current.emit("subscribe:account", { accountId });
+    socket.emit("subscribe:account", { accountId });
   }, [accountId]);
 
-  // Initialize connection on mount
-  useEffect(() => {
-    connect();
-
-    // Cleanup on unmount
-    return () => {
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
-
-      if (socketRef.current) {
-        console.log("[WebSocket] Disconnecting");
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
-
-      subscribedAccountRef.current = null;
-      setIsConnected(false);
-      setConnectionStatus("disconnected");
-    };
-  }, [connect]); // Depend on connect to ensure latest version is used
-
-  // Manual reconnect function
   const reconnect = useCallback(() => {
-    if (socketRef.current) {
-      socketRef.current.disconnect();
-      socketRef.current = null;
-    }
-    connect();
-  }, [connect]);
+    reconnectSocketWithToken();
+  }, []);
 
-  return {
-    isConnected,
-    connectionStatus,
-    reconnect,
-  };
+  return { isConnected, connectionStatus, reconnect };
 }
