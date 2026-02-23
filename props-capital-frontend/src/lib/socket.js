@@ -18,7 +18,10 @@ const socket = io(`${baseUrl}/trading`, {
   reconnectionDelay: 1000,
   reconnectionDelayMax: 5000,
   reconnectionAttempts: 10,
-  transports: ['websocket', 'polling'],
+  // polling-first: establishes HTTP long-poll handshake, then upgrades to WS.
+  // This is required for nginx proxies (without ws headers) and Windows firewall.
+  // 'websocket' first skips the polling handshake and never falls back on failure.
+  transports: ['polling', 'websocket'],
 });
 
 // Connect only when token exists (avoids "Invalid token" before login)
