@@ -7,22 +7,27 @@ const getAuthToken = () => {
     localStorage.getItem('jwt_token')
   );
 };
+const ENABLE_TRADING_WS = import.meta.env.VITE_ENABLE_TRADING_WS === 'true';
 
-const baseUrl = import.meta.env.VITE_WEBSOCKET_URL || 'https://api-dev.prop-capitals.com';
+const baseUrl =
+  import.meta.env.VITE_WEBSOCKET_URL ||
+  import.meta.env.VITE_API_URL ||
+  'http://localhost:5002';
 // Backend gateway is on namespace /trading – connect there with JWT
 const socket = io(`${baseUrl}/trading`, {
   path: '/socket.io',
   auth: (cb) => cb({ token: getAuthToken() }),
   autoConnect: false,
-  reconnection: true,
+  reconnection: ENABLE_TRADING_WS,
   reconnectionDelay: 1000,
   reconnectionDelayMax: 5000,
   reconnectionAttempts: 10,
-  transports: ['websocket', 'polling'],
+  transports: ['polling', 'websocket'],
 });
 
 // Connect only when token exists (avoids "Invalid token" before login)
 function tryConnect() {
+  if (!ENABLE_TRADING_WS) return;
   if (getAuthToken() && !socket.connected) socket.connect();
 }
 if (typeof window !== 'undefined') {
@@ -33,6 +38,7 @@ if (typeof window !== 'undefined') {
 }
 
 export function reconnectSocketWithToken() {
+  if (!ENABLE_TRADING_WS) return;
   socket.auth = (cb) => cb({ token: getAuthToken() });
   if (getAuthToken()) {
     if (!socket.connected) socket.connect();

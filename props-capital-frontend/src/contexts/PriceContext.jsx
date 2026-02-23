@@ -15,7 +15,10 @@ import { useLocation } from "react-router-dom";
 const PriceContext = createContext(undefined);
 
 const WEBSOCKET_URL =
-  import.meta.env.VITE_WEBSOCKET_URL || "https://api-dev.prop-capitals.com";
+  import.meta.env.VITE_WEBSOCKET_URL ||
+  import.meta.env.VITE_API_URL ||
+  "http://localhost:5002";
+const ENABLE_FOREX_WS = import.meta.env.VITE_ENABLE_FOREX_WS === "true";
 
 // Unified price polling interval: 1000ms for smooth updates
 const POLL_INTERVAL = 1000;
@@ -287,7 +290,9 @@ export function PriceProvider({ children, currentPathname = null }) {
   useEffect(() => {
     const pathname = getCurrentPathname();
     const shouldConnect =
-      authStatus === "authenticated" && isPriceRequiredPage(pathname);
+      ENABLE_FOREX_WS &&
+      authStatus === "authenticated" &&
+      isPriceRequiredPage(pathname);
 
     if (!shouldConnect) {
       // Disconnect if we're not on a price-required page
@@ -331,7 +336,7 @@ export function PriceProvider({ children, currentPathname = null }) {
     // Connect to forex prices WebSocket
     const socket = io(`${WEBSOCKET_URL}/forex-prices`, {
       auth: { token },
-      transports: ["websocket", "polling"],
+      transports: ["polling", "websocket"],
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
