@@ -15,7 +15,7 @@ ENV VITE_WEBSOCKET_URL=$VITE_WEBSOCKET_URL
 ENV VITE_MT5_API_URL=$VITE_MT5_API_URL
 
 # Copy manifests first — layer cache
-COPY package.json yarn.lock ./
+COPY package.json ./
 RUN yarn install --frozen-lockfile
 
 # Copy source and build

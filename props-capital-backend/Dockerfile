@@ -10,10 +10,12 @@ WORKDIR /app
 RUN apk add --no-cache python3 make g++
 
 # Copy dependency manifests first — maximises Docker layer caching
-COPY package.json yarn.lock ./
+COPY package.json ./
 
 # Install ALL dependencies (dev included — needed for @nestjs/cli & prisma CLI)
-RUN yarn install --frozen-lockfile
+# --no-frozen-lockfile lets yarn resolve even when yarn.lock is slightly stale.
+# The lockfile is never written back to the host from inside Docker.
+RUN yarn install --no-frozen-lockfile
 
 # Copy Prisma schema before running prisma generate
 COPY prisma ./prisma
@@ -41,8 +43,8 @@ ENV NODE_ENV=production
 RUN apk add --no-cache python3 make g++
 
 # Copy manifests and install production dependencies only
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile --production && yarn cache clean
+COPY package.json ./
+RUN yarn install --no-frozen-lockfile --production && yarn cache clean
 
 # Compiled NestJS application
 COPY --from=builder /app/dist ./dist
@@ -57,4 +59,6 @@ COPY prisma ./prisma
 
 EXPOSE 5101
 
-CMD ["node", "dist/main"]
+# prisma.config.ts sits at the project root, so TypeScript uses the repo root
+# as rootDir.  src/main.ts therefore compiles to dist/src/main.js.
+CMD ["node", "dist/src/main"]

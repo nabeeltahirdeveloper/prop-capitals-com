@@ -1,8 +1,8 @@
 {
     "private": true,
     "workspaces": [
-      "props-capital-frontend",
+      "PROP/props-capital-frontend",
       "props-capital-frontend-admin",
-      "props-capital-backend"
+      "PROP/props-capital-backend"
     ]
   }
