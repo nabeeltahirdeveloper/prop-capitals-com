@@ -380,9 +380,12 @@ const MT5TradingArea = ({
   // WebSocket listener for real-time candle updates from backend
   useEffect(() => {
     if (!selectedSymbol || !selectedTimeframe) return;
+    if (import.meta.env.VITE_ENABLE_TRADING_WS !== "true") return;
 
     const WEBSOCKET_URL =
-      import.meta.env.VITE_WEBSOCKET_URL || "https://api-dev.prop-capitals.com";
+      import.meta.env.VITE_WEBSOCKET_URL ||
+      import.meta.env.VITE_API_URL ||
+      "http://localhost:5002";
     const symbolStr = selectedSymbol.symbol || selectedSymbol;
     const timeframeStr = selectedTimeframe || "M1";
 
@@ -399,7 +402,7 @@ const MT5TradingArea = ({
     // Connect to candles WebSocket (root namespace)
     const socket = io(WEBSOCKET_URL, {
       auth: (cb) => cb({ token: getAuthToken() }),
-      transports: [ "websocket", "polling"],
+      transports: ["polling", "websocket"],
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,

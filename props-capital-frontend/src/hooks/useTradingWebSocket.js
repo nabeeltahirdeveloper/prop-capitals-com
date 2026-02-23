@@ -2,7 +2,10 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { io, Socket } from "socket.io-client";
 
 const WEBSOCKET_URL =
-  import.meta.env.VITE_WEBSOCKET_URL || "https://api-dev.prop-capitals.com";
+  import.meta.env.VITE_WEBSOCKET_URL ||
+  import.meta.env.VITE_API_URL ||
+  "http://localhost:5002";
+const ENABLE_TRADING_WS = import.meta.env.VITE_ENABLE_TRADING_WS === "true";
 
 /**
  * Custom hook to manage WebSocket connection for trading events
@@ -42,6 +45,12 @@ export function useTradingWebSocket({
 
   // Connect to WebSocket server
   const connect = useCallback(() => {
+    if (!ENABLE_TRADING_WS) {
+      setIsConnected(false);
+      setConnectionStatus("disconnected");
+      return;
+    }
+
     const token = getAuthToken();
     if (!token) {
       console.warn("[WebSocket] Cannot connect without auth token");
@@ -58,7 +67,7 @@ export function useTradingWebSocket({
 
     const socket = io(`${WEBSOCKET_URL}/trading`, {
       auth: { token },
-      transports: ["websocket", "polling"],
+      transports: ["polling", "websocket"],
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
