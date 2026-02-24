@@ -302,7 +302,8 @@ const TraderPanelLayoutInner = () => {
               onClick={handleNavClick}
             >
               <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center text-[#0a0d12] font-black text-sm">
-                PC
+                <img src="/assets/images/logo-light.png" alt="Logo" className="block dark:hidden" />
+                <img src="/assets/images/logo-dark.png" alt="Logo Dark" className="hidden dark:block" />
               </div>
               {!sidebarCollapsed && (
                 <span

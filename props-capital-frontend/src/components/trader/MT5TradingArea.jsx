@@ -467,7 +467,10 @@ const MT5TradingArea = ({
     pricesRef.current[symbolName] = price;
   }, []);
 
-  const handleNewOrder = () => setShowBuySellPanel(true);
+  const handleNewOrder = () => {
+    setOrderType("BUY");
+    setIsOrderModalOpen(true);
+  };
   const handleToggleBuySell = () => setShowBuySellPanel((prev) => !prev);
 
   const handleZoomIn = () => {

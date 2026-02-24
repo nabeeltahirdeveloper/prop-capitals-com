@@ -85,31 +85,45 @@ export class CandlesGateway
   }
 
   async handleConnection(client: Socket, ...args: any[]) {
-    // Allow all connections — candle data is public
-    // Initialize subscriptions map for this client immediately
-    this.subscriptions.set(client.id, new Map());
+    try {
+      const token =
+        client.handshake.auth?.token || client.handshake.query?.token;
 
-    const token =
-      client.handshake.auth?.token || client.handshake.query?.token;
-
-    if (token) {
-      try {
-        const payload = await this.jwtService.verifyAsync(token, {
-          secret: process.env.JWT_SECRET || 'your-secret-key-here',
-        });
-        const userId = payload.sub || payload.userId;
-        client.data.userId = userId;
-        client.data.email = payload.email;
-        this.logger.log(
-          `✅ Client connected: ${client.id} (User: ${payload.email})`,
-        );
-      } catch {
+      if (!token) {
         this.logger.warn(
-          `⚠️ Client ${client.id} connected with invalid/expired token`,
+          `❌ Client ${client.id} connection rejected: No token provided`,
         );
+        client.disconnect();
+        return;
       }
-    } else {
-      this.logger.log(`✅ Client connected: ${client.id} (unauthenticated)`);
+
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: process.env.JWT_SECRET || 'your-secret-key-here',
+      });
+
+      const userId = payload.sub || payload.userId;
+      if (!payload || !userId) {
+        this.logger.warn(
+          `❌ Client ${client.id} connection rejected: Invalid token`,
+        );
+        client.disconnect();
+        return;
+      }
+
+      client.data.userId = userId;
+      client.data.email = payload.email;
+
+      // Initialize subscriptions map for this client
+      this.subscriptions.set(client.id, new Map());
+
+      this.logger.log(
+        `✅ Client connected: ${client.id} (User: ${payload.email})`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `❌ Client ${client.id} connection error: ${error.message}`,
+      );
+      client.disconnect();
     }
   }
 
@@ -234,7 +248,7 @@ export class CandlesGateway
     try {
       allPrices = await this.pricesService.getAllPrices();
       this.logger.debug(
-        `📊 Got prices from /prices API: ${Object.keys(allPrices.forex || {}).length} forex, ${Object.keys(allPrices.crypto || {}).length} crypto`,
+        `📊 Got prices from /prices API: ${(allPrices.forex || []).length} forex, ${(allPrices.crypto || []).length} crypto, ${(allPrices.metals || []).length} metals`,
       );
     } catch (error) {
       this.logger.error(`❌ Error getting prices: ${error.message}`);
@@ -288,15 +302,16 @@ export class CandlesGateway
     allPrices: any,
   ): any {
     try {
-      // Find price in forex or crypto arrays
+      // Find price in forex, crypto, or metals arrays
       const forexPrice = allPrices.forex?.find((f: any) => f.symbol === symbol);
       const cryptoPrice = allPrices.crypto?.find(
         (c: any) => c.symbol === symbol,
       );
-      const metalsPrice = allPrices.metals?.find(
+      const metalPrice = allPrices.metals?.find(
         (m: any) => m.symbol === symbol,
       );
-      const priceData = forexPrice || cryptoPrice || metalsPrice;
+      const priceData = forexPrice || cryptoPrice || metalPrice;
+
       if (!priceData) {
         this.logger.debug(`⚠️ No price data found for ${symbol} in prices API`);
         return null;
