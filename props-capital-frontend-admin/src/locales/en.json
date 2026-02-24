@@ -1200,8 +1200,9 @@
     "crm": "CRM",
     "crmLeads": "CRM Leads",
     "pipeline": "Pipeline",
-    "ftdReport": "FTD Report",
-    "calendar": "Calendar"
+    "ftdReport": "Orders Report",
+    "calendar": "Calendar",
+    "fundedAccounts": "Funded Accounts"
   },
   "status": {
     "active": "Active",
@@ -1384,6 +1385,7 @@
       },
       "table": {
         "account": "Account",
+        "trader": "Trader",
         "platform": "Platform",
         "balance": "Balance",
         "phase": "Phase",
@@ -1422,6 +1424,23 @@
         "noDetails": "No account details available"
       },
       "emptyMessage": "No accounts found"
+    },
+    "fundedAccounts": {
+      "title": "Funded Accounts",
+      "subtitle": "Overview of all funded trading accounts",
+      "stats": {
+        "totalFunded": "Total Funded Accounts",
+        "activeFunded": "Active Funded Accounts",
+        "totalCapital": "Total Allocated Capital",
+        "totalProfit": "Total Current Profit",
+        "totalPayouts": "Total Payouts"
+      },
+      "details": {
+        "profitSplitLabel": "Profit Split",
+        "totalPayoutsLabel": "Total Payouts",
+        "withdrawableProfitLabel": "Withdrawable Profit",
+        "lastPayoutDateLabel": "Last Payout Date"
+      }
     },
     "riskMonitor": {
       "title": "Risk Monitor",
@@ -1798,7 +1817,7 @@
       "saveError": "Failed to save settings"
     },
     "brokerServers": {
-      "title": "Broker Servers",
+      "title": "Prop Server",
       "subtitle": "Manage trading platform connections",
       "addServer": "Add Server",
       "adding": "Adding...",
@@ -3104,11 +3123,11 @@
       "noDescription": "No description provided"
     },
     "ftdReport": {
-      "title": "FTD Report",
-      "subtitle": "First Time Deposit tracking from converted leads",
+      "title": "Orders Report",
+      "subtitle": "Orders tracking from converted leads",
       "totalFtd": "Total FTD",
-      "totalDeposits": "Total Deposits",
-      "avgFtdAmount": "Avg FTD Amount",
+      "totalDeposits": "Total Orders",
+      "avgFtdAmount": "Avg Order Amount",
       "activeAgents": "Active Agents",
       "searchPlaceholder": "Search by name, email, or country...",
       "allAgents": "All Agents",
