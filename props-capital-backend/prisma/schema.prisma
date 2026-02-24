@@ -261,16 +261,18 @@ model Notification {
 }
 
 model SupportTicket {
-  id        String         @id @default(cuid())
-  userId    String
-  subject   String
-  message   String
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
-  category  TicketCategory @default(OTHER)
-  priority  TicketPriority @default(MEDIUM)
-  status    TicketStatus   @default(OPEN)
-  user      User           @relation(fields: [userId], references: [id])
+  id         String         @id @default(cuid())
+  userId     String
+  subject    String
+  message    String
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  category   TicketCategory @default(OTHER)
+  priority   TicketPriority @default(MEDIUM)
+  status     TicketStatus   @default(OPEN)
+  adminReply String?
+  repliedAt  DateTime?
+  user       User           @relation(fields: [userId], references: [id])
 }
 
 model BrokerServer {

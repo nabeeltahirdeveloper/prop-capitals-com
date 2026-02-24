@@ -85,11 +85,6 @@ export const TradingProvider = ({ children }) => {
 
   const socketRef = useRef(null);
 
-  // ✅ Price update batching refs (slowed down for MT5-like stability)
-  const pendingPriceRef = useRef(new Map()); // symbol -> latest update
-  const flushTimerRef = useRef(null);
-  const FLUSH_MS = 1000; // 1 second batching for natural, stable price updates (MT5-like)
-
   // Ref so fetchOrders can read current prices synchronously without adding symbols to its deps
   const symbolsRef = useRef([]);
   // Monotonically increasing counter — only the latest fetch call may write to state
@@ -169,7 +164,7 @@ export const TradingProvider = ({ children }) => {
 
           // Priority 1: calculate from current known prices (handles startup + reconnect)
           const symbolData = symbolsRef.current.find(
-            (s) => s.symbol === order.symbol
+            (s) => s.symbol === order.symbol,
           );
           if (symbolData) {
             const currentPrice =
@@ -322,13 +317,20 @@ export const TradingProvider = ({ children }) => {
         const fetchedSymbols = data?.prices ?? [];
         setSymbols(fetchedSymbols);
         if (fetchedSymbols.length > 0) {
-          const normalized = selectedSymbol.replace("/", "");
-          const exists = fetchedSymbols.find(
-            (s) =>
-              (s.symbol && s.symbol.replace("/", "") === normalized) ||
-              s.symbol === selectedSymbol,
+          // Don't auto-reset the symbol if the user has an explicit saved preference
+          // (BybitTerminal saves its symbol to bybit_selectedSymbol in localStorage)
+          const hasBybitSavedSymbol = !!localStorage.getItem(
+            "bybit_selectedSymbol",
           );
-          if (!exists) setSelectedSymbol(fetchedSymbols[0].symbol);
+          if (!hasBybitSavedSymbol) {
+            const normalized = selectedSymbol.replace("/", "");
+            const exists = fetchedSymbols.find(
+              (s) =>
+                (s.symbol && s.symbol.replace("/", "") === normalized) ||
+                s.symbol === selectedSymbol,
+            );
+            if (!exists) setSelectedSymbol(fetchedSymbols[0].symbol);
+          }
         }
       } catch (error) {
         console.error("❌ Error fetching symbols:", error?.message || error);
@@ -342,55 +344,6 @@ export const TradingProvider = ({ children }) => {
   }, []);
 
   // ---------------------------------------
-  // ✅ 500ms flush function (batch state updates)
-  // ---------------------------------------
-  const flushPriceUpdates = useCallback(() => {
-    const updatesMap = pendingPriceRef.current;
-    if (updatesMap.size === 0) return;
-
-    // clone & clear
-    const localUpdates = new Map(updatesMap);
-    updatesMap.clear();
-
-    // 1) update symbols ONCE
-    setSymbols((prev) =>
-      prev.map((s) => {
-        const u = localUpdates.get(s.symbol);
-        return u ? { ...s, ...u } : s;
-      }),
-    );
-
-    // 2) update orders profit ONCE
-    setOrders((prev) => {
-      let changed = false;
-
-      const next = prev.map((order) => {
-        // Only update real-time profit for open positions; closed orders have a fixed P/L from DB
-        if (order.status !== "OPEN") return order;
-
-        const u = localUpdates.get(order.symbol);
-        if (!u) return order;
-
-        const currentPrice =
-          order.type === "BUY"
-            ? parseFloat(u.bid || 0)
-            : parseFloat(u.ask || 0);
-
-        if (!currentPrice || isNaN(currentPrice) || currentPrice <= 0)
-          return order;
-
-        const newProfit = calculateRealTimeProfit(order, currentPrice);
-        if (newProfit === order.profit) return order;
-
-        changed = true;
-        return { ...order, profit: newProfit };
-      });
-
-      return changed ? next : prev;
-    });
-  }, [calculateRealTimeProfit]);
-
-  // ---------------------------------------
   // Socket.io price updates (batched)
   // ---------------------------------------
   useEffect(() => {
@@ -402,21 +355,6 @@ export const TradingProvider = ({ children }) => {
 
     const onConnect = () => console.log("✅ TradingContext: Connected");
     const onDisconnect = () => console.log("⚠️ TradingContext: Disconnected");
-
-    const onPriceUpdate = (updatedSymbol) => {
-      if (!updatedSymbol?.symbol) return;
-
-      // store latest update
-      pendingPriceRef.current.set(updatedSymbol.symbol, updatedSymbol);
-
-      // schedule flush every 500ms
-      if (!flushTimerRef.current) {
-        flushTimerRef.current = setTimeout(() => {
-          flushTimerRef.current = null;
-          flushPriceUpdates();
-        }, FLUSH_MS);
-      }
-    };
 
     // Backend emits "position:closed" (not "tradeClosed"). Normalize payload for one handler.
     const onTradeClosed = async (data) => {
@@ -487,7 +425,6 @@ export const TradingProvider = ({ children }) => {
 
     sock.on("connect", onConnect);
     sock.on("disconnect", onDisconnect);
-    sock.on("priceUpdate", onPriceUpdate);
     // Backend sends "position:closed"; listen for that so trade-closed events work
     sock.on("position:closed", onTradeClosed);
     // Backend sends "trade:executed" when a new position opens
@@ -496,19 +433,10 @@ export const TradingProvider = ({ children }) => {
     return () => {
       sock.off("connect", onConnect);
       sock.off("disconnect", onDisconnect);
-      sock.off("priceUpdate", onPriceUpdate);
       sock.off("position:closed", onTradeClosed);
       sock.off("trade:executed", onTradeExecuted);
-
-      // clear pending flush timer on unmount
-      if (flushTimerRef.current) {
-        clearTimeout(flushTimerRef.current);
-        flushTimerRef.current = null;
-      }
-
-      pendingPriceRef.current.clear();
     };
-  }, [flushPriceUpdates, fetchOrders, fetchUserBalance]);
+  }, [fetchOrders, fetchUserBalance]);
 
   // ---------------------------------------
   // Global theme (dark/light) applied to document root

@@ -65,6 +65,31 @@ function getLimitForTimeframe(timeframe, daysBack) {
   return Math.min(Math.max(needed, 500), 5000);
 }
 
+/**
+ * Extends a trend line beyond its drawn endpoints so it spans the full chart.
+ * Returns an array of {time, value} points from far-past to far-future.
+ * extensionFactor: how many times the drawn distance to extend on each side.
+ */
+const extendTrendLineData = (p1, p2, extensionFactor = 100) => {
+  const [start, end] = p1.time <= p2.time ? [p1, p2] : [p2, p1];
+  const timeDiff = end.time - start.time;
+  if (timeDiff === 0) {
+    return [{ time: start.time, value: start.price }];
+  }
+  const slope = (end.price - start.price) / timeDiff;
+  const leftTime = Math.max(
+    1,
+    Math.floor(start.time - extensionFactor * timeDiff),
+  );
+  const rightTime = Math.floor(end.time + extensionFactor * timeDiff);
+  return [
+    { time: leftTime, value: start.price + slope * (leftTime - start.time) },
+    { time: start.time, value: start.price },
+    { time: end.time, value: end.price },
+    { time: rightTime, value: end.price + slope * (rightTime - end.time) },
+  ];
+};
+
 // Professional Data Validation Utility
 // Ensures array is strictly ascending by time with unique times
 // Uses last-wins merge (forex: latest close should win)
@@ -389,6 +414,10 @@ const ChartArea = forwardRef(function ChartArea(
           // Ignore if range becomes invalid
         }
       },
+      fitContent: () => {
+        const timeScale = chartRef.current?.timeScale();
+        if (timeScale) timeScale.fitContent();
+      },
       downloadChartAsPNG: () => {
         const container = containerRef.current;
         if (!container) {
@@ -452,6 +481,7 @@ const ChartArea = forwardRef(function ChartArea(
           });
       },
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [selectedSymbol, selectedTimeframe, isDark],
   );
 
@@ -461,6 +491,7 @@ const ChartArea = forwardRef(function ChartArea(
       return prepareCandlesForSetData(candles, selectedTimeframe);
     const prepared = prepareCandlesForSetData(candles, selectedTimeframe);
     return compressForexCandles(prepared).compressedCandles;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [candles, isForexInstrument, selectedTimeframe, selectedSymbolStr]);
 
   useEffect(() => {
@@ -470,6 +501,7 @@ const ChartArea = forwardRef(function ChartArea(
     } else {
       syncForexCompressionMaps(candles);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [candles, isForexInstrument, selectedTimeframe, selectedSymbolStr]);
 
   // Convert candles to line/area format (use close price as value)
@@ -693,6 +725,7 @@ const ChartArea = forwardRef(function ChartArea(
       volumeSeriesRef.current = null;
       drawingObjectsRef.current = [];
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Apply dark/light theme when isDark changes (chart already created with initial theme)
@@ -846,6 +879,7 @@ const ChartArea = forwardRef(function ChartArea(
         pinch: zoomAllowed,
       },
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTool, chartLocked]);
 
   // Fetch historical candles when symbol or timeframe changes (PROFESSIONAL - Instant load like Binance)
@@ -1090,10 +1124,23 @@ const ChartArea = forwardRef(function ChartArea(
         }
       }
 
-      // MT5/TradingView style: Always fitContent on initial load
-      // This ensures all candles (including gap-filled ones) are visible
-      // Don't restore zoom state until user manually zooms
-      timeScale.fitContent();
+      // Show last ~150 bars on initial load (MT5/TradingView style)
+      // Calling fitContent() on large datasets (e.g. M1 = 4320 candles) makes
+      // each candle <1px wide — they appear as thin lines. Instead, zoom to
+      // the last N bars so candles have reasonable width.
+      const BARS_TO_SHOW = 150;
+      try {
+        if (displayCandles.length > BARS_TO_SHOW) {
+          timeScale.setVisibleLogicalRange({
+            from: displayCandles.length - BARS_TO_SHOW,
+            to: displayCandles.length + 5, // slight right padding
+          });
+        } else {
+          timeScale.fitContent();
+        }
+      } catch (e) {
+        timeScale.fitContent(); // fallback
+      }
 
       // Nudge right price scale so horizontal grid lines (tied to price ticks) recompute
       try {
@@ -1111,6 +1158,7 @@ const ChartArea = forwardRef(function ChartArea(
       hasInitializedRef.current = true;
       saveZoomState(timeScale.getVisibleRange());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     candles.length,
     chartType,
@@ -1259,22 +1307,58 @@ const ChartArea = forwardRef(function ChartArea(
       if (volumeData.length > 0) volumeSeries.setData(volumeData);
 
       volumeSeriesRef.current = volumeSeries;
+      // Ensure price scale auto-fits candle data after both series are created
+      try {
+        chart.priceScale("right").applyOptions({ autoScale: true });
+      } catch (e) {
+        /* ignore */
+      }
     } else {
-      // default: candlesticks
+      // default: candlesticks with volume overlay (like Bybit/TradingView)
       newSeries = chart.addCandlestickSeries({
-        upColor: "#26A69A", // Green
-        downColor: "#EF5350", // Red
+        upColor: "#26A69A",
+        downColor: "#EF5350",
         wickUpColor: "#26A69A",
         wickDownColor: "#EF5350",
         borderVisible: false,
-        // priceScaleId: '', // Use default price scale
-        scaleMargins: {
-          top: 0.1,
-          bottom: 0.1, // Normal margins when no volume
-        },
+        priceScaleId: "right",
+        scaleMargins: { top: 0.05, bottom: 0.25 }, // leave room for volume
       });
       const sortedCandles = displayCandles;
       if (sortedCandles.length > 0) newSeries.setData(sortedCandles);
+
+      // Add volume histogram at the bottom like Bybit.com
+      const volumeSeries = chart.addHistogramSeries({
+        priceFormat: { type: "volume" },
+        priceScaleId: "vol",
+        base: 0,
+        priceLineVisible: false,
+        lastValueVisible: false,
+        color: "rgba(38,166,154,0.15)",
+      });
+      chart.priceScale("right").applyOptions({
+        scaleMargins: { top: 0.05, bottom: 0.25 },
+      });
+      chart.priceScale("vol").applyOptions({
+        scaleMargins: { top: 0.8, bottom: 0.0 },
+        visible: false,
+      });
+      const volumeData = sortedCandles.map((candle) => ({
+        time: candle.time,
+        value: candle.volume || 0,
+        color:
+          candle.close >= candle.open
+            ? "rgba(38,166,154,0.3)"
+            : "rgba(239,83,80,0.3)",
+      }));
+      if (volumeData.length > 0) volumeSeries.setData(volumeData);
+      volumeSeriesRef.current = volumeSeries;
+      // Ensure price scale auto-fits candle data after both series are created
+      try {
+        chart.priceScale("right").applyOptions({ autoScale: true });
+      } catch (e) {
+        /* ignore */
+      }
     }
     seriesRef.current = newSeries;
 
@@ -1308,11 +1392,15 @@ const ChartArea = forwardRef(function ChartArea(
           }
         }
         // Nudge right price scale so horizontal grid lines recompute after series/data change
+        // Use volume-aware margins: if volume series is present, leave 25% bottom for it
         try {
+          const hasVol = volumeSeriesRef.current != null;
           chart.priceScale("right").applyOptions({
             borderColor: isDark ? "#1e293b" : "#e5e7eb",
             autoScale: true,
-            scaleMargins: { top: 0.1, bottom: 0.1 },
+            scaleMargins: hasVol
+              ? { top: 0.05, bottom: 0.25 }
+              : { top: 0.1, bottom: 0.1 },
             ticksVisible: true,
             ensureEdgeTickMarksVisible: true,
           });
@@ -1323,10 +1411,13 @@ const ChartArea = forwardRef(function ChartArea(
     } else if (!hasInitializedRef.current) {
       timeScale.fitContent();
       try {
+        const hasVol = volumeSeriesRef.current != null;
         chart.priceScale("right").applyOptions({
           borderColor: isDark ? "#1e293b" : "#e5e7eb",
           autoScale: true,
-          scaleMargins: { top: 0.1, bottom: 0.1 },
+          scaleMargins: hasVol
+            ? { top: 0.05, bottom: 0.25 }
+            : { top: 0.1, bottom: 0.1 },
           ticksVisible: true,
           ensureEdgeTickMarksVisible: true,
         });
@@ -1336,6 +1427,7 @@ const ChartArea = forwardRef(function ChartArea(
       hasInitializedRef.current = true;
       saveZoomState(timeScale.getVisibleRange());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartType, candles.length, lineAreaData.length, displayCandles.length]); // Only depend on lengths to avoid re-running on every candle update
 
   // Update volume series when candles change (for volume and volume ticks chart types)
@@ -1349,7 +1441,14 @@ const ChartArea = forwardRef(function ChartArea(
       candles.length === 0
     )
       return;
-    if (chartType !== "volume" && chartType !== "volume ticks") return;
+    // Update volume for all chart types that have volume bars
+    if (
+      chartType !== "volume" &&
+      chartType !== "volume ticks" &&
+      chartType !== "candlestick" &&
+      chartType !== "candles"
+    )
+      return;
 
     const sortedCandles = displayCandles;
 
@@ -1358,10 +1457,8 @@ const ChartArea = forwardRef(function ChartArea(
       value: candle.volume || 0,
       color:
         candle.close >= candle.open
-          ? "rgba(38,166,154,0.25)"
-          : "rgba(239,83,80,0.25)",
-
-      // color: candle.close >= candle.open ? '#26a69a' : '#ef5350', // Green for up, red for down
+          ? "rgba(38,166,154,0.3)"
+          : "rgba(239,83,80,0.3)",
     }));
 
     if (volumeData.length > 0) {
@@ -1407,6 +1504,7 @@ const ChartArea = forwardRef(function ChartArea(
       if (currentDrawingRef.current?.series) {
         try {
           chart.removeSeries(currentDrawingRef.current.series);
+          // eslint-disable-next-line no-empty
         } catch (e) {}
       }
       currentDrawingRef.current = null;
@@ -1486,6 +1584,7 @@ const ChartArea = forwardRef(function ChartArea(
           if (timeDiff < minTimeDiff && priceDiff < minPriceDiff) {
             try {
               chart.removeSeries(currentDrawingRef.current.series);
+              // eslint-disable-next-line no-empty
             } catch (err) {}
             trendLineFirstPointRef.current = null;
             currentDrawingRef.current = null;
@@ -1494,10 +1593,9 @@ const ChartArea = forwardRef(function ChartArea(
 
           const point1 = { time: firstPoint.time, price: firstPoint.price };
           const point2 = { time: endPoint.time, price: endPoint.price };
-          const lineData = ensureAscendingTimeOrder([
-            { time: point1.time, value: point1.price },
-            { time: point2.time, value: point2.price },
-          ]);
+          // Extend line far beyond drawn endpoints to visually span the entire chart
+          const extendedData = extendTrendLineData(point1, point2);
+          const lineData = ensureAscendingTimeOrder(extendedData);
           if (lineData.length > 0) {
             currentDrawingRef.current.series.setData(lineData);
             const trendLineObj = {
@@ -1537,10 +1635,13 @@ const ChartArea = forwardRef(function ChartArea(
         if (time == null) return;
 
         const firstPoint = trendLineFirstPointRef.current;
-        const lineData = ensureAscendingTimeOrder([
-          { time: firstPoint.time, value: firstPoint.price },
-          { time, value: price },
-        ]);
+        // Extend preview line too so user sees how the final line will look
+        const previewData = extendTrendLineData(
+          { time: firstPoint.time, price: firstPoint.price },
+          { time, price },
+          20, // smaller factor for preview
+        );
+        const lineData = ensureAscendingTimeOrder(previewData);
         if (lineData.length > 0) {
           currentDrawingRef.current.series.setData(lineData);
         }
@@ -1571,6 +1672,7 @@ const ChartArea = forwardRef(function ChartArea(
         ) {
           try {
             chart.removeSeries(currentDrawingRef.current.series);
+            // eslint-disable-next-line no-empty
           } catch (err) {}
           currentDrawingRef.current = null;
         }
@@ -1660,6 +1762,7 @@ const ChartArea = forwardRef(function ChartArea(
           if (currentDrawingRef.current?.previewLine) {
             try {
               chart.removeSeries(currentDrawingRef.current.previewLine);
+              // eslint-disable-next-line no-empty
             } catch (err) {}
             currentDrawingRef.current.previewLine = null;
           }
@@ -1780,6 +1883,7 @@ const ChartArea = forwardRef(function ChartArea(
               chart.removeSeries(currentDrawingRef.current.series);
             if (currentDrawingRef.current.previewLine)
               chart.removeSeries(currentDrawingRef.current.previewLine);
+            // eslint-disable-next-line no-empty
           } catch (err) {}
           currentDrawingRef.current = null;
         }
@@ -1806,6 +1910,7 @@ const ChartArea = forwardRef(function ChartArea(
     ) {
       try {
         chart.removeSeries(currentDrawingRef.current.series);
+        // eslint-disable-next-line no-empty
       } catch (err) {}
       currentDrawingRef.current = null;
     }
@@ -1965,6 +2070,7 @@ const ChartArea = forwardRef(function ChartArea(
           currentDrawingRef.current.priceLines.forEach((pl) => {
             try {
               series.removePriceLine(pl);
+              // eslint-disable-next-line no-empty
             } catch (e) {}
           });
           currentDrawingRef.current.priceLines = [];
@@ -2075,6 +2181,7 @@ const ChartArea = forwardRef(function ChartArea(
         if (Math.abs(start.price - endPrice) < 0.0001) {
           try {
             chart.removeSeries(currentDrawingRef.current.series);
+            // eslint-disable-next-line no-empty
           } catch (e) {}
           isDrawingRef.current = false;
           startPointRef.current = null;
@@ -2106,6 +2213,7 @@ const ChartArea = forwardRef(function ChartArea(
         // Remove preview line
         try {
           chart.removeSeries(fibSeries);
+          // eslint-disable-next-line no-empty
         } catch (e) {}
 
         // Create horizontal price lines for each Fibonacci level
@@ -2177,6 +2285,7 @@ const ChartArea = forwardRef(function ChartArea(
         } else {
           try {
             chart.removeSeries(currentDrawingRef.current.series);
+            // eslint-disable-next-line no-empty
           } catch (e) {}
         }
       }
@@ -2567,9 +2676,21 @@ const ChartArea = forwardRef(function ChartArea(
     });
     orderPriceLinesRef.current = [];
 
-    // Filter orders for current symbol
+    // Normalize symbol for comparison: handles "BTCUSDT" vs "BTC/USD" and "EURUSD" vs "EUR/USD"
+    const normalizeSymForCompare = (s) =>
+      s
+        ? String(s)
+            .toUpperCase()
+            .replace(/[^A-Z]/g, "")
+            .replace(/USDT$/, "USD")
+        : "";
+    const currentNorm = normalizeSymForCompare(selectedSymbolStr);
+
+    // Filter orders for current symbol — only OPEN positions (closed ones must not persist on chart)
     const currentSymbolOrders = orders.filter(
-      (order) => order.symbol === selectedSymbolStr,
+      (order) =>
+        normalizeSymForCompare(order.symbol) === currentNorm &&
+        order.status === "OPEN",
     );
 
     // Add price lines for each order
@@ -2605,6 +2726,7 @@ const ChartArea = forwardRef(function ChartArea(
       orderPriceLinesRef.current = [];
     };
   }, [orders, selectedSymbolStr]);
+
 
   return (
     <div

@@ -41,7 +41,7 @@ const getContractSpec = (symbol: string) => {
 
   if (isCrypto(s)) {
     return {
-      contractSize: 100,
+      contractSize: 1, // 1 BTC/ETH/etc per lot (spot/perp — NOT MT5 CFD)
       minVolume: 0.01,
       volumeStep: 0.01,
       volumePrecision: 2,

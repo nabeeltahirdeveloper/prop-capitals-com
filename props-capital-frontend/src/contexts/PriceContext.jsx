@@ -7,15 +7,11 @@ import React, {
   useCallback,
 } from "react";
 import { getUnifiedPrices } from "@/api/market-data";
-import { io } from "socket.io-client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation } from "react-router-dom";
 
 // Create context with a default value to help with debugging
 const PriceContext = createContext(undefined);
-
-const WEBSOCKET_URL =
-  import.meta.env.VITE_WEBSOCKET_URL || "https://api-dev.prop-capitals.com";
 
 // Unified price polling interval: 1000ms for smooth updates
 const POLL_INTERVAL = 1000;
@@ -70,7 +66,6 @@ export function PriceProvider({ children, currentPathname = null }) {
   const lastUpdateTimeRef = useRef({}); // For jump detection
   const backoffTimeoutRef = useRef(null);
   const isRetryingRef = useRef(false);
-  const forexSocketRef = useRef(null); // WebSocket for forex prices
   const forexSymbolsRef = useRef(new Set()); // Track forex symbols we're interested in
   const authStatusRef = useRef(authStatus); // Track current auth status for polling checks
   const locationRef = useRef(getCurrentPathname()); // Track current location for polling checks
@@ -280,124 +275,8 @@ export function PriceProvider({ children, currentPathname = null }) {
     });
   }, [fetchPrices]);
 
-  /**
-   * Connect to forex prices WebSocket
-   * Only connects when on a page that requires prices
-   */
-  useEffect(() => {
-    const pathname = getCurrentPathname();
-    const shouldConnect =
-      authStatus === "authenticated" && isPriceRequiredPage(pathname);
-
-    if (!shouldConnect) {
-      // Disconnect if we're not on a price-required page
-      if (forexSocketRef.current) {
-        forexSocketRef.current.emit("unsubscribe:forex-prices");
-        forexSocketRef.current.disconnect();
-        forexSocketRef.current = null;
-      }
-
-      if (
-        process.env.NODE_ENV !== "production" &&
-        authStatus === "authenticated"
-      ) {
-        console.log(
-          `[PriceContext] Not on a price-required page (${pathname}), disconnecting forex WebSocket`,
-        );
-      }
-      return;
-    }
-
-    const getAuthToken = () => {
-      try {
-        return (
-          localStorage.getItem("token") || localStorage.getItem("authToken")
-        );
-      } catch (error) {
-        return null;
-      }
-    };
-
-    const token = getAuthToken();
-    if (!token) {
-      if (process.env.NODE_ENV !== "production") {
-        console.log(
-          "[PriceContext] No auth token, skipping forex WebSocket connection",
-        );
-      }
-      return;
-    }
-
-    // Connect to forex prices WebSocket
-    const socket = io(`${WEBSOCKET_URL}/forex-prices`, {
-      auth: { token },
-      transports: ["websocket", "polling"],
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-    });
-
-    forexSocketRef.current = socket;
-
-    socket.on("connect", () => {
-      if (process.env.NODE_ENV !== "production") {
-        console.log("[PriceContext] Forex WebSocket connected");
-      }
-
-      // Subscribe to all forex prices
-      socket.emit("subscribe:forex-prices");
-    });
-
-    socket.on("forex:price-update", (priceData) => {
-      if (priceData && priceData.symbol) {
-        // Update price directly from WebSocket
-        updatePrice(
-          priceData.symbol,
-          priceData.bid,
-          priceData.ask,
-          priceData.timestamp || Date.now(),
-        );
-
-        // Mark that we received a WebSocket update
-        if (process.env.NODE_ENV !== "production") {
-          console.log(`[PriceContext] Forex WS update: ${priceData.symbol}`);
-        }
-      }
-    });
-
-    socket.on("subscription:confirmed", (data) => {
-      if (process.env.NODE_ENV !== "production") {
-        console.log(
-          "[PriceContext] Forex WebSocket subscription confirmed:",
-          data,
-        );
-      }
-    });
-
-    socket.on("disconnect", () => {
-      if (process.env.NODE_ENV !== "production") {
-        console.log("[PriceContext] Forex WebSocket disconnected");
-      }
-    });
-
-    socket.on("connect_error", (error) => {
-      if (process.env.NODE_ENV !== "production") {
-        console.warn(
-          "[PriceContext] Forex WebSocket connection error:",
-          error.message,
-        );
-      }
-    });
-
-    return () => {
-      if (socket) {
-        socket.emit("unsubscribe:forex-prices");
-        socket.disconnect();
-      }
-      forexSocketRef.current = null;
-    };
-  }, [authStatus, currentPathname, getCurrentPathname, updatePrice]);
+  // Prices are fetched via REST polling (see polling effect above).
+  // The /forex-prices WebSocket namespace does not exist on the backend.
 
   // Update auth status and location refs whenever they change
   useEffect(() => {

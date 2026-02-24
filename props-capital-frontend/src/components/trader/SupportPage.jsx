@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   MessageSquare,
   Mail,
@@ -42,11 +42,12 @@ const SupportPage = () => {
     queryFn: getCurrentUser,
     retry: false,
   });
+  const authUserId = user?.userId || user?.id;
 
   const { data: tickets = [], isLoading, isError: isTicketsError } = useQuery({
-    queryKey: ["support-tickets", user?.userId],
-    queryFn: getUserTickets,
-    enabled: !!user?.userId,
+    queryKey: ["support-tickets", authUserId],
+    queryFn: () => getUserTickets(authUserId),
+    enabled: !!authUserId,
     retry: false,
     refetchInterval: 10000,
   });
@@ -78,7 +79,7 @@ const SupportPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!user) {
+    if (!authUserId) {
       toast({
         title: "Not authenticated",
         description: "Please sign in to submit a support ticket.",
@@ -88,7 +89,6 @@ const SupportPage = () => {
     }
 
     createTicketMutation.mutate({
-      userId: user.userId,
       subject: ticketForm.subject.trim(),
       message: ticketForm.message.trim(),
       category: ticketForm.category?.toUpperCase(),

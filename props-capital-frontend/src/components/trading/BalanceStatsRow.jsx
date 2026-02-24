@@ -13,7 +13,7 @@ const BalanceStatsRow = ({ balance, equity, floatingPL, profitPercent }) => {
     {
       id: 'balance',
       icon: DollarSign,
-      label: 'Balance',
+      label: 'Available',
       value: `$${(balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
       color: textClass,
     },

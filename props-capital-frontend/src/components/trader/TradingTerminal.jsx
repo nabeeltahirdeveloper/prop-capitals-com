@@ -17,7 +17,7 @@ const MT5Terminal = () => {
     candles: "/market-data/history", // Historical candles endpoint
     symbols: "/market-data/prices?symbols", // Symbols list (query param allowed)
     trades: "/trades", // Trades endpoint (adjust if different)
-    account: "/api/v1/user/account", // Account endpoint (adjust if different)
+    account: "/trades/account/${accountId}", // Account endpoint (adjust if different)
   };
 
   return (
