@@ -22,13 +22,13 @@ interface CandleSubscription {
  * Handles real-time candle updates for SDK
  * Root namespace (default - no namespace specified = root namespace)
  */
-@WebSocketGateway({
+@WebSocketGateway(0, {
+  // port 0 = attach to the same HTTP server (port 5002), not a standalone server on port 80
   cors: {
-    origin: true, // Allow all origins in development
-    credentials: true,
+    origin: true,
+    credentials: false, // false because client uses JWT in auth payload, not cookies
   },
-  // No namespace specified = root namespace (/)
-  // This is the default behavior for Socket.IO
+  // No namespace = root namespace (/)
 })
 export class CandlesGateway
   implements
@@ -310,12 +310,10 @@ export class CandlesGateway
       const metalPrice = allPrices.metals?.find(
         (m: any) => m.symbol === symbol,
       );
-      console.log('Meatl Price ', metalPrice);
       const priceData = forexPrice || cryptoPrice || metalPrice;
 
       if (!priceData) {
         this.logger.debug(`⚠️ No price data found for ${symbol} in prices API`);
-        this.logger.debug(`⚠️ metalPrice`);
         return null;
       }
 
