@@ -174,6 +174,7 @@ export default function Layout({ children, currentPageName }) {
     "AdminUsers",
     "AdminChallenges",
     "AdminAccounts",
+    "AdminFundedAccounts",
     "AdminPayments",
     "AdminPayouts",
     "AdminViolations",
@@ -233,9 +234,14 @@ export default function Layout({ children, currentPageName }) {
       { name: t("nav.users"), icon: Users, page: "AdminUsers" },
       { name: t("nav.challenges"), icon: Award, page: "AdminChallenges" },
       { name: t("nav.accounts"), icon: TrendingUp, page: "AdminAccounts" },
+      {
+        name: t("nav.fundedAccounts"),
+        icon: DollarSign,
+        page: "AdminFundedAccounts",
+      },
       { name: t("nav.riskMonitor"), icon: Activity, page: "AdminRiskMonitor" },
       {
-        name: t("nav.brokerServers"),
+        name: "Prop Server",
         icon: Server,
         page: "AdminBrokerServers",
       },

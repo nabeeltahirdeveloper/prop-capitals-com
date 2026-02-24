@@ -161,19 +161,7 @@ export default function CRMFTDReport() {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card className="bg-card border-border p-6 flex items-center justify-between hover:border-amber-300 transition-all duration-300">
-                    <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                            {t('crm.ftdReport.totalFtd')}
-                        </p>
-                        <h3 className="text-2xl font-bold text-foreground mt-1">
-                            {stats.totalFtd}
-                        </h3>
-                    </div>
-                    <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
-                        <Users className="w-6 h-6" />
-                    </div>
-                </Card>
+                
 
                 <Card className="bg-card border-border p-6 flex items-center justify-between hover:border-amber-300 transition-all duration-300">
                     <div>
