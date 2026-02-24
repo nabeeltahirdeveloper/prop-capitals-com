@@ -63,6 +63,7 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
   private reconnectTimeout: NodeJS.Timeout | null = null;
   private isConnected = false;
   private authenticated = false;
+  private authFailed = false;
   private reconnectAttempts = 0;
   private readonly MAX_RECONNECT_ATTEMPTS = 10;
   private readonly BASE_RECONNECT_DELAY = 5000;
@@ -140,7 +141,8 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
                   '❌ Massive.com: Authentication failed - Check your API key',
                 );
                 this.authenticated = false;
-                // Fall back to mock prices
+                this.authFailed = true;
+                // Fall back to mock prices and stop reconnecting
                 this.startMockPrices();
                 return;
               }
@@ -170,6 +172,13 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
       this.ws.on('close', (code) => {
         this.isConnected = false;
         this.authenticated = false;
+
+        if (this.authFailed) {
+          this.logger.warn(
+            `⚠️ Massive.com WS Closed (Code: ${code}). Not reconnecting — auth_failed (plan does not include WebSocket access).`,
+          );
+          return;
+        }
 
         // Calculate exponential backoff delay
         const delay = this.calculateReconnectDelay();
