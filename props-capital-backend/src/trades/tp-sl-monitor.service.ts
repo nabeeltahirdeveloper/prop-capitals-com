@@ -184,7 +184,7 @@ export class TpSlMonitorService {
           const symbolUpper = String(position.symbol || '').toUpperCase();
           const isXAU = symbolUpper.includes('XAU');
           const isXAG = symbolUpper.includes('XAG');
-          const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 1 : 100000;
+          const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 100 : 100000;
           const profit = priceDiff * position.volume * contractSize;
 
           positionsToClose.push({
