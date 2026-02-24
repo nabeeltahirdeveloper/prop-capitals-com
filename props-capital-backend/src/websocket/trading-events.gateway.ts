@@ -35,7 +35,7 @@ interface AccountUpdateEvent {
 
 @WebSocketGateway({
   cors: {
-    origin: true, // Allow all origins in development
+    origin: true,
     credentials: true,
   },
   namespace: '/trading',

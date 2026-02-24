@@ -24,11 +24,9 @@ interface CandleSubscription {
  */
 @WebSocketGateway({
   cors: {
-    origin: true, // Allow all origins in development
+    origin: true,
     credentials: true,
   },
-  // No namespace specified = root namespace (/)
-  // This is the default behavior for Socket.IO
 })
 export class CandlesGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, OnModuleDestroy
