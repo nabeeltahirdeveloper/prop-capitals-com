@@ -164,7 +164,7 @@ export const TradingProvider = ({ children }) => {
 
           // Priority 1: calculate from current known prices (handles startup + reconnect)
           const symbolData = symbolsRef.current.find(
-            (s) => s.symbol === order.symbol
+            (s) => s.symbol === order.symbol,
           );
           if (symbolData) {
             const currentPrice =
@@ -317,13 +317,20 @@ export const TradingProvider = ({ children }) => {
         const fetchedSymbols = data?.prices ?? [];
         setSymbols(fetchedSymbols);
         if (fetchedSymbols.length > 0) {
-          const normalized = selectedSymbol.replace("/", "");
-          const exists = fetchedSymbols.find(
-            (s) =>
-              (s.symbol && s.symbol.replace("/", "") === normalized) ||
-              s.symbol === selectedSymbol,
+          // Don't auto-reset the symbol if the user has an explicit saved preference
+          // (BybitTerminal saves its symbol to bybit_selectedSymbol in localStorage)
+          const hasBybitSavedSymbol = !!localStorage.getItem(
+            "bybit_selectedSymbol",
           );
-          if (!exists) setSelectedSymbol(fetchedSymbols[0].symbol);
+          if (!hasBybitSavedSymbol) {
+            const normalized = selectedSymbol.replace("/", "");
+            const exists = fetchedSymbols.find(
+              (s) =>
+                (s.symbol && s.symbol.replace("/", "") === normalized) ||
+                s.symbol === selectedSymbol,
+            );
+            if (!exists) setSelectedSymbol(fetchedSymbols[0].symbol);
+          }
         }
       } catch (error) {
         console.error("❌ Error fetching symbols:", error?.message || error);
