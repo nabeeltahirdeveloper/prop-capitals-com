@@ -134,10 +134,13 @@ const CommonTerminalWrapper = ({
   } = useChallenges();
   const selectedChallenge =
     selectedChallengeProp || selectedChallengeFromContext;
-  const platformKey = String(selectedChallenge?.platform || "mt5").toLowerCase();
+  const platformKey = String(
+    selectedChallenge?.platform || "mt5",
+  ).toLowerCase();
   const tradingEngine = useMemo(
     () => getTradingEngineForPlatform(platformKey),
     [platformKey],
+    console.log("platformkey", platformKey),
   );
 
   const [selectedTab, setSelectedTab] = useState("positions");
@@ -250,15 +253,18 @@ const CommonTerminalWrapper = ({
   );
 
   /* ── PnL calculation helper ── */
-  const calculateTradePnL = useCallback((trade, currentPrice) => {
-    return tradingEngine.calculatePnL({
-      symbol: trade?.symbol,
-      type: String(trade?.type || "BUY").toUpperCase(),
-      volume: Number(trade?.volume),
-      openPrice: Number(trade?.openPrice),
-      currentPrice: Number(currentPrice),
-    });
-  }, [tradingEngine]);
+  const calculateTradePnL = useCallback(
+    (trade, currentPrice) => {
+      return tradingEngine.calculatePnL({
+        symbol: trade?.symbol,
+        type: String(trade?.type || "BUY").toUpperCase(),
+        volume: Number(trade?.volume),
+        openPrice: Number(trade?.openPrice),
+        currentPrice: Number(currentPrice),
+      });
+    },
+    [tradingEngine],
+  );
   const calculateRequiredMargin = useCallback(
     (symbol, volume, price, leverage = 100) => {
       return tradingEngine.calculateRequiredMargin({
@@ -758,7 +764,9 @@ const CommonTerminalWrapper = ({
             return;
           }
 
-          const rawOrderType = String(trade?.orderType || "limit").toLowerCase();
+          const rawOrderType = String(
+            trade?.orderType || "limit",
+          ).toLowerCase();
           const mappedOrderType =
             rawOrderType === "stop"
               ? "STOP"
