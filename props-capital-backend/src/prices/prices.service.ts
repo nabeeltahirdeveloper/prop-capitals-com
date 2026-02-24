@@ -185,7 +185,6 @@ export class PricesService {
         change: 0,
       };
     });
-
     // Crypto Formatting
     const formattedCrypto = Object.entries(cryptoPrices)
       .map(([key, val]) => {

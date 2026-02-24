@@ -318,7 +318,7 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
     });
 
     if (initCount > 0) {
-      this.logger.log(`📊 Mock prices initialized for ${initCount} symbol(s) not covered by WS stream`);
+      this.logger.log(`Mock prices initialized for ${initCount} symbol(s) not covered by WS stream`);
     }
 
     // Start the mock update interval only once
@@ -327,7 +327,7 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
       setInterval(() => {
         this.massivePairs.forEach((symbol) => {
           const current = this.priceCache.get(symbol);
-          // Only apply mock random walk if the price hasn't been updated by real WS recently (>2s old)
+          // Only apply mock random walk if not recently updated by real WS (>2s old)
           if (current && Date.now() - current.timestamp > 2000) {
             const changePercent = (Math.random() - 0.5) * 0.001;
             const newBid = current.bid * (1 + changePercent);

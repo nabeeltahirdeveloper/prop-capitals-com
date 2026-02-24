@@ -32,11 +32,7 @@ import { usePlatformTokensStore } from "@/lib/stores/platform-tokens.store";
 import { processPlatformLogin, resetPlatformPassword } from "@/api/auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAccountSummary, getUserAccounts } from "@/api/accounts";
-import {
-  getAccountTrades,
-  updateTrade,
-  modifyPosition,
-} from "@/api/trades";
+import { getAccountTrades, updateTrade, modifyPosition } from "@/api/trades";
 import { mt5Engine } from "@/trading/engines/mt5Engine";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -96,7 +92,9 @@ const MT5TradingArea = ({
       updateTrade(tradeId, { closePrice }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trades", accountId] });
-      queryClient.invalidateQueries({ queryKey: ["accountSummary", accountId] });
+      queryClient.invalidateQueries({
+        queryKey: ["accountSummary", accountId],
+      });
       toast({ title: "Position closed" });
     },
     onError: (e) =>
@@ -263,7 +261,13 @@ const MT5TradingArea = ({
       // Use mt5Engine directly for correct XAU/XAG/Forex contract sizes
       const liveProfit =
         Number.isFinite(exitPrice) && exitPrice > 0
-          ? mt5Engine.calculatePnL({ symbol, type, volume, openPrice, currentPrice: exitPrice })
+          ? mt5Engine.calculatePnL({
+              symbol,
+              type,
+              volume,
+              openPrice,
+              currentPrice: exitPrice,
+            })
           : Number(position?.profit || 0);
 
       return {
@@ -281,7 +285,8 @@ const MT5TradingArea = ({
         swap: Number(position?.swap || 0),
         profit: Number.isFinite(liveProfit) ? liveProfit : 0,
         livePnL: Number.isFinite(liveProfit) ? liveProfit : 0,
-        currentPrice: Number.isFinite(exitPrice) && exitPrice > 0 ? exitPrice : null,
+        currentPrice:
+          Number.isFinite(exitPrice) && exitPrice > 0 ? exitPrice : null,
         profitCurrency: "USD",
         time: new Date(
           position?.openedAt ||
@@ -290,14 +295,11 @@ const MT5TradingArea = ({
             Date.now(),
         ).toLocaleTimeString(),
         openAt:
-          position?.openedAt ||
-          position?.openAt ||
-          position?.createdAt ||
-          null,
+          position?.openedAt || position?.openAt || position?.createdAt || null,
         closeAt: null,
       };
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activePositionsSource, normalizeType, unifiedPrices]);
 
   const lastSyncSignatureRef = useRef("");
@@ -377,7 +379,7 @@ const MT5TradingArea = ({
     if (Number.isFinite(askNum) && askNum > 0) setRealTimeAskPrice(askNum);
   }, [unifiedPrices, selectedSymbol]);
 
-  // WebSocket listener for real-time candle updates from backend
+  // WebSocket connection for real-time candle updates from backend
   useEffect(() => {
     if (!selectedSymbol || !selectedTimeframe) return;
 
@@ -386,17 +388,12 @@ const MT5TradingArea = ({
     const symbolStr = selectedSymbol.symbol || selectedSymbol;
     const timeframeStr = selectedTimeframe || "M1";
 
-    // Get auth token
-    const getAuthToken = () => {
-      return (
-        localStorage.getItem("token") ||
-        localStorage.getItem("accessToken") ||
-        localStorage.getItem("authToken") ||
-        localStorage.getItem("jwt_token")
-      );
-    };
+    const getAuthToken = () =>
+      localStorage.getItem("token") ||
+      localStorage.getItem("accessToken") ||
+      localStorage.getItem("authToken") ||
+      localStorage.getItem("jwt_token");
 
-    // Connect to candles WebSocket (root namespace)
     const socket = io(WEBSOCKET_URL, {
       auth: (cb) => cb({ token: getAuthToken() }),
       // polling-first: works through nginx proxies and Windows firewall
@@ -411,7 +408,6 @@ const MT5TradingArea = ({
 
     socket.on("connect", () => {
       console.log("[MT5TradingArea] ✅ Connected to candles WebSocket");
-      // Subscribe to candle updates for the current symbol/timeframe
       socket.emit("subscribeCandles", { symbol: symbolStr, timeframe: timeframeStr });
       console.log(`[MT5TradingArea] 📡 Subscribed to candles: ${symbolStr}@${timeframeStr}`);
     });
@@ -429,96 +425,25 @@ const MT5TradingArea = ({
     });
     
     socket.on("connect_error", (error) => {
-      console.error(
-        "[MT5TradingArea] 🔌 Candles WebSocket connection error:",
-        error.message,
-        // socket URL
-        socket?.url,
-        socket?.auth,
-        socket?.transport,
-        socket?.reconnection,
-        socket?.reconnectionDelay,
-        socket?.reconnectionDelayMax,
-        socket?.reconnectionAttempts,
-        socket?.transports,
-        socket?.path,
-        socket?.query,
-        socket?.headers,
-        socket?.autoConnect,
-        socket?.forceNew,
-        socket?.withCredentials,
-        socket?.timeout,
-        socket?.timeoutInterval,
-        socket?.timeoutGracePeriod,
-      );
+      console.warn("[MT5] Candles WebSocket error:", error.message);
     });
 
-    // Listen for candleUpdate events from backend
     socket.on("candleUpdate", (data) => {
-      try {
-        // Backend sends: { symbol, timeframe, candle: { time, open, high, low, close, volume } }
-        if (!data || !data.candle || !data.symbol || !data.timeframe) {
-          console.warn("[MT5TradingArea] Invalid candleUpdate data:", data);
-          return;
-        }
+      if (!data?.candle || !data?.symbol || !data?.timeframe) return;
 
-        // Check if this update is for current symbol/timeframe
-        const normalizedSymbol = (data.symbol || "")
-          .toUpperCase()
-          .replace(/[^A-Z0-9]/g, "");
-        const currentSymbolNormalized = (symbolStr || "")
-          .toUpperCase()
-          .replace(/[^A-Z0-9]/g, "");
+      const normalizedSymbol = (data.symbol || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+      const currentSymbolNormalized = (symbolStr || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+      if (normalizedSymbol !== currentSymbolNormalized || data.timeframe !== timeframeStr) return;
 
-        if (
-          normalizedSymbol !== currentSymbolNormalized ||
-          data.timeframe !== timeframeStr
-        ) {
-          // Not for current symbol/timeframe, ignore
-          return;
-        }
-
-        const candle = data.candle;
-
-        // Convert time from milliseconds to seconds if needed (lightweight-charts uses seconds)
-        let candleTime = candle.time;
-        if (candleTime > 1e10) {
-          // Time is in milliseconds, convert to seconds
-          candleTime = Math.floor(candleTime / 1000);
-        }
-
-        // Update SDK Chart component with new candle
-        // Since SDK Chart is a black box, we need to check if SDK provides a method to update candles
-        // For now, we'll try to update through SDK's context if available
-        // If SDK Chart component has a ref method to update candles, we can use that
-
-        // Note: SDK Chart component should automatically update when candles are updated in SDK's context
-        // If SDK doesn't support this, we may need to manually update the chart through ref methods
-
-        console.log("[MT5TradingArea] 📊 Received candleUpdate:", {
-          symbol: data.symbol,
-          timeframe: data.timeframe,
-          candle: {
-            time: candleTime,
-            open: candle.open,
-            high: candle.high,
-            low: candle.low,
-            close: candle.close,
-          },
-        });
-
-        // TODO: Update SDK Chart component with this candle
-        // This depends on SDK's API - check SDK documentation for updateCandle or similar method
-        // For now, we'll log it and let SDK Chart handle it if it listens to WebSocket internally
-      } catch (error) {
-        console.error("[MT5TradingArea] Error processing candleUpdate:", error);
+      // Update bid price from latest candle close for real-time accuracy
+      const close = data.candle.close;
+      if (close > 0) {
+        setRealTimeBidPrice(close);
       }
     });
 
     return () => {
-      if (socket && socket.connected) {
-        socket.disconnect();
-      }
+      socket.disconnect();
       candlesSocketRef.current = null;
     };
   }, [selectedSymbol, selectedTimeframe]);
@@ -533,9 +458,9 @@ const MT5TradingArea = ({
         }
       : selectedSymbol;
 
-  const handlePriceUpdate = useCallback((symbolName, price) => {
-    pricesRef.current[symbolName] = price;
-  }, []);
+  // const handlePriceUpdate = useCallback((symbolName, price) => {
+  //   pricesRef.current[symbolName] = price;
+  // }, []);
 
   const handleNewOrder = () => {
     setOrderType("BUY");
@@ -817,16 +742,36 @@ const MT5TradingArea = ({
               height={bottomPanelHeight}
               accountSummary={{
                 balance,
-                equity: balance + sdkOrdersFromBackend.reduce((s, p) => s + (p.livePnL || 0), 0),
+                equity:
+                  balance +
+                  sdkOrdersFromBackend.reduce(
+                    (s, p) => s + (p.livePnL || 0),
+                    0,
+                  ),
                 margin: sdkOrdersFromBackend.reduce(
-                  (s, p) => s + mt5Engine.calculateRequiredMargin({ symbol: p.symbol, volume: p.volume, price: p.openPrice }),
+                  (s, p) =>
+                    s +
+                    mt5Engine.calculateRequiredMargin({
+                      symbol: p.symbol,
+                      volume: p.volume,
+                      price: p.openPrice,
+                    }),
                   0,
                 ),
                 freeMargin:
                   balance +
-                  sdkOrdersFromBackend.reduce((s, p) => s + (p.livePnL || 0), 0) -
                   sdkOrdersFromBackend.reduce(
-                    (s, p) => s + mt5Engine.calculateRequiredMargin({ symbol: p.symbol, volume: p.volume, price: p.openPrice }),
+                    (s, p) => s + (p.livePnL || 0),
+                    0,
+                  ) -
+                  sdkOrdersFromBackend.reduce(
+                    (s, p) =>
+                      s +
+                      mt5Engine.calculateRequiredMargin({
+                        symbol: p.symbol,
+                        volume: p.volume,
+                        price: p.openPrice,
+                      }),
                     0,
                   ),
               }}
@@ -881,13 +826,21 @@ const MT5TradingArea = ({
       {/* Modify TP/SL Dialog */}
       {modifyTPSLTrade && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60">
-          <div className={`rounded-lg p-6 w-80 shadow-xl ${isLight ? "bg-white" : "bg-[#1a2332] border border-[#2a3a4a]"}`}>
-            <h3 className={`text-sm font-semibold mb-4 ${isLight ? "text-slate-800" : "text-slate-100"}`}>
+          <div
+            className={`rounded-lg p-6 w-80 shadow-xl ${isLight ? "bg-white" : "bg-[#1a2332] border border-[#2a3a4a]"}`}
+          >
+            <h3
+              className={`text-sm font-semibold mb-4 ${isLight ? "text-slate-800" : "text-slate-100"}`}
+            >
               Modify {modifyTPSLTrade.symbol} {modifyTPSLTrade.type}
             </h3>
             <div className="space-y-3">
               <div>
-                <label className={`text-xs mb-1 block ${isLight ? "text-slate-500" : "text-slate-400"}`}>Stop Loss</label>
+                <label
+                  className={`text-xs mb-1 block ${isLight ? "text-slate-500" : "text-slate-400"}`}
+                >
+                  Stop Loss
+                </label>
                 <input
                   type="number"
                   value={modifySL}
@@ -897,7 +850,11 @@ const MT5TradingArea = ({
                 />
               </div>
               <div>
-                <label className={`text-xs mb-1 block ${isLight ? "text-slate-500" : "text-slate-400"}`}>Take Profit</label>
+                <label
+                  className={`text-xs mb-1 block ${isLight ? "text-slate-500" : "text-slate-400"}`}
+                >
+                  Take Profit
+                </label>
                 <input
                   type="number"
                   value={modifyTP}
