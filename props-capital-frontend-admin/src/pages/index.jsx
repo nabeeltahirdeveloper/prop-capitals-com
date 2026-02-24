@@ -11,6 +11,7 @@ import AdminUsers from "./AdminUsers";
 import AdminChallenges from "./AdminChallenges";
 
 import AdminAccounts from "./AdminAccounts";
+import AdminFundedAccounts from "./AdminFundedAccounts";
 
 import AdminPayouts from "./AdminPayouts";
 
@@ -54,6 +55,7 @@ const PAGES = {
     AdminChallenges: AdminChallenges,
 
     AdminAccounts: AdminAccounts,
+    AdminFundedAccounts: AdminFundedAccounts,
 
     AdminPayouts: AdminPayouts,
 
@@ -120,6 +122,7 @@ function PagesContent() {
                                 <Route path="/AdminUsers" element={<AdminUsers />} />
                                 <Route path="/AdminChallenges" element={<AdminChallenges />} />
                                 <Route path="/AdminAccounts" element={<AdminAccounts />} />
+                                <Route path="/AdminFundedAccounts" element={<AdminFundedAccounts />} />
                                 <Route path="/AdminPayouts" element={<AdminPayouts />} />
                                 <Route path="/AdminPayments" element={<AdminPayments />} />
                                 <Route path="/AdminViolations" element={<AdminViolations />} />
