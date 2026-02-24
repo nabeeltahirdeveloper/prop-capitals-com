@@ -383,8 +383,8 @@ const MT5TradingArea = ({
   useEffect(() => {
     if (!selectedSymbol || !selectedTimeframe) return;
 
-    const WS_URL =
-      import.meta.env.VITE_WEBSOCKET_URL || "http://localhost:5002";
+    const WEBSOCKET_URL =
+      import.meta.env.VITE_WEBSOCKET_URL || "https://api-dev.prop-capitals.com";
     const symbolStr = selectedSymbol.symbol || selectedSymbol;
     const timeframeStr = selectedTimeframe || "M1";
 
@@ -396,6 +396,7 @@ const MT5TradingArea = ({
 
     const socket = io(WS_URL, {
       auth: (cb) => cb({ token: getAuthToken() }),
+      // polling-first: works through nginx proxies and Windows firewall
       transports: ["polling", "websocket"],
       reconnection: true,
       reconnectionDelay: 1000,
@@ -410,6 +411,24 @@ const MT5TradingArea = ({
       socket.emit("subscribeCandles", { symbol: symbolStr, timeframe: timeframeStr });
     });
 
+      console.log("[MT5TradingArea] ✅ Connected to candles WebSocket");
+      // Subscribe to candle updates for the current symbol/timeframe
+      socket.emit("subscribeCandles", { symbol: symbolStr, timeframe: timeframeStr });
+      console.log(`[MT5TradingArea] 📡 Subscribed to candles: ${symbolStr}@${timeframeStr}`);
+    });
+
+    // If already connected, subscribe immediately (symbol/timeframe change without reconnect)
+    if (socket.connected) {
+      socket.emit("subscribeCandles", { symbol: symbolStr, timeframe: timeframeStr });
+    }
+
+    socket.on("disconnect", (reason) => {
+      console.log(
+        "[MT5TradingArea] ❌ Candles WebSocket disconnected:",
+        reason,
+      );
+    });
+    
     socket.on("connect_error", (error) => {
       console.warn("[MT5] Candles WebSocket error:", error.message);
     });

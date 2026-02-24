@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
     Calendar as CalendarIcon,
     List,
@@ -7,17 +7,13 @@ import {
     ChevronLeft,
     ChevronRight,
     Clock,
-    Phone,
-    Video,
     MoreVertical,
-    CheckCircle2,
-    XCircle,
     Loader2,
     User,
-    ArrowRight,
     Filter,
     CalendarDays
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,13 +43,12 @@ import {
     isSameDay,
     addDays,
     parseISO,
-    startOfDay,
-    endOfDay
 } from 'date-fns';
-import { apiGet, apiPost, apiPatch } from '@/lib/api';
+import { apiGet, apiPost } from '@/lib/api';
 import { useToast } from '@/components/ui/use-toast';
 
 export default function CRMCalendar() {
+    const { t } = useTranslation();
     const { toast } = useToast();
     const [viewMode, setViewMode] = useState('calendar'); // 'calendar', 'list'
     const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -71,10 +66,8 @@ export default function CRMCalendar() {
     const [searchQuery, setSearchQuery] = useState('');
     const [typeFilter, setTypeFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
-    const [fromDate, setFromDate] = useState('');
-    const [toDate, setToDate] = useState('');
-    const fromDateRef = useRef(null);
-    const toDateRef = useRef(null);
+    const [fromDate] = useState('');
+    const [toDate] = useState('');
     const meetingDateRef = useRef(null);
     const meetingTimeRef = useRef(null);
 
@@ -91,11 +84,7 @@ export default function CRMCalendar() {
         description: ''
     });
 
-    useEffect(() => {
-        fetchData();
-    }, [searchQuery, typeFilter, statusFilter, fromDate, toDate, currentMonth]);
-
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         setLoading(true);
         try {
             const params = new URLSearchParams();
@@ -103,13 +92,15 @@ export default function CRMCalendar() {
             if (typeFilter && typeFilter !== 'all') params.append('type', typeFilter);
             if (statusFilter && statusFilter !== 'all') params.append('status', statusFilter);
             if (fromDate) {
-                const [y, m, d] = fromDate.split('-').map(Number);
-                const start = new Date(y, m - 1, d, 0, 0, 0, 0);
+                // Ensure fromDate is ISO string at start of day
+                const start = new Date(fromDate);
+                start.setHours(0, 0, 0, 0);
                 params.append('fromDate', start.toISOString());
             }
             if (toDate) {
-                const [y, m, d] = toDate.split('-').map(Number);
-                const end = new Date(y, m - 1, d, 23, 59, 59, 999);
+                // Ensure toDate is ISO string at end of day
+                const end = new Date(toDate);
+                end.setHours(23, 59, 59, 999);
                 params.append('toDate', end.toISOString());
             }
 
@@ -127,13 +118,17 @@ export default function CRMCalendar() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [searchQuery, typeFilter, statusFilter, fromDate, toDate]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData, currentMonth]);
 
     const handleScheduleMeeting = async () => {
         if (!newMeeting.title || !newMeeting.clientName) {
             toast({
-                title: "Error",
-                description: "Please fill in all required fields",
+                title: t('common.error'),
+                description: t('crm.crmCalendar.errorRequiredFields'),
                 variant: "destructive"
             });
             return;
@@ -153,8 +148,8 @@ export default function CRMCalendar() {
             });
 
             toast({
-                title: "Success",
-                description: "Meeting scheduled successfully"
+                title: t('common.success'),
+                description: t('crm.crmCalendar.successScheduled')
             });
 
             setIsModalOpen(false);
@@ -170,8 +165,8 @@ export default function CRMCalendar() {
             fetchData();
         } catch (error) {
             toast({
-                title: "Error",
-                description: error.message || "Failed to schedule meeting",
+                title: t('common.error'),
+                description: error.message || t('crm.crmCalendar.loadError'),
                 variant: "destructive"
             });
         } finally {
@@ -184,16 +179,16 @@ export default function CRMCalendar() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
                 <div>
                     <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
-                        Sales Calendar
+                        {t('crm.crmCalendar.title')}
                     </h1>
-                    <p className="text-muted-foreground mt-1">Your scheduled meetings</p>
+                    <p className="text-muted-foreground mt-1">{t('crm.crmCalendar.subtitle')}</p>
                 </div>
                 <Button
                     className="bg-[#d97706] hover:bg-amber-600 text-white shadow-lg shadow-amber-500/20"
                     onClick={() => setIsModalOpen(true)}
                 >
                     <Plus className="w-4 h-4 mr-2" />
-                    Schedule Meeting
+                    {t('crm.crmCalendar.scheduleMeeting')}
                 </Button>
             </div>
         );
@@ -206,7 +201,7 @@ export default function CRMCalendar() {
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input
-                            placeholder="Search meetings, clients, or agents..."
+                            placeholder={t('crm.crmCalendar.searchPlaceholder')}
                             className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -216,23 +211,23 @@ export default function CRMCalendar() {
                         <Select value={typeFilter} onValueChange={setTypeFilter}>
                             <SelectTrigger className="w-[140px] bg-muted border-border text-foreground">
                                 <Filter className="w-3.5 h-3.5 mr-2 text-muted-foreground" />
-                                <SelectValue placeholder="All Types" />
+                                <SelectValue placeholder={t('crm.crmCalendar.allTypes')} />
                             </SelectTrigger>
                             <SelectContent className="bg-card border-border text-foreground">
-                                <SelectItem value="all">All Types</SelectItem>
-                                <SelectItem value="Call">Call</SelectItem>
-                                <SelectItem value="Meeting">Meeting</SelectItem>
+                                <SelectItem value="all">{t('crm.crmCalendar.allTypes')}</SelectItem>
+                                <SelectItem value="Call">{t('crm.crmCalendar.call')}</SelectItem>
+                                <SelectItem value="Meeting">{t('crm.crmCalendar.meeting')}</SelectItem>
                             </SelectContent>
                         </Select>
                         <Select value={statusFilter} onValueChange={setStatusFilter}>
                             <SelectTrigger className="w-[140px] bg-muted border-border text-foreground">
-                                <SelectValue placeholder="All Status" />
+                                <SelectValue placeholder={t('crm.crmCalendar.allStatus')} />
                             </SelectTrigger>
                             <SelectContent className="bg-card border-border text-foreground">
-                                <SelectItem value="all">All Status</SelectItem>
-                                <SelectItem value="SCHEDULED">Scheduled</SelectItem>
-                                <SelectItem value="COMPLETED">Completed</SelectItem>
-                                <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                                <SelectItem value="all">{t('crm.crmCalendar.allStatus')}</SelectItem>
+                                <SelectItem value="SCHEDULED">{t('crm.crmCalendar.scheduled')}</SelectItem>
+                                <SelectItem value="COMPLETED">{t('crm.crmCalendar.completed')}</SelectItem>
+                                <SelectItem value="CANCELLED">{t('crm.crmCalendar.cancelled')}</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -245,7 +240,7 @@ export default function CRMCalendar() {
                             {stats.totalMeetings}
                         </p>
                         <p className="text-xs text-muted-foreground font-medium mt-2 uppercase tracking-wider">
-                            Total Meetings
+                            {t('crm.crmCalendar.totalMeetings')}
                         </p>
                     </Card>
                     <Card className="bg-card border-border p-4 hover:border-amber-300 transition-colors">
@@ -253,7 +248,7 @@ export default function CRMCalendar() {
                             {stats.today}
                         </p>
                         <p className="text-xs text-muted-foreground font-medium mt-2 uppercase tracking-wider">
-                            Today
+                            {t('crm.crmCalendar.today')}
                         </p>
                     </Card>
                     <Card className="bg-card border-border p-4 hover:border-amber-300 transition-colors">
@@ -261,7 +256,7 @@ export default function CRMCalendar() {
                             {stats.calls}
                         </p>
                         <p className="text-xs text-muted-foreground font-medium mt-2 uppercase tracking-wider">
-                            Calls
+                            {t('crm.crmCalendar.calls')}
                         </p>
                     </Card>
                     <Card className="bg-card border-border p-4 hover:border-amber-300 transition-colors">
@@ -269,7 +264,7 @@ export default function CRMCalendar() {
                             {stats.meetings}
                         </p>
                         <p className="text-xs text-muted-foreground font-medium mt-2 uppercase tracking-wider">
-                            Meetings
+                            {t('crm.crmCalendar.meetings')}
                         </p>
                     </Card>
                 </div>
@@ -291,7 +286,7 @@ export default function CRMCalendar() {
                     onClick={() => setViewMode('calendar')}
                 >
                     <CalendarDays className="w-4 h-4 mr-2" />
-                    Calendar View
+                    {t('crm.crmCalendar.calendarView')}
                 </Button>
                 <Button
                     variant={viewMode === 'list' ? 'secondary' : 'ghost'}
@@ -304,7 +299,7 @@ export default function CRMCalendar() {
                     onClick={() => setViewMode('list')}
                 >
                     <List className="w-4 h-4 mr-2" />
-                    List View
+                    {t('crm.crmCalendar.listView')}
                 </Button>
             </div>
         );
@@ -346,7 +341,7 @@ export default function CRMCalendar() {
                         </span>
 
                         <div className="mt-2 space-y-1">
-                            {dailyMeetings.slice(0, 3).map((m, idx) => (
+                            {dailyMeetings.slice(0, 3).map((m) => (
                                 <div
                                     key={m.id}
                                     className={`text-[10px] px-1.5 py-0.5 rounded truncate border
@@ -358,7 +353,7 @@ export default function CRMCalendar() {
                             ))}
                             {dailyMeetings.length > 3 && (
                                 <div className="text-[10px] text-muted-foreground font-bold ml-1">
-                                    + {dailyMeetings.length - 3} more
+                                    {t('crm.crmCalendar.moreCount', { count: dailyMeetings.length - 3 })}
                                 </div>
                             )}
                         </div>
@@ -402,12 +397,12 @@ export default function CRMCalendar() {
                         </div>
                     </div>
                     <div className="grid grid-cols-7 bg-muted/40">
-                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
+                        {['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].map(d => (
                             <div
                                 key={d}
                                 className="py-3 text-center text-[10px] font-bold text-muted-foreground uppercase tracking-widest border-b border-border/60"
                             >
-                                {d}
+                                {t(`crm.crmCalendar.weekdays.${d}`)}
                             </div>
                         ))}
                     </div>
@@ -423,7 +418,7 @@ export default function CRMCalendar() {
                             {format(selectedDate, 'MMMM d, yyyy')}
                         </h3>
                         <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider font-semibold">
-                            Today's Schedule
+                            {t('crm.crmCalendar.todaysSchedule')}
                         </p>
                     </div>
                     <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
@@ -433,14 +428,14 @@ export default function CRMCalendar() {
                                     <CalendarIcon className="w-8 h-8 text-muted-foreground" />
                                 </div>
                                 <p className="text-muted-foreground font-medium">
-                                    No meetings scheduled
+                                    {t('crm.crmCalendar.noMeetings')}
                                 </p>
                                 <Button
                                     variant="link"
                                     className="text-[#d97706] mt-2 text-sm"
                                     onClick={() => setIsModalOpen(true)}
                                 >
-                                    Schedule one now
+                                    {t('crm.crmCalendar.scheduleOneNow')}
                                 </Button>
                             </div>
                         ) : (
@@ -471,7 +466,7 @@ export default function CRMCalendar() {
                                                         {format(parseISO(meeting.startTime), 'HH:mm')}
                                                     </p>
                                                     <p className="text-[10px] text-muted-foreground font-medium mt-1">
-                                                        {meeting.duration} min
+                                                        {meeting.duration} {t('crm.crmCalendar.minShort')}
                                                     </p>
                                                 </div>
                                             </div>
@@ -489,18 +484,18 @@ export default function CRMCalendar() {
         return (
             <Card className="bg-card border-border overflow-hidden shadow-xl">
                 <div className="p-6 border-b border-border bg-muted/60">
-                    <h2 className="text-xl font-bold text-foreground">All Meetings</h2>
+                    <h2 className="text-xl font-bold text-foreground">{t('crm.crmCalendar.listView')}</h2>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
                             <tr className="border-b border-border text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
-                                <th className="px-6 py-4">Date & Time</th>
-                                <th className="px-6 py-4">Meeting</th>
-                                <th className="px-6 py-4">Client</th>
-                                <th className="px-6 py-4">Type</th>
-                                <th className="px-6 py-4">Duration</th>
-                                <th className="px-6 py-4">Status</th>
+                                <th className="px-6 py-4">{t('crm.crmCalendar.dateTime')}</th>
+                                <th className="px-6 py-4">{t('crm.crmCalendar.meeting')}</th>
+                                <th className="px-6 py-4">{t('crm.crmCalendar.clientName')}</th>
+                                <th className="px-6 py-4">{t('crm.crmCalendar.type')}</th>
+                                <th className="px-6 py-4">{t('crm.crmCalendar.duration')}</th>
+                                <th className="px-6 py-4">{t('crm.crmCalendar.status')}</th>
                                 <th className="px-6 py-4"></th>
                             </tr>
                         </thead>
@@ -508,7 +503,7 @@ export default function CRMCalendar() {
                             {meetings.length === 0 ? (
                                 <tr>
                                     <td colSpan="7" className="px-6 py-12 text-center text-muted-foreground">
-                                        No meetings found
+                                        {t('crm.crmCalendar.noMeetings')}
                                     </td>
                                 </tr>
                             ) : (
@@ -551,11 +546,11 @@ export default function CRMCalendar() {
                                             <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wider
                                                 ${meeting.type === 'Call' ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 'bg-blue-50 border-blue-200 text-blue-600'}
                                             `}>
-                                                {meeting.type}
+                                                {meeting.type === 'Call' ? t('crm.crmCalendar.call') : meeting.type === 'Meeting' ? t('crm.crmCalendar.meeting') : t('crm.crmCalendar.other')}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-sm text-muted-foreground font-medium">
-                                            {meeting.duration} min
+                                            {meeting.duration} {t('crm.crmCalendar.minShort')}
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wider
@@ -565,7 +560,11 @@ export default function CRMCalendar() {
                                                         ? 'bg-emerald-50 border-emerald-200 text-emerald-600'
                                                         : 'bg-red-50 border-red-200 text-red-600'}
                                             `}>
-                                                {meeting.status}
+                                                {meeting.status === 'SCHEDULED'
+                                                    ? t('crm.crmCalendar.scheduled')
+                                                    : meeting.status === 'COMPLETED'
+                                                        ? t('crm.crmCalendar.completed')
+                                                        : t('crm.crmCalendar.cancelled')}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -592,7 +591,7 @@ export default function CRMCalendar() {
             {loading && meetings.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-64">
                     <Loader2 className="w-10 h-10 animate-spin text-[#d97706] mb-4" />
-                    <p className="text-muted-foreground font-medium">Loading your schedule...</p>
+                    <p className="text-muted-foreground font-medium">{t('crm.crmCalendar.loading')}</p>
                 </div>
             ) : (
                 viewMode === 'calendar' ? renderCalendar() : renderListView()
@@ -606,17 +605,17 @@ export default function CRMCalendar() {
                             <div className="p-2 rounded-lg bg-amber-50 text-[#d97706]">
                                 <CalendarDays className="w-5 h-5" />
                             </div>
-                            Schedule New Meeting
+                            {t('crm.crmCalendar.scheduleNewMeeting')}
                         </DialogTitle>
                     </DialogHeader>
 
                     <div className="p-6 space-y-5">
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                                Meeting Title
+                                {t('crm.crmCalendar.meetingTitle')}
                             </label>
                             <Input
-                                placeholder="e.g., Follow-up Call"
+                                placeholder={t('crm.crmCalendar.placeholderTitle')}
                                 className="bg-muted border-border text-foreground h-11"
                                 value={newMeeting.title}
                                 onChange={(e) => setNewMeeting({ ...newMeeting, title: e.target.value })}
@@ -625,10 +624,10 @@ export default function CRMCalendar() {
 
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                                Client Name
+                                {t('crm.crmCalendar.clientName')}
                             </label>
                             <Input
-                                placeholder="Enter client name"
+                                placeholder={t('crm.crmCalendar.placeholderClient')}
                                 className="bg-muted border-border text-foreground h-11"
                                 value={newMeeting.clientName}
                                 onChange={(e) => setNewMeeting({ ...newMeeting, clientName: e.target.value })}
@@ -638,7 +637,7 @@ export default function CRMCalendar() {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                                    Date
+                                    {t('crm.crmCalendar.date')}
                                 </label>
                                 <div className="relative">
                                     <CalendarIcon
@@ -656,7 +655,7 @@ export default function CRMCalendar() {
                             </div>
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                                    Time
+                                    {t('crm.crmCalendar.time')}
                                 </label>
                                 <div className="relative">
                                     <Clock
@@ -677,7 +676,7 @@ export default function CRMCalendar() {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                                    Duration (minutes)
+                                    {t('crm.crmCalendar.duration')}
                                 </label>
                                 <Input
                                     type="number"
@@ -688,7 +687,7 @@ export default function CRMCalendar() {
                             </div>
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                                    Type
+                                    {t('crm.crmCalendar.type')}
                                 </label>
                                 <Select
                                     value={newMeeting.type}
@@ -698,9 +697,9 @@ export default function CRMCalendar() {
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent className="bg-card border-border text-foreground">
-                                        <SelectItem value="Call">Call</SelectItem>
-                                        <SelectItem value="Meeting">Meeting</SelectItem>
-                                        <SelectItem value="Other">Other</SelectItem>
+                                        <SelectItem value="Call">{t('crm.crmCalendar.call')}</SelectItem>
+                                        <SelectItem value="Meeting">{t('crm.crmCalendar.meeting')}</SelectItem>
+                                        <SelectItem value="Other">{t('crm.crmCalendar.other')}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -709,7 +708,7 @@ export default function CRMCalendar() {
 
                     <DialogFooter className="p-6 bg-muted/60 border-t border-border gap-3">
                         <Button variant="ghost" className="text-muted-foreground hover:text-foreground" onClick={() => setIsModalOpen(false)}>
-                            Cancel
+                            {t('crm.crmCalendar.cancel')}
                         </Button>
                         <Button
                             className="bg-[#d97706] hover:bg-amber-600 text-white font-bold h-11 px-8 rounded-lg shadow-lg shadow-amber-500/20"
@@ -717,7 +716,7 @@ export default function CRMCalendar() {
                             disabled={isSaving}
                         >
                             {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                            Schedule Meeting
+                            {t('crm.crmCalendar.scheduleMeeting')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
