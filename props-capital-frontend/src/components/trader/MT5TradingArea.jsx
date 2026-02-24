@@ -394,7 +394,7 @@ const MT5TradingArea = ({
       localStorage.getItem("authToken") ||
       localStorage.getItem("jwt_token");
 
-    const socket = io(WS_URL, {
+    const socket = io(WEBSOCKET_URL, {
       auth: (cb) => cb({ token: getAuthToken() }),
       // polling-first: works through nginx proxies and Windows firewall
       transports: ["polling", "websocket"],
@@ -407,12 +407,7 @@ const MT5TradingArea = ({
     candlesSocketRef.current = socket;
 
     socket.on("connect", () => {
-      // Subscribe to real-time candle updates for this symbol/timeframe
-      socket.emit("subscribeCandles", { symbol: symbolStr, timeframe: timeframeStr });
-    });
-
       console.log("[MT5TradingArea] ✅ Connected to candles WebSocket");
-      // Subscribe to candle updates for the current symbol/timeframe
       socket.emit("subscribeCandles", { symbol: symbolStr, timeframe: timeframeStr });
       console.log(`[MT5TradingArea] 📡 Subscribed to candles: ${symbolStr}@${timeframeStr}`);
     });
@@ -463,9 +458,9 @@ const MT5TradingArea = ({
         }
       : selectedSymbol;
 
-  const handlePriceUpdate = useCallback((symbolName, price) => {
-    pricesRef.current[symbolName] = price;
-  }, []);
+  // const handlePriceUpdate = useCallback((symbolName, price) => {
+  //   pricesRef.current[symbolName] = price;
+  // }, []);
 
   const handleNewOrder = () => {
     setOrderType("BUY");
