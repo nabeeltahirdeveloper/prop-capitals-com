@@ -209,9 +209,31 @@ export class PricesService {
       })
       .filter((x) => x.symbol);
 
+    // Metal Formatting (XAU/USD, XAG/USD)
+    // Fallback prices used when Massive WS plan doesn't stream metal quotes
+    const metalSymbols = [
+      { symbol: 'XAU/USD', spread: 0.5, fallbackBid: 2870.0 },
+      { symbol: 'XAG/USD', spread: 0.03, fallbackBid: 32.5 },
+    ];
+
+    const formattedMetals = metalSymbols.map((s) => {
+      const quote = this.massiveWebSocketService.getPrice(s.symbol);
+      const bid = quote?.bid ?? s.fallbackBid;
+      const ask = quote?.ask ?? (bid + s.spread);
+      return {
+        symbol: s.symbol,
+        category: 'metal',
+        bid,
+        ask,
+        spread: s.spread,
+        change: 0,
+      };
+    });
+
     return {
       forex: formattedForex,
       crypto: formattedCrypto,
+      metals: formattedMetals,
       timestamp: new Date().toISOString(),
     };
   }
@@ -228,7 +250,7 @@ export class PricesService {
     // 3. Fallback
     try {
       const all = await this.getAllPrices();
-      const found = [...all.forex, ...all.crypto].find(
+      const found = [...all.forex, ...all.crypto, ...(all.metals || [])].find(
         (x) => x.symbol === symbol,
       );
       return found ? found.bid : null;

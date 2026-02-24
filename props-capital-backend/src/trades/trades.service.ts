@@ -68,7 +68,7 @@ export class TradesService {
       const isNewCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|LINK|USDT/i.test(String(symbol || ''));
       const isNewXAU = /XAU/i.test(String(symbol || ''));
       const isNewXAG = /XAG/i.test(String(symbol || ''));
-      const newContractSize = isNewXAU ? 100 : isNewXAG ? 5000 : isNewCrypto ? 1 : 100000;
+      const newContractSize = isNewXAU ? 100 : isNewXAG ? 5000 : isNewCrypto ? 100 : 100000;
       const requiredMargin = (Number(volume) * newContractSize * Number(openPrice)) / effectiveLeverage;
 
       const usedMargin = (account.trades || [])
@@ -77,7 +77,7 @@ export class TradesService {
           const isCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|LINK|USDT/i.test(String(t.symbol || ''));
           const isXAU = /XAU/i.test(String(t.symbol || ''));
           const isXAG = /XAG/i.test(String(t.symbol || ''));
-          const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 1 : 100000;
+          const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 100 : 100000;
           const existingLeverage = Number((t as any)?.leverage);
           const effectiveExistingLeverage = Number.isFinite(existingLeverage) && existingLeverage > 0 ? existingLeverage : 1;
           return sum + ((Number(t.volume) * contractSize * Number(t.openPrice)) / effectiveExistingLeverage);
@@ -244,7 +244,7 @@ export class TradesService {
           symbolUpper.includes('LINK');
         const isXAU = symbolUpper.includes('XAU');
         const isXAG = symbolUpper.includes('XAG');
-        const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 1 : 100000;
+        const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 100 : 100000;
         const priceDiff =
           trade.type === 'BUY'
             ? closePrice - trade.openPrice
