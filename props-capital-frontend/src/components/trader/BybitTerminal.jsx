@@ -19,6 +19,7 @@ import { isCryptoSymbol } from "@/config/symbolConfig";
 import { useToast } from "@/components/ui/use-toast";
 import { useTraderTheme } from "./TraderPanelLayout";
 import TradingChart from "../trading/TradingChart";
+import ViolationModal from "../trading/ViolationModal";
 import SectionErrorBoundary from "../ui/SectionErrorBoundary";
 
 /* ───────────────────────── Symbol List (Crypto + Forex) ───────────────────────── */
@@ -343,6 +344,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   const dropdownRef = useRef(null);
   const chartRef = useRef(null);
   const [tradeMode, setTradeMode] = useState("cfd");
+  const [selectedLeverage, setSelectedLeverage] = useState(100);
+  const [violationModal, setViolationModal] = useState(null);
+  const dismissedModalAccountsRef = useRef(new Set());
 
   const {
     selectedSymbol,
@@ -505,6 +509,12 @@ const BybitTradingArea = ({ selectedChallenge }) => {
           description: `Account is now ${event.status}`,
           variant: "destructive",
         });
+        dismissedModalAccountsRef.current.delete(accountId);
+        setViolationModal({
+          type: event.status,
+          shown: true,
+          accountId,
+        });
       }
     },
     [queryClient, accountId, toast],
@@ -520,6 +530,33 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     onAccountUpdate: handleAccountUpdate,
   });
 
+  /* ── Violation modal: show on status change or page load with locked status ── */
+  useEffect(() => {
+    if (!accountId) return;
+    const status = normalizedAccountStatus;
+    const type =
+      status === "daily_locked"
+        ? "DAILY_LOCKED"
+        : status === "disqualified" || status === "failed"
+          ? "DISQUALIFIED"
+          : null;
+    if (!type) {
+      setViolationModal(null);
+      dismissedModalAccountsRef.current.delete(accountId);
+      return;
+    }
+    if (!dismissedModalAccountsRef.current.has(accountId)) {
+      setViolationModal({ type, shown: true, accountId });
+    }
+  }, [accountId, normalizedAccountStatus]);
+
+  const handleViolationModalClose = useCallback(() => {
+    if (accountId) {
+      dismissedModalAccountsRef.current.add(accountId);
+    }
+    setViolationModal((prev) => (prev ? { ...prev, shown: false } : null));
+  }, [accountId]);
+
   /* ── Derived data ── */
   const openPositions = useMemo(() => {
     const t = Array.isArray(tradesData) ? tradesData : [];
@@ -529,7 +566,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     return openPositions.reduce((sum, position) => {
       const vol = Number(position.volume);
       const price = Number(position.openPrice);
-      const lev = Number(position.leverage) || 1;
+      const lev = Number(position.leverage) || 100;
       if (
         !Number.isFinite(vol) ||
         vol <= 0 ||
@@ -737,10 +774,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     (pct) => {
       setSliderPct(pct);
       if (!availableBalance || !effectivePrice || effectivePrice === 0) return;
-      const maxQty = availableBalance / (effectivePrice * contractSize);
+      const maxQty = (availableBalance * selectedLeverage) / (effectivePrice * contractSize);
       setQuantity(((maxQty * pct) / 100).toFixed(isCrypto ? 6 : 2));
     },
-    [availableBalance, effectivePrice, contractSize, isCrypto],
+    [availableBalance, effectivePrice, contractSize, isCrypto, selectedLeverage],
   );
 
   /* ── Symbol switching ── */
@@ -874,6 +911,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
             type: pos.type,
             volume: remainVol,
             openPrice: closePrice,
+            leverage: selectedLeverage,
             stopLoss: pos.stopLoss ?? null,
             takeProfit: pos.takeProfit ?? null,
           });
@@ -888,6 +926,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
       accountId,
       closePositionMutation,
       createTradeMutation,
+      selectedLeverage,
     ],
   );
 
@@ -921,7 +960,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
           : currentBid;
     const maxAllowedQty =
       priceForMargin > 0 && contractSize > 0
-        ? availableBalance / (priceForMargin * contractSize)
+        ? (availableBalance * selectedLeverage) / (priceForMargin * contractSize)
         : 0;
     const requestedQty = parseFloat(quantity);
     if (requestedQty > maxAllowedQty * 1.001) {
@@ -946,6 +985,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
           type: orderSide.toUpperCase(),
           volume: parseFloat(quantity),
           openPrice,
+          leverage: selectedLeverage,
           stopLoss: slPrice ? parseFloat(slPrice) : null,
           takeProfit: tpPrice ? parseFloat(tpPrice) : null,
         });
@@ -957,6 +997,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
           orderType: orderType === "tp/sl" ? "STOP" : "LIMIT",
           volume: parseFloat(quantity),
           price: parseFloat(limitPrice),
+          leverage: selectedLeverage,
           stopLoss: slPrice ? parseFloat(slPrice) : null,
           takeProfit: tpPrice ? parseFloat(tpPrice) : null,
         });
@@ -975,7 +1016,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     const vol = parseFloat(quantity) || (isCrypto ? 0.001 : 0.01);
     const maxAllowed =
       currentAsk > 0 && contractSize > 0
-        ? availableBalance / (currentAsk * contractSize)
+        ? (availableBalance * selectedLeverage) / (currentAsk * contractSize)
         : 0;
     if (vol > maxAllowed * 1.001) {
       toast({
@@ -993,6 +1034,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         type: "BUY",
         volume: vol,
         openPrice: currentAsk,
+        leverage: selectedLeverage,
       });
     } catch (e) {
       console.error("[BybitTerminal] Chart buy failed:", e);
@@ -1008,6 +1050,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     contractSize,
     availableBalance,
     createTradeMutation,
+    selectedLeverage,
     toast,
   ]);
 
@@ -1017,7 +1060,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     const vol = parseFloat(quantity) || (isCrypto ? 0.001 : 0.01);
     const maxAllowed =
       currentBid > 0 && contractSize > 0
-        ? availableBalance / (currentBid * contractSize)
+        ? (availableBalance * selectedLeverage) / (currentBid * contractSize)
         : 0;
     if (vol > maxAllowed * 1.001) {
       toast({
@@ -1035,6 +1078,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         type: "SELL",
         volume: vol,
         openPrice: currentBid,
+        leverage: selectedLeverage,
       });
     } catch (e) {
       console.error("[BybitTerminal] Chart sell failed:", e);
@@ -1050,6 +1094,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     contractSize,
     availableBalance,
     createTradeMutation,
+    selectedLeverage,
     toast,
   ]);
 
@@ -1885,7 +1930,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           ? "0.001"
                           : "0.00001",
                     },
-                    { label: "Margin", value: "Perpetual (No Leverage)" },
+                    { label: "Margin", value: `Perpetual (${selectedLeverage}x Leverage)` },
                     {
                       label: "Trading Hours",
                       value: isCrypto ? "24/7" : "Mon-Fri, 00:00-24:00 UTC",
@@ -3099,6 +3144,37 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     </div>
                   </div>
 
+                  {/* Leverage selector */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span style={{ fontSize: 12, color: C.textS }}>Leverage</span>
+                      <span style={{ fontSize: 11, color: C.yellow, fontWeight: 600 }}>
+                        {selectedLeverage}x
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-6 gap-1">
+                      {[1, 10, 25, 50, 75, 100].map((lev) => (
+                        <button
+                          key={lev}
+                          onClick={() => setSelectedLeverage(lev)}
+                          style={{
+                            padding: "4px 0",
+                            borderRadius: 4,
+                            fontSize: 11,
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            border: `1px solid ${selectedLeverage === lev ? C.yellow : C.border}`,
+                            background: selectedLeverage === lev ? C.yellowDim : "transparent",
+                            color: selectedLeverage === lev ? C.yellow : C.textS,
+                            transition: "all .15s",
+                          }}
+                        >
+                          {lev}x
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* TP/SL toggle */}
                   {orderType !== "tp/sl" && (
                     <div className="flex items-center justify-between">
@@ -3216,6 +3292,15 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       className="flex justify-between"
                       style={{ fontSize: 12 }}
                     >
+                      <span style={{ color: C.textS }}>Margin</span>
+                      <span style={{ color: C.textP, fontFamily: "monospace" }}>
+                        {orderValue > 0 ? formatNum(orderValue / selectedLeverage) : "--"} USDT
+                      </span>
+                    </div>
+                    <div
+                      className="flex justify-between"
+                      style={{ fontSize: 12 }}
+                    >
                       <span style={{ color: C.textS }}>Commission</span>
                       <span style={{ color: C.textS, fontFamily: "monospace" }}>
                         {qty > 0 ? `~${commission.toFixed(2)}` : "--"} USDT
@@ -3237,7 +3322,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       >
                         {balance > 0 && effectivePrice > 0
                           ? (
-                              availableBalance /
+                              (availableBalance * selectedLeverage) /
                               (effectivePrice * contractSize)
                             ).toFixed(isCrypto ? 6 : 4)
                           : "--"}{" "}
@@ -3284,6 +3369,19 @@ const BybitTradingArea = ({ selectedChallenge }) => {
           </div>
         </SectionErrorBoundary>
       </div>
+
+      {/* Violation Modal */}
+      <ViolationModal
+        isOpen={violationModal?.shown === true}
+        onClose={handleViolationModalClose}
+        violationType={violationModal?.type}
+        account={{
+          equity: equity,
+          balance: balance,
+          maxDailyDrawdown: selectedChallenge?.challenge?.maxDailyLoss ?? selectedChallenge?.rules?.maxDailyLoss ?? 5,
+          maxOverallDrawdown: selectedChallenge?.challenge?.maxTotalDrawdown ?? selectedChallenge?.rules?.maxTotalDrawdown ?? 10,
+        }}
+      />
     </div>
   );
 };
