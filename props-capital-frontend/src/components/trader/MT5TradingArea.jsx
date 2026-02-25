@@ -717,6 +717,7 @@ const MT5TradingArea = ({
                   <BuySellPanel
                     bidPrice={realTimeBidPrice ?? currentSymbolData.bid}
                     askPrice={realTimeAskPrice ?? currentSymbolData.ask}
+                    userAccountId={accountId}
                     onBuyClick={handleBuyClick}
                     onSellClick={handleSellClick}
                   />
