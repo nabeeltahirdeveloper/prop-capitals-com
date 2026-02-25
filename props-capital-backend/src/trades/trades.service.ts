@@ -66,14 +66,18 @@ export class TradesService {
       const requestedLeverage = positionType === 'SPOT' ? 1 : Number(data?.leverage);
       const effectiveLeverage = Number.isFinite(requestedLeverage) && requestedLeverage > 0 ? requestedLeverage : 1;
       const isNewCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|LINK|USDT/i.test(String(symbol || ''));
-      const newContractSize = isNewCrypto ? 1 : 100000;
+      const isNewXAU = /XAU/i.test(String(symbol || ''));
+      const isNewXAG = /XAG/i.test(String(symbol || ''));
+      const newContractSize = isNewXAU ? 100 : isNewXAG ? 5000 : isNewCrypto ? 100 : 100000;
       const requiredMargin = (Number(volume) * newContractSize * Number(openPrice)) / effectiveLeverage;
 
       const usedMargin = (account.trades || [])
         .filter((t: any) => t.closePrice === null)
         .reduce((sum: number, t: any) => {
           const isCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|LINK|USDT/i.test(String(t.symbol || ''));
-          const contractSize = isCrypto ? 1 : 100000;
+          const isXAU = /XAU/i.test(String(t.symbol || ''));
+          const isXAG = /XAG/i.test(String(t.symbol || ''));
+          const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 100 : 100000;
           const existingLeverage = Number((t as any)?.leverage);
           const effectiveExistingLeverage = Number.isFinite(existingLeverage) && existingLeverage > 0 ? existingLeverage : 1;
           return sum + ((Number(t.volume) * contractSize * Number(t.openPrice)) / effectiveExistingLeverage);
@@ -238,7 +242,9 @@ export class TradesService {
           symbolUpper.includes('DOT') ||
       //    symbolUpper.includes('MATIC') ||
           symbolUpper.includes('LINK');
-        const contractSize = isCrypto ? 1 : 100000;
+        const isXAU = symbolUpper.includes('XAU');
+        const isXAG = symbolUpper.includes('XAG');
+        const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 100 : 100000;
         const priceDiff =
           trade.type === 'BUY'
             ? closePrice - trade.openPrice

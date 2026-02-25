@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   MessageSquare,
   Mail,
@@ -8,6 +8,7 @@ import {
   CheckCircle,
   ExternalLink,
   Loader2,
+  AlertCircle,
 } from "lucide-react";
 import { useTraderTheme } from "./TraderPanelLayout";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -16,6 +17,13 @@ import { getUserTickets, createSupportTicket } from "@/api/support";
 import { useToast } from "@/components/ui/use-toast";
 import { formatDate } from "@/utils/dateFormating";
 import { useChatSupportStore } from "@/lib/stores/chat-support.store";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const SupportPage = () => {
   const { isDark } = useTraderTheme();
@@ -34,18 +42,12 @@ const SupportPage = () => {
     queryFn: getCurrentUser,
     retry: false,
   });
+  const authUserId = user?.userId || user?.id;
 
-  const { data: tickets = [], isLoading } = useQuery({
-    queryKey: ["support-tickets"],
-    queryFn: async () => {
-      try {
-        return await getUserTickets();
-      } catch (error) {
-        console.error("Failed to fetch tickets:", error);
-        return [];
-      }
-    },
-    enabled: !!user?.userId,
+  const { data: tickets = [], isLoading, isError: isTicketsError } = useQuery({
+    queryKey: ["support-tickets", authUserId],
+    queryFn: () => getUserTickets(authUserId),
+    enabled: !!authUserId,
     retry: false,
     refetchInterval: 10000,
   });
@@ -77,7 +79,14 @@ const SupportPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!user?.userId) return;
+    if (!authUserId) {
+      toast({
+        title: "Not authenticated",
+        description: "Please sign in to submit a support ticket.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     createTicketMutation.mutate({
       subject: ticketForm.subject.trim(),
@@ -264,21 +273,29 @@ const SupportPage = () => {
                 >
                   Category
                 </label>
-                <select
+                <Select
                   value={ticketForm.category}
-                  onChange={(e) => setTicketForm({ ...ticketForm, category: e.target.value })}
-                  className={`w-full px-4 py-3 rounded-xl border transition-all ${isDark ? "bg-white/5 border-white/10 text-white focus:border-amber-500" : "bg-slate-50 border-slate-200 text-slate-900 focus:border-amber-500"} focus:outline-none focus:ring-2 focus:ring-amber-500/20`}
+                  onValueChange={(value) => setTicketForm({ ...ticketForm, category: value })}
                 >
-                  {supportCategories.map((cat) => (
-                    <option
-                      key={cat.value}
-                      value={cat.value}
-                      className="text-slate-900 bg-white"
-                    >
-                      {cat.label}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger
+                    className={`w-full px-4 py-3 h-auto rounded-xl border transition-all pr-3 ${isDark ? "bg-white/5 border-white/10 text-white focus:border-amber-500 data-[state=open]:border-amber-500" : "bg-slate-50 border-slate-200 text-slate-900 focus:border-amber-500"} focus:outline-none focus:ring-2 focus:ring-amber-500/20`}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent
+                    className={isDark ? "bg-[#1a1f2a] border-white/10 text-white" : "bg-white border-slate-200 text-slate-900"}
+                  >
+                    {supportCategories.map((cat) => (
+                      <SelectItem
+                        key={cat.value}
+                        value={cat.value}
+                        className={isDark ? "text-white focus:bg-amber-500/20 focus:text-amber-400" : "text-slate-900 focus:bg-amber-50 focus:text-amber-700"}
+                      >
+                        {cat.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
@@ -348,6 +365,13 @@ const SupportPage = () => {
                 >
                   <Loader2 className="w-4 h-4 animate-spin" />
                   Loading tickets...
+                </div>
+              ) : isTicketsError ? (
+                <div
+                  className={`p-3 rounded-xl flex items-center gap-2 text-sm ${isDark ? "bg-red-500/10 text-red-400" : "bg-red-50 text-red-600"}`}
+                >
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  Failed to load tickets. Please refresh and try again.
                 </div>
               ) : mappedTickets.length === 0 ? (
                 <div

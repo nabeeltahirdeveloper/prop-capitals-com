@@ -85,15 +85,27 @@ export const TradingProvider = ({ children }) => {
 
   const socketRef = useRef(null);
 
-  // ✅ Price update batching refs (slowed down for MT5-like stability)
-  const pendingPriceRef = useRef(new Map()); // symbol -> latest update
-  const flushTimerRef = useRef(null);
-  const FLUSH_MS = 1000; // 1 second batching for natural, stable price updates (MT5-like)
+  // Ref so fetchOrders can read current prices synchronously without adding symbols to its deps
+  const symbolsRef = useRef([]);
+  // Monotonically increasing counter — only the latest fetch call may write to state
+  const fetchOrdersRequestIdRef = useRef(0);
+
+  // Normalize symbol to canonical slash format: "BTCUSDT" → "BTC/USD", "EURUSD" → "EUR/USD"
+  // DB trades can be stored in either format; prices/sockets always use slash format
+  const normalizeSymbol = useCallback((symbol) => {
+    if (!symbol) return symbol;
+    if (symbol.includes("/")) return symbol; // already normalized
+    if (symbol.endsWith("USDT")) return `${symbol.replace(/USDT$/, "")}/USD`;
+    if (symbol.length >= 6 && /^[A-Z]+$/.test(symbol))
+      return `${symbol.slice(0, 3)}/${symbol.slice(3)}`;
+    return symbol;
+  }, []);
 
   // ---------------------------------------
   // API: fetchOrders – project APIs: auth/me → trading-accounts → trades/account
   // ---------------------------------------
   const fetchOrders = useCallback(async (accountId) => {
+    const myRequestId = ++fetchOrdersRequestIdRef.current;
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
@@ -123,7 +135,7 @@ export const TradingProvider = ({ children }) => {
       const fetchedOrders = list.map((trade) => ({
         id: trade.id,
         ticket: trade.id,
-        symbol: trade.symbol,
+        symbol: normalizeSymbol(trade.symbol), // normalize to "BTC/USD" format to match price data
         type: trade.type,
         volume: trade.volume,
         price: trade.openPrice,
@@ -138,13 +150,54 @@ export const TradingProvider = ({ children }) => {
         openAt: trade.openedAt,
         closeAt: trade.closedAt ?? null,
         closePrice: trade.closePrice ?? null,
+        closeReason: trade.closeReason ?? null,
       }));
-      setOrders(fetchedOrders);
+
+      // Discard result if a newer fetch has already started
+      if (myRequestId !== fetchOrdersRequestIdRef.current) return;
+
+      // Merge fetched orders with real-time profit so open positions never flash to 0
+      setOrders((prev) => {
+        const prevById = new Map(prev.map((o) => [o.id, o]));
+        return fetchedOrders.map((order) => {
+          if (order.status !== "OPEN") return order;
+
+          // Priority 1: calculate from current known prices (handles startup + reconnect)
+          const symbolData = symbolsRef.current.find(
+            (s) => s.symbol === order.symbol,
+          );
+          if (symbolData) {
+            const currentPrice =
+              order.type === "BUY"
+                ? parseFloat(symbolData.bid || 0)
+                : parseFloat(symbolData.ask || 0);
+            if (currentPrice && !isNaN(currentPrice) && currentPrice > 0) {
+              const priceDiff =
+                order.type === "BUY"
+                  ? currentPrice - order.price
+                  : order.price - currentPrice;
+              return { ...order, profit: priceDiff * order.volume };
+            }
+          }
+
+          // Priority 2: preserve existing real-time profit from state (navigation between pages)
+          const existing = prevById.get(order.id);
+          if (existing && existing.profit !== 0) {
+            return { ...order, profit: existing.profit };
+          }
+
+          // Fallback: DB value (0 for new positions, fixed on next price tick)
+          return order;
+        });
+      });
     } catch (error) {
+      if (myRequestId !== fetchOrdersRequestIdRef.current) return;
       console.error("❌ Error fetching orders:", error?.message || error);
       setOrders([]);
     } finally {
-      setOrdersLoading(false);
+      if (myRequestId === fetchOrdersRequestIdRef.current) {
+        setOrdersLoading(false);
+      }
     }
   }, []);
 
@@ -238,15 +291,20 @@ export const TradingProvider = ({ children }) => {
   }, [orders, symbols, userBalance, calculateRealTimeProfit]);
 
   // ---------------------------------------
-  // on mount: orders + balance
+  // on mount: balance only — orders are fetched by TraderPanelLayout/OrdersPage
+  // with the correct account ID to avoid a race with the wrong account
   // ---------------------------------------
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      fetchOrders();
       fetchUserBalance();
     }
-  }, [fetchOrders, fetchUserBalance]);
+  }, [fetchUserBalance]);
+
+  // Keep symbolsRef current so fetchOrders can read prices synchronously
+  useEffect(() => {
+    symbolsRef.current = symbols;
+  }, [symbols]);
 
   // ---------------------------------------
   // symbols list on mount – project API: market-data/prices
@@ -259,13 +317,20 @@ export const TradingProvider = ({ children }) => {
         const fetchedSymbols = data?.prices ?? [];
         setSymbols(fetchedSymbols);
         if (fetchedSymbols.length > 0) {
-          const normalized = selectedSymbol.replace("/", "");
-          const exists = fetchedSymbols.find(
-            (s) =>
-              (s.symbol && s.symbol.replace("/", "") === normalized) ||
-              s.symbol === selectedSymbol,
+          // Don't auto-reset the symbol if the user has an explicit saved preference
+          // (BybitTerminal saves its symbol to bybit_selectedSymbol in localStorage)
+          const hasBybitSavedSymbol = !!localStorage.getItem(
+            "bybit_selectedSymbol",
           );
-          if (!exists) setSelectedSymbol(fetchedSymbols[0].symbol);
+          if (!hasBybitSavedSymbol) {
+            const normalized = selectedSymbol.replace("/", "");
+            const exists = fetchedSymbols.find(
+              (s) =>
+                (s.symbol && s.symbol.replace("/", "") === normalized) ||
+                s.symbol === selectedSymbol,
+            );
+            if (!exists) setSelectedSymbol(fetchedSymbols[0].symbol);
+          }
         }
       } catch (error) {
         console.error("❌ Error fetching symbols:", error?.message || error);
@@ -279,52 +344,6 @@ export const TradingProvider = ({ children }) => {
   }, []);
 
   // ---------------------------------------
-  // ✅ 500ms flush function (batch state updates)
-  // ---------------------------------------
-  const flushPriceUpdates = useCallback(() => {
-    const updatesMap = pendingPriceRef.current;
-    if (updatesMap.size === 0) return;
-
-    // clone & clear
-    const localUpdates = new Map(updatesMap);
-    updatesMap.clear();
-
-    // 1) update symbols ONCE
-    setSymbols((prev) =>
-      prev.map((s) => {
-        const u = localUpdates.get(s.symbol);
-        return u ? { ...s, ...u } : s;
-      }),
-    );
-
-    // 2) update orders profit ONCE
-    setOrders((prev) => {
-      let changed = false;
-
-      const next = prev.map((order) => {
-        const u = localUpdates.get(order.symbol);
-        if (!u) return order;
-
-        const currentPrice =
-          order.type === "BUY"
-            ? parseFloat(u.bid || 0)
-            : parseFloat(u.ask || 0);
-
-        if (!currentPrice || isNaN(currentPrice) || currentPrice <= 0)
-          return order;
-
-        const newProfit = calculateRealTimeProfit(order, currentPrice);
-        if (newProfit === order.profit) return order;
-
-        changed = true;
-        return { ...order, profit: newProfit };
-      });
-
-      return changed ? next : prev;
-    });
-  }, [calculateRealTimeProfit]);
-
-  // ---------------------------------------
   // Socket.io price updates (batched)
   // ---------------------------------------
   useEffect(() => {
@@ -336,21 +355,6 @@ export const TradingProvider = ({ children }) => {
 
     const onConnect = () => console.log("✅ TradingContext: Connected");
     const onDisconnect = () => console.log("⚠️ TradingContext: Disconnected");
-
-    const onPriceUpdate = (updatedSymbol) => {
-      if (!updatedSymbol?.symbol) return;
-
-      // store latest update
-      pendingPriceRef.current.set(updatedSymbol.symbol, updatedSymbol);
-
-      // schedule flush every 500ms
-      if (!flushTimerRef.current) {
-        flushTimerRef.current = setTimeout(() => {
-          flushTimerRef.current = null;
-          flushPriceUpdates();
-        }, FLUSH_MS);
-      }
-    };
 
     // Backend emits "position:closed" (not "tradeClosed"). Normalize payload for one handler.
     const onTradeClosed = async (data) => {
@@ -386,27 +390,53 @@ export const TradingProvider = ({ children }) => {
       await fetchUserBalance();
     };
 
+    // Backend emits "trade:executed" when a new position is opened
+    const onTradeExecuted = async (data) => {
+      console.log("🔔 Trade executed event received:", data);
+      // Optimistically add the new order so the list updates immediately
+      if (data?.tradeId && data?.symbol) {
+        const newOrder = {
+          id: data.tradeId,
+          ticket: data.tradeId,
+          symbol: normalizeSymbol(data.symbol),
+          type: data.type,
+          volume: data.volume,
+          price: data.openPrice,
+          status: "OPEN",
+          profit: 0,
+          profitCurrency: "USD",
+          openAt: data.timestamp,
+          closeAt: null,
+          closePrice: null,
+          closeReason: null,
+          swap: 0,
+          comment: "",
+          time: new Date(data.timestamp).toLocaleTimeString(),
+        };
+        setOrders((prev) => {
+          // Avoid duplicate if already present
+          if (prev.some((o) => o.id === data.tradeId)) return prev;
+          return [newOrder, ...prev];
+        });
+      }
+      // Full sync from API to get accurate data
+      await fetchOrders();
+    };
+
     sock.on("connect", onConnect);
     sock.on("disconnect", onDisconnect);
-    sock.on("priceUpdate", onPriceUpdate);
     // Backend sends "position:closed"; listen for that so trade-closed events work
     sock.on("position:closed", onTradeClosed);
+    // Backend sends "trade:executed" when a new position opens
+    sock.on("trade:executed", onTradeExecuted);
 
     return () => {
       sock.off("connect", onConnect);
       sock.off("disconnect", onDisconnect);
-      sock.off("priceUpdate", onPriceUpdate);
       sock.off("position:closed", onTradeClosed);
-
-      // clear pending flush timer on unmount
-      if (flushTimerRef.current) {
-        clearTimeout(flushTimerRef.current);
-        flushTimerRef.current = null;
-      }
-
-      pendingPriceRef.current.clear();
+      sock.off("trade:executed", onTradeExecuted);
     };
-  }, [flushPriceUpdates, fetchOrders, fetchUserBalance]);
+  }, [fetchOrders, fetchUserBalance]);
 
   // ---------------------------------------
   // Global theme (dark/light) applied to document root

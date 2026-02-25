@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminGetAllSettings, adminUpdateSettingsGroup } from "@/api/admin";
 import { useTranslation } from "../contexts/LanguageContext";
@@ -6,7 +6,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -14,8 +13,6 @@ import {
   Palette,
   CreditCard,
   Link,
-  Mail,
-  Shield,
   Save,
   CheckCircle,
   Loader2,
@@ -120,8 +117,8 @@ export default function AdminSettings() {
     },
     onError: (error) => {
       toast({
-        title: "Error",
-        description: error.message || "Failed to save settings",
+        title: t("common.error"),
+        description: error?.message || t("admin.settings.saveError"),
         variant: "destructive",
       });
     },
@@ -169,7 +166,7 @@ export default function AdminSettings() {
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
           {saved && (
-            <span className="text-emerald-500 flex items-center gap-2 justify-center text-sm">
+            <span className="text-amber-500 flex items-center gap-2 justify-center text-sm">
               <CheckCircle className="w-4 h-4" />
               {t("admin.settings.settingsSaved")}
             </span>
@@ -229,13 +226,13 @@ export default function AdminSettings() {
               <Link className="w-4 h-4 mr-2 flex-shrink-0" />
               {t("admin.settings.tabs.integrations")}
             </TabsTrigger>
-            <TabsTrigger
+            {/* <TabsTrigger
               value="email"
               className="data-[state=active]:bg-card text-muted-foreground data-[state=active]:text-foreground text-xs sm:text-sm px-3 sm:px-4 py-2"
             >
               <Mail className="w-4 h-4 mr-2 flex-shrink-0" />
               {t("admin.settings.tabs.email")}
-            </TabsTrigger>
+            </TabsTrigger> */}
           </TabsList>
         </div>
 
@@ -302,10 +299,10 @@ export default function AdminSettings() {
                   }}
                 >
                   <div
-                    className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                    className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all ${
                       localGeneral.maintenance_mode
-                        ? "right-0.5 sm:right-1"
-                        : "left-0.5 sm:left-1"
+                        ? "right-0.5 sm:right-0.5"
+                        : "left-0.5 sm:left-0.5"
                     }`}
                   />
                 </div>
@@ -422,7 +419,9 @@ export default function AdminSettings() {
                 </div>
                 <div
                   className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
-                    localPayment.stripe_enabled ? "bg-amber-500" : "bg-slate-600"
+                    localPayment.stripe_enabled
+                      ? "bg-amber-500"
+                      : "bg-slate-600"
                   } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
                   onClick={() => {
                     if (isLoading) return;
@@ -431,10 +430,10 @@ export default function AdminSettings() {
                   }}
                 >
                   <div
-                    className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                    className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all ${
                       localPayment.stripe_enabled
-                        ? "right-0.5 sm:right-1"
-                        : "left-0.5 sm:left-1"
+                        ? "right-0.5 sm:right-0.5"
+                        : "left-0.5 sm:left-0.5"
                     }`}
                   />
                 </div>
@@ -454,7 +453,7 @@ export default function AdminSettings() {
                       })
                     }
                     placeholder={t(
-                      "admin.settings.payments.stripeApiKeyPlaceholder"
+                      "admin.settings.payments.stripeApiKeyPlaceholder",
                     )}
                     className="bg-muted border-border text-foreground text-sm"
                     disabled={isLoading}
@@ -473,7 +472,9 @@ export default function AdminSettings() {
                 </div>
                 <div
                   className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
-                    localPayment.paypal_enabled ? "bg-amber-500" : "bg-slate-600"
+                    localPayment.paypal_enabled
+                      ? "bg-amber-500"
+                      : "bg-slate-600"
                   } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
                   onClick={() => {
                     if (isLoading) return;
@@ -482,14 +483,34 @@ export default function AdminSettings() {
                   }}
                 >
                   <div
-                    className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                    className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all ${
                       localPayment.paypal_enabled
-                        ? "right-0.5 sm:right-1"
-                        : "left-0.5 sm:left-1"
+                        ? "right-0.5 sm:right-0.5"
+                        : "left-0.5 sm:left-0.5"
                     }`}
                   />
                 </div>
               </div>
+              {localPayment.paypal_enabled && (
+                <div className="space-y-1.5 sm:space-y-2 pl-2 sm:pl-4">
+                  <Label className="text-muted-foreground text-xs sm:text-sm">
+                    {t("admin.settings.payments.paypalClientId", { defaultValue: "PayPal Client ID" })}
+                  </Label>
+                  <Input
+                    type="password"
+                    value={localPayment.paypal_client_id || ""}
+                    onChange={(e) =>
+                      setLocalPayment({
+                        ...localPayment,
+                        paypal_client_id: e.target.value,
+                      })
+                    }
+                    placeholder="Enter PayPal Client ID"
+                    className="bg-muted border-border text-foreground text-sm"
+                    disabled={isLoading}
+                  />
+                </div>
+              )}
 
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-muted/60 rounded-lg gap-3">
                 <div className="min-w-0">
@@ -502,7 +523,9 @@ export default function AdminSettings() {
                 </div>
                 <div
                   className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
-                    localPayment.crypto_enabled ? "bg-amber-500" : "bg-slate-600"
+                    localPayment.crypto_enabled
+                      ? "bg-amber-500"
+                      : "bg-slate-600"
                   } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
                   onClick={() => {
                     if (isLoading) return;
@@ -511,10 +534,10 @@ export default function AdminSettings() {
                   }}
                 >
                   <div
-                    className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                    className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all ${
                       localPayment.crypto_enabled
-                        ? "right-0.5 sm:right-1"
-                        : "left-0.5 sm:left-1"
+                        ? "right-0.5 sm:right-0.5"
+                        : "left-0.5 sm:left-0.5"
                     }`}
                   />
                 </div>
@@ -571,10 +594,10 @@ export default function AdminSettings() {
                     }}
                   >
                     <div
-                      className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                      className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all ${
                         localIntegration[platform.key]
-                          ? "right-0.5 sm:right-1"
-                          : "left-0.5 sm:left-1"
+                          ? "right-0.5 sm:right-0.5"
+                          : "left-0.5 sm:left-0.5"
                       }`}
                     />
                   </div>

@@ -247,10 +247,12 @@ export default function AdminBrokerServers() {
           >
             <DialogHeader>
               <DialogTitle className="text-foreground text-base sm:text-lg md:text-xl">
-                {t("admin.brokerServers.dialog.title")}
+                Prop Server
               </DialogTitle>
               <DialogDescription className="text-muted-foreground text-sm">
-                {t("admin.brokerServers.dialog.description")}
+              Configure a new Prop Server connection for trading accounts.
+
+
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
@@ -558,10 +560,10 @@ export default function AdminBrokerServers() {
             <Card className="bg-card border-border p-8 sm:p-12 col-span-full text-center">
               <Server className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
               <h3 className="text-base sm:text-lg font-semibold text-foreground mb-1.5 sm:mb-2">
-                {t("admin.brokerServers.empty.title")}
+                No Prop Servers
               </h3>
               <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">
-                {t("admin.brokerServers.empty.description")}
+              Add your first Prop Server to start creating trading accounts
               </p>
               <Button
                 onClick={() => setShowAddDialog(true)}
