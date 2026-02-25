@@ -168,6 +168,7 @@ model Trade {
   breachUnrealizedPnl          Float?
   closeReason                  String?
   positionType                 String         @default("CFD")
+  leverage                     Float          @default(100)
   tradingAccount               TradingAccount @relation(fields: [tradingAccountId], references: [id])
 }
 
@@ -187,6 +188,7 @@ model PendingOrder {
   filledAt         DateTime?
   cancelledAt      DateTime?
   positionType     String         @default("CFD")
+  leverage         Float          @default(100)
   tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
 }
 
@@ -261,18 +263,19 @@ model Notification {
 }
 
 model SupportTicket {
-  id         String         @id @default(cuid())
-  userId     String
-  subject    String
-  message    String
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
-  category   TicketCategory @default(OTHER)
-  priority   TicketPriority @default(MEDIUM)
-  status     TicketStatus   @default(OPEN)
-  adminReply String?
-  repliedAt  DateTime?
-  user       User           @relation(fields: [userId], references: [id])
+  id                   String                 @id @default(cuid())
+  userId               String
+  subject              String
+  message              String
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  category             TicketCategory         @default(OTHER)
+  priority             TicketPriority         @default(MEDIUM)
+  status               TicketStatus           @default(OPEN)
+  adminReply           String?
+  repliedAt            DateTime?
+  user                 User                   @relation(fields: [userId], references: [id])
+  SupportTicketMessage SupportTicketMessage[]
 }
 
 model BrokerServer {
@@ -409,6 +412,18 @@ model ContactMessage {
   updatedAt DateTime        @updatedAt
 }
 
+model SupportTicketMessage {
+  id            String        @id
+  ticketId      String
+  senderType    SenderType
+  senderId      String?
+  message       String
+  createdAt     DateTime      @default(now())
+  SupportTicket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId, createdAt])
+}
+
 enum UserRole {
   TRADER
   ADMIN
@@ -518,6 +533,8 @@ enum TicketStatus {
   IN_PROGRESS
   RESOLVED
   CLOSED
+  WAITING_FOR_ADMIN
+  WAITING_FOR_TRADER
 }
 
 enum LeadOnlineStatus {
@@ -576,4 +593,9 @@ enum ContactCategory {
   PAYOUT
   TECHNICAL
   OTHER
+}
+
+enum SenderType {
+  ADMIN
+  TRADER
 }
