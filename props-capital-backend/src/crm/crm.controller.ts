@@ -76,11 +76,13 @@ export class CrmController {
 
   @Get('ftd-stats')
   async getFtdStats(
+    @Query('search') search?: string,
     @Query('agent') agent?: string,
     @Query('fromDate') fromDate?: string,
     @Query('toDate') toDate?: string,
   ) {
     const filters: any = {};
+    if (search) filters.search = search;
     if (agent) filters.agent = agent;
     if (fromDate) filters.fromDate = fromDate;
     if (toDate) filters.toDate = toDate;

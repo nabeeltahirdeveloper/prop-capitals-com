@@ -73,7 +73,9 @@ export class PaymentsService {
 
     // 2. Validate and apply coupon if provided
     let finalPrice = challenge.price;
-    let appliedCoupon: { code: string; discountPct: number } | null = null;
+    let appliedCoupon:
+      | { code: string; discountType: string; discountPct: number }
+      | null = null;
     let discountAmount = 0;
 
     if (couponCode) {
@@ -85,7 +87,15 @@ export class PaymentsService {
 
       if (couponValidation.coupon) {
         appliedCoupon = couponValidation.coupon;
-        discountAmount = Math.floor(challenge.price * (appliedCoupon.discountPct / 100));
+        if (appliedCoupon.discountType === 'fixed') {
+          discountAmount = Math.floor(appliedCoupon.discountPct);
+        } else {
+          discountAmount = Math.floor(
+            challenge.price * (appliedCoupon.discountPct / 100),
+          );
+        }
+        if (discountAmount < 0) discountAmount = 0;
+        if (discountAmount > challenge.price) discountAmount = challenge.price;
         finalPrice = challenge.price - discountAmount;
       }
     }
@@ -93,6 +103,7 @@ export class PaymentsService {
     console.log('💰 Price calculation:', {
       originalPrice: challenge.price,
       couponCode: couponCode || 'none',
+      discountType: appliedCoupon?.discountType || 'none',
       discountPct: appliedCoupon?.discountPct || 0,
       discountAmount,
       finalPrice,
@@ -118,6 +129,16 @@ export class PaymentsService {
       },
 
     });
+
+    if (appliedCoupon?.code) {
+      const coupon = await this.couponsService.getCouponByCode(appliedCoupon.code);
+      if (coupon) {
+        await this.prisma.coupon.update({
+          where: { id: coupon.id },
+          data: { usedCount: { increment: 1 } },
+        });
+      }
+    }
 
     // 3. Create trading account (NO brokerServerId needed)
 

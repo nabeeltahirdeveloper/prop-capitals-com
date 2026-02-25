@@ -324,7 +324,7 @@ export const ChallengesProvider = ({ children }) => {
 
             return {
               id: account.id,
-              accountId: `#${account.id.slice(0, 4)}`,
+              accountId: account.id,
               type: challengeType,
               accountSize: challenge.accountSize || account.initialBalance,
               currentBalance: account.balance || 0,

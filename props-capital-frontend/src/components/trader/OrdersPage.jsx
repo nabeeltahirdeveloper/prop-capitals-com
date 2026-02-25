@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   TrendingUp,
   TrendingDown,
   Clock,
-  Filter,
   Download,
   Search,
-  ChevronDown,
-  Loader2
+  Loader2,
+  RefreshCw
 } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
 import { useTrading } from '@/contexts/TradingContext';
+import { useChallenges } from '@/contexts/ChallengesContext';
 
 const formatDateTime = (dateStr) => {
   if (!dateStr) return '-';
@@ -26,11 +26,49 @@ const formatDateTime = (dateStr) => {
   });
 };
 
+const formatPrice = (price) => {
+  if (price == null) return '-';
+  const p = parseFloat(price);
+  if (isNaN(p)) return '-';
+  // Crypto / large prices: 2 decimals; forex / small prices: 5 decimals
+  return p >= 100 ? p.toFixed(2) : p.toFixed(5);
+};
+
+const CLOSE_REASON_LABELS = {
+  SL_HIT: 'SL Hit',
+  TP_HIT: 'TP Hit',
+  RISK_AUTO_CLOSE: 'Auto Close',
+  USER_CLOSE: 'Closed',
+};
+
+const getCloseLabel = (order) => {
+  if (order.status === 'OPEN') return 'Open';
+  return CLOSE_REASON_LABELS[order.closeReason] ?? 'Closed';
+};
+
+const escapeCsv = (val) => `"${String(val ?? '').replace(/"/g, '""')}"`;
+
 const OrdersPage = () => {
   const { isDark } = useTraderTheme();
-  const { orders, ordersLoading } = useTrading();
+  const { orders, ordersLoading, fetchOrders } = useTrading();
+  const { selectedChallengeId } = useChallenges();
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Refresh orders when this page mounts or the account changes.
+  // Only fetch once we have the account ID — avoids fetching the wrong account.
+  useEffect(() => {
+    if (selectedChallengeId) {
+      fetchOrders(selectedChallengeId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedChallengeId]);
+
+  const handleRefresh = useCallback(() => {
+    if (selectedChallengeId) {
+      fetchOrders(selectedChallengeId);
+    }
+  }, [fetchOrders, selectedChallengeId]);
 
   const filteredOrders = orders.filter(order => {
     if (activeTab === 'open') return order.status === 'OPEN';
@@ -48,6 +86,31 @@ const OrdersPage = () => {
     ? (closedOrders.filter(o => o.profit > 0).length / closedOrders.length * 100).toFixed(1)
     : '0.0';
 
+  const handleExport = () => {
+    const headers = ['Symbol', 'Type', 'Lots', 'Open Price', 'Close Price', 'Open Time', 'Close Time', 'P/L ($)', 'Status'];
+    const rows = filteredOrders.map(order => [
+      escapeCsv(order.symbol),
+      escapeCsv(order.type),
+      escapeCsv(order.volume),
+      escapeCsv(formatPrice(order.price)),
+      escapeCsv(formatPrice(order.closePrice)),
+      escapeCsv(formatDateTime(order.openAt)),
+      escapeCsv(formatDateTime(order.closeAt)),
+      escapeCsv((order.profit || 0).toFixed(2)),
+      escapeCsv(getCloseLabel(order)),
+    ]);
+    const csv = [headers.map(escapeCsv), ...rows].map(row => row.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `orders_${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   if (ordersLoading) {
     return (
       <div className="flex items-center justify-center py-24">
@@ -61,11 +124,24 @@ const OrdersPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Orders</h2>
-        <button className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'
-          }`}>
-          <Download className="w-4 h-4" />
-          <span className="text-sm font-medium">Export</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleRefresh}
+            disabled={ordersLoading}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'} disabled:opacity-50`}
+          >
+            <RefreshCw className={`w-4 h-4 ${ordersLoading ? 'animate-spin' : ''}`} />
+            <span className="text-sm font-medium">Refresh</span>
+          </button>
+          <button
+            onClick={handleExport}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'
+              }`}
+          >
+            <Download className="w-4 h-4" />
+            <span className="text-sm font-medium">Export</span>
+          </button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -95,7 +171,7 @@ const OrdersPage = () => {
       {/* Filters */}
       <div className={`rounded-2xl border p-4 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          {/* Tabs - Highlighted */}
+          {/* Tabs */}
           <div className={`flex items-center gap-2 rounded-xl p-1.5 ${isDark ? 'bg-white/5' : 'bg-slate-100'}`}>
             {[
               { key: 'all', label: 'All Orders', count: orders.length },
@@ -105,7 +181,6 @@ const OrdersPage = () => {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                data-testid={`filter-${tab.key}`}
                 className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${activeTab === tab.key
                   ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-[#0a0d12] shadow-lg shadow-amber-500/20'
                   : isDark
@@ -151,45 +226,56 @@ const OrdersPage = () => {
                 <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Open Price</th>
                 <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Close Price</th>
                 <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Open Time</th>
+                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Close Time</th>
                 <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>P/L</th>
                 <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Status</th>
               </tr>
             </thead>
             <tbody>
-              {filteredOrders.map((order) => (
-                <tr key={order.id} className={`border-b transition-all ${isDark ? 'border-white/5 hover:bg-white/5' : 'border-slate-100 hover:bg-slate-50'}`}>
-                  <td className="px-6 py-4">
-                    <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{order.symbol}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${order.type === 'BUY'
-                      ? 'bg-emerald-500/10 text-emerald-500'
-                      : 'bg-red-500/10 text-red-500'
-                      }`}>
-                      {order.type === 'BUY' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                      {order.type}
-                    </span>
-                  </td>
-                  <td className={`px-6 py-4 font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{order.volume}</td>
-                  <td className={`px-6 py-4 font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{order.price}</td>
-                  <td className={`px-6 py-4 font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{order.closePrice || '-'}</td>
-                  <td className={`px-6 py-4 text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{formatDateTime(order.openAt)}</td>
-                  <td className="px-6 py-4">
-                    <span className={`font-semibold ${order.profit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                      {order.profit >= 0 ? '+' : ''}${(order.profit || 0).toFixed(2)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${order.status === 'OPEN'
-                      ? 'bg-amber-500/10 text-amber-500'
-                      : isDark ? 'bg-white/10 text-gray-400' : 'bg-slate-100 text-slate-500'
-                      }`}>
-                      {order.status === 'OPEN' && <Clock className="w-3 h-3" />}
-                      {order.status === 'OPEN' ? 'Open' : 'Closed'}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+              {filteredOrders.map((order) => {
+                const closeLabel = getCloseLabel(order);
+                const isSlTp = order.closeReason === 'SL_HIT' || order.closeReason === 'TP_HIT';
+                const isAutoClose = order.closeReason === 'RISK_AUTO_CLOSE';
+                return (
+                  <tr key={order.id} className={`border-b transition-all ${isDark ? 'border-white/5 hover:bg-white/5' : 'border-slate-100 hover:bg-slate-50'}`}>
+                    <td className="px-6 py-4">
+                      <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{order.symbol}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${order.type === 'BUY'
+                        ? 'bg-emerald-500/10 text-emerald-500'
+                        : 'bg-red-500/10 text-red-500'
+                        }`}>
+                        {order.type === 'BUY' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                        {order.type}
+                      </span>
+                    </td>
+                    <td className={`px-6 py-4 font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{order.volume}</td>
+                    <td className={`px-6 py-4 font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{formatPrice(order.price)}</td>
+                    <td className={`px-6 py-4 font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>{formatPrice(order.closePrice)}</td>
+                    <td className={`px-6 py-4 text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{formatDateTime(order.openAt)}</td>
+                    <td className={`px-6 py-4 text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{formatDateTime(order.closeAt)}</td>
+                    <td className="px-6 py-4">
+                      <span className={`font-semibold ${order.profit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                        {order.profit >= 0 ? '+' : ''}${(order.profit || 0).toFixed(2)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${order.status === 'OPEN'
+                        ? 'bg-amber-500/10 text-amber-500'
+                        : isAutoClose
+                          ? 'bg-red-500/10 text-red-400'
+                          : isSlTp
+                            ? 'bg-blue-500/10 text-blue-400'
+                            : isDark ? 'bg-white/10 text-gray-400' : 'bg-slate-100 text-slate-500'
+                        }`}>
+                        {order.status === 'OPEN' && <Clock className="w-3 h-3" />}
+                        {closeLabel}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

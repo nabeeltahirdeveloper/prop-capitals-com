@@ -3,7 +3,10 @@
     "loading": "Cargando...",
     "url": "URL",
     "dismiss": "Cerrar",
-    "allPlatforms": "Todas las plataformas"
+    "allPlatforms": "Todas las plataformas",
+    "unknown": "Desconocido",
+    "error": "Error",
+    "success": "Éxito"
   },
   "home": {
     "hero": {
@@ -436,7 +439,18 @@
     "challengeUpdates": "Actualizaciones de desafíos",
     "challengeUpdatesDesc": "Actualizaciones de progreso y cambios de fase",
     "marketingEmails": "Correos de marketing",
-    "marketingEmailsDesc": "Noticias, promociones y ofertas especiales"
+    "marketingEmailsDesc": "Noticias, promociones y ofertas especiales",
+    "notif": "Notifications",
+    "passwordChangedDesc": "Su contraseña ha sido actualizada exitosamente.",
+    "passwordChangeFailed": "Error al cambiar la contraseña",
+    "passwordChangeError": "Ocurrió un error al cambiar su contraseña.",
+    "validationError": "Error de validación",
+    "notificationUpdateError": "Error al actualizar las preferencias de notificación.",
+    "notificationsUpdated": "Notificaciones actualizadas",
+    "notificationsUpdatedDesc": "Sus preferencias de notificación han sido guardadas.",
+    "personal": "Personal",
+    "sec": "Security",
+    "verify": "Verify"
   },
   "support": {
     "title": "Soporte",
@@ -1070,7 +1084,8 @@
       "ask": "Ask",
       "chg": "Chg%",
       "updated": "Actualizado",
-      "retry": "Reintentar"
+      "retry": "Reintentar",
+      "reconnecting": "Reconnecting"
     },
     "positions": {
       "title": "Posiciones abiertas",
@@ -1103,7 +1118,9 @@
       "exit": "Salida",
       "autoClosed": "Cerrado automáticamente",
       "breach": "Infracción",
-      "breachPnL": "PnL al infringir (al límite)"
+      "breachPnL": "PnL al infringir (al límite)",
+      "finalFill": "Final Fill",
+      "finalFillPnL": "Final Fill P/L"
     },
     "accountMetrics": {
       "balance": "Saldo",
@@ -1178,7 +1195,13 @@
     "website": "Sitio web",
     "logout": "Cerrar sesión",
     "user": "Usuario",
-    "adminPanel": "Panel de administrador"
+    "adminPanel": "Panel de administrador",
+    "coupons": "Cupones",
+    "crm": "CRM",
+    "crmLeads": "Leads CRM",
+    "pipeline": "Canalizaci?n",
+    "ftdReport": "Informe FTD",
+    "calendar": "Calendario"
   },
   "status": {
     "active": "Activo",
@@ -1220,7 +1243,8 @@
         "payouts": "Pagos",
         "fundedAccounts": "Cuentas financiadas",
         "violationsToday": "Infracciones de hoy",
-        "changeThisMonth": "Este mes +{{percent}}%"
+        "changeThisMonth": "Este mes +{{percent}}%",
+        "changeThisMonthNeutral": "{{percent}}% este mes"
       },
       "chart": {
         "title": "Ingresos y pagos (últimos 30 días)",
@@ -1273,6 +1297,17 @@
           "type": "Desconocido",
           "description": "Infracción desconocida"
         }
+      },
+      "messages": {
+        "loading": "Cargando panel...",
+        "loadFailedTitle": "No se pudo cargar el panel",
+        "unexpectedError": "Ocurri? un error inesperado",
+        "reload": "Recargar panel",
+        "liveUpdates": "Actualizaciones en vivo cada 10 s. ?ltima actualizaci?n: {{time}}",
+        "chartLoadFailed": "No se pudieron cargar los datos del gr?fico",
+        "noRevenueData": "No hay datos de ingresos disponibles",
+        "accountsLoadFailed": "No se pudieron cargar las cuentas",
+        "violationsLoadFailed": "No se pudieron cargar las infracciones"
       }
     },
     "users": {
@@ -1329,7 +1364,8 @@
         "active": "Activas",
         "passed": "Aprobadas",
         "funded": "Financiadas",
-        "failed": "Fallidas"
+        "failed": "Fallidas",
+        "phase2": "Phase 2"
       },
       "searchPlaceholder": "Buscar por número de cuenta o correo...",
       "filter": {
@@ -1343,7 +1379,11 @@
         "failed": "Fallidas",
         "suspended": "Suspendidas",
         "phase1": "Fase 1",
-        "phase2": "Fase 2"
+        "phase2": "Fase 2",
+        "closed": "Closed",
+        "dailyLocked": "Daily Locked",
+        "disqualified": "Disqualified",
+        "paused": "Paused"
       },
       "table": {
         "account": "Cuenta",
@@ -1359,7 +1399,9 @@
         "forcePass": "Forzar aprobación",
         "forceFail": "Forzar fallo",
         "resetAccount": "Restablecer cuenta",
-        "moveToFunded": "Mover a financiada"
+        "moveToFunded": "Mover a financiada",
+        "pause": "Pause Account",
+        "resume": "Resume Account"
       },
       "dialog": {
         "title": "Detalles de la cuenta",
@@ -1568,7 +1610,22 @@
         "inactive": "Inactivo"
       },
       "noExpiry": "Sin caducidad",
-      "emptyMessage": "No se encontraron cupones"
+      "emptyMessage": "No se encontraron cupones",
+      "messages": {
+        "copySuccess": "Coupon code copied",
+        "copyError": "Failed to copy coupon code",
+        "createSuccess": "Coupon created successfully",
+        "updateSuccess": "Coupon updated successfully",
+        "deleteSuccess": "Coupon deleted successfully",
+        "saveError": "Failed to save coupon",
+        "deleteError": "Failed to delete coupon"
+      },
+      "validation": {
+        "codeRequired": "Coupon code is required",
+        "discountRequired": "Discount value must be greater than 0",
+        "discountRangePercent": "Percentage discount cannot exceed 100",
+        "maxUsesInvalid": "Max uses must be at least 1"
+      }
     },
     "support": {
       "title": "Tickets de soporte",
@@ -1611,14 +1668,25 @@
       },
       "actions": {
         "take": "Asignarme",
-        "resolve": "Resolver"
+        "resolve": "Resolver",
+        "close": "Cerrar"
       },
       "dialog": {
         "from": "De",
+        "submitted": "Enviado",
+        "userMessage": "Mensaje del usuario",
+        "previousReply": "Respuesta previa del administrador",
+        "sendNewReply": "Enviar nueva respuesta",
         "writeResponse": "Escribe una respuesta...",
         "close": "Cerrar",
         "sending": "Enviando...",
         "sendAndResolve": "Enviar y resolver"
+      },
+      "toast": {
+        "successTitle": "Éxito",
+        "errorTitle": "Error",
+        "replySent": "Respuesta enviada y ticket resuelto.",
+        "statusUpdated": "Estado del ticket actualizado con éxito."
       },
       "emptyMessage": "No se encontraron tickets",
       "subjects": {
@@ -1665,6 +1733,7 @@
         "stripeApiKeyPlaceholder": "sk_live_...",
         "paypal": "PayPal",
         "paypalDesc": "Aceptar pagos con PayPal",
+        "paypalClientId": "ID de Cliente de PayPal",
         "cryptocurrency": "Criptomoneda",
         "cryptocurrencyDesc": "Aceptar pagos en BTC, ETH, USDT"
       },
@@ -1695,7 +1764,8 @@
         "payoutApproved": "Retiro aprobado",
         "payoutApprovedDesc": "Se envía cuando se aprueba un retiro",
         "editTemplate": "Editar plantilla"
-      }
+      },
+      "saveError": "Failed to save settings"
     },
     "riskMonitor": {
       "title": "Monitoreo de riesgo",
@@ -1731,6 +1801,10 @@
         "title": "Infracciones recientes",
         "noViolations": "No hay infracciones recientes",
         "account": "Cuenta"
+      },
+      "severity": {
+        "fatal": "Fatal",
+        "warning": "Warning"
       }
     },
     "brokerServers": {
@@ -1750,7 +1824,8 @@
         "managerPassword": "Contraseña del manager",
         "apiKey": "API Key / Client ID",
         "apiSecret": "API Secret",
-        "demoServer": "Servidor demo"
+        "demoServer": "Servidor demo",
+        "description": "Configure a new broker server connection for trading accounts."
       },
       "platforms": {
         "mt4": "MetaTrader 4",
@@ -1769,7 +1844,8 @@
       "card": {
         "platform": "Plataforma",
         "timezone": "Zona horaria",
-        "lastSync": "Última sincronización"
+        "lastSync": "Última sincronización",
+        "accounts": "Linked Accounts"
       },
       "actions": {
         "test": "Probar"
@@ -1777,6 +1853,21 @@
       "empty": {
         "title": "No hay servidores de bróker",
         "description": "Añade tu primer servidor de bróker para comenzar a crear cuentas de trading"
+      },
+      "confirmDelete": "Are you sure you want to delete this broker server?",
+      "error": {
+        "description": "An error occurred while loading broker servers",
+        "retry": "Retry",
+        "title": "Failed to Load Broker Servers"
+      },
+      "toast": {
+        "connectionError": "Failed to test connection",
+        "connectionFailed": "Connection test failed",
+        "connectionSuccess": "Connection test successful",
+        "createError": "Failed to add broker server",
+        "createSuccess": "Broker server added successfully",
+        "deleteError": "Failed to delete broker server",
+        "deleteSuccess": "Broker server deleted successfully"
       }
     },
     "scaling": {
@@ -1888,7 +1979,8 @@
       "deleteErrorTitle": "No se puede eliminar el desafío",
       "deleteErrorMessage": "Este desafío no se puede eliminar",
       "deleteErrorDesc": "No se puede eliminar porque está vinculado a cuentas de trading existentes",
-      "understand": "Entendido"
+      "understand": "Entendido",
+      "noChallenges": "No challenges available"
     }
   },
   "signIn": {
@@ -1908,8 +2000,12 @@
     "fundsProtected": "Tus fondos están protegidos",
     "securityDescription": "Opera con tranquilidad. Nuestra plataforma utiliza seguridad de nivel bancario para proteger tu cuenta y tus datos de trading.",
     "errors": {
-      "invalidCredentials": "El correo electrónico o la contraseña no son correctos"
-    }
+      "invalidCredentials": "El correo electrónico o la contraseña no son correctos",
+      "adminPortalOnly": "This is the Admin portal. Please use the Trader portal to sign in.",
+      "adminCredentialsRequired": "Access denied. Admin credentials required."
+    },
+    "adminSubtitle": "Sign in to access the admin dashboard",
+    "adminAccessOnly": "Admin access only. Contact your system administrator for credentials."
   },
   "signUp": {
     "title": "Crear cuenta",
@@ -2855,6 +2951,249 @@
     "contactUs": {
       "title": "10. Contáctanos",
       "content": "Si tienes preguntas sobre privacidad, contáctanos en support@the-bluehaven.com."
+    }
+  },
+  "crm": {
+    "leads": {
+      "title": "Gestión de Leads",
+      "subtitle": "Administre y convierta sus leads",
+      "import": "Importar Leads",
+      "search": "Buscar leads...",
+      "allStatus": "Todos los Estados",
+      "allCategory": "Todas las Categorías",
+      "bySource": "Por Fuente",
+      "byAgent": "Por Agente",
+      "loading": "Cargando leads...",
+      "noLeads": "No se encontraron leads",
+      "cards": "Tarjetas",
+      "list": "Lista",
+      "compact": "Compacto",
+      "leadReceived": "Lead Recibido",
+      "contactInfo": "Información de Contacto",
+      "personName": "Nombre de la Persona",
+      "emailAddress": "Correo Electrónico",
+      "phoneNumber": "Número de Teléfono",
+      "country": "País",
+      "source": "Fuente",
+      "leadStatus": "Estado del Lead",
+      "onlineStatus": "Estado en Línea",
+      "priority": "Prioridad",
+      "assignedAgent": "Agente Asignado",
+      "ftdInfo": "Información FTD",
+      "ftdAmount": "Monto FTD",
+      "paymentMethod": "Método de Pago",
+      "paymentProvider": "Proveedor de Pago",
+      "editableFields": "Campos Editables",
+      "age": "Edad",
+      "salary": "Salario",
+      "jobIndustry": "Industria Laboral",
+      "workTitle": "Título del Trabajo",
+      "updateLead": "Actualizar Lead",
+      "updating": "Actualizando...",
+      "quickActions": "Acciones Rápidas",
+      "callLead": "Llamar Lead",
+      "sendEmail": "Enviar Correo",
+      "whatsApp": "WhatsApp",
+      "telegram": "Telegram",
+      "activityHistory": "Historial de Actividad",
+      "activities": "Actividades",
+      "noActivities": "No hay actividades aún",
+      "addNote": "Agregar Nota",
+      "addNotePlaceholder": "Agregar una nota...",
+      "add": "Agregar",
+      "importLeads": "Importar Leads",
+      "uploadCSV": "Haga clic para subir CSV",
+      "changeFile": "Cambiar Archivo",
+      "csvFormat": "El CSV debe seguir el formato requerido",
+      "csvFormatDesc": "El CSV debe seguir el formato requerido con encabezados: personName, email, phoneNumber, country, source, leadStatus, ftdAmount, paymentMethod, paymentProvider, priority, age, salary, jobIndustry, workTitle",
+      "requiredFields": "Campos obligatorios: personName, email",
+      "cancel": "Cancelar",
+      "importButton": "Importar",
+      "importing": "Importando...",
+      "note": "Nota",
+      "call": "Llamada",
+      "email": "Correo",
+      "whatsapp": "WhatsApp",
+      "telegram_activity": "Telegram",
+      "toast": {
+        "fetchError": "Failed to fetch leads",
+        "loadError": "Failed to load lead details",
+        "updateSuccess": "Lead updated successfully",
+        "updateError": "Failed to update lead",
+        "activityLogged": "Activity logged: {{type}}",
+        "activityError": "Failed to log activity",
+        "importSuccess": "Imported {{created}} of {{total}} leads",
+        "importError": "Failed to import CSV",
+        "noteAdded": "Note added successfully",
+        "noteError": "Failed to add note"
+      }
+    },
+    "status": {
+      "all": "Todos",
+      "new": "Nuevo",
+      "contacted": "Contactado",
+      "qualified": "Calificado",
+      "callback": "Devolver Llamada",
+      "followup": "Seguimiento",
+      "converted": "Convertido",
+      "lost": "Perdido",
+      "online": "En línea",
+      "offline": "Desconectado"
+    },
+    "priority": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "urgent": "Urgente"
+    },
+    "payment": {
+      "crypto": "Crypto",
+      "card": "Tarjeta",
+      "wire": "Transferencia",
+      "other": "Otro",
+      "bankTransfer": "Transferencia Bancaria",
+      "wireTransfer": "Transferencia Electrónica",
+      "stripe": "Stripe",
+      "paypal": "PayPal",
+      "skrill": "Skrill",
+      "neteller": "Neteller",
+      "binancePay": "Binance Pay",
+      "coinbase": "Coinbase"
+    },
+    "pipeline": {
+      "title": "Pipeline de Ventas",
+      "subtitle": "Seguimiento y gestión de clientes potenciales por etapas",
+      "search": "Buscar clientes potenciales...",
+      "loading": "Cargando Pipeline...",
+      "statusUpdated": "Estado Actualizado",
+      "movedTo": "Cliente potencial movido a {{status}}",
+      "updateError": "Error al actualizar el estado. Revirtiendo...",
+      "loadError": "Error al cargar los detalles",
+      "updateSuccess": "Cliente potencial actualizado con éxito",
+      "updateFailed": "Error al actualizar el cliente potencial",
+      "noteAdded": "Nota añadida con éxito",
+      "noteFailed": "Error al añadir la nota",
+      "activityLogged": "Actividad Registrada",
+      "activityRecorded": "{{type}} registrado",
+      "direct": "Directo",
+      "quickActionNote": "Intento de {{type}} realizado a través de Acciones Rápidas del Pipeline",
+      "activityFailed": "Error al registrar la actividad"
+    },
+    "columns": {
+      "new": "Nuevos Leads",
+      "contacted": "Contactado",
+      "qualified": "Calificado",
+      "callback": "Devolver Llamada",
+      "followUp": "Seguimiento",
+      "converted": "Convertido",
+      "lost": "Perdido"
+    },
+    "modal": {
+      "close": "Cerrar",
+      "basicInfo": "Información Básica",
+      "fullName": "Nombre Completo",
+      "email": "Correo Electrónico",
+      "phone": "Número de Teléfono",
+      "country": "País",
+      "statusAssignment": "Estado y Asignación",
+      "status": "Estado",
+      "priority": "Prioridad",
+      "additionalInfo": "Información Adicional",
+      "age": "Edad",
+      "salary": "Rango Salarial",
+      "industry": "Industria",
+      "workTitle": "Cargo",
+      "ftdInfo": "Información FTD",
+      "deposit": "Monto del Depósito ($)",
+      "paymentMethod": "Método de Pago",
+      "paymentProvider": "Proveedor de Pago",
+      "convertedDate": "Fecha de Conversión",
+      "funnelName": "Nombre del Embudo",
+      "timeline": "Línea de Tiempo",
+      "noActivities": "No hay actividades registradas",
+      "noDescription": "No se proporcionó descripción"
+    },
+    "ftdReport": {
+      "title": "FTD Report",
+      "subtitle": "First Time Deposit tracking from converted leads",
+      "totalFtd": "Total FTD",
+      "totalDeposits": "Total Deposits",
+      "avgFtdAmount": "Avg FTD Amount",
+      "activeAgents": "Active Agents",
+      "searchPlaceholder": "Search by name, email, or country...",
+      "allAgents": "All Agents",
+      "tableTitle": "First Time Deposits",
+      "leadName": "Lead Name",
+      "email": "Email",
+      "phone": "Phone",
+      "country": "Country",
+      "depositAmount": "Deposit Amount",
+      "convertedDate": "Converted Date",
+      "status": "Status",
+      "converted": "Converted",
+      "agent": "Agent",
+      "paymentMethod": "Payment Method",
+      "paymentProvider": "Payment Provider",
+      "source": "Source",
+      "affiliateId": "Affiliate ID",
+      "funnelName": "Funnel Name",
+      "ftdTime": "FTD Time",
+      "subParameters": "Sub Parameters",
+      "na": "N/A",
+      "unassigned": "Unassigned",
+      "loading": "Loading FTD data...",
+      "noData": "No first time deposits found.",
+      "showing": "Showing {{count}} First Time Deposits",
+      "loadError": "Failed to load FTD report data"
+    },
+    "crmCalendar": {
+      "title": "Calendario de Ventas",
+      "subtitle": "Sus reuniones programadas",
+      "scheduleMeeting": "Programar Reunión",
+      "searchPlaceholder": "Buscar reuniones, clientes o agentes...",
+      "allTypes": "Todos los Tipos",
+      "call": "Llamada",
+      "meeting": "Reunión",
+      "other": "Otro",
+      "allStatus": "Todos los Estados",
+      "scheduled": "Programado",
+      "completed": "Completado",
+      "cancelled": "Cancelado",
+      "totalMeetings": "Total de Reuniones",
+      "today": "Hoy",
+      "calls": "Llamadas",
+      "meetings": "Reuniones",
+      "calendarView": "Vista de Calendario",
+      "listView": "Vista de Lista",
+      "todaysSchedule": "Agenda de Hoy",
+      "noMeetings": "No hay reuniones programadas",
+      "scheduleOneNow": "Programar una ahora",
+      "scheduleNewMeeting": "Programar Nueva Reunión",
+      "meetingTitle": "Título de la Reunión",
+      "clientName": "Nombre del Cliente",
+      "date": "Fecha",
+      "time": "Hora",
+      "duration": "Duración (minutos)",
+      "type": "Tipo",
+      "cancel": "Cancelar",
+      "loading": "Cargando su agenda...",
+      "errorRequiredFields": "Por favor, complete todos los campos obligatorios",
+      "successScheduled": "Reunión programada con éxito",
+      "dateTime": "Fecha y Hora",
+      "status": "Estado",
+      "placeholderTitle": "ej., Llamada de seguimiento",
+      "placeholderClient": "Ingrese el nombre del cliente",
+      "weekdays": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      },
+      "moreCount": "+ {{count}} more",
+      "minShort": "min"
     }
   }
 }

@@ -9,7 +9,7 @@ const getAuthToken = () => {
   );
 };
 
-const baseUrl = import.meta.env.VITE_WEBSOCKET_URL || 'https://dev-api.prop-capitals.com';
+const baseUrl = import.meta.env.VITE_WEBSOCKET_URL || 'http://localhost:5002';
 // Backend gateway is on namespace /trading – connect there with JWT
 const socket = io(`${baseUrl}/trading`, {
   path: '/socket.io',
@@ -19,7 +19,10 @@ const socket = io(`${baseUrl}/trading`, {
   reconnectionDelay: 1000,
   reconnectionDelayMax: 5000,
   reconnectionAttempts: 10,
-  transports: ['websocket', 'polling'],
+  // polling-first: establishes HTTP long-poll handshake, then upgrades to WS.
+  // This is required for nginx proxies (without ws headers) and Windows firewall.
+  // 'websocket' first skips the polling handshake and never falls back on failure.
+  transports: ['polling', 'websocket'],
 });
 
 // Connect only when token exists (avoids "Invalid token" before login)
