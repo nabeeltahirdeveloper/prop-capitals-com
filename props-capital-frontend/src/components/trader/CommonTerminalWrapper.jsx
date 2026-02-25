@@ -105,17 +105,6 @@ const saveDemoAccountTrades = (
   }
 };
 
-const formatPrice = (price) => {
-  if (!price || price === 0) return "--";
-  if (price >= 1000)
-    return price.toLocaleString("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  if (price >= 1) return price.toFixed(4);
-  return price.toFixed(6);
-};
-
 const CommonTerminalWrapper = ({
   children,
   selectedChallenge: selectedChallengeProp = null,
@@ -140,8 +129,9 @@ const CommonTerminalWrapper = ({
   const tradingEngine = useMemo(
     () => getTradingEngineForPlatform(platformKey),
     [platformKey],
-    console.log("platformkey", platformKey),
   );
+  // Local alias for formatPrice to keep JSX concise
+  const formatPrice = tradingEngine.formatPrice;
 
   const [selectedTab, setSelectedTab] = useState("positions");
   const [violationModal, setViolationModal] = useState(null);
@@ -205,88 +195,6 @@ const CommonTerminalWrapper = ({
     setViolationModal(null);
   }, [accountId]);
 
-  /* ── Price lookup helper ── */
-  const getPriceForSymbol = useCallback(
-    (symbol) => {
-      if (!symbol || !prices) return null;
-      const raw = String(symbol).trim();
-      const upper = raw.toUpperCase();
-      const compact = upper.replace(/[^A-Z]/g, "");
-      const compactUsd = compact.replace(/USDT$/, "USD");
-      const compactUsdt = compact.endsWith("USD")
-        ? compact.replace(/USD$/, "USDT")
-        : compact;
-      const slashFromCompact =
-        compact.length === 6
-          ? `${compact.slice(0, 3)}/${compact.slice(3)}`
-          : null;
-      const slashFromCompactUsd =
-        compactUsd.length === 6
-          ? `${compactUsd.slice(0, 3)}/${compactUsd.slice(3)}`
-          : null;
-      const slashFromCompactUsdt =
-        compactUsdt.length === 7
-          ? `${compactUsdt.slice(0, 3)}/${compactUsdt.slice(3)}`
-          : null;
-      const candidates = [
-        raw,
-        upper,
-        compact,
-        compactUsd,
-        compactUsdt,
-        slashFromCompact,
-        slashFromCompactUsd,
-        slashFromCompactUsdt,
-        compact.endsWith("USDT") ? `${compact.slice(0, -4)}/USDT` : null,
-        compact.endsWith("USDT") ? `${compact.slice(0, -4)}/USD` : null,
-        compact.endsWith("USD") ? `${compact.slice(0, -3)}/USDT` : null,
-        compact.endsWith("USD") ? `${compact.slice(0, -3)}USDT` : null,
-        compact.endsWith("USDT") ? `${compact.slice(0, -4)}USD` : null,
-      ].filter(Boolean);
-      for (const key of candidates) {
-        const pd = prices[key];
-        if (pd && pd.bid !== undefined && pd.ask !== undefined) return pd;
-      }
-      return null;
-    },
-    [prices],
-  );
-
-  /* ── PnL calculation helper ── */
-  const calculateTradePnL = useCallback(
-    (trade, currentPrice) => {
-      return tradingEngine.calculatePnL({
-        symbol: trade?.symbol,
-        type: String(trade?.type || "BUY").toUpperCase(),
-        volume: Number(trade?.volume),
-        openPrice: Number(trade?.openPrice),
-        currentPrice: Number(currentPrice),
-      });
-    },
-    [tradingEngine],
-  );
-  const calculateRequiredMargin = useCallback(
-    (symbol, volume, price, leverage = 100) => {
-      return tradingEngine.calculateRequiredMargin({
-        symbol,
-        volume: Number(volume),
-        price: Number(price),
-        leverage: Number(leverage),
-      });
-    },
-    [tradingEngine],
-  );
-
-  /* ── Get exit price for a position ── */
-  const getClosePrice = useCallback(
-    (trade) => {
-      const pd = getPriceForSymbol(trade.symbol);
-      if (!pd) return trade.openPrice;
-      return trade.type === "BUY" ? pd.bid : pd.ask;
-    },
-    [getPriceForSymbol],
-  );
-
   /* ── Data Queries (React Query auto-deduplicates with same keys used in terminal) ── */
   const { data: tradesData, isLoading: tradesLoading } = useQuery({
     queryKey: ["trades", accountId],
@@ -325,47 +233,28 @@ const CommonTerminalWrapper = ({
   }, [pendingOrdersData]);
   const hasTradeHistory = openPositions.length > 0 || closedTrades.length > 0;
 
-  /* ── Live PnL per position ── */
-  const positionsWithPnL = useMemo(() => {
-    return openPositions.map((trade) => {
-      const pd = getPriceForSymbol(trade.symbol);
-      if (!pd)
-        return { ...trade, livePnL: trade.profit || 0, currentPrice: null };
-      const exitPrice = trade.type === "BUY" ? pd.bid : pd.ask;
-      const livePnL = calculateTradePnL(trade, exitPrice);
-      return { ...trade, livePnL, currentPrice: exitPrice };
-    });
-  }, [openPositions, getPriceForSymbol, calculateTradePnL]);
+  /* ── Live PnL per position (delegated to engine) ── */
+  const positionsWithPnL = useMemo(
+    () => tradingEngine.computePositionsPnL(openPositions, prices),
+    [openPositions, prices, tradingEngine],
+  );
 
-  const totalFloatingPnL = useMemo(() => {
-    return positionsWithPnL.reduce((sum, pos) => sum + pos.livePnL, 0);
-  }, [positionsWithPnL]);
-  const usedOpenMargin = useMemo(() => {
-    return openPositions.reduce((sum, position) => {
-      return (
-        sum +
-        calculateRequiredMargin(
-          position.symbol,
-          Number(position.volume),
-          Number(position.openPrice),
-          Number(position.leverage) || 1,
-        )
-      );
-    }, 0);
-  }, [openPositions, calculateRequiredMargin]);
+  const totalFloatingPnL = useMemo(
+    () => tradingEngine.computeTotalFloatingPnL(positionsWithPnL),
+    [positionsWithPnL, tradingEngine],
+  );
+  const usedOpenMargin = useMemo(
+    () => tradingEngine.computeMarginUsage(openPositions),
+    [openPositions, tradingEngine],
+  );
   const usedPendingMargin = useMemo(() => {
-    return activePendingOrders.reduce((sum, order) => {
-      return (
-        sum +
-        calculateRequiredMargin(
-          order.symbol,
-          Number(order.volume),
-          Number(order.price),
-          Number(order.leverage) || 1,
-        )
-      );
-    }, 0);
-  }, [activePendingOrders, calculateRequiredMargin]);
+    // Normalize pending orders: engine expects `openPrice` field
+    const normalized = activePendingOrders.map((o) => ({
+      ...o,
+      openPrice: Number(o.price),
+    }));
+    return tradingEngine.computeMarginUsage(normalized);
+  }, [activePendingOrders, tradingEngine]);
   const totalReservedMargin = usedOpenMargin + usedPendingMargin;
 
   const hasOpenPositions = openPositions.length > 0;
@@ -411,7 +300,7 @@ const CommonTerminalWrapper = ({
     if (positionSymbols.length === 0) return;
 
     positionSymbols.forEach((symbol) => {
-      const pd = getPriceForSymbol(symbol);
+      const pd = tradingEngine.resolvePrice(symbol, prices);
       if (!pd || pd.bid === undefined || pd.ask === undefined) return;
 
       const throttleKey = `${accountId}-${symbol}`;
@@ -475,7 +364,7 @@ const CommonTerminalWrapper = ({
         })
         .catch(() => {});
     });
-  }, [openPositions, accountId, getPriceForSymbol, queryClient, toast]);
+  }, [openPositions, accountId, prices, tradingEngine, queryClient, toast]);
 
   useEffect(() => {
     if (!accountId || openPositions.length === 0) return;
@@ -726,15 +615,16 @@ const CommonTerminalWrapper = ({
       }
 
       const requestedLeverage = Number(trade?.leverage);
-      const tradeLeverage = Number.isFinite(requestedLeverage)
-        ? requestedLeverage
-        : 100;
-      const requiredMargin = calculateRequiredMargin(
-        trade.symbol,
+      const tradeLeverage =
+        Number.isFinite(requestedLeverage) && requestedLeverage > 0
+          ? requestedLeverage
+          : 100;
+      const requiredMargin = tradingEngine.calculateRequiredMargin({
+        symbol: trade.symbol,
         volume,
-        executionPriceForMargin,
-        tradeLeverage,
-      );
+        price: executionPriceForMargin,
+        leverage: tradeLeverage,
+      });
       const currentBalance = Number(
         accountSummaryData?.account?.balance ??
           selectedChallenge?.currentBalance ??
@@ -822,7 +712,7 @@ const CommonTerminalWrapper = ({
     [
       accountId,
       isChallengeLocked,
-      calculateRequiredMargin,
+      tradingEngine,
       usedOpenMargin,
       usedPendingMargin,
       accountSummaryData,
@@ -897,25 +787,26 @@ const CommonTerminalWrapper = ({
   const balance = Number.isFinite(summaryAccount?.balance)
     ? summaryAccount.balance
     : selectedChallenge.currentBalance || 0;
-  const availableBalance = Math.max(0, balance - totalReservedMargin);
-  const baselineEquity = Number.isFinite(activeEquityBaselineRef.current)
-    ? activeEquityBaselineRef.current
-    : balance;
-  const activeEquity = balance + totalFloatingPnL;
-  const equity = hasOpenPositions
-    ? activeEquity
-    : Number.isFinite(summaryAccount?.equity)
-      ? summaryAccount.equity
-      : selectedChallenge.equity || balance;
+
+  /* ── Equity computation (delegated to engine) ── */
+  const {
+    availableBalance,
+    activeEquity,
+    equity,
+    activeProfitPercent,
+    activeDrawdownPercent,
+  } = tradingEngine.computeEquity({
+    balance,
+    totalFloatingPnL,
+    totalReservedMargin,
+    hasOpenPositions,
+    baselineEquity: Number.isFinite(activeEquityBaselineRef.current)
+      ? activeEquityBaselineRef.current
+      : balance,
+    summaryEquity: summaryAccount?.equity,
+    challengeEquity: selectedChallenge.equity,
+  });
   const floatingPL = totalFloatingPnL;
-  const activeProfitPercent =
-    hasOpenPositions && baselineEquity > 0
-      ? ((activeEquity - baselineEquity) / baselineEquity) * 100
-      : 0;
-  const activeDrawdownPercent =
-    hasOpenPositions && baselineEquity > 0
-      ? Math.max(0, ((baselineEquity - activeEquity) / baselineEquity) * 100)
-      : 0;
   const profitPercent = Math.max(0, activeProfitPercent);
 
   const isAccountLocked = isStatusLocked(
@@ -943,132 +834,29 @@ const CommonTerminalWrapper = ({
     };
   })();
 
-  // Compliance: override with live backend metrics when available
+  /* ── Compliance bars (delegated to engine) ── */
   const baseCompliance = getRuleCompliance(selectedChallenge);
-  const compliance = (() => {
-    if (!baseCompliance) return baseCompliance;
-    const result = { ...baseCompliance };
-    const target = rules.profitTarget || 8;
-    const dailyLimit = rules.maxDailyLoss || 5;
-    const overallLimit = rules.maxTotalDrawdown || 10;
-
-    const currentDate = new Date().toISOString().substring(0, 10);
-    if (dailyDrawdownBarPeakRef.current.date !== currentDate) {
-      dailyDrawdownBarPeakRef.current = {
-        date: currentDate,
-        value: Math.max(0, Number(summaryMetrics?.dailyDrawdownPercent) || 0),
-      };
-    }
-
-    const profitSeed = Math.max(0, Number(summaryMetrics?.profitPercent) || 0);
-    const overallSeed = Math.max(
-      0,
-      Number(summaryMetrics?.overallDrawdownPercent) || 0,
-    );
-    const dailySeed = Math.max(
-      0,
-      Number(summaryMetrics?.dailyDrawdownPercent) || 0,
-    );
-
-    const profitCurrentRaw = Math.max(
-      0,
-      Number(liveMetrics?.profitPercent ?? summaryMetrics?.profitPercent) || 0,
-      activeProfitPercent,
-    );
-    const dailyCurrentRaw = Math.max(
-      0,
-      Number(
-        liveMetrics?.dailyDrawdownPercent ??
-          summaryMetrics?.dailyDrawdownPercent,
-      ) || 0,
-      activeDrawdownPercent,
-    );
-    const overallCurrentRaw = Math.max(
-      0,
-      Number(
-        liveMetrics?.overallDrawdownPercent ??
-          summaryMetrics?.overallDrawdownPercent,
-      ) || 0,
-      activeDrawdownPercent,
-    );
-
-    // For brand-new accounts with no executed trades, metrics must stay at 0.
-    if (!hasTradeHistory) {
-      profitBarPeakRef.current = 0;
-      overallDrawdownBarPeakRef.current = 0;
-      dailyDrawdownBarPeakRef.current.value = 0;
-      result.profitTarget = {
-        ...result.profitTarget,
-        current: 0,
-        percentage: 0,
-        status: "in-progress",
-      };
-      result.dailyLoss = {
-        ...result.dailyLoss,
-        current: 0,
-        percentage: 0,
-        status: "safe",
-      };
-      result.totalDrawdown = {
-        ...result.totalDrawdown,
-        current: 0,
-        percentage: 0,
-        status: "safe",
-      };
-      return result;
-    }
-
-    profitBarPeakRef.current = Math.max(
-      profitBarPeakRef.current,
-      profitSeed,
-      profitCurrentRaw,
-    );
-    overallDrawdownBarPeakRef.current = Math.max(
-      overallDrawdownBarPeakRef.current,
-      overallSeed,
-      overallCurrentRaw,
-    );
-    dailyDrawdownBarPeakRef.current.value = Math.max(
-      dailyDrawdownBarPeakRef.current.value,
-      dailySeed,
-      dailyCurrentRaw,
-    );
-
-    const profitCurrent = profitBarPeakRef.current;
-    result.profitTarget = {
-      ...result.profitTarget,
-      current: profitCurrent,
-      percentage:
-        target > 0 ? Math.min((profitCurrent / target) * 100, 100) : 0,
-      status: profitCurrent >= target ? "passed" : "in-progress",
-    };
-
-    const dailyCurrent = dailyDrawdownBarPeakRef.current.value;
-    const overallCurrent = overallDrawdownBarPeakRef.current;
-    result.dailyLoss = {
-      ...result.dailyLoss,
-      current: dailyCurrent,
-      percentage: dailyLimit > 0 ? (dailyCurrent / dailyLimit) * 100 : 0,
-      status:
-        dailyCurrent >= dailyLimit
-          ? "violated"
-          : dailyCurrent >= dailyLimit * 0.8
-            ? "warning"
-            : "safe",
-    };
-    result.totalDrawdown = {
-      ...result.totalDrawdown,
-      current: overallCurrent,
-      percentage: overallLimit > 0 ? (overallCurrent / overallLimit) * 100 : 0,
-      status:
-        overallCurrent >= overallLimit
-          ? "violated"
-          : overallCurrent >= overallLimit * 0.8
-            ? "warning"
-            : "safe",
-    };
-    return result;
-  })();
+  const complianceResult = tradingEngine.computeComplianceBars({
+    baseCompliance,
+    rules: {
+      profitTarget: rules.profitTarget || 8,
+      maxDailyLoss: rules.maxDailyLoss || 5,
+      maxTotalDrawdown: rules.maxTotalDrawdown || 10,
+    },
+    summaryMetrics,
+    liveMetrics,
+    activeProfitPercent,
+    activeDrawdownPercent,
+    hasTradeHistory,
+    profitBarPeak: profitBarPeakRef.current,
+    overallDrawdownBarPeak: overallDrawdownBarPeakRef.current,
+    dailyDrawdownBarPeak: dailyDrawdownBarPeakRef.current,
+  });
+  const compliance = complianceResult.compliance;
+  // Write updated peaks back to refs
+  profitBarPeakRef.current = complianceResult.profitBarPeak;
+  overallDrawdownBarPeakRef.current = complianceResult.overallDrawdownBarPeak;
+  dailyDrawdownBarPeakRef.current = complianceResult.dailyDrawdownBarPeak;
 
   // WALLET FEATURE DISABLED - 2026-02-16
   // const spotPositionsCount = openPositions.filter((t) => t.positionType === 'SPOT').length;
@@ -1844,7 +1632,7 @@ const CommonTerminalWrapper = ({
                 <span className={textClass}>
                   {formatPrice(
                     closeConfirmTrade.currentPrice ||
-                      getClosePrice(closeConfirmTrade),
+                      tradingEngine.getExitPrice(closeConfirmTrade, prices),
                   )}
                 </span>
               </div>
@@ -1878,7 +1666,7 @@ const CommonTerminalWrapper = ({
                 onClick={() => {
                   const cp =
                     closeConfirmTrade.currentPrice ||
-                    getClosePrice(closeConfirmTrade);
+                    tradingEngine.getExitPrice(closeConfirmTrade, prices);
                   closePositionMutation.mutate({
                     tradeId: closeConfirmTrade.id,
                     closePrice: cp,

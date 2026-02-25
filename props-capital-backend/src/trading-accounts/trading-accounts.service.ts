@@ -240,19 +240,14 @@ export class TradingAccountsService {
     );
 
     let marginUsed = 0;
-    const leverage = 100; // Standard leverage for all positions
 
     for (const trade of openTrades) {
-      // Check if symbol is crypto
+      const tradeLeverage = Number((trade as any).leverage) > 0 ? Number((trade as any).leverage) : 100;
       const isCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE/.test(trade.symbol);
-      const contractSize = isCrypto ? 1 : 100000; // Crypto uses 1, Forex uses 100000
-
-      // Calculate margin: (lotSize * contractSize * entryPrice) / leverage
-      // For crypto: volume is in units, so margin = (volume * entryPrice) / leverage
-      // For forex: volume is in lots, so margin = (volume * contractSize * entryPrice) / leverage
-      const positionMargin = isCrypto
-        ? (trade.volume * trade.openPrice) / leverage
-        : (trade.volume * contractSize * trade.openPrice) / leverage;
+      const isXAU = /XAU/i.test(trade.symbol);
+      const isXAG = /XAG/i.test(trade.symbol);
+      const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 1 : 100000;
+      const positionMargin = (trade.volume * contractSize * trade.openPrice) / tradeLeverage;
 
       marginUsed += positionMargin;
     }
