@@ -11,6 +11,8 @@ import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { MarketDataService } from '../market-data/market-data.service';
 import { PricesService } from '../prices/prices.service';
+import * as fs from 'fs';
+import * as path from 'path';
 
 interface CandleSubscription {
   symbol: string;
@@ -79,12 +81,25 @@ export class CandlesGateway
   }
 
   afterInit(server: Server) {
+    // #region agent log
+    const logPath = path.join(process.cwd(), 'debug-d59405.log');
+    const payload = { sessionId: 'd59405', runId: 'run1', hypothesisId: 'H2', location: 'candles.gateway.ts:afterInit', message: 'CandlesGateway initialized (root namespace)', data: {}, timestamp: Date.now() };
+    try { fs.appendFileSync(logPath, JSON.stringify(payload) + '\n'); } catch (_) {}
+    fetch('http://127.0.0.1:7718/ingest/4d92c47f-44a6-4394-954a-da3f7a6d4e37', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'd59405' }, body: JSON.stringify(payload) }).catch(() => {});
+    // #endregion
     this.logger.log('🔌 Candles WebSocket Gateway initialized');
     this.logger.log(`📡 Server namespace: root (/)`);
     this.startCandleEmitter();
   }
 
   async handleConnection(client: Socket, ...args: any[]) {
+    // #region agent log
+    const token = client.handshake.auth?.token || client.handshake.query?.token;
+    const logPath = path.join(process.cwd(), 'debug-d59405.log');
+    const connPayload = { sessionId: 'd59405', runId: 'run1', hypothesisId: 'H2,H3', location: 'candles.gateway.ts:handleConnection', message: 'CandlesGateway connection attempt', data: { clientId: client.id, hasToken: !!token, tokenLength: token ? String(token).length : 0 }, timestamp: Date.now() };
+    try { fs.appendFileSync(logPath, JSON.stringify(connPayload) + '\n'); } catch (_) {}
+    fetch('http://127.0.0.1:7718/ingest/4d92c47f-44a6-4394-954a-da3f7a6d4e37', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': 'd59405' }, body: JSON.stringify(connPayload) }).catch(() => {});
+    // #endregion
     try {
       const token =
         client.handshake.auth?.token || client.handshake.query?.token;
@@ -97,9 +112,7 @@ export class CandlesGateway
         return;
       }
 
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_SECRET || 'your-secret-key-here',
-      });
+      const payload = await this.jwtService.verifyAsync(token);
 
       const userId = payload.sub || payload.userId;
       if (!payload || !userId) {
