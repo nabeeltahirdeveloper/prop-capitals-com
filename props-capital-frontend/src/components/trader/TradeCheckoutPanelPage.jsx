@@ -232,7 +232,9 @@ const TradeCheckoutPanelPage = () => {
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                   <div className={`px-4 py-1 rounded-full text-xs font-bold flex items-center gap-1 ${challenge.popular
                     ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-black'
-                    : isDark ? 'bg-white/10 text-gray-400' : 'bg-slate-100 text-slate-500'
+                    : challenge.badge
+                      ? 'bg-gradient-to-r from-emerald-500 to-green-500 text-white'
+                      : isDark ? 'bg-white/10 text-gray-400' : 'bg-slate-100 text-slate-500'
                     }`}>
                     {challenge.popular && <Star className="w-3 h-3 fill-current" />}
                     {challenge.badge}

@@ -132,6 +132,8 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
                 this.logger.log('🔑 Massive.com: Authenticated successfully');
                 this.authenticated = true;
                 this.subscribe();
+                // After a short delay, initialize mock prices for any symbols the stream doesn't cover (e.g. metals)
+                setTimeout(() => this.startMockPrices(), 3000);
                 return;
               }
 
@@ -274,17 +276,13 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
     this.authenticated = false;
   }
 
+  // Flag to prevent starting the mock update interval multiple times
+  private mockIntervalStarted = false;
+
   /**
-   * Mock prices for fallback when API is unavailable
+   * Mock prices for fallback when API is unavailable or doesn't stream certain symbols
    */
   private startMockPrices() {
-    if (this.priceCache.size > 0) {
-      this.logger.log(
-        '📊 Price cache already populated, skipping mock initialization',
-      );
-      return;
-    }
-
     const basePrices: Record<string, number> = {
       'EUR/USD': 1.16,
       'GBP/USD': 1.338,
@@ -301,49 +299,50 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
       'XAG/USD': 32.5,
     };
 
-    // Initialize with base prices
+    const getSpread = (symbol: string) =>
+      symbol.includes('JPY') ? 0.02 : symbol.includes('XAU') ? 0.5 : symbol.includes('XAG') ? 0.03 : 0.0002;
+
+    // Only initialize symbols not already streaming from real WS
+    let initCount = 0;
     this.massivePairs.forEach((symbol) => {
-      const basePrice = basePrices[symbol] || 1.0;
-      const spread = symbol.includes('JPY')
-        ? 0.02
-        : symbol.includes('XAU')
-          ? 0.5
-          : symbol.includes('XAG')
-            ? 0.03
-            : 0.0002;
-      this.priceCache.set(symbol, {
-        bid: basePrice,
-        ask: basePrice + spread,
-        timestamp: Date.now(),
-      });
+      if (!this.priceCache.has(symbol)) {
+        const basePrice = basePrices[symbol] || 1.0;
+        const spread = getSpread(symbol);
+        this.priceCache.set(symbol, {
+          bid: basePrice,
+          ask: basePrice + spread,
+          timestamp: Date.now(),
+        });
+        initCount++;
+      }
     });
 
-    // Update prices every second with realistic movement
-    setInterval(() => {
-      this.massivePairs.forEach((symbol) => {
-        const current = this.priceCache.get(symbol);
-        if (current) {
-          // Random walk: +/- 0.05% movement
-          const changePercent = (Math.random() - 0.5) * 0.001;
-          const newBid = current.bid * (1 + changePercent);
-          const spread = symbol.includes('JPY')
-            ? 0.02
-            : symbol.includes('XAU')
-              ? 0.5
-              : symbol.includes('XAG')
-                ? 0.03
-                : 0.0002;
+    if (initCount > 0) {
+      this.logger.log(`Mock prices initialized for ${initCount} symbol(s) not covered by WS stream`);
+    }
 
-          this.priceCache.set(symbol, {
-            bid: newBid,
-            ask: newBid + spread,
-            timestamp: Date.now(),
-          });
-        }
-      });
-    }, 1000);
+    // Start the mock update interval only once
+    if (!this.mockIntervalStarted) {
+      this.mockIntervalStarted = true;
+      setInterval(() => {
+        this.massivePairs.forEach((symbol) => {
+          const current = this.priceCache.get(symbol);
+          // Only apply mock random walk if not recently updated by real WS (>2s old)
+          if (current && Date.now() - current.timestamp > 2000) {
+            const changePercent = (Math.random() - 0.5) * 0.001;
+            const newBid = current.bid * (1 + changePercent);
+            const spread = getSpread(symbol);
+            this.priceCache.set(symbol, {
+              bid: newBid,
+              ask: newBid + spread,
+              timestamp: Date.now(),
+            });
+          }
+        });
+      }, 1000);
+    }
 
-    this.logger.log('📊 Mock forex prices initialized (API unavailable)');
+    this.logger.log('📊 Mock price service ready');
   }
 
   // ============ PUBLIC API ============

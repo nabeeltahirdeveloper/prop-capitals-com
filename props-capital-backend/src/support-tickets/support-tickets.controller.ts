@@ -8,6 +8,7 @@ import {
   UseGuards,
   Req,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { UserRole } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt.guard';
@@ -26,20 +27,31 @@ export class SupportTicketsController {
   @Post()
 
   async create(@Req() req: any, @Body() dto: CreateSupportTicketDto) {
-
-    return this.supportTicketsService.create(req.user.userId, dto);
+    const userId = req.user?.userId || req.user?.sub || dto.userId;
+    if (!userId) {
+      throw new BadRequestException('Unable to identify user. Please sign in again.');
+    }
+    return this.supportTicketsService.create(userId, dto);
 
   }
 
   @Get('me')
   async getMyTickets(@Req() req: any) {
-    return this.supportTicketsService.getUserTickets(req.user.userId);
+    const userId = req.user?.userId || req.user?.sub;
+    if (!userId) {
+      throw new BadRequestException('Unable to identify user. Please sign in again.');
+    }
+    return this.supportTicketsService.getUserTickets(userId);
   }
 
   @Get('user/:userId')
 
   async getUserTickets(@Req() req: any, @Param('userId') userId: string) {
-    if (req.user.role !== UserRole.ADMIN && req.user.userId !== userId) {
+    const requesterId = req.user?.userId || req.user?.sub;
+    if (!requesterId) {
+      throw new BadRequestException('Unable to identify user. Please sign in again.');
+    }
+    if (req.user.role !== UserRole.ADMIN && requesterId !== userId) {
       throw new ForbiddenException('You can only access your own support tickets');
     }
 
@@ -50,10 +62,14 @@ export class SupportTicketsController {
   @Get(':id')
 
   async getOne(@Req() req: any, @Param('id') id: string) {
+    const requesterId = req.user?.userId || req.user?.sub;
+    if (!requesterId) {
+      throw new BadRequestException('Unable to identify user. Please sign in again.');
+    }
 
     return this.supportTicketsService.getOneForUser(
       id,
-      req.user.userId,
+      requesterId,
       req.user.role,
     );
 

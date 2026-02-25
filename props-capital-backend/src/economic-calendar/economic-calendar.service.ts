@@ -123,6 +123,7 @@ export class EconomicCalendarService {
           'User-Agent': 'Mozilla/5.0',
         },
         timeout: 15000,
+        family: 4,
       }),
     );
 
@@ -158,6 +159,7 @@ export class EconomicCalendarService {
         timeout: 15000,
         responseType: 'text',
         maxRedirects: 5,
+        family: 4,
       }),
     );
 

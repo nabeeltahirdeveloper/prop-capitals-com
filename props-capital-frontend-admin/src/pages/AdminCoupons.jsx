@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   adminGetAllCoupons,
@@ -7,6 +7,7 @@ import {
   adminDeleteCoupon,
 } from "@/api/admin";
 import { useTranslation } from "../contexts/LanguageContext";
+import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,7 @@ import { format } from "date-fns";
 
 export default function AdminCoupons() {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState(null);
   const [copiedCode, setCopiedCode] = useState(null);
@@ -54,8 +56,19 @@ export default function AdminCoupons() {
     mutationFn: (data) => adminCreateCoupon(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-coupons"] });
+      toast({
+        title: t("common.success"),
+        description: t("admin.coupons.messages.createSuccess"),
+      });
       setIsOpen(false);
       resetForm();
+    },
+    onError: (error) => {
+      toast({
+        title: t("common.error"),
+        description: error?.message || t("admin.coupons.messages.saveError"),
+        variant: "destructive",
+      });
     },
   });
 
@@ -63,15 +76,38 @@ export default function AdminCoupons() {
     mutationFn: ({ id, data }) => adminUpdateCoupon(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-coupons"] });
+      toast({
+        title: t("common.success"),
+        description: t("admin.coupons.messages.updateSuccess"),
+      });
       setIsOpen(false);
       resetForm();
+    },
+    onError: (error) => {
+      toast({
+        title: t("common.error"),
+        description: error?.message || t("admin.coupons.messages.saveError"),
+        variant: "destructive",
+      });
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id) => adminDeleteCoupon(id),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["admin-coupons"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-coupons"] });
+      toast({
+        title: t("common.success"),
+        description: t("admin.coupons.messages.deleteSuccess"),
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: t("common.error"),
+        description: error?.message || t("admin.coupons.messages.deleteError"),
+        variant: "destructive",
+      });
+    },
   });
 
   const resetForm = () => {
@@ -102,10 +138,49 @@ export default function AdminCoupons() {
   };
 
   const handleSubmit = () => {
+    if (!formData.code.trim()) {
+      toast({
+        title: t("common.error"),
+        description: t("admin.coupons.validation.codeRequired"),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const discountValue = Number(formData.discountPct);
+    if (!Number.isFinite(discountValue) || discountValue <= 0) {
+      toast({
+        title: t("common.error"),
+        description: t("admin.coupons.validation.discountRequired"),
+        variant: "destructive",
+      });
+      return;
+    }
+    if (formData.discountType === "percentage" && discountValue > 100) {
+      toast({
+        title: t("common.error"),
+        description: t("admin.coupons.validation.discountRangePercent"),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.maxUses) {
+      const maxUses = Number(formData.maxUses);
+      if (!Number.isFinite(maxUses) || maxUses < 1) {
+        toast({
+          title: t("common.error"),
+          description: t("admin.coupons.validation.maxUsesInvalid"),
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     const data = {
-      code: formData.code,
+      code: formData.code.trim().toUpperCase(),
       discountType: formData.discountType,
-      discountPct: parseInt(formData.discountPct),
+      discountPct: Math.floor(discountValue),
       maxUses: formData.maxUses ? parseInt(formData.maxUses) : null,
       expiresAt: formData.expiresAt || null,
       isActive: formData.isActive,
@@ -118,10 +193,22 @@ export default function AdminCoupons() {
     }
   };
 
-  const copyCode = (code) => {
-    navigator.clipboard.writeText(code);
-    setCopiedCode(code);
-    setTimeout(() => setCopiedCode(null), 2000);
+  const copyCode = async (code) => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopiedCode(code);
+      setTimeout(() => setCopiedCode(null), 2000);
+      toast({
+        title: t("common.success"),
+        description: t("admin.coupons.messages.copySuccess"),
+      });
+    } catch {
+      toast({
+        title: t("common.error"),
+        description: t("admin.coupons.messages.copyError"),
+        variant: "destructive",
+      });
+    }
   };
 
   const generateCode = () => {
@@ -143,6 +230,7 @@ export default function AdminCoupons() {
             {row.code}
           </code>
           <button
+            type="button"
             onClick={() => copyCode(row.code)}
             className="text-foreground transition-colors"
           >
@@ -297,7 +385,7 @@ export default function AdminCoupons() {
                       setFormData({ ...formData, discountType: v })
                     }
                   >
-                    <SelectTrigger className="bg-slate-800 border-slate-700 text-white text-sm h-9 sm:h-10">
+                    <SelectTrigger className="bg-muted border-border text-foreground text-sm h-9 sm:h-10">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-card border-border text-foreground">
@@ -385,7 +473,7 @@ export default function AdminCoupons() {
                 disabled={
                   createMutation.isPending ||
                   updateMutation.isPending ||
-                  !formData.code ||
+                  !formData.code.trim() ||
                   !formData.discountPct
                 }
               >

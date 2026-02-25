@@ -152,7 +152,7 @@ export default function AdminRiskMonitor() {
         );
       default:
         return (
-          <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+          <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">
             {t("admin.riskMonitor.riskBadges.low")}
           </Badge>
         );
@@ -279,16 +279,16 @@ export default function AdminRiskMonitor() {
 
         <Card
           className={`bg-card border-border p-3 sm:p-4 cursor-pointer transition-all ${
-            riskFilter === "low" ? "ring-2 ring-emerald-500" : ""
+            riskFilter === "low" ? "ring-2 ring-amber-500" : ""
           }`}
           onClick={() => setRiskFilter(riskFilter === "low" ? "all" : "low")}
         >
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-amber-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl sm:text-2xl font-bold text-emerald-500">
+              <p className="text-xl sm:text-2xl font-bold text-amber-500">
                 {riskCounts.low}
               </p>
               <p className="text-xs text-muted-foreground truncate">
@@ -720,7 +720,7 @@ export default function AdminRiskMonitor() {
                       return (
                         <p
                           className={`font-bold text-sm sm:text-lg ${
-                            profit >= 0 ? "text-emerald-500" : "text-red-500"
+                            profit >= 0 ? "text-amber-500" : "text-red-500"
                           }`}
                         >
                           {profit >= 0 ? "+" : ""}

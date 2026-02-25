@@ -38,6 +38,21 @@ import { format } from "date-fns";
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
+  const formatChangePercentLabel = React.useCallback(
+    (value) => {
+      const numeric = Number(value);
+      if (!Number.isFinite(numeric)) return undefined;
+      const rounded = Math.round(numeric * 10) / 10;
+      const normalized = Number.isInteger(rounded)
+        ? String(rounded)
+        : rounded.toFixed(1);
+      const signed = rounded > 0 ? `+${normalized}` : normalized;
+      return t("admin.dashboard.stats.changeThisMonthNeutral", {
+        percent: signed,
+      });
+    },
+    [t],
+  );
 
   // Get dashboard overview stats with error/loading states
   const {
@@ -45,12 +60,16 @@ export default function AdminDashboard() {
     isLoading: overviewLoading,
     isError: overviewError,
     error: overviewErrorObj,
+    dataUpdatedAt: overviewUpdatedAt,
   } = useQuery({
     queryKey: ["admin-dashboard-overview"],
     queryFn: adminGetDashboardOverview,
-    refetchInterval: 30000,
+    refetchInterval: 5000,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
     retry: 2,
-    staleTime: 10000,
+    staleTime: 2000,
   });
 
   // Get recent accounts with error/loading states
@@ -61,7 +80,9 @@ export default function AdminDashboard() {
   } = useQuery({
     queryKey: ["admin-dashboard-recent-accounts"],
     queryFn: adminGetRecentAccounts,
-    refetchInterval: 30000,
+    refetchInterval: 15000,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
     retry: 2,
   });
 
@@ -73,7 +94,9 @@ export default function AdminDashboard() {
   } = useQuery({
     queryKey: ["admin-dashboard-recent-violations"],
     queryFn: adminGetRecentViolations,
-    refetchInterval: 30000,
+    refetchInterval: 15000,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
     retry: 2,
   });
 
@@ -82,11 +105,16 @@ export default function AdminDashboard() {
     data: revenueChartData = [],
     isLoading: revenueLoading,
     isError: revenueError,
+    dataUpdatedAt: revenueUpdatedAt,
   } = useQuery({
     queryKey: ["admin-dashboard-revenue-chart"],
     queryFn: adminGetRevenueChart,
     retry: 1,
-    refetchInterval: 60000,
+    refetchInterval: 5000,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    staleTime: 2000,
   });
 
   // SAFE: Map revenue chart data with comprehensive error handling
@@ -95,20 +123,36 @@ export default function AdminDashboard() {
       return [];
     }
 
+    const monthShort = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
     return revenueChartData
       .map((item) => {
         try {
           if (!item || !item.date) return null;
 
-          const dateObj = new Date(item.date);
-          
-          if (isNaN(dateObj.getTime())) {
-            console.warn("Invalid date in revenue chart:", item.date);
-            return null;
-          }
+          const parts = String(item.date).split("-");
+          if (parts.length !== 3) return null;
+          const year = Number(parts[0]);
+          const month = Number(parts[1]);
+          const day = Number(parts[2]);
+          if (!year || !month || !day || month < 1 || month > 12) return null;
 
           return {
-            date: format(dateObj, "MMM d"),
+            date: `${monthShort[month - 1]} ${day}`,
+            sortKey: `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
             revenue: Number(item.revenue) || 0,
             payouts: Number(item.payouts) || 0,
           };
@@ -117,48 +161,97 @@ export default function AdminDashboard() {
           return null;
         }
       })
-      .filter(Boolean);
+      .filter(Boolean)
+      .sort((a, b) => a.sortKey.localeCompare(b.sortKey));
   }, [revenueChartData]);
+
+  const maxRevenue = React.useMemo(
+    () => Math.max(...revenueData.map((d) => d.revenue), 0),
+    [revenueData],
+  );
+  const maxPayouts = React.useMemo(
+    () => Math.max(...revenueData.map((d) => d.payouts), 0),
+    [revenueData],
+  );
+  const chartMax = Math.max(maxRevenue, maxPayouts, 1000);
+  const paddedChartMax = chartMax * 1.15;
+  const formatCurrencyTick = (value) => {
+    const num = Number(value) || 0;
+    if (Math.abs(num) >= 1000) {
+      return `$${(num / 1000).toFixed(0)}k`;
+    }
+    return `$${num.toFixed(0)}`;
+  };
+  const getNiceStep = (maxValue, segments = 4) => {
+    const rawStep = maxValue / segments;
+    const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep || 1)));
+    const normalized = rawStep / magnitude;
+    let niceNormalized = 1;
+    if (normalized > 1 && normalized <= 2) niceNormalized = 2;
+    else if (normalized > 2 && normalized <= 5) niceNormalized = 5;
+    else if (normalized > 5) niceNormalized = 10;
+    return niceNormalized * magnitude;
+  };
+  const yAxisStep = getNiceStep(paddedChartMax, 4);
+  const yAxisTicks = React.useMemo(
+    () => Array.from({ length: 5 }, (_, i) => i * yAxisStep),
+    [yAxisStep],
+  );
+  const yAxisMax = yAxisStep * 4;
+  const xAxisInterval = React.useMemo(
+    () => Math.max(0, Math.ceil(revenueData.length / 8) - 1),
+    [revenueData.length],
+  );
+  const lastUpdatedAt = Math.max(overviewUpdatedAt || 0, revenueUpdatedAt || 0);
+  const lastUpdatedLabel = lastUpdatedAt
+    ? new Date(lastUpdatedAt).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      })
+    : "--:--:--";
 
   // SAFE: Map backend accounts to frontend format with null safety
   const recentAccounts = React.useMemo(() => {
     if (!Array.isArray(recentAccountsData)) return [];
 
-    return recentAccountsData.map((account) => {
-      try {
-        const challenge = account?.challenge || {};
-        const statusMap = {
-          ACTIVE: "active",
-          PAUSED: "paused",
-          CLOSED: "closed",
-        };
-        const phaseMap = {
-          PHASE1: "phase1",
-          PHASE2: "phase2",
-          FUNDED: "funded",
-          FAILED: "failed",
-        };
+    return recentAccountsData
+      .map((account) => {
+        try {
+          const challenge = account?.challenge || {};
+          const statusMap = {
+            ACTIVE: "active",
+            PAUSED: "paused",
+            CLOSED: "closed",
+          };
+          const phaseMap = {
+            PHASE1: "phase1",
+            PHASE2: "phase2",
+            FUNDED: "funded",
+            FAILED: "failed",
+          };
 
-        return {
-          id: account?.id || "",
-          account_number:
-            account?.brokerLogin || account?.id?.slice(0, 8) || "N/A",
-          platform: challenge?.platform || "MT5",
-          status:
-            statusMap[account?.status] ||
-            account?.status?.toLowerCase() ||
-            "active",
-          current_phase:
-            phaseMap[account?.phase] ||
-            account?.phase?.toLowerCase() ||
-            "phase1",
-          created_date: account?.createdAt || null,
-        };
-      } catch (error) {
-        console.error("Error mapping account:", account, error);
-        return null;
-      }
-    }).filter(Boolean);
+          return {
+            id: account?.id || "",
+            account_number:
+              account?.brokerLogin || account?.id?.slice(0, 8) || "N/A",
+            platform: challenge?.platform || "MT5",
+            status:
+              statusMap[account?.status] ||
+              account?.status?.toLowerCase() ||
+              "active",
+            current_phase:
+              phaseMap[account?.phase] ||
+              account?.phase?.toLowerCase() ||
+              "phase1",
+            created_date: account?.createdAt || null,
+          };
+        } catch (error) {
+          console.error("Error mapping account:", account, error);
+          return null;
+        }
+      })
+      .filter(Boolean);
   }, [recentAccountsData]);
 
   // SAFE: Helper function to extract percentage from message
@@ -176,27 +269,29 @@ export default function AdminDashboard() {
   const recentViolations = React.useMemo(() => {
     if (!Array.isArray(recentViolationsData)) return [];
 
-    return recentViolationsData.map((violation) => {
-      try {
-        const violationType = violation?.type?.toLowerCase() || "unknown";
-        const threshold = extractPercentage(violation?.message) || 5;
-        
-        return {
-          id: violation?.id || "",
-          type: violationType,
-          description:
-            violation?.message ||
-            t(`admin.dashboard.violations.${violationType}.description`, {
-              defaultValue: `${violation?.type || "Unknown"} violation`,
-            }),
-          threshold: threshold,
-          created_date: violation?.createdAt || null,
-        };
-      } catch (error) {
-        console.error("Error mapping violation:", violation, error);
-        return null;
-      }
-    }).filter(Boolean);
+    return recentViolationsData
+      .map((violation) => {
+        try {
+          const violationType = violation?.type?.toLowerCase() || "unknown";
+          const threshold = extractPercentage(violation?.message) || 5;
+
+          return {
+            id: violation?.id || "",
+            type: violationType,
+            description:
+              violation?.message ||
+              t(`admin.dashboard.violations.${violationType}.description`, {
+                defaultValue: `${violation?.type || "Unknown"} violation`,
+              }),
+            threshold: threshold,
+            created_date: violation?.createdAt || null,
+          };
+        } catch (error) {
+          console.error("Error mapping violation:", violation, error);
+          return null;
+        }
+      })
+      .filter(Boolean);
   }, [recentViolationsData, t]);
 
   const displayRecentAccounts = recentAccounts;
@@ -274,11 +369,18 @@ export default function AdminDashboard() {
   ];
 
   // Show global loading state
-  if (overviewLoading && accountsLoading && violationsLoading && revenueLoading) {
+  if (
+    overviewLoading &&
+    accountsLoading &&
+    violationsLoading &&
+    revenueLoading
+  ) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
-        <span className="ml-3 text-muted-foreground font-medium">Loading dashboard...</span>
+        <span className="ml-3 text-muted-foreground font-medium">
+          {t("admin.dashboard.messages.loading")}
+        </span>
       </div>
     );
   }
@@ -288,12 +390,15 @@ export default function AdminDashboard() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <AlertTriangle className="w-12 h-12 text-red-500 mb-4" />
-        <h2 className="text-xl font-bold text-foreground mb-2">Failed to Load Dashboard</h2>
+        <h2 className="text-xl font-bold text-foreground mb-2">
+          {t("admin.dashboard.messages.loadFailedTitle")}
+        </h2>
         <p className="text-muted-foreground mb-4">
-          {overviewErrorObj?.message || "An unexpected error occurred"}
+          {overviewErrorObj?.message ||
+            t("admin.dashboard.messages.unexpectedError")}
         </p>
         <Button onClick={() => window.location.reload()}>
-          Reload Dashboard
+          {t("admin.dashboard.messages.reload")}
         </Button>
       </div>
     );
@@ -317,8 +422,13 @@ export default function AdminDashboard() {
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">
           {t("admin.dashboard.title")}
         </h1>
-        <p className="text-sm sm:text-base text-muted-foreground">
+        <p className="text-sm sm:text-base text-muted-foreground mb-1">
           {t("admin.dashboard.subtitle")}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          {t("admin.dashboard.messages.liveUpdates", {
+            time: lastUpdatedLabel,
+          })}
         </p>
       </div>
 
@@ -326,16 +436,10 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4">
         <StatsCard
           title={t("admin.dashboard.stats.totalTraders")}
-          value={overview.totalUsers || 0}
+          value={overview.totalTraders ?? overview.totalUsers ?? 0}
           icon={Users}
           gradient="from-[#020617] to-[#020617]"
-          change={
-            overview.usersChangePercent !== undefined
-              ? t("admin.dashboard.stats.changeThisMonth", {
-                  percent: Math.round(overview.usersChangePercent),
-                })
-              : undefined
-          }
+          change={formatChangePercentLabel(overview.usersChangePercent)}
           changeType={
             (overview.usersChangePercent || 0) >= 0 ? "positive" : "negative"
           }
@@ -351,13 +455,7 @@ export default function AdminDashboard() {
           value={`$${(overview.totalRevenue || 0).toLocaleString()}`}
           icon={DollarSign}
           gradient="from-[#15803d] to-[#22c55e]"
-          change={
-            overview.revenueChangePercent !== undefined
-              ? t("admin.dashboard.stats.changeThisMonth", {
-                  percent: Math.round(overview.revenueChangePercent),
-                })
-              : undefined
-          }
+          change={formatChangePercentLabel(overview.revenueChangePercent)}
           changeType={
             (overview.revenueChangePercent || 0) >= 0 ? "positive" : "negative"
           }
@@ -390,7 +488,7 @@ export default function AdminDashboard() {
           </h3>
           <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm">
             <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-500" />
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-amber-500" />
               <span className="text-muted-foreground">
                 {t("admin.dashboard.chart.revenue")}
               </span>
@@ -403,31 +501,50 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
-        
+
         {revenueLoading ? (
           <div className="h-[300px] flex items-center justify-center">
-            <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+            <Loader2 className="w-6 h-6 animate-spin text-amber-500" />
           </div>
         ) : revenueError ? (
           <div className="h-[300px] flex items-center justify-center">
-            <p className="text-muted-foreground">Failed to load chart data</p>
+            <p className="text-muted-foreground">
+              {t("admin.dashboard.messages.chartLoadFailed")}
+            </p>
           </div>
         ) : revenueData.length === 0 ? (
           <div className="h-[300px] flex items-center justify-center">
-            <p className="text-muted-foreground">No revenue data available</p>
+            <p className="text-muted-foreground">
+              {t("admin.dashboard.messages.noRevenueData")}
+            </p>
           </div>
         ) : (
           <div className="h-[200px] sm:h-[250px] md:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={revenueData}>
+              <AreaChart
+                data={revenueData}
+                margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+              >
                 <defs>
-                  <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                  <linearGradient
+                    id="revenueGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.03} />
                   </linearGradient>
-                  <linearGradient id="payoutGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#a855f7" stopOpacity={0} />
+                  <linearGradient
+                    id="payoutGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="5%" stopColor="#a855f7" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="#a855f7" stopOpacity={0.03} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
@@ -435,13 +552,17 @@ export default function AdminDashboard() {
                   dataKey="date"
                   stroke="#64748b"
                   tick={{ fill: "#64748b", fontSize: 10 }}
-                  interval="preserveStartEnd"
+                  interval={xAxisInterval}
+                  minTickGap={18}
                 />
                 <YAxis
                   stroke="#64748b"
                   tick={{ fill: "#64748b", fontSize: 10 }}
-                  tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                  tickFormatter={formatCurrencyTick}
                   width={45}
+                  ticks={yAxisTicks}
+                  domain={[0, yAxisMax]}
+                  allowDecimals={false}
                 />
                 <Tooltip
                   contentStyle={{
@@ -464,9 +585,10 @@ export default function AdminDashboard() {
                 <Area
                   type="monotone"
                   dataKey="revenue"
-                  stroke="#10b981"
+                  stroke="#f59e0b"
                   fill="url(#revenueGradient)"
                   strokeWidth={2}
+                  dot={false}
                 />
                 <Area
                   type="monotone"
@@ -474,6 +596,7 @@ export default function AdminDashboard() {
                   stroke="#a855f7"
                   fill="url(#payoutGradient)"
                   strokeWidth={2}
+                  dot={false}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -502,11 +625,11 @@ export default function AdminDashboard() {
           </div>
           {accountsLoading ? (
             <div className="flex justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+              <Loader2 className="w-6 h-6 animate-spin text-amber-500" />
             </div>
           ) : accountsError ? (
             <p className="text-center text-muted-foreground py-8">
-              Failed to load accounts
+              {t("admin.dashboard.messages.accountsLoadFailed")}
             </p>
           ) : (
             <div className="overflow-x-auto no-scrollbar">
@@ -518,7 +641,7 @@ export default function AdminDashboard() {
             </div>
           )}
         </Card>
-
+      
         {/* Recent Violations */}
         <Card className="bg-card border-border p-4 sm:p-6">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
@@ -539,11 +662,11 @@ export default function AdminDashboard() {
           </div>
           {violationsLoading ? (
             <div className="flex justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+              <Loader2 className="w-6 h-6 animate-spin text-amber-500" />
             </div>
           ) : violationsError ? (
             <p className="text-center text-muted-foreground py-8">
-              Failed to load violations
+              {t("admin.dashboard.messages.violationsLoadFailed")}
             </p>
           ) : (
             <div className="overflow-x-auto no-scrollbar">
@@ -560,9 +683,9 @@ export default function AdminDashboard() {
       {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <Link to={createPageUrl("AdminUsers")}>
-        <Card className="bg-card border-border p-3 sm:p-4 hover:border-emerald-500/50 transition-colors cursor-pointer h-full">
+          <Card className="bg-card border-border p-3 sm:p-4 hover:border-amber-500/50 transition-colors cursor-pointer h-full">
             <div className="flex items-center gap-2 sm:gap-3">
-              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 flex-shrink-0" />
+              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 flex-shrink-0" />
               <span className="text-foreground font-medium text-xs sm:text-sm">
                 {t("admin.dashboard.quickActions.manageUsers")}
               </span>
@@ -570,7 +693,7 @@ export default function AdminDashboard() {
           </Card>
         </Link>
         <Link to={createPageUrl("AdminChallenges")}>
-        <Card className="bg-card border-border p-3 sm:p-4 hover:border-cyan-500/50 transition-colors cursor-pointer h-full">
+          <Card className="bg-card border-border p-3 sm:p-4 hover:border-cyan-500/50 transition-colors cursor-pointer h-full">
             <div className="flex items-center gap-2 sm:gap-3">
               <Award className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400 flex-shrink-0" />
               <span className="text-foreground font-medium text-xs sm:text-sm">
@@ -580,7 +703,7 @@ export default function AdminDashboard() {
           </Card>
         </Link>
         <Link to={createPageUrl("AdminPayouts")}>
-        <Card className="bg-card border-border p-3 sm:p-4 hover:border-purple-500/50 transition-colors cursor-pointer h-full">
+          <Card className="bg-card border-border p-3 sm:p-4 hover:border-purple-500/50 transition-colors cursor-pointer h-full">
             <div className="flex items-center gap-2 sm:gap-3">
               <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400 flex-shrink-0" />
               <span className="text-foreground font-medium text-xs sm:text-sm">
@@ -590,7 +713,7 @@ export default function AdminDashboard() {
           </Card>
         </Link>
         <Link to={createPageUrl("AdminSettings")}>
-        <Card className="bg-card border-border p-3 sm:p-4 hover:border-amber-500/50 transition-colors cursor-pointer h-full">
+          <Card className="bg-card border-border p-3 sm:p-4 hover:border-amber-500/50 transition-colors cursor-pointer h-full">
             <div className="flex items-center gap-2 sm:gap-3">
               <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 flex-shrink-0" />
               <span className="text-foreground font-medium text-xs sm:text-sm">

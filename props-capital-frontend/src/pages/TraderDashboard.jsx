@@ -50,6 +50,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useTranslation } from "../contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { translateNotification } from "../utils/notificationTranslations";
 
 // Helper function to translate violation messages
@@ -86,6 +87,7 @@ const translateViolationMessage = (violationReason, t) => {
 
 export default function TraderDashboard() {
   const { t, language } = useTranslation();
+  const { isDark } = useTheme();
   const [selectedAccountForRules, setSelectedAccountForRules] = useState(null);
   const queryClient = useQueryClient();
 
@@ -424,10 +426,19 @@ export default function TraderDashboard() {
   if (accountsLoading) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-32 w-full bg-slate-800" />
+        <Skeleton
+          className={`h-32 w-full rounded-2xl ${
+            isDark ? "bg-[#12161d]" : "bg-slate-200"
+          }`}
+        />
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-28 bg-slate-800" />
+            <Skeleton
+              key={i}
+              className={`h-28 rounded-2xl ${
+                isDark ? "bg-[#12161d]" : "bg-slate-200"
+              }`}
+            />
           ))}
         </div>
       </div>

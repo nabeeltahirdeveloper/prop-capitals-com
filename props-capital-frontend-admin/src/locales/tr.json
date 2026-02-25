@@ -3,7 +3,10 @@
     "loading": "Yükleniyor...",
     "url": "URL",
     "dismiss": "Kapat",
-    "allPlatforms": "Tüm platformlar"
+    "allPlatforms": "Tüm platformlar",
+    "unknown": "Bilinmiyor",
+    "error": "Hata",
+    "success": "Başarılı"
   },
   "home": {
     "hero": {
@@ -436,7 +439,18 @@
     "challengeUpdates": "Meydan okuma güncellemeleri",
     "challengeUpdatesDesc": "İlerleme ve aşama değişiklikleriyle ilgili güncellemeler",
     "marketingEmails": "Pazarlama e-postaları",
-    "marketingEmailsDesc": "Haberler, promosyonlar ve özel teklifler"
+    "marketingEmailsDesc": "Haberler, promosyonlar ve özel teklifler",
+    "notif": "Bildirimler",
+    "passwordChangedDesc": "Şifreniz başarıyla güncellendi.",
+    "passwordChangeFailed": "Şifre Değiştirme Başarısız",
+    "passwordChangeError": "Şifreniz değiştirilirken bir hata oluştu.",
+    "validationError": "Doğrulama Hatası",
+    "notificationUpdateError": "Bildirim tercihleri güncellenemedi.",
+    "notificationsUpdated": "Bildirimler Güncellendi",
+    "notificationsUpdatedDesc": "Bildirim tercihleriniz kaydedildi.",
+    "personal": "Personal",
+    "sec": "Security",
+    "verify": "Verify"
   },
   "support": {
     "title": "Destek",
@@ -823,7 +837,6 @@
     "orderSummary": "Sipariş özeti",
     "challenge": "Meydan okuma",
     "noChallenges": "Zorluk yok",
-
     "platform": "Platform",
     "amountPaid": "Ödenen tutar",
     "goToDashboard": "Panoya git",
@@ -1071,7 +1084,8 @@
       "ask": "Ask",
       "chg": "Chg%",
       "updated": "Güncellendi",
-      "retry": "Tekrar dene"
+      "retry": "Tekrar dene",
+      "reconnecting": "Reconnecting"
     },
     "positions": {
       "title": "Açık pozisyonlar",
@@ -1104,7 +1118,9 @@
       "exit": "Çıkış",
       "autoClosed": "Otomatik kapandı",
       "breach": "Kural ihlali",
-      "breachPnL": "İhlal anı PnL (limit)"
+      "breachPnL": "İhlal anı PnL (limit)",
+      "finalFill": "Final Fill",
+      "finalFillPnL": "Final Fill P/L"
     },
     "accountMetrics": {
       "balance": "Bakiye",
@@ -1179,7 +1195,13 @@
     "website": "Web sitesi",
     "logout": "Çıkış",
     "user": "Kullanıcı",
-    "adminPanel": "Yönetici paneli"
+    "adminPanel": "Yönetici paneli",
+    "coupons": "Kuponlar",
+    "crm": "CRM",
+    "crmLeads": "CRM Leadleri",
+    "pipeline": "Pipeline",
+    "ftdReport": "FTD Raporu",
+    "calendar": "Takvim"
   },
   "status": {
     "active": "Aktif",
@@ -1221,7 +1243,8 @@
         "payouts": "Ödemeler",
         "fundedAccounts": "Fonlanan hesaplar",
         "violationsToday": "Bugünkü ihlaller",
-        "changeThisMonth": "Bu ay +{{percent}}%"
+        "changeThisMonth": "Bu ay +{{percent}}%",
+        "changeThisMonthNeutral": "Bu ay {{percent}}%"
       },
       "chart": {
         "title": "Gelir ve ödemeler (son 30 gün)",
@@ -1274,6 +1297,17 @@
           "type": "Bilinmiyor",
           "description": "Bilinmeyen ihlal"
         }
+      },
+      "messages": {
+        "loading": "Y?netici paneli y?kleniyor...",
+        "loadFailedTitle": "Y?netici paneli y?klenemedi",
+        "unexpectedError": "Beklenmeyen bir hata olu?tu",
+        "reload": "Paneli Yeniden Y?kle",
+        "liveUpdates": "Her 10 saniyede canl? g?ncelleme. Son yenileme: {{time}}",
+        "chartLoadFailed": "Grafik verileri y?klenemedi",
+        "noRevenueData": "Gelir verisi bulunmuyor",
+        "accountsLoadFailed": "Hesaplar y?klenemedi",
+        "violationsLoadFailed": "?hlaller y?klenemedi"
       }
     },
     "users": {
@@ -1330,7 +1364,8 @@
         "active": "Aktif",
         "passed": "Geçti",
         "funded": "Fonlandı",
-        "failed": "Başarısız"
+        "failed": "Başarısız",
+        "phase2": "Phase 2"
       },
       "searchPlaceholder": "Hesap numarası veya e-posta ile ara...",
       "filter": {
@@ -1344,7 +1379,11 @@
         "failed": "Başarısız",
         "suspended": "Askıya alındı",
         "phase1": "Aşama 1",
-        "phase2": "Aşama 2"
+        "phase2": "Aşama 2",
+        "closed": "Closed",
+        "dailyLocked": "Daily Locked",
+        "disqualified": "Disqualified",
+        "paused": "Paused"
       },
       "table": {
         "account": "Hesap",
@@ -1360,7 +1399,9 @@
         "forcePass": "Zorla geçir",
         "forceFail": "Zorla başarısız yap",
         "resetAccount": "Hesabı sıfırla",
-        "moveToFunded": "Fonlanana taşı"
+        "moveToFunded": "Fonlanana taşı",
+        "pause": "Pause Account",
+        "resume": "Resume Account"
       },
       "dialog": {
         "title": "Hesap detayları",
@@ -1569,7 +1610,22 @@
         "inactive": "Pasif"
       },
       "noExpiry": "Süresiz",
-      "emptyMessage": "Kupon bulunamadı"
+      "emptyMessage": "Kupon bulunamadı",
+      "messages": {
+        "copySuccess": "Coupon code copied",
+        "copyError": "Failed to copy coupon code",
+        "createSuccess": "Coupon created successfully",
+        "updateSuccess": "Coupon updated successfully",
+        "deleteSuccess": "Coupon deleted successfully",
+        "saveError": "Failed to save coupon",
+        "deleteError": "Failed to delete coupon"
+      },
+      "validation": {
+        "codeRequired": "Coupon code is required",
+        "discountRequired": "Discount value must be greater than 0",
+        "discountRangePercent": "Percentage discount cannot exceed 100",
+        "maxUsesInvalid": "Max uses must be at least 1"
+      }
     },
     "support": {
       "title": "Destek talepleri",
@@ -1666,6 +1722,7 @@
         "stripeApiKeyPlaceholder": "sk_live_...",
         "paypal": "PayPal",
         "paypalDesc": "PayPal ödemelerini kabul et",
+        "paypalClientId": "PayPal Müşteri Kimliği",
         "cryptocurrency": "Kripto para",
         "cryptocurrencyDesc": "BTC, ETH, USDT ile ödemeleri kabul et"
       },
@@ -1696,7 +1753,8 @@
         "payoutApproved": "Çekim onaylandı",
         "payoutApprovedDesc": "Çekim onaylandığında gönderilir",
         "editTemplate": "Şablonu düzenle"
-      }
+      },
+      "saveError": "Failed to save settings"
     },
     "riskMonitor": {
       "title": "Risk izleme",
@@ -1732,6 +1790,10 @@
         "title": "Son ihlaller",
         "noViolations": "Son ihlal yok",
         "account": "Hesap"
+      },
+      "severity": {
+        "fatal": "Fatal",
+        "warning": "Warning"
       }
     },
     "brokerServers": {
@@ -1751,7 +1813,8 @@
         "managerPassword": "Yönetici şifresi",
         "apiKey": "API Key / Client ID",
         "apiSecret": "API Secret",
-        "demoServer": "Demo sunucu"
+        "demoServer": "Demo sunucu",
+        "description": "Configure a new broker server connection for trading accounts."
       },
       "platforms": {
         "mt4": "MetaTrader 4",
@@ -1770,7 +1833,8 @@
       "card": {
         "platform": "Platform",
         "timezone": "Saat dilimi",
-        "lastSync": "Son senkronizasyon"
+        "lastSync": "Son senkronizasyon",
+        "accounts": "Linked Accounts"
       },
       "actions": {
         "test": "Test"
@@ -1778,6 +1842,21 @@
       "empty": {
         "title": "Broker sunucusu yok",
         "description": "İlk broker sunucunuzu ekleyerek işlem hesabı oluşturmayı başlatın"
+      },
+      "confirmDelete": "Are you sure you want to delete this broker server?",
+      "error": {
+        "description": "An error occurred while loading broker servers",
+        "retry": "Retry",
+        "title": "Failed to Load Broker Servers"
+      },
+      "toast": {
+        "connectionError": "Failed to test connection",
+        "connectionFailed": "Connection test failed",
+        "connectionSuccess": "Connection test successful",
+        "createError": "Failed to add broker server",
+        "createSuccess": "Broker server added successfully",
+        "deleteError": "Failed to delete broker server",
+        "deleteSuccess": "Broker server deleted successfully"
       }
     },
     "scaling": {
@@ -1889,7 +1968,8 @@
       "deleteErrorTitle": "Meydan okuma silinemiyor",
       "deleteErrorMessage": "Bu meydan okuma silinemez",
       "deleteErrorDesc": "Mevcut işlem hesaplarına bağlı olduğu için silinemez",
-      "understand": "Anladım"
+      "understand": "Anladım",
+      "noChallenges": "No challenges available"
     }
   },
   "signIn": {
@@ -1909,8 +1989,12 @@
     "fundsProtected": "Fonlar korunur",
     "securityDescription": "Güvenle işlem yapın. Platformumuz, hesabınızı ve işlem verilerinizi korumak için banka seviyesinde güvenlik kullanır.",
     "errors": {
-      "invalidCredentials": "E-posta adresi veya şifre hatalı"
-    }
+      "invalidCredentials": "E-posta adresi veya şifre hatalı",
+      "adminPortalOnly": "This is the Admin portal. Please use the Trader portal to sign in.",
+      "adminCredentialsRequired": "Access denied. Admin credentials required."
+    },
+    "adminSubtitle": "Sign in to access the admin dashboard",
+    "adminAccessOnly": "Admin access only. Contact your system administrator for credentials."
   },
   "signUp": {
     "title": "Hesap oluştur",
@@ -2856,6 +2940,249 @@
     "contactUs": {
       "title": "10. Bize ulaşın",
       "content": "Gizlilikle ilgili sorularınız için support@the-bluehaven.com adresinden bize ulaşabilirsiniz."
+    }
+  },
+  "crm": {
+    "leads": {
+      "title": "Müşteri Adayı Yönetimi",
+      "subtitle": "Müşteri adaylarınızı yönetin ve dönüştürün",
+      "import": "Müşteri Adaylarını İçe Aktar",
+      "search": "Müşteri adaylarını ara...",
+      "allStatus": "Tüm Durumlar",
+      "allCategory": "Tümü",
+      "bySource": "Kaynağa Göre",
+      "byAgent": "Temsilciye Göre",
+      "loading": "Müşteri adayları yükleniyor...",
+      "noLeads": "Müşteri adayı bulunamadı",
+      "cards": "Kartlar",
+      "list": "Liste",
+      "compact": "Sıkışık",
+      "leadReceived": "Aday Alınma Tarihi",
+      "contactInfo": "İletişim Bilgileri",
+      "personName": "Kişi Adı",
+      "emailAddress": "E-posta Adresi",
+      "phoneNumber": "Telefon Numarası",
+      "country": "Ülke",
+      "source": "Kaynak",
+      "leadStatus": "Müşteri Adayı Durumu",
+      "onlineStatus": "Çevrimiçi Durumu",
+      "priority": "Öncelik",
+      "assignedAgent": "Atanan Temsilci",
+      "ftdInfo": "FTD Bilgileri",
+      "ftdAmount": "FTD Tutarı",
+      "paymentMethod": "Ödeme Yöntemi",
+      "paymentProvider": "Ödeme Sağlayıcısı",
+      "editableFields": "Düzenlenebilir Alanlar",
+      "age": "Yaş",
+      "salary": "Maaş",
+      "jobIndustry": "İş Sektörü",
+      "workTitle": "İş Unvanı",
+      "updateLead": "Müşteri Adayını Güncelle",
+      "updating": "Güncelleniyor...",
+      "quickActions": "Hızlı İşlemler",
+      "callLead": "Adayı Ara",
+      "sendEmail": "E-posta Gönder",
+      "whatsApp": "WhatsApp",
+      "telegram": "Telegram",
+      "activityHistory": "Etkinlik Geçmişi",
+      "activities": "Etkinlikler",
+      "noActivities": "Henüz etkinlik yok",
+      "addNote": "Not Ekle",
+      "addNotePlaceholder": "Not ekle...",
+      "add": "Ekle",
+      "importLeads": "Müşteri Adaylarını İçe Aktar",
+      "uploadCSV": "CSV yüklemek için tıklayın",
+      "changeFile": "Dosyayı Değiştir",
+      "csvFormat": "CSV gerekli formatı izlemelidir",
+      "csvFormatDesc": "CSV, şu başlıklara sahip zorunlu formatı izlemelidir: personName, email, phoneNumber, country, source, leadStatus, ftdAmount, paymentMethod, paymentProvider, priority, age, salary, jobIndustry, workTitle",
+      "requiredFields": "Zorunlu alanlar: personName, email",
+      "cancel": "İptal",
+      "importButton": "İçe Aktar",
+      "importing": "İçe aktarılıyor...",
+      "note": "Not",
+      "call": "Arama",
+      "email": "E-posta",
+      "whatsapp": "WhatsApp",
+      "telegram_activity": "Telegram",
+      "toast": {
+        "fetchError": "Failed to fetch leads",
+        "loadError": "Failed to load lead details",
+        "updateSuccess": "Lead updated successfully",
+        "updateError": "Failed to update lead",
+        "activityLogged": "Activity logged: {{type}}",
+        "activityError": "Failed to log activity",
+        "importSuccess": "Imported {{created}} of {{total}} leads",
+        "importError": "Failed to import CSV",
+        "noteAdded": "Note added successfully",
+        "noteError": "Failed to add note"
+      }
+    },
+    "status": {
+      "all": "Tümü",
+      "new": "Yeni",
+      "contacted": "İletişime Geçildi",
+      "qualified": "Kalifiye",
+      "callback": "Geri Arama",
+      "followup": "Takip",
+      "converted": "Dönüştürüldü",
+      "lost": "Kaybedildi",
+      "online": "Çevrimiçi",
+      "offline": "Çevrimdışı"
+    },
+    "priority": {
+      "low": "Düşük",
+      "medium": "Orta",
+      "high": "Yüksek",
+      "urgent": "Acil"
+    },
+    "payment": {
+      "crypto": "Kripto",
+      "card": "Kart",
+      "wire": "Havale",
+      "other": "Diğer",
+      "bankTransfer": "Banka Havalesi",
+      "wireTransfer": "Elektronik Havale",
+      "stripe": "Stripe",
+      "paypal": "PayPal",
+      "skrill": "Skrill",
+      "neteller": "Neteller",
+      "binancePay": "Binance Pay",
+      "coinbase": "Coinbase"
+    },
+    "pipeline": {
+      "title": "Satış Hunisi",
+      "subtitle": "Adayları aşamalar üzerinden takip edin ve yönetin",
+      "search": "Aday ara...",
+      "loading": "Huni Yükleniyor...",
+      "statusUpdated": "Durum Güncellendi",
+      "movedTo": "Aday {{status}} aşamasına taşındı",
+      "updateError": "Durum güncellenemedi. Geri alınıyor...",
+      "loadError": "Detaylar yüklenemedi",
+      "updateSuccess": "Aday başarıyla güncellendi",
+      "updateFailed": "Aday güncellenemedi",
+      "noteAdded": "Not başarıyla eklendi",
+      "noteFailed": "Not eklenemedi",
+      "activityLogged": "Aktivite Kaydedildi",
+      "activityRecorded": "{{type}} kaydedildi",
+      "direct": "Doğrudan",
+      "quickActionNote": "Pipeline Hızlı İşlemleri aracılığıyla {{type}} denemesi yapıldı",
+      "activityFailed": "Aktivite kaydedilemedi"
+    },
+    "columns": {
+      "new": "Yeni Adaylar",
+      "contacted": "İletişime Geçildi",
+      "qualified": "Kalifiye",
+      "callback": "Geri Arama",
+      "followUp": "Takip",
+      "converted": "Dönüştü",
+      "lost": "Kaybedildi"
+    },
+    "modal": {
+      "close": "Kapat",
+      "basicInfo": "Temel Bilgiler",
+      "fullName": "Ad Soyad",
+      "email": "E-posta Adresi",
+      "phone": "Telefon Numarası",
+      "country": "Ülke",
+      "statusAssignment": "Durum ve Atama",
+      "status": "Durum",
+      "priority": "Öncelik",
+      "additionalInfo": "Ek Bilgiler",
+      "age": "Yaş",
+      "salary": "Maaş Aralığı",
+      "industry": "Sektör",
+      "workTitle": "Unvan",
+      "ftdInfo": "FTD Bilgileri",
+      "deposit": "Yatırım Tutarı ($)",
+      "paymentMethod": "Ödeme Yöntemi",
+      "paymentProvider": "Ödeme Sağlayıcısı",
+      "convertedDate": "Dönüşüm Tarihi",
+      "funnelName": "Huni Adı",
+      "timeline": "Aktivite Zaman Çizelgesi",
+      "noActivities": "Henüz aktivite kaydedilmedi",
+      "noDescription": "Açıklama girilmedi"
+    },
+    "ftdReport": {
+      "title": "FTD Report",
+      "subtitle": "First Time Deposit tracking from converted leads",
+      "totalFtd": "Total FTD",
+      "totalDeposits": "Total Deposits",
+      "avgFtdAmount": "Avg FTD Amount",
+      "activeAgents": "Active Agents",
+      "searchPlaceholder": "Search by name, email, or country...",
+      "allAgents": "All Agents",
+      "tableTitle": "First Time Deposits",
+      "leadName": "Lead Name",
+      "email": "Email",
+      "phone": "Phone",
+      "country": "Country",
+      "depositAmount": "Deposit Amount",
+      "convertedDate": "Converted Date",
+      "status": "Status",
+      "converted": "Converted",
+      "agent": "Agent",
+      "paymentMethod": "Payment Method",
+      "paymentProvider": "Payment Provider",
+      "source": "Source",
+      "affiliateId": "Affiliate ID",
+      "funnelName": "Funnel Name",
+      "ftdTime": "FTD Time",
+      "subParameters": "Sub Parameters",
+      "na": "N/A",
+      "unassigned": "Unassigned",
+      "loading": "Loading FTD data...",
+      "noData": "No first time deposits found.",
+      "showing": "Showing {{count}} First Time Deposits",
+      "loadError": "Failed to load FTD report data"
+    },
+    "crmCalendar": {
+      "title": "Satış Takvimi",
+      "subtitle": "Planlanmış toplantılarınız",
+      "scheduleMeeting": "Toplantı Planla",
+      "searchPlaceholder": "Toplantı, müşteri veya temsilci ara...",
+      "allTypes": "Tüm Türler",
+      "call": "Arama",
+      "meeting": "Toplantı",
+      "other": "Diğer",
+      "allStatus": "Tüm Durumlar",
+      "scheduled": "Planlandı",
+      "completed": "Tamamlandı",
+      "cancelled": "İptal Edildi",
+      "totalMeetings": "Toplam Toplantı",
+      "today": "Bugün",
+      "calls": "Aramalar",
+      "meetings": "Toplantılar",
+      "calendarView": "Takvim Görünümü",
+      "listView": "Liste Görünümü",
+      "todaysSchedule": "Bugünkü Program",
+      "noMeetings": "Planlanmış toplantı yok",
+      "scheduleOneNow": "Şimdi bir tane planla",
+      "scheduleNewMeeting": "Yeni Toplantı Planla",
+      "meetingTitle": "Toplantı Başlığı",
+      "clientName": "Müşteri Adı",
+      "date": "Tarih",
+      "time": "Saat",
+      "duration": "Süre (dakika)",
+      "type": "Tür",
+      "cancel": "İptal",
+      "loading": "Programınız yükleniyor...",
+      "errorRequiredFields": "Lütfen tüm zorunlu alanları doldurun",
+      "successScheduled": "Toplantı başarıyla planlandı",
+      "dateTime": "Tarih ve Saat",
+      "status": "Durum",
+      "placeholderTitle": "örneğin, Takip Araması",
+      "placeholderClient": "Müşteri adını girin",
+      "weekdays": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      },
+      "moreCount": "+ {{count}} more",
+      "minShort": "min"
     }
   }
 }

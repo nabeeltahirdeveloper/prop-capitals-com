@@ -11,10 +11,11 @@ import { useTrading } from "@/contexts/TradingContext";
 import { usePrices } from "@/contexts/PriceContext";
 import { useTradingWebSocket } from "@/hooks/useTradingWebSocket";
 import { useBinanceStream } from "@/hooks/useBinanceStream";
-import { getAccountTrades, createTrade } from "@/api/trades";
+import { getAccountTrades, createTrade, updateTrade } from "@/api/trades";
 import { createPendingOrder } from "@/api/pending-orders";
 import { getCurrentPrice } from "@/api/market-data";
 import { getAccountSummary } from "@/api/accounts";
+import { isCryptoSymbol } from "@/config/symbolConfig";
 import { useToast } from "@/components/ui/use-toast";
 import { useTraderTheme } from "./TraderPanelLayout";
 import TradingChart from "../trading/TradingChart";
@@ -249,6 +250,27 @@ const toBackendSymbol = (sym, type) => {
   return sym;
 };
 
+/** Returns the correct contract size for a given symbol.
+ *  XAU (Gold)  = 100 oz/lot
+ *  XAG (Silver) = 5000 oz/lot
+ *  Crypto       = 1 unit/lot
+ *  Forex        = 100,000 units/lot
+ *  Handles both "XAUUSD" and "XAU/USD" formats. */
+const getContractSize = (symbol) => {
+  if (!symbol) return 100000;
+  const upper = String(symbol)
+    .toUpperCase()
+    .replace(/[^A-Z]/g, "");
+  if (upper.includes("XAU")) return 100;
+  if (upper.includes("XAG")) return 5000;
+  if (
+    upper.endsWith("USDT") ||
+    /^(BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|LINK)/.test(upper)
+  )
+    return 1;
+  return 100000;
+};
+
 const formatPrice = (price) => {
   if (!price || price === 0) return "--";
   if (price >= 1000)
@@ -312,10 +334,14 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   const [obTab, setObTab] = useState("book");
   const [obMode, setObMode] = useState("both");
   const [chartTab, setChartTab] = useState("chart");
+  // Partial close state
+  const [partialCloseId, setPartialCloseId] = useState(null);
+  const [partialCloseQty, setPartialCloseQty] = useState("");
   const [sliderPct, setSliderPct] = useState(0);
   const [symbolDropdownOpen, setSymbolDropdownOpen] = useState(false);
   const [symbolSearch, setSymbolSearch] = useState("");
   const dropdownRef = useRef(null);
+  const chartRef = useRef(null);
   const [tradeMode, setTradeMode] = useState("cfd");
 
   const {
@@ -327,7 +353,8 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     setChartType,
   } = useTrading();
   const pricesRef = useRef({});
-  const { prices: unifiedPrices } = usePrices();
+  const { prices: unifiedPrices, updatePrice: updatePriceContext } =
+    usePrices();
 
   /* ── Symbol resolution ── */
   // Ensure selected symbol is one we support; default to BTCUSDT otherwise
@@ -343,6 +370,34 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   useEffect(() => {
     if (!isKnownSymbol) setSelectedSymbol("BTCUSDT");
   }, [isKnownSymbol, setSelectedSymbol]);
+
+  // Restore last symbol from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("bybit_selectedSymbol");
+    if (saved && ALL_SYMBOLS.some((s) => s.symbol === saved)) {
+      setSelectedSymbol(saved);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Restore last timeframe from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("bybit_selectedTimeframe");
+    const validTfs = ["M1", "M5", "M15", "M30", "H1", "H4", "D1", "W1"];
+    if (saved && validTfs.includes(saved)) {
+      setSelectedTimeframe(saved);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Persist symbol and timeframe to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("bybit_selectedSymbol", currentSymbolStr);
+  }, [currentSymbolStr]);
+
+  useEffect(() => {
+    localStorage.setItem("bybit_selectedTimeframe", selectedTimeframe);
+  }, [selectedTimeframe]);
 
   /* ── Binance live streams (crypto only — forex has no Binance data) ── */
   const isCrypto = symbolInfo.type === "crypto";
@@ -470,6 +525,27 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     const t = Array.isArray(tradesData) ? tradesData : [];
     return t.filter((x) => !x.closedAt);
   }, [tradesData]);
+  const usedMargin = useMemo(() => {
+    return openPositions.reduce((sum, position) => {
+      const vol = Number(position.volume);
+      const price = Number(position.openPrice);
+      const lev = Number(position.leverage) || 1;
+      if (
+        !Number.isFinite(vol) ||
+        vol <= 0 ||
+        !Number.isFinite(price) ||
+        price <= 0
+      )
+        return sum;
+      const cs = getContractSize(position.symbol);
+      return sum + (vol * cs * price) / lev;
+    }, 0);
+  }, [openPositions]);
+  const equity = Number.isFinite(accountSummaryData?.account?.equity)
+    ? accountSummaryData.account.equity
+    : balance;
+  const freeMargin = Math.max(0, equity - usedMargin);
+  const availableBalance = Math.max(0, balance - usedMargin);
   const recentTrades = useMemo(() => {
     const list = Array.isArray(tradesData) ? tradesData : [];
     return list
@@ -530,6 +606,13 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   const handlePriceUpdate = useCallback((s, p) => {
     pricesRef.current[s] = p;
   }, []);
+
+  // Feed real-time bid/ask into PriceContext so TradingChart gets live price updates
+  useEffect(() => {
+    if (currentBid > 0 && currentAsk > 0) {
+      updatePriceContext(currentSymbolStr, currentBid, currentAsk);
+    }
+  }, [currentBid, currentAsk, currentSymbolStr, updatePriceContext]);
 
   /* ── Order Book: live Binance for crypto, simulated for forex ── */
   const askOrders = useMemo(() => {
@@ -637,7 +720,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   }, [orderBook, currentAsk, currentBid]);
 
   /* ── Computed values ── */
-  const contractSize = isCrypto ? 1 : 100000;
+  const contractSize = getContractSize(currentSymbolStr);
   const effectivePrice =
     orderType === "limit" && limitPrice
       ? parseFloat(limitPrice) || 0
@@ -646,16 +729,18 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         : currentBid;
   const qty = parseFloat(quantity) || 0;
   const orderValue = qty * effectivePrice * contractSize;
+  // Commission: crypto 0.1% of notional, metals $7/lot, forex $7/lot standard
+  const commission = isCrypto ? orderValue * 0.001 : qty > 0 ? qty * 7 : 0;
 
   /* ── Slider → qty ── */
   const handleSlider = useCallback(
     (pct) => {
       setSliderPct(pct);
-      if (!balance || !effectivePrice || effectivePrice === 0) return;
-      const maxQty = balance / (effectivePrice * contractSize);
-      setQuantity(((maxQty * pct) / 100).toFixed(6));
+      if (!availableBalance || !effectivePrice || effectivePrice === 0) return;
+      const maxQty = availableBalance / (effectivePrice * contractSize);
+      setQuantity(((maxQty * pct) / 100).toFixed(isCrypto ? 6 : 2));
     },
-    [balance, effectivePrice, contractSize],
+    [availableBalance, effectivePrice, contractSize, isCrypto],
   );
 
   /* ── Symbol switching ── */
@@ -737,6 +822,75 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     },
   });
 
+  const closePositionMutation = useMutation({
+    mutationFn: ({ tradeId, closePrice, profit, closeReason }) =>
+      updateTrade(tradeId, { closePrice, profit, closeReason }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["trades", accountId] });
+      queryClient.invalidateQueries({
+        queryKey: ["accountSummary", accountId],
+      });
+      setPartialCloseId(null);
+      setPartialCloseQty("");
+      toast({ title: "Position Closed" });
+    },
+    onError: (e) => {
+      toast({
+        title: "Close Failed",
+        description: e?.response?.data?.message || e.message || "Failed",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleClosePosition = useCallback(
+    async (pos, partialVol) => {
+      const closePrice = pos.type === "BUY" ? currentBid : currentAsk;
+      if (!closePrice) return;
+      const posCs = getContractSize(pos.symbol || currentSymbolStr);
+      const fullVol = pos.volume || 0;
+      const vol = partialVol ?? fullVol;
+      const priceDiff =
+        pos.type === "BUY"
+          ? closePrice - pos.openPrice
+          : pos.openPrice - closePrice;
+      const profit = priceDiff * vol * posCs;
+
+      await closePositionMutation.mutateAsync({
+        tradeId: pos.id,
+        closePrice,
+        profit,
+        closeReason:
+          partialVol && partialVol < fullVol ? "PARTIAL_CLOSE" : "MANUAL",
+      });
+
+      // Re-open remaining volume for partial close
+      if (partialVol && partialVol < fullVol) {
+        const remainVol = parseFloat((fullVol - partialVol).toFixed(6));
+        if (remainVol > 0) {
+          await createTradeMutation.mutateAsync({
+            accountId,
+            symbol: pos.symbol || backendSymbol,
+            type: pos.type,
+            volume: remainVol,
+            openPrice: closePrice,
+            stopLoss: pos.stopLoss ?? null,
+            takeProfit: pos.takeProfit ?? null,
+          });
+        }
+      }
+    },
+    [
+      currentBid,
+      currentAsk,
+      currentSymbolStr,
+      backendSymbol,
+      accountId,
+      closePositionMutation,
+      createTradeMutation,
+    ],
+  );
+
   /* ── Handlers ── */
   const handlePlaceOrder = async () => {
     if (isAccountLocked) {
@@ -756,6 +910,26 @@ const BybitTradingArea = ({ selectedChallenge }) => {
       (!limitPrice || parseFloat(limitPrice) <= 0)
     ) {
       toast({ title: "Enter valid price", variant: "destructive" });
+      return;
+    }
+    // Margin check: reject if requested quantity exceeds available balance
+    const priceForMargin =
+      orderType === "limit" && limitPrice
+        ? parseFloat(limitPrice)
+        : orderSide === "buy"
+          ? currentAsk
+          : currentBid;
+    const maxAllowedQty =
+      priceForMargin > 0 && contractSize > 0
+        ? availableBalance / (priceForMargin * contractSize)
+        : 0;
+    const requestedQty = parseFloat(quantity);
+    if (requestedQty > maxAllowedQty * 1.001) {
+      toast({
+        title: "Insufficient Margin",
+        description: `Max allowed: ${maxAllowedQty.toFixed(isCrypto ? 6 : 4)} ${isCrypto ? symbolInfo.base : "Lots"}`,
+        variant: "destructive",
+      });
       return;
     }
     setIsPlacingOrder(true);
@@ -793,6 +967,91 @@ const BybitTradingArea = ({ selectedChallenge }) => {
       setIsPlacingOrder(false);
     }
   };
+
+  /* ── Chart buy/sell: execute market order directly using current qty ── */
+  const handleChartBuy = useCallback(async () => {
+    if (isAccountLocked || !accountId || !currentSymbolStr || !currentAsk)
+      return;
+    const vol = parseFloat(quantity) || (isCrypto ? 0.001 : 0.01);
+    const maxAllowed =
+      currentAsk > 0 && contractSize > 0
+        ? availableBalance / (currentAsk * contractSize)
+        : 0;
+    if (vol > maxAllowed * 1.001) {
+      toast({
+        title: "Insufficient Margin",
+        description: `Max allowed: ${maxAllowed.toFixed(isCrypto ? 6 : 4)} ${isCrypto ? "" : "Lots"}`,
+        variant: "destructive",
+      });
+      return;
+    }
+    setOrderSide("buy");
+    try {
+      await createTradeMutation.mutateAsync({
+        accountId,
+        symbol: backendSymbol,
+        type: "BUY",
+        volume: vol,
+        openPrice: currentAsk,
+      });
+    } catch (e) {
+      console.error("[BybitTerminal] Chart buy failed:", e);
+    }
+  }, [
+    isAccountLocked,
+    accountId,
+    currentSymbolStr,
+    currentAsk,
+    quantity,
+    isCrypto,
+    backendSymbol,
+    contractSize,
+    availableBalance,
+    createTradeMutation,
+    toast,
+  ]);
+
+  const handleChartSell = useCallback(async () => {
+    if (isAccountLocked || !accountId || !currentSymbolStr || !currentBid)
+      return;
+    const vol = parseFloat(quantity) || (isCrypto ? 0.001 : 0.01);
+    const maxAllowed =
+      currentBid > 0 && contractSize > 0
+        ? availableBalance / (currentBid * contractSize)
+        : 0;
+    if (vol > maxAllowed * 1.001) {
+      toast({
+        title: "Insufficient Margin",
+        description: `Max allowed: ${maxAllowed.toFixed(isCrypto ? 6 : 4)} ${isCrypto ? "" : "Lots"}`,
+        variant: "destructive",
+      });
+      return;
+    }
+    setOrderSide("sell");
+    try {
+      await createTradeMutation.mutateAsync({
+        accountId,
+        symbol: backendSymbol,
+        type: "SELL",
+        volume: vol,
+        openPrice: currentBid,
+      });
+    } catch (e) {
+      console.error("[BybitTerminal] Chart sell failed:", e);
+    }
+  }, [
+    isAccountLocked,
+    accountId,
+    currentSymbolStr,
+    currentBid,
+    quantity,
+    isCrypto,
+    backendSymbol,
+    contractSize,
+    availableBalance,
+    createTradeMutation,
+    toast,
+  ]);
 
   const timeframes = [
     { key: "M1", label: "1m" },
@@ -1144,7 +1403,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   className="px-2 py-1 shrink-0"
                   style={{
                     fontSize: 11,
-                    color: chartType === "candlestick" ? C.textP : C.textS,
+                    color:
+                      chartType === "candlestick" || chartType === "candles"
+                        ? C.textP
+                        : C.textS,
                   }}
                 >
                   Candles
@@ -1159,14 +1421,43 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                 >
                   Line
                 </button>
+                <div style={{ flex: 1 }} />
+                <button
+                  onClick={() => chartRef.current?.fitContent()}
+                  className="px-2 py-1 shrink-0"
+                  title="Reset chart view"
+                  style={{
+                    fontSize: 11,
+                    color: C.textS,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 3,
+                  }}
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M21 3H3v18h18V3z" />
+                    <path d="M21 3L3 21M3 3l18 18" />
+                  </svg>
+                  Fit
+                </button>
               </div>
               <div className="flex-1">
                 <TradingChart
+                  ref={chartRef}
                   key={`chart-bybit-${currentSymbolStr}`}
                   symbol={enrichedSelectedSymbol}
                   openPositions={openPositions}
                   onPriceUpdate={handlePriceUpdate}
-                  showBuySellPanel={false}
+                  showBuySellPanel={true}
+                  onBuyClick={handleChartBuy}
+                  onSellClick={handleChartSell}
                 />
               </div>
             </SectionErrorBoundary>
@@ -1690,9 +1981,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                         pos.type === "BUY"
                           ? exitP - pos.openPrice
                           : pos.openPrice - exitP;
-                      const pnl = isCrypto
-                        ? priceDiff * (pos.volume || 0)
-                        : priceDiff * (pos.volume || 0) * 100000;
+                      const posCs = getContractSize(
+                        pos.symbol || currentSymbolStr,
+                      );
+                      const pnl = priceDiff * (pos.volume || 0) * posCs;
                       return (
                         <div
                           key={pos.id}
@@ -1724,7 +2016,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           {[
                             {
                               label: "Size",
-                              value: `${pos.volume?.toFixed(isCrypto ? 6 : 3)} ${isCrypto ? symbolInfo.base : "Lots"}`,
+                              value: `${pos.volume?.toFixed(isCrypto ? 6 : 2)} ${isCrypto ? symbolInfo.base : "Lots"}`,
                             },
                             {
                               label: "Entry Price",
@@ -1767,6 +2059,120 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                               </span>
                             </div>
                           ))}
+
+                          {/* Partial close UI */}
+                          {partialCloseId === pos.id && (
+                            <div
+                              className="flex items-center gap-1 mt-2"
+                              style={{
+                                background: C.card,
+                                borderRadius: 4,
+                                padding: "6px 8px",
+                                border: `1px solid ${C.border}`,
+                              }}
+                            >
+                              <input
+                                type="number"
+                                step={isCrypto ? 0.001 : 0.01}
+                                min={isCrypto ? 0.001 : 0.01}
+                                max={pos.volume}
+                                value={partialCloseQty}
+                                onChange={(e) =>
+                                  setPartialCloseQty(e.target.value)
+                                }
+                                placeholder={`Max ${pos.volume}`}
+                                style={{
+                                  flex: 1,
+                                  background: C.inputBg,
+                                  border: `1px solid ${C.border}`,
+                                  borderRadius: 3,
+                                  color: C.textP,
+                                  fontSize: 12,
+                                  padding: "3px 6px",
+                                  outline: "none",
+                                }}
+                              />
+                              <button
+                                onClick={() => {
+                                  const v = parseFloat(partialCloseQty);
+                                  if (v > 0 && v < (pos.volume || 0))
+                                    handleClosePosition(pos, v);
+                                  else if (v >= (pos.volume || 0))
+                                    handleClosePosition(pos);
+                                }}
+                                style={{
+                                  background: C.red,
+                                  color: "#fff",
+                                  border: "none",
+                                  borderRadius: 3,
+                                  fontSize: 11,
+                                  padding: "3px 8px",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                Confirm
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setPartialCloseId(null);
+                                  setPartialCloseQty("");
+                                }}
+                                style={{
+                                  background: C.border,
+                                  color: C.textS,
+                                  border: "none",
+                                  borderRadius: 3,
+                                  fontSize: 11,
+                                  padding: "3px 8px",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Close buttons */}
+                          <div className="flex gap-1 mt-2">
+                            <button
+                              onClick={() => handleClosePosition(pos)}
+                              disabled={closePositionMutation.isPending}
+                              style={{
+                                flex: 1,
+                                background: C.redDim,
+                                color: C.red,
+                                border: `1px solid ${C.red}`,
+                                borderRadius: 4,
+                                fontSize: 11,
+                                fontWeight: 600,
+                                padding: "5px 0",
+                                cursor: "pointer",
+                              }}
+                            >
+                              Close All
+                            </button>
+                            <button
+                              onClick={() => {
+                                setPartialCloseId(
+                                  partialCloseId === pos.id ? null : pos.id,
+                                );
+                                setPartialCloseQty("");
+                              }}
+                              style={{
+                                flex: 1,
+                                background: C.yellowDim,
+                                color: C.yellow,
+                                border: `1px solid ${C.yellow}`,
+                                borderRadius: 4,
+                                fontSize: 11,
+                                fontWeight: 600,
+                                padding: "5px 0",
+                                cursor: "pointer",
+                              }}
+                            >
+                              Partial Close
+                            </button>
+                          </div>
                         </div>
                       );
                     })}
@@ -2018,7 +2424,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   className="grid grid-cols-3 px-3 py-1.5 shrink-0"
                   style={{ fontSize: 10, color: C.textT }}
                 >
-                  <span>Price(USDT)</span>
+                  <span>Price({symbolInfo.quote})</span>
                   <span className="text-right">Qty</span>
                   <span className="text-right">Total</span>
                 </div>
@@ -2472,20 +2878,83 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     ))}
                   </div>
 
-                  {/* Available Balance */}
-                  <div className="flex items-center justify-between">
-                    <span style={{ fontSize: 12, color: C.textS }}>
-                      Available Balance
-                    </span>
-                    <span
-                      style={{
-                        fontSize: 12,
-                        color: C.textP,
-                        fontFamily: "monospace",
-                      }}
-                    >
-                      {balance > 0 ? formatNum(balance) : "--"} USDT
-                    </span>
+                  {/* Account metrics: Balance / Equity / Margin */}
+                  <div
+                    className="space-y-1 pb-2"
+                    style={{ borderBottom: `1px solid ${C.border}` }}
+                  >
+                    {/* "Balance" = available trading balance (decreases when trades open) */}
+                    <div className="flex items-center justify-between">
+                      <span style={{ fontSize: 11, color: C.textS }}>
+                        Balance
+                      </span>
+                      <span
+                        style={{
+                          fontSize: 11,
+                          color: C.yellow,
+                          fontFamily: "monospace",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {balance > 0 ? formatNum(availableBalance) : "--"} USDT
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span style={{ fontSize: 11, color: C.textS }}>
+                        Equity
+                      </span>
+                      <span
+                        style={{
+                          fontSize: 11,
+                          color: equity >= balance ? C.green : C.red,
+                          fontFamily: "monospace",
+                        }}
+                      >
+                        {equity > 0 ? formatNum(equity) : "--"} USDT
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span style={{ fontSize: 11, color: C.textS }}>
+                        Acct. Balance
+                      </span>
+                      <span
+                        style={{
+                          fontSize: 11,
+                          color: C.textP,
+                          fontFamily: "monospace",
+                        }}
+                      >
+                        {balance > 0 ? formatNum(balance) : "--"} USDT
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span style={{ fontSize: 11, color: C.textS }}>
+                        Used Margin
+                      </span>
+                      <span
+                        style={{
+                          fontSize: 11,
+                          color: C.textP,
+                          fontFamily: "monospace",
+                        }}
+                      >
+                        {formatNum(usedMargin)} USDT
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span style={{ fontSize: 11, color: C.textS }}>
+                        Free Margin
+                      </span>
+                      <span
+                        style={{
+                          fontSize: 11,
+                          color: freeMargin > 0 ? C.textP : C.red,
+                          fontFamily: "monospace",
+                        }}
+                      >
+                        {balance > 0 ? formatNum(freeMargin) : "--"} USDT
+                      </span>
+                    </div>
                   </div>
 
                   {/* Price input (for limit / tp/sl) */}
@@ -2747,12 +3216,30 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       className="flex justify-between"
                       style={{ fontSize: 12 }}
                     >
-                      <span style={{ color: C.textS }}>Max. buying amount</span>
-                      <span style={{ color: C.textP, fontFamily: "monospace" }}>
+                      <span style={{ color: C.textS }}>Commission</span>
+                      <span style={{ color: C.textS, fontFamily: "monospace" }}>
+                        {qty > 0 ? `~${commission.toFixed(2)}` : "--"} USDT
+                      </span>
+                    </div>
+                    <div
+                      className="flex justify-between"
+                      style={{ fontSize: 12 }}
+                    >
+                      <span style={{ color: C.textS }}>
+                        Max. {orderSide === "buy" ? "buy" : "sell"} amount
+                      </span>
+                      <span
+                        style={{
+                          color: orderSide === "buy" ? C.green : C.red,
+                          fontFamily: "monospace",
+                          fontWeight: 600,
+                        }}
+                      >
                         {balance > 0 && effectivePrice > 0
-                          ? (balance / (effectivePrice * contractSize)).toFixed(
-                              isCrypto ? 6 : 2,
-                            )
+                          ? (
+                              availableBalance /
+                              (effectivePrice * contractSize)
+                            ).toFixed(isCrypto ? 6 : 4)
                           : "--"}{" "}
                         {isCrypto ? symbolInfo.base : "Lots"}
                       </span>

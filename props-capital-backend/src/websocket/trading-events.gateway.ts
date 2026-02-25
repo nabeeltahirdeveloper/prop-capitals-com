@@ -33,10 +33,11 @@ interface AccountUpdateEvent {
   timestamp?: string;
 }
 
-@WebSocketGateway({
+@WebSocketGateway(0, {
+  // port 0 = attach to the same HTTP server (port 5002), not a standalone server on port 80
   cors: {
-    origin: true, // Allow all origins in development
-    credentials: true,
+    origin: true,
+    credentials: false, // false because client uses JWT in auth payload, not cookies
   },
   namespace: '/trading',
 })

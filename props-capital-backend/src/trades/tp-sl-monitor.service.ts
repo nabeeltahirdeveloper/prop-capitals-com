@@ -179,9 +179,12 @@ export class TpSlMonitorService {
             ? currentPrice - position.openPrice
             : position.openPrice - currentPrice;
 
-          // Check if crypto or forex
+          // Determine contract size by symbol type
           const isCrypto = this.isCryptoSymbol(position.symbol);
-          const contractSize = isCrypto ? 1 : 100000;
+          const symbolUpper = String(position.symbol || '').toUpperCase();
+          const isXAU = symbolUpper.includes('XAU');
+          const isXAG = symbolUpper.includes('XAG');
+          const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 100 : 100000;
           const profit = priceDiff * position.volume * contractSize;
 
           positionsToClose.push({

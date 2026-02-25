@@ -11,10 +11,10 @@ export default function ProtectedRoute({ allowedRoles = [] }) {
   // Block ALL rendering until auth status is resolved
   if (status === 'checking') {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0d12] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-400">{t('common.loading')}</p>
+          <div className="w-16 h-16 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -49,10 +49,10 @@ export function DashboardRedirect() {
 
   if (status === 'checking') {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0d12] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-400">{t('common.loading')}</p>
+          <div className="w-16 h-16 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -74,10 +74,10 @@ export function PublicOnlyRoute({ children }) {
   // Block ALL rendering until auth status is resolved
   if (status === 'checking') {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0d12] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-400">{t('common.loading')}</p>
+          <div className="w-16 h-16 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">{t('common.loading')}</p>
         </div>
       </div>
     );

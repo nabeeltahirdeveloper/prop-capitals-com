@@ -3,7 +3,10 @@
     "loading": "กำลังโหลด...",
     "url": "URL",
     "dismiss": "ปิด",
-    "allPlatforms": "ทุกแพลตฟอร์ม"
+    "allPlatforms": "ทุกแพลตฟอร์ม",
+    "unknown": "ไม่ทราบ",
+    "error": "ข้อผิดพลาด",
+    "success": "สำเร็จ"
   },
   "home": {
     "hero": {
@@ -440,7 +443,14 @@
     "personal": "ข้อมูลส่วนตัว",
     "sec": "ความปลอดภัย",
     "verify": "ยืนยัน",
-    "notif": "แจ้งเตือน"
+    "notif": "การแจ้งเตือน",
+    "passwordChangedDesc": "อัปเดตรหัสผ่านของคุณสำเร็จแล้ว",
+    "passwordChangeFailed": "เปลี่ยนรหัสผ่านล้มเหลว",
+    "passwordChangeError": "เกิดข้อผิดพลาดขณะเปลี่ยนรหัสผ่านของคุณ",
+    "validationError": "ข้อผิดพลาดการตรวจสอบความถูกต้อง",
+    "notificationUpdateError": "อัปเดตการตั้งค่าการแจ้งเตือนล้มเหลว",
+    "notificationsUpdated": "อัปเดตการแจ้งเตือนแล้ว",
+    "notificationsUpdatedDesc": "บันทึกการตั้งค่าการแจ้งเตือนของคุณแล้ว"
   },
   "support": {
     "title": "ฝ่ายสนับสนุน",
@@ -1074,7 +1084,8 @@
       "ask": "ราคาซื้อ",
       "chg": "Chg%",
       "updated": "อัปเดต",
-      "retry": "ลองอีกครั้ง"
+      "retry": "ลองอีกครั้ง",
+      "reconnecting": "Reconnecting"
     },
     "positions": {
       "title": "ตำแหน่งที่เปิดอยู่",
@@ -1107,7 +1118,9 @@
       "exit": "ออก",
       "autoClosed": "ปิดอัตโนมัติ",
       "breach": "การละเมิดกฎ",
-      "breachPnL": "PnL ตอนละเมิดกฎ (ที่ขีดจำกัด)"
+      "breachPnL": "PnL ตอนละเมิดกฎ (ที่ขีดจำกัด)",
+      "finalFill": "Final Fill",
+      "finalFillPnL": "Final Fill P/L"
     },
     "accountMetrics": {
       "balance": "ยอดเงิน",
@@ -1183,7 +1196,12 @@
     "website": "เว็บไซต์",
     "logout": "ออกจากระบบ",
     "user": "ผู้ใช้",
-    "adminPanel": "แผงควบคุมผู้ดูแลระบบ"
+    "adminPanel": "แผงควบคุมผู้ดูแลระบบ",
+    "crm": "CRM",
+    "crmLeads": "ลีด CRM",
+    "pipeline": "ไปป์ไลน์",
+    "ftdReport": "รายงาน FTD",
+    "calendar": "ปฏิทิน"
   },
   "status": {
     "active": "ใช้งาน",
@@ -1225,7 +1243,8 @@
         "payouts": "การจ่ายเงิน",
         "fundedAccounts": "บัญชีที่ได้รับเงินทุน",
         "violationsToday": "การละเมิดวันนี้",
-        "changeThisMonth": "+{{percent}}% เดือนนี้"
+        "changeThisMonth": "+{{percent}}% เดือนนี้",
+        "changeThisMonthNeutral": "{{percent}}% เดือนนี้"
       },
       "chart": {
         "title": "รายได้และการจ่ายเงิน (30 วันล่าสุด)",
@@ -1278,6 +1297,17 @@
           "type": "ไม่ทราบ",
           "description": "การละเมิดที่ไม่ทราบ"
         }
+      },
+      "messages": {
+        "loading": "กำลังโหลดแดชบอร์ด...",
+        "loadFailedTitle": "โหลดแดชบอร์ดไม่สำเร็จ",
+        "unexpectedError": "เกิดข้อผิดพลาดที่ไม่คาดคิด",
+        "reload": "โหลดแดชบอร์ดใหม่",
+        "liveUpdates": "อัปเดตสดทุก 10 วินาที รีเฟรชล่าสุด: {{time}}",
+        "chartLoadFailed": "โหลดข้อมูลกราฟไม่สำเร็จ",
+        "noRevenueData": "ไม่มีข้อมูลรายได้",
+        "accountsLoadFailed": "โหลดบัญชีไม่สำเร็จ",
+        "violationsLoadFailed": "โหลดรายการละเมิดไม่สำเร็จ"
       }
     },
     "users": {
@@ -1334,7 +1364,8 @@
         "active": "ใช้งานอยู่",
         "passed": "ผ่าน",
         "funded": "ได้รับเงินทุน",
-        "failed": "ล้มเหลว"
+        "failed": "ล้มเหลว",
+        "phase2": "Phase 2"
       },
       "searchPlaceholder": "ค้นหาตามหมายเลขบัญชีหรืออีเมล...",
       "filter": {
@@ -1348,7 +1379,11 @@
         "failed": "ล้มเหลว",
         "suspended": "ระงับ",
         "phase1": "เฟส 1",
-        "phase2": "เฟส 2"
+        "phase2": "เฟส 2",
+        "closed": "Closed",
+        "dailyLocked": "Daily Locked",
+        "disqualified": "Disqualified",
+        "paused": "Paused"
       },
       "table": {
         "account": "บัญชี",
@@ -1364,7 +1399,9 @@
         "forcePass": "บังคับผ่าน",
         "forceFail": "บังคับล้มเหลว",
         "resetAccount": "รีเซ็ตบัญชี",
-        "moveToFunded": "ย้ายไปยังเงินทุน"
+        "moveToFunded": "ย้ายไปยังเงินทุน",
+        "pause": "Pause Account",
+        "resume": "Resume Account"
       },
       "dialog": {
         "title": "รายละเอียดบัญชี",
@@ -1573,7 +1610,22 @@
         "inactive": "ไม่ใช้งาน"
       },
       "noExpiry": "ไม่มีวันหมดอายุ",
-      "emptyMessage": "ไม่พบคูปอง"
+      "emptyMessage": "ไม่พบคูปอง",
+      "messages": {
+        "copySuccess": "Coupon code copied",
+        "copyError": "Failed to copy coupon code",
+        "createSuccess": "Coupon created successfully",
+        "updateSuccess": "Coupon updated successfully",
+        "deleteSuccess": "Coupon deleted successfully",
+        "saveError": "Failed to save coupon",
+        "deleteError": "Failed to delete coupon"
+      },
+      "validation": {
+        "codeRequired": "Coupon code is required",
+        "discountRequired": "Discount value must be greater than 0",
+        "discountRangePercent": "Percentage discount cannot exceed 100",
+        "maxUsesInvalid": "Max uses must be at least 1"
+      }
     },
     "support": {
       "title": "ตั๋วสนับสนุน",
@@ -1616,14 +1668,25 @@
       },
       "actions": {
         "take": "รับ",
-        "resolve": "แก้ไข"
+        "resolve": "แก้ไข",
+        "close": "ปิด"
       },
       "dialog": {
         "from": "จาก",
+        "submitted": "ส่งแล้วเมื่อ",
+        "userMessage": "ข้อความจากผู้ใช้",
+        "previousReply": "การตอบกลับก่อนหน้าของผู้ดูแลระบบ",
+        "sendNewReply": "ส่งคำตอบใหม่",
         "writeResponse": "เขียนคำตอบของคุณ...",
         "close": "ปิด",
         "sending": "กำลังส่ง...",
         "sendAndResolve": "ส่งและแก้ไข"
+      },
+      "toast": {
+        "successTitle": "สำเร็จ",
+        "errorTitle": "ข้อผิดพลาด",
+        "replySent": "ส่งคำตอบและแก้ไขตั๋วแล้ว",
+        "statusUpdated": "อัปเดตสถานะตั๋วสำเร็จแล้ว"
       },
       "emptyMessage": "ไม่พบตั๋ว",
       "subjects": {
@@ -1670,6 +1733,7 @@
         "stripeApiKeyPlaceholder": "sk_live_...",
         "paypal": "PayPal",
         "paypalDesc": "รับการชำระเงินผ่าน PayPal",
+        "paypalClientId": "PayPal Client ID",
         "cryptocurrency": "สกุลเงินดิจิทัล",
         "cryptocurrencyDesc": "รับการชำระเงินด้วย BTC, ETH, USDT"
       },
@@ -1700,7 +1764,8 @@
         "payoutApproved": "อนุมัติการจ่ายเงิน",
         "payoutApprovedDesc": "ส่งเมื่ออนุมัติการจ่ายเงิน",
         "editTemplate": "แก้ไขเทมเพลต"
-      }
+      },
+      "saveError": "Failed to save settings"
     },
     "riskMonitor": {
       "title": "การตรวจสอบความเสี่ยง",
@@ -1736,6 +1801,10 @@
         "title": "การละเมิดล่าสุด",
         "noViolations": "ไม่มีการละเมิดล่าสุด",
         "account": "บัญชี"
+      },
+      "severity": {
+        "fatal": "Fatal",
+        "warning": "Warning"
       }
     },
     "brokerServers": {
@@ -1755,7 +1824,8 @@
         "managerPassword": "รหัสผ่านผู้จัดการ",
         "apiKey": "API Key / Client ID",
         "apiSecret": "API Secret",
-        "demoServer": "เซิร์ฟเวอร์เดโม"
+        "demoServer": "เซิร์ฟเวอร์เดโม",
+        "description": "Configure a new broker server connection for trading accounts."
       },
       "platforms": {
         "mt4": "MetaTrader 4",
@@ -1774,7 +1844,8 @@
       "card": {
         "platform": "แพลตฟอร์ม",
         "timezone": "เขตเวลา",
-        "lastSync": "ซิงค์ล่าสุด"
+        "lastSync": "ซิงค์ล่าสุด",
+        "accounts": "Linked Accounts"
       },
       "actions": {
         "test": "ทดสอบ"
@@ -1782,6 +1853,21 @@
       "empty": {
         "title": "ไม่มีเซิร์ฟเวอร์โบรกเกอร์",
         "description": "เพิ่มเซิร์ฟเวอร์โบรกเกอร์แรกของคุณเพื่อเริ่มสร้างบัญชีการเทรด"
+      },
+      "confirmDelete": "Are you sure you want to delete this broker server?",
+      "error": {
+        "description": "An error occurred while loading broker servers",
+        "retry": "Retry",
+        "title": "Failed to Load Broker Servers"
+      },
+      "toast": {
+        "connectionError": "Failed to test connection",
+        "connectionFailed": "Connection test failed",
+        "connectionSuccess": "Connection test successful",
+        "createError": "Failed to add broker server",
+        "createSuccess": "Broker server added successfully",
+        "deleteError": "Failed to delete broker server",
+        "deleteSuccess": "Broker server deleted successfully"
       }
     },
     "scaling": {
@@ -1893,7 +1979,8 @@
       "deleteErrorTitle": "ไม่สามารถลบความท้าทาย",
       "deleteErrorMessage": "ไม่สามารถลบความท้าทายนี้ได้",
       "deleteErrorDesc": "ไม่สามารถลบความท้าทายได้เนื่องจากเชื่อมโยงกับบัญชีการเทรดที่มีอยู่",
-      "understand": "เข้าใจแล้ว"
+      "understand": "เข้าใจแล้ว",
+      "noChallenges": "No challenges available"
     }
   },
   "signIn": {
@@ -1913,8 +2000,12 @@
     "fundsProtected": "เงินทุนของคุณได้รับการปกป้อง",
     "securityDescription": "เทรดด้วยความมั่นใจ แพลตฟอร์มของเราใช้ความปลอดภัยระดับธนาคารเพื่อปกป้องบัญชีและข้อมูลการเทรดของคุณ",
     "errors": {
-      "invalidCredentials": "อีเมลหรือรหัสผ่านไม่ถูกต้อง"
-    }
+      "invalidCredentials": "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
+      "adminPortalOnly": "This is the Admin portal. Please use the Trader portal to sign in.",
+      "adminCredentialsRequired": "Access denied. Admin credentials required."
+    },
+    "adminSubtitle": "Sign in to access the admin dashboard",
+    "adminAccessOnly": "Admin access only. Contact your system administrator for credentials."
   },
   "signUp": {
     "title": "สร้างบัญชีของคุณ",
@@ -2860,6 +2951,249 @@
     "contactUs": {
       "title": "10. ติดต่อเรา",
       "content": "สำหรับคำถามเกี่ยวกับความเป็นส่วนตัว โปรดติดต่อเจ้าหน้าที่คุ้มครองข้อมูลของเราที่ support@the-bluehaven.com"
+    }
+  },
+  "crm": {
+    "leads": {
+      "title": "การจัดการลีด",
+      "subtitle": "จัดการและแปลงลีดของคุณ",
+      "import": "นำเข้าลีด",
+      "search": "ค้นหาลีด...",
+      "allStatus": "ทุกสถานะ",
+      "allCategory": "ทั้งหมด",
+      "bySource": "ตามแหล่งที่มา",
+      "byAgent": "ตามตัวแทน",
+      "loading": "กำลังโหลดลีด...",
+      "noLeads": "ไม่พบข้อมูลลีด",
+      "cards": "การ์ด",
+      "list": "รายการ",
+      "compact": "กะทัดรัด",
+      "leadReceived": "ลีดถูกรับเมื่อ",
+      "contactInfo": "ข้อมูลติดต่อ",
+      "personName": "ชื่อบุคคล",
+      "emailAddress": "อีเมล",
+      "phoneNumber": "เบอร์โทรศัพท์",
+      "country": "ประเทศ",
+      "source": "แหล่งที่มา",
+      "leadStatus": "สถานะลีด",
+      "onlineStatus": "สถานะออนไลน์",
+      "priority": "ความสำคัญ",
+      "assignedAgent": "ตัวแทนที่ได้รับมอบหมาย",
+      "ftdInfo": "ข้อมูล FTD",
+      "ftdAmount": "จำนวน FTD",
+      "paymentMethod": "วิธีการชำระเงิน",
+      "paymentProvider": "ผู้ให้บริการชำระเงิน",
+      "editableFields": "ฟิลด์ที่แก้ไขได้",
+      "age": "อายุ",
+      "salary": "เงินเดือน",
+      "jobIndustry": "อุตสาหกรรมงาน",
+      "workTitle": "ตำแหน่งงาน",
+      "updateLead": "อัปเดตลีด",
+      "updating": "กำลังอัปเดต...",
+      "quickActions": "ดำเนินการด่วน",
+      "callLead": "โทรหาลีด",
+      "sendEmail": "ส่งอีเมล",
+      "whatsApp": "WhatsApp",
+      "telegram": "Telegram",
+      "activityHistory": "ประวัติกิจกรรม",
+      "activities": "กิจกรรม",
+      "noActivities": "ยังไม่มีกิจกรรม",
+      "addNote": "เพิ่มบันทึก",
+      "addNotePlaceholder": "เพิ่มบันทึก...",
+      "add": "เพิ่ม",
+      "importLeads": "นำเข้าลีด",
+      "uploadCSV": "คลิกเพื่ออัปโหลด CSV",
+      "changeFile": "เปลี่ยนไฟล์",
+      "csvFormat": "CSV ต้องเป็นไปตามรูปแบบที่กำหนด",
+      "csvFormatDesc": "CSV ต้องเป็นไปตามรูปแบบที่กำหนดด้วยส่วนหัว: personName, email, phoneNumber, country, source, leadStatus, ftdAmount, paymentMethod, paymentProvider, priority, age, salary, jobIndustry, workTitle",
+      "requiredFields": "ฟิลด์ที่จำเป็น: personName, email",
+      "cancel": "ยกเลิก",
+      "importButton": "นำเข้า",
+      "importing": "กำลังนำเข้า...",
+      "note": "บันทึก",
+      "call": "โทร",
+      "email": "อีเมล",
+      "whatsapp": "WhatsApp",
+      "telegram_activity": "Telegram",
+      "toast": {
+        "fetchError": "Failed to fetch leads",
+        "loadError": "Failed to load lead details",
+        "updateSuccess": "Lead updated successfully",
+        "updateError": "Failed to update lead",
+        "activityLogged": "Activity logged: {{type}}",
+        "activityError": "Failed to log activity",
+        "importSuccess": "Imported {{created}} of {{total}} leads",
+        "importError": "Failed to import CSV",
+        "noteAdded": "Note added successfully",
+        "noteError": "Failed to add note"
+      }
+    },
+    "status": {
+      "all": "ทั้งหมด",
+      "new": "ใหม่",
+      "contacted": "ติดต่อแล้ว",
+      "qualified": "มีคุณสมบัติ",
+      "callback": "โทรกลับ",
+      "followup": "ติดตามผล",
+      "converted": "เปลี่ยนเป็นลูกค้า",
+      "lost": "สูญเสีย",
+      "online": "ออนไลน์",
+      "offline": "ออฟไลน์"
+    },
+    "priority": {
+      "low": "ต่ำ",
+      "medium": "ปานกลาง",
+      "high": "สูง",
+      "urgent": "เร่งด่วน"
+    },
+    "payment": {
+      "crypto": "คริปโต",
+      "card": "บัตร",
+      "wire": "โอนเงิน",
+      "other": "อื่นๆ",
+      "bankTransfer": "โอนเงินผ่านธนาคาร",
+      "wireTransfer": "โอนเงินทางโทรเลข",
+      "stripe": "Stripe",
+      "paypal": "PayPal",
+      "skrill": "Skrill",
+      "neteller": "Neteller",
+      "binancePay": "Binance Pay",
+      "coinbase": "Coinbase"
+    },
+    "pipeline": {
+      "title": "ไปป์ไลน์การขาย",
+      "subtitle": "ติดตามและจัดการลูกค้ามุ่งหวังตามขั้นตอน",
+      "search": "ค้นหาลูกค้ามุ่งหวัง...",
+      "loading": "กำลังโหลดไปป์ไลน์...",
+      "statusUpdated": "อัปเดตสถานะแล้ว",
+      "movedTo": "ย้ายลูกค้ามุ่งหวังไปยัง {{status}} แล้ว",
+      "updateError": "ไม่สามารถอัปเดตสถานะได้ กำลังเปลี่ยนกลับ...",
+      "loadError": "ไม่สามารถโหลดรายละเอียดได้",
+      "updateSuccess": "อัปเดตข้อมูลลูกค้ามุ่งหวังสำเร็จ",
+      "updateFailed": "ไม่สามารถอัปเดตข้อมูลลูกค้ามุ่งหวังได้",
+      "noteAdded": "เพิ่มบันทึกสำเร็จ",
+      "noteFailed": "ไม่สามารถเพิ่มบันทึกได้",
+      "activityLogged": "บันทึกกิจกรรมแล้ว",
+      "activityRecorded": "บันทึก {{type}} แล้ว",
+      "direct": "โดยตรง",
+      "quickActionNote": "พยายาม {{type}} ผ่านการดำเนินการด่วนของไปป์ไลน์",
+      "activityFailed": "บันทึกกิจกรรมไม่สำเร็จ"
+    },
+    "columns": {
+      "new": "ลูกค้ามุ่งหวังใหม่",
+      "contacted": "ติดต่อแล้ว",
+      "qualified": "ผ่านคุณสมบัติ",
+      "callback": "โทรกลับ",
+      "followUp": "ติดตามผล",
+      "converted": "เปลี่ยนเป็นลูกค้า",
+      "lost": "สูญเสีย"
+    },
+    "modal": {
+      "close": "ปิด",
+      "basicInfo": "ข้อมูลพื้นฐาน",
+      "fullName": "ชื่อ-นามสกุล",
+      "email": "ที่อยู่อีเมล",
+      "phone": "เบอร์โทรศัพท์",
+      "country": "ประเทศ",
+      "statusAssignment": "สถานะและการมอบหมาย",
+      "status": "สถานะ",
+      "priority": "ลำดับความสำคัญ",
+      "additionalInfo": "ข้อมูลเพิ่มเติม",
+      "age": "อายุ",
+      "salary": "ช่วงเงินเดือน",
+      "industry": "อุตสาหกรรม",
+      "workTitle": "ตำแหน่งงาน",
+      "ftdInfo": "ข้อมูล FTD",
+      "deposit": "จำนวนเงินฝาก ($)",
+      "paymentMethod": "วิธีการชำระเงิน",
+      "paymentProvider": "ผู้ให้บริการชำระเงิน",
+      "convertedDate": "วันที่เปลี่ยนเป็นลูกค้า",
+      "funnelName": "ชื่อฟันネル",
+      "timeline": "ไทม์ไลน์กิจกรรม",
+      "noActivities": "ยังไม่มีการบันทึกกิจกรรม",
+      "noDescription": "ไม่มีการระบุคำอธิบาย"
+    },
+    "ftdReport": {
+      "title": "FTD Report",
+      "subtitle": "First Time Deposit tracking from converted leads",
+      "totalFtd": "Total FTD",
+      "totalDeposits": "Total Deposits",
+      "avgFtdAmount": "Avg FTD Amount",
+      "activeAgents": "Active Agents",
+      "searchPlaceholder": "Search by name, email, or country...",
+      "allAgents": "All Agents",
+      "tableTitle": "First Time Deposits",
+      "leadName": "Lead Name",
+      "email": "Email",
+      "phone": "Phone",
+      "country": "Country",
+      "depositAmount": "Deposit Amount",
+      "convertedDate": "Converted Date",
+      "status": "Status",
+      "converted": "Converted",
+      "agent": "Agent",
+      "paymentMethod": "Payment Method",
+      "paymentProvider": "Payment Provider",
+      "source": "Source",
+      "affiliateId": "Affiliate ID",
+      "funnelName": "Funnel Name",
+      "ftdTime": "FTD Time",
+      "subParameters": "Sub Parameters",
+      "na": "N/A",
+      "unassigned": "Unassigned",
+      "loading": "Loading FTD data...",
+      "noData": "No first time deposits found.",
+      "showing": "Showing {{count}} First Time Deposits",
+      "loadError": "Failed to load FTD report data"
+    },
+    "crmCalendar": {
+      "title": "ปฏิทินการขาย",
+      "subtitle": "การประชุมที่กำหนดไว้ของคุณ",
+      "scheduleMeeting": "กำหนดการประชุม",
+      "searchPlaceholder": "ค้นหาการประชุม ลูกค้า หรือตัวแทน...",
+      "allTypes": "ทุกประเภท",
+      "call": "โทร",
+      "meeting": "การประชุม",
+      "other": "อื่นๆ",
+      "allStatus": "ทุกสถานะ",
+      "scheduled": "กำหนดไว้แล้ว",
+      "completed": "เสร็จสิ้น",
+      "cancelled": "ยกเลิกแล้ว",
+      "totalMeetings": "การประชุมทั้งหมด",
+      "today": "วันนี้",
+      "calls": "การโทร",
+      "meetings": "การประชุม",
+      "calendarView": "มุมมองปฏิทิน",
+      "listView": "มุมมองรายการ",
+      "todaysSchedule": "ตารางงานวันนี้",
+      "noMeetings": "ไม่มีการประชุมที่กำหนดไว้",
+      "scheduleOneNow": "กำหนดตารางเวลาตอนนี้",
+      "scheduleNewMeeting": "กำหนดการประชุมใหม่",
+      "meetingTitle": "หัวข้อการประชุม",
+      "clientName": "ชื่อลูกค้า",
+      "date": "วันที่",
+      "time": "เวลา",
+      "duration": "ระยะเวลา (นาที)",
+      "type": "ประเภท",
+      "cancel": "ยกเลิก",
+      "loading": "กำลังโหลดตารางเวลาของคุณ...",
+      "errorRequiredFields": "โปรดกรอกข้อมูลในช่องที่จำเป็นให้ครบถ้วน",
+      "successScheduled": "กำหนดการประชุมสำเร็จแล้ว",
+      "dateTime": "วันที่และเวลา",
+      "status": "สถานะ",
+      "placeholderTitle": "เช่น โทรติดตามผล",
+      "placeholderClient": "ป้อนชื่อลูกค้า",
+      "weekdays": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      },
+      "moreCount": "+ {{count}} more",
+      "minShort": "min"
     }
   }
 }

@@ -70,7 +70,7 @@ const PlatformsSection = () => {
 };
 
 const PlatformCard = ({ isDark, name, logo, color, description, features, isProprietary }) => (
-  <div className={`rounded-2xl p-6 border transition-all duration-300 group hover:-translate-y-2 relative overflow-visible ${
+  <div className={`rounded-2xl p-6 border transition-all duration-300 group hover:-translate-y-2 relative overflow-hidden ${
     isProprietary 
       ? isDark 
         ? 'border-amber-500/50 hover:border-amber-400 bg-[#12161d]' 

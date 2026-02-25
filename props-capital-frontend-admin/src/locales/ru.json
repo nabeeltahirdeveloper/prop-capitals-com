@@ -3,7 +3,10 @@
     "loading": "Загрузка...",
     "url": "URL",
     "dismiss": "Закрыть",
-    "allPlatforms": "Все платформы"
+    "allPlatforms": "Все платформы",
+    "unknown": "Неизвестно",
+    "error": "Ошибка",
+    "success": "Успех"
   },
   "home": {
     "hero": {
@@ -436,7 +439,18 @@
     "challengeUpdates": "Обновления челленджа",
     "challengeUpdatesDesc": "Обновления прогресса и изменений фаз",
     "marketingEmails": "Маркетинговые письма",
-    "marketingEmailsDesc": "Новости, акции и специальные предложения"
+    "marketingEmailsDesc": "Новости, акции и специальные предложения",
+    "notif": "Уведомления",
+    "passwordChangedDesc": "Ваш пароль успешно обновлен.",
+    "passwordChangeFailed": "Ошибка смены пароля",
+    "passwordChangeError": "Произошла ошибка при смене пароля.",
+    "validationError": "Ошибка валидации",
+    "notificationUpdateError": "Ошибка обновления настроек уведомлений.",
+    "notificationsUpdated": "Уведомления обновлены",
+    "notificationsUpdatedDesc": "Настройки уведомлений сохранены.",
+    "personal": "Personal",
+    "sec": "Security",
+    "verify": "Verify"
   },
   "support": {
     "title": "Поддержка",
@@ -1070,7 +1084,8 @@
       "ask": "Ask",
       "chg": "Chg%",
       "updated": "Обновлено",
-      "retry": "Повторить"
+      "retry": "Повторить",
+      "reconnecting": "Reconnecting"
     },
     "positions": {
       "title": "Открытые позиции",
@@ -1103,7 +1118,9 @@
       "exit": "Выход",
       "autoClosed": "Автозакрытие",
       "breach": "Нарушение правил",
-      "breachPnL": "PnL при нарушении (на лимите)"
+      "breachPnL": "PnL при нарушении (на лимите)",
+      "finalFill": "Final Fill",
+      "finalFillPnL": "Final Fill P/L"
     },
     "accountMetrics": {
       "balance": "Баланс",
@@ -1178,7 +1195,13 @@
     "website": "Сайт",
     "logout": "Выйти",
     "user": "Пользователь",
-    "adminPanel": "Панель администратора"
+    "adminPanel": "Панель администратора",
+    "coupons": "Купоны",
+    "crm": "CRM",
+    "crmLeads": "CRM Лиды",
+    "pipeline": "Pipeline",
+    "ftdReport": "FTD Report",
+    "calendar": "Calendar"
   },
   "status": {
     "active": "Активен",
@@ -1220,7 +1243,8 @@
         "payouts": "Выплаты",
         "fundedAccounts": "Финансируемые аккаунты",
         "violationsToday": "Нарушения сегодня",
-        "changeThisMonth": "В этом месяце +{{percent}}%"
+        "changeThisMonth": "В этом месяце +{{percent}}%",
+        "changeThisMonthNeutral": "{{percent}}% в этом месяце"
       },
       "chart": {
         "title": "Выручка и выплаты (последние 30 дней)",
@@ -1273,6 +1297,17 @@
           "type": "Неизвестно",
           "description": "Неизвестное нарушение"
         }
+      },
+      "messages": {
+        "loading": "Загрузка панели администратора...",
+        "loadFailedTitle": "Failed to Load Dashboard",
+        "unexpectedError": "An unexpected error occurred",
+        "reload": "Reload Dashboard",
+        "liveUpdates": "Обновление каждые 10 сек. Последнее обновление: {{time}}",
+        "chartLoadFailed": "Failed to load chart data",
+        "noRevenueData": "No revenue data available",
+        "accountsLoadFailed": "Failed to load accounts",
+        "violationsLoadFailed": "Failed to load violations"
       }
     },
     "users": {
@@ -1329,7 +1364,8 @@
         "active": "Активные",
         "passed": "Пройдено",
         "funded": "Профинансировано",
-        "failed": "Не пройдено"
+        "failed": "Не пройдено",
+        "phase2": "Phase 2"
       },
       "searchPlaceholder": "Поиск по номеру аккаунта или email...",
       "filter": {
@@ -1343,7 +1379,11 @@
         "failed": "Не пройдено",
         "suspended": "Приостановлено",
         "phase1": "Фаза 1",
-        "phase2": "Фаза 2"
+        "phase2": "Фаза 2",
+        "closed": "Closed",
+        "dailyLocked": "Daily Locked",
+        "disqualified": "Disqualified",
+        "paused": "Paused"
       },
       "table": {
         "account": "Аккаунт",
@@ -1359,7 +1399,9 @@
         "forcePass": "Принудительно засчитать",
         "forceFail": "Принудительно провалить",
         "resetAccount": "Сбросить аккаунт",
-        "moveToFunded": "Перевести в финансируемый"
+        "moveToFunded": "Перевести в финансируемый",
+        "pause": "Pause Account",
+        "resume": "Resume Account"
       },
       "dialog": {
         "title": "Детали аккаунта",
@@ -1568,7 +1610,22 @@
         "inactive": "Неактивен"
       },
       "noExpiry": "Без срока действия",
-      "emptyMessage": "Купоны не найдены"
+      "emptyMessage": "Купоны не найдены",
+      "messages": {
+        "copySuccess": "Coupon code copied",
+        "copyError": "Failed to copy coupon code",
+        "createSuccess": "Coupon created successfully",
+        "updateSuccess": "Coupon updated successfully",
+        "deleteSuccess": "Coupon deleted successfully",
+        "saveError": "Failed to save coupon",
+        "deleteError": "Failed to delete coupon"
+      },
+      "validation": {
+        "codeRequired": "Coupon code is required",
+        "discountRequired": "Discount value must be greater than 0",
+        "discountRangePercent": "Percentage discount cannot exceed 100",
+        "maxUsesInvalid": "Max uses must be at least 1"
+      }
     },
     "support": {
       "title": "Тикеты поддержки",
@@ -1634,7 +1691,6 @@
       "subtitle": "Настройка параметров и интеграций",
       "saveChanges": "Сохранить изменения",
       "saveChange": "Сохранение ...",
-
       "settingsSaved": "Настройки сохранены",
       "settingsSaveDescription": "Настройки успешно сохранены.",
       "tabs": {
@@ -1666,6 +1722,7 @@
         "stripeApiKeyPlaceholder": "sk_live_...",
         "paypal": "PayPal",
         "paypalDesc": "Принимать оплату через PayPal",
+        "paypalClientId": "ID клиента PayPal",
         "cryptocurrency": "Криптовалюта",
         "cryptocurrencyDesc": "Принимать оплату в BTC, ETH, USDT"
       },
@@ -1696,7 +1753,8 @@
         "payoutApproved": "Вывод одобрен",
         "payoutApprovedDesc": "Отправляется при одобрении вывода",
         "editTemplate": "Редактировать шаблон"
-      }
+      },
+      "saveError": "Failed to save settings"
     },
     "riskMonitor": {
       "title": "Мониторинг рисков",
@@ -1732,6 +1790,10 @@
         "title": "Недавние нарушения",
         "noViolations": "Недавних нарушений нет",
         "account": "Аккаунт"
+      },
+      "severity": {
+        "fatal": "Fatal",
+        "warning": "Warning"
       }
     },
     "brokerServers": {
@@ -1751,7 +1813,8 @@
         "managerPassword": "Пароль менеджера",
         "apiKey": "API Key / Client ID",
         "apiSecret": "API Secret",
-        "demoServer": "Демо-сервер"
+        "demoServer": "Демо-сервер",
+        "description": "Configure a new broker server connection for trading accounts."
       },
       "platforms": {
         "mt4": "MetaTrader 4",
@@ -1770,7 +1833,8 @@
       "card": {
         "platform": "Платформа",
         "timezone": "Часовой пояс",
-        "lastSync": "Последняя синхронизация"
+        "lastSync": "Последняя синхронизация",
+        "accounts": "Linked Accounts"
       },
       "actions": {
         "test": "Тест"
@@ -1778,6 +1842,21 @@
       "empty": {
         "title": "Серверы брокера отсутствуют",
         "description": "Добавьте первый сервер брокера, чтобы начать создавать торговые аккаунты"
+      },
+      "confirmDelete": "Are you sure you want to delete this broker server?",
+      "error": {
+        "description": "An error occurred while loading broker servers",
+        "retry": "Retry",
+        "title": "Failed to Load Broker Servers"
+      },
+      "toast": {
+        "connectionError": "Failed to test connection",
+        "connectionFailed": "Connection test failed",
+        "connectionSuccess": "Connection test successful",
+        "createError": "Failed to add broker server",
+        "createSuccess": "Broker server added successfully",
+        "deleteError": "Failed to delete broker server",
+        "deleteSuccess": "Broker server deleted successfully"
       }
     },
     "scaling": {
@@ -1889,7 +1968,8 @@
       "deleteErrorTitle": "Невозможно удалить челлендж",
       "deleteErrorMessage": "Этот челлендж нельзя удалить",
       "deleteErrorDesc": "Невозможно удалить, так как он связан с существующими торговыми аккаунтами",
-      "understand": "Понятно"
+      "understand": "Понятно",
+      "noChallenges": "No challenges available"
     }
   },
   "signIn": {
@@ -1909,8 +1989,12 @@
     "fundsProtected": "Средства защищены",
     "securityDescription": "Торгуйте с уверенностью. Наша платформа использует безопасность банковского уровня для защиты вашего аккаунта и торговых данных.",
     "errors": {
-      "invalidCredentials": "Неверный email или пароль"
-    }
+      "invalidCredentials": "Неверный email или пароль",
+      "adminPortalOnly": "This is the Admin portal. Please use the Trader portal to sign in.",
+      "adminCredentialsRequired": "Access denied. Admin credentials required."
+    },
+    "adminSubtitle": "Sign in to access the admin dashboard",
+    "adminAccessOnly": "Admin access only. Contact your system administrator for credentials."
   },
   "signUp": {
     "title": "Создать аккаунт",
@@ -2856,6 +2940,249 @@
     "contactUs": {
       "title": "10. Свяжитесь с нами",
       "content": "По вопросам конфиденциальности пишите на support@the-bluehaven.com."
+    }
+  },
+  "crm": {
+    "leads": {
+      "title": "Управление лидами",
+      "subtitle": "Управляйте и конвертируйте ваши лиды",
+      "import": "Импортировать лиды",
+      "search": "Поиск лидов...",
+      "allStatus": "Все статусы",
+      "allCategory": "Все",
+      "bySource": "По источнику",
+      "byAgent": "По агенту",
+      "loading": "Загрузка лидов...",
+      "noLeads": "Лиды не найдены",
+      "cards": "Карточки",
+      "list": "Список",
+      "compact": "Компактный",
+      "leadReceived": "Лид получен",
+      "contactInfo": "Контактная информация",
+      "personName": "Имя",
+      "emailAddress": "Адрес электронной почты",
+      "phoneNumber": "Номер телефона",
+      "country": "Страна",
+      "source": "Источник",
+      "leadStatus": "Статус лида",
+      "onlineStatus": "Онлайн-статус",
+      "priority": "Приоритет",
+      "assignedAgent": "Назначенный агент",
+      "ftdInfo": "Информация FTD",
+      "ftdAmount": "Сумма FTD",
+      "paymentMethod": "Способ оплаты",
+      "paymentProvider": "Платежный провайдер",
+      "editableFields": "Редактируемые поля",
+      "age": "Возраст",
+      "salary": "Зарплата",
+      "jobIndustry": "Отрасль",
+      "workTitle": "Должность",
+      "updateLead": "Обновить лид",
+      "updating": "Обновление...",
+      "quickActions": "Быстрые действия",
+      "callLead": "Позвонить лиду",
+      "sendEmail": "Отправить Email",
+      "whatsApp": "WhatsApp",
+      "telegram": "Telegram",
+      "activityHistory": "История активности",
+      "activities": "Активности",
+      "noActivities": "Активностей пока нет",
+      "addNote": "Добавить заметку",
+      "addNotePlaceholder": "Добавить заметку...",
+      "add": "Добавить",
+      "importLeads": "Импортировать лиды",
+      "uploadCSV": "Нажмите для загрузки CSV",
+      "changeFile": "Изменить файл",
+      "csvFormat": "CSV должен соответствовать требуемому формату",
+      "csvFormatDesc": "CSV должен соответствовать требуемому формату с заголовками: personName, email, phoneNumber, country, source, leadStatus, ftdAmount, paymentMethod, paymentProvider, priority, age, salary, jobIndustry, workTitle",
+      "requiredFields": "Обязательные поля: personName, email",
+      "cancel": "Отмена",
+      "importButton": "Импортировать",
+      "importing": "Импорт...",
+      "note": "Заметка",
+      "call": "Звонок",
+      "email": "Email",
+      "whatsapp": "WhatsApp",
+      "telegram_activity": "Telegram",
+      "toast": {
+        "fetchError": "Failed to fetch leads",
+        "loadError": "Failed to load lead details",
+        "updateSuccess": "Lead updated successfully",
+        "updateError": "Failed to update lead",
+        "activityLogged": "Activity logged: {{type}}",
+        "activityError": "Failed to log activity",
+        "importSuccess": "Imported {{created}} of {{total}} leads",
+        "importError": "Failed to import CSV",
+        "noteAdded": "Note added successfully",
+        "noteError": "Failed to add note"
+      }
+    },
+    "status": {
+      "all": "Все",
+      "new": "Новый",
+      "contacted": "Связались",
+      "qualified": "Квалифицирован",
+      "callback": "Перезвонить",
+      "followup": "Последующее наблюдение",
+      "converted": "Конвертирован",
+      "lost": "Утерян",
+      "online": "В сети",
+      "offline": "Не в сети"
+    },
+    "priority": {
+      "low": "Низкий",
+      "medium": "Средний",
+      "high": "Высокий",
+      "urgent": "Срочный"
+    },
+    "payment": {
+      "crypto": "Крипто",
+      "card": "Карта",
+      "wire": "Перевод",
+      "other": "Другое",
+      "bankTransfer": "Банковский перевод",
+      "wireTransfer": "Электронный перевод",
+      "stripe": "Stripe",
+      "paypal": "PayPal",
+      "skrill": "Skrill",
+      "neteller": "Neteller",
+      "binancePay": "Binance Pay",
+      "coinbase": "Coinbase"
+    },
+    "pipeline": {
+      "title": "Воронка Продаж",
+      "subtitle": "Отслеживайте и управляйте лидами по этапам",
+      "search": "Поиск лидов...",
+      "loading": "Загрузка воронки...",
+      "statusUpdated": "Статус обновлен",
+      "movedTo": "Лид перемещен в {{status}}",
+      "updateError": "Не удалось обновить статус. Отмена...",
+      "loadError": "Не удалось загрузить данные",
+      "updateSuccess": "Данные лида успешно обновлены",
+      "updateFailed": "Ошибка при обновлении данных",
+      "noteAdded": "Заметка успешно добавлена",
+      "noteFailed": "Не удалось добавить заметку",
+      "activityLogged": "Активность зафиксирована",
+      "activityRecorded": "{{type}} зафиксирован(а)",
+      "direct": "Прямой",
+      "quickActionNote": "Попытка {{type}}, сделанная через быстрые действия воронки",
+      "activityFailed": "Не удалось записать активность"
+    },
+    "columns": {
+      "new": "Новые лиды",
+      "contacted": "Установлен контакт",
+      "qualified": "Квалифицирован",
+      "callback": "Перезвонить",
+      "followUp": "Последующие действия",
+      "converted": "Конвертирован",
+      "lost": "Утерян"
+    },
+    "modal": {
+      "close": "Закрыть",
+      "basicInfo": "Основная информация",
+      "fullName": "Полное имя",
+      "email": "Электронная почта",
+      "phone": "Номер телефона",
+      "country": "Страна",
+      "statusAssignment": "Статус и назначение",
+      "status": "Статус",
+      "priority": "Приоритет",
+      "additionalInfo": "Дополнительная информация",
+      "age": "Возраст",
+      "salary": "Уровень дохода",
+      "industry": "Отрасль",
+      "workTitle": "Должность",
+      "ftdInfo": "Информация о FTD",
+      "deposit": "Сумма депозита ($)",
+      "paymentMethod": "Способ оплаты",
+      "paymentProvider": "Платежный шлюз",
+      "convertedDate": "Дата конвертации",
+      "funnelName": "Название воронки",
+      "timeline": "История активности",
+      "noActivities": "История активности пуста",
+      "noDescription": "Описание не предоставлено"
+    },
+    "ftdReport": {
+      "title": "FTD Report",
+      "subtitle": "First Time Deposit tracking from converted leads",
+      "totalFtd": "Total FTD",
+      "totalDeposits": "Total Deposits",
+      "avgFtdAmount": "Avg FTD Amount",
+      "activeAgents": "Active Agents",
+      "searchPlaceholder": "Search by name, email, or country...",
+      "allAgents": "All Agents",
+      "tableTitle": "First Time Deposits",
+      "leadName": "Lead Name",
+      "email": "Email",
+      "phone": "Phone",
+      "country": "Country",
+      "depositAmount": "Deposit Amount",
+      "convertedDate": "Converted Date",
+      "status": "Status",
+      "converted": "Converted",
+      "agent": "Agent",
+      "paymentMethod": "Payment Method",
+      "paymentProvider": "Payment Provider",
+      "source": "Source",
+      "affiliateId": "Affiliate ID",
+      "funnelName": "Funnel Name",
+      "ftdTime": "FTD Time",
+      "subParameters": "Sub Parameters",
+      "na": "N/A",
+      "unassigned": "Unassigned",
+      "loading": "Loading FTD data...",
+      "noData": "No first time deposits found.",
+      "showing": "Showing {{count}} First Time Deposits",
+      "loadError": "Failed to load FTD report data"
+    },
+    "crmCalendar": {
+      "title": "Календарь продаж",
+      "subtitle": "Ваши запланированные встречи",
+      "scheduleMeeting": "Запланировать встречу",
+      "searchPlaceholder": "Поиск встреч, клиентов или агентов...",
+      "allTypes": "Все типы",
+      "call": "Звонок",
+      "meeting": "Встреча",
+      "other": "Другое",
+      "allStatus": "Все статусы",
+      "scheduled": "Запланировано",
+      "completed": "Завершено",
+      "cancelled": "Отменено",
+      "totalMeetings": "Всего встреч",
+      "today": "Сегодня",
+      "calls": "Звонки",
+      "meetings": "Встречи",
+      "calendarView": "Вид календаря",
+      "listView": "Вид списка",
+      "todaysSchedule": "Расписание на сегодня",
+      "noMeetings": "Нет запланированных встреч",
+      "scheduleOneNow": "Запланировать сейчас",
+      "scheduleNewMeeting": "Запланировать новую встречу",
+      "meetingTitle": "Заголовок встречи",
+      "clientName": "Имя клиента",
+      "date": "Дата",
+      "time": "Время",
+      "duration": "Длительность (минуты)",
+      "type": "Тип",
+      "cancel": "Отмена",
+      "loading": "Загрузка расписания...",
+      "errorRequiredFields": "Пожалуйста, заполните все обязательные поля",
+      "successScheduled": "Встреча успешно запланирована",
+      "dateTime": "Дата и время",
+      "status": "Статус",
+      "placeholderTitle": "напр., Последующий звонок",
+      "placeholderClient": "Введите имя клиента",
+      "weekdays": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      },
+      "moreCount": "+ {{count}} more",
+      "minShort": "min"
     }
   }
 }

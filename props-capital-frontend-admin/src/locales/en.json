@@ -3,7 +3,10 @@
     "loading": "Loading...",
     "dismiss": "Dismiss",
     "url": "URL",
-    "allPlatforms": "all platforms"
+    "allPlatforms": "all platforms",
+    "unknown": "Unknown",
+    "error": "Error",
+    "success": "Success"
   },
   "home": {
     "hero": {
@@ -440,7 +443,14 @@
     "personal": "Personal",
     "sec": "Security",
     "verify": "Verify",
-    "notif": "Notifications"
+    "notif": "Notifications",
+    "passwordChangedDesc": "Your password has been successfully updated.",
+    "passwordChangeFailed": "Password Change Failed",
+    "passwordChangeError": "An error occurred while changing your password.",
+    "validationError": "Validation Error",
+    "notificationUpdateError": "Failed to update notification preferences.",
+    "notificationsUpdated": "Notifications Updated",
+    "notificationsUpdatedDesc": "Your notification preferences have been saved."
   },
   "support": {
     "title": "Support",
@@ -1186,7 +1196,13 @@
     "website": "Website",
     "logout": "Logout",
     "user": "User",
-    "adminPanel": "Admin Panel"
+    "adminPanel": "Admin Panel",
+    "crm": "CRM",
+    "crmLeads": "CRM Leads",
+    "pipeline": "Pipeline",
+    "ftdReport": "Orders Report",
+    "calendar": "Calendar",
+    "fundedAccounts": "Funded Accounts"
   },
   "status": {
     "active": "Active",
@@ -1221,6 +1237,17 @@
     "dashboard": {
       "title": "Admin Dashboard",
       "subtitle": "Overview of platform performance and activity",
+      "messages": {
+        "loading": "Loading dashboard...",
+        "loadFailedTitle": "Failed to Load Dashboard",
+        "unexpectedError": "An unexpected error occurred",
+        "reload": "Reload Dashboard",
+        "liveUpdates": "Live updates every 10s. Last refresh: {{time}}",
+        "chartLoadFailed": "Failed to load chart data",
+        "noRevenueData": "No revenue data available",
+        "accountsLoadFailed": "Failed to load accounts",
+        "violationsLoadFailed": "Failed to load violations"
+      },
       "stats": {
         "totalTraders": "Total Traders",
         "activeChallenges": "Active Challenges",
@@ -1228,7 +1255,8 @@
         "payouts": "Payouts",
         "fundedAccounts": "Funded Accounts",
         "violationsToday": "Violations Today",
-        "changeThisMonth": "+{{percent}}% this month"
+        "changeThisMonth": "+{{percent}}% this month",
+        "changeThisMonthNeutral": "{{percent}}% this month"
       },
       "chart": {
         "title": "Revenue & Payouts (Last 30 Days)",
@@ -1357,6 +1385,7 @@
       },
       "table": {
         "account": "Account",
+        "trader": "Trader",
         "platform": "Platform",
         "balance": "Balance",
         "phase": "Phase",
@@ -1396,11 +1425,27 @@
       },
       "emptyMessage": "No accounts found"
     },
+    "fundedAccounts": {
+      "title": "Funded Accounts",
+      "subtitle": "Overview of all funded trading accounts",
+      "stats": {
+        "totalFunded": "Total Funded Accounts",
+        "activeFunded": "Active Funded Accounts",
+        "totalCapital": "Total Allocated Capital",
+        "totalProfit": "Total Current Profit",
+        "totalPayouts": "Total Payouts"
+      },
+      "details": {
+        "profitSplitLabel": "Profit Split",
+        "totalPayoutsLabel": "Total Payouts",
+        "withdrawableProfitLabel": "Withdrawable Profit",
+        "lastPayoutDateLabel": "Last Payout Date"
+      }
+    },
     "riskMonitor": {
       "title": "Risk Monitor",
-      "subtitle": "Real-time monitoring of trading account risk levels",
+      "subtitle": "Real-time account risk monitoring",
       "refresh": "Refresh",
-      "searchPlaceholder": "Search by account number or trader ID...",
       "riskLevels": {
         "critical": "Critical Risk",
         "high": "High Risk",
@@ -1413,6 +1458,7 @@
         "medium": "Medium",
         "low": "Low"
       },
+      "searchPlaceholder": "Search by account number or trader...",
       "table": {
         "account": "Account",
         "balance": "Balance",
@@ -1422,18 +1468,18 @@
         "riskLevel": "Risk Level",
         "actions": "Actions"
       },
+      "confirmations": {
+        "emergencyClose": "Are you sure you want to close all positions for this account?",
+        "lockAccount": "Are you sure you want to lock this account?"
+      },
       "recentViolations": {
         "title": "Recent Violations",
-        "account": "Account",
-        "noViolations": "No recent violations"
+        "noViolations": "No recent violations",
+        "account": "Account"
       },
       "severity": {
         "fatal": "Fatal",
         "warning": "Warning"
-      },
-      "confirmations": {
-        "emergencyClose": "Are you sure you want to pause this account? This will prevent further trading.",
-        "lockAccount": "Are you sure you want to lock this account? This will pause all trading activity."
       }
     },
     "payouts": {
@@ -1620,7 +1666,22 @@
         "inactive": "Inactive"
       },
       "noExpiry": "No expiry",
-      "emptyMessage": "No coupons found"
+      "emptyMessage": "No coupons found",
+      "messages": {
+        "copySuccess": "Coupon code copied",
+        "copyError": "Failed to copy coupon code",
+        "createSuccess": "Coupon created successfully",
+        "updateSuccess": "Coupon updated successfully",
+        "deleteSuccess": "Coupon deleted successfully",
+        "saveError": "Failed to save coupon",
+        "deleteError": "Failed to delete coupon"
+      },
+      "validation": {
+        "codeRequired": "Coupon code is required",
+        "discountRequired": "Discount value must be greater than 0",
+        "discountRangePercent": "Percentage discount cannot exceed 100",
+        "maxUsesInvalid": "Max uses must be at least 1"
+      }
     },
     "support": {
       "title": "Support Tickets",
@@ -1633,6 +1694,7 @@
         "avgResponse": "Avg Response"
       },
       "searchPlaceholder": "Search by email or subject...",
+      "emptyMessage": "No tickets found",
       "filter": {
         "status": "Status",
         "allStatus": "All Status",
@@ -1663,22 +1725,25 @@
       },
       "actions": {
         "take": "Take",
-        "resolve": "Resolve"
+        "resolve": "Resolve",
+        "close": "Close"
       },
       "dialog": {
         "from": "From",
+        "submitted": "Submitted",
+        "userMessage": "User Message",
+        "previousReply": "Previous Admin Reply",
+        "sendNewReply": "Send New Reply",
         "writeResponse": "Write your response...",
         "close": "Close",
         "sending": "Sending...",
         "sendAndResolve": "Send & Resolve"
       },
-      "emptyMessage": "No tickets found",
-      "subjects": {
-        "unableToLoginMT5": "Unable to login to MT5",
-        "payoutRequestTakingTooLong": "Payout request taking too long",
-        "questionAboutScalingPlan": "Question about scaling plan",
-        "refundRequest": "Refund request",
-        "challengeRulesClarification": "Challenge rules clarification"
+      "toast": {
+        "successTitle": "Success",
+        "errorTitle": "Error",
+        "replySent": "Reply sent and ticket resolved.",
+        "statusUpdated": "Ticket status updated successfully."
       }
     },
     "settings": {
@@ -1717,6 +1782,7 @@
         "stripeApiKeyPlaceholder": "sk_live_...",
         "paypal": "PayPal",
         "paypalDesc": "Accept PayPal payments",
+        "paypalClientId": "PayPal Client ID",
         "cryptocurrency": "Cryptocurrency",
         "cryptocurrencyDesc": "Accept BTC, ETH, USDT payments"
       },
@@ -1747,50 +1813,11 @@
         "payoutApproved": "Payout Approved",
         "payoutApprovedDesc": "Sent when a payout is approved",
         "editTemplate": "Edit Template"
-      }
-    },
-    "riskMonitor": {
-      "title": "Risk Monitor",
-      "subtitle": "Real-time account risk monitoring",
-      "refresh": "Refresh",
-      "riskLevels": {
-        "critical": "Critical Risk",
-        "high": "High Risk",
-        "medium": "Medium Risk",
-        "low": "Low Risk"
       },
-      "riskBadges": {
-        "critical": "Critical",
-        "high": "High",
-        "medium": "Medium",
-        "low": "Low"
-      },
-      "searchPlaceholder": "Search by account number or trader...",
-      "table": {
-        "account": "Account",
-        "balance": "Balance",
-        "equity": "Equity",
-        "dailyDD": "Daily DD",
-        "maxDD": "Max DD",
-        "riskLevel": "Risk Level",
-        "actions": "Actions"
-      },
-      "confirmations": {
-        "emergencyClose": "Are you sure you want to close all positions for this account?",
-        "lockAccount": "Are you sure you want to lock this account?"
-      },
-      "recentViolations": {
-        "title": "Recent Violations",
-        "noViolations": "No recent violations",
-        "account": "Account"
-      },
-      "severity": {
-        "fatal": "Fatal",
-        "warning": "Warning"
-      }
+      "saveError": "Failed to save settings"
     },
     "brokerServers": {
-      "title": "Broker Servers",
+      "title": "Prop Server",
       "subtitle": "Manage trading platform connections",
       "addServer": "Add Server",
       "adding": "Adding...",
@@ -1968,6 +1995,8 @@
   "signIn": {
     "title": "Welcome back",
     "subtitle": "Sign in to your trading account",
+    "adminSubtitle": "Sign in to access the admin dashboard",
+    "adminAccessOnly": "Admin access only. Contact your system administrator for credentials.",
     "email": "Email",
     "emailPlaceholder": "Enter your email",
     "password": "Password",
@@ -1982,7 +2011,9 @@
     "fundsProtected": "Your funds are protected",
     "securityDescription": "Trade with confidence. Our platform uses bank-level security to protect your account and trading data.",
     "errors": {
-      "invalidCredentials": "Invalid email or password"
+      "invalidCredentials": "Invalid email or password",
+      "adminPortalOnly": "This is the Admin portal. Please use the Trader portal to sign in.",
+      "adminCredentialsRequired": "Access denied. Admin credentials required."
     }
   },
   "signUp": {
@@ -2929,6 +2960,249 @@
     "contactUs": {
       "title": "10. Contact Us",
       "content": "For privacy-related inquiries, please contact our Data Protection Officer at support@the-bluehaven.com"
+    }
+  },
+  "crm": {
+    "leads": {
+      "title": "Lead Management",
+      "subtitle": "Manage and convert your leads",
+      "import": "Import Leads",
+      "search": "Search leads...",
+      "allStatus": "All Status",
+      "allCategory": "All",
+      "bySource": "By Source",
+      "byAgent": "By Agent",
+      "loading": "Loading leads...",
+      "noLeads": "No leads found",
+      "cards": "Cards",
+      "list": "List",
+      "compact": "Compact",
+      "leadReceived": "Lead Received",
+      "contactInfo": "Contact Information",
+      "personName": "Person Name",
+      "emailAddress": "Email Address",
+      "phoneNumber": "Phone Number",
+      "country": "Country",
+      "source": "Source",
+      "leadStatus": "Lead Status",
+      "onlineStatus": "Online Status",
+      "priority": "Priority",
+      "assignedAgent": "Assigned Agent",
+      "ftdInfo": "FTD Information",
+      "ftdAmount": "FTD Amount",
+      "paymentMethod": "Payment Method",
+      "paymentProvider": "Payment Provider",
+      "editableFields": "Editable Fields",
+      "age": "Age",
+      "salary": "Salary",
+      "jobIndustry": "Job Industry",
+      "workTitle": "Work Title",
+      "updateLead": "Update Lead",
+      "updating": "Updating...",
+      "quickActions": "Quick Actions",
+      "callLead": "Call Lead",
+      "sendEmail": "Send Email",
+      "whatsApp": "WhatsApp",
+      "telegram": "Telegram",
+      "activityHistory": "Activity History",
+      "activities": "Activities",
+      "noActivities": "No activities yet",
+      "addNote": "Add Note",
+      "addNotePlaceholder": "Add a note...",
+      "add": "Add",
+      "importLeads": "Import Leads",
+      "uploadCSV": "Click to upload CSV",
+      "changeFile": "Change File",
+      "csvFormat": "CSV must follow the required format",
+      "csvFormatDesc": "CSV must follow the required format with headers: personName, email, phoneNumber, country, source, leadStatus, ftdAmount, paymentMethod, paymentProvider, priority, age, salary, jobIndustry, workTitle",
+      "requiredFields": "Required fields: personName, email",
+      "cancel": "Cancel",
+      "importButton": "Import",
+      "importing": "Importing...",
+      "note": "Note",
+      "call": "Call",
+      "email": "Email",
+      "whatsapp": "WhatsApp",
+      "telegram_activity": "Telegram",
+      "toast": {
+        "fetchError": "Failed to fetch leads",
+        "loadError": "Failed to load lead details",
+        "updateSuccess": "Lead updated successfully",
+        "updateError": "Failed to update lead",
+        "activityLogged": "Activity logged: {{type}}",
+        "activityError": "Failed to log activity",
+        "importSuccess": "Imported {{created}} of {{total}} leads",
+        "importError": "Failed to import CSV",
+        "noteAdded": "Note added successfully",
+        "noteError": "Failed to add note"
+      }
+    },
+    "status": {
+      "all": "All",
+      "new": "New",
+      "contacted": "Contacted",
+      "qualified": "Qualified",
+      "callback": "Callback",
+      "followup": "Follow Up",
+      "converted": "Converted",
+      "lost": "Lost",
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "payment": {
+      "crypto": "Crypto",
+      "card": "Card",
+      "wire": "Wire",
+      "other": "Other",
+      "bankTransfer": "Bank Transfer",
+      "wireTransfer": "Wire Transfer",
+      "stripe": "Stripe",
+      "paypal": "PayPal",
+      "skrill": "Skrill",
+      "neteller": "Neteller",
+      "binancePay": "Binance Pay",
+      "coinbase": "Coinbase"
+    },
+    "pipeline": {
+      "title": "Sales Pipeline",
+      "subtitle": "Track and manage leads through stages",
+      "search": "Search leads...",
+      "loading": "Loading Pipeline...",
+      "statusUpdated": "Status Updated",
+      "movedTo": "Lead moved to {{status}}",
+      "updateError": "Failed to update lead status. Reverting...",
+      "loadError": "Failed to load lead details",
+      "updateSuccess": "Lead updated successfully",
+      "updateFailed": "Failed to update lead",
+      "noteAdded": "Note added successfully",
+      "noteFailed": "Failed to add note",
+      "activityLogged": "Activity Logged",
+      "activityRecorded": "{{type}} recorded",
+      "direct": "Direct",
+      "quickActionNote": "{{type}} attempt made via Pipeline Quick Actions",
+      "activityFailed": "Failed to log activity"
+    },
+    "columns": {
+      "new": "New Leads",
+      "contacted": "Contacted",
+      "qualified": "Qualified",
+      "callback": "Callback",
+      "followUp": "Follow Up",
+      "converted": "Converted",
+      "lost": "Lost"
+    },
+    "modal": {
+      "close": "Close",
+      "basicInfo": "Basic Information",
+      "fullName": "Full Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "country": "Country",
+      "statusAssignment": "Status & Assignment",
+      "status": "Status",
+      "priority": "Priority",
+      "additionalInfo": "Additional Information",
+      "age": "Age",
+      "salary": "Salary Range",
+      "industry": "Job Industry",
+      "workTitle": "Work Title",
+      "ftdInfo": "FTD Information",
+      "deposit": "Deposit Amount ($)",
+      "paymentMethod": "Payment Method",
+      "paymentProvider": "Payment Provider",
+      "convertedDate": "Converted Date",
+      "funnelName": "Funnel Name",
+      "timeline": "Activity Timeline",
+      "noActivities": "No activities recorded yet",
+      "noDescription": "No description provided"
+    },
+    "ftdReport": {
+      "title": "Orders Report",
+      "subtitle": "Orders tracking from converted leads",
+      "totalFtd": "Total FTD",
+      "totalDeposits": "Total Orders",
+      "avgFtdAmount": "Avg Order Amount",
+      "activeAgents": "Active Agents",
+      "searchPlaceholder": "Search by name, email, or country...",
+      "allAgents": "All Agents",
+      "tableTitle": "First Time Deposits",
+      "leadName": "Lead Name",
+      "email": "Email",
+      "phone": "Phone",
+      "country": "Country",
+      "depositAmount": "Deposit Amount",
+      "convertedDate": "Converted Date",
+      "status": "Status",
+      "converted": "Converted",
+      "agent": "Agent",
+      "paymentMethod": "Payment Method",
+      "paymentProvider": "Payment Provider",
+      "source": "Source",
+      "affiliateId": "Affiliate ID",
+      "funnelName": "Funnel Name",
+      "ftdTime": "FTD Time",
+      "subParameters": "Sub Parameters",
+      "na": "N/A",
+      "unassigned": "Unassigned",
+      "loading": "Loading FTD data...",
+      "noData": "No first time deposits found.",
+      "showing": "Showing {{count}} First Time Deposits",
+      "loadError": "Failed to load FTD report data"
+    },
+    "crmCalendar": {
+      "title": "Sales Calendar",
+      "subtitle": "Your scheduled meetings",
+      "scheduleMeeting": "Schedule Meeting",
+      "searchPlaceholder": "Search meetings, clients, or agents...",
+      "allTypes": "All Types",
+      "call": "Call",
+      "meeting": "Meeting",
+      "other": "Other",
+      "allStatus": "All Status",
+      "scheduled": "Scheduled",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "totalMeetings": "Total Meetings",
+      "today": "Today",
+      "calls": "Calls",
+      "meetings": "Meetings",
+      "calendarView": "Calendar View",
+      "listView": "List View",
+      "todaysSchedule": "Today's Schedule",
+      "noMeetings": "No meetings scheduled",
+      "scheduleOneNow": "Schedule one now",
+      "scheduleNewMeeting": "Schedule New Meeting",
+      "meetingTitle": "Meeting Title",
+      "clientName": "Client Name",
+      "date": "Date",
+      "time": "Time",
+      "duration": "Duration (minutes)",
+      "type": "Type",
+      "cancel": "Cancel",
+      "loading": "Loading your schedule...",
+      "errorRequiredFields": "Please fill in all required fields",
+      "successScheduled": "Meeting scheduled successfully",
+      "dateTime": "Date & Time",
+      "status": "Status",
+      "placeholderTitle": "e.g., Follow-up Call",
+      "placeholderClient": "Enter client name",
+      "weekdays": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      },
+      "moreCount": "+ {{count}} more",
+      "minShort": "min"
     }
   }
 }

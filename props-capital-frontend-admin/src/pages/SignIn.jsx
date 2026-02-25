@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { createPageUrl } from '../utils';
@@ -25,7 +25,6 @@ export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
@@ -35,7 +34,7 @@ export default function SignIn() {
     if (location.state?.from) {
       navigate(createPageUrl('SignIn'), { replace: true, state: null });
     }
-  }, []);
+  }, [location.state?.from, navigate]);
 
   const loginMutation = useMutation({
     mutationFn: async (credentials) => {
@@ -47,9 +46,9 @@ export default function SignIn() {
       const userRole = data.user?.role?.toUpperCase();
       if (userRole !== 'ADMIN') {
         if (userRole === 'TRADER') {
-          setError('This is the Admin portal. Please use the Trader portal to sign in.');
+          setError(t('signIn.errors.adminPortalOnly'));
         } else {
-          setError('Access denied. Admin credentials required.');
+          setError(t('signIn.errors.adminCredentialsRequired'));
         }
         localStorage.removeItem('token');
         return;
@@ -101,14 +100,14 @@ export default function SignIn() {
           <div className="flex items-center justify-center mb-6">
             <div className={`flex items-center gap-2 px-4 py-2 rounded-xl ${isDark ? 'bg-amber-500/10 border border-amber-500/20' : 'bg-amber-50 border border-amber-200'}`}>
               <Shield className="w-5 h-5 text-amber-500" />
-              <span className="text-amber-500 font-semibold text-sm">ADMIN PANEL</span>
+              <span className="text-amber-500 font-semibold text-sm">{t('nav.adminPanel')}</span>
             </div>
           </div>
 
           {/* Header */}
           <div className="text-center mb-6">
-            <h1 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Welcome Back</h1>
-            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Sign in to access the admin dashboard</p>
+            <h1 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('signIn.title')}</h1>
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('signIn.adminSubtitle')}</p>
           </div>
 
           {/* Error Message */}
@@ -122,7 +121,7 @@ export default function SignIn() {
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Email Address</label>
+              <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('signIn.email')}</label>
               <div className="relative">
                 <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                 <input
@@ -134,13 +133,13 @@ export default function SignIn() {
                     ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500'
                     : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
                     }`}
-                  placeholder="admin@example.com"
+                  placeholder={t('signIn.emailPlaceholder')}
                 />
               </div>
             </div>
 
             <div>
-              <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Password</label>
+              <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('signIn.password')}</label>
               <div className="relative">
                 <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                 <input
@@ -152,7 +151,7 @@ export default function SignIn() {
                     ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500'
                     : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
                     }`}
-                  placeholder="Enter your password"
+                  placeholder={t('signIn.passwordPlaceholder')}
                 />
                 <button
                   type="button"
@@ -172,10 +171,10 @@ export default function SignIn() {
               {loginMutation.isPending ? (
                 <div className="flex items-center gap-2">
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Signing in...
+                  {t('common.loading')}
                 </div>
               ) : (
-                <>Sign In<ArrowRight className="ml-2 w-5 h-5" /></>
+                <>{t('signIn.signInButton')}<ArrowRight className="ml-2 w-5 h-5" /></>
               )}
             </Button>
           </form>
@@ -183,7 +182,7 @@ export default function SignIn() {
           {/* Admin Notice */}
           <div className={`mt-6 pt-6 border-t ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
             <p className={`text-center text-sm ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-              Admin access only. Contact your system administrator for credentials.
+              {t('signIn.adminAccessOnly')}
             </p>
           </div>
         </div>

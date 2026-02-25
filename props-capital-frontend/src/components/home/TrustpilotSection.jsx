@@ -226,11 +226,11 @@ const TrustpilotSection = () => {
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-6">
             {/* Trustpilot Logo */}
-            <div className="bg-[#00b67a] px-4 py-2 rounded-lg flex items-center gap-2">
-              <svg viewBox="0 0 126 31" className="h-6 w-auto">
-                <path fill="white" d="M15.5 0L19.1 9.8H29.4L21.1 15.9L24.7 25.7L15.5 19.2L6.3 25.7L9.9 15.9L1.6 9.8H11.9L15.5 0Z"/>
-              </svg>
-              <span className="text-white font-bold">Trustpilot</span>
+            <div className="relative inline-flex items-center justify-center bg-[#00b67a] pl-8 pr-4 py-2 rounded-full">
+              <Star className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white fill-white" />
+              <span className="text-white  font-bold leading-none">
+                Trustpilot
+              </span>
             </div>
           </div>
           
@@ -306,18 +306,7 @@ const TrustpilotSection = () => {
           </button>
         </div>
 
-        {/* View All Reviews Link */}
-        <div className="text-center mt-8">
-          <a
-            href="#"
-            className={`inline-flex items-center gap-2 font-semibold transition-colors ${
-              isDark ? 'text-amber-400 hover:text-amber-300' : 'text-amber-600 hover:text-amber-700'
-            }`}
-          >
-            View all reviews on Trustpilot
-            <ExternalLink className="w-4 h-4" />
-          </a>
-        </div>
+        
       </div>
     </section>
   );

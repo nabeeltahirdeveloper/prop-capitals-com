@@ -1,10 +1,25 @@
-import { Injectable, NotFoundException, forwardRef, Inject, Logger } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable no-irregular-whitespace */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import {
+  Injectable,
+  NotFoundException,
+  forwardRef,
+  Inject,
+  Logger,
+} from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { MarketDataService } from '../market-data/market-data.service';
 import { TradesService } from '../trades/trades.service';
-import { ChallengeRulesService, RuleInputs, RuleOutputs } from './challenge-rules.service';
+import {
+  ChallengeRulesService,
+  RuleInputs,
+  RuleOutputs,
+} from './challenge-rules.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { TradingEventsGateway } from '../websocket/trading-events.gateway';
 
@@ -19,13 +34,23 @@ import {
 @Injectable()
 export class EvaluationService {
   private readonly logger = new Logger(EvaluationService.name);
-  
+
   // In-memory price cache: accountId -> symbol -> { bid, ask, timestamp }
-  private priceCache: Map<string, Map<string, { bid: number; ask: number; timestamp: number }>> = new Map();
-  
+  private priceCache: Map<
+    string,
+    Map<string, { bid: number; ask: number; timestamp: number }>
+  > = new Map();
+
   // Track warnings sent today to avoid spamming: accountId -> { dailyWarningSent: boolean, overallWarningSent: boolean, lastWarningDate: string }
-  private warningCache: Map<string, { dailyWarningSent: boolean; overallWarningSent: boolean; lastWarningDate: string }> = new Map();
-  
+  private warningCache: Map<
+    string,
+    {
+      dailyWarningSent: boolean;
+      overallWarningSent: boolean;
+      lastWarningDate: string;
+    }
+  > = new Map();
+
   // Track trading days milestones sent: accountId -> Set<number> (milestone days)
   private tradingDaysMilestones: Map<string, Set<number>> = new Map();
 
@@ -120,15 +145,19 @@ export class EvaluationService {
     const drawdownViolated = (account as any).drawdownViolated ?? false;
     const dailyLossViolated = (account as any).dailyLossViolated ?? false;
 
-    if (drawdownViolated || account.status === ('DISQUALIFIED' as TradingAccountStatus)) {
-      const positionsClosed = account.trades.length > 0
-        ? await this.autoCloseAllPositionsWithPrices(
-            accountId,
-            account.trades,
-            accountPriceCache,
-            'Max Drawdown Violated',
-          )
-        : 0;
+    if (
+      drawdownViolated ||
+      account.status === ('DISQUALIFIED' as TradingAccountStatus)
+    ) {
+      const positionsClosed =
+        account.trades.length > 0
+          ? await this.autoCloseAllPositionsWithPrices(
+              accountId,
+              account.trades,
+              accountPriceCache,
+              'Max Drawdown Violated',
+            )
+          : 0;
       return {
         statusChanged: false,
         positionsClosed,
@@ -136,15 +165,19 @@ export class EvaluationService {
       };
     }
 
-    if (dailyLossViolated || account.status === ('DAILY_LOCKED' as TradingAccountStatus)) {
-      const positionsClosed = account.trades.length > 0
-        ? await this.autoCloseAllPositionsWithPrices(
-            accountId,
-            account.trades,
-            accountPriceCache,
-            'Daily Loss Limit Violated',
-          )
-        : 0;
+    if (
+      dailyLossViolated ||
+      account.status === ('DAILY_LOCKED' as TradingAccountStatus)
+    ) {
+      const positionsClosed =
+        account.trades.length > 0
+          ? await this.autoCloseAllPositionsWithPrices(
+              accountId,
+              account.trades,
+              accountPriceCache,
+              'Daily Loss Limit Violated',
+            )
+          : 0;
       return {
         statusChanged: false,
         positionsClosed,
@@ -161,29 +194,24 @@ export class EvaluationService {
       if (!tradePrice) continue; // Skip if we don't have price for this symbol yet
 
       // Use correct price side: BID for BUY (selling to close), ASK for SELL (buying to close)
-      const currentPrice = trade.type === 'BUY' ? tradePrice.bid : tradePrice.ask;
-      
-      // Calculate PnL
-      const isCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE/.test(trade.symbol);
-      let positionPnL: number;
-      
-      if (isCrypto) {
-        // Crypto: P/L = priceDiff * volume (volume is in units)
-        const priceDiff = trade.type === 'BUY'
-          ? (currentPrice - trade.openPrice)
-          : (trade.openPrice - currentPrice);
-        positionPnL = priceDiff * trade.volume;
-      } else {
-        // Forex: P/L = priceDiff * volume * contractSize (volume is in lots)
-        const contractSize = 100000;
-        const priceDiff = trade.type === 'BUY'
-          ? (currentPrice - trade.openPrice)
-          : (trade.openPrice - currentPrice);
-        positionPnL = priceDiff * trade.volume * contractSize;
-      }
-      
+      const currentPrice =
+        trade.type === 'BUY' ? tradePrice.bid : tradePrice.ask;
+
+      // Calculate PnL using correct contract sizes per instrument
+      const isCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|LINK/.test(
+        trade.symbol,
+      );
+      const isXAU = /XAU/i.test(trade.symbol);
+      const isXAG = /XAG/i.test(trade.symbol);
+      const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 1 : 100000;
+      const priceDiff =
+        trade.type === 'BUY'
+          ? currentPrice - trade.openPrice
+          : trade.openPrice - currentPrice;
+      const positionPnL = priceDiff * trade.volume * contractSize;
+
       totalUnrealizedPnL += positionPnL;
-    }    
+    }
     // Calculate equity = balance + unrealized PnL
     const balance = account.balance ?? initialBalance;
     const equity = balance + totalUnrealizedPnL;
@@ -192,7 +220,8 @@ export class EvaluationService {
     // CRITICAL: Fallback to initialBalance (not equity) for todayStartEquity and minEquityToday
     // Using current equity as fallback is WRONG because it already includes losses,
     // which would make drawdown calculations start from the wrong base
-    const todayStartEquity = (account as any).todayStartEquity ?? initialBalance;
+    const todayStartEquity =
+      (account as any).todayStartEquity ?? initialBalance;
     let maxEquityToDate = (account as any).maxEquityToDate ?? initialBalance;
     let minEquityToday = (account as any).minEquityToday ?? initialBalance;
     let minEquityOverall = (account as any).minEquityOverall ?? initialBalance;
@@ -200,14 +229,18 @@ export class EvaluationService {
     // Check if we need to reset daily metrics (new day)
     const today = new Date().toISOString().substring(0, 10);
     const lastReset = (account as any).lastDailyReset;
-    const lastResetDate = lastReset ? new Date(lastReset).toISOString().substring(0, 10) : null;
+    const lastResetDate = lastReset
+      ? new Date(lastReset).toISOString().substring(0, 10)
+      : null;
     let dailyReset = false;
 
     if (lastResetDate !== today) {
       // New day - reset daily metrics
       minEquityToday = equity;
       dailyReset = true;
-      this.logger.debug(`[processPriceTick] Reset daily metrics for new day. minEquityToday=${equity}`);
+      this.logger.debug(
+        `[processPriceTick] Reset daily metrics for new day. minEquityToday=${equity}`,
+      );
     }
 
     // Track what changed so we can do a SINGLE atomic DB write
@@ -279,7 +312,11 @@ export class EvaluationService {
 
     // Reset warning cache if it's a new day
     if (!warningCache || warningCache.lastWarningDate !== today) {
-      warningCache = { dailyWarningSent: false, overallWarningSent: false, lastWarningDate: today };
+      warningCache = {
+        dailyWarningSent: false,
+        overallWarningSent: false,
+        lastWarningDate: today,
+      };
       this.warningCache.set(warningCacheKey, warningCache);
     }
 
@@ -337,13 +374,17 @@ export class EvaluationService {
         // Store violation drawdown values BEFORE closing positions
         violationDailyDrawdown = ruleOutputs.dailyLossPercent;
         violationOverallDrawdown = ruleOutputs.drawdownPercent;
-        
-        this.logger.log(`[processPriceTick] ðŸš¨ Daily violation detected! dailyLossPercent=${ruleOutputs.dailyLossPercent.toFixed(2)}%, drawdownPercent=${ruleOutputs.drawdownPercent.toFixed(2)}%, openTrades=${openTrades.length}`);
-        
+
+        this.logger.log(
+          `[processPriceTick] ðŸš¨ Daily violation detected! dailyLossPercent=${ruleOutputs.dailyLossPercent.toFixed(2)}%, drawdownPercent=${ruleOutputs.drawdownPercent.toFixed(2)}%, openTrades=${openTrades.length}`,
+        );
+
         // CRITICAL: Capture breach snapshot BEFORE auto-closing positions
         // This ensures we capture the worst moment even if price rebounds during close
         if (openTrades.length > 0) {
-          this.logger.log(`[processPriceTick] ðŸ“¸ Capturing breach snapshot for ${openTrades.length} trades before auto-close...`);
+          this.logger.log(
+            `[processPriceTick] ðŸ“¸ Capturing breach snapshot for ${openTrades.length} trades before auto-close...`,
+          );
           await this.captureBreachSnapshot(
             accountId,
             openTrades,
@@ -355,14 +396,23 @@ export class EvaluationService {
             todayStartEquity,
             maxEquityToDate,
           );
-          this.logger.log(`[processPriceTick] âœ… Breach snapshot captured, now closing positions...`);
+          this.logger.log(
+            `[processPriceTick] âœ… Breach snapshot captured, now closing positions...`,
+          );
         } else {
-          this.logger.warn(`[processPriceTick] âš ï¸ Daily violation detected but no open trades to capture snapshot for!`);
+          this.logger.warn(
+            `[processPriceTick] âš ï¸ Daily violation detected but no open trades to capture snapshot for!`,
+          );
         }
-        
+
         // Daily violation - auto-close with prices from cache
-        positionsClosed = await this.autoCloseAllPositionsWithPrices(accountId, openTrades, accountPriceCache, 'Daily Loss Limit Violated');
-        
+        positionsClosed = await this.autoCloseAllPositionsWithPrices(
+          accountId,
+          openTrades,
+          accountPriceCache,
+          'Daily Loss Limit Violated',
+        );
+
         const nextMidnight = new Date();
         nextMidnight.setDate(nextMidnight.getDate() + 1);
         nextMidnight.setHours(0, 0, 0, 0);
@@ -376,7 +426,7 @@ export class EvaluationService {
           true, // dailyLossViolated
           false, // drawdownViolated
         );
-        
+
         // Create notification for daily drawdown violation
         if (account.userId) {
           await this.notificationsService.create(
@@ -387,20 +437,24 @@ export class EvaluationService {
             NotificationCategory.ACCOUNT,
           );
         }
-        
+
         statusChanged = true;
         violationType = 'DAILY_LOCKED';
       } else if (ruleOutputs.drawdownViolated && !drawdownViolated) {
         // Store violation drawdown values BEFORE closing positions
         violationDailyDrawdown = ruleOutputs.dailyLossPercent;
         violationOverallDrawdown = ruleOutputs.drawdownPercent;
-        
-        this.logger.log(`[processPriceTick] ðŸš¨ Overall drawdown violation detected! drawdownPercent=${ruleOutputs.drawdownPercent.toFixed(2)}%, dailyLossPercent=${ruleOutputs.dailyLossPercent.toFixed(2)}%, openTrades=${openTrades.length}`);
-        
+
+        this.logger.log(
+          `[processPriceTick] ðŸš¨ Overall drawdown violation detected! drawdownPercent=${ruleOutputs.drawdownPercent.toFixed(2)}%, dailyLossPercent=${ruleOutputs.dailyLossPercent.toFixed(2)}%, openTrades=${openTrades.length}`,
+        );
+
         // CRITICAL: Capture breach snapshot BEFORE auto-closing positions
         // This ensures we capture the worst moment even if price rebounds during close
         if (openTrades.length > 0) {
-          this.logger.log(`[processPriceTick] ðŸ“¸ Capturing breach snapshot for ${openTrades.length} trades before auto-close...`);
+          this.logger.log(
+            `[processPriceTick] ðŸ“¸ Capturing breach snapshot for ${openTrades.length} trades before auto-close...`,
+          );
           await this.captureBreachSnapshot(
             accountId,
             openTrades,
@@ -412,14 +466,23 @@ export class EvaluationService {
             todayStartEquity,
             maxEquityToDate,
           );
-          this.logger.log(`[processPriceTick] âœ… Breach snapshot captured, now closing positions...`);
+          this.logger.log(
+            `[processPriceTick] âœ… Breach snapshot captured, now closing positions...`,
+          );
         } else {
-          this.logger.warn(`[processPriceTick] âš ï¸ Overall drawdown violation detected but no open trades to capture snapshot for!`);
+          this.logger.warn(
+            `[processPriceTick] âš ï¸ Overall drawdown violation detected but no open trades to capture snapshot for!`,
+          );
         }
-        
+
         // Overall drawdown violation - auto-close with prices from cache
-        positionsClosed = await this.autoCloseAllPositionsWithPrices(accountId, openTrades, accountPriceCache, 'Max Drawdown Violated');
-        
+        positionsClosed = await this.autoCloseAllPositionsWithPrices(
+          accountId,
+          openTrades,
+          accountPriceCache,
+          'Max Drawdown Violated',
+        );
+
         await this.recordViolationAndLock(
           accountId,
           ViolationType.OVERALL_DRAWDOWN,
@@ -429,7 +492,7 @@ export class EvaluationService {
           false, // dailyLossViolated
           true, // drawdownViolated
         );
-        
+
         // Create notification for overall drawdown violation
         if (account.userId) {
           await this.notificationsService.create(
@@ -440,7 +503,7 @@ export class EvaluationService {
             NotificationCategory.ACCOUNT,
           );
         }
-        
+
         statusChanged = true;
         violationType = 'DISQUALIFIED';
       }
@@ -547,20 +610,28 @@ export class EvaluationService {
    */
   private async captureBreachSnapshot(
     accountId: string,
-    openTrades: Array<{ id: string; symbol: string; type: string; openPrice: number; volume: number }>,
+    openTrades: Array<{
+      id: string;
+      symbol: string;
+      type: string;
+      openPrice: number;
+      volume: number;
+    }>,
     priceCache: Map<string, { bid: number; ask: number; timestamp: number }>,
     breachType: 'DAILY_LOSS' | 'OVERALL_DD',
     breachEquity: number,
     breachDrawdownPercentDaily: number,
     breachDrawdownPercentOverall: number,
-    todayStartEquity: number,
-    maxEquityToDate: number,
+    _todayStartEquity: number,
+    _maxEquityToDate: number,
   ): Promise<void> {
     if (openTrades.length === 0) {
       return;
     }
 
-    this.logger.log(`[Breach Snapshot] Capturing breach snapshot for ${openTrades.length} positions (${breachType})`);
+    this.logger.log(
+      `[Breach Snapshot] Capturing breach snapshot for ${openTrades.length} positions (${breachType})`,
+    );
 
     const breachAt = new Date();
 
@@ -570,7 +641,9 @@ export class EvaluationService {
         try {
           let tradePrice = priceCache.get(trade.symbol);
           if (!tradePrice) {
-            this.logger.warn(`[Breach Snapshot] No price cache for ${trade.symbol}, using open price as fallback`);
+            this.logger.warn(
+              `[Breach Snapshot] No price cache for ${trade.symbol}, using open price as fallback`,
+            );
             // Fallback: use open price (not ideal but better than nothing)
             tradePrice = {
               bid: trade.openPrice,
@@ -580,25 +653,27 @@ export class EvaluationService {
           }
 
           // Use correct price side: BID for BUY, ASK for SELL
-          const breachPrice = trade.type === 'BUY' ? tradePrice.bid : tradePrice.ask;
+          const breachPrice =
+            trade.type === 'BUY' ? tradePrice.bid : tradePrice.ask;
 
-          // Calculate unrealized PnL at breach moment
-          const isCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE/.test(trade.symbol);
-          let breachUnrealizedPnl: number;
-
-          if (isCrypto) {
-            const priceDiff = trade.type === 'BUY'
-              ? (breachPrice - trade.openPrice)
-              : (trade.openPrice - breachPrice);
-            breachUnrealizedPnl = priceDiff * trade.volume;
-          } else {
-            // Forex: P/L = priceDiff * volume * contractSize
-            const contractSize = 100000;
-            const priceDiff = trade.type === 'BUY'
-              ? (breachPrice - trade.openPrice)
-              : (trade.openPrice - breachPrice);
-            breachUnrealizedPnl = priceDiff * trade.volume * contractSize;
-          }
+          // Calculate unrealized PnL at breach moment using correct contract sizes
+          const isCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|LINK/.test(
+            trade.symbol,
+          );
+          const isXAU = /XAU/i.test(trade.symbol);
+          const isXAG = /XAG/i.test(trade.symbol);
+          const contractSize = isXAU
+            ? 100
+            : isXAG
+              ? 5000
+              : isCrypto
+                ? 1
+                : 100000;
+          const priceDiff =
+            trade.type === 'BUY'
+              ? breachPrice - trade.openPrice
+              : trade.openPrice - breachPrice;
+          const breachUnrealizedPnl = priceDiff * trade.volume * contractSize;
 
           // Update trade with breach snapshot
           await this.prisma.trade.update({
@@ -616,14 +691,21 @@ export class EvaluationService {
             } as any,
           });
 
-          this.logger.debug(`[Breach Snapshot] Captured snapshot for trade ${trade.id}: PnL=${breachUnrealizedPnl.toFixed(2)}, DD Daily=${breachDrawdownPercentDaily.toFixed(2)}%, DD Overall=${breachDrawdownPercentOverall.toFixed(2)}%`);
+          this.logger.debug(
+            `[Breach Snapshot] Captured snapshot for trade ${trade.id}: PnL=${breachUnrealizedPnl.toFixed(2)}, DD Daily=${breachDrawdownPercentDaily.toFixed(2)}%, DD Overall=${breachDrawdownPercentOverall.toFixed(2)}%`,
+          );
         } catch (error) {
-          this.logger.error(`[Breach Snapshot] Failed to capture snapshot for trade ${trade.id}:`, error);
+          this.logger.error(
+            `[Breach Snapshot] Failed to capture snapshot for trade ${trade.id}:`,
+            error,
+          );
         }
-      })
+      }),
     );
 
-    this.logger.log(`[Breach Snapshot] Completed capturing breach snapshots for ${openTrades.length} positions`);
+    this.logger.log(
+      `[Breach Snapshot] Completed capturing breach snapshots for ${openTrades.length} positions`,
+    );
   }
 
   /**
@@ -631,7 +713,13 @@ export class EvaluationService {
    */
   private async autoCloseAllPositionsWithPrices(
     accountId: string,
-    openTrades: Array<{ id: string; symbol: string; type: string; openPrice: number; volume: number }>,
+    openTrades: Array<{
+      id: string;
+      symbol: string;
+      type: string;
+      openPrice: number;
+      volume: number;
+    }>,
     priceCache: Map<string, { bid: number; ask: number; timestamp: number }>,
     reason: string,
   ): Promise<number> {
@@ -639,7 +727,9 @@ export class EvaluationService {
       return 0;
     }
 
-    this.logger.log(`[Price-Tick Auto-Close] Closing ${openTrades.length} positions immediately due to: ${reason}`);
+    this.logger.log(
+      `[Price-Tick Auto-Close] Closing ${openTrades.length} positions immediately due to: ${reason}`,
+    );
 
     let closedCount = 0;
 
@@ -649,31 +739,42 @@ export class EvaluationService {
         try {
           let tradePrice = priceCache.get(trade.symbol);
           if (!tradePrice) {
-            this.logger.warn(`[Price-Tick Auto-Close] No price cache for ${trade.symbol}, fetching from market`);
+            this.logger.warn(
+              `[Price-Tick Auto-Close] No price cache for ${trade.symbol}, fetching from market`,
+            );
             // Fallback: fetch from market data service
-            const priceData = await this.marketDataService.getCurrentPrice(trade.symbol);
-            tradePrice = { bid: priceData.bid, ask: priceData.ask, timestamp: Date.now() };
+            const priceData = await this.marketDataService.getCurrentPrice(
+              trade.symbol,
+            );
+            tradePrice = {
+              bid: priceData.bid,
+              ask: priceData.ask,
+              timestamp: Date.now(),
+            };
           }
 
           // Use correct price side: BID for BUY, ASK for SELL
-          const closePrice = trade.type === 'BUY' ? tradePrice.bid : tradePrice.ask;
+          const closePrice =
+            trade.type === 'BUY' ? tradePrice.bid : tradePrice.ask;
 
-          // Calculate PnL
-          const isCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE/.test(trade.symbol);
-          let profit: number;
-
-          if (isCrypto) {
-            const priceDiff = trade.type === 'BUY'
-              ? (closePrice - trade.openPrice)
-              : (trade.openPrice - closePrice);
-            profit = priceDiff * trade.volume;
-          } else {
-            const contractSize = 100000;
-            const priceDiff = trade.type === 'BUY'
-              ? (closePrice - trade.openPrice)
-              : (trade.openPrice - closePrice);
-            profit = priceDiff * trade.volume * contractSize;
-          }
+          // Calculate PnL using correct contract sizes per instrument
+          const isCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|LINK/.test(
+            trade.symbol,
+          );
+          const isXAU = /XAU/i.test(trade.symbol);
+          const isXAG = /XAG/i.test(trade.symbol);
+          const contractSize = isXAU
+            ? 100
+            : isXAG
+              ? 5000
+              : isCrypto
+                ? 1
+                : 100000;
+          const priceDiff =
+            trade.type === 'BUY'
+              ? closePrice - trade.openPrice
+              : trade.openPrice - closePrice;
+          const profit = priceDiff * trade.volume * contractSize;
 
           // Update trade with close price and realized profit
           // NOTE: Breach snapshot was already captured before auto-close, so we preserve it
@@ -682,11 +783,13 @@ export class EvaluationService {
             where: { id: trade.id },
             select: { breachTriggered: true, closeReason: true },
           });
-          
+
           if (!existingTrade?.breachTriggered) {
-            this.logger.warn(`[Price-Tick Auto-Close] Trade ${trade.id} is being closed but breach snapshot was not captured! This should not happen.`);
+            this.logger.warn(
+              `[Price-Tick Auto-Close] Trade ${trade.id} is being closed but breach snapshot was not captured! This should not happen.`,
+            );
           }
-          
+
           await this.tradesService.updateTrade(trade.id, {
             closePrice,
             profit,
@@ -696,11 +799,16 @@ export class EvaluationService {
           });
 
           closedCount++;
-          this.logger.debug(`[Price-Tick Auto-Close] Successfully closed trade ${trade.id} (${trade.symbol})`);
+          this.logger.debug(
+            `[Price-Tick Auto-Close] Successfully closed trade ${trade.id} (${trade.symbol})`,
+          );
         } catch (error) {
-          this.logger.error(`[Price-Tick Auto-Close] Failed to close trade ${trade.id}:`, error);
+          this.logger.error(
+            `[Price-Tick Auto-Close] Failed to close trade ${trade.id}:`,
+            error,
+          );
         }
-      })
+      }),
     );
 
     // CRITICAL: After all trades are closed, update maxEquityToDate based on final balance
@@ -708,26 +816,45 @@ export class EvaluationService {
     try {
       const finalAccount = await this.prisma.tradingAccount.findUnique({
         where: { id: accountId },
-        select: { balance: true, equity: true, maxEquityToDate: true, initialBalance: true },
+        select: {
+          balance: true,
+          equity: true,
+          maxEquityToDate: true,
+          initialBalance: true,
+        },
       });
 
       if (finalAccount) {
-        const finalEquity = finalAccount.equity ?? finalAccount.balance ?? finalAccount.initialBalance ?? 0;
-        const currentMaxEquity = (finalAccount as any).maxEquityToDate ?? finalAccount.initialBalance ?? 0;
+        const finalEquity =
+          finalAccount.equity ??
+          finalAccount.balance ??
+          finalAccount.initialBalance ??
+          0;
+        const currentMaxEquity =
+          (finalAccount as any).maxEquityToDate ??
+          finalAccount.initialBalance ??
+          0;
 
         if (finalEquity > currentMaxEquity) {
           await this.prisma.tradingAccount.update({
             where: { id: accountId },
             data: { maxEquityToDate: finalEquity } as any,
           });
-          this.logger.debug(`[Price-Tick Auto-Close] Updated maxEquityToDate to ${finalEquity} after closing all positions`);
+          this.logger.debug(
+            `[Price-Tick Auto-Close] Updated maxEquityToDate to ${finalEquity} after closing all positions`,
+          );
         }
       }
     } catch (error) {
-      this.logger.error(`[Price-Tick Auto-Close] Failed to update maxEquityToDate after closing positions:`, error);
+      this.logger.error(
+        `[Price-Tick Auto-Close] Failed to update maxEquityToDate after closing positions:`,
+        error,
+      );
     }
 
-    this.logger.log(`[Price-Tick Auto-Close] Completed closing ${closedCount} positions`);
+    this.logger.log(
+      `[Price-Tick Auto-Close] Completed closing ${closedCount} positions`,
+    );
     return closedCount;
   }
 
@@ -766,7 +893,9 @@ export class EvaluationService {
     // Check if we need to reset daily metrics (new day)
     const today = new Date().toISOString().substring(0, 10);
     const lastReset = (account as any).lastDailyReset;
-    const lastResetDate = lastReset ? new Date(lastReset).toISOString().substring(0, 10) : null;
+    const lastResetDate = lastReset
+      ? new Date(lastReset).toISOString().substring(0, 10)
+      : null;
 
     // ✅ Initialize or reset daily metrics
     let todayStartEquity = (account as any).todayStartEquity;
@@ -787,7 +916,9 @@ export class EvaluationService {
           lastDailyReset: new Date(),
         } as any,
       });
-      this.logger.debug(`[evaluateAccountAfterTrade] New day detected - reset daily metrics. todayStartEquity=${equity}, minEquityToday=${equity}`);
+      this.logger.debug(
+        `[evaluateAccountAfterTrade] New day detected - reset daily metrics. todayStartEquity=${equity}, minEquityToday=${equity}`,
+      );
     } else if (!todayStartEquity) {
       // First trade of the day - initialize todayStartEquity but preserve minEquityToday
       todayStartEquity = equity;
@@ -797,7 +928,9 @@ export class EvaluationService {
           todayStartEquity: equity,
         } as any,
       });
-      this.logger.debug(`[evaluateAccountAfterTrade] Initialized todayStartEquity=${equity}, preserving minEquityToday=${minEquityToday}`);
+      this.logger.debug(
+        `[evaluateAccountAfterTrade] Initialized todayStartEquity=${equity}, preserving minEquityToday=${minEquityToday}`,
+      );
     }
 
     let maxEquityToDate = (account as any).maxEquityToDate ?? initialBalance;
@@ -818,7 +951,9 @@ export class EvaluationService {
         where: { id: accountId },
         data: { minEquityToday: equity } as any,
       });
-      this.logger.debug(`[evaluateAccountAfterTrade] Updated minEquityToday to ${equity}`);
+      this.logger.debug(
+        `[evaluateAccountAfterTrade] Updated minEquityToday to ${equity}`,
+      );
     }
 
     // Update minEquityOverall if current equity is lower
@@ -828,7 +963,9 @@ export class EvaluationService {
         where: { id: accountId },
         data: { minEquityOverall: equity } as any,
       });
-      this.logger.debug(`[evaluateAccountAfterTrade] Updated minEquityOverall to ${equity}`);
+      this.logger.debug(
+        `[evaluateAccountAfterTrade] Updated minEquityOverall to ${equity}`,
+      );
     }
 
     //  Snapshot equity for today
@@ -868,8 +1005,11 @@ export class EvaluationService {
       // Check daily violation first (higher priority for detection)
       if (ruleOutputs.dailyViolated && !dailyLossViolatedFlag) {
         // First time daily violation detected - auto-close all positions and lock account
-        await this.autoCloseAllPositions(accountId, 'Daily Loss Limit Violated');
-        
+        await this.autoCloseAllPositions(
+          accountId,
+          'Daily Loss Limit Violated',
+        );
+
         // Set next midnight as dailyLockedUntil
         const nextMidnight = new Date();
         nextMidnight.setDate(nextMidnight.getDate() + 1);
@@ -898,7 +1038,7 @@ export class EvaluationService {
       } else if (ruleOutputs.drawdownViolated && !drawdownViolatedFlag) {
         // First time overall drawdown violation detected - auto-close all positions and disqualify
         await this.autoCloseAllPositions(accountId, 'Max Drawdown Violated');
-        
+
         await this.recordViolationAndLock(
           accountId,
           ViolationType.OVERALL_DRAWDOWN,
@@ -938,7 +1078,10 @@ export class EvaluationService {
       }
 
       // Check if minimum trading days requirement is met
-      if (tradingDaysCompleted >= challenge.minTradingDays && !milestones.has(challenge.minTradingDays)) {
+      if (
+        tradingDaysCompleted >= challenge.minTradingDays &&
+        !milestones.has(challenge.minTradingDays)
+      ) {
         await this.notificationsService.create(
           account.userId,
           'Trading Days Milestone',
@@ -952,7 +1095,10 @@ export class EvaluationService {
       // Check for other milestone days (5, 10, 15, 20, 25, 30)
       const milestoneDays = [5, 10, 15, 20, 25, 30];
       for (const milestoneDay of milestoneDays) {
-        if (tradingDaysCompleted >= milestoneDay && !milestones.has(milestoneDay)) {
+        if (
+          tradingDaysCompleted >= milestoneDay &&
+          !milestones.has(milestoneDay)
+        ) {
           await this.notificationsService.create(
             account.userId,
             'Trading Days Milestone',
@@ -995,7 +1141,6 @@ export class EvaluationService {
 
       // Create notification for Phase 1 completion
       if (account.userId) {
-        const accountNumber = account.brokerLogin || accountId.substring(0, 8);
         await this.notificationsService.create(
           account.userId,
           'Phase 1 Completed!',
@@ -1029,7 +1174,6 @@ export class EvaluationService {
 
       // Create notification for Phase 2 completion (FUNDED)
       if (account.userId) {
-        const accountNumber = account.brokerLogin || accountId.substring(0, 8);
         await this.notificationsService.create(
           account.userId,
           'Phase 2 Completed!',
@@ -1043,7 +1187,10 @@ export class EvaluationService {
     return ruleOutputs;
   }
 
-  async evaluateAccountRealTime(accountId: string, currentEquity: number): Promise<RuleOutputs & { statusChanged: boolean }> {
+  async evaluateAccountRealTime(
+    accountId: string,
+    currentEquity: number,
+  ): Promise<RuleOutputs & { statusChanged: boolean }> {
     const account = await this.prisma.tradingAccount.findUnique({
       where: { id: accountId },
       include: {
@@ -1061,12 +1208,14 @@ export class EvaluationService {
     const dailyLossViolated = (account as any).dailyLossViolated ?? false;
 
     // If already disqualified, skip evaluation entirely
-    if (drawdownViolated || account.status === ('DISQUALIFIED' as TradingAccountStatus)) {
+    if (
+      drawdownViolated ||
+      account.status === ('DISQUALIFIED' as TradingAccountStatus)
+    ) {
       if (account.trades.length > 0) {
         await this.autoCloseAllPositions(accountId, 'Max Drawdown Violated');
       }
       // Return default outputs indicating violation
-      const { challenge } = account;
       return {
         profitPercent: 0,
         profitProgress: 0,
@@ -1083,12 +1232,17 @@ export class EvaluationService {
     }
 
     // If already daily locked, skip evaluation
-    if (dailyLossViolated || account.status === ('DAILY_LOCKED' as TradingAccountStatus)) {
+    if (
+      dailyLossViolated ||
+      account.status === ('DAILY_LOCKED' as TradingAccountStatus)
+    ) {
       if (account.trades.length > 0) {
-        await this.autoCloseAllPositions(accountId, 'Daily Loss Limit Violated');
+        await this.autoCloseAllPositions(
+          accountId,
+          'Daily Loss Limit Violated',
+        );
       }
       // Return default outputs indicating daily violation
-      const { challenge } = account;
       return {
         profitPercent: 0,
         profitProgress: 0,
@@ -1113,7 +1267,8 @@ export class EvaluationService {
     const todayStartEquity = (account as any).todayStartEquity ?? equity;
     const maxEquityToDate = (account as any).maxEquityToDate ?? initialBalance;
     const minEquityToday = (account as any).minEquityToday ?? equity;
-    const minEquityOverall = (account as any).minEquityOverall ?? initialBalance;
+    const minEquityOverall =
+      (account as any).minEquityOverall ?? initialBalance;
 
     // Calculate rules with current equity
     const ruleInputs: RuleInputs = {
@@ -1140,8 +1295,11 @@ export class EvaluationService {
       // Check daily violation first (higher priority for detection, but overall drawdown is more severe)
       if (ruleOutputs.dailyViolated && !dailyLossViolated) {
         // First time daily violation detected - auto-close all positions and lock account
-        await this.autoCloseAllPositions(accountId, 'Daily Loss Limit Violated');
-        
+        await this.autoCloseAllPositions(
+          accountId,
+          'Daily Loss Limit Violated',
+        );
+
         const nextMidnight = new Date();
         nextMidnight.setDate(nextMidnight.getDate() + 1);
         nextMidnight.setHours(0, 0, 0, 0);
@@ -1156,19 +1314,19 @@ export class EvaluationService {
           false, // drawdownViolated (not set)
         );
         statusChanged = true;
-        
+
         // Return immediately - don't check drawdown after daily violation
         return {
           ...ruleOutputs,
           statusChanged,
         };
       }
-      
+
       // Check overall drawdown violation
       if (ruleOutputs.drawdownViolated && !drawdownViolated) {
         // First time overall drawdown violation detected - auto-close all positions and disqualify
         await this.autoCloseAllPositions(accountId, 'Max Drawdown Violated');
-        
+
         await this.recordViolationAndLock(
           accountId,
           ViolationType.OVERALL_DRAWDOWN,
@@ -1191,7 +1349,10 @@ export class EvaluationService {
   /**
    * Auto-close all open positions for an account
    */
-  private async autoCloseAllPositions(accountId: string, reason: string): Promise<void> {
+  private async autoCloseAllPositions(
+    accountId: string,
+    reason: string,
+  ): Promise<void> {
     // Get all open trades (closePrice is null)
     const openTrades = await this.prisma.trade.findMany({
       where: {
@@ -1204,7 +1365,9 @@ export class EvaluationService {
       return; // No positions to close
     }
 
-    this.logger.log(`[Auto-Close] Closing ${openTrades.length} positions immediately due to: ${reason}`);
+    this.logger.log(
+      `[Auto-Close] Closing ${openTrades.length} positions immediately due to: ${reason}`,
+    );
 
     // Close all positions in PARALLEL for maximum speed (within 0.1 seconds)
     // This ensures all positions are closed simultaneously, not sequentially
@@ -1212,41 +1375,35 @@ export class EvaluationService {
       openTrades.map(async (trade) => {
         try {
           // Get current market price
-          const priceData = await this.marketDataService.getCurrentPrice(trade.symbol);
-          
+          const priceData = await this.marketDataService.getCurrentPrice(
+            trade.symbol,
+          );
           // Use correct price side: BID for BUY (selling to close), ASK for SELL (buying to close)
-          const closePrice = trade.type === 'BUY' ? priceData.bid : priceData.ask;
-          
-          // Calculate PnL - different for forex vs crypto
-          // Check if symbol is crypto (contains BTC, ETH, SOL, XRP, ADA, DOGE)
-          const isCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE/.test(trade.symbol);
-          
-          let profit: number;
-          if (isCrypto) {
-            // For crypto: P/L = priceDiff * volume (volume is in units, e.g., 0.5 BTC)
-            // BUY: (closePrice - openPrice) * volume
-            // SELL: (openPrice - closePrice) * volume
-            const priceDiff = trade.type === 'BUY'
-              ? (closePrice - trade.openPrice)
-              : (trade.openPrice - closePrice);
-            profit = priceDiff * trade.volume;
-            
-            // Debug logging (dev only)
-            this.logger.debug(`[Backend PnL Debug - Crypto] ${trade.symbol} ${trade.type}: entry=${trade.openPrice}, close=${closePrice}, priceDiff=${priceDiff}, volume=${trade.volume} units, pnl=$${profit.toFixed(2)}`);
-          } else {
-            // For forex: P/L = priceDiff * volume * contractSize (100,000 units per lot)
-            // IMPORTANT: volume represents LOTS (e.g., 10 = 10 lots), NOT units
-            // BUY: (closePrice - openPrice) * volume * contractSize
-            // SELL: (openPrice - closePrice) * volume * contractSize
-            const contractSize = 100000;
-            const priceDiff = trade.type === 'BUY'
-              ? (closePrice - trade.openPrice)
-              : (trade.openPrice - closePrice);
-            profit = priceDiff * trade.volume * contractSize;
-            
-            // Debug logging (dev only) - helps identify scaling issues
-            this.logger.debug(`[Backend PnL Debug - Forex] ${trade.symbol} ${trade.type}: entry=${trade.openPrice.toFixed(5)}, close=${closePrice.toFixed(5)}, priceDiff=${priceDiff.toFixed(5)}, volume=${trade.volume} lots, contractSize=${contractSize}, pnl=$${profit.toFixed(2)}`);
-          }
+          const closePrice =
+            trade.type === 'BUY' ? priceData.bid : priceData.ask;
+
+          // Calculate PnL using correct contract sizes per instrument
+          const isCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|LINK/.test(
+            trade.symbol,
+          );
+          const isXAU = /XAU/i.test(trade.symbol);
+          const isXAG = /XAG/i.test(trade.symbol);
+          const contractSize = isXAU
+            ? 100
+            : isXAG
+              ? 5000
+              : isCrypto
+                ? 1
+                : 100000;
+          const priceDiff =
+            trade.type === 'BUY'
+              ? closePrice - trade.openPrice
+              : trade.openPrice - closePrice;
+          const profit = priceDiff * trade.volume * contractSize;
+
+          this.logger.debug(
+            `[Backend PnL] ${trade.symbol} ${trade.type}: entry=${trade.openPrice}, close=${closePrice}, diff=${priceDiff}, vol=${trade.volume}, cs=${contractSize}, pnl=$${profit.toFixed(2)}`,
+          );
 
           // Update trade via TradesService
           await this.tradesService.updateTrade(trade.id, {
@@ -1254,10 +1411,15 @@ export class EvaluationService {
             profit,
             closedAt: new Date(),
           });
-          
-          this.logger.debug(`[Auto-Close] Successfully closed trade ${trade.id} (${trade.symbol})`);
+
+          this.logger.debug(
+            `[Auto-Close] Successfully closed trade ${trade.id} (${trade.symbol})`,
+          );
         } catch (error) {
-          this.logger.error(`[Auto-Close] Failed to auto-close trade ${trade.id}:`, error);
+          this.logger.error(
+            `[Auto-Close] Failed to auto-close trade ${trade.id}:`,
+            error,
+          );
           // Fallback: force-close at openPrice to guarantee risk lock consistency
           try {
             await this.tradesService.updateTrade(trade.id, {
@@ -1266,15 +1428,22 @@ export class EvaluationService {
               closedAt: new Date(),
               closeReason: 'RISK_AUTO_CLOSE_FALLBACK',
             });
-            this.logger.warn(`[Auto-Close] Fallback close applied for trade ${trade.id} (${trade.symbol}) at open price`);
+            this.logger.warn(
+              `[Auto-Close] Fallback close applied for trade ${trade.id} (${trade.symbol}) at open price`,
+            );
           } catch (fallbackError) {
-            this.logger.error(`[Auto-Close] Fallback close also failed for trade ${trade.id}:`, fallbackError);
+            this.logger.error(
+              `[Auto-Close] Fallback close also failed for trade ${trade.id}:`,
+              fallbackError,
+            );
           }
         }
-      })
+      }),
     );
-    
-    this.logger.log(`[Auto-Close] Completed closing ${openTrades.length} positions`);
+
+    this.logger.log(
+      `[Auto-Close] Completed closing ${openTrades.length} positions`,
+    );
   }
 
   /**
@@ -1319,7 +1488,6 @@ export class EvaluationService {
     });
   }
 
-
   /**
    * Reset daily tracking at midnight (cron job)
    */
@@ -1349,7 +1517,8 @@ export class EvaluationService {
     });
 
     for (const account of activeAccounts) {
-      const equity = account.equity ?? account.balance ?? account.initialBalance;
+      const equity =
+        account.equity ?? account.balance ?? account.initialBalance;
       await this.prisma.tradingAccount.update({
         where: { id: account.id },
         data: {
@@ -1360,6 +1529,8 @@ export class EvaluationService {
       });
     }
 
-    this.logger.log(`[Cron] Reset daily tracking for ${activeAccounts.length} accounts (todayStartEquity, minEquityToday, lastDailyReset)`);
+    this.logger.log(
+      `[Cron] Reset daily tracking for ${activeAccounts.length} accounts (todayStartEquity, minEquityToday, lastDailyReset)`,
+    );
   }
 }
