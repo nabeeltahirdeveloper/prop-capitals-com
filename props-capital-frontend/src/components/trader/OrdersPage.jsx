@@ -215,9 +215,9 @@ const OrdersPage = () => {
       </div>
 
       {/* Orders Table */}
-      <div className={`rounded-2xl border overflow-hidden ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
+      <div className={`rounded-2xl border lg:max-w-[calc(100vw-300px)] max-lg:max-w-[calc(100vw-24px)] ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-[1024px]">
             <thead>
               <tr className={`border-b ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
                 <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Symbol</th>

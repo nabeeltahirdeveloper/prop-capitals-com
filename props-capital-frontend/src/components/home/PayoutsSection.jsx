@@ -129,8 +129,9 @@ const PayoutCheck = ({ payout }) => {
         {/* Check Header */}
         <div className="bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-              <span className="text-amber-600 font-black text-xs">PC</span>
+            <div className="w-8 h-8 bg-white rounded-full overflow-hidden flex items-center justify-center">
+              <img src="/assets/images/logo-light.png" alt="Logo" className="block dark:hidden w-full h-full object-contain" />
+              <img src="/assets/images/logo-dark.png" alt="Logo Dark" className="hidden dark:block w-full h-full object-contain" />
             </div>
             <div>
               <span className="text-white font-bold text-sm">PROP CAPITALS</span>
@@ -291,3 +292,6 @@ const PayoutsSection = () => {
 };
 
 export default PayoutsSection;
+
+
+

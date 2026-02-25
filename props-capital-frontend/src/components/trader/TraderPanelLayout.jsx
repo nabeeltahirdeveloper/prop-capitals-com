@@ -301,9 +301,9 @@ const TraderPanelLayoutInner = () => {
               className="flex items-center gap-3"
               onClick={handleNavClick}
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center text-[#0a0d12] font-black text-sm">
-                <img src="/assets/images/logo-light.png" alt="Logo" className="block dark:hidden" />
-                <img src="/assets/images/logo-dark.png" alt="Logo Dark" className="hidden dark:block" />
+              <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center">
+                <img src="/assets/images/logo-light.png" alt="Logo" className="block dark:hidden w-full h-full object-contain" />
+                <img src="/assets/images/logo-dark.png" alt="Logo Dark" className="hidden dark:block w-full h-full object-contain" />
               </div>
               {!sidebarCollapsed && (
                 <span
@@ -988,3 +988,5 @@ const TraderPanelLayout = () => {
 };
 
 export default TraderPanelLayout;
+
+

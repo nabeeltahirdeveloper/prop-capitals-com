@@ -29,6 +29,7 @@ export class PendingOrdersService {
     stopLoss?: number;
     takeProfit?: number;
     positionType?: string;
+    leverage?: number;
   }) {
     // Verify trading account exists
     const account = await this.prisma.tradingAccount.findUnique({
@@ -48,6 +49,13 @@ export class PendingOrdersService {
         throw new BadRequestException(`Symbol ${data.symbol} is not available for spot trading.`);
       }
     }
+
+    // Compute effective leverage
+    const requestedLeverage = positionType === 'SPOT' ? 1 : Number(data.leverage);
+    const effectiveLeverage =
+      Number.isFinite(requestedLeverage) && requestedLeverage > 0
+        ? requestedLeverage
+        : 100;
 
     // Block pending order creation when account is locked/disqualified/inactive
     if (account.status === ('DAILY_LOCKED' as any)) {
@@ -73,6 +81,7 @@ export class PendingOrdersService {
         takeProfit: data.takeProfit ?? null,
         status: 'PENDING',
         positionType,
+        leverage: effectiveLeverage,
       } as any,
     });
 
@@ -189,6 +198,7 @@ export class PendingOrdersService {
       profit: 0, // No profit until closed
       stopLoss: pendingOrder.stopLoss ?? undefined,
       takeProfit: pendingOrder.takeProfit ?? undefined,
+      leverage: (pendingOrder as any).leverage ?? 100,
     };
 
     // Create the trade using TradesService (this will handle balance updates and evaluation)

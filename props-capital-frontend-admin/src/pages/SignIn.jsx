@@ -84,8 +84,9 @@ export default function SignIn() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center">
-              <span className="text-[#0a0d12] font-black text-xl">PC</span>
+            <div className="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center">
+              <img src="/assets/images/logo-light.png" alt="Logo" className="block dark:hidden w-full h-full object-contain" />
+              <img src="/assets/images/logo-dark.png" alt="Logo Dark" className="hidden dark:block w-full h-full object-contain" />
             </div>
             <div className="flex flex-col items-start">
               <span className={`font-bold text-xl tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>PROP<span className="text-amber-400">CAPITALS</span></span>
@@ -192,3 +193,6 @@ export default function SignIn() {
     </div>
   );
 }
+
+
+
