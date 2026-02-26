@@ -774,10 +774,17 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     (pct) => {
       setSliderPct(pct);
       if (!availableBalance || !effectivePrice || effectivePrice === 0) return;
-      const maxQty = (availableBalance * selectedLeverage) / (effectivePrice * contractSize);
+      const maxQty =
+        (availableBalance * selectedLeverage) / (effectivePrice * contractSize);
       setQuantity(((maxQty * pct) / 100).toFixed(isCrypto ? 6 : 2));
     },
-    [availableBalance, effectivePrice, contractSize, isCrypto, selectedLeverage],
+    [
+      availableBalance,
+      effectivePrice,
+      contractSize,
+      isCrypto,
+      selectedLeverage,
+    ],
   );
 
   /* ── Symbol switching ── */
@@ -960,7 +967,8 @@ const BybitTradingArea = ({ selectedChallenge }) => {
           : currentBid;
     const maxAllowedQty =
       priceForMargin > 0 && contractSize > 0
-        ? (availableBalance * selectedLeverage) / (priceForMargin * contractSize)
+        ? (availableBalance * selectedLeverage) /
+          (priceForMargin * contractSize)
         : 0;
     const requestedQty = parseFloat(quantity);
     if (requestedQty > maxAllowedQty * 1.001) {
@@ -1441,7 +1449,6 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     background: C.border,
                     margin: "0 6px",
                   }}
-                  className="shrink-0"
                 />
                 <button
                   onClick={() => setChartType("candlestick")}
@@ -1930,7 +1937,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           ? "0.001"
                           : "0.00001",
                     },
-                    { label: "Margin", value: `Perpetual (${selectedLeverage}x Leverage)` },
+                    {
+                      label: "Margin",
+                      value: `Perpetual (${selectedLeverage}x Leverage)`,
+                    },
                     {
                       label: "Trading Hours",
                       value: isCrypto ? "24/7" : "Mon-Fri, 00:00-24:00 UTC",
@@ -3147,8 +3157,16 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   {/* Leverage selector */}
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
-                      <span style={{ fontSize: 12, color: C.textS }}>Leverage</span>
-                      <span style={{ fontSize: 11, color: C.yellow, fontWeight: 600 }}>
+                      <span style={{ fontSize: 12, color: C.textS }}>
+                        Leverage
+                      </span>
+                      <span
+                        style={{
+                          fontSize: 11,
+                          color: C.yellow,
+                          fontWeight: 600,
+                        }}
+                      >
                         {selectedLeverage}x
                       </span>
                     </div>
@@ -3164,8 +3182,12 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                             fontWeight: 600,
                             cursor: "pointer",
                             border: `1px solid ${selectedLeverage === lev ? C.yellow : C.border}`,
-                            background: selectedLeverage === lev ? C.yellowDim : "transparent",
-                            color: selectedLeverage === lev ? C.yellow : C.textS,
+                            background:
+                              selectedLeverage === lev
+                                ? C.yellowDim
+                                : "transparent",
+                            color:
+                              selectedLeverage === lev ? C.yellow : C.textS,
                             transition: "all .15s",
                           }}
                         >
@@ -3294,7 +3316,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     >
                       <span style={{ color: C.textS }}>Margin</span>
                       <span style={{ color: C.textP, fontFamily: "monospace" }}>
-                        {orderValue > 0 ? formatNum(orderValue / selectedLeverage) : "--"} USDT
+                        {orderValue > 0
+                          ? formatNum(orderValue / selectedLeverage)
+                          : "--"}{" "}
+                        USDT
                       </span>
                     </div>
                     <div
@@ -3378,8 +3403,14 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         account={{
           equity: equity,
           balance: balance,
-          maxDailyDrawdown: selectedChallenge?.challenge?.maxDailyLoss ?? selectedChallenge?.rules?.maxDailyLoss ?? 5,
-          maxOverallDrawdown: selectedChallenge?.challenge?.maxTotalDrawdown ?? selectedChallenge?.rules?.maxTotalDrawdown ?? 10,
+          maxDailyDrawdown:
+            selectedChallenge?.challenge?.maxDailyLoss ??
+            selectedChallenge?.rules?.maxDailyLoss ??
+            5,
+          maxOverallDrawdown:
+            selectedChallenge?.challenge?.maxTotalDrawdown ??
+            selectedChallenge?.rules?.maxTotalDrawdown ??
+            10,
         }}
       />
     </div>
