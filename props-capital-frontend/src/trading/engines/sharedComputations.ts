@@ -80,6 +80,8 @@ export const computeEquityShared = (input: EquityInput): EquityResult => {
     baselineEquity,
     summaryEquity,
     challengeEquity,
+    initialBalance,
+    todayStartEquity,
   } = input;
 
   const availableBalance = Math.max(0, balance - totalReservedMargin);
@@ -101,6 +103,16 @@ export const computeEquityShared = (input: EquityInput): EquityResult => {
         )
       : 0;
 
+  // Separate daily/overall drawdowns using correct backend bases
+  const activeDailyDrawdownPercent =
+    hasOpenPositions && todayStartEquity && todayStartEquity > 0
+      ? Math.max(0, ((todayStartEquity - activeEquity) / todayStartEquity) * 100)
+      : 0;
+  const activeOverallDrawdownPercent =
+    hasOpenPositions && initialBalance && initialBalance > 0
+      ? Math.max(0, ((initialBalance - activeEquity) / initialBalance) * 100)
+      : 0;
+
   return {
     balance,
     availableBalance,
@@ -108,6 +120,8 @@ export const computeEquityShared = (input: EquityInput): EquityResult => {
     equity,
     activeProfitPercent,
     activeDrawdownPercent,
+    activeDailyDrawdownPercent,
+    activeOverallDrawdownPercent,
   };
 };
 
@@ -124,7 +138,8 @@ export const computeComplianceBarsShared = (
     summaryMetrics,
     liveMetrics,
     activeProfitPercent,
-    activeDrawdownPercent,
+    activeDailyDrawdownPercent,
+    activeOverallDrawdownPercent,
     hasTradeHistory,
   } = input;
 
@@ -171,12 +186,15 @@ export const computeComplianceBarsShared = (
     Number(summaryMetrics?.dailyDrawdownPercent) || 0,
   );
 
+  // Combine backend tracked values with live floating drawdowns (correct bases).
+  // activeDailyDrawdownPercent uses todayStartEquity, activeOverallDrawdownPercent
+  // uses initialBalance — matching the backend formulas exactly.
   const profitCurrentRaw = Math.max(
     0,
     Number(
       liveMetrics?.profitPercent ?? summaryMetrics?.profitPercent,
     ) || 0,
-    activeProfitPercent,
+    Math.max(0, activeProfitPercent),
   );
   const dailyCurrentRaw = Math.max(
     0,
@@ -184,7 +202,7 @@ export const computeComplianceBarsShared = (
       liveMetrics?.dailyDrawdownPercent ??
         summaryMetrics?.dailyDrawdownPercent,
     ) || 0,
-    activeDrawdownPercent,
+    activeDailyDrawdownPercent,
   );
   const overallCurrentRaw = Math.max(
     0,
@@ -192,7 +210,7 @@ export const computeComplianceBarsShared = (
       liveMetrics?.overallDrawdownPercent ??
         summaryMetrics?.overallDrawdownPercent,
     ) || 0,
-    activeDrawdownPercent,
+    activeOverallDrawdownPercent,
   );
 
   // For brand-new accounts with no executed trades, metrics must stay at 0.

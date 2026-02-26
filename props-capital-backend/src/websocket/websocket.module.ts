@@ -31,9 +31,3 @@ import { MarketDataModule } from '../market-data/market-data.module';
   exports: [TradingEventsGateway, CandlesGateway],
 })
 export class WebsocketModule {}
-
-
-
-
-
-
