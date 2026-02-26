@@ -409,13 +409,21 @@ const MT5TradingArea = ({
 
     socket.on("connect", () => {
       console.log("[MT5TradingArea] ✅ Connected to candles WebSocket");
-      socket.emit("subscribeCandles", { symbol: symbolStr, timeframe: timeframeStr });
-      console.log(`[MT5TradingArea] 📡 Subscribed to candles: ${symbolStr}@${timeframeStr}`);
+      socket.emit("subscribeCandles", {
+        symbol: symbolStr,
+        timeframe: timeframeStr,
+      });
+      console.log(
+        `[MT5TradingArea] 📡 Subscribed to candles: ${symbolStr}@${timeframeStr}`,
+      );
     });
 
     // If already connected, subscribe immediately (symbol/timeframe change without reconnect)
     if (socket.connected) {
-      socket.emit("subscribeCandles", { symbol: symbolStr, timeframe: timeframeStr });
+      socket.emit("subscribeCandles", {
+        symbol: symbolStr,
+        timeframe: timeframeStr,
+      });
     }
 
     socket.on("disconnect", (reason) => {
@@ -424,7 +432,7 @@ const MT5TradingArea = ({
         reason,
       );
     });
-    
+
     socket.on("connect_error", (error) => {
       console.warn("[MT5] Candles WebSocket error:", error.message);
     });
@@ -432,9 +440,17 @@ const MT5TradingArea = ({
     socket.on("candleUpdate", (data) => {
       if (!data?.candle || !data?.symbol || !data?.timeframe) return;
 
-      const normalizedSymbol = (data.symbol || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
-      const currentSymbolNormalized = (symbolStr || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
-      if (normalizedSymbol !== currentSymbolNormalized || data.timeframe !== timeframeStr) return;
+      const normalizedSymbol = (data.symbol || "")
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, "");
+      const currentSymbolNormalized = (symbolStr || "")
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, "");
+      if (
+        normalizedSymbol !== currentSymbolNormalized ||
+        data.timeframe !== timeframeStr
+      )
+        return;
 
       // Update bid price from latest candle close for real-time accuracy
       const close = data.candle.close;
@@ -638,8 +654,7 @@ const MT5TradingArea = ({
   const accountSummaryProps = {
     balance,
     equity:
-      balance +
-      sdkOrdersFromBackend.reduce((s, p) => s + (p.livePnL || 0), 0),
+      balance + sdkOrdersFromBackend.reduce((s, p) => s + (p.livePnL || 0), 0),
     margin: sdkOrdersFromBackend.reduce(
       (s, p) =>
         s +
@@ -674,11 +689,12 @@ const MT5TradingArea = ({
         >
           {/* Single content area — tabs are absolute panels inside */}
           <div className="flex-1 relative overflow-hidden">
-
             {/* ── CHART TAB ── */}
             <div
               className="absolute inset-0 flex flex-col overflow-hidden"
-              style={{ visibility: mobileTab === "chart" ? "visible" : "hidden" }}
+              style={{
+                visibility: mobileTab === "chart" ? "visible" : "hidden",
+              }}
             >
               {/* Left Sidebar — absolute, full height of this panel */}
               <div className="absolute left-0 top-0 bottom-0 z-50">
@@ -720,7 +736,7 @@ const MT5TradingArea = ({
               </div>
 
               {/* Chart — fills remaining space */}
-              <div className="flex-1 overflow-hidden pl-12 relative">
+              <div className="flex flex-1 overflow-hidden pl-12 relative">
                 <Chart
                   ref={chartAreaRef}
                   bidPrice={realTimeBidPrice ?? currentSymbolData.bid}
@@ -780,7 +796,9 @@ const MT5TradingArea = ({
             {/* ── QUOTES TAB ── */}
             <div
               className="absolute inset-0 overflow-x-auto overflow-y-hidden"
-              style={{ visibility: mobileTab === "quotes" ? "visible" : "hidden" }}
+              style={{
+                visibility: mobileTab === "quotes" ? "visible" : "hidden",
+              }}
             >
               <MarketWatch
                 symbols={symbols}
@@ -796,7 +814,9 @@ const MT5TradingArea = ({
             {/* ── POSITIONS TAB ── */}
             <div
               className="absolute inset-0 overflow-x-auto overflow-y-hidden"
-              style={{ visibility: mobileTab === "positions" ? "visible" : "hidden" }}
+              style={{
+                visibility: mobileTab === "positions" ? "visible" : "hidden",
+              }}
             >
               <AccountPanel
                 accountSummary={accountSummaryProps}
@@ -809,7 +829,6 @@ const MT5TradingArea = ({
                 }}
               />
             </div>
-
           </div>
           {/* end content area */}
 
