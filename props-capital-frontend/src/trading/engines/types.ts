@@ -63,6 +63,8 @@ export interface EquityInput {
   baselineEquity: number;
   summaryEquity?: number;
   challengeEquity?: number;
+  initialBalance?: number;
+  todayStartEquity?: number;
 }
 
 export interface EquityResult {
@@ -72,6 +74,8 @@ export interface EquityResult {
   equity: number;
   activeProfitPercent: number;
   activeDrawdownPercent: number;
+  activeDailyDrawdownPercent: number;
+  activeOverallDrawdownPercent: number;
 }
 
 export interface ComplianceInput {
@@ -88,7 +92,8 @@ export interface ComplianceInput {
     overallDrawdownPercent?: number | null;
   };
   activeProfitPercent: number;
-  activeDrawdownPercent: number;
+  activeDailyDrawdownPercent: number;
+  activeOverallDrawdownPercent: number;
   hasTradeHistory: boolean;
   profitBarPeak: number;
   overallDrawdownBarPeak: number;
