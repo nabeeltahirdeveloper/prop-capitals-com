@@ -35,7 +35,7 @@ export default function CRMApiKeys() {
   const [showKey, setShowKey] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5002";
+  const baseUrl = import.meta.env.VITE_API_URL || "http://api.prop-capitals.com";
 
   const { data: apiKeys = [], isLoading } = useQuery({
     queryKey: ["crm-api-keys"],
