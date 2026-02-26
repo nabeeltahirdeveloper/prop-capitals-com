@@ -14,7 +14,7 @@ import { useBinanceStream } from "@/hooks/useBinanceStream";
 import { getAccountTrades, createTrade, updateTrade } from "@/api/trades";
 import { createPendingOrder } from "@/api/pending-orders";
 import { getCurrentPrice } from "@/api/market-data";
-import { getAccountSummary } from "@/api/accounts";
+import { getAccountSummary, evaluateAccountRealTime } from "@/api/accounts";
 import { isCryptoSymbol } from "@/config/symbolConfig";
 import { useToast } from "@/components/ui/use-toast";
 import { useTraderTheme } from "./TraderPanelLayout";
@@ -256,7 +256,12 @@ const toBackendSymbol = (sym, type) => {
  *  XAG (Silver) = 5000 oz/lot
  *  Crypto       = 1 unit/lot
  *  Forex        = 100,000 units/lot
- *  Handles both "XAUUSD" and "XAU/USD" formats. */
+ *  Handles both "XAUUSD" and "XAU/USD" formats.
+ *
+ *  NOTE: Duplicates BybitEngine.getContractSpec() logic. All Bybit symbols
+ *  are crypto (contractSize=1), so XAU/XAG/forex branches are dead code.
+ *  Consider using engine.getContractSpec() instead if tradingEngine prop
+ *  becomes available in this component. */
 const getContractSize = (symbol) => {
   if (!symbol) return 100000;
   const upper = String(symbol)
@@ -347,6 +352,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   const [selectedLeverage, setSelectedLeverage] = useState(100);
   const [violationModal, setViolationModal] = useState(null);
   const dismissedModalAccountsRef = useRef(new Set());
+  const violationEnforcementThrottleRef = useRef({});
 
   const {
     selectedSymbol,
@@ -462,7 +468,13 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
   /* ── Account ── */
   const accountId = selectedChallenge?.id;
-  const accountStatus = selectedChallenge?.status;
+  const { data: accountSummaryData } = useQuery({
+    queryKey: ["accountSummary", accountId],
+    queryFn: () => getAccountSummary(accountId),
+    enabled: !!accountId,
+    refetchInterval: 3000,
+  });
+  const accountStatus = accountSummaryData?.account?.status ?? selectedChallenge?.status;
   const normalizedAccountStatus = String(accountStatus || "").toLowerCase();
   const isAccountLocked =
     normalizedAccountStatus === "failed" ||
@@ -471,12 +483,6 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     normalizedAccountStatus === "disqualified" ||
     normalizedAccountStatus === "closed" ||
     normalizedAccountStatus === "paused";
-  const { data: accountSummaryData } = useQuery({
-    queryKey: ["accountSummary", accountId],
-    queryFn: () => getAccountSummary(accountId),
-    enabled: !!accountId,
-    refetchInterval: 3000,
-  });
   const balance = Number.isFinite(accountSummaryData?.account?.balance)
     ? accountSummaryData.account.balance
     : selectedChallenge?.currentBalance || 0;
@@ -583,6 +589,26 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     : balance;
   const freeMargin = Math.max(0, equity - usedMargin);
   const availableBalance = Math.max(0, balance - usedMargin);
+
+  /* ── Auto-close positions when account is locked (violation enforcement) ── */
+  useEffect(() => {
+    if (!accountId || openPositions.length === 0) return;
+    if (!isAccountLocked) return;
+
+    const throttleKey = `${accountId}-locked-open-positions`;
+    const now = Date.now();
+    const last = violationEnforcementThrottleRef.current[throttleKey] || 0;
+    if (now - last < 2000) return;
+    violationEnforcementThrottleRef.current[throttleKey] = now;
+
+    evaluateAccountRealTime(accountId, Number(equity))
+      .then(() => {
+        queryClient.invalidateQueries({ queryKey: ["trades", accountId] });
+        queryClient.invalidateQueries({ queryKey: ["accountSummary", accountId] });
+      })
+      .catch(() => {});
+  }, [accountId, openPositions.length, isAccountLocked, equity, queryClient]);
+
   const recentTrades = useMemo(() => {
     const list = Array.isArray(tradesData) ? tradesData : [];
     return list
@@ -884,19 +910,11 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     async (pos, partialVol) => {
       const closePrice = pos.type === "BUY" ? currentBid : currentAsk;
       if (!closePrice) return;
-      const posCs = getContractSize(pos.symbol || currentSymbolStr);
       const fullVol = pos.volume || 0;
-      const vol = partialVol ?? fullVol;
-      const priceDiff =
-        pos.type === "BUY"
-          ? closePrice - pos.openPrice
-          : pos.openPrice - closePrice;
-      const profit = priceDiff * vol * posCs;
 
       await closePositionMutation.mutateAsync({
         tradeId: pos.id,
         closePrice,
-        profit,
         closeReason:
           partialVol && partialVol < fullVol ? "PARTIAL_CLOSE" : "MANUAL",
       });
@@ -1112,7 +1130,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   /* ════════════════════════ RENDER ════════════════════════ */
   return (
     <div
-      className="flex flex-col"
+      className="flex flex-col h-full overflow-hidden"
       style={{
         background: C.bg,
         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
@@ -1400,12 +1418,12 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
       {/* ═══ MAIN 3-COLUMN AREA ═══ */}
       <div
-        className="flex flex-col lg:flex-row flex-1 min-h-0"
+        className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-hidden"
         style={{ position: "relative", zIndex: 1 }}
       >
         {/* ── LEFT: CHART / OVERVIEW / DATA ── */}
         <div
-          className="flex-1 min-w-0 flex flex-col"
+          className="flex-1 min-w-0 min-h-[350px] lg:min-h-[300px] flex flex-col"
           style={{ background: C.panel }}
         >
           {chartTab === "chart" && (
@@ -2367,7 +2385,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         {/* ── MIDDLE: ORDER BOOK ── */}
         <SectionErrorBoundary label="Order Book">
           <div
-            className="w-full lg:w-[280px] shrink-0 flex flex-col border-b lg:border-b-0 lg:border-r"
+            className="hidden lg:flex lg:w-[280px] lg:max-h-none shrink-0 flex-col lg:border-r overflow-hidden"
             style={{ background: C.panel, borderColor: C.border }}
           >
             {/* OB Header */}
@@ -2528,7 +2546,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
                   {/* Spread / current price */}
                   <div
-                    className="py-2 flex items-center gap-2 shrink-0"
+                    className="py-2 flex items-center gap-2 shrink-0 overflow-hidden"
                     style={{
                       borderTop: `1px solid ${C.border}`,
                       borderBottom: `1px solid ${C.border}`,
@@ -2538,12 +2556,13 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       <>
                         {isCrypto ? (
                           ticker?.priceChangePercent >= 0 ? (
-                            <ArrowUp size={14} style={{ color: C.green }} />
+                            <ArrowUp size={14} style={{ color: C.green, flexShrink: 0 }} />
                           ) : (
-                            <ArrowDown size={14} style={{ color: C.red }} />
+                            <ArrowDown size={14} style={{ color: C.red, flexShrink: 0 }} />
                           )
                         ) : null}
                         <span
+                          className="truncate"
                           style={{
                             fontSize: 16,
                             fontWeight: 700,
@@ -2553,19 +2572,22 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                                 : C.red
                               : C.textP,
                             fontFamily: "monospace",
+                            flexShrink: 0,
                           }}
                         >
                           {formatPrice(currentMid)}
                         </span>
-                        <span style={{ fontSize: 11, color: C.textS }}>
+                        <span className="truncate" style={{ fontSize: 11, color: C.textS, minWidth: 0 }}>
                           ≈{formatNum(currentMid)} USD
                         </span>
                         {spread > 0 && (
                           <span
+                            className="truncate"
                             style={{
                               fontSize: 10,
                               color: C.textT,
                               marginLeft: "auto",
+                              flexShrink: 0,
                             }}
                           >
                             Spread: {formatPrice(spread)}
@@ -2723,7 +2745,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         {/* ── RIGHT: TRADE PANEL ── */}
         <SectionErrorBoundary label="Trade Panel">
           <div
-            className="w-full lg:w-[280px] shrink-0 flex flex-col border-t lg:border-t-0 lg:border-l"
+            className="w-full lg:w-[280px] lg:max-h-none shrink-0 flex flex-col border-t lg:border-t-0 lg:border-l overflow-y-auto"
             style={{ background: C.panel, borderColor: C.border }}
           >
             {/* Trade header */}
@@ -3017,7 +3039,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           fontSize: 12,
                           color: C.textS,
                           width: 40,
-                          shrink: 0,
+                          flexShrink: 0,
                         }}
                       >
                         Price
@@ -3059,7 +3081,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                         fontSize: 12,
                         color: C.textS,
                         width: 58,
-                        shrink: 0,
+                        flexShrink: 0,
                       }}
                     >
                       Quantity
@@ -3105,7 +3127,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                         accentColor: orderSide === "buy" ? C.green : C.red,
                       }}
                     />
-                    <div className="flex justify-between mt-1 px-0.5">
+                    <div className="flex justify-between mt-1 px-0">
                       {[0, 25, 50, 75, 100].map((p) => (
                         <button
                           key={p}

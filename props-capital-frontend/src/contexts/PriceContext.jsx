@@ -366,7 +366,7 @@ export function PriceProvider({ children, currentPathname = null }) {
 
       // Calculate next poll interval
       // Increase polling interval since forex is handled by WebSocket
-      let nextPollDelay = POLL_INTERVAL * 2; // Poll less frequently (2 seconds instead of 1)
+      let nextPollDelay = POLL_INTERVAL; // 1s polling — no forex WebSocket exists on backend
 
       if (!success) {
         // Use exponential backoff on failures, but cap at MAX_RECONNECT_ATTEMPTS
@@ -381,13 +381,8 @@ export function PriceProvider({ children, currentPathname = null }) {
             );
           }
         } else {
-          // Stop polling after max attempts - require manual retry
-          if (process.env.NODE_ENV !== "production") {
-            console.log(
-              `[PriceContext] Max retry attempts reached. Manual retry required.`,
-            );
-          }
-          return; // Don't schedule next poll
+          // Keep polling at slow rate for auto-recovery
+          nextPollDelay = 30000; // 30 seconds
         }
       }
 
