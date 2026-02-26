@@ -1144,7 +1144,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
           background: C.panel,
           borderBottom: `1px solid ${C.border}`,
           position: "relative",
-          zIndex: 100,
+          zIndex: 10,
         }}
         className="flex items-center px-4 py-3 gap-y-4 gap-x-6 flex-wrap"
       >
