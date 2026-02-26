@@ -1420,14 +1420,13 @@ const BybitTradingArea = ({ selectedChallenge }) => {
             <SectionErrorBoundary label="Chart">
               {/* Timeframe bar */}
               <div
-                className="flex items-center px-2 py-1 gap-0.5 overflow-x-auto"
-                style={{ borderBottom: `1px solid ${C.border}` }}
+                className={`flex flex-wrap items-center px-2 py-1 gap-0.5 border-b border-[${C.border}]`}
               >
                 {timeframes.map((tf) => (
                   <button
                     key={tf.key}
                     onClick={() => setSelectedTimeframe(tf.key)}
-                    className="px-2 py-1 shrink-0"
+                    className="px-2 py-1"
                     style={{
                       fontSize: 11,
                       fontWeight: selectedTimeframe === tf.key ? 600 : 400,
@@ -1452,7 +1451,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                 />
                 <button
                   onClick={() => setChartType("candlestick")}
-                  className="px-2 py-1 shrink-0"
+                  className="px-2 py-1"
                   style={{
                     fontSize: 11,
                     color:
@@ -1465,7 +1464,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                 </button>
                 <button
                   onClick={() => setChartType("line")}
-                  className="px-2 py-1 shrink-0"
+                  className="px-2 py-1"
                   style={{
                     fontSize: 11,
                     color: chartType === "line" ? C.textP : C.textS,
@@ -1476,7 +1475,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                 <div style={{ flex: 1 }} />
                 <button
                   onClick={() => chartRef.current?.fitContent()}
-                  className="px-2 py-1 shrink-0"
+                  className="px-2 py-1"
                   title="Reset chart view"
                   style={{
                     fontSize: 11,
@@ -1500,6 +1499,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   Fit
                 </button>
               </div>
+
               <div className="flex-1">
                 <TradingChart
                   ref={chartRef}
