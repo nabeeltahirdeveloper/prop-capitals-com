@@ -306,7 +306,7 @@ const CommonTerminalWrapper = ({
       const throttleKey = `${accountId}-${symbol}`;
       const lastTickTime = priceTickThrottleRef.current[throttleKey] || 0;
       const now = Date.now();
-      if (now - lastTickTime < 100) return;
+      if (now - lastTickTime < 50) return;
       priceTickThrottleRef.current[throttleKey] = now;
 
       processPriceTick(accountId, symbol, pd.bid, pd.ask, pd.timestamp || now)
@@ -789,12 +789,16 @@ const CommonTerminalWrapper = ({
     : selectedChallenge.currentBalance || 0;
 
   /* ── Equity computation (delegated to engine) ── */
+  const initialBalance = summaryAccount?.initialBalance || selectedChallenge?.accountSize || balance;
+  const todayStartEquity = summaryAccount?.todayStartEquity || balance;
   const {
     availableBalance,
     activeEquity,
     equity,
     activeProfitPercent,
     activeDrawdownPercent,
+    activeDailyDrawdownPercent,
+    activeOverallDrawdownPercent,
   } = tradingEngine.computeEquity({
     balance,
     totalFloatingPnL,
@@ -805,6 +809,8 @@ const CommonTerminalWrapper = ({
       : balance,
     summaryEquity: summaryAccount?.equity,
     challengeEquity: selectedChallenge.equity,
+    initialBalance,
+    todayStartEquity,
   });
   const floatingPL = totalFloatingPnL;
   const profitPercent = Math.max(0, activeProfitPercent);
@@ -846,14 +852,18 @@ const CommonTerminalWrapper = ({
     summaryMetrics,
     liveMetrics,
     activeProfitPercent,
-    activeDrawdownPercent,
+    activeDailyDrawdownPercent,
+    activeOverallDrawdownPercent,
     hasTradeHistory,
     profitBarPeak: profitBarPeakRef.current,
     overallDrawdownBarPeak: overallDrawdownBarPeakRef.current,
     dailyDrawdownBarPeak: dailyDrawdownBarPeakRef.current,
   });
   const compliance = complianceResult.compliance;
-  // Write updated peaks back to refs
+  // Write updated peaks back to refs during render (intentional).
+  // These are deterministic, monotonic (Math.max), and self-correcting — safe
+  // to write here. Moving to useEffect would introduce a one-render-cycle delay
+  // that could cause child components to read stale peak values.
   profitBarPeakRef.current = complianceResult.profitBarPeak;
   overallDrawdownBarPeakRef.current = complianceResult.overallDrawdownBarPeak;
   dailyDrawdownBarPeakRef.current = complianceResult.dailyDrawdownBarPeak;
@@ -881,7 +891,7 @@ const CommonTerminalWrapper = ({
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+    <div className="space-y-3 sm:space-y-6 p-2 sm:p-6">
       {/* ==================== CHALLENGE ACTIVE BANNER ==================== */}
       <ChallengeActiveBanner
         challenge={selectedChallenge}
