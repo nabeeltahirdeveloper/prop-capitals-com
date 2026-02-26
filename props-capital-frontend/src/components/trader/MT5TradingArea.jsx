@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
+import { useMediaQuery } from "usehooks-ts";
 // import { useTrading } from '@/contexts/TradingContext';
 import { usePrices } from "@/contexts/PriceContext";
 import { alignToTimeframe } from "@/utils/timeEngine";
@@ -488,6 +489,9 @@ const MT5TradingArea = ({
     }
   };
 
+  const isMobile = useMediaQuery("(max-width: 767px)");
+  const [mobileTab, setMobileTab] = useState("chart"); // "chart" | "quotes" | "positions"
+
   const isLight = theme === "light";
   const [marketWatchWidth, setMarketWatchWidth] = useState(500); // Right symbols panel width (default: thoda sa left/chhota)
   const [isResizing, setIsResizing] = useState(false);
@@ -631,6 +635,275 @@ const MT5TradingArea = ({
     );
   }
 
+  const accountSummaryProps = {
+    balance,
+    equity:
+      balance +
+      sdkOrdersFromBackend.reduce((s, p) => s + (p.livePnL || 0), 0),
+    margin: sdkOrdersFromBackend.reduce(
+      (s, p) =>
+        s +
+        mt5Engine.calculateRequiredMargin({
+          symbol: p.symbol,
+          volume: p.volume,
+          price: p.openPrice,
+        }),
+      0,
+    ),
+    freeMargin:
+      balance +
+      sdkOrdersFromBackend.reduce((s, p) => s + (p.livePnL || 0), 0) -
+      sdkOrdersFromBackend.reduce(
+        (s, p) =>
+          s +
+          mt5Engine.calculateRequiredMargin({
+            symbol: p.symbol,
+            volume: p.volume,
+            price: p.openPrice,
+          }),
+        0,
+      ),
+  };
+
+  /* ─────────────── MOBILE LAYOUT ─────────────── */
+  if (isMobile) {
+    return (
+      <>
+        <div
+          className={`h-[100dvh] flex flex-col overflow-hidden ${isLight ? "bg-slate-100 text-slate-900" : "bg-slate-950 text-slate-100"}`}
+        >
+          {/* Single content area — tabs are absolute panels inside */}
+          <div className="flex-1 relative overflow-hidden">
+
+            {/* ── CHART TAB ── */}
+            <div
+              className="absolute inset-0 flex flex-col overflow-hidden"
+              style={{ visibility: mobileTab === "chart" ? "visible" : "hidden" }}
+            >
+              {/* Left Sidebar — absolute, full height of this panel */}
+              <div className="absolute left-0 top-0 bottom-0 z-50">
+                <LeftSidebar
+                  AccountId={accountId}
+                  UserName={
+                    selectedChallenge?.platform === "MT5"
+                      ? selectedChallenge?.platformEmail
+                      : undefined
+                  }
+                  UserId={user?.userId}
+                />
+              </div>
+
+              {/* Top Bar — scrollable horizontally, starts after sidebar */}
+              <div
+                className="pl-12 shrink-0"
+                style={{ overflowX: "auto", overflowY: "hidden" }}
+              >
+                <div style={{ minWidth: "max-content" }}>
+                  <TopBar
+                    selectedSymbol={selectedSymbol}
+                    selectedTimeframe={selectedTimeframe}
+                    onTimeframeChange={setSelectedTimeframe}
+                    chartType={chartType}
+                    onChartTypeChange={setChartType}
+                    onNewOrder={handleNewOrder}
+                    onZoomIn={handleZoomIn}
+                    onZoomOut={handleZoomOut}
+                    onDownloadChartPNG={handleDownloadChartPNG}
+                    onToggleFullscreen={handleToggleFullscreen}
+                    marketWatchOpen={false}
+                    onToggleMarketWatch={() => setMobileTab("quotes")}
+                    onToggleBuySell={handleToggleBuySell}
+                    buySellPanelOpen={showBuySellPanel}
+                    onMove={onMove}
+                  />
+                </div>
+              </div>
+
+              {/* Chart — fills remaining space */}
+              <div className="flex-1 overflow-hidden pl-12 relative">
+                <Chart
+                  ref={chartAreaRef}
+                  bidPrice={realTimeBidPrice ?? currentSymbolData.bid}
+                  askPrice={realTimeAskPrice ?? currentSymbolData.ask}
+                  showBuySellPanel={false}
+                  onBuyClick={handleBuyClick}
+                  onSellClick={handleSellClick}
+                />
+
+                {showBuySellPanel && (
+                  <div className="absolute top-6 left-4 z-[99] pointer-events-auto">
+                    <BuySellPanel
+                      bidPrice={realTimeBidPrice ?? currentSymbolData.bid}
+                      askPrice={realTimeAskPrice ?? currentSymbolData.ask}
+                      userAccountId={accountId}
+                      onBuyClick={handleBuyClick}
+                      onSellClick={handleSellClick}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Market Execution Modal slide-in */}
+              <div
+                className="absolute top-0 left-0 w-80 z-[99] pointer-events-none h-full"
+                style={{
+                  transition: "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+                  transform: isOrderModalOpen
+                    ? "translateX(0)"
+                    : "translateX(-110%)",
+                }}
+              >
+                <div
+                  className="pointer-events-auto h-full"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <MarketExecutionModal
+                    isOpen={isOrderModalOpen}
+                    onClose={() => {
+                      setIsOrderModalOpen(false);
+                      setModalInitialVolume(null);
+                    }}
+                    orderType={orderType}
+                    bidPrice={realTimeBidPrice ?? currentSymbolData.bid}
+                    askPrice={realTimeAskPrice ?? currentSymbolData.ask}
+                    onExecuteTrade={onExecuteTrade}
+                    userAccountId={accountId}
+                    initialVolume={modalInitialVolume}
+                    disableOptimistic={true}
+                    forceParentExecution={true}
+                    tradingEngine={tradingEngine}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* ── QUOTES TAB ── */}
+            <div
+              className="absolute inset-0 overflow-x-auto overflow-y-hidden"
+              style={{ visibility: mobileTab === "quotes" ? "visible" : "hidden" }}
+            >
+              <MarketWatch
+                symbols={symbols}
+                selectedSymbol={selectedSymbol}
+                onSymbolSelect={(sym) => {
+                  setSelectedSymbol(sym);
+                  setMobileTab("chart");
+                }}
+                symbolsLoading={symbolsLoading}
+              />
+            </div>
+
+            {/* ── POSITIONS TAB ── */}
+            <div
+              className="absolute inset-0 overflow-x-auto overflow-y-hidden"
+              style={{ visibility: mobileTab === "positions" ? "visible" : "hidden" }}
+            >
+              <AccountPanel
+                accountSummary={accountSummaryProps}
+                orders={sdkOrdersFromBackend}
+                onClose={handleClosePosition}
+                onModify={(trade) => {
+                  setModifyTPSLTrade(trade);
+                  setModifyTP(trade.takeProfit ? String(trade.takeProfit) : "");
+                  setModifySL(trade.stopLoss ? String(trade.stopLoss) : "");
+                }}
+              />
+            </div>
+
+          </div>
+          {/* end content area */}
+
+          {/* ── Bottom Tab Bar ── */}
+          <div
+            className={`shrink-0 flex border-t ${isLight ? "bg-white border-slate-200" : "bg-slate-900 border-slate-700"}`}
+            style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+          >
+            {[
+              { key: "chart", label: "Chart" },
+              { key: "quotes", label: "Quotes" },
+              { key: "positions", label: "Positions" },
+            ].map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => setMobileTab(key)}
+                className={`flex-1 py-3 text-xs font-semibold transition-colors ${
+                  mobileTab === key
+                    ? "text-sky-400 border-t-2 border-sky-400"
+                    : isLight
+                      ? "text-slate-500"
+                      : "text-slate-400"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Modify TP/SL Dialog (mobile) */}
+        {modifyTPSLTrade && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60">
+            <div
+              className={`rounded-lg p-6 w-80 shadow-xl ${isLight ? "bg-white" : "bg-[#1a2332] border border-[#2a3a4a]"}`}
+            >
+              <h3
+                className={`text-sm font-semibold mb-4 ${isLight ? "text-slate-800" : "text-slate-100"}`}
+              >
+                Modify {modifyTPSLTrade.symbol} {modifyTPSLTrade.type}
+              </h3>
+              <div className="space-y-3">
+                <div>
+                  <label
+                    className={`text-xs mb-1 block ${isLight ? "text-slate-500" : "text-slate-400"}`}
+                  >
+                    Stop Loss
+                  </label>
+                  <input
+                    type="number"
+                    value={modifySL}
+                    onChange={(e) => setModifySL(e.target.value)}
+                    placeholder="0.00000"
+                    className={`w-full px-3 py-2 rounded text-sm font-mono ${isLight ? "bg-slate-100 border border-slate-300 text-slate-800" : "bg-[#0f172a] border border-[#2a3a4a] text-slate-200"}`}
+                  />
+                </div>
+                <div>
+                  <label
+                    className={`text-xs mb-1 block ${isLight ? "text-slate-500" : "text-slate-400"}`}
+                  >
+                    Take Profit
+                  </label>
+                  <input
+                    type="number"
+                    value={modifyTP}
+                    onChange={(e) => setModifyTP(e.target.value)}
+                    placeholder="0.00000"
+                    className={`w-full px-3 py-2 rounded text-sm font-mono ${isLight ? "bg-slate-100 border border-slate-300 text-slate-800" : "bg-[#0f172a] border border-[#2a3a4a] text-slate-200"}`}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <button
+                  onClick={handleModifyTPSLSubmit}
+                  disabled={modifyTPSLMutation.isPending}
+                  className="flex-1 py-2 rounded text-sm font-semibold bg-sky-600 hover:bg-sky-500 text-white disabled:opacity-50"
+                >
+                  {modifyTPSLMutation.isPending ? "Saving…" : "Save"}
+                </button>
+                <button
+                  onClick={() => setModifyTPSLTrade(null)}
+                  className={`flex-1 py-2 rounded text-sm font-semibold ${isLight ? "bg-slate-200 hover:bg-slate-300 text-slate-700" : "bg-[#2a3a4a] hover:bg-[#3a4a5a] text-slate-200"}`}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  }
+  /* ─────────────── END MOBILE LAYOUT ─────────────── */
+
   return (
     <>
       <div
@@ -741,41 +1014,7 @@ const MT5TradingArea = ({
             {/* MT5 Bottom Panel — Positions + Account Summary */}
             <AccountPanel
               height={bottomPanelHeight}
-              accountSummary={{
-                balance,
-                equity:
-                  balance +
-                  sdkOrdersFromBackend.reduce(
-                    (s, p) => s + (p.livePnL || 0),
-                    0,
-                  ),
-                margin: sdkOrdersFromBackend.reduce(
-                  (s, p) =>
-                    s +
-                    mt5Engine.calculateRequiredMargin({
-                      symbol: p.symbol,
-                      volume: p.volume,
-                      price: p.openPrice,
-                    }),
-                  0,
-                ),
-                freeMargin:
-                  balance +
-                  sdkOrdersFromBackend.reduce(
-                    (s, p) => s + (p.livePnL || 0),
-                    0,
-                  ) -
-                  sdkOrdersFromBackend.reduce(
-                    (s, p) =>
-                      s +
-                      mt5Engine.calculateRequiredMargin({
-                        symbol: p.symbol,
-                        volume: p.volume,
-                        price: p.openPrice,
-                      }),
-                    0,
-                  ),
-              }}
+              accountSummary={accountSummaryProps}
               orders={sdkOrdersFromBackend}
               onClose={handleClosePosition}
               onModify={(trade) => {
