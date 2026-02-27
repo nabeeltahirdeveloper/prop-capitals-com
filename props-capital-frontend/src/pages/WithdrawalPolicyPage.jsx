@@ -70,6 +70,7 @@ const WithdrawalPolicyPage = () => {
                 fourteen (14) consecutive calendar days of funded trading activity, provided all
                 trading rules and risk management requirements have been fully complied with.
               </p>
+              
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
                 2.2. Eligibility for subsequent withdrawals shall be subject to ongoing compliance
                 with all platform policies, including but not limited to trading conduct, risk
