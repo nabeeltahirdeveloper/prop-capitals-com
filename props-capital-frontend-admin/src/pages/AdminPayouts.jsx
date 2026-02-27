@@ -113,7 +113,7 @@ export default function AdminPayouts() {
   };
 
   // Map backend payouts to frontend format
-  const mappedPayouts = (payoutsData || []).map((payout) => {
+  const mappedPayouts = (Array.isArray(payoutsData) ? payoutsData : []).map((payout) => {
     const user = payout.user || {};
     const statusMap = {
       PENDING: "pending",

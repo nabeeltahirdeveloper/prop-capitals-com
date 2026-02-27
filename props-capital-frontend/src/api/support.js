@@ -25,3 +25,11 @@ export const updateTicketStatus = async (id, status) => {
   return apiPatch(`/support-tickets/${id}/status`, { status });
 };
 
+export const getTicketMessages = async (id) => {
+  return apiGet(`/support-tickets/${id}/messages`);
+};
+
+export const sendTicketMessage = async (id, message) => {
+  return apiPost(`/support-tickets/${id}/messages`, { message });
+};
+

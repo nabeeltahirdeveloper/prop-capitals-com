@@ -138,7 +138,9 @@ const Footer = () => {
                 { name: 'Terms of Service', path: '/terms' },
                 { name: 'Privacy Policy', path: '/privacy' },
                 { name: 'Risk Disclosure', path: '/risk-disclosure' },
-                { name: 'Refund Policy', path: '/refund-policy' }
+                { name: 'Refund Policy', path: '/refund-policy' },
+                { name: 'Withdrawal Policy', path: '/withdrawal-policy' },
+                { name: 'KYC Policy', path: '/kyc-policy' }
               ].map((item) => (
                 <li key={item.path}>
                   <Link
@@ -173,7 +175,9 @@ const Footer = () => {
                 { name: 'Terms', path: '/terms' },
                 { name: 'Privacy', path: '/privacy' },
                 { name: 'Risk', path: '/risk-disclosure' },
-                { name: 'Refunds', path: '/refund-policy' }
+                { name: 'Refunds', path: '/refund-policy' },
+                { name: 'Withdrawals', path: '/withdrawal-policy' },
+                { name: 'KYC', path: '/kyc-policy' }
               ].map((item) => (
                 <Link
                   key={item.path}

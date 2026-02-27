@@ -1,12 +1,12 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminGetAllSupportTickets, adminGetSupportStatistics, adminUpdateTicketStatus } from '@/api/admin';
+import { adminGetAllSupportTicketsPaginated, adminGetSupportStatistics, adminUpdateTicketStatus } from '@/api/admin';
 import { useTranslation } from "../contexts/LanguageContext";
 import { useToast } from '@/components/ui/use-toast';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -14,12 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import DataTable from "@/components/shared/DataTable";
 import StatusBadge from "@/components/shared/StatusBadge";
 import StatsCard from "@/components/shared/StatsCard";
@@ -30,28 +24,32 @@ import {
   CheckCircle,
   AlertCircle,
   Eye,
-  Send,
-  MessageSquare,
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useChatSupportStore } from '@/lib/stores/chat-support.store';
 
 export default function AdminSupport() {
   const { t } = useTranslation();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const openChat = useChatSupportStore((state) => state.openChat);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [selectedTicket, setSelectedTicket] = useState(null);
-  const [response, setResponse] = useState('');
+  const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
+  const limit = 20;
 
-  // Fetch tickets from backend
-  const { data: ticketsData = [], isLoading } = useQuery({
-    queryKey: ['admin-support-tickets'],
-    queryFn: adminGetAllSupportTickets,
+  const { data: ticketsResponse = {}, isLoading } = useQuery({
+    queryKey: ['admin-support-tickets', page],
+    queryFn: () => adminGetAllSupportTicketsPaginated(page, limit),
     refetchInterval: 30000,
   });
 
-  // Fetch statistics from backend
+  const rawTickets = ticketsResponse?.data ?? ticketsResponse;
+  const ticketsData = Array.isArray(rawTickets) ? rawTickets : [];
+  const totalTickets = ticketsResponse?.total || 0;
+  const totalPages = Math.ceil(totalTickets / limit) || 1;
+
   const { data: statistics = {} } = useQuery({
     queryKey: ['admin-support-statistics'],
     queryFn: adminGetSupportStatistics,
@@ -59,17 +57,13 @@ export default function AdminSupport() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, status, adminReply }) => adminUpdateTicketStatus(id, status, adminReply),
-    onSuccess: (_, variables) => {
+    mutationFn: ({ id, status }) => adminUpdateTicketStatus(id, status),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-support-tickets'] });
       queryClient.invalidateQueries({ queryKey: ['admin-support-statistics'] });
-      setSelectedTicket(null);
-      setResponse('');
       toast({
         title: t('admin.support.toast.successTitle') || 'Ticket Updated',
-        description: variables.adminReply
-          ? t('admin.support.toast.replySent') || 'Reply sent and status updated successfully.'
-          : t('admin.support.toast.statusUpdated') || 'Ticket status updated successfully.',
+        description: t('admin.support.toast.statusUpdated') || 'Ticket status updated successfully.',
       });
     },
     onError: (error) => {
@@ -81,18 +75,22 @@ export default function AdminSupport() {
     },
   });
 
-  // Helper to build display name: prefer firstName+lastName, fallback to email
-  const getUserDisplayName = (user) => {
-    if (!user) return 'N/A';
-    const profile = user.profile;
-    if (profile?.firstName || profile?.lastName) {
-      return [profile.firstName, profile.lastName].filter(Boolean).join(' ');
+  const getUserDisplayName = (user, ticket) => {
+    if (user) {
+      const profile = user.profile;
+      if (profile?.firstName || profile?.lastName) {
+        return [profile.firstName, profile.lastName].filter(Boolean).join(' ');
+      }
+      return user.email || 'N/A';
     }
-    return user.email || 'N/A';
+    if (ticket?.guestName || ticket?.guestEmail) {
+      return ticket.guestName || ticket.guestEmail || 'Guest';
+    }
+    return 'Guest';
   };
 
-  // Helper to get user email regardless of profile
-  const getUserEmail = (user) => user?.email || 'N/A';
+  const getUserEmail = (user, ticket) =>
+    user?.email || ticket?.guestEmail || 'N/A';
 
   const mapStatusToFrontend = (status) => {
     const statusMap = {
@@ -100,6 +98,8 @@ export default function AdminSupport() {
       'IN_PROGRESS': 'in_progress',
       'RESOLVED': 'resolved',
       'CLOSED': 'closed',
+      'WAITING_FOR_ADMIN': 'waiting_for_admin',
+      'WAITING_FOR_TRADER': 'waiting_for_trader',
     };
     return statusMap[status] || status?.toLowerCase() || 'open';
   };
@@ -107,19 +107,17 @@ export default function AdminSupport() {
   const mapCategoryToFrontend = (category) => category ? category.toLowerCase() : 'other';
   const mapPriorityToFrontend = (priority) => priority ? priority.toLowerCase() : 'medium';
 
-  // Map backend ticket data to frontend format
   const displayTickets = useMemo(() => {
-    return (ticketsData || []).map(ticket => ({
+    return (Array.isArray(ticketsData) ? ticketsData : []).map((ticket) => ({
       id: ticket.id,
-      displayName: getUserDisplayName(ticket.user),
-      email: getUserEmail(ticket.user),
+      displayName: getUserDisplayName(ticket.user, ticket),
+      email: getUserEmail(ticket.user, ticket),
+      isGuest: !ticket.user,
       subject: ticket.subject,
       category: mapCategoryToFrontend(ticket.category),
       priority: mapPriorityToFrontend(ticket.priority),
       status: mapStatusToFrontend(ticket.status),
       message: ticket.message,
-      adminReply: ticket.adminReply || null,
-      repliedAt: ticket.repliedAt || null,
       created_date: ticket.createdAt,
       updated_date: ticket.updatedAt,
     }));
@@ -131,19 +129,12 @@ export default function AdminSupport() {
       'in_progress': 'IN_PROGRESS',
       'resolved': 'RESOLVED',
       'closed': 'CLOSED',
+      'waiting_for_admin': 'WAITING_FOR_ADMIN',
+      'waiting_for_trader': 'WAITING_FOR_TRADER',
     };
     updateMutation.mutate({
       id: ticket.id,
       status: statusMap[status] || status.toUpperCase(),
-    });
-  };
-
-  const handleSendResponse = () => {
-    if (!response.trim()) return;
-    updateMutation.mutate({
-      id: selectedTicket.id,
-      status: 'RESOLVED',
-      adminReply: response.trim(),
     });
   };
 
@@ -183,7 +174,14 @@ export default function AdminSupport() {
       cell: (row) => (
         <div>
           <p className="text-foreground font-medium line-clamp-1">{row.subject}</p>
-          <p className="text-xs text-muted-foreground">{row.displayName}</p>
+          <p className="text-xs text-muted-foreground flex items-center gap-1">
+            <span>{row.displayName}</span>
+            {row.isGuest && (
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full border border-border text-[10px] uppercase tracking-wide text-muted-foreground">
+                Guest
+              </span>
+            )}
+          </p>
           <p className="text-xs text-muted-foreground/70">{row.email}</p>
         </div>
       )
@@ -225,7 +223,7 @@ export default function AdminSupport() {
             size="sm"
             variant="ghost"
             className="text-muted-foreground hover:text-foreground h-7 px-2"
-            onClick={() => setSelectedTicket(row)}
+            onClick={() => navigate(`/AdminSupport/tickets/${row.id}`)}
           >
             <Eye className="w-4 h-4" />
           </Button>
@@ -234,7 +232,7 @@ export default function AdminSupport() {
               size="sm"
               variant="ghost"
               className="text-[#d97706] hover:text-amber-600 h-7 px-2 text-xs"
-              onClick={() => handleUpdateStatus(row, 'in_progress')}
+              onClick={(e) => { e.stopPropagation(); handleUpdateStatus(row, 'in_progress'); }}
               disabled={updateMutation.isPending}
             >
               {t('admin.support.actions.take')}
@@ -245,18 +243,18 @@ export default function AdminSupport() {
               size="sm"
               variant="ghost"
               className="text-emerald-500 hover:text-emerald-600 h-7 px-2 text-xs"
-              onClick={() => handleUpdateStatus(row, 'resolved')}
+              onClick={(e) => { e.stopPropagation(); handleUpdateStatus(row, 'resolved'); }}
               disabled={updateMutation.isPending}
             >
               {t('admin.support.actions.resolve')}
             </Button>
           )}
-          {(row.status === 'open' || row.status === 'in_progress' || row.status === 'resolved') && (
+          {(row.status !== 'closed') && (
             <Button
               size="sm"
               variant="ghost"
               className="text-muted-foreground hover:text-foreground h-7 px-2 text-xs"
-              onClick={() => handleUpdateStatus(row, 'closed')}
+              onClick={(e) => { e.stopPropagation(); handleUpdateStatus(row, 'closed'); }}
               disabled={updateMutation.isPending}
             >
               {t('admin.support.actions.close') || 'Close'}
@@ -267,10 +265,10 @@ export default function AdminSupport() {
     },
   ];
 
-  // Use statistics from backend, fallback to calculated values
-  const openCount = statistics.openCount ?? displayTickets.filter(t => t.status === 'open').length;
-  const inProgressCount = statistics.inProgressCount ?? displayTickets.filter(t => t.status === 'in_progress').length;
-  const resolvedCount = statistics.resolvedCount ?? displayTickets.filter(t => t.status === 'resolved').length;
+  const openCount = statistics.openCount ?? 0;
+  const inProgressCount = statistics.inProgressCount ?? 0;
+  const resolvedCount = statistics.resolvedCount ?? 0;
+  const waitingForAdminCount = statistics.waitingForAdminCount ?? 0;
 
   return (
     <div className="space-y-6">
@@ -280,13 +278,35 @@ export default function AdminSupport() {
           <h1 className="text-xl sm:text-2xl font-bold text-foreground">{t('admin.support.title')}</h1>
           <p className="text-sm sm:text-base text-muted-foreground">{t('admin.support.subtitle')}</p>
         </div>
+        <div className="flex items-center gap-3">
+          <Card className="bg-card border-border px-4 py-3 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-emerald-500/10 flex items-center justify-center">
+              <MessageCircle className="w-4 h-4 text-emerald-500" />
+            </div>
+            <div className="hidden sm:block">
+              <p className="text-xs font-medium text-foreground">
+                {t('contact.liveChatTitle')}
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                {t('contact.liveChatDescription')}
+              </p>
+            </div>
+            <Button
+              size="sm"
+              className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-xs"
+              onClick={openChat}
+            >
+              {t('contact.startChat')}
+            </Button>
+          </Card>
+        </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatsCard
           title={t('admin.support.stats.openTickets')}
-          value={openCount}
+          value={openCount + waitingForAdminCount}
           icon={AlertCircle}
           gradient="from-red-500 to-pink-500"
         />
@@ -323,12 +343,14 @@ export default function AdminSupport() {
             />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-[150px] bg-muted border-border text-foreground text-sm">
+            <SelectTrigger className="w-full sm:w-[180px] bg-muted border-border text-foreground text-sm">
               <SelectValue placeholder={t('admin.support.filter.status')} />
             </SelectTrigger>
             <SelectContent className="bg-card border-border text-foreground">
               <SelectItem value="all" className="text-foreground">{t('admin.support.filter.allStatus')}</SelectItem>
               <SelectItem value="open" className="text-foreground">{t('admin.support.filter.open')}</SelectItem>
+              <SelectItem value="waiting_for_admin" className="text-foreground">Waiting for Admin</SelectItem>
+              <SelectItem value="waiting_for_trader" className="text-foreground">Waiting for Trader</SelectItem>
               <SelectItem value="in_progress" className="text-foreground">{t('admin.support.filter.inProgress')}</SelectItem>
               <SelectItem value="resolved" className="text-foreground">{t('admin.support.filter.resolved')}</SelectItem>
               <SelectItem value="closed" className="text-foreground">{t('admin.support.filter.closed')}</SelectItem>
@@ -345,126 +367,35 @@ export default function AdminSupport() {
           isLoading={isLoading}
           emptyMessage={t('admin.support.emptyMessage')}
         />
-      </Card>
-
-      {/* Ticket Detail Dialog */}
-      <Dialog open={!!selectedTicket} onOpenChange={() => { setSelectedTicket(null); setResponse(''); }}>
-        <DialogContent className="bg-card border-border w-[95vw] sm:w-full sm:max-w-2xl p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-foreground text-base sm:text-lg md:text-xl pr-6">
-              {selectedTicket?.subject}
-            </DialogTitle>
-          </DialogHeader>
-          {selectedTicket && (
-            <div className="space-y-4 mt-3">
-              {/* Meta info */}
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                <StatusBadge status={selectedTicket.status} />
-                <span className={`px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs font-medium capitalize ${getPriorityClass(selectedTicket.priority)}`}>
-                  {t(`admin.support.priority.${selectedTicket.priority}`, { defaultValue: selectedTicket.priority })}
-                </span>
-                <span className="text-xs text-muted-foreground capitalize bg-muted px-2 py-0.5 rounded">
-                  {t(`admin.support.category.${selectedTicket.category}`, { defaultValue: selectedTicket.category })}
-                </span>
-              </div>
-
-              {/* User details */}
-              <div className="bg-muted/40 rounded-lg p-3 space-y-1">
-                <p className="text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground">{t('admin.support.dialog.from') || 'From'}:</span>{' '}
-                  {selectedTicket.displayName}
-                </p>
-                {selectedTicket.displayName !== selectedTicket.email && (
-                  <p className="text-xs text-muted-foreground">{selectedTicket.email}</p>
-                )}
-                <p className="text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground">{t('admin.support.dialog.submitted') || 'Submitted'}:</span>{' '}
-                  {formatDate(selectedTicket.created_date)}
-                </p>
-              </div>
-
-              {/* User message */}
-              <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1.5">
-                  {t('admin.support.dialog.userMessage') || 'User Message'}
-                </p>
-                <div className="bg-muted/60 rounded-lg p-3 sm:p-4">
-                  <p className="text-xs sm:text-sm text-foreground leading-relaxed whitespace-pre-wrap">
-                    {selectedTicket.message}
-                  </p>
-                </div>
-              </div>
-
-              {/* Previous admin reply (if any) */}
-              {selectedTicket.adminReply && (
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-1.5 flex items-center gap-1.5">
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    {t('admin.support.dialog.previousReply') || 'Previous Admin Reply'}
-                    {selectedTicket.repliedAt && (
-                      <span className="ml-auto font-normal">{formatDate(selectedTicket.repliedAt)}</span>
-                    )}
-                  </p>
-                  <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 sm:p-4">
-                    <p className="text-xs sm:text-sm text-emerald-400 leading-relaxed whitespace-pre-wrap">
-                      {selectedTicket.adminReply}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Reply form */}
-              {selectedTicket.status !== 'closed' && (
-                <div className="space-y-3">
-                  <p className="text-xs font-medium text-muted-foreground">
-                    {selectedTicket.adminReply
-                      ? (t('admin.support.dialog.sendNewReply') || 'Send New Reply')
-                      : (t('admin.support.dialog.writeResponse') || 'Write a Response')}
-                  </p>
-                  <Textarea
-                    placeholder={t('admin.support.dialog.writeResponse') || 'Type your response here...'}
-                    value={response}
-                    onChange={(e) => setResponse(e.target.value)}
-                    className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm min-h-[100px] sm:min-h-[120px]"
-                  />
-                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                    <Button
-                      variant="outline"
-                      className="w-full sm:flex-1 border-border text-foreground hover:bg-accent order-2 sm:order-1 h-9 sm:h-11"
-                      onClick={() => { setSelectedTicket(null); setResponse(''); }}
-                    >
-                      {t('admin.support.dialog.close') || 'Close'}
-                    </Button>
-                    <Button
-                      className="w-full sm:flex-1 bg-gradient-to-r from-[#d97706] to-amber-600 hover:from-amber-600 hover:to-amber-700 order-1 sm:order-2 h-9 sm:h-11 text-white disabled:opacity-50"
-                      onClick={handleSendResponse}
-                      disabled={updateMutation.isPending || !response.trim()}
-                    >
-                      <Send className="w-4 h-4 mr-2" />
-                      {updateMutation.isPending
-                        ? (t('admin.support.dialog.sending') || 'Sending...')
-                        : (t('admin.support.dialog.sendAndResolve') || 'Send & Resolve')}
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {/* Closed state */}
-              {selectedTicket.status === 'closed' && (
-                <div className="flex justify-end">
-                  <Button
-                    variant="outline"
-                    className="border-border text-foreground hover:bg-accent h-9"
-                    onClick={() => { setSelectedTicket(null); setResponse(''); }}
-                  >
-                    {t('admin.support.dialog.close') || 'Close'}
-                  </Button>
-                </div>
-              )}
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
+            <p className="text-xs text-muted-foreground">
+              Page {page} of {totalPages} ({totalTickets} tickets)
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 text-xs border-border"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 text-xs border-border"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page >= totalPages}
+              >
+                Next
+              </Button>
             </div>
-          )}
-        </DialogContent>
-      </Dialog>
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

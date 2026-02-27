@@ -4,6 +4,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 
 const RefundPage = () => {
   const { isDark } = useTheme();
+  
 
   return (
     <div className={`min-h-screen pt-20 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
@@ -14,102 +15,91 @@ const RefundPage = () => {
               <RefreshCcw className="w-8 h-8 text-amber-500" />
             </div>
             <h1 className={`text-3xl sm:text-4xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Refund Policy</h1>
-            <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>Last updated: January 1, 2025</p>
-          </div>
-
-          {/* Highlight Box */}
-          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6 mb-8">
-            <div className="flex items-start gap-4">
-              <CheckCircle2 className="w-6 h-6 text-emerald-400 flex-shrink-0 mt-1" />
-              <div>
-                <h2 className="text-emerald-400 font-bold text-lg mb-2">100% Challenge Fee Refund</h2>
-                <p className={isDark ? 'text-gray-300' : 'text-slate-700'}>
-                  When you pass your challenge and receive your first profit payout as a funded trader, we will refund 100% of your challenge fee. This makes your evaluation essentially free!
-                </p>
-              </div>
-            </div>
+            <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>Clear conditions for refund eligibility and processing</p>
           </div>
 
           <div className={`rounded-2xl p-6 lg:p-8 border space-y-8 ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`}>
             <section>
               <h2 className={`text-xl font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 <CreditCard className="w-5 h-5 text-amber-500" />
-                Challenge Fee Refund
+                1. Eligibility for Refunds
               </h2>
               <p className={`leading-relaxed mb-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Your challenge fee is fully refundable under the following conditions:
+                1.1. Clients may request a refund within fourteen (14) calendar days from the date of purchase, provided that no trading activity has been initiated on the purchased evaluation or account.
               </p>
-              <ul className="space-y-3">
-                {[
-                  "You successfully pass all challenge phases",
-                  "You receive a funded trading account",
-                  "You make a profit and request your first payout",
-                  "The refund is added to your first profit withdrawal"
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                    <span className={isDark ? 'text-gray-300' : 'text-slate-700'}>{item}</span>
-                  </li>
-                ))}
-              </ul>
+              <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
+                1.2. The refund eligibility period shall automatically expire upon the execution of any trade, regardless of trade size, duration, or outcome.
+              </p>
             </section>
 
             <section>
               <h2 className={`text-xl font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 <XCircle className="w-5 h-5 text-red-400" />
-                Non-Refundable Situations
+                2. Non-Refundable Conditions
               </h2>
               <p className={`leading-relaxed mb-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Refunds will not be provided in the following cases:
+                2.1. Once trading activity has commenced, the evaluation shall be deemed active, and the Client expressly acknowledges that no refunds shall be granted thereafter.
               </p>
               <ul className="space-y-3">
-                {[
-                  "Failure to pass the challenge due to rule violations",
-                  "Account termination due to prohibited trading activities",
-                  "Request for refund after trading has commenced",
-                  "Fraudulent or unauthorized payment methods"
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <XCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                    <span className={isDark ? 'text-gray-300' : 'text-slate-700'}>{item}</span>
-                  </li>
-                ))}
+                <li className="flex items-start gap-3">
+                  <XCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                  <span className={isDark ? 'text-gray-300' : 'text-slate-700'}>
+                    2.2. This applies equally to: Evaluation accounts, Challenge programs, and any funded or simulated trading environment.
+                  </span>
+                </li>
               </ul>
             </section>
 
             <section>
               <h2 className={`text-xl font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 <Clock className="w-5 h-5 text-amber-500" />
-                Refund Processing Time
+                3. Scope of Refunds
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Challenge fee refunds are processed together with your first profit payout. The combined amount will be sent to your preferred payment method within our standard payout timeframe of under 90 minutes after request approval.
+                3.1. Refunds, where approved, apply only to the initial purchase fee paid for the evaluation or program.
+              </p>
+              <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
+                3.2. Any additional fees, third-party charges, or service costs are non-refundable, unless otherwise required by applicable law.
               </p>
             </section>
 
             <section>
               <h2 className={`text-xl font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 <HelpCircle className="w-5 h-5 text-amber-500" />
-                Cooling-Off Period
+                4. Refund Processing
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                If you have purchased a challenge but have not yet started trading (no trades executed), you may request a full refund within 14 days of purchase. To request a cooling-off refund, please contact our support team with your order details.
+                4.1. Approved refunds will be processed using the original payment method whenever possible.
+              </p>
+              <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
+                4.2. Processing times may vary depending on the payment provider and are subject to external banking or payment system delays.
               </p>
             </section>
 
             <section>
-              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Retry Discounts</h2>
+              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>5. Abuse Prevention</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                If you fail a challenge, we offer discounted retry options of up to 20% off the original price. This allows you to start fresh with a new evaluation at a reduced cost. Contact support to receive your personalized retry discount code.
+                5.1. The Company reserves the right to deny refund requests in cases of suspected abuse, fraud, or attempts to circumvent platform rules.
+              </p>
+              <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
+                5.2. Repeated refund requests or account activity indicating misuse may result in account suspension or termination.
               </p>
             </section>
 
             <section>
-              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Contact Us</h2>
+              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>6. Policy Amendments</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                If you have any questions about our refund policy, please contact us at:<br />
-                Email: billing@prop-capitals.com<br />
-                Live Chat: Available 24/7 on our website
+                6.1. The Company reserves the right to amend this Refund Policy at any time.
+              </p>
+              <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
+                6.2. Any amendments shall become effective upon publication on the Company’s website unless otherwise stated.
+              </p>
+            </section>
+
+            <section>
+              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>7. Governing Law</h2>
+              <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
+                This Refund Policy shall be governed by and construed in accordance with the laws applicable to the Company’s jurisdiction of operation.
               </p>
             </section>
           </div>

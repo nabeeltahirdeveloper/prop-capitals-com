@@ -5,6 +5,7 @@ import { validateEnvironment } from './config/env.validation';
 import { Server } from 'socket.io';
 import { TradingEventsGateway } from './websocket/trading-events.gateway';
 import { CandlesGateway } from './websocket/candles.gateway';
+import { SupportEventsGateway } from './websocket/support-events.gateway';
 
 async function bootstrap() {
   // Validate environment BEFORE creating app
@@ -41,20 +42,14 @@ async function bootstrap() {
   });
   console.log('[Socket.IO] Server created and attached to http.Server');
 
-  const port = process.env.PORT || 5101;
-  await app.listen(port);
-  console.log(`Server is running on port ${port}`);
-
-  // Get gateway instances from DI container and wire them to Socket.IO
+  // Register all namespaces BEFORE listen() so they exist when the first client connects
   const tradingGateway = app.get(TradingEventsGateway);
   const candlesGateway = app.get(CandlesGateway);
+  const supportGateway = app.get(SupportEventsGateway);
 
-  // Wire /trading namespace
   const tradingNamespace = io.of('/trading');
-  // Set @WebSocketServer() property (NestJS uses duck-typing, Namespace works as Server)
   (tradingGateway as any).server = tradingNamespace;
   tradingGateway.afterInit(tradingNamespace as any);
-
   tradingNamespace.on('connection', async (socket) => {
     try {
       await tradingGateway.handleConnection(socket as any);
@@ -72,10 +67,8 @@ async function bootstrap() {
     }
   });
 
-  // Wire root namespace (/) for candle streaming
   (candlesGateway as any).server = io;
   candlesGateway.afterInit(io);
-
   io.on('connection', async (socket) => {
     try {
       await candlesGateway.handleConnection(socket as any);
@@ -93,6 +86,30 @@ async function bootstrap() {
     }
   });
 
-  console.log('[Socket.IO] Gateways wired — /trading and / (candles) ready');
+  const supportNamespace = io.of('/support');
+  (supportGateway as any).server = supportNamespace;
+  supportGateway.afterInit(supportNamespace as any);
+  supportNamespace.on('connection', async (socket) => {
+    try {
+      await supportGateway.handleConnection(socket as any);
+      socket.on('subscribe:ticket', (payload) =>
+        supportGateway.handleSubscribeTicket(socket as any, payload),
+      );
+      socket.on('unsubscribe:ticket', (payload) =>
+        supportGateway.handleUnsubscribeTicket(socket as any, payload),
+      );
+      socket.on('disconnect', () =>
+        supportGateway.handleDisconnect(socket as any),
+      );
+    } catch (e) {
+      console.error('[Socket.IO] /support connection error:', e);
+    }
+  });
+
+  console.log('[Socket.IO] Namespaces registered: /, /trading, /support');
+
+  const port = process.env.PORT || 5101;
+  await app.listen(port);
+  console.log(`Server is running on port ${port}`);
 }
 bootstrap();

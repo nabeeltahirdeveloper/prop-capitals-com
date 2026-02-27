@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   MessageSquare,
   Mail,
@@ -28,6 +29,7 @@ import {
 const SupportPage = () => {
   const { isDark } = useTraderTheme();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [ticketForm, setTicketForm] = useState({
     subject: "",
     category: "ACCOUNT",
@@ -101,6 +103,8 @@ const SupportPage = () => {
       IN_PROGRESS: "in_progress",
       RESOLVED: "resolved",
       CLOSED: "closed",
+      WAITING_FOR_ADMIN: "waiting_for_admin",
+      WAITING_FOR_TRADER: "waiting_for_trader",
     };
 
     const categoryMap = {
@@ -384,22 +388,30 @@ const SupportPage = () => {
                   {mappedTickets.map((ticket) => (
                     <div
                       key={ticket.id}
-                      className={`flex items-center justify-between p-3 rounded-xl ${isDark ? "bg-white/5" : "bg-slate-50"}`}
+                      onClick={() => navigate(`/traderdashboard/support/tickets/${ticket.id}`)}
+                      className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors ${isDark ? "bg-white/5 hover:bg-white/10" : "bg-slate-50 hover:bg-slate-100"}`}
                     >
-                      <div className="flex items-center gap-3">
-                        <span className={`text-sm font-mono ${isDark ? "text-gray-500" : "text-slate-400"}`}>
-                          {ticket.id}
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className={`text-sm font-mono shrink-0 ${isDark ? "text-gray-500" : "text-slate-400"}`}>
+                          {ticket.id.slice(0, 8)}...
                         </span>
-                        <span className={`text-sm ${isDark ? "text-white" : "text-slate-900"}`}>
+                        <span className={`text-sm truncate ${isDark ? "text-white" : "text-slate-900"}`}>
                           {ticket.subject}
                         </span>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 shrink-0">
                         <span className={`text-xs ${isDark ? "text-gray-500" : "text-slate-400"}`}>
                           {formatDate(ticket.created_date)}
                         </span>
                         <span
-                          className={`px-2 py-0.5 rounded text-xs font-medium ${ticket.status === "resolved" ? "bg-emerald-500/10 text-emerald-500" : ticket.status === "closed" ? "bg-slate-500/10 text-slate-500" : ticket.status === "in_progress" ? "bg-blue-500/10 text-blue-500" : "bg-amber-500/10 text-amber-500"}`}
+                          className={`px-2 py-0.5 rounded text-xs font-medium ${
+                            ticket.status === "resolved" ? "bg-emerald-500/10 text-emerald-500"
+                            : ticket.status === "closed" ? "bg-slate-500/10 text-slate-500"
+                            : ticket.status === "in_progress" ? "bg-blue-500/10 text-blue-500"
+                            : ticket.status === "waiting_for_admin" ? "bg-orange-500/10 text-orange-400"
+                            : ticket.status === "waiting_for_trader" ? "bg-cyan-500/10 text-cyan-400"
+                            : "bg-amber-500/10 text-amber-500"
+                          }`}
                         >
                           {ticket.status
                             .split("_")

@@ -36,6 +36,8 @@ import TradingRulesPage from "./TradingRulesPage.jsx"
 import AffiliatePage from "./AffiliatePage.jsx"
 import RiskDisclosurePage from "./RiskDisclosurePage.jsx"
 import RefundPage from "./RefundPage.jsx"
+import WithdrawalPolicyPage from "./WithdrawalPolicyPage.jsx"
+import KycPolicyPage from "./KycPolicyPage.jsx"
 import ForgotPassword from "./ForgotPassword.jsx";
 import CheckoutPage from "./CheckoutPage.jsx";
 import CheckoutSuccessPage from "./CheckoutSuccessPage.jsx";
@@ -50,6 +52,7 @@ import AccountSettings from "@/components/trader/AccountSettings.jsx";
 import NotificationsPage from "@/components/trader/NotificationsPage.jsx";
 import ProfilePage from "@/components/trader/ProfilePage.jsx";
 import SupportPage from "@/components/trader/SupportPage.jsx";
+import TraderTicketChat from "@/components/trader/TraderTicketChat.jsx";
 import FAQPage from "@/components/trader/FAQPage.jsx";
 import TradeCheckoutPanelPage from "@/components/trader/TradeCheckoutPanelPage.jsx";
 
@@ -161,6 +164,8 @@ function PagesContent() {
               <Route path="/Privacy" element={<Privacy />} />
               <Route path="/risk-disclosure" element={<RiskDisclosurePage />} />
               <Route path="/refund-policy" element={<RefundPage />} />
+              <Route path="/withdrawal-policy" element={<WithdrawalPolicyPage />} />
+              <Route path="/kyc-policy" element={<KycPolicyPage />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route
                 path="/SignIn"
@@ -215,6 +220,7 @@ function PagesContent() {
                   <Route path="settings" element={<AccountSettings />} />
                   <Route path="notifications" element={<NotificationsPage />} />
                   <Route path="profile" element={<ProfilePage />} />
+                  <Route path="support/tickets/:id" element={<TraderTicketChat />} />
                   <Route path="support" element={<SupportPage />} />
                   <Route path="faqs" element={<FAQPage />} />
                   <Route path="checkout" element={<TradeCheckoutPanelPage />} />

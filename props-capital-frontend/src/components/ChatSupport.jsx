@@ -20,7 +20,7 @@ const ChatSupport = () => {
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const [showHumanForm, setShowHumanForm] = useState(false);
-  const [humanFormData, setHumanFormData] = useState({ name: '', email: '', message: '' });
+  const [humanFormData, setHumanFormData] = useState({ name: '', email: '', message: '', category: 'OTHER' });
   const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -115,33 +115,56 @@ const ChatSupport = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${BACKEND_URL}/chat/human-support`, {
+      const token = localStorage.getItem('token');
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const response = await fetch(`${BACKEND_URL}/support/public/tickets`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
-          session_id: sessionId,
-          ...humanFormData
-        })
+          name: humanFormData.name,
+          email: humanFormData.email,
+          message: humanFormData.message,
+          category: humanFormData.category || 'OTHER',
+        }),
       });
 
       const data = await response.json();
 
       setShowHumanForm(false);
-      setHumanFormData({ name: '', email: '', message: '' });
+      const savedCategory = humanFormData.category || 'OTHER';
+      const savedTicketId = data.ticketId;
+      setHumanFormData({ name: '', email: '', message: '', category: 'OTHER' });
 
-      setMessages(prev => [...prev, {
-        type: 'bot',
-        text: data.success
-          ? `Thanks ${humanFormData.name}! Your request has been submitted. Our team will contact you at ${humanFormData.email} shortly.`
-          : "There was an issue submitting your request. Please email us directly at support@prop-capitals.com.",
-        timestamp: new Date()
-      }]);
+      if (response.ok && savedTicketId) {
+        const categoryLabel = savedCategory.charAt(0) + savedCategory.slice(1).toLowerCase();
+        const isLoggedIn = !!token;
+        let text = `Thanks! Your support ticket has been created under ${categoryLabel}. Our team will reply as soon as possible.`;
+        if (isLoggedIn) {
+          text += ` You can continue the conversation from your Support Tickets page.`;
+        }
+        setMessages(prev => [...prev, {
+          type: 'bot',
+          text,
+          ticketId: savedTicketId,
+          isLoggedIn,
+          timestamp: new Date(),
+        }]);
+      } else {
+        const errMsg = data?.message || "There was an issue submitting your request.";
+        setMessages(prev => [...prev, {
+          type: 'bot',
+          text: `${errMsg} Please email us directly at support@prop-capitals.com.`,
+          timestamp: new Date(),
+        }]);
+      }
     } catch (error) {
       console.error('Human support request error:', error);
       setMessages(prev => [...prev, {
         type: 'bot',
         text: "Failed to submit your request. Please email us directly at support@prop-capitals.com.",
-        timestamp: new Date()
+        timestamp: new Date(),
       }]);
     }
   };
@@ -238,6 +261,14 @@ const ChatSupport = () => {
                             }`}
                         >
                           <p className="whitespace-pre-wrap text-sm leading-relaxed break-words">{msg.text}</p>
+                          {msg.ticketId && msg.isLoggedIn && (
+                            <a
+                              href={`/traderdashboard/support/tickets/${msg.ticketId}`}
+                              className="inline-block mt-2 text-xs font-semibold underline text-amber-600 hover:text-amber-500"
+                            >
+                              Open Ticket
+                            </a>
+                          )}
                         </div>
                         <span className={`text-[10px] mt-1 block ${msg.type === 'user' ? 'text-right' : ''} ${isDark ? 'text-gray-600' : 'text-slate-400'
                           }`}>
@@ -284,6 +315,20 @@ const ChatSupport = () => {
                           : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
                           }`}
                       />
+                      <select
+                        value={humanFormData.category}
+                        onChange={(e) => setHumanFormData({ ...humanFormData, category: e.target.value })}
+                        className={`w-full px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 ${isDark
+                          ? 'bg-[#0a0d12] border border-white/10 text-white'
+                          : 'bg-slate-50 border border-slate-200 text-slate-900'
+                          }`}
+                      >
+                        <option value="ACCOUNT">Account</option>
+                        <option value="PAYMENT">Payment</option>
+                        <option value="PAYOUT">Payout</option>
+                        <option value="TECHNICAL">Technical</option>
+                        <option value="OTHER">Other</option>
+                      </select>
                       <textarea
                         placeholder="Describe your issue..."
                         value={humanFormData.message}

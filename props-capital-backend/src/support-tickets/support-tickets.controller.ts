@@ -12,27 +12,21 @@ import {
 } from '@nestjs/common';
 import { UserRole } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt.guard';
-
 import { SupportTicketsService } from './support-tickets.service';
-
 import { CreateSupportTicketDto } from './dto/create-support-ticket.dto';
 
 @Controller('support-tickets')
 @UseGuards(JwtAuthGuard)
-
 export class SupportTicketsController {
-
   constructor(private readonly supportTicketsService: SupportTicketsService) {}
 
   @Post()
-
   async create(@Req() req: any, @Body() dto: CreateSupportTicketDto) {
     const userId = req.user?.userId || req.user?.sub || dto.userId;
     if (!userId) {
       throw new BadRequestException('Unable to identify user. Please sign in again.');
     }
     return this.supportTicketsService.create(userId, dto);
-
   }
 
   @Get('me')
@@ -45,7 +39,6 @@ export class SupportTicketsController {
   }
 
   @Get('user/:userId')
-
   async getUserTickets(@Req() req: any, @Param('userId') userId: string) {
     const requesterId = req.user?.userId || req.user?.sub;
     if (!requesterId) {
@@ -54,29 +47,44 @@ export class SupportTicketsController {
     if (req.user.role !== UserRole.ADMIN && requesterId !== userId) {
       throw new ForbiddenException('You can only access your own support tickets');
     }
-
     return this.supportTicketsService.getUserTickets(userId);
-
   }
 
   @Get(':id')
-
   async getOne(@Req() req: any, @Param('id') id: string) {
     const requesterId = req.user?.userId || req.user?.sub;
     if (!requesterId) {
       throw new BadRequestException('Unable to identify user. Please sign in again.');
     }
+    return this.supportTicketsService.getOneForUser(id, requesterId, req.user.role);
+  }
 
-    return this.supportTicketsService.getOneForUser(
-      id,
-      requesterId,
-      req.user.role,
-    );
+  @Get(':id/messages')
+  async getMessages(@Req() req: any, @Param('id') id: string) {
+    const userId = req.user?.userId || req.user?.sub;
+    if (!userId) {
+      throw new BadRequestException('Unable to identify user. Please sign in again.');
+    }
+    return this.supportTicketsService.getMessages(id, userId, req.user.role);
+  }
 
+  @Post(':id/messages')
+  async addMessage(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Body() body: { message: string },
+  ) {
+    const userId = req.user?.userId || req.user?.sub;
+    if (!userId) {
+      throw new BadRequestException('Unable to identify user. Please sign in again.');
+    }
+    if (!body.message?.trim()) {
+      throw new BadRequestException('Message is required');
+    }
+    return this.supportTicketsService.addTraderMessage(id, userId, body.message.trim());
   }
 
   @Patch(':id/status')
-
   async updateStatus(
     @Req() req: any,
     @Param('id') id: string,
@@ -85,9 +93,6 @@ export class SupportTicketsController {
     if (req.user.role !== UserRole.ADMIN) {
       throw new ForbiddenException('Only admin can update ticket status');
     }
-
     return this.supportTicketsService.updateStatus(id, body.status);
-
   }
-
 }

@@ -1230,7 +1230,9 @@
     "daily_locked": "ล็อครายวัน",
     "dailylocked": "ล็อครายวัน",
     "Dailylocked": "ล็อครายวัน",
-    "disqualified": "ถูกตัดสิทธิ์"
+    "disqualified": "ถูกตัดสิทธิ์",
+    "waitingforadmin": "รอผู้ดูแลระบบ",
+    "waitingfortrader": "รอเทรดเดอร์"
   },
   "admin": {
     "dashboard": {

@@ -22,6 +22,7 @@ import AdminViolations from "./AdminViolations";
 import AdminCoupons from "./AdminCoupons";
 
 import AdminSupport from "./AdminSupport";
+import AdminTicketChat from "./AdminTicketChat";
 
 import AdminSettings from "./AdminSettings";
 
@@ -86,6 +87,7 @@ const PAGES = {
 }
 
 function _getCurrentPage(url) {
+    if (url.startsWith('/AdminSupport/tickets/')) return 'AdminTicketChat';
     if (url.endsWith('/')) {
         url = url.slice(0, -1);
     }
@@ -127,6 +129,7 @@ function PagesContent() {
                                 <Route path="/AdminPayments" element={<AdminPayments />} />
                                 <Route path="/AdminViolations" element={<AdminViolations />} />
                                 <Route path="/AdminCoupons" element={<AdminCoupons />} />
+                                <Route path="/AdminSupport/tickets/:id" element={<AdminTicketChat />} />
                                 <Route path="/AdminSupport" element={<AdminSupport />} />
                                 <Route path="/AdminSettings" element={<AdminSettings />} />
                                 <Route path="/AdminBrokerServers" element={<AdminBrokerServers />} />
