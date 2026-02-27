@@ -19,6 +19,22 @@ export class PricesService {
   private cryptoCache: { data: CryptoPrices; timestamp: number } | null = null;
   private activeCryptoRequest: Promise<CryptoPrices> | null = null;
 
+  // Session open price cache — stores first bid seen per symbol on server start
+  // Used to calculate daily % change since session began
+  private readonly sessionOpenCache = new Map<string, number>();
+
+  /** Returns change% since session open. Stores first bid as open reference. */
+  getChangePercent(symbol: string, currentBid: number): number {
+    if (!currentBid || currentBid <= 0) return 0;
+    if (!this.sessionOpenCache.has(symbol)) {
+      this.sessionOpenCache.set(symbol, currentBid);
+      return 0;
+    }
+    const openBid = this.sessionOpenCache.get(symbol)!;
+    if (!openBid || openBid <= 0) return 0;
+    return parseFloat(((currentBid - openBid) / openBid * 100).toFixed(2));
+  }
+
   private readonly BINANCE_API = 'https://api.binance.com/api/v3';
 
   constructor(
@@ -77,7 +93,7 @@ export class PricesService {
         wsData.forEach((val, key) => {
           const coinId = coinMap[key];
           if (coinId) {
-            prices[coinId] = { usd: val.bid, usd_24h_change: 0 }; // WS doesn't give 24h change, handled elsewhere or ignored
+            prices[coinId] = { usd: val.bid, usd_24h_change: undefined }; // change calculated via sessionOpenCache
           }
         });
         return prices;
@@ -167,7 +183,7 @@ export class PricesService {
           bid: directQuote.bid,
           ask: directQuote.ask,
           spread: 1.5,
-          change: 0,
+          change: this.getChangePercent(s.symbol, directQuote.bid),
         };
       }
       // Fallback Cross Rate
@@ -182,7 +198,7 @@ export class PricesService {
         bid: price,
         ask: price + spread,
         spread: s.symbol.includes('JPY') ? 2.0 : 1.5,
-        change: 0,
+        change: this.getChangePercent(s.symbol, price),
       };
     });
     // Crypto Formatting
@@ -203,7 +219,9 @@ export class PricesService {
           bid: val.usd,
           ask: val.usd * 1.001,
           spread: 10,
-          change: val.usd_24h_change || 0,
+          change: val.usd_24h_change != null
+            ? parseFloat(val.usd_24h_change.toFixed(2))
+            : this.getChangePercent(symbolMap[key], val.usd),
         };
       })
       .filter((x) => x.symbol);
@@ -225,7 +243,7 @@ export class PricesService {
         bid,
         ask,
         spread: s.spread,
-        change: 0,
+        change: this.getChangePercent(s.symbol, bid),
       };
     });
 

@@ -108,6 +108,7 @@ export class MarketDataService {
             price: wsPrice.bid,
             bid: wsPrice.bid,
             ask: wsPrice.ask,
+            change: this.pricesService.getChangePercent(normalizedSymbol, wsPrice.bid),
             timestamp: new Date(wsPrice.timestamp).toISOString(),
           };
         }
@@ -126,6 +127,7 @@ export class MarketDataService {
             price: wsPrice.bid,
             bid: wsPrice.bid,
             ask: wsPrice.ask,
+            change: this.pricesService.getChangePercent(normalizedSymbol, wsPrice.bid),
             timestamp: new Date(wsPrice.timestamp).toISOString(),
           };
         }
@@ -433,6 +435,7 @@ export class MarketDataService {
           bid: priceData.bid,
           ask: priceData.ask,
           price: priceData.price,
+          change: priceData.change ?? 0,
           timestamp: new Date(priceData.timestamp).getTime(),
         };
       } catch (e) {
