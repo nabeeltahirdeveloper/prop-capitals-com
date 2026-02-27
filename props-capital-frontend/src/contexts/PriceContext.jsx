@@ -116,7 +116,7 @@ export function PriceProvider({ children, currentPathname = null }) {
   /**
    * Update price with jump detection
    */
-  const updatePrice = useCallback((symbol, bid, ask, timestamp) => {
+  const updatePrice = useCallback((symbol, bid, ask, timestamp, change) => {
     if (
       !symbol ||
       typeof bid !== "number" ||
@@ -154,6 +154,7 @@ export function PriceProvider({ children, currentPathname = null }) {
         ask,
         price: bid, // Use bid as price
         timestamp: timestamp || now,
+        change: change ?? prev[symbol]?.change ?? 0,
       },
     }));
 
@@ -205,6 +206,7 @@ export function PriceProvider({ children, currentPathname = null }) {
                 priceData.bid,
                 priceData.ask,
                 priceData.timestamp || Date.now(),
+                priceData.change,
               );
               if (updated) {
                 updateCount++;

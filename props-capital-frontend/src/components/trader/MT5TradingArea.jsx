@@ -346,8 +346,7 @@ const MT5TradingArea = ({
           ...s,
           bid: livePrice.bid ?? s.bid,
           ask: livePrice.ask ?? s.ask,
-          // change field maintain karo (agar MT5 se nahi aata)
-          change: s.change ?? 0,
+          change: livePrice.change ?? s.change ?? 0,
         };
 
         return next;
