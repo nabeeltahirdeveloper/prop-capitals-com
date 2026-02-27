@@ -46,14 +46,30 @@ export function useSupportSocket({ ticketId } = {}) {
       const msgTicketId = message?.ticketId;
       if (!msgTicketId) return;
 
-      queryClient.setQueryData(
-        ['ticket-messages', msgTicketId],
-        (old) => {
-          const list = Array.isArray(old) ? old : [];
-          if (list.some((m) => m.id === message.id)) return old;
-          return [...list, message];
-        },
-      );
+      queryClient.setQueryData(['ticket-messages', msgTicketId], (old) => {
+        const list = Array.isArray(old) ? old : [];
+
+        // If the real message is already there, do nothing
+        if (list.some((m) => m.id === message.id)) return old;
+
+        // Replace matching optimistic message (same sender + text) with real one
+        const optimisticIndex = list.findIndex(
+          (m) =>
+            typeof m.id === 'string' &&
+            m.id.startsWith('optimistic-') &&
+            m.senderType === message.senderType &&
+            m.message === message.message,
+        );
+
+        if (optimisticIndex !== -1) {
+          const next = [...list];
+          next[optimisticIndex] = message;
+          return next;
+        }
+
+        // No optimistic match → just append
+        return [...list, message];
+      });
 
       queryClient.invalidateQueries({
         queryKey: ['support-tickets'],
@@ -63,6 +79,14 @@ export function useSupportSocket({ ticketId } = {}) {
 
     const onStatusChanged = ({ ticketId: tid, status }) => {
       if (!tid) return;
+
+      // Update the active ticket detail cache in-place so UI reflects status immediately
+      queryClient.setQueryData(['support-ticket-detail', tid], (old) => {
+        if (!old) return old;
+        return { ...old, status };
+      });
+
+      // Keep list & messages in sync via refetch
       queryClient.invalidateQueries({
         queryKey: ['support-tickets'],
         exact: false,

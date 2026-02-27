@@ -75,16 +75,22 @@ export default function AdminSupport() {
     },
   });
 
-  const getUserDisplayName = (user) => {
-    if (!user) return 'N/A';
-    const profile = user.profile;
-    if (profile?.firstName || profile?.lastName) {
-      return [profile.firstName, profile.lastName].filter(Boolean).join(' ');
+  const getUserDisplayName = (user, ticket) => {
+    if (user) {
+      const profile = user.profile;
+      if (profile?.firstName || profile?.lastName) {
+        return [profile.firstName, profile.lastName].filter(Boolean).join(' ');
+      }
+      return user.email || 'N/A';
     }
-    return user.email || 'N/A';
+    if (ticket?.guestName || ticket?.guestEmail) {
+      return ticket.guestName || ticket.guestEmail || 'Guest';
+    }
+    return 'Guest';
   };
 
-  const getUserEmail = (user) => user?.email || 'N/A';
+  const getUserEmail = (user, ticket) =>
+    user?.email || ticket?.guestEmail || 'N/A';
 
   const mapStatusToFrontend = (status) => {
     const statusMap = {
@@ -102,10 +108,11 @@ export default function AdminSupport() {
   const mapPriorityToFrontend = (priority) => priority ? priority.toLowerCase() : 'medium';
 
   const displayTickets = useMemo(() => {
-    return (Array.isArray(ticketsData) ? ticketsData : []).map(ticket => ({
+    return (Array.isArray(ticketsData) ? ticketsData : []).map((ticket) => ({
       id: ticket.id,
-      displayName: getUserDisplayName(ticket.user),
-      email: getUserEmail(ticket.user),
+      displayName: getUserDisplayName(ticket.user, ticket),
+      email: getUserEmail(ticket.user, ticket),
+      isGuest: !ticket.user,
       subject: ticket.subject,
       category: mapCategoryToFrontend(ticket.category),
       priority: mapPriorityToFrontend(ticket.priority),
@@ -167,7 +174,14 @@ export default function AdminSupport() {
       cell: (row) => (
         <div>
           <p className="text-foreground font-medium line-clamp-1">{row.subject}</p>
-          <p className="text-xs text-muted-foreground">{row.displayName}</p>
+          <p className="text-xs text-muted-foreground flex items-center gap-1">
+            <span>{row.displayName}</span>
+            {row.isGuest && (
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full border border-border text-[10px] uppercase tracking-wide text-muted-foreground">
+                Guest
+              </span>
+            )}
+          </p>
           <p className="text-xs text-muted-foreground/70">{row.email}</p>
         </div>
       )
