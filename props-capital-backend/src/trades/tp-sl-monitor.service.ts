@@ -184,7 +184,7 @@ export class TpSlMonitorService {
           const symbolUpper = String(position.symbol || '').toUpperCase();
           const isXAU = symbolUpper.includes('XAU');
           const isXAG = symbolUpper.includes('XAG');
-          const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 100 : 100000;
+          const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 1 : 100000;
           const profit = priceDiff * position.volume * contractSize;
 
           positionsToClose.push({
@@ -258,11 +258,15 @@ export class TpSlMonitorService {
    * Helper to check if symbol is crypto
    */
   private isCryptoSymbol(symbol: string): boolean {
-    return symbol.includes('BTC') || 
-           symbol.includes('ETH') || 
-           symbol.includes('SOL') || 
+    return symbol.includes('BTC') ||
+           symbol.includes('ETH') ||
+           symbol.includes('SOL') ||
            symbol.includes('XRP') ||
-           symbol.includes('ADA') || 
-           symbol.includes('DOGE');
+           symbol.includes('ADA') ||
+           symbol.includes('DOGE') ||
+           symbol.includes('BNB') ||
+           symbol.includes('AVAX') ||
+           symbol.includes('DOT') ||
+           symbol.includes('LINK');
   }
 }

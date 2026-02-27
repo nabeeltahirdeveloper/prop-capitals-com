@@ -1,9 +1,37 @@
-import { Injectable, NotFoundException, BadRequestException, forwardRef, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  forwardRef,
+  Inject,
+} from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { EvaluationService } from '../evaluation/evaluation.service';
 import { TradingEventsGateway } from '../websocket/trading-events.gateway';
-import { calculateTradingDaysMetrics } from '../utils/trading-days-utils';
+
+interface CreateTradeData {
+  accountId: string;
+  profit?: number;
+  openPrice: number;
+  closePrice?: number | null;
+  volume: number;
+  symbol: string;
+  stopLoss?: number | null;
+  takeProfit?: number | null;
+  positionType?: string;
+  type?: string;
+  leverage?: number;
+}
+
+interface UpdateTradeData {
+  closePrice?: number;
+  closedAt?: Date;
+  profit?: number;
+  stopLoss?: number | null;
+  takeProfit?: number | null;
+  closeReason?: string;
+}
 
 @Injectable()
 export class TradesService {
@@ -12,26 +40,47 @@ export class TradesService {
     @Inject(forwardRef(() => EvaluationService))
     private evaluationService: EvaluationService,
     private tradingEventsGateway: TradingEventsGateway,
-    
   ) {}
 
   private static readonly SPOT_SYMBOLS = [
-    'BTCUSDT','ETHUSDT','SOLUSDT','XRPUSDT','DOGEUSDT',
-    'BNBUSDT','ADAUSDT','AVAXUSDT','DOTUSDT',
-    //'MATICUSDT',
+    'BTCUSDT',
+    'ETHUSDT',
+    'SOLUSDT',
+    'XRPUSDT',
+    'DOGEUSDT',
+    'BNBUSDT',
+    'ADAUSDT',
+    'AVAXUSDT',
+    'DOTUSDT',
     'LINKUSDT',
   ];
 
   // Create trade and trigger evaluation engine
-  async createTrade(data: any) {
-    const { accountId, profit, openPrice, closePrice, volume, symbol, stopLoss, takeProfit } = data;
+  async createTrade(data: CreateTradeData) {
+    const {
+      accountId,
+      profit,
+      openPrice,
+      closePrice,
+      volume,
+      symbol,
+      stopLoss,
+      takeProfit,
+    } = data;
     const positionType: string = data.positionType === 'SPOT' ? 'SPOT' : 'CFD';
     const account = await this.prisma.tradingAccount.findUnique({
       where: { id: accountId },
       include: {
         challenge: true,
         trades: {
-          select: { openedAt: true, closePrice: true, symbol: true, volume: true, openPrice: true },
+          select: {
+            openedAt: true,
+            closePrice: true,
+            symbol: true,
+            volume: true,
+            openPrice: true,
+            leverage: true,
+          },
         },
       },
     });
@@ -42,54 +91,97 @@ export class TradesService {
 
     // Check account status - block trading if locked or disqualified
     if (account.status === ('DAILY_LOCKED' as any)) {
-      throw new BadRequestException('Daily loss limit reached. Trading locked until tomorrow.');
+      throw new BadRequestException(
+        'Daily loss limit reached. Trading locked until tomorrow.',
+      );
     }
     if (account.status === ('DISQUALIFIED' as any)) {
-      throw new BadRequestException('Challenge disqualified. Trading is no longer allowed.');
+      throw new BadRequestException(
+        'Challenge disqualified. Trading is no longer allowed.',
+      );
     }
-    if (account.status === ('CLOSED' as any) || account.status === ('PAUSED' as any)) {
+    if (
+      account.status === ('CLOSED' as any) ||
+      account.status === ('PAUSED' as any)
+    ) {
       throw new BadRequestException('Account is not active for trading.');
     }
 
     // Spot-specific validation
     if (positionType === 'SPOT') {
-      const sym = String(symbol || '').toUpperCase().replace('/', '');
+      const sym = String(symbol || '')
+        .toUpperCase()
+        .replace('/', '');
       if (!TradesService.SPOT_SYMBOLS.includes(sym)) {
-        throw new BadRequestException(`Symbol ${symbol} is not available for spot trading.`);
+        throw new BadRequestException(
+          `Symbol ${symbol} is not available for spot trading.`,
+        );
       }
       data.leverage = 1;
     }
 
+    // Compute effective leverage for this trade (used for margin validation AND stored on the trade)
+    const requestedLeverage =
+      positionType === 'SPOT' ? 1 : Number(data.leverage);
+    const effectiveLeverage =
+      Number.isFinite(requestedLeverage) && requestedLeverage > 0
+        ? requestedLeverage
+        : 100;
+
     // Enforce margin availability to prevent opening unlimited max-size positions.
-    // Existing trades default to 1:100 for reserved margin calculation.
     if (closePrice === undefined || closePrice === null) {
-      const requestedLeverage = positionType === 'SPOT' ? 1 : Number(data?.leverage);
-      const effectiveLeverage = Number.isFinite(requestedLeverage) && requestedLeverage > 0 ? requestedLeverage : 1;
-      const isNewCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|LINK|USDT/i.test(String(symbol || ''));
+      const isNewCrypto =
+        /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|LINK|USDT/i.test(
+          String(symbol || ''),
+        );
       const isNewXAU = /XAU/i.test(String(symbol || ''));
       const isNewXAG = /XAG/i.test(String(symbol || ''));
-      const newContractSize = isNewXAU ? 100 : isNewXAG ? 5000 : isNewCrypto ? 100 : 100000;
-      const requiredMargin = (Number(volume) * newContractSize * Number(openPrice)) / effectiveLeverage;
+      const newContractSize = isNewXAU
+        ? 100
+        : isNewXAG
+          ? 5000
+          : isNewCrypto
+            ? 1
+            : 100000;
+      const requiredMargin =
+        (Number(volume) * newContractSize * Number(openPrice)) /
+        effectiveLeverage;
 
       const usedMargin = (account.trades || [])
-        .filter((t: any) => t.closePrice === null)
-        .reduce((sum: number, t: any) => {
-          const isCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|LINK|USDT/i.test(String(t.symbol || ''));
+        .filter((t) => t.closePrice === null)
+        .reduce((sum: number, t) => {
+          const isCrypto =
+            /BTC|ETH|SOL|XRP|ADA|DOGE|BNB|AVAX|DOT|LINK|USDT/i.test(
+              String(t.symbol || ''),
+            );
           const isXAU = /XAU/i.test(String(t.symbol || ''));
           const isXAG = /XAG/i.test(String(t.symbol || ''));
-          const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 100 : 100000;
-          const existingLeverage = Number((t as any)?.leverage);
-          const effectiveExistingLeverage = Number.isFinite(existingLeverage) && existingLeverage > 0 ? existingLeverage : 1;
-          return sum + ((Number(t.volume) * contractSize * Number(t.openPrice)) / effectiveExistingLeverage);
+          const contractSize = isXAU
+            ? 100
+            : isXAG
+              ? 5000
+              : isCrypto
+                ? 1
+                : 100000;
+          const tradeLeverage = Number((t as any).leverage) > 0 ? Number((t as any).leverage) : 100;
+          return (
+            sum + (Number(t.volume) * contractSize * Number(t.openPrice)) / tradeLeverage
+          );
         }, 0);
 
-      const currentBalance = Number(account.balance ?? account.initialBalance ?? 0);
+      const currentBalance = Number(
+        account.balance ?? account.initialBalance ?? 0,
+      );
       const availableMargin = Math.max(0, currentBalance - usedMargin);
       if (!Number.isFinite(requiredMargin) || requiredMargin <= 0) {
-        throw new BadRequestException('Invalid margin requirements for requested trade.');
+        throw new BadRequestException(
+          'Invalid margin requirements for requested trade.',
+        );
       }
       if (requiredMargin > availableMargin) {
-        throw new BadRequestException(`Insufficient margin. Required ${requiredMargin.toFixed(2)}, available ${availableMargin.toFixed(2)}.`);
+        throw new BadRequestException(
+          `Insufficient margin. Required ${requiredMargin.toFixed(2)}, available ${availableMargin.toFixed(2)}.`,
+        );
       }
     }
 
@@ -98,32 +190,38 @@ export class TradesService {
       data: {
         tradingAccountId: accountId,
         symbol,
-        type: data.type || 'BUY',
+        type: (data.type || 'BUY') as 'BUY' | 'SELL',
         volume,
         openPrice,
-        closePrice,
+        closePrice: closePrice ?? null,
         stopLoss: stopLoss ?? null,
         takeProfit: takeProfit ?? null,
         profit: profit || 0,
         openedAt: new Date(),
         closedAt: closePrice ? new Date() : null,
         positionType,
-      } as any,
+        leverage: effectiveLeverage,
+      },
     });
 
     // 2️⃣ Update balance/equity (simple: balance += profit)
     // When opening a trade, profit is undefined/0 — balance stays the same
     const effectiveProfit = profit || 0;
-    const newBalance = (account.balance ?? account.initialBalance) + effectiveProfit;
+    const newBalance =
+      (account.balance ?? account.initialBalance) + effectiveProfit;
     const newEquity = newBalance;
 
     // Update maxEquityToDate if equity increased
-    const currentMaxEquity = (account as any).maxEquityToDate ?? account.initialBalance;
-    const updateData: any = {
+    const currentMaxEquity = account.maxEquityToDate ?? account.initialBalance;
+    const updateData: Partial<{
+      balance: number;
+      equity: number;
+      maxEquityToDate: number;
+    }> = {
       balance: newBalance,
       equity: newEquity,
     };
-    
+
     if (newEquity > currentMaxEquity) {
       updateData.maxEquityToDate = newEquity;
     }
@@ -134,7 +232,8 @@ export class TradesService {
     });
 
     // 3️⃣ Run evaluation engine
-    const evaluation = await this.evaluationService.evaluateAccountAfterTrade(accountId);
+    const evaluation =
+      await this.evaluationService.evaluateAccountAfterTrade(accountId);
 
     // 🔥 4️⃣ Calculate trading days metrics for real-time update
     const allTrades = [...account.trades, { openedAt: trade.openedAt }]; // Include the new trade
@@ -147,17 +246,22 @@ export class TradesService {
     // Check if traded today
     const today = new Date().toISOString().substring(0, 10);
     const tradedToday = allTrades.some(
-      (t) => t.openedAt && t.openedAt.toISOString().substring(0, 10) === today
+      (t) => t.openedAt && t.openedAt.toISOString().substring(0, 10) === today,
     );
 
     // Calculate days remaining
-    const daysRemaining = Math.max(0, account.challenge.minTradingDays - tradingDaysCompleted);
+    const daysRemaining = Math.max(
+      0,
+      account.challenge.minTradingDays - tradingDaysCompleted,
+    );
 
     // Calculate profit percent for real-time display
-    const initialBalance = account.initialBalance || account.challenge.accountSize || 0;
-    const profitPercent = initialBalance > 0 
-      ? ((newEquity - initialBalance) / initialBalance) * 100 
-      : 0;
+    const initialBalance =
+      account.initialBalance || account.challenge.accountSize || 0;
+    const profitPercent =
+      initialBalance > 0
+        ? ((newEquity - initialBalance) / initialBalance) * 100
+        : 0;
 
     // 🔥 5️⃣ Emit real-time account update via WebSocket
     this.tradingEventsGateway.emitAccountUpdate(accountId, {
@@ -195,7 +299,7 @@ export class TradesService {
   }
 
   // Update trade when position is closed or SL/TP is modified
-  async updateTrade(tradeId: string, data: any) {
+  async updateTrade(tradeId: string, data: UpdateTradeData) {
     const { closePrice, profit, stopLoss, takeProfit, closeReason } = data;
 
     // Get the trade first
@@ -211,7 +315,14 @@ export class TradesService {
     const account = trade.tradingAccount;
 
     // Build update data object
-    const updateData: any = {};
+    const updateData: Partial<{
+      closePrice: number;
+      closedAt: Date;
+      profit: number;
+      stopLoss: number | null;
+      takeProfit: number | null;
+      closeReason: string;
+    }> = {};
 
     // If closing the trade
     if (closePrice !== undefined) {
@@ -240,11 +351,10 @@ export class TradesService {
           symbolUpper.includes('BNB') ||
           symbolUpper.includes('AVAX') ||
           symbolUpper.includes('DOT') ||
-      //    symbolUpper.includes('MATIC') ||
           symbolUpper.includes('LINK');
         const isXAU = symbolUpper.includes('XAU');
         const isXAG = symbolUpper.includes('XAG');
-        const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 100 : 100000;
+        const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 1 : 100000;
         const priceDiff =
           trade.type === 'BUY'
             ? closePrice - trade.openPrice
@@ -286,11 +396,7 @@ export class TradesService {
     }
 
     // CRITICAL: Preserve breach snapshot fields - do NOT overwrite them
-    // If breach snapshot was already captured, keep all those fields
-    if (trade.breachTriggered) {
-      // Don't include breach fields in updateData - they're already set
-      // This ensures they're not accidentally overwritten
-    }
+    // If breachTriggered is set, breach fields were already captured and we skip adding them
 
     // 1️⃣ Update trade
     // NOTE: Breach snapshot fields are preserved - they were set before closing
@@ -307,19 +413,27 @@ export class TradesService {
 
       const nextEquity = newBalance;
 
-      const accountUpdateData: any = {
+      const accountUpdateData: Partial<{
+        balance: number;
+        equity: number;
+        maxEquityToDate: number;
+        todayStartEquity: number;
+        minEquityToday: number;
+        lastDailyReset: Date;
+        minEquityOverall: number;
+      }> = {
         balance: newBalance,
         equity: nextEquity,
       };
 
       const initialBalance = account.initialBalance ?? newBalance;
-      const currentMaxEquity = (account as any).maxEquityToDate ?? initialBalance;
+      const currentMaxEquity = account.maxEquityToDate ?? initialBalance;
       if (nextEquity > currentMaxEquity) {
         accountUpdateData.maxEquityToDate = nextEquity;
       }
 
       const today = new Date().toISOString().substring(0, 10);
-      const lastReset = (account as any).lastDailyReset;
+      const lastReset = account.lastDailyReset;
       const lastResetDate = lastReset
         ? new Date(lastReset).toISOString().substring(0, 10)
         : null;
@@ -330,13 +444,13 @@ export class TradesService {
         accountUpdateData.minEquityToday = nextEquity;
         accountUpdateData.lastDailyReset = new Date();
       } else {
-        const currentMinToday = (account as any).minEquityToday ?? nextEquity;
+        const currentMinToday = account.minEquityToday ?? nextEquity;
         if (nextEquity < currentMinToday) {
           accountUpdateData.minEquityToday = nextEquity;
         }
       }
 
-      const currentMinOverall = (account as any).minEquityOverall ?? initialBalance;
+      const currentMinOverall = account.minEquityOverall ?? initialBalance;
       if (nextEquity < currentMinOverall) {
         accountUpdateData.minEquityOverall = nextEquity;
       }
@@ -347,7 +461,9 @@ export class TradesService {
       });
 
       // 3️⃣ Run evaluation engine when trade is closed
-      const evaluation = await this.evaluationService.evaluateAccountAfterTrade(account.id);
+      const evaluation = await this.evaluationService.evaluateAccountAfterTrade(
+        account.id,
+      );
 
       return {
         trade: updatedTrade,
@@ -365,7 +481,10 @@ export class TradesService {
   /**
    * Modify position - update stop loss and/or take profit on open positions
    */
-  async modifyPosition(tradeId: string, data: { stopLoss?: number; takeProfit?: number }) {
+  async modifyPosition(
+    tradeId: string,
+    data: { stopLoss?: number; takeProfit?: number },
+  ) {
     const { stopLoss, takeProfit } = data;
 
     // Get the trade first
@@ -383,7 +502,10 @@ export class TradesService {
     }
 
     // Build update data object
-    const updateData: any = {};
+    const updateData: Partial<{
+      stopLoss: number | null;
+      takeProfit: number | null;
+    }> = {};
 
     if (stopLoss !== undefined) {
       updateData.stopLoss = stopLoss ?? null;

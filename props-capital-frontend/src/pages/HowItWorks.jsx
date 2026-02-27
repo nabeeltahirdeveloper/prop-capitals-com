@@ -128,8 +128,9 @@ const HowItWorksPage = () => {
                     <div className="w-2.5 h-2.5 lg:w-3 lg:h-3 rounded-full bg-emerald-500"></div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 lg:w-6 lg:h-6 bg-gradient-to-br from-amber-400 to-amber-600 rounded flex items-center justify-center">
-                      <span className="text-[#0a0d12] font-black text-[6px] lg:text-[8px]">PC</span>
+                    <div className="w-5 h-5 lg:w-6 lg:h-6 rounded overflow-hidden flex items-center justify-center">
+                      <img src="/assets/images/logo-light.png" alt="Logo" className="block dark:hidden w-full h-full object-contain" />
+                      <img src="/assets/images/logo-dark.png" alt="Logo Dark" className="hidden dark:block w-full h-full object-contain" />
                     </div>
                     <span className={`font-semibold text-xs lg:text-sm hidden sm:inline ${isDark ? 'text-white' : 'text-slate-900'}`}>Prop Capitals Trading Platform</span>
                     <span className={`font-semibold text-xs sm:hidden ${isDark ? 'text-white' : 'text-slate-900'}`}>Trading Platform</span>
@@ -347,3 +348,6 @@ const HowItWorksPage = () => {
 };
 
 export default HowItWorksPage;
+
+
+

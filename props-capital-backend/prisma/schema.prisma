@@ -426,6 +426,18 @@ model ContactMessage {
   updatedAt DateTime        @updatedAt
 }
 
+model SupportTicketMessage {
+  id            String        @id
+  ticketId      String
+  senderType    SenderType
+  senderId      String?
+  message       String
+  createdAt     DateTime      @default(now())
+  SupportTicket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId, createdAt])
+}
+
 enum UserRole {
   TRADER
   ADMIN
@@ -600,4 +612,9 @@ enum ContactCategory {
   PAYOUT
   TECHNICAL
   OTHER
+}
+
+enum SenderType {
+  ADMIN
+  TRADER
 }

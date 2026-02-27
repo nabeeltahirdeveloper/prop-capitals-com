@@ -545,8 +545,9 @@ export default function Layout({ children, currentPageName }) {
               className={`flex items-center min-w-0 transition-all ${sidebarCollapsed ? "justify-center" : "gap-2 flex-1 min-w-0 lg:flex-none"}`}
               title="Admin Dashboard"
             >
-              <div className="w-10 h-10 shrink-0 mx-auto bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center text-[#0a0d12] font-black ">
-                PC
+              <div className="w-10 h-10 shrink-0 mx-auto rounded-xl overflow-hidden flex items-center justify-center">
+                <img src="/assets/images/logo-light.png" alt="Logo" className="block dark:hidden w-full h-full object-contain" />
+                <img src="/assets/images/logo-dark.png" alt="Logo Dark" className="hidden dark:block w-full h-full object-contain" />
               </div>
               {!sidebarCollapsed && (
                 <span className="min-w-0 block truncate text-base font-bold text-sidebar-foreground lg:text-xl">
@@ -910,3 +911,6 @@ export default function Layout({ children, currentPageName }) {
     </div>
   );
 }
+
+
+
