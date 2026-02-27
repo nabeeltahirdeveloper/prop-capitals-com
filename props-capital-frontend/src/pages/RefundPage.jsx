@@ -4,6 +4,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 
 const RefundPage = () => {
   const { isDark } = useTheme();
+  
 
   return (
     <div className={`min-h-screen pt-20 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
