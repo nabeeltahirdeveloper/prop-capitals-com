@@ -129,6 +129,7 @@ const CommonTerminalWrapper = ({
   const tradingEngine = useMemo(
     () => getTradingEngineForPlatform(platformKey),
     [platformKey],
+    // console.log(platformKey)
   );
   // Local alias for formatPrice to keep JSX concise
   const formatPrice = tradingEngine.formatPrice;
@@ -995,7 +996,8 @@ const CommonTerminalWrapper = ({
       </div>
 
       {/* ==================== POSITIONS / PENDING / HISTORY ==================== */}
-      <div className={cardClass}>
+      { platformKey !== "mt5" &&  (
+            <div className={cardClass}>
         <div className={`flex ${borderColor} border-b overflow-x-auto`}>
           {tabs.map((tab) => (
             <button
@@ -1509,6 +1511,9 @@ const CommonTerminalWrapper = ({
           ── END WALLET TAB ── */}
         </div>
       </div>
+        )
+      }
+    
 
       {/* ==================== TRADING STYLE RULES ==================== */}
       <TradingStyleRules challenge={selectedChallenge} />
