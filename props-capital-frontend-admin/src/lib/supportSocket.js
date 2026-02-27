@@ -1,35 +1,24 @@
 import { io } from 'socket.io-client';
 
-// Use origin only so namespace is always "/support" (not e.g. "/api/support")
-function getSupportSocketUrl() {
-  const raw = import.meta.env.VITE_WEBSOCKET_URL || 'https://api-dev.prop-capitals.com';
-  try {
-    const u = new URL(raw);
-    return `${u.origin}/support`;
-  } catch {
-    return raw.replace(/\/+$/, '').replace(/#.*$/, '') + '/support';
-  }
-}
+const getAuthToken = () => {
+  return (
+    localStorage.getItem('accessToken') ||
+    localStorage.getItem('token') ||
+    localStorage.getItem('authToken') ||
+    localStorage.getItem('jwt_token')
+  );
+};
 
-const SUPPORT_SOCKET_URL = getSupportSocketUrl();
-if (typeof window !== 'undefined') {
-  console.log('[SupportSocket] Connecting to', SUPPORT_SOCKET_URL, '(namespace /support)');
-}
-
-const getAuthToken = () =>
-  localStorage.getItem('accessToken') ||
-  localStorage.getItem('token') ||
-  localStorage.getItem('jwt_token');
-
-const supportSocket = io(SUPPORT_SOCKET_URL, {
+const baseUrl = import.meta.env.VITE_WEBSOCKET_URL || import.meta.env.VITE_API_URL || 'http://localhost:5101';
+const supportSocket = io(`${baseUrl}/support`, {
   path: '/socket.io',
   auth: (cb) => cb({ token: getAuthToken() }),
   autoConnect: false,
   reconnection: true,
   reconnectionDelay: 1000,
   reconnectionDelayMax: 5000,
-  reconnectionAttempts: Infinity,
-  transports: ['websocket', 'polling'],
+  reconnectionAttempts: 10,
+  transports: ['polling', 'websocket'],
 });
 
 export function connectSupportSocket() {
