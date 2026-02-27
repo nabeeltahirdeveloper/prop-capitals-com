@@ -281,7 +281,7 @@ export default function AdminChallenges() {
   };
 
   // Map backend challenges to frontend format
-  const challenges = (challengesData || []).map((challenge) => ({
+  const challenges = (Array.isArray(challengesData) ? challengesData : []).map((challenge) => ({
     id: challenge.id,
     name: challenge.name,
     account_size: challenge.accountSize || challenge.account_size,

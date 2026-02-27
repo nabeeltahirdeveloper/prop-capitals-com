@@ -91,7 +91,7 @@ export default function AdminPayments() {
   };
 
   // Map backend payments to frontend format
-  const mappedPayments = (paymentsData || []).map((payment) => {
+  const mappedPayments = (Array.isArray(paymentsData) ? paymentsData : []).map((payment) => {
     const user = payment.user || {};
     const statusMap = {
       succeeded: "completed",

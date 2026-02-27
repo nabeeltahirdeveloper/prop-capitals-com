@@ -168,6 +168,7 @@ model Trade {
   breachUnrealizedPnl          Float?
   closeReason                  String?
   positionType                 String         @default("CFD")
+  leverage                     Float          @default(100)
   tradingAccount               TradingAccount @relation(fields: [tradingAccountId], references: [id])
 }
 
@@ -187,6 +188,7 @@ model PendingOrder {
   filledAt         DateTime?
   cancelledAt      DateTime?
   positionType     String         @default("CFD")
+  leverage         Float          @default(100)
   tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
 }
 
@@ -261,18 +263,33 @@ model Notification {
 }
 
 model SupportTicket {
-  id         String         @id @default(cuid())
-  userId     String
+  id         String                 @id @default(cuid())
+  userId     String?
+  guestName  String?
+  guestEmail String?
   subject    String
   message    String
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
-  category   TicketCategory @default(OTHER)
-  priority   TicketPriority @default(MEDIUM)
-  status     TicketStatus   @default(OPEN)
-  adminReply String?
-  repliedAt  DateTime?
-  user       User           @relation(fields: [userId], references: [id])
+  createdAt  DateTime               @default(now())
+  updatedAt  DateTime               @updatedAt
+  category   TicketCategory         @default(OTHER)
+  priority   TicketPriority         @default(MEDIUM)
+  status     TicketStatus           @default(OPEN)
+  adminReply String? // @legacy – kept for backward compat; use messages relation instead
+  repliedAt  DateTime? // @legacy – kept for backward compat
+  user       User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  messages   SupportTicketMessage[]
+}
+
+model SupportTicketMessage {
+  id         String        @id @default(cuid())
+  ticketId   String
+  senderType SenderType
+  senderId   String?
+  message    String
+  createdAt  DateTime      @default(now())
+  ticket     SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId, createdAt])
 }
 
 model BrokerServer {
@@ -518,6 +535,13 @@ enum TicketStatus {
   IN_PROGRESS
   RESOLVED
   CLOSED
+  WAITING_FOR_ADMIN
+  WAITING_FOR_TRADER
+}
+
+enum SenderType {
+  ADMIN
+  TRADER
 }
 
 enum LeadOnlineStatus {
