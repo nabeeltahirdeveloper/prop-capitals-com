@@ -426,18 +426,6 @@ model ContactMessage {
   updatedAt DateTime        @updatedAt
 }
 
-model SupportTicketMessage {
-  id            String        @id
-  ticketId      String
-  senderType    SenderType
-  senderId      String?
-  message       String
-  createdAt     DateTime      @default(now())
-  SupportTicket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-
-  @@index([ticketId, createdAt])
-}
-
 enum UserRole {
   TRADER
   ADMIN
@@ -549,11 +537,6 @@ enum TicketStatus {
   CLOSED
   WAITING_FOR_ADMIN
   WAITING_FOR_TRADER
-}
-
-enum SenderType {
-  ADMIN
-  TRADER
 }
 
 enum LeadOnlineStatus {
