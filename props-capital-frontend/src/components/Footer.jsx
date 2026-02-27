@@ -26,8 +26,9 @@ const Footer = () => {
           {/* Logo & Social */}
           <div className="col-span-2 md:col-span-1">
             <Link to="/" className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center">
-                <span className="text-[#0a0d12] font-black text-lg">PC</span>
+              <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center">
+                <img src="/assets/images/logo-light.png" alt="Logo" className="block dark:hidden w-full h-full object-contain" />
+                <img src="/assets/images/logo-dark.png" alt="Logo Dark" className="hidden dark:block w-full h-full object-contain" />
               </div>
               <div className="flex flex-col">
                 <span className={`font-bold text-sm tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
@@ -197,3 +198,6 @@ const Footer = () => {
 };
 
 export default Footer;
+
+
+

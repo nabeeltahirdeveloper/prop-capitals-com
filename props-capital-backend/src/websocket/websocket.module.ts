@@ -1,5 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TradingEventsGateway } from './trading-events.gateway';
 import { CandlesGateway } from './candles.gateway';
 import { SupportEventsGateway } from './support-events.gateway';
@@ -9,9 +10,21 @@ import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
   imports: [
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'your-secret-key-here',
-      signOptions: { expiresIn: '7d' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => {
+        const secret = configService.get<string>('JWT_SECRET');
+        if (!secret) {
+          throw new Error('JWT_SECRET environment variable is not set (required by WebsocketModule)');
+        }
+        return {
+          secret,
+          signOptions: {
+            expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '7d',
+          } as any,
+        };
+      },
+      inject: [ConfigService],
     }),
     forwardRef(() => PricesModule),
     forwardRef(() => MarketDataModule),
@@ -21,9 +34,3 @@ import { PrismaModule } from '../prisma/prisma.module';
   exports: [TradingEventsGateway, CandlesGateway, SupportEventsGateway],
 })
 export class WebsocketModule {}
-
-
-
-
-
-

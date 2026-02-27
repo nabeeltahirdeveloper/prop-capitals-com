@@ -14,11 +14,12 @@ import { useBinanceStream } from "@/hooks/useBinanceStream";
 import { getAccountTrades, createTrade, updateTrade } from "@/api/trades";
 import { createPendingOrder } from "@/api/pending-orders";
 import { getCurrentPrice } from "@/api/market-data";
-import { getAccountSummary } from "@/api/accounts";
+import { getAccountSummary, evaluateAccountRealTime } from "@/api/accounts";
 import { isCryptoSymbol } from "@/config/symbolConfig";
 import { useToast } from "@/components/ui/use-toast";
 import { useTraderTheme } from "./TraderPanelLayout";
 import TradingChart from "../trading/TradingChart";
+import ViolationModal from "../trading/ViolationModal";
 import SectionErrorBoundary from "../ui/SectionErrorBoundary";
 
 /* ───────────────────────── Symbol List (Crypto + Forex) ───────────────────────── */
@@ -255,7 +256,12 @@ const toBackendSymbol = (sym, type) => {
  *  XAG (Silver) = 5000 oz/lot
  *  Crypto       = 1 unit/lot
  *  Forex        = 100,000 units/lot
- *  Handles both "XAUUSD" and "XAU/USD" formats. */
+ *  Handles both "XAUUSD" and "XAU/USD" formats.
+ *
+ *  NOTE: Duplicates BybitEngine.getContractSpec() logic. All Bybit symbols
+ *  are crypto (contractSize=1), so XAU/XAG/forex branches are dead code.
+ *  Consider using engine.getContractSpec() instead if tradingEngine prop
+ *  becomes available in this component. */
 const getContractSize = (symbol) => {
   if (!symbol) return 100000;
   const upper = String(symbol)
@@ -343,6 +349,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   const dropdownRef = useRef(null);
   const chartRef = useRef(null);
   const [tradeMode, setTradeMode] = useState("cfd");
+  const [selectedLeverage, setSelectedLeverage] = useState(100);
+  const [violationModal, setViolationModal] = useState(null);
+  const dismissedModalAccountsRef = useRef(new Set());
+  const violationEnforcementThrottleRef = useRef({});
 
   const {
     selectedSymbol,
@@ -458,7 +468,13 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
   /* ── Account ── */
   const accountId = selectedChallenge?.id;
-  const accountStatus = selectedChallenge?.status;
+  const { data: accountSummaryData } = useQuery({
+    queryKey: ["accountSummary", accountId],
+    queryFn: () => getAccountSummary(accountId),
+    enabled: !!accountId,
+    refetchInterval: 3000,
+  });
+  const accountStatus = accountSummaryData?.account?.status ?? selectedChallenge?.status;
   const normalizedAccountStatus = String(accountStatus || "").toLowerCase();
   const isAccountLocked =
     normalizedAccountStatus === "failed" ||
@@ -467,12 +483,6 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     normalizedAccountStatus === "disqualified" ||
     normalizedAccountStatus === "closed" ||
     normalizedAccountStatus === "paused";
-  const { data: accountSummaryData } = useQuery({
-    queryKey: ["accountSummary", accountId],
-    queryFn: () => getAccountSummary(accountId),
-    enabled: !!accountId,
-    refetchInterval: 3000,
-  });
   const balance = Number.isFinite(accountSummaryData?.account?.balance)
     ? accountSummaryData.account.balance
     : selectedChallenge?.currentBalance || 0;
@@ -505,6 +515,12 @@ const BybitTradingArea = ({ selectedChallenge }) => {
           description: `Account is now ${event.status}`,
           variant: "destructive",
         });
+        dismissedModalAccountsRef.current.delete(accountId);
+        setViolationModal({
+          type: event.status,
+          shown: true,
+          accountId,
+        });
       }
     },
     [queryClient, accountId, toast],
@@ -520,6 +536,33 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     onAccountUpdate: handleAccountUpdate,
   });
 
+  /* ── Violation modal: show on status change or page load with locked status ── */
+  useEffect(() => {
+    if (!accountId) return;
+    const status = normalizedAccountStatus;
+    const type =
+      status === "daily_locked"
+        ? "DAILY_LOCKED"
+        : status === "disqualified" || status === "failed"
+          ? "DISQUALIFIED"
+          : null;
+    if (!type) {
+      setViolationModal(null);
+      dismissedModalAccountsRef.current.delete(accountId);
+      return;
+    }
+    if (!dismissedModalAccountsRef.current.has(accountId)) {
+      setViolationModal({ type, shown: true, accountId });
+    }
+  }, [accountId, normalizedAccountStatus]);
+
+  const handleViolationModalClose = useCallback(() => {
+    if (accountId) {
+      dismissedModalAccountsRef.current.add(accountId);
+    }
+    setViolationModal((prev) => (prev ? { ...prev, shown: false } : null));
+  }, [accountId]);
+
   /* ── Derived data ── */
   const openPositions = useMemo(() => {
     const t = Array.isArray(tradesData) ? tradesData : [];
@@ -529,7 +572,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     return openPositions.reduce((sum, position) => {
       const vol = Number(position.volume);
       const price = Number(position.openPrice);
-      const lev = Number(position.leverage) || 1;
+      const lev = Number(position.leverage) || 100;
       if (
         !Number.isFinite(vol) ||
         vol <= 0 ||
@@ -546,6 +589,26 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     : balance;
   const freeMargin = Math.max(0, equity - usedMargin);
   const availableBalance = Math.max(0, balance - usedMargin);
+
+  /* ── Auto-close positions when account is locked (violation enforcement) ── */
+  useEffect(() => {
+    if (!accountId || openPositions.length === 0) return;
+    if (!isAccountLocked) return;
+
+    const throttleKey = `${accountId}-locked-open-positions`;
+    const now = Date.now();
+    const last = violationEnforcementThrottleRef.current[throttleKey] || 0;
+    if (now - last < 2000) return;
+    violationEnforcementThrottleRef.current[throttleKey] = now;
+
+    evaluateAccountRealTime(accountId, Number(equity))
+      .then(() => {
+        queryClient.invalidateQueries({ queryKey: ["trades", accountId] });
+        queryClient.invalidateQueries({ queryKey: ["accountSummary", accountId] });
+      })
+      .catch(() => {});
+  }, [accountId, openPositions.length, isAccountLocked, equity, queryClient]);
+
   const recentTrades = useMemo(() => {
     const list = Array.isArray(tradesData) ? tradesData : [];
     return list
@@ -737,10 +800,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     (pct) => {
       setSliderPct(pct);
       if (!availableBalance || !effectivePrice || effectivePrice === 0) return;
-      const maxQty = availableBalance / (effectivePrice * contractSize);
+      const maxQty = (availableBalance * selectedLeverage) / (effectivePrice * contractSize);
       setQuantity(((maxQty * pct) / 100).toFixed(isCrypto ? 6 : 2));
     },
-    [availableBalance, effectivePrice, contractSize, isCrypto],
+    [availableBalance, effectivePrice, contractSize, isCrypto, selectedLeverage],
   );
 
   /* ── Symbol switching ── */
@@ -847,19 +910,11 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     async (pos, partialVol) => {
       const closePrice = pos.type === "BUY" ? currentBid : currentAsk;
       if (!closePrice) return;
-      const posCs = getContractSize(pos.symbol || currentSymbolStr);
       const fullVol = pos.volume || 0;
-      const vol = partialVol ?? fullVol;
-      const priceDiff =
-        pos.type === "BUY"
-          ? closePrice - pos.openPrice
-          : pos.openPrice - closePrice;
-      const profit = priceDiff * vol * posCs;
 
       await closePositionMutation.mutateAsync({
         tradeId: pos.id,
         closePrice,
-        profit,
         closeReason:
           partialVol && partialVol < fullVol ? "PARTIAL_CLOSE" : "MANUAL",
       });
@@ -874,6 +929,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
             type: pos.type,
             volume: remainVol,
             openPrice: closePrice,
+            leverage: selectedLeverage,
             stopLoss: pos.stopLoss ?? null,
             takeProfit: pos.takeProfit ?? null,
           });
@@ -888,6 +944,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
       accountId,
       closePositionMutation,
       createTradeMutation,
+      selectedLeverage,
     ],
   );
 
@@ -921,7 +978,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
           : currentBid;
     const maxAllowedQty =
       priceForMargin > 0 && contractSize > 0
-        ? availableBalance / (priceForMargin * contractSize)
+        ? (availableBalance * selectedLeverage) / (priceForMargin * contractSize)
         : 0;
     const requestedQty = parseFloat(quantity);
     if (requestedQty > maxAllowedQty * 1.001) {
@@ -946,6 +1003,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
           type: orderSide.toUpperCase(),
           volume: parseFloat(quantity),
           openPrice,
+          leverage: selectedLeverage,
           stopLoss: slPrice ? parseFloat(slPrice) : null,
           takeProfit: tpPrice ? parseFloat(tpPrice) : null,
         });
@@ -957,6 +1015,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
           orderType: orderType === "tp/sl" ? "STOP" : "LIMIT",
           volume: parseFloat(quantity),
           price: parseFloat(limitPrice),
+          leverage: selectedLeverage,
           stopLoss: slPrice ? parseFloat(slPrice) : null,
           takeProfit: tpPrice ? parseFloat(tpPrice) : null,
         });
@@ -975,7 +1034,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     const vol = parseFloat(quantity) || (isCrypto ? 0.001 : 0.01);
     const maxAllowed =
       currentAsk > 0 && contractSize > 0
-        ? availableBalance / (currentAsk * contractSize)
+        ? (availableBalance * selectedLeverage) / (currentAsk * contractSize)
         : 0;
     if (vol > maxAllowed * 1.001) {
       toast({
@@ -993,6 +1052,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         type: "BUY",
         volume: vol,
         openPrice: currentAsk,
+        leverage: selectedLeverage,
       });
     } catch (e) {
       console.error("[BybitTerminal] Chart buy failed:", e);
@@ -1008,6 +1068,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     contractSize,
     availableBalance,
     createTradeMutation,
+    selectedLeverage,
     toast,
   ]);
 
@@ -1017,7 +1078,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     const vol = parseFloat(quantity) || (isCrypto ? 0.001 : 0.01);
     const maxAllowed =
       currentBid > 0 && contractSize > 0
-        ? availableBalance / (currentBid * contractSize)
+        ? (availableBalance * selectedLeverage) / (currentBid * contractSize)
         : 0;
     if (vol > maxAllowed * 1.001) {
       toast({
@@ -1035,6 +1096,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         type: "SELL",
         volume: vol,
         openPrice: currentBid,
+        leverage: selectedLeverage,
       });
     } catch (e) {
       console.error("[BybitTerminal] Chart sell failed:", e);
@@ -1050,6 +1112,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     contractSize,
     availableBalance,
     createTradeMutation,
+    selectedLeverage,
     toast,
   ]);
 
@@ -1067,7 +1130,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   /* ════════════════════════ RENDER ════════════════════════ */
   return (
     <div
-      className="flex flex-col"
+      className="flex flex-col h-full overflow-hidden"
       style={{
         background: C.bg,
         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
@@ -1355,12 +1418,12 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
       {/* ═══ MAIN 3-COLUMN AREA ═══ */}
       <div
-        className="flex flex-col lg:flex-row flex-1 min-h-0"
+        className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-hidden"
         style={{ position: "relative", zIndex: 1 }}
       >
         {/* ── LEFT: CHART / OVERVIEW / DATA ── */}
         <div
-          className="flex-1 min-w-0 flex flex-col"
+          className="flex-1 min-w-0 min-h-[350px] lg:min-h-[300px] flex flex-col"
           style={{ background: C.panel }}
         >
           {chartTab === "chart" && (
@@ -1885,7 +1948,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           ? "0.001"
                           : "0.00001",
                     },
-                    { label: "Margin", value: "Perpetual (No Leverage)" },
+                    { label: "Margin", value: `Perpetual (${selectedLeverage}x Leverage)` },
                     {
                       label: "Trading Hours",
                       value: isCrypto ? "24/7" : "Mon-Fri, 00:00-24:00 UTC",
@@ -2322,7 +2385,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         {/* ── MIDDLE: ORDER BOOK ── */}
         <SectionErrorBoundary label="Order Book">
           <div
-            className="w-full lg:w-[280px] shrink-0 flex flex-col border-b lg:border-b-0 lg:border-r"
+            className="hidden lg:flex lg:w-[280px] lg:max-h-none shrink-0 flex-col lg:border-r overflow-hidden"
             style={{ background: C.panel, borderColor: C.border }}
           >
             {/* OB Header */}
@@ -2483,7 +2546,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
                   {/* Spread / current price */}
                   <div
-                    className="py-2 flex items-center gap-2 shrink-0"
+                    className="py-2 flex items-center gap-2 shrink-0 overflow-hidden"
                     style={{
                       borderTop: `1px solid ${C.border}`,
                       borderBottom: `1px solid ${C.border}`,
@@ -2493,12 +2556,13 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       <>
                         {isCrypto ? (
                           ticker?.priceChangePercent >= 0 ? (
-                            <ArrowUp size={14} style={{ color: C.green }} />
+                            <ArrowUp size={14} style={{ color: C.green, flexShrink: 0 }} />
                           ) : (
-                            <ArrowDown size={14} style={{ color: C.red }} />
+                            <ArrowDown size={14} style={{ color: C.red, flexShrink: 0 }} />
                           )
                         ) : null}
                         <span
+                          className="truncate"
                           style={{
                             fontSize: 16,
                             fontWeight: 700,
@@ -2508,19 +2572,22 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                                 : C.red
                               : C.textP,
                             fontFamily: "monospace",
+                            flexShrink: 0,
                           }}
                         >
                           {formatPrice(currentMid)}
                         </span>
-                        <span style={{ fontSize: 11, color: C.textS }}>
+                        <span className="truncate" style={{ fontSize: 11, color: C.textS, minWidth: 0 }}>
                           ≈{formatNum(currentMid)} USD
                         </span>
                         {spread > 0 && (
                           <span
+                            className="truncate"
                             style={{
                               fontSize: 10,
                               color: C.textT,
                               marginLeft: "auto",
+                              flexShrink: 0,
                             }}
                           >
                             Spread: {formatPrice(spread)}
@@ -2678,7 +2745,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         {/* ── RIGHT: TRADE PANEL ── */}
         <SectionErrorBoundary label="Trade Panel">
           <div
-            className="w-full lg:w-[280px] shrink-0 flex flex-col border-t lg:border-t-0 lg:border-l"
+            className="w-full lg:w-[280px] lg:max-h-none shrink-0 flex flex-col border-t lg:border-t-0 lg:border-l overflow-y-auto"
             style={{ background: C.panel, borderColor: C.border }}
           >
             {/* Trade header */}
@@ -2972,7 +3039,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           fontSize: 12,
                           color: C.textS,
                           width: 40,
-                          shrink: 0,
+                          flexShrink: 0,
                         }}
                       >
                         Price
@@ -3014,7 +3081,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                         fontSize: 12,
                         color: C.textS,
                         width: 58,
-                        shrink: 0,
+                        flexShrink: 0,
                       }}
                     >
                       Quantity
@@ -3060,7 +3127,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                         accentColor: orderSide === "buy" ? C.green : C.red,
                       }}
                     />
-                    <div className="flex justify-between mt-1 px-0.5">
+                    <div className="flex justify-between mt-1 px-0">
                       {[0, 25, 50, 75, 100].map((p) => (
                         <button
                           key={p}
@@ -3095,6 +3162,37 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                         >
                           {p}%
                         </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Leverage selector */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span style={{ fontSize: 12, color: C.textS }}>Leverage</span>
+                      <span style={{ fontSize: 11, color: C.yellow, fontWeight: 600 }}>
+                        {selectedLeverage}x
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-6 gap-1">
+                      {[1, 10, 25, 50, 75, 100].map((lev) => (
+                        <button
+                          key={lev}
+                          onClick={() => setSelectedLeverage(lev)}
+                          style={{
+                            padding: "4px 0",
+                            borderRadius: 4,
+                            fontSize: 11,
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            border: `1px solid ${selectedLeverage === lev ? C.yellow : C.border}`,
+                            background: selectedLeverage === lev ? C.yellowDim : "transparent",
+                            color: selectedLeverage === lev ? C.yellow : C.textS,
+                            transition: "all .15s",
+                          }}
+                        >
+                          {lev}x
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -3216,6 +3314,15 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       className="flex justify-between"
                       style={{ fontSize: 12 }}
                     >
+                      <span style={{ color: C.textS }}>Margin</span>
+                      <span style={{ color: C.textP, fontFamily: "monospace" }}>
+                        {orderValue > 0 ? formatNum(orderValue / selectedLeverage) : "--"} USDT
+                      </span>
+                    </div>
+                    <div
+                      className="flex justify-between"
+                      style={{ fontSize: 12 }}
+                    >
                       <span style={{ color: C.textS }}>Commission</span>
                       <span style={{ color: C.textS, fontFamily: "monospace" }}>
                         {qty > 0 ? `~${commission.toFixed(2)}` : "--"} USDT
@@ -3237,7 +3344,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       >
                         {balance > 0 && effectivePrice > 0
                           ? (
-                              availableBalance /
+                              (availableBalance * selectedLeverage) /
                               (effectivePrice * contractSize)
                             ).toFixed(isCrypto ? 6 : 4)
                           : "--"}{" "}
@@ -3284,6 +3391,19 @@ const BybitTradingArea = ({ selectedChallenge }) => {
           </div>
         </SectionErrorBoundary>
       </div>
+
+      {/* Violation Modal */}
+      <ViolationModal
+        isOpen={violationModal?.shown === true}
+        onClose={handleViolationModalClose}
+        violationType={violationModal?.type}
+        account={{
+          equity: equity,
+          balance: balance,
+          maxDailyDrawdown: selectedChallenge?.challenge?.maxDailyLoss ?? selectedChallenge?.rules?.maxDailyLoss ?? 5,
+          maxOverallDrawdown: selectedChallenge?.challenge?.maxTotalDrawdown ?? selectedChallenge?.rules?.maxTotalDrawdown ?? 10,
+        }}
+      />
     </div>
   );
 };

@@ -28,7 +28,7 @@ export default function TradingPanel({
 
   const symbol =
     selectedSymbol && selectedSymbol.symbol ? selectedSymbol : null;
-  const effectiveLeverage = leverageMultiplier === 0 ? 1 : leverageMultiplier;
+  const effectiveLeverage = leverageMultiplier;
 
   const hasValidSymbol = Boolean(symbol?.symbol);
   const isCrypto =
@@ -130,7 +130,7 @@ export default function TradingPanel({
       symbol: symbol.symbol,
       type: tradeDirection,
       lotSize: lotSize,
-      leverage: leverageMultiplier,
+      leverage: effectiveLeverage,
       entryPrice: executionPriceForTrade,
       stopLoss: stopLoss ? parseFloat(stopLoss) : null,
       takeProfit: takeProfit ? parseFloat(takeProfit) : null,
@@ -352,7 +352,7 @@ export default function TradingPanel({
             Leverage
           </label>
           <div className="grid grid-cols-4 gap-0.5">
-            {[0, 25, 50, 100].map((lev) => {
+            {[1, 25, 50, 100].map((lev) => {
               const active = leverageMultiplier === lev;
               return (
                 <button
@@ -371,7 +371,7 @@ export default function TradingPanel({
                       : "bg-muted/30 text-muted-foreground/80 border-border/60 hover:text-foreground hover:bg-muted/50",
                   ].join(" ")}
                 >
-                  {lev === 0 ? "0x" : `${lev}x`}
+                  {`${lev}x`}
                 </button>
               );
             })}
@@ -461,7 +461,7 @@ export default function TradingPanel({
               {t("terminal.tradingPanel.leverage")}
             </span>
             <span className="text-[9px] font-mono font-black text-emerald-600 bg-emerald-500/12 px-1.5 py-0.5 rounded-md">
-              {leverageMultiplier === 0 ? "1:1 (0x)" : `1:${effectiveLeverage}`}
+              {`1:${effectiveLeverage}`}
             </span>
           </div>
         </div>
