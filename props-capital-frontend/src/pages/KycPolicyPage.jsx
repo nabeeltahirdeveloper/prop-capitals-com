@@ -54,6 +54,7 @@ const KycPolicyPage = () => {
                 KYC verification is mandatory for access to certain services, including funded
                 trading and withdrawals.
               </p>
+              
             </section>
 
             <section>
