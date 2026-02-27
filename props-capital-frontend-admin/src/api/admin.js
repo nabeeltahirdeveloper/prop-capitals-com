@@ -244,6 +244,22 @@ export const adminUpdateTicketStatus = async (id, status, adminReply) => {
   return apiPatch(`/admin/support/tickets/${id}/status`, body);
 };
 
+export const adminGetAllSupportTicketsPaginated = async (page = 1, limit = 50) => {
+  return apiGet(`/admin/support/tickets?page=${page}&limit=${limit}`);
+};
+
+export const adminGetTicket = async (ticketId) => {
+  return apiGet(`/admin/support/tickets/${ticketId}`);
+};
+
+export const adminGetTicketMessages = async (ticketId) => {
+  return apiGet(`/admin/support/tickets/${ticketId}/messages`);
+};
+
+export const adminSendTicketMessage = async (ticketId, message) => {
+  return apiPost(`/admin/support/tickets/${ticketId}/messages`, { message });
+};
+
 // ============================================================================
 // Admin Settings
 // ============================================================================

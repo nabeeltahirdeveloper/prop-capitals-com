@@ -57,7 +57,8 @@ export default function AdminViolations() {
 
   // Map backend violation data to frontend format
   const displayViolations = useMemo(() => {
-    return (violationsData || []).map((violation) => {
+    const data = Array.isArray(violationsData) ? violationsData : [];
+    return data.map((violation) => {
       // Convert backend enum type to frontend lowercase format
       const violationType = violation.type?.toLowerCase() || "unknown";
 

@@ -180,6 +180,7 @@ export default function Layout({ children, currentPageName }) {
     "AdminViolations",
     "AdminCoupons",
     "AdminSupport",
+    "AdminTicketChat",
     "AdminSettings",
     "AdminBrokerServers",
     "AdminRiskMonitor",

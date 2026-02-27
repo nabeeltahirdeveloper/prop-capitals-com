@@ -23,7 +23,7 @@ const RiskDisclosurePage = () => {
               <div>
                 <h2 className="text-red-400 font-bold text-lg mb-2">High Risk Warning</h2>
                 <p className={isDark ? 'text-gray-300' : 'text-slate-700'}>
-                  Trading in foreign exchange (Forex), contracts for difference (CFDs), cryptocurrencies, and other financial instruments involves substantial risk of loss and is not suitable for all investors. You should carefully consider whether trading is appropriate for you in light of your circumstances, knowledge, and financial resources.
+                  Trading involves significant risk of loss and may not be suitable for all investors. Please ensure you fully understand these risks before participating and only trade with money you can afford to lose.
                 </p>
               </div>
             </div>
@@ -33,61 +33,54 @@ const RiskDisclosurePage = () => {
             <section>
               <h2 className={`text-xl font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 <TrendingDown className="w-5 h-5 text-amber-500" />
-                Market Risk
+                General Information & Risk Disclosure
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Financial markets are subject to rapid and unexpected price movements. Prices can be influenced by economic events, political developments, natural disasters, and other factors beyond anyone's control. Past performance is not indicative of future results, and you may lose more than your initial investment.
+                Risk Disclosure: All material published and disseminated by Prop Capitals should be considered as general information only. The information provided by Prop Capitals or included here is not intended to serve as (a) investment advice, (b) an offer or solicitation to buy or sell any securities, or (c) a recommendation, endorsement, or sponsorship of any security, company, or fund. Testimonials featured on Prop Capitals's website(s) may not reflect the experiences of other clients or customers and do not guarantee future performance or success. Using the information on Prop Capitals's website(s) is at your own risk. Prop Capitals, along with its partners, representatives, agents, employees, and contractors, does not accept any responsibility or liability for the use or misuse of such information.
               </p>
             </section>
 
             <section>
               <h2 className={`text-xl font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 <DollarSign className="w-5 h-5 text-amber-500" />
-                Leverage Risk
+                Trading Risk & Suitability
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Trading with leverage can amplify both profits and losses. While leverage allows you to control larger positions with a smaller amount of capital, it also increases the risk of significant losses. You should never trade with money you cannot afford to lose.
+                Trading leveraged instruments carries significant risk and is not suitable for all investors. Investors may lose all or more than their initial investment. Only risk capital—money that can be lost without affecting one's financial security or lifestyle—should be used for trading, and only those with sufficient risk capital should engage in trading. This document is not a solicitation or an offer to buy or sell futures, options, or forex. Past performance does not necessarily predict future results.
               </p>
             </section>
 
             <section>
               <h2 className={`text-xl font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 <BarChart3 className="w-5 h-5 text-amber-500" />
-                Volatility Risk
+                Hypothetical & Simulated Performance
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Financial instruments can be highly volatile. Price gaps, where the market opens at a significantly different price from the previous close, can occur, especially during periods of high volatility or after market-moving news events. This can result in losses greater than anticipated.
+                Hypothetical or simulated performance results have inherent limitations. Unlike an actual performance record, simulated results do not reflect real trading. Additionally, because these trades have not been executed, the results may have under- or overcompensated for the impact of certain market factors, such as lack of liquidity. Simulated trading programs are also typically designed with the benefit of hindsight. There is no guarantee that any account will achieve profits or losses similar to those shown.
               </p>
             </section>
 
             <section>
               <h2 className={`text-xl font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 <Shield className="w-5 h-5 text-amber-500" />
-                Simulated Trading Disclaimer
+                CFD Availability
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Prop Capitals provides simulated trading accounts for evaluation purposes. Results achieved in simulated trading may not reflect results that would have been achieved in real trading. Simulated results do not account for slippage, liquidity issues, and other factors that affect real trading.
+                Prop Capitals does not offer Contracts for Difference to residents of certain jurisdictions including the USA, Canada and Russia.
               </p>
             </section>
 
             <section>
-              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>No Investment Advice</h2>
+              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Company Information</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Prop Capitals does not provide investment advice. All information provided is for educational purposes only. You should seek advice from a qualified financial advisor before making any investment decisions. We do not make any representations about the suitability of any financial product for your personal situation.
+                This website is owned and operated by BLUEHAVEN MANAGEMENT LTD with registration number 16797169 and registered address at 60 TOTTENHAM COURT ROAD, W1T 2EW, LONDON, ENGLAND.
               </p>
             </section>
 
             <section>
-              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Regulatory Notice</h2>
+              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Ownership & Copyright</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Prop Capitals is not a broker, investment advisor, or financial institution. We provide trading evaluation services through simulated accounts. We do not hold client funds for trading purposes. All funded trading is conducted through our partner brokers who are appropriately regulated in their respective jurisdictions.
-              </p>
-            </section>
-
-            <section>
-              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Acknowledgment</h2>
-              <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                By using Prop Capitals services, you acknowledge that you have read, understood, and accepted the risks associated with trading. You confirm that you are willing to assume these risks and that you will not hold Prop Capitals liable for any losses incurred.
+                © 2026 BLUEHAVEN MANAGEMENT LTD. All Rights Reserved.
               </p>
             </section>
           </div>

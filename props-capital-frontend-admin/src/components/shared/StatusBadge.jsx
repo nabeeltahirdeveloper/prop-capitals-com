@@ -19,6 +19,8 @@ const statusStyles = {
   in_progress: "bg-amber-500/20 text-amber-400 border-amber-500/30",
   resolved: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
   closed: "bg-slate-500/20 text-slate-400 border-slate-500/30",
+  waiting_for_admin: "bg-orange-500/20 text-orange-400 border-orange-500/30",
+  waiting_for_trader: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
   phase1: "bg-blue-500/20 text-blue-400 border-blue-500/30 pointer-events-none",
   phase2:
     "bg-purple-500/20 text-purple-400 border-purple-500/30 pointer-events-none",

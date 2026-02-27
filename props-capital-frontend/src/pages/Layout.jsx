@@ -176,6 +176,11 @@ export default function Layout({ children, currentPageName }) {
   // Early returns
   if (isNoLayoutPage) return <>{children}</>;
 
+  // All /traderdashboard/* routes use TraderPanelLayout only — no public header/footer
+  if (location.pathname.startsWith("/traderdashboard")) {
+    return <>{children}</>;
+  }
+
   const isProtectedPage = !isPublicPage && !isNoLayoutPage;
   if (isProtectedPage && status === "checking") {
     return (
