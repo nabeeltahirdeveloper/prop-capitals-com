@@ -1,24 +1,46 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useChallenges } from "@/contexts/ChallengesContext";
 import CommonTerminalWrapper from "./CommonTerminalWrapper";
 import MT5TradingArea from "./MT5TradingArea";
 import BybitTerminal from "./BybitTerminal";
 import TradeLockerComingSoon from "./TradeLockerComingSoon";
 import PT5Terminal from "./PT5Terminal";
+import TradingPersistence from "./TradingPersistence";
 import { TradingProvider } from "@nabeeltahirdeveloper/chart-sdk";
+
+const LS_SYMBOL_KEY = "trading_selectedSymbol";
+const LS_TIMEFRAME_KEY = "trading_selectedTimeframe";
 
 const MT5Terminal = () => {
   const { selectedChallenge } = useChallenges();
-  console.log("Selected Challenge", selectedChallenge);
+  const [searchParams] = useSearchParams();
+
+  // Read persisted values ONCE on mount (URL > localStorage > default)
+  const initialSymbol = useMemo(
+    () =>
+      searchParams.get("symbol") ||
+      localStorage.getItem(LS_SYMBOL_KEY) ||
+      "BTC/USD",
+    [], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  const initialTimeframe = useMemo(
+    () =>
+      searchParams.get("tf") ||
+      localStorage.getItem(LS_TIMEFRAME_KEY) ||
+      "M1",
+    [], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
   // MT5 backend URL - use env variable for local testing
   const MT5_API_URL =
     import.meta.env.VITE_WEBSOCKET_URL || "https://api-dev.prop-capitals.com";
 
   const endpoints = {
-    candles: "/market-data/history", // Historical candles endpoint
-    symbols: "/market-data/prices?symbols", // Symbols list (query param allowed)
-    trades: "/trades", // Trades endpoint (adjust if different)
-    account: "/trades/account/${accountId}", // Account endpoint (adjust if different)
+    candles: "/market-data/history",
+    symbols: "/market-data/prices?symbols",
+    trades: "/trades",
+    account: "/trades/account/${accountId}",
   };
 
   return (
@@ -26,7 +48,10 @@ const MT5Terminal = () => {
       baseUrl={MT5_API_URL}
       endpoints={endpoints}
       accountId={selectedChallenge?.id}
+      initialSymbol={initialSymbol}
+      initialTimeframe={initialTimeframe}
     >
+      <TradingPersistence />
       <CommonTerminalWrapper>
         <MT5TradingArea selectedChallenge={selectedChallenge} />
       </CommonTerminalWrapper>
