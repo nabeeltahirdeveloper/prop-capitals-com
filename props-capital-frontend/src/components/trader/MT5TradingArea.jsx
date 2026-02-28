@@ -346,7 +346,8 @@ const MT5TradingArea = ({
           ...s,
           bid: livePrice.bid ?? s.bid,
           ask: livePrice.ask ?? s.ask,
-          change: livePrice.change ?? s.change ?? 0,
+          // change field maintain karo (agar MT5 se nahi aata)
+          change: s.change ?? 0,
         };
 
         return next;
@@ -407,13 +408,21 @@ const MT5TradingArea = ({
 
     socket.on("connect", () => {
       console.log("[MT5TradingArea] ✅ Connected to candles WebSocket");
-      socket.emit("subscribeCandles", { symbol: symbolStr, timeframe: timeframeStr });
-      console.log(`[MT5TradingArea] 📡 Subscribed to candles: ${symbolStr}@${timeframeStr}`);
+      socket.emit("subscribeCandles", {
+        symbol: symbolStr,
+        timeframe: timeframeStr,
+      });
+      console.log(
+        `[MT5TradingArea] 📡 Subscribed to candles: ${symbolStr}@${timeframeStr}`,
+      );
     });
 
     // If already connected, subscribe immediately (symbol/timeframe change without reconnect)
     if (socket.connected) {
-      socket.emit("subscribeCandles", { symbol: symbolStr, timeframe: timeframeStr });
+      socket.emit("subscribeCandles", {
+        symbol: symbolStr,
+        timeframe: timeframeStr,
+      });
     }
 
     socket.on("disconnect", (reason) => {
@@ -422,7 +431,7 @@ const MT5TradingArea = ({
         reason,
       );
     });
-    
+
     socket.on("connect_error", (error) => {
       console.warn("[MT5] Candles WebSocket error:", error.message);
     });
@@ -430,9 +439,17 @@ const MT5TradingArea = ({
     socket.on("candleUpdate", (data) => {
       if (!data?.candle || !data?.symbol || !data?.timeframe) return;
 
-      const normalizedSymbol = (data.symbol || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
-      const currentSymbolNormalized = (symbolStr || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
-      if (normalizedSymbol !== currentSymbolNormalized || data.timeframe !== timeframeStr) return;
+      const normalizedSymbol = (data.symbol || "")
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, "");
+      const currentSymbolNormalized = (symbolStr || "")
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, "");
+      if (
+        normalizedSymbol !== currentSymbolNormalized ||
+        data.timeframe !== timeframeStr
+      )
+        return;
 
       // Update bid price from latest candle close for real-time accuracy
       const close = data.candle.close;
@@ -488,7 +505,12 @@ const MT5TradingArea = ({
   };
 
   const isLight = theme === "light";
-  const [marketWatchWidth, setMarketWatchWidth] = useState(500); // Right symbols panel width (default: thoda sa left/chhota)
+  const [marketWatchWidth, setMarketWatchWidth] = useState(() => {
+    if (typeof window === "undefined") return 420;
+    // On desktop (>=1024px): 420px default. On smaller screens: cap at 40% of available width
+    const available = window.innerWidth - 48; // minus left sidebar
+    return window.innerWidth >= 1024 ? 420 : Math.min(420, Math.max(160, available * 0.4));
+  });
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef(null);
   const resizeStartX = useRef(0);
@@ -547,17 +569,29 @@ const MT5TradingArea = ({
     setIsOrderModalOpen(true);
   };
 
+  // Auto-adjust marketWatchWidth when screen is resized (prevent chart from disappearing)
+  useEffect(() => {
+    const handleWindowResize = () => {
+      const available = window.innerWidth - 48; // minus sidebar
+      const maxAllowed = Math.max(160, available - 200); // leave at least 200px for chart
+      setMarketWatchWidth((prev) => Math.min(prev, maxAllowed));
+    };
+    window.addEventListener("resize", handleWindowResize);
+    return () => window.removeEventListener("resize", handleWindowResize);
+  }, []);
+
   // Handle right sidebar (Market Watch) horizontal resize
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (!isResizing) return;
 
       // Calculate delta from start position
-      const deltaX = resizeStartX.current - e.clientX; // Negative when dragging left (making panel smaller)
+      const deltaX = resizeStartX.current - e.clientX;
       const newWidth = resizeStartWidth.current + deltaX;
 
-      // Min width: 120px, Max width: 600px
-      const clampedWidth = Math.min(Math.max(newWidth, 120), 600);
+      // Min: 120px, Max: 600px but also capped so chart keeps at least 200px
+      const maxAllowed = Math.min(600, window.innerWidth - 48 - 200);
+      const clampedWidth = Math.min(Math.max(newWidth, 120), maxAllowed);
       setMarketWatchWidth(clampedWidth);
     };
 
@@ -672,9 +706,9 @@ const MT5TradingArea = ({
         {/* Main Content Area – tools bar full-height, chart + market watch + bottom panel on right */}
         <div className="flex-1 flex overflow-hidden pl-12">
           {/* Right side: chart + market watch + bottom account panel */}
-          <div className="flex-1 flex flex-col relative">
+          <div className="flex-1 flex flex-col relative min-w-0">
             {/* Center row: chart + market watch */}
-            <div className="flex-1 flex overflow-hidden relative">
+            <div className="flex-1 flex overflow-hidden relative min-w-0">
               {/* Center - Chart Area */}
               <Chart
                 ref={chartAreaRef}
@@ -700,13 +734,26 @@ const MT5TradingArea = ({
                   >
                     <div className="absolute inset-y-0 left-1/2  group-hover:bg-white" />
                   </div>
-                  <MarketWatch
-                    width={marketWatchWidth}
-                    symbols={symbols}
-                    selectedSymbol={selectedSymbol}
-                    onSymbolSelect={setSelectedSymbol}
-                    symbolsLoading={symbolsLoading}
-                  />
+                  <div
+                    style={{
+                      width: marketWatchWidth,
+                      minWidth: marketWatchWidth,
+                    }}
+                    className="h-full overflow-x-auto overflow-y-auto flex-shrink-0"
+                  >
+                    <div
+                      style={{ minWidth: Math.max(marketWatchWidth, 360) }}
+                      className="h-full"
+                    >
+                      <MarketWatch
+                        width={marketWatchWidth}
+                        symbols={symbols}
+                        selectedSymbol={selectedSymbol}
+                        onSymbolSelect={setSelectedSymbol}
+                        symbolsLoading={symbolsLoading}
+                      />
+                    </div>
+                  </div>
                 </>
               )}
 
@@ -738,51 +785,60 @@ const MT5TradingArea = ({
             </div>
 
             {/* MT5 Bottom Panel — Positions + Account Summary */}
-            <AccountPanel
-              height={bottomPanelHeight}
-              accountSummary={{
-                balance,
-                equity:
-                  balance +
-                  sdkOrdersFromBackend.reduce(
-                    (s, p) => s + (p.livePnL || 0),
-                    0,
-                  ),
-                margin: sdkOrdersFromBackend.reduce(
-                  (s, p) =>
-                    s +
-                    mt5Engine.calculateRequiredMargin({
-                      symbol: p.symbol,
-                      volume: p.volume,
-                      price: p.openPrice,
-                    }),
-                  0,
-                ),
-                freeMargin:
-                  balance +
-                  sdkOrdersFromBackend.reduce(
-                    (s, p) => s + (p.livePnL || 0),
-                    0,
-                  ) -
-                  sdkOrdersFromBackend.reduce(
-                    (s, p) =>
-                      s +
-                      mt5Engine.calculateRequiredMargin({
-                        symbol: p.symbol,
-                        volume: p.volume,
-                        price: p.openPrice,
-                      }),
-                    0,
-                  ),
-              }}
-              orders={sdkOrdersFromBackend}
-              onClose={handleClosePosition}
-              onModify={(trade) => {
-                setModifyTPSLTrade(trade);
-                setModifyTP(trade.takeProfit ? String(trade.takeProfit) : "");
-                setModifySL(trade.stopLoss ? String(trade.stopLoss) : "");
-              }}
-            />
+            <div
+              style={{ height: bottomPanelHeight }}
+              className="w-full overflow-x-auto overflow-y-auto"
+            >
+              <div className="min-w-[750px] min-h-full">
+                <AccountPanel
+                  height={bottomPanelHeight}
+                  accountSummary={{
+                    balance,
+                    equity:
+                      balance +
+                      sdkOrdersFromBackend.reduce(
+                        (s, p) => s + (p.livePnL || 0),
+                        0,
+                      ),
+                    margin: sdkOrdersFromBackend.reduce(
+                      (s, p) =>
+                        s +
+                        mt5Engine.calculateRequiredMargin({
+                          symbol: p.symbol,
+                          volume: p.volume,
+                          price: p.openPrice,
+                        }),
+                      0,
+                    ),
+                    freeMargin:
+                      balance +
+                      sdkOrdersFromBackend.reduce(
+                        (s, p) => s + (p.livePnL || 0),
+                        0,
+                      ) -
+                      sdkOrdersFromBackend.reduce(
+                        (s, p) =>
+                          s +
+                          mt5Engine.calculateRequiredMargin({
+                            symbol: p.symbol,
+                            volume: p.volume,
+                            price: p.openPrice,
+                          }),
+                        0,
+                      ),
+                  }}
+                  orders={sdkOrdersFromBackend}
+                  onClose={handleClosePosition}
+                  onModify={(trade) => {
+                    setModifyTPSLTrade(trade);
+                    setModifyTP(
+                      trade.takeProfit ? String(trade.takeProfit) : "",
+                    );
+                    setModifySL(trade.stopLoss ? String(trade.stopLoss) : "");
+                  }}
+                />
+              </div>
+            </div>
 
             {/* Market Execution Modal — at COLUMN level so z-[998] beats LeftSidebar z-50 */}
             <div

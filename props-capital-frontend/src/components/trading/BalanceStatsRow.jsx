@@ -43,7 +43,7 @@ const BalanceStatsRow = ({ balance, equity, floatingPL, profitPercent }) => {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
       {stats.map((stat) => (
         <div key={stat.id} className={cardClass + ' p-3 sm:p-4'}>
           <div className="flex items-center gap-2 mb-1 sm:mb-2">
