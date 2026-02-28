@@ -103,7 +103,7 @@ const ComplianceMetrics = ({ compliance, challenge }) => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-4">
       {metrics.map((metric) => {
         const statusColor = getStatusColor(metric.status);
         const statusLabel = getStatusLabel(metric.status);

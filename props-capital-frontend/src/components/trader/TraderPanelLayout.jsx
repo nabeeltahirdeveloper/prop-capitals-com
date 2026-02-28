@@ -275,8 +275,13 @@ const TraderPanelLayoutInner = () => {
 
   return (
     <TraderThemeContext.Provider value={{ isDark, toggleTheme }}>
-      <div
+      {/* <div
         className={`min-h-screen flex ${isDark ? "bg-[#0a0d12]" : "bg-slate-100"}`}
+      > */}
+      <div
+        className={`min-h-screen flex w-full overflow-x-hidden ${
+          isDark ? "bg-[#0a0d12]" : "bg-slate-100"
+        }`}
       >
         {/* Mobile Menu Overlay */}
         {mobileMenuOpen && (
@@ -302,8 +307,16 @@ const TraderPanelLayoutInner = () => {
               onClick={handleNavClick}
             >
               <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center">
-                <img src="/assets/images/logo-light.png" alt="Logo" className="block dark:hidden w-full h-full object-contain" />
-                <img src="/assets/images/logo-dark.png" alt="Logo Dark" className="hidden dark:block w-full h-full object-contain" />
+                <img
+                  src="/assets/images/logo-light.png"
+                  alt="Logo"
+                  className="block dark:hidden w-full h-full object-contain"
+                />
+                <img
+                  src="/assets/images/logo-dark.png"
+                  alt="Logo Dark"
+                  className="hidden dark:block w-full h-full object-contain"
+                />
               </div>
               {!sidebarCollapsed && (
                 <span
@@ -448,8 +461,13 @@ const TraderPanelLayoutInner = () => {
         </aside>
 
         {/* Main Content */}
-        <main
+        {/* <main
           className={`h-screen flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? "lg:ml-20" : "lg:ml-64"} ml-0`}
+        > */}
+        <main
+          className={`h-screen flex-1 min-w-0 w-full flex flex-col overflow-x-hidden transition-all duration-300 ${
+            sidebarCollapsed ? "lg:ml-20" : "lg:ml-64"
+          } ml-0`}
         >
           {/* Top Header */}
           <header
@@ -969,7 +987,10 @@ const TraderPanelLayoutInner = () => {
           </header>
 
           {/* Page Content */}
-          <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6">
+          {/* <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6">
+            <Outlet />
+          </div> */}
+          <div className="flex-1 min-w-0 w-full overflow-y-auto overflow-x-hidden p-3 sm:p-4 md:p-6">
             <Outlet />
           </div>
         </main>
@@ -988,5 +1009,3 @@ const TraderPanelLayout = () => {
 };
 
 export default TraderPanelLayout;
-
-
