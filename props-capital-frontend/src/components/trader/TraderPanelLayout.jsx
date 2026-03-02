@@ -740,8 +740,13 @@ const TraderPanelLayoutInner = () => {
 
                 {/* Notifications Dropdown */}
                 {showNotifications && (
+                  <>
                   <div
-                    className={`absolute right-0 top-12 w-[calc(100vw-2rem)] sm:w-80 max-w-sm rounded-xl shadow-2xl border z-50 ${
+                    className="fixed inset-0 z-40"
+                    onClick={() => setShowNotifications(false)}
+                  />
+                  <div
+                    className={`fixed inset-x-4 top-16 sm:absolute sm:inset-auto sm:right-0 sm:top-12 sm:w-80 rounded-xl shadow-2xl border z-50 ${
                       isDark
                         ? "bg-[#12161d] border-white/10"
                         : "bg-white border-slate-200"
@@ -856,6 +861,7 @@ const TraderPanelLayoutInner = () => {
                       </Link>
                     </div>
                   </div>
+                  </>
                 )}
               </div>
 
