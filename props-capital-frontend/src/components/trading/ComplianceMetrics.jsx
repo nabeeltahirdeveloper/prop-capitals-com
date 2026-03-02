@@ -142,7 +142,7 @@ const ComplianceMetrics = ({ compliance, challenge }) => {
                 <span
                   className={`text-lg sm:text-2xl font-bold font-mono ${textClass}`}
                 >
-                  {metric.current.toFixed(2)}
+                  {Number(metric.current).toFixed(2)}
                   {metric.suffix}
                 </span>
                 <span className={`text-xs sm:text-sm ${mutedClass}`}>
@@ -154,7 +154,7 @@ const ComplianceMetrics = ({ compliance, challenge }) => {
               <span
                 className={`text-xs sm:text-sm font-medium ${isDark ? "text-gray-500" : "text-slate-500"}`}
               >
-                {metric.percentage.toFixed(0)}%
+                {Number(metric.percentage).toFixed(0)}%
               </span>
             </div>
           </div>

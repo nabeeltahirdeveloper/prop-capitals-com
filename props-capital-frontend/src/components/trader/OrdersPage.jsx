@@ -122,49 +122,49 @@ const OrdersPage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Orders</h2>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <h2 className={`text-xl sm:text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Orders</h2>
         <div className="flex items-center gap-2">
           <button
             onClick={handleRefresh}
             disabled={ordersLoading}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'} disabled:opacity-50`}
+            className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl transition-all ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'} disabled:opacity-50`}
           >
             <RefreshCw className={`w-4 h-4 ${ordersLoading ? 'animate-spin' : ''}`} />
-            <span className="text-sm font-medium">Refresh</span>
+            <span className="hidden sm:inline text-sm font-medium">Refresh</span>
           </button>
           <button
             onClick={handleExport}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'
+            className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl transition-all ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'
               }`}
           >
             <Download className="w-4 h-4" />
-            <span className="text-sm font-medium">Export</span>
+            <span className="hidden sm:inline text-sm font-medium">Export</span>
           </button>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className={`rounded-2xl border p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
-          <p className={`text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Total Trades</p>
-          <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{orders.length}</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className={`rounded-2xl border p-3 sm:p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
+          <p className={`text-xs sm:text-sm mb-1 sm:mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Total Trades</p>
+          <p className={`text-xl sm:text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{orders.length}</p>
         </div>
-        <div className={`rounded-2xl border p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
-          <p className={`text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Closed P/L</p>
-          <p className={`text-2xl font-bold ${totalProfit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+        <div className={`rounded-2xl border p-3 sm:p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
+          <p className={`text-xs sm:text-sm mb-1 sm:mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Closed P/L</p>
+          <p className={`text-xl sm:text-2xl font-bold ${totalProfit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
             {totalProfit >= 0 ? '+' : ''}${totalProfit.toFixed(2)}
           </p>
         </div>
-        <div className={`rounded-2xl border p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
-          <p className={`text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Open P/L</p>
-          <p className={`text-2xl font-bold ${openProfit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+        <div className={`rounded-2xl border p-3 sm:p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
+          <p className={`text-xs sm:text-sm mb-1 sm:mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Open P/L</p>
+          <p className={`text-xl sm:text-2xl font-bold ${openProfit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
             {openProfit >= 0 ? '+' : ''}${openProfit.toFixed(2)}
           </p>
         </div>
-        <div className={`rounded-2xl border p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
-          <p className={`text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Win Rate</p>
-          <p className="text-amber-500 text-2xl font-bold">{winRate}%</p>
+        <div className={`rounded-2xl border p-3 sm:p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
+          <p className={`text-xs sm:text-sm mb-1 sm:mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Win Rate</p>
+          <p className="text-amber-500 text-xl sm:text-2xl font-bold">{winRate}%</p>
         </div>
       </div>
 
