@@ -21,6 +21,7 @@ interface CreateTradeData {
   takeProfit?: number | null;
   positionType?: string;
   type?: string;
+  commission?: number;
   leverage?: number;
 }
 
@@ -41,6 +42,9 @@ export class TradesService {
     private evaluationService: EvaluationService,
     private tradingEventsGateway: TradingEventsGateway,
   ) {}
+  private static readonly COMMISSION_PER_LOT = 6;
+  private static readonly COMMISSION_PER_SIDE =
+    TradesService.COMMISSION_PER_LOT / 2; // 3
 
   private static readonly SPOT_SYMBOLS = [
     'BTCUSDT',
@@ -163,9 +167,12 @@ export class TradesService {
               : isCrypto
                 ? 1
                 : 100000;
-          const tradeLeverage = Number((t as any).leverage) > 0 ? Number((t as any).leverage) : 100;
+          const tradeLeverage =
+            Number((t as any).leverage) > 0 ? Number((t as any).leverage) : 100;
           return (
-            sum + (Number(t.volume) * contractSize * Number(t.openPrice)) / tradeLeverage
+            sum +
+            (Number(t.volume) * contractSize * Number(t.openPrice)) /
+              tradeLeverage
           );
         }, 0);
 
@@ -185,6 +192,13 @@ export class TradesService {
       }
     }
 
+    const openCommission =
+      positionType === 'SPOT'
+        ? 0
+        : Number(volume || 0) * TradesService.COMMISSION_PER_SIDE;
+    // const closeCommission = positionType === 'SPOT' ? 0 : (closePrice ? TradesService.COMMISSION_PER_SIDE : 0);
+    // const totalCommission = openCommission + closeCommission;
+
     // 1️⃣ Store trade
     const trade = await this.prisma.trade.create({
       data: {
@@ -197,6 +211,7 @@ export class TradesService {
         stopLoss: stopLoss ?? null,
         takeProfit: takeProfit ?? null,
         profit: profit || 0,
+        commission: openCommission,
         openedAt: new Date(),
         closedAt: closePrice ? new Date() : null,
         positionType,
@@ -208,7 +223,9 @@ export class TradesService {
     // When opening a trade, profit is undefined/0 — balance stays the same
     const effectiveProfit = profit || 0;
     const newBalance =
-      (account.balance ?? account.initialBalance) + effectiveProfit;
+      (account.balance ?? account.initialBalance) +
+      effectiveProfit -
+      openCommission;
     const newEquity = newBalance;
 
     // Update maxEquityToDate if equity increased
@@ -303,9 +320,24 @@ export class TradesService {
     const { closePrice, profit, stopLoss, takeProfit, closeReason } = data;
 
     // Get the trade first
+    // const trade = await this.prisma.trade.findUnique({
+    //   where: { id: tradeId },
+    //   include: { tradingAccount: true },
+    // });
     const trade = await this.prisma.trade.findUnique({
       where: { id: tradeId },
-      include: { tradingAccount: true },
+      select: {
+        id: true,
+        symbol: true,
+        type: true,
+        volume: true,
+        openPrice: true,
+        closePrice: true,
+        positionType: true,
+        commission: true, // ✅ THIS FIXES trade.commission red line
+        closeReason: true,
+        tradingAccount: true,
+      },
     });
 
     if (!trade) {
@@ -321,22 +353,57 @@ export class TradesService {
       profit: number;
       stopLoss: number | null;
       takeProfit: number | null;
+      commission: number;
       closeReason: string;
     }> = {};
 
     // If closing the trade
+    // if (closePrice !== undefined) {
+    //   // If trade is already closed, return it idempotently (treat as success)
+    //   // This handles the case where auto-close already closed the trade
+    //   if (trade.closePrice !== null) {
+    //     // Trade is already closed - return the existing trade data in the expected format
+    //     return {
+    //       trade: trade,
+    //       evaluation: null, // No need to re-evaluate if already closed
+    //     };
+    //   }
+    //   updateData.closePrice = closePrice;
+    //   updateData.closedAt = new Date();
+    //   if (profit !== undefined) {
+    //     updateData.profit = profit;
+    //   } else {
+    //     const symbolUpper = String(trade.symbol || '').toUpperCase();
+    //     const isCrypto =
+    //       symbolUpper.includes('BTC') ||
+    //       symbolUpper.includes('ETH') ||
+    //       symbolUpper.includes('SOL') ||
+    //       symbolUpper.includes('XRP') ||
+    //       symbolUpper.includes('ADA') ||
+    //       symbolUpper.includes('DOGE') ||
+    //       symbolUpper.includes('BNB') ||
+    //       symbolUpper.includes('AVAX') ||
+    //       symbolUpper.includes('DOT') ||
+    //       symbolUpper.includes('LINK');
+    //     const isXAU = symbolUpper.includes('XAU');
+    //     const isXAG = symbolUpper.includes('XAG');
+    //     const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 1 : 100000;
+    //     const priceDiff =
+    //       trade.type === 'BUY'
+    //         ? closePrice - trade.openPrice
+    //         : trade.openPrice - closePrice;
+    //     updateData.profit = priceDiff * (trade.volume || 0) * contractSize;
+    //   }
+    // }
     if (closePrice !== undefined) {
-      // If trade is already closed, return it idempotently (treat as success)
-      // This handles the case where auto-close already closed the trade
       if (trade.closePrice !== null) {
-        // Trade is already closed - return the existing trade data in the expected format
-        return {
-          trade: trade,
-          evaluation: null, // No need to re-evaluate if already closed
-        };
+        return { trade, evaluation: null };
       }
+
       updateData.closePrice = closePrice;
       updateData.closedAt = new Date();
+
+      // Profit calc (existing)
       if (profit !== undefined) {
         updateData.profit = profit;
       } else {
@@ -355,14 +422,23 @@ export class TradesService {
         const isXAU = symbolUpper.includes('XAU');
         const isXAG = symbolUpper.includes('XAG');
         const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 1 : 100000;
+
         const priceDiff =
           trade.type === 'BUY'
             ? closePrice - trade.openPrice
             : trade.openPrice - closePrice;
+
         updateData.profit = priceDiff * (trade.volume || 0) * contractSize;
       }
-    }
 
+      // ✅ CLOSE commission (3/lot) + cumulative store
+      const closeCommission =
+        trade.positionType === 'SPOT'
+          ? 0
+          : Number(trade.volume || 0) * TradesService.COMMISSION_PER_SIDE;
+
+      updateData.commission = (trade.commission ?? 0) + closeCommission;
+    }
     // Allow updating stopLoss and takeProfit for open trades
     if (stopLoss !== undefined) {
       // Only allow SL/TP updates for open trades
@@ -407,9 +483,18 @@ export class TradesService {
 
     // 2️⃣ Update balance/equity only when closing the trade
     if (closePrice !== undefined) {
-      const profitToAdd = updatedTrade.profit ?? 0;
-      const previousBalance = account.balance ?? account.initialBalance;
-      const newBalance = previousBalance + profitToAdd;
+      const grossProfit = updatedTrade.profit ?? 0;
+
+      // same closeCommission calc (or reuse by recalculating)
+      const closeCommission =
+        trade.positionType === 'SPOT'
+          ? 0
+          : Number(trade.volume || 0) * TradesService.COMMISSION_PER_SIDE;
+
+      const newBalance =
+        (account.balance ?? account.initialBalance) +
+        grossProfit -
+        closeCommission;
 
       const nextEquity = newBalance;
 
