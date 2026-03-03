@@ -167,6 +167,7 @@ model Trade {
   breachType                   String?
   breachUnrealizedPnl          Float?
   closeReason                  String?
+  commission                   Float          @default(0)
   positionType                 String         @default("CFD")
   leverage                     Float          @default(100)
   tradingAccount               TradingAccount @relation(fields: [tradingAccountId], references: [id])
@@ -265,8 +266,6 @@ model Notification {
 model SupportTicket {
   id         String                 @id @default(cuid())
   userId     String?
-  guestName  String?
-  guestEmail String?
   subject    String
   message    String
   createdAt  DateTime               @default(now())
