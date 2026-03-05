@@ -127,9 +127,12 @@ model TradingAccount {
   dailyLossViolated      Boolean              @default(false)
   drawdownViolated       Boolean              @default(false)
   platform               ChallengePlatform?
-  minEquityToday         Float?
-  minEquityOverall       Float?
-  lastDailyReset         DateTime?
+  minEquityToday             Float?
+  minEquityOverall           Float?
+  lastDailyReset             DateTime?
+  peakDailyDrawdownPercent   Float?   @default(0)
+  peakOverallDrawdownPercent Float?   @default(0)
+  peakProfitPercent          Float?   @default(0)
   platformEmail          String?
   platformHashedPassword String?
   platformSessionId      String?
