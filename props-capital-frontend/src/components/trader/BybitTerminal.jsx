@@ -1213,7 +1213,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                 background: C.panel,
                 border: `1px solid ${C.border}`,
                 width: 260,
-                zIndex: 9999,
+                zIndex: 40,
               }}
             >
               <div

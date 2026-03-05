@@ -167,9 +167,9 @@ model Trade {
   breachType                   String?
   breachUnrealizedPnl          Float?
   closeReason                  String?
-  commission                   Float          @default(0)
   positionType                 String         @default("CFD")
   leverage                     Float          @default(100)
+  commission                   Float          @default(0)
   tradingAccount               TradingAccount @relation(fields: [tradingAccountId], references: [id])
 }
 
