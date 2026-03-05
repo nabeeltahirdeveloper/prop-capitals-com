@@ -60,6 +60,10 @@ export class TradingAccountsService {
         minEquityToday: initialBalance, // Lowest equity today - starts at initial balance
         todayStartEquity: initialBalance, // Equity at start of trading day
         lastDailyReset: new Date(), // Track when daily metrics were last reset
+        // ✅ Initialize peak tracking for monotonic progress bars
+        peakDailyDrawdownPercent: 0,
+        peakOverallDrawdownPercent: 0,
+        peakProfitPercent: 0,
       } as any,
     });
   }
@@ -595,6 +599,11 @@ export class TradingAccountsService {
         ),
 
         phasePassed,
+
+        // Peak values for monotonic progress bars (never decrease)
+        peakDailyDrawdownPercent: (account as any).peakDailyDrawdownPercent ?? 0,
+        peakOverallDrawdownPercent: (account as any).peakOverallDrawdownPercent ?? 0,
+        peakProfitPercent: (account as any).peakProfitPercent ?? 0,
       },
 
       violations: account.violations,

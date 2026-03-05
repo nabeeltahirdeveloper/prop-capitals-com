@@ -98,6 +98,11 @@ export interface ComplianceInput {
   profitBarPeak: number;
   overallDrawdownBarPeak: number;
   dailyDrawdownBarPeak: { date: string | null; value: number };
+  backendPeaks?: {
+    peakProfitPercent: number;
+    peakDailyDrawdownPercent: number;
+    peakOverallDrawdownPercent: number;
+  };
 }
 
 export interface ComplianceResult {

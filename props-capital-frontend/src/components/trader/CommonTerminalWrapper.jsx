@@ -141,6 +141,9 @@ const CommonTerminalWrapper = ({
     profitPercent: null,
     dailyDrawdownPercent: null,
     overallDrawdownPercent: null,
+    peakProfitPercent: null,
+    peakDailyDrawdownPercent: null,
+    peakOverallDrawdownPercent: null,
   });
   const [closeConfirmTrade, setCloseConfirmTrade] = useState(null);
   const [modifyTPSLTrade, setModifyTPSLTrade] = useState(null);
@@ -185,6 +188,9 @@ const CommonTerminalWrapper = ({
       profitPercent: null,
       dailyDrawdownPercent: null,
       overallDrawdownPercent: null,
+      peakProfitPercent: null,
+      peakDailyDrawdownPercent: null,
+      peakOverallDrawdownPercent: null,
     });
     priceTickThrottleRef.current = {};
     profitBarPeakRef.current = 0;
@@ -290,6 +296,15 @@ const CommonTerminalWrapper = ({
       ...(Number.isFinite(metrics?.overallDrawdownPercent) && {
         overallDrawdownPercent: metrics.overallDrawdownPercent,
       }),
+      ...(Number.isFinite(metrics?.peakProfitPercent) && {
+        peakProfitPercent: metrics.peakProfitPercent,
+      }),
+      ...(Number.isFinite(metrics?.peakDailyDrawdownPercent) && {
+        peakDailyDrawdownPercent: metrics.peakDailyDrawdownPercent,
+      }),
+      ...(Number.isFinite(metrics?.peakOverallDrawdownPercent) && {
+        peakOverallDrawdownPercent: metrics.peakOverallDrawdownPercent,
+      }),
     }));
   }, [accountSummaryData]);
 
@@ -336,6 +351,15 @@ const CommonTerminalWrapper = ({
               ...(response.overallDrawdownPercent !== undefined &&
                 Number.isFinite(response.overallDrawdownPercent) && {
                   overallDrawdownPercent: response.overallDrawdownPercent,
+                }),
+              ...(Number.isFinite(response.peakProfitPercent) && {
+                  peakProfitPercent: response.peakProfitPercent,
+                }),
+              ...(Number.isFinite(response.peakDailyDrawdownPercent) && {
+                  peakDailyDrawdownPercent: response.peakDailyDrawdownPercent,
+                }),
+              ...(Number.isFinite(response.peakOverallDrawdownPercent) && {
+                  peakOverallDrawdownPercent: response.peakOverallDrawdownPercent,
                 }),
             }));
           }
@@ -859,6 +883,11 @@ const CommonTerminalWrapper = ({
     profitBarPeak: profitBarPeakRef.current,
     overallDrawdownBarPeak: overallDrawdownBarPeakRef.current,
     dailyDrawdownBarPeak: dailyDrawdownBarPeakRef.current,
+    backendPeaks: {
+      peakProfitPercent: Math.max(Number(summaryMetrics?.peakProfitPercent) || 0, Number(liveMetrics?.peakProfitPercent) || 0),
+      peakDailyDrawdownPercent: Math.max(Number(summaryMetrics?.peakDailyDrawdownPercent) || 0, Number(liveMetrics?.peakDailyDrawdownPercent) || 0),
+      peakOverallDrawdownPercent: Math.max(Number(summaryMetrics?.peakOverallDrawdownPercent) || 0, Number(liveMetrics?.peakOverallDrawdownPercent) || 0),
+    },
   });
   const compliance = complianceResult.compliance;
   // Write updated peaks back to refs during render (intentional).
