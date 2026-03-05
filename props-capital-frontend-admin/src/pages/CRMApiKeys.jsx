@@ -120,7 +120,7 @@ export default function CRMApiKeys() {
     "personName": "John Doe",
     "email": "john@example.com",
     "phoneNumber": "+1234567890",
-    "country": "United States",
+    "country": "United Kingdom",
     "source": "Partner Name"
   }'`;
 
@@ -608,7 +608,7 @@ x-api-key: pc_your_key_here
   "personName": "John Doe",
   "email": "john@example.com",
   "phoneNumber": "+1234567890",
-  "country": "United States",
+  "country": "United Kingdom",
   "source": "Partner Name"
 }`}</code>
           </pre>
