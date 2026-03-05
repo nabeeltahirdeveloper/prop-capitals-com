@@ -20,8 +20,8 @@ const HeroSection = () => {
   // Trading hub locations with live trader counts per country (25 countries)
   const tradingHubs = useMemo(() => [
     // AMERICAS (5)
-    { lat: 40.7128, lng: -74.006, name: 'USA', traders: 4850, size: 1.4 },
-    { lat: 43.6532, lng: -79.3832, name: 'Canada', traders: 1250, size: 1.0 },
+    { lat: 6.5244, lng: 3.3792, name: 'Nigeria', traders: 3200, size: 1.2 },
+    { lat: -33.9249, lng: 18.4241, name: 'South Africa', traders: 1250, size: 1.0 },
     { lat: 19.4326, lng: -99.1332, name: 'Mexico', traders: 680, size: 0.8 },
     { lat: -23.5505, lng: -46.6333, name: 'Brazil', traders: 920, size: 0.9 },
     { lat: -34.6037, lng: -58.3816, name: 'Argentina', traders: 420, size: 0.7 },

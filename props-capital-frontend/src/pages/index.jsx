@@ -38,6 +38,7 @@ import RiskDisclosurePage from "./RiskDisclosurePage.jsx"
 import RefundPage from "./RefundPage.jsx"
 import WithdrawalPolicyPage from "./WithdrawalPolicyPage.jsx"
 import KycPolicyPage from "./KycPolicyPage.jsx"
+import AmlPolicyPage from "./AmlPolicyPage.jsx"
 import ForgotPassword from "./ForgotPassword.jsx";
 import CheckoutPage from "./CheckoutPage.jsx";
 import CheckoutSuccessPage from "./CheckoutSuccessPage.jsx";
@@ -166,6 +167,7 @@ function PagesContent() {
               <Route path="/refund-policy" element={<RefundPage />} />
               <Route path="/withdrawal-policy" element={<WithdrawalPolicyPage />} />
               <Route path="/kyc-policy" element={<KycPolicyPage />} />
+              <Route path="/aml-policy" element={<AmlPolicyPage />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route
                 path="/SignIn"

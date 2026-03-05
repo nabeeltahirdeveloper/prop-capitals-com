@@ -7,7 +7,7 @@ const trustpilotReviews = [
   {
     id: 1,
     name: "James Wilson",
-    location: "United States",
+    location: "United Kingdom",
     date: "2 days ago",
     rating: 5,
     title: "Best prop firm I've worked with",
@@ -117,7 +117,7 @@ const trustpilotReviews = [
   {
     id: 12,
     name: "Olga Petrov",
-    location: "Russia",
+    location: "Netherlands",
     date: "1 week ago",
     rating: 4,
     title: "Solid prop firm",
