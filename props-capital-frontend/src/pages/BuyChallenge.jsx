@@ -70,11 +70,18 @@ export default function BuyChallenge() {
     name: challenge.name || `$${challenge.accountSize?.toLocaleString()} Standard`,
     account_size: challenge.accountSize,
     price: challenge.price,
+    platform: challenge.platform,
+    challenge_type: challenge.challengeType || "two_phase",
     phase1_profit_target: challenge.phase1TargetPercent,
     phase2_profit_target: challenge.phase2TargetPercent,
     max_daily_drawdown: challenge.dailyDrawdownPercent,
     max_overall_drawdown: challenge.overallDrawdownPercent,
-    profit_split: 80, // Default profit split
+    min_trading_days: challenge.minTradingDays,
+    max_trading_days: challenge.maxTradingDays,
+    profit_split: challenge.profitSplit || 80,
+    news_trading_allowed: challenge.newsTradingAllowed,
+    weekend_holding_allowed: challenge.weekendHoldingAllowed,
+    ea_allowed: challenge.eaAllowed,
   }));
 
   // Only use real challenges from backend, no mock data fallback

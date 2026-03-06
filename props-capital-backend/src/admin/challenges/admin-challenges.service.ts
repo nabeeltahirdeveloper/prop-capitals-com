@@ -71,12 +71,12 @@ export class AdminChallengesService {
       overallDrawdownPercent: data.overallDrawdownPercent || data.max_overall_drawdown || 10.0,
       minTradingDays: data.minTradingDays || data.min_trading_days || 5,
       maxTradingDays: data.maxTradingDays || data.max_trading_days ? parseInt(String(data.maxTradingDays || data.max_trading_days)) : null,
-      profitSplit: data.profitSplit !== undefined || data.profit_split !== undefined ? parseFloat(String(data.profitSplit || data.profit_split)) : 80.0,
-      isActive: data.isActive !== undefined || data.is_active !== undefined ? Boolean(data.isActive !== undefined ? data.isActive : data.is_active) : true,
-      newsTradingAllowed: data.newsTradingAllowed !== undefined || data.news_trading_allowed !== undefined ? Boolean(data.newsTradingAllowed !== undefined ? data.newsTradingAllowed : data.news_trading_allowed) : true,
-      weekendHoldingAllowed: data.weekendHoldingAllowed !== undefined || data.weekend_holding_allowed !== undefined ? Boolean(data.weekendHoldingAllowed !== undefined ? data.weekendHoldingAllowed : data.weekend_holding_allowed) : true,
-      eaAllowed: data.eaAllowed !== undefined || data.ea_allowed !== undefined ? Boolean(data.eaAllowed !== undefined ? data.eaAllowed : data.ea_allowed) : true,
-      scalingEnabled: data.scalingEnabled !== undefined || data.scaling_enabled !== undefined ? Boolean(data.scalingEnabled !== undefined ? data.scalingEnabled : data.scaling_enabled) : false,
+      profitSplit: parseFloat(String(data.profitSplit ?? data.profit_split ?? 80.0)),
+      isActive: Boolean(data.isActive ?? data.is_active ?? true),
+      newsTradingAllowed: Boolean(data.newsTradingAllowed ?? data.news_trading_allowed ?? true),
+      weekendHoldingAllowed: Boolean(data.weekendHoldingAllowed ?? data.weekend_holding_allowed ?? true),
+      eaAllowed: Boolean(data.eaAllowed ?? data.ea_allowed ?? true),
+      scalingEnabled: Boolean(data.scalingEnabled ?? data.scaling_enabled ?? false),
     };
 
     const challenge = await this.prisma.challenge.create({

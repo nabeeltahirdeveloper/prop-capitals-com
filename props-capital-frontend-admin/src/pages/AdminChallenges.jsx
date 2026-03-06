@@ -49,14 +49,16 @@ export default function AdminChallenges() {
   const [deleteError, setDeleteError] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
+    description: "",
     account_size: "",
     price: "",
+    platform: "MT5",
     challenge_type: "two_phase",
     phase1_profit_target: 8,
     phase2_profit_target: 5,
     max_daily_drawdown: 5,
     max_overall_drawdown: 10,
-    min_trading_days: 4,
+    min_trading_days: 5,
     max_trading_days: null,
     profit_split: 80,
     is_active: true,
@@ -146,13 +148,14 @@ export default function AdminChallenges() {
       description: "",
       account_size: "",
       price: "",
+      platform: "MT5",
       challenge_type: "two_phase",
       phase1_profit_target: 8,
       phase2_profit_target: 5,
       max_daily_drawdown: 5,
       max_overall_drawdown: 10,
-      min_trading_days: 4,
-      max_trading_days: undefined,
+      min_trading_days: 5,
+      max_trading_days: null,
       profit_split: 80,
       is_active: true,
       news_trading_allowed: true,
@@ -171,6 +174,7 @@ export default function AdminChallenges() {
       account_size:
         (challenge.accountSize || challenge.account_size)?.toString() || "",
       price: challenge.price?.toString() || "",
+      platform: challenge.platform || "MT5",
       challenge_type:
         challenge.challengeType || challenge.challenge_type || "two_phase",
       phase1_profit_target:
@@ -229,48 +233,31 @@ export default function AdminChallenges() {
         ? parseInt(formData.account_size)
         : undefined,
       price: formData.price ? parseInt(formData.price) : undefined,
+      platform: formData.platform || "MT5",
       challengeType: formData.challenge_type || "two_phase",
-      challenge_type: formData.challenge_type || "two_phase", // Send both formats for compatibility
       phase1TargetPercent: formData.phase1_profit_target || 8,
       phase2TargetPercent: formData.phase2_profit_target || 5,
       dailyDrawdownPercent: formData.max_daily_drawdown || 5,
       overallDrawdownPercent: formData.max_overall_drawdown || 10,
-      minTradingDays: formData.min_trading_days || 4,
+      minTradingDays: formData.min_trading_days || 5,
       maxTradingDays: formData.max_trading_days
         ? parseInt(formData.max_trading_days)
         : null,
       profitSplit: formData.profit_split || 80,
-      profit_split: formData.profit_split || 80, // Send both formats for compatibility
       isActive: formData.is_active !== undefined ? formData.is_active : true,
-      is_active: formData.is_active !== undefined ? formData.is_active : true, // Send both formats for compatibility
       newsTradingAllowed:
         formData.news_trading_allowed !== undefined
           ? formData.news_trading_allowed
           : true,
-      news_trading_allowed:
-        formData.news_trading_allowed !== undefined
-          ? formData.news_trading_allowed
-          : true, // Send both formats for compatibility
       weekendHoldingAllowed:
         formData.weekend_holding_allowed !== undefined
           ? formData.weekend_holding_allowed
           : true,
-      weekend_holding_allowed:
-        formData.weekend_holding_allowed !== undefined
-          ? formData.weekend_holding_allowed
-          : true, // Send both formats for compatibility
       eaAllowed: formData.ea_allowed !== undefined ? formData.ea_allowed : true,
-      ea_allowed:
-        formData.ea_allowed !== undefined ? formData.ea_allowed : true, // Send both formats for compatibility
       scalingEnabled:
         formData.scaling_enabled !== undefined
           ? formData.scaling_enabled
           : false,
-      scaling_enabled:
-        formData.scaling_enabled !== undefined
-          ? formData.scaling_enabled
-          : false,
-      platform: null, // Explicitly send null to prevent backend defaulting to MT5 if possible
     };
 
     if (editingChallenge) {
@@ -297,8 +284,9 @@ export default function AdminChallenges() {
     max_overall_drawdown:
       challenge.overallDrawdownPercent || challenge.max_overall_drawdown || 10,
     min_trading_days:
-      challenge.minTradingDays || challenge.min_trading_days || 4,
+      challenge.minTradingDays || challenge.min_trading_days || 5,
     profit_split: challenge.profitSplit || challenge.profit_split || 80,
+    platform: challenge.platform || "MT5",
     is_active:
       challenge.isActive !== undefined
         ? challenge.isActive
@@ -419,6 +407,31 @@ export default function AdminChallenges() {
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
+
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label className="text-muted-foreground text-xs sm:text-sm">
+                  {t("admin.challenges.form.platform") || "Platform"}
+                </Label>
+                <Select
+                  value={formData.platform}
+                  onValueChange={(v) =>
+                    setFormData({ ...formData, platform: v })
+                  }
+                >
+                  <SelectTrigger className="bg-muted border-border text-foreground text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card border-border text-foreground">
+                    <SelectItem value="MT5" className="text-foreground">MT5</SelectItem>
+                    <SelectItem value="MT4" className="text-foreground">MT4</SelectItem>
+                    <SelectItem value="CTRADER" className="text-foreground">cTrader</SelectItem>
+                    <SelectItem value="DXTRADE" className="text-foreground">DXTrade</SelectItem>
+                    <SelectItem value="TRADELOCKER" className="text-foreground">TradeLocker</SelectItem>
+                    <SelectItem value="PT5" className="text-foreground">PT5</SelectItem>
+                    <SelectItem value="BYBIT" className="text-foreground">Bybit</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -732,6 +745,14 @@ export default function AdminChallenges() {
                   </span>
                   <span className="text-emerald-500 font-medium">
                     ${challenge.price}
+                  </span>
+                </div>
+                <div className="flex justify-between text-xs sm:text-sm">
+                  <span className="text-muted-foreground">
+                    {t("admin.challenges.card.platform") || "Platform"}
+                  </span>
+                  <span className="text-foreground font-medium">
+                    {challenge.platform}
                   </span>
                 </div>
                 <div className="flex justify-between text-xs sm:text-sm">
