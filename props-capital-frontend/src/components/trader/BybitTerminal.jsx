@@ -474,7 +474,8 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     enabled: !!accountId,
     refetchInterval: 3000,
   });
-  const accountStatus = accountSummaryData?.account?.status ?? selectedChallenge?.status;
+  const accountStatus =
+    accountSummaryData?.account?.status ?? selectedChallenge?.status;
   const normalizedAccountStatus = String(accountStatus || "").toLowerCase();
   const isAccountLocked =
     normalizedAccountStatus === "failed" ||
@@ -604,7 +605,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     evaluateAccountRealTime(accountId, Number(equity))
       .then(() => {
         queryClient.invalidateQueries({ queryKey: ["trades", accountId] });
-        queryClient.invalidateQueries({ queryKey: ["accountSummary", accountId] });
+        queryClient.invalidateQueries({
+          queryKey: ["accountSummary", accountId],
+        });
       })
       .catch(() => {});
   }, [accountId, openPositions.length, isAccountLocked, equity, queryClient]);
@@ -1138,21 +1141,23 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   /* ════════════════════════ RENDER ════════════════════════ */
   return (
     <div
-      className="flex flex-col h-full overflow-hidden"
+      className="flex flex-col h-full overflow-hidden bg-[var(--c-bg)] text-[var(--c-textP)] text-xs font-['Inter',_-apple-system,_BlinkMacSystemFont,_sans-serif]"
       style={{
-        background: C.bg,
-        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-        color: C.textP,
-        fontSize: 12,
+        '--c-bg': C.bg, '--c-panel': C.panel, '--c-card': C.card,
+        '--c-border': C.border, '--c-borderL': C.borderL,
+        '--c-textP': C.textP, '--c-textS': C.textS, '--c-textT': C.textT,
+        '--c-green': C.green, '--c-greenBg': C.greenBg, '--c-greenDim': C.greenDim,
+        '--c-red': C.red, '--c-redDim': C.redDim,
+        '--c-yellow': C.yellow, '--c-yellowDim': C.yellowDim,
+        '--c-orange': C.orange, '--c-inputBg': C.inputBg, '--c-hoverBg': C.hoverBg,
       }}
     >
       {/* ═══ LOCKED BANNER ═══ */}
       {isAccountLocked && (
         <div
-          style={{ background: C.redDim, borderBottom: `1px solid ${C.red}` }}
-          className="px-4 py-1.5 text-center"
+          className="px-4 py-1.5 text-center bg-[var(--c-redDim)] border-b border-[var(--c-red)]"
         >
-          <span style={{ color: C.red, fontSize: 12 }}>
+          <span className="text-[var(--c-red)] text-xs">
             Account{" "}
             {normalizedAccountStatus === "failed" ||
             normalizedAccountStatus === "disqualified"
@@ -1166,83 +1171,51 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
       {/* ═══ TOP HEADER BAR ═══ */}
       <div
-        style={{
-          background: C.panel,
-          borderBottom: `1px solid ${C.border}`,
-          position: "relative",
-          zIndex: 10,
-        }}
-        className="flex items-center px-4 py-3 gap-y-4 gap-x-6 flex-wrap"
+        className="flex items-center px-4 py-3 gap-y-4 gap-x-6 flex-wrap bg-[var(--c-panel)] border-b border-[var(--c-border)] relative z-10"
       >
         {/* Symbol selector */}
         <div className="relative shrink-0" ref={dropdownRef}>
           <button
             onClick={() => setSymbolDropdownOpen(!symbolDropdownOpen)}
-            className="flex items-center gap-2 px-2 py-1 rounded transition-colors"
-            style={{ background: symbolDropdownOpen ? C.card : "transparent" }}
+            className={`flex items-center gap-2 px-2 py-1 rounded transition-colors ${symbolDropdownOpen ? 'bg-[var(--c-card)]' : 'bg-transparent'}`}
           >
-            <span style={{ fontSize: 16, fontWeight: 700, color: C.textP }}>
+            <span className="text-base font-bold text-[var(--c-textP)]">
               {symbolInfo.label}
             </span>
             <span
-              style={{
-                fontSize: 11,
-                color: C.textS,
-                background: C.card,
-                padding: "2px 6px",
-                borderRadius: 3,
-              }}
+              className="text-[11px] text-[var(--c-textS)] bg-[var(--c-card)] py-0.5 px-1.5 rounded-[3px]"
             >
               Perpetual
             </span>
             <ChevronDown
               size={14}
-              style={{
-                color: C.textS,
-                transform: symbolDropdownOpen ? "rotate(180deg)" : "none",
-                transition: "transform 0.2s",
-              }}
+              className={`text-[var(--c-textS)] transition-transform duration-200 ${symbolDropdownOpen ? 'rotate-180' : ''}`}
             />
           </button>
 
           {/* Dropdown */}
           {symbolDropdownOpen && (
             <div
-              className="absolute top-full left-0 mt-1 rounded-lg overflow-hidden shadow-xl"
-              style={{
-                background: C.panel,
-                border: `1px solid ${C.border}`,
-                width: 260,
-                zIndex: 40,
-              }}
+              className="absolute top-full left-0 mt-1 rounded-lg overflow-hidden shadow-xl bg-[var(--c-panel)] border border-[var(--c-border)] w-[260px] z-40"
             >
               <div
-                className="p-2"
-                style={{ borderBottom: `1px solid ${C.border}` }}
+                className="p-2 border-b border-[var(--c-border)]"
               >
                 <div
-                  className="flex items-center gap-2 px-2 py-1.5 rounded"
-                  style={{ background: C.card }}
+                  className="flex items-center gap-2 px-2 py-1.5 rounded bg-[var(--c-card)]"
                 >
-                  <Search size={14} style={{ color: C.textT }} />
+                  <Search size={14} className="text-[var(--c-textT)]" />
                   <input
                     type="text"
                     value={symbolSearch}
                     onChange={(e) => setSymbolSearch(e.target.value)}
                     placeholder="Search..."
                     autoFocus
-                    style={{
-                      flex: 1,
-                      background: "transparent",
-                      color: C.textP,
-                      fontSize: 12,
-                      outline: "none",
-                      border: "none",
-                    }}
+                    className="flex-1 bg-transparent text-[var(--c-textP)] text-xs outline-none border-0"
                   />
                 </div>
               </div>
-              <div style={{ maxHeight: 320, overflowY: "auto" }}>
+              <div className="max-h-[320px] overflow-y-auto">
                 {(() => {
                   let lastType = "";
                   return filteredSymbols.map((s) => {
@@ -1252,32 +1225,14 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       <React.Fragment key={s.symbol}>
                         {showHeader && (
                           <div
-                            className="px-3 py-1.5 sticky top-0"
-                            style={{
-                              fontSize: 10,
-                              fontWeight: 700,
-                              color: C.textT,
-                              background: C.panel,
-                              textTransform: "uppercase",
-                              letterSpacing: 1,
-                            }}
+                            className="px-3 py-1.5 sticky top-0 text-[10px] font-bold text-[var(--c-textT)] bg-[var(--c-panel)] uppercase tracking-[1px]"
                           >
                             {s.type === "crypto" ? "Crypto" : "Forex & Metals"}
                           </div>
                         )}
                         <button
                           onClick={() => handleSymbolSelect(s.symbol)}
-                          className="flex items-center justify-between w-full px-3 py-2 transition-colors"
-                          style={{
-                            background:
-                              currentSymbolStr === s.symbol
-                                ? C.yellowDim
-                                : "transparent",
-                            color:
-                              currentSymbolStr === s.symbol
-                                ? C.yellow
-                                : C.textP,
-                          }}
+                          className={`flex items-center justify-between w-full px-3 py-2 transition-colors ${currentSymbolStr === s.symbol ? 'bg-[var(--c-yellowDim)] text-[var(--c-yellow)]' : 'bg-transparent text-[var(--c-textP)]'}`}
                           onMouseEnter={(e) => {
                             if (currentSymbolStr !== s.symbol)
                               e.currentTarget.style.background = C.hoverBg;
@@ -1287,10 +1242,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                               e.currentTarget.style.background = "transparent";
                           }}
                         >
-                          <span style={{ fontSize: 13, fontWeight: 500 }}>
+                          <span className="text-[13px] font-medium">
                             {s.label}
                           </span>
-                          <span style={{ fontSize: 11, color: C.textT }}>
+                          <span className="text-[11px] text-[var(--c-textT)]">
                             {s.base}
                           </span>
                         </button>
@@ -1306,20 +1261,11 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         {/* Current price */}
         <div className="shrink-0">
           <span
-            style={{
-              fontSize: 18,
-              fontWeight: 700,
-              color: isCrypto
-                ? ticker?.priceChangePercent >= 0
-                  ? C.green
-                  : C.red
-                : C.textP,
-              fontFamily: "monospace",
-            }}
+            className={`text-lg font-bold font-mono ${isCrypto ? (ticker?.priceChangePercent >= 0 ? 'text-[var(--c-green)]' : 'text-[var(--c-red)]') : 'text-[var(--c-textP)]'}`}
           >
             {currentMid > 0 ? formatPrice(currentMid) : "--"}
           </span>
-          <div style={{ fontSize: 11, color: C.textS }}>
+          <div className="text-[11px] text-[var(--c-textS)]">
             {currentMid > 0 ? `≈${formatNum(currentMid)} USD` : ""}
           </div>
         </div>
@@ -1354,15 +1300,12 @@ const BybitTradingArea = ({ selectedChallenge }) => {
           },
         ].map((item, i) => (
           <div key={i} className="shrink-0 hidden md:block">
-            <div style={{ fontSize: 10, color: C.textT, marginBottom: 1 }}>
+            <div className="text-[10px] text-[var(--c-textT)] mb-px">
               {item.label}
             </div>
             <div
-              style={{
-                fontSize: 12,
-                color: item.color,
-                fontFamily: "monospace",
-              }}
+              className="text-xs font-mono"
+              style={{ color: item.color }}
             >
               {item.value}
             </div>
@@ -1372,18 +1315,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         {/* Connection indicator */}
         <div className="shrink-0 hidden lg:flex items-center gap-1 ml-auto">
           <div
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: "50%",
-              background: isCrypto
-                ? binanceConnected
-                  ? C.green
-                  : C.red
-                : C.yellow,
-            }}
+            className={`w-1.5 h-1.5 rounded-full ${isCrypto ? (binanceConnected ? 'bg-[var(--c-green)]' : 'bg-[var(--c-red)]') : 'bg-[var(--c-yellow)]'}`}
           />
-          <span style={{ fontSize: 10, color: C.textT }}>
+          <span className="text-[10px] text-[var(--c-textT)]">
             {isCrypto ? (binanceConnected ? "Live" : "Offline") : "Polling"}
           </span>
         </div>
@@ -1391,13 +1325,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
       {/* ═══ CHART NAV TABS ═══ */}
       <div
-        style={{
-          background: C.panel,
-          borderBottom: `1px solid ${C.border}`,
-          position: "relative",
-          zIndex: 2,
-        }}
-        className="flex items-center px-4 gap-1"
+        className="flex items-center px-4 gap-1 bg-[var(--c-panel)] border-b border-[var(--c-border)] relative z-[2]"
       >
         {[
           { key: "chart", label: "Chart" },
@@ -1407,16 +1335,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
           <button
             key={tab.key}
             onClick={() => setChartTab(tab.key)}
-            className="px-3 py-2"
-            style={{
-              fontSize: 12,
-              color: chartTab === tab.key ? C.textP : C.textS,
-              fontWeight: chartTab === tab.key ? 600 : 400,
-              borderBottom:
-                chartTab === tab.key
-                  ? `2px solid ${C.yellow}`
-                  : "2px solid transparent",
-            }}
+            className={`px-3 py-2 text-xs border-b-2 ${chartTab === tab.key ? 'text-[var(--c-textP)] font-semibold border-[var(--c-yellow)]' : 'text-[var(--c-textS)] font-normal border-transparent'}`}
           >
             {tab.label}
           </button>
@@ -1426,82 +1345,47 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
       {/* ═══ MAIN 3-COLUMN AREA ═══ */}
       <div
-        className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-hidden"
-        style={{ position: "relative", zIndex: 1 }}
+        className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-hidden relative z-[1]"
       >
         {/* ── LEFT: CHART / OVERVIEW / DATA ── */}
         <div
-          className="flex-1 min-w-0 min-h-[350px] lg:min-h-[300px] flex flex-col"
-          style={{ background: C.panel }}
+          className="flex-1 min-w-0 min-h-[350px] lg:min-h-[300px] flex flex-col bg-[var(--c-panel)]"
         >
           {chartTab === "chart" && (
             <SectionErrorBoundary label="Chart">
               {/* Timeframe bar */}
               <div
-                className={`flex flex-wrap items-center px-2 py-1 gap-0.5 border-b border-[${C.border}]`}
+                className="flex flex-wrap items-center px-2 py-1 gap-0.5 border-b border-[var(--c-border)]"
               >
                 {timeframes.map((tf) => (
                   <button
                     key={tf.key}
                     onClick={() => setSelectedTimeframe(tf.key)}
-                    className="px-2 py-1"
-                    style={{
-                      fontSize: 11,
-                      fontWeight: selectedTimeframe === tf.key ? 600 : 400,
-                      color: selectedTimeframe === tf.key ? C.yellow : C.textS,
-                      background:
-                        selectedTimeframe === tf.key
-                          ? C.yellowDim
-                          : "transparent",
-                      borderRadius: 3,
-                    }}
+                    className={`px-2 py-1 text-[11px] rounded-[3px] ${selectedTimeframe === tf.key ? 'font-semibold text-[var(--c-yellow)] bg-[var(--c-yellowDim)]' : 'font-normal text-[var(--c-textS)] bg-transparent'}`}
                   >
                     {tf.label}
                   </button>
                 ))}
                 <div
-                  style={{
-                    width: 1,
-                    height: 14,
-                    background: C.border,
-                    margin: "0 6px",
-                  }}
+                  className="w-px h-3.5 bg-[var(--c-border)] mx-1.5 my-0"
                 />
                 <button
                   onClick={() => setChartType("candlestick")}
-                  className="px-2 py-1"
-                  style={{
-                    fontSize: 11,
-                    color:
-                      chartType === "candlestick" || chartType === "candles"
-                        ? C.textP
-                        : C.textS,
-                  }}
+                  className={`px-2 py-1 text-[11px] ${(chartType === "candlestick" || chartType === "candles") ? 'text-[var(--c-textP)]' : 'text-[var(--c-textS)]'}`}
                 >
                   Candles
                 </button>
                 <button
                   onClick={() => setChartType("line")}
-                  className="px-2 py-1"
-                  style={{
-                    fontSize: 11,
-                    color: chartType === "line" ? C.textP : C.textS,
-                  }}
+                  className={`px-2 py-1 text-[11px] ${chartType === "line" ? 'text-[var(--c-textP)]' : 'text-[var(--c-textS)]'}`}
                 >
                   Line
                 </button>
-                <div style={{ flex: 1 }} />
+                <div className="flex-1" />
                 <button
                   onClick={() => chartRef.current?.fitContent()}
-                  className="px-2 py-1"
+                  className="px-2 py-1 text-[11px] text-[var(--c-textS)] flex items-center gap-1"
                   title="Reset chart view"
-                  style={{
-                    fontSize: 11,
-                    color: C.textS,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 3,
-                  }}
                 >
                   <svg
                     width="12"
@@ -1538,29 +1422,21 @@ const BybitTradingArea = ({ selectedChallenge }) => {
               {/* Symbol Header */}
               <div className="flex items-center gap-3">
                 <div
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: "50%",
-                    background: C.card,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                  className="w-10 h-10 rounded-full bg-[var(--c-card)] flex items-center justify-center"
                 >
                   <span
-                    style={{ fontSize: 14, fontWeight: 700, color: C.yellow }}
+                    className="text-sm font-bold text-[var(--c-yellow)]"
                   >
                     {symbolInfo.base.slice(0, 2)}
                   </span>
                 </div>
                 <div>
                   <div
-                    style={{ fontSize: 18, fontWeight: 700, color: C.textP }}
+                    className="text-lg font-bold text-[var(--c-textP)]"
                   >
                     {symbolInfo.label}
                   </div>
-                  <div style={{ fontSize: 12, color: C.textS }}>
+                  <div className="text-xs text-[var(--c-textS)]">
                     {isCrypto
                       ? "Perpetual Contract"
                       : symbolInfo.type === "forex" && symbolInfo.base === "XAU"
@@ -1572,90 +1448,58 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
               {/* Price Overview Card */}
               <div
-                style={{
-                  background: C.card,
-                  borderRadius: 8,
-                  border: `1px solid ${C.border}`,
-                }}
-                className="p-4"
+                className="p-4 bg-[var(--c-card)] rounded-lg border border-[var(--c-border)]"
               >
                 <div
-                  style={{
-                    fontSize: 11,
-                    color: C.textT,
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    letterSpacing: 0.5,
-                    marginBottom: 12,
-                  }}
+                  className="text-[11px] text-[var(--c-textT)] font-semibold uppercase tracking-[0.5px] mb-3"
                 >
                   Price Overview
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <div
-                      style={{ fontSize: 10, color: C.textT, marginBottom: 2 }}
+                      className="text-[10px] text-[var(--c-textT)] mb-0.5"
                     >
                       Bid
                     </div>
                     <div
-                      style={{
-                        fontSize: 15,
-                        fontWeight: 600,
-                        color: C.green,
-                        fontFamily: "monospace",
-                      }}
+                      className="text-[15px] font-semibold text-[var(--c-green)] font-mono"
                     >
                       {currentBid > 0 ? formatPrice(currentBid) : "--"}
                     </div>
                   </div>
                   <div>
                     <div
-                      style={{ fontSize: 10, color: C.textT, marginBottom: 2 }}
+                      className="text-[10px] text-[var(--c-textT)] mb-0.5"
                     >
                       Ask
                     </div>
                     <div
-                      style={{
-                        fontSize: 15,
-                        fontWeight: 600,
-                        color: C.red,
-                        fontFamily: "monospace",
-                      }}
+                      className="text-[15px] font-semibold text-[var(--c-red)] font-mono"
                     >
                       {currentAsk > 0 ? formatPrice(currentAsk) : "--"}
                     </div>
                   </div>
                   <div>
                     <div
-                      style={{ fontSize: 10, color: C.textT, marginBottom: 2 }}
+                      className="text-[10px] text-[var(--c-textT)] mb-0.5"
                     >
                       Mid Price
                     </div>
                     <div
-                      style={{
-                        fontSize: 15,
-                        fontWeight: 600,
-                        color: C.textP,
-                        fontFamily: "monospace",
-                      }}
+                      className="text-[15px] font-semibold text-[var(--c-textP)] font-mono"
                     >
                       {currentMid > 0 ? formatPrice(currentMid) : "--"}
                     </div>
                   </div>
                   <div>
                     <div
-                      style={{ fontSize: 10, color: C.textT, marginBottom: 2 }}
+                      className="text-[10px] text-[var(--c-textT)] mb-0.5"
                     >
                       Spread
                     </div>
                     <div
-                      style={{
-                        fontSize: 15,
-                        fontWeight: 600,
-                        color: C.textP,
-                        fontFamily: "monospace",
-                      }}
+                      className="text-[15px] font-semibold text-[var(--c-textP)] font-mono"
                     >
                       {spread > 0 ? formatPrice(spread) : "--"}
                     </div>
@@ -1666,44 +1510,22 @@ const BybitTradingArea = ({ selectedChallenge }) => {
               {/* 24h Statistics (crypto only, from Binance ticker) */}
               {isCrypto && ticker && (
                 <div
-                  style={{
-                    background: C.card,
-                    borderRadius: 8,
-                    border: `1px solid ${C.border}`,
-                  }}
-                  className="p-4"
+                  className="p-4 bg-[var(--c-card)] rounded-lg border border-[var(--c-border)]"
                 >
                   <div
-                    style={{
-                      fontSize: 11,
-                      color: C.textT,
-                      fontWeight: 600,
-                      textTransform: "uppercase",
-                      letterSpacing: 0.5,
-                      marginBottom: 12,
-                    }}
+                    className="text-[11px] text-[var(--c-textT)] font-semibold uppercase tracking-[0.5px] mb-3"
                   >
                     24h Statistics
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <div
-                        style={{
-                          fontSize: 10,
-                          color: C.textT,
-                          marginBottom: 2,
-                        }}
+                        className="text-[10px] text-[var(--c-textT)] mb-0.5"
                       >
                         24h Change
                       </div>
                       <div
-                        style={{
-                          fontSize: 13,
-                          fontWeight: 600,
-                          color:
-                            ticker.priceChangePercent >= 0 ? C.green : C.red,
-                          fontFamily: "monospace",
-                        }}
+                        className={`text-[13px] font-semibold font-mono ${ticker.priceChangePercent >= 0 ? 'text-[var(--c-green)]' : 'text-[var(--c-red)]'}`}
                       >
                         {ticker.priceChangePercent >= 0 ? "+" : ""}
                         {ticker.priceChangePercent.toFixed(2)}%
@@ -1711,105 +1533,60 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     </div>
                     <div>
                       <div
-                        style={{
-                          fontSize: 10,
-                          color: C.textT,
-                          marginBottom: 2,
-                        }}
+                        className="text-[10px] text-[var(--c-textT)] mb-0.5"
                       >
                         24h Volume
                       </div>
                       <div
-                        style={{
-                          fontSize: 13,
-                          fontWeight: 600,
-                          color: C.textP,
-                          fontFamily: "monospace",
-                        }}
+                        className="text-[13px] font-semibold text-[var(--c-textP)] font-mono"
                       >
                         {formatVolume(ticker.volume)} {symbolInfo.base}
                       </div>
                     </div>
                     <div>
                       <div
-                        style={{
-                          fontSize: 10,
-                          color: C.textT,
-                          marginBottom: 2,
-                        }}
+                        className="text-[10px] text-[var(--c-textT)] mb-0.5"
                       >
                         24h High
                       </div>
                       <div
-                        style={{
-                          fontSize: 13,
-                          fontWeight: 600,
-                          color: C.textP,
-                          fontFamily: "monospace",
-                        }}
+                        className="text-[13px] font-semibold text-[var(--c-textP)] font-mono"
                       >
                         {formatPrice(ticker.highPrice)}
                       </div>
                     </div>
                     <div>
                       <div
-                        style={{
-                          fontSize: 10,
-                          color: C.textT,
-                          marginBottom: 2,
-                        }}
+                        className="text-[10px] text-[var(--c-textT)] mb-0.5"
                       >
                         24h Low
                       </div>
                       <div
-                        style={{
-                          fontSize: 13,
-                          fontWeight: 600,
-                          color: C.textP,
-                          fontFamily: "monospace",
-                        }}
+                        className="text-[13px] font-semibold text-[var(--c-textP)] font-mono"
                       >
                         {formatPrice(ticker.lowPrice)}
                       </div>
                     </div>
                     <div>
                       <div
-                        style={{
-                          fontSize: 10,
-                          color: C.textT,
-                          marginBottom: 2,
-                        }}
+                        className="text-[10px] text-[var(--c-textT)] mb-0.5"
                       >
                         24h Turnover
                       </div>
                       <div
-                        style={{
-                          fontSize: 13,
-                          fontWeight: 600,
-                          color: C.textP,
-                          fontFamily: "monospace",
-                        }}
+                        className="text-[13px] font-semibold text-[var(--c-textP)] font-mono"
                       >
                         {formatVolume(ticker.quoteVolume)} USDT
                       </div>
                     </div>
                     <div>
                       <div
-                        style={{
-                          fontSize: 10,
-                          color: C.textT,
-                          marginBottom: 2,
-                        }}
+                        className="text-[10px] text-[var(--c-textT)] mb-0.5"
                       >
                         Last Price
                       </div>
                       <div
-                        style={{
-                          fontSize: 13,
-                          fontWeight: 600,
-                          color: C.textP,
-                          fontFamily: "monospace",
-                        }}
+                        className="text-[13px] font-semibold text-[var(--c-textP)] font-mono"
                       >
                         {formatPrice(ticker.lastPrice)}
                       </div>
@@ -1820,22 +1597,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
               {/* Market Info */}
               <div
-                style={{
-                  background: C.card,
-                  borderRadius: 8,
-                  border: `1px solid ${C.border}`,
-                }}
-                className="p-4"
+                className="p-4 bg-[var(--c-card)] rounded-lg border border-[var(--c-border)]"
               >
                 <div
-                  style={{
-                    fontSize: 11,
-                    color: C.textT,
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    letterSpacing: 0.5,
-                    marginBottom: 12,
-                  }}
+                  className="text-[11px] text-[var(--c-textT)] font-semibold uppercase tracking-[0.5px] mb-3"
                 >
                   Market Info
                 </div>
@@ -1859,11 +1624,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   ].map((row) => (
                     <div
                       key={row.label}
-                      className="flex justify-between items-center"
-                      style={{ fontSize: 12 }}
+                      className="flex justify-between items-center text-xs"
                     >
-                      <span style={{ color: C.textS }}>{row.label}</span>
-                      <span style={{ color: C.textP, fontWeight: 500 }}>
+                      <span className="text-[var(--c-textS)]">{row.label}</span>
+                      <span className="text-[var(--c-textP)] font-medium">
                         {row.value}
                       </span>
                     </div>
@@ -1873,26 +1637,14 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
               {/* About Section */}
               <div
-                style={{
-                  background: C.card,
-                  borderRadius: 8,
-                  border: `1px solid ${C.border}`,
-                }}
-                className="p-4"
+                className="p-4 bg-[var(--c-card)] rounded-lg border border-[var(--c-border)]"
               >
                 <div
-                  style={{
-                    fontSize: 11,
-                    color: C.textT,
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    letterSpacing: 0.5,
-                    marginBottom: 8,
-                  }}
+                  className="text-[11px] text-[var(--c-textT)] font-semibold uppercase tracking-[0.5px] mb-2"
                 >
                   About {symbolInfo.label}
                 </div>
-                <p style={{ fontSize: 12, color: C.textS, lineHeight: 1.6 }}>
+                <p className="text-xs text-[var(--c-textS)] leading-[1.6]">
                   {isCrypto
                     ? `${symbolInfo.base} is traded against ${symbolInfo.quote} as a perpetual contract. This pair tracks the spot price of ${symbolInfo.base} and is one of the most liquid cryptocurrency trading pairs available.`
                     : symbolInfo.base === "XAU"
@@ -1909,22 +1661,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {/* Contract / Pair Specifications */}
               <div
-                style={{
-                  background: C.card,
-                  borderRadius: 8,
-                  border: `1px solid ${C.border}`,
-                }}
-                className="p-4"
+                className="p-4 bg-[var(--c-card)] rounded-lg border border-[var(--c-border)]"
               >
                 <div
-                  style={{
-                    fontSize: 11,
-                    color: C.textT,
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    letterSpacing: 0.5,
-                    marginBottom: 12,
-                  }}
+                  className="text-[11px] text-[var(--c-textT)] font-semibold uppercase tracking-[0.5px] mb-3"
                 >
                   {isCrypto ? "Contract Specifications" : "Pair Specifications"}
                 </div>
@@ -1966,19 +1706,11 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   ].map((row) => (
                     <div
                       key={row.label}
-                      className="flex justify-between items-center py-1"
-                      style={{
-                        fontSize: 12,
-                        borderBottom: `1px solid ${C.border}`,
-                      }}
+                      className="flex justify-between items-center py-1 text-xs border-b border-[var(--c-border)]"
                     >
-                      <span style={{ color: C.textS }}>{row.label}</span>
+                      <span className="text-[var(--c-textS)]">{row.label}</span>
                       <span
-                        style={{
-                          color: C.textP,
-                          fontWeight: 500,
-                          fontFamily: "monospace",
-                        }}
+                        className="text-[var(--c-textP)] font-medium font-mono"
                       >
                         {row.value}
                       </span>
@@ -1995,32 +1727,15 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                 if (symbolPositions.length === 0)
                   return (
                     <div
-                      style={{
-                        background: C.card,
-                        borderRadius: 8,
-                        border: `1px solid ${C.border}`,
-                      }}
-                      className="p-4"
+                      className="p-4 bg-[var(--c-card)] rounded-lg border border-[var(--c-border)]"
                     >
                       <div
-                        style={{
-                          fontSize: 11,
-                          color: C.textT,
-                          fontWeight: 600,
-                          textTransform: "uppercase",
-                          letterSpacing: 0.5,
-                          marginBottom: 12,
-                        }}
+                        className="text-[11px] text-[var(--c-textT)] font-semibold uppercase tracking-[0.5px] mb-3"
                       >
                         My Position
                       </div>
                       <p
-                        style={{
-                          fontSize: 12,
-                          color: C.textS,
-                          textAlign: "center",
-                          padding: "12px 0",
-                        }}
+                        className="text-xs text-[var(--c-textS)] text-center py-3 px-0"
                       >
                         No open position for {symbolInfo.label}
                       </p>
@@ -2028,22 +1743,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   );
                 return (
                   <div
-                    style={{
-                      background: C.card,
-                      borderRadius: 8,
-                      border: `1px solid ${C.border}`,
-                    }}
-                    className="p-4"
+                    className="p-4 bg-[var(--c-card)] rounded-lg border border-[var(--c-border)]"
                   >
                     <div
-                      style={{
-                        fontSize: 11,
-                        color: C.textT,
-                        fontWeight: 600,
-                        textTransform: "uppercase",
-                        letterSpacing: 0.5,
-                        marginBottom: 12,
-                      }}
+                      className="text-[11px] text-[var(--c-textT)] font-semibold uppercase tracking-[0.5px] mb-3"
                     >
                       My Positions — {symbolInfo.label}
                     </div>
@@ -2061,26 +1764,16 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       return (
                         <div
                           key={pos.id}
-                          className="space-y-2 mb-3 pb-3"
-                          style={{ borderBottom: `1px solid ${C.border}` }}
+                          className="space-y-2 mb-3 pb-3 border-b border-[var(--c-border)]"
                         >
                           <div className="flex justify-between items-center">
                             <span
-                              style={{
-                                fontSize: 13,
-                                fontWeight: 700,
-                                color: pos.type === "BUY" ? C.green : C.red,
-                              }}
+                              className={`text-[13px] font-bold ${pos.type === "BUY" ? 'text-[var(--c-green)]' : 'text-[var(--c-red)]'}`}
                             >
                               {pos.type === "BUY" ? "Long" : "Short"}
                             </span>
                             <span
-                              style={{
-                                fontSize: 13,
-                                fontWeight: 700,
-                                color: pnl >= 0 ? C.green : C.red,
-                                fontFamily: "monospace",
-                              }}
+                              className={`text-[13px] font-bold font-mono ${pnl >= 0 ? 'text-[var(--c-green)]' : 'text-[var(--c-red)]'}`}
                             >
                               {pnl >= 0 ? "+" : ""}
                               {pnl.toFixed(2)} USDT
@@ -2116,17 +1809,13 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           ].map((row) => (
                             <div
                               key={row.label}
-                              className="flex justify-between"
-                              style={{ fontSize: 12 }}
+                              className="flex justify-between text-xs"
                             >
-                              <span style={{ color: C.textS }}>
+                              <span className="text-[var(--c-textS)]">
                                 {row.label}
                               </span>
                               <span
-                                style={{
-                                  color: C.textP,
-                                  fontFamily: "monospace",
-                                }}
+                                className="text-[var(--c-textP)] font-mono"
                               >
                                 {row.value}
                               </span>
@@ -2136,13 +1825,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           {/* Partial close UI */}
                           {partialCloseId === pos.id && (
                             <div
-                              className="flex items-center gap-1 mt-2"
-                              style={{
-                                background: C.card,
-                                borderRadius: 4,
-                                padding: "6px 8px",
-                                border: `1px solid ${C.border}`,
-                              }}
+                              className="flex items-center gap-1 mt-2 bg-[var(--c-card)] rounded py-1.5 px-2 border border-[var(--c-border)]"
                             >
                               <input
                                 type="number"
@@ -2154,16 +1837,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                                   setPartialCloseQty(e.target.value)
                                 }
                                 placeholder={`Max ${pos.volume}`}
-                                style={{
-                                  flex: 1,
-                                  background: C.inputBg,
-                                  border: `1px solid ${C.border}`,
-                                  borderRadius: 3,
-                                  color: C.textP,
-                                  fontSize: 12,
-                                  padding: "3px 6px",
-                                  outline: "none",
-                                }}
+                                className="flex-1 bg-[var(--c-inputBg)] border border-[var(--c-border)] rounded-[3px] text-[var(--c-textP)] text-xs py-[3px] px-1.5 outline-none"
                               />
                               <button
                                 onClick={() => {
@@ -2173,15 +1847,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                                   else if (v >= (pos.volume || 0))
                                     handleClosePosition(pos);
                                 }}
-                                style={{
-                                  background: C.red,
-                                  color: "#fff",
-                                  border: "none",
-                                  borderRadius: 3,
-                                  fontSize: 11,
-                                  padding: "3px 8px",
-                                  cursor: "pointer",
-                                }}
+                                className="bg-[var(--c-red)] text-white border-0 rounded-[3px] text-[11px] py-[3px] px-2 cursor-pointer"
                               >
                                 Confirm
                               </button>
@@ -2190,15 +1856,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                                   setPartialCloseId(null);
                                   setPartialCloseQty("");
                                 }}
-                                style={{
-                                  background: C.border,
-                                  color: C.textS,
-                                  border: "none",
-                                  borderRadius: 3,
-                                  fontSize: 11,
-                                  padding: "3px 8px",
-                                  cursor: "pointer",
-                                }}
+                                className="bg-[var(--c-border)] text-[var(--c-textS)] border-0 rounded-[3px] text-[11px] py-[3px] px-2 cursor-pointer"
                               >
                                 Cancel
                               </button>
@@ -2210,17 +1868,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                             <button
                               onClick={() => handleClosePosition(pos)}
                               disabled={closePositionMutation.isPending}
-                              style={{
-                                flex: 1,
-                                background: C.redDim,
-                                color: C.red,
-                                border: `1px solid ${C.red}`,
-                                borderRadius: 4,
-                                fontSize: 11,
-                                fontWeight: 600,
-                                padding: "5px 0",
-                                cursor: "pointer",
-                              }}
+                              className="flex-1 bg-[var(--c-redDim)] text-[var(--c-red)] border border-[var(--c-red)] rounded text-[11px] font-semibold py-[5px] px-0 cursor-pointer"
                             >
                               Close All
                             </button>
@@ -2231,17 +1879,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                                 );
                                 setPartialCloseQty("");
                               }}
-                              style={{
-                                flex: 1,
-                                background: C.yellowDim,
-                                color: C.yellow,
-                                border: `1px solid ${C.yellow}`,
-                                borderRadius: 4,
-                                fontSize: 11,
-                                fontWeight: 600,
-                                padding: "5px 0",
-                                cursor: "pointer",
-                              }}
+                              className="flex-1 bg-[var(--c-yellowDim)] text-[var(--c-yellow)] border border-[var(--c-yellow)] rounded text-[11px] font-semibold py-[5px] px-0 cursor-pointer"
                             >
                               Partial Close
                             </button>
@@ -2255,22 +1893,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
               {/* Price Reference */}
               <div
-                style={{
-                  background: C.card,
-                  borderRadius: 8,
-                  border: `1px solid ${C.border}`,
-                }}
-                className="p-4"
+                className="p-4 bg-[var(--c-card)] rounded-lg border border-[var(--c-border)]"
               >
                 <div
-                  style={{
-                    fontSize: 11,
-                    color: C.textT,
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    letterSpacing: 0.5,
-                    marginBottom: 12,
-                  }}
+                  className="text-[11px] text-[var(--c-textT)] font-semibold uppercase tracking-[0.5px] mb-3"
                 >
                   Price Reference
                 </div>
@@ -2313,16 +1939,12 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   ].map((row) => (
                     <div
                       key={row.label}
-                      className="flex justify-between items-center"
-                      style={{ fontSize: 12 }}
+                      className="flex justify-between items-center text-xs"
                     >
-                      <span style={{ color: C.textS }}>{row.label}</span>
+                      <span className="text-[var(--c-textS)]">{row.label}</span>
                       <span
-                        style={{
-                          color: row.color,
-                          fontWeight: 500,
-                          fontFamily: "monospace",
-                        }}
+                        className="font-medium font-mono"
+                        style={{ color: row.color }}
                       >
                         {row.value}
                       </span>
@@ -2333,22 +1955,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
               {/* Account Trading Summary */}
               <div
-                style={{
-                  background: C.card,
-                  borderRadius: 8,
-                  border: `1px solid ${C.border}`,
-                }}
-                className="p-4"
+                className="p-4 bg-[var(--c-card)] rounded-lg border border-[var(--c-border)]"
               >
                 <div
-                  style={{
-                    fontSize: 11,
-                    color: C.textT,
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    letterSpacing: 0.5,
-                    marginBottom: 12,
-                  }}
+                  className="text-[11px] text-[var(--c-textT)] font-semibold uppercase tracking-[0.5px] mb-3"
                 >
                   Account Summary
                 </div>
@@ -2371,16 +1981,12 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   ].map((row) => (
                     <div
                       key={row.label}
-                      className="flex justify-between items-center"
-                      style={{ fontSize: 12 }}
+                      className="flex justify-between items-center text-xs"
                     >
-                      <span style={{ color: C.textS }}>{row.label}</span>
+                      <span className="text-[var(--c-textS)]">{row.label}</span>
                       <span
-                        style={{
-                          color: row.color || C.textP,
-                          fontWeight: 500,
-                          fontFamily: "monospace",
-                        }}
+                        className="font-medium font-mono"
+                        style={{ color: row.color || C.textP }}
                       >
                         {row.value}
                       </span>
@@ -2395,94 +2001,43 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         {/* ── MIDDLE: ORDER BOOK ── */}
         <SectionErrorBoundary label="Order Book">
           <div
-            className="hidden lg:flex lg:w-[280px] lg:max-h-none shrink-0 flex-col lg:border-r overflow-hidden"
-            style={{ background: C.panel, borderColor: C.border }}
+            className="hidden lg:flex lg:w-[280px] lg:max-h-none shrink-0 flex-col lg:border-r overflow-hidden bg-[var(--c-panel)] border-[var(--c-border)]"
           >
             {/* OB Header */}
             <div
-              className="flex items-center justify-between px-3 shrink-0"
-              style={{ borderBottom: `1px solid ${C.border}` }}
+              className="flex items-center justify-between px-3 shrink-0 border-b border-[var(--c-border)]"
             >
               <div className="flex">
                 <button
                   onClick={() => setObTab("book")}
-                  className="py-2 mr-4"
-                  style={{
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: obTab === "book" ? C.textP : C.textS,
-                    borderBottom:
-                      obTab === "book"
-                        ? `2px solid ${C.yellow}`
-                        : "2px solid transparent",
-                  }}
+                  className={`py-2 mr-4 text-xs font-semibold border-b-2 ${obTab === "book" ? 'text-[var(--c-textP)] border-[var(--c-yellow)]' : 'text-[var(--c-textS)] border-transparent'}`}
                 >
                   Order Book
                 </button>
                 <button
                   onClick={() => setObTab("trades")}
-                  className="py-2"
-                  style={{
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: obTab === "trades" ? C.textP : C.textS,
-                    borderBottom:
-                      obTab === "trades"
-                        ? `2px solid ${C.yellow}`
-                        : "2px solid transparent",
-                  }}
+                  className={`py-2 text-xs font-semibold border-b-2 ${obTab === "trades" ? 'text-[var(--c-textP)] border-[var(--c-yellow)]' : 'text-[var(--c-textS)] border-transparent'}`}
                 >
                   Recent Trades
                 </button>
               </div>
               <div
-                className="flex items-center gap-1"
-                style={{
-                  opacity: obTab === "book" ? 1 : 0.45,
-                  pointerEvents: obTab === "book" ? "auto" : "none",
-                }}
+                className={`flex items-center gap-1 ${obTab === "book" ? 'opacity-100 pointer-events-auto' : 'opacity-[0.45] pointer-events-none'}`}
               >
                 {["both", "asks", "bids"].map((mode) => (
                   <button
                     key={mode}
                     onClick={() => setObMode(mode)}
-                    className="p-1 rounded"
-                    style={{
-                      background: obMode === mode ? C.card : "transparent",
-                    }}
+                    className={`p-1 rounded ${obMode === mode ? 'bg-[var(--c-card)]' : 'bg-transparent'}`}
                   >
                     <div
-                      style={{
-                        width: 14,
-                        height: 14,
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 1,
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
+                      className="w-3.5 h-3.5 flex flex-col gap-px justify-center items-center"
                     >
                       <div
-                        style={{
-                          width: 10,
-                          height: 2,
-                          background:
-                            mode === "asks" || mode === "both"
-                              ? C.red
-                              : C.textT,
-                          borderRadius: 1,
-                        }}
+                        className={`w-[10px] h-0.5 rounded-[1px] ${(mode === "asks" || mode === "both") ? 'bg-[var(--c-red)]' : 'bg-[var(--c-textT)]'}`}
                       />
                       <div
-                        style={{
-                          width: 10,
-                          height: 2,
-                          background:
-                            mode === "bids" || mode === "both"
-                              ? C.green
-                              : C.textT,
-                          borderRadius: 1,
-                        }}
+                        className={`w-[10px] h-0.5 rounded-[1px] ${(mode === "bids" || mode === "both") ? 'bg-[var(--c-green)]' : 'bg-[var(--c-textT)]'}`}
                       />
                     </div>
                   </button>
@@ -2494,8 +2049,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
               <>
                 {/* OB Column Headers */}
                 <div
-                  className="grid grid-cols-3 px-3 py-1.5 shrink-0"
-                  style={{ fontSize: 10, color: C.textT }}
+                  className="grid grid-cols-3 px-3 py-1.5 shrink-0 text-[10px] text-[var(--c-textT)]"
                 >
                   <span>Price({symbolInfo.quote})</span>
                   <span className="text-right">Qty</span>
@@ -2517,34 +2071,24 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                             onClick={() =>
                               o.rawPrice && setLimitPrice(o.rawPrice.toString())
                             }
-                            className="relative grid grid-cols-3 py-[1.5px] cursor-pointer hover:brightness-125"
-                            style={{ fontSize: 11 }}
+                            className="relative grid grid-cols-3 py-[1.5px] cursor-pointer hover:brightness-125 text-[11px]"
                           >
                             <div
-                              className="absolute right-0 top-0 bottom-0"
-                              style={{ width: `${pct}%`, background: C.redDim }}
+                              className="absolute right-0 top-0 bottom-0 bg-[var(--c-redDim)]"
+                              style={{ width: `${pct}%` }}
                             />
                             <span
-                              style={{ color: C.red, fontFamily: "monospace" }}
-                              className="relative z-10"
+                              className="text-[var(--c-red)] font-mono relative z-10"
                             >
                               {o.price}
                             </span>
                             <span
-                              style={{
-                                color: C.textP,
-                                fontFamily: "monospace",
-                              }}
-                              className="text-right relative z-10"
+                              className="text-[var(--c-textP)] font-mono text-right relative z-10"
                             >
                               {o.qty}
                             </span>
                             <span
-                              style={{
-                                color: C.textS,
-                                fontFamily: "monospace",
-                              }}
-                              className="text-right relative z-10"
+                              className="text-[var(--c-textS)] font-mono text-right relative z-10"
                             >
                               {o.total}
                             </span>
@@ -2556,56 +2100,43 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
                   {/* Spread / current price */}
                   <div
-                    className="py-2 flex items-center gap-2 shrink-0 overflow-hidden"
-                    style={{
-                      borderTop: `1px solid ${C.border}`,
-                      borderBottom: `1px solid ${C.border}`,
-                    }}
+                    className="py-2 flex items-center gap-2 shrink-0 overflow-hidden border-t border-b border-[var(--c-border)]"
                   >
                     {currentMid > 0 ? (
                       <>
                         {isCrypto ? (
                           ticker?.priceChangePercent >= 0 ? (
-                            <ArrowUp size={14} style={{ color: C.green, flexShrink: 0 }} />
+                            <ArrowUp
+                              size={14}
+                              className="text-[var(--c-green)] shrink-0"
+                            />
                           ) : (
-                            <ArrowDown size={14} style={{ color: C.red, flexShrink: 0 }} />
+                            <ArrowDown
+                              size={14}
+                              className="text-[var(--c-red)] shrink-0"
+                            />
                           )
                         ) : null}
                         <span
-                          className="truncate"
-                          style={{
-                            fontSize: 16,
-                            fontWeight: 700,
-                            color: isCrypto
-                              ? ticker?.priceChangePercent >= 0
-                                ? C.green
-                                : C.red
-                              : C.textP,
-                            fontFamily: "monospace",
-                            flexShrink: 0,
-                          }}
+                          className={`truncate text-base font-bold font-mono shrink-0 ${isCrypto ? (ticker?.priceChangePercent >= 0 ? 'text-[var(--c-green)]' : 'text-[var(--c-red)]') : 'text-[var(--c-textP)]'}`}
                         >
                           {formatPrice(currentMid)}
                         </span>
-                        <span className="truncate" style={{ fontSize: 11, color: C.textS, minWidth: 0 }}>
+                        <span
+                          className="truncate text-[11px] text-[var(--c-textS)] min-w-0"
+                        >
                           ≈{formatNum(currentMid)} USD
                         </span>
                         {spread > 0 && (
                           <span
-                            className="truncate"
-                            style={{
-                              fontSize: 10,
-                              color: C.textT,
-                              marginLeft: "auto",
-                              flexShrink: 0,
-                            }}
+                            className="truncate text-[10px] text-[var(--c-textT)] ml-auto shrink-0"
                           >
                             Spread: {formatPrice(spread)}
                           </span>
                         )}
                       </>
                     ) : (
-                      <span style={{ color: C.textS }}>--</span>
+                      <span className="text-[var(--c-textS)]">--</span>
                     )}
                   </div>
 
@@ -2622,40 +2153,24 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                             onClick={() =>
                               o.rawPrice && setLimitPrice(o.rawPrice.toString())
                             }
-                            className="relative grid grid-cols-3 py-[1.5px] cursor-pointer hover:brightness-125"
-                            style={{ fontSize: 11 }}
+                            className="relative grid grid-cols-3 py-[1.5px] cursor-pointer hover:brightness-125 text-[11px]"
                           >
                             <div
-                              className="absolute right-0 top-0 bottom-0"
-                              style={{
-                                width: `${pct}%`,
-                                background: C.greenDim,
-                              }}
+                              className="absolute right-0 top-0 bottom-0 bg-[var(--c-greenDim)]"
+                              style={{ width: `${pct}%` }}
                             />
                             <span
-                              style={{
-                                color: C.green,
-                                fontFamily: "monospace",
-                              }}
-                              className="relative z-10"
+                              className="text-[var(--c-green)] font-mono relative z-10"
                             >
                               {o.price}
                             </span>
                             <span
-                              style={{
-                                color: C.textP,
-                                fontFamily: "monospace",
-                              }}
-                              className="text-right relative z-10"
+                              className="text-[var(--c-textP)] font-mono text-right relative z-10"
                             >
                               {o.qty}
                             </span>
                             <span
-                              style={{
-                                color: C.textS,
-                                fontFamily: "monospace",
-                              }}
-                              className="text-right relative z-10"
+                              className="text-[var(--c-textS)] font-mono text-right relative z-10"
                             >
                               {o.total}
                             </span>
@@ -2667,19 +2182,18 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
                   {/* Buy/Sell ratio bar */}
                   <div
-                    className="flex items-center gap-0 shrink-0 py-2"
-                    style={{ borderTop: `1px solid ${C.border}` }}
+                    className="flex items-center gap-0 shrink-0 py-2 border-t border-[var(--c-border)]"
                   >
                     <span
-                      style={{ fontSize: 10, color: C.green, marginRight: 4 }}
+                      className="text-[10px] text-[var(--c-green)] mr-1"
                     >
                       B
                     </span>
                     <div className="flex-1 flex h-1 rounded overflow-hidden">
-                      <div style={{ width: "45%", background: C.green }} />
-                      <div style={{ width: "55%", background: C.red }} />
+                      <div className="bg-[var(--c-green)]" style={{ width: "45%" }} />
+                      <div className="bg-[var(--c-red)]" style={{ width: "55%" }} />
                     </div>
-                    <span style={{ fontSize: 10, color: C.red, marginLeft: 4 }}>
+                    <span className="text-[10px] text-[var(--c-red)] ml-1">
                       S
                     </span>
                   </div>
@@ -2689,20 +2203,14 @@ const BybitTradingArea = ({ selectedChallenge }) => {
               <div className="flex-1 overflow-y-auto px-3 py-2">
                 {recentTrades.length === 0 ? (
                   <div
-                    className="text-center py-4"
-                    style={{ fontSize: 12, color: C.textS }}
+                    className="text-center py-4 text-xs text-[var(--c-textS)]"
                   >
                     No recent trades for {symbolInfo.label}
                   </div>
                 ) : (
                   <>
                     <div
-                      className="grid grid-cols-3 px-1 py-1.5 sticky top-0 z-10"
-                      style={{
-                        fontSize: 10,
-                        color: C.textT,
-                        background: C.panel,
-                      }}
+                      className="grid grid-cols-3 px-1 py-1.5 sticky top-0 z-10 text-[10px] text-[var(--c-textT)] bg-[var(--c-panel)]"
                     >
                       <span>Price</span>
                       <span className="text-right">Qty</span>
@@ -2712,26 +2220,20 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       {recentTrades.map((t) => (
                         <div
                           key={t.id}
-                          className="grid grid-cols-3 py-1 px-1"
-                          style={{ fontSize: 11 }}
+                          className="grid grid-cols-3 py-1 px-1 text-[11px]"
                         >
                           <span
-                            style={{
-                              color: t.type === "BUY" ? C.green : C.red,
-                              fontFamily: "monospace",
-                            }}
+                            className={`font-mono ${t.type === "BUY" ? 'text-[var(--c-green)]' : 'text-[var(--c-red)]'}`}
                           >
                             {formatPrice(t.price)}
                           </span>
                           <span
-                            className="text-right"
-                            style={{ color: C.textP, fontFamily: "monospace" }}
+                            className="text-right text-[var(--c-textP)] font-mono"
                           >
                             {(t.volume || 0).toFixed(isCrypto ? 6 : 3)}
                           </span>
                           <span
-                            className="text-right"
-                            style={{ color: C.textS, fontFamily: "monospace" }}
+                            className="text-right text-[var(--c-textS)] font-mono"
                           >
                             {t.time
                               ? new Date(t.time).toLocaleTimeString([], {
@@ -2755,36 +2257,24 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         {/* ── RIGHT: TRADE PANEL ── */}
         <SectionErrorBoundary label="Trade Panel">
           <div
-            className="w-full lg:w-[280px] lg:max-h-none shrink-0 flex flex-col border-t lg:border-t-0 lg:border-l overflow-y-auto"
-            style={{ background: C.panel, borderColor: C.border }}
+            className="w-full lg:w-[280px] lg:max-h-none shrink-0 flex flex-col border-t lg:border-t-0 lg:border-l overflow-y-auto bg-[var(--c-panel)] border-[var(--c-border)]"
           >
             {/* Trade header */}
             <div
-              className="px-4 py-2.5 flex items-center justify-between shrink-0"
-              style={{ borderBottom: `1px solid ${C.border}` }}
+              className="px-4 py-2.5 flex items-center justify-between shrink-0 border-b border-[var(--c-border)]"
             >
-              <span style={{ fontSize: 14, fontWeight: 700, color: C.textP }}>
+              <span className="text-sm font-bold text-[var(--c-textP)]">
                 Trade
               </span>
             </div>
 
             {/* CFD / Spot mode toggle */}
             <div
-              className="flex px-4 shrink-0"
-              style={{ borderBottom: `1px solid ${C.border}` }}
+              className="flex px-4 shrink-0 border-b border-[var(--c-border)]"
             >
               <button
                 onClick={() => setTradeMode("cfd")}
-                className="py-2 mr-4"
-                style={{
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: tradeMode === "cfd" ? C.textP : C.textS,
-                  borderBottom:
-                    tradeMode === "cfd"
-                      ? `2px solid ${C.yellow}`
-                      : "2px solid transparent",
-                }}
+                className={`py-2 mr-4 text-xs font-semibold border-b-2 ${tradeMode === "cfd" ? 'text-[var(--c-textP)] border-[var(--c-yellow)]' : 'text-[var(--c-textS)] border-transparent'}`}
               >
                 CFD
               </button>
@@ -2799,53 +2289,28 @@ const BybitTradingArea = ({ selectedChallenge }) => {
               <div className="flex-1 flex flex-col items-center justify-center p-6 gap-5">
                 {/* Wallet icon circle */}
                 <div
-                  style={{
-                    width: 56,
-                    height: 56,
-                    borderRadius: "50%",
-                    background: C.yellowDim,
-                    border: `1px solid ${C.yellow}`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                  className="w-14 h-14 rounded-full bg-[var(--c-yellowDim)] border border-[var(--c-yellow)] flex items-center justify-center"
                 >
-                  <span style={{ fontSize: 24 }}>💼</span>
+                  <span className="text-2xl">💼</span>
                 </div>
 
-                <div style={{ textAlign: "center" }}>
+                <div className="text-center">
                   <div
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 700,
-                      color: C.textP,
-                      marginBottom: 6,
-                    }}
+                    className="text-sm font-bold text-[var(--c-textP)] mb-1.5"
                   >
                     Spot Trading
                   </div>
                   <p
-                    style={{
-                      fontSize: 12,
-                      color: C.textS,
-                      lineHeight: 1.7,
-                      maxWidth: 200,
-                    }}
+                    className="text-xs text-[var(--c-textS)] leading-[1.7] max-w-[200px]"
                   >
                     Buy and manage crypto assets from the{" "}
-                    <strong style={{ color: C.yellow }}>Wallet</strong> tab in
+                    <strong className="text-[var(--c-yellow)]">Wallet</strong> tab in
                     the panel below.
                   </p>
                 </div>
 
                 <div
-                  style={{
-                    background: C.card,
-                    borderRadius: 8,
-                    border: `1px solid ${C.border}`,
-                    padding: "10px 14px",
-                    width: "100%",
-                  }}
+                  className="bg-[var(--c-card)] rounded-lg border border-[var(--c-border)] py-2.5 px-3.5 w-full"
                 >
                   {[
                     { label: "Mode", value: "Spot (No Leverage)" },
@@ -2854,41 +2319,29 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   ].map((row) => (
                     <div
                       key={row.label}
-                      className="flex justify-between"
-                      style={{
-                        fontSize: 11,
-                        paddingBottom: 4,
-                        marginBottom: 4,
-                        borderBottom: `1px solid ${C.border}`,
-                      }}
+                      className="flex justify-between text-[11px] pb-1 mb-1 border-b border-[var(--c-border)]"
                     >
-                      <span style={{ color: C.textS }}>{row.label}</span>
-                      <span style={{ color: C.textP, fontFamily: "monospace" }}>
+                      <span className="text-[var(--c-textS)]">{row.label}</span>
+                      <span className="text-[var(--c-textP)] font-mono">
                         {row.value}
                       </span>
                     </div>
                   ))}
                   <div
-                    className="flex justify-between"
-                    style={{ fontSize: 11 }}
+                    className="flex justify-between text-[11px]"
                   >
-                    <span style={{ color: C.textS }}>Assets</span>
-                    <span style={{ color: C.textP, fontFamily: "monospace" }}>
+                    <span className="text-[var(--c-textS)]">Assets</span>
+                    <span className="text-[var(--c-textP)] font-mono">
                       11 crypto pairs
                     </span>
                   </div>
                 </div>
 
                 <div
-                  style={{
-                    fontSize: 11,
-                    color: C.textT,
-                    textAlign: "center",
-                    lineHeight: 1.6,
-                  }}
+                  className="text-[11px] text-[var(--c-textT)] text-center leading-[1.6]"
                 >
                   Scroll down to the{" "}
-                  <span style={{ color: C.yellow, fontWeight: 600 }}>
+                  <span className="text-[var(--c-yellow)] font-semibold">
                     Wallet
                   </span>{" "}
                   tab to buy, sell, and track your spot positions.
@@ -2904,27 +2357,13 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   <div className="grid grid-cols-2 gap-0 rounded overflow-hidden">
                     <button
                       onClick={() => setOrderSide("buy")}
-                      style={{
-                        padding: "10px 0",
-                        fontSize: 13,
-                        fontWeight: 700,
-                        color: orderSide === "buy" ? "#fff" : C.textS,
-                        background: orderSide === "buy" ? C.green : C.card,
-                        transition: "all .15s",
-                      }}
+                      className={`py-2.5 px-0 text-[13px] font-bold transition-all duration-150 ${orderSide === "buy" ? 'text-white bg-[var(--c-green)]' : 'text-[var(--c-textS)] bg-[var(--c-card)]'}`}
                     >
                       Buy
                     </button>
                     <button
                       onClick={() => setOrderSide("sell")}
-                      style={{
-                        padding: "10px 0",
-                        fontSize: 13,
-                        fontWeight: 700,
-                        color: orderSide === "sell" ? "#fff" : C.textS,
-                        background: orderSide === "sell" ? C.red : C.card,
-                        transition: "all .15s",
-                      }}
+                      className={`py-2.5 px-0 text-[13px] font-bold transition-all duration-150 ${orderSide === "sell" ? 'text-white bg-[var(--c-red)]' : 'text-[var(--c-textS)] bg-[var(--c-card)]'}`}
                     >
                       Sell
                     </button>
@@ -2936,17 +2375,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       <button
                         key={t}
                         onClick={() => setOrderType(t)}
-                        className="py-1.5 mr-4"
-                        style={{
-                          fontSize: 12,
-                          fontWeight: orderType === t ? 600 : 400,
-                          color: orderType === t ? C.textP : C.textS,
-                          borderBottom:
-                            orderType === t
-                              ? `2px solid ${C.yellow}`
-                              : "2px solid transparent",
-                          textTransform: "capitalize",
-                        }}
+                        className={`py-1.5 mr-4 text-xs capitalize border-b-2 ${orderType === t ? 'font-semibold text-[var(--c-textP)] border-[var(--c-yellow)]' : 'font-normal text-[var(--c-textS)] border-transparent'}`}
                       >
                         {t === "tp/sl"
                           ? "TP/SL"
@@ -2957,77 +2386,55 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
                   {/* Account metrics: Balance / Equity / Margin */}
                   <div
-                    className="space-y-1 pb-2"
-                    style={{ borderBottom: `1px solid ${C.border}` }}
+                    className="space-y-1 pb-2 border-b border-[var(--c-border)]"
                   >
                     {/* "Balance" = available trading balance (decreases when trades open) */}
                     <div className="flex items-center justify-between">
-                      <span style={{ fontSize: 11, color: C.textS }}>
+                      <span className="text-[11px] text-[var(--c-textS)]">
                         Balance
                       </span>
                       <span
-                        style={{
-                          fontSize: 11,
-                          color: C.yellow,
-                          fontFamily: "monospace",
-                          fontWeight: 600,
-                        }}
+                        className="text-[11px] text-[var(--c-yellow)] font-mono font-semibold"
                       >
                         {balance > 0 ? formatNum(availableBalance) : "--"} USDT
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span style={{ fontSize: 11, color: C.textS }}>
+                      <span className="text-[11px] text-[var(--c-textS)]">
                         Equity
                       </span>
                       <span
-                        style={{
-                          fontSize: 11,
-                          color: equity >= balance ? C.green : C.red,
-                          fontFamily: "monospace",
-                        }}
+                        className={`text-[11px] font-mono ${equity >= balance ? 'text-[var(--c-green)]' : 'text-[var(--c-red)]'}`}
                       >
                         {equity > 0 ? formatNum(equity) : "--"} USDT
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span style={{ fontSize: 11, color: C.textS }}>
+                      <span className="text-[11px] text-[var(--c-textS)]">
                         Acct. Balance
                       </span>
                       <span
-                        style={{
-                          fontSize: 11,
-                          color: C.textP,
-                          fontFamily: "monospace",
-                        }}
+                        className="text-[11px] text-[var(--c-textP)] font-mono"
                       >
                         {balance > 0 ? formatNum(balance) : "--"} USDT
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span style={{ fontSize: 11, color: C.textS }}>
+                      <span className="text-[11px] text-[var(--c-textS)]">
                         Used Margin
                       </span>
                       <span
-                        style={{
-                          fontSize: 11,
-                          color: C.textP,
-                          fontFamily: "monospace",
-                        }}
+                        className="text-[11px] text-[var(--c-textP)] font-mono"
                       >
                         {formatNum(usedMargin)} USDT
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span style={{ fontSize: 11, color: C.textS }}>
+                      <span className="text-[11px] text-[var(--c-textS)]">
                         Free Margin
                       </span>
                       <span
-                        style={{
-                          fontSize: 11,
-                          color: freeMargin > 0 ? C.textP : C.red,
-                          fontFamily: "monospace",
-                        }}
+                        className={`text-[11px] font-mono ${freeMargin > 0 ? 'text-[var(--c-textP)]' : 'text-[var(--c-red)]'}`}
                       >
                         {balance > 0 ? formatNum(freeMargin) : "--"} USDT
                       </span>
@@ -3037,20 +2444,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   {/* Price input (for limit / tp/sl) */}
                   {orderType !== "market" && (
                     <div
-                      style={{
-                        background: C.inputBg,
-                        borderRadius: 4,
-                        border: `1px solid ${C.border}`,
-                      }}
-                      className="flex items-center px-3 py-2"
+                      className="flex items-center px-3 py-2 bg-[var(--c-inputBg)] rounded border border-[var(--c-border)]"
                     >
                       <span
-                        style={{
-                          fontSize: 12,
-                          color: C.textS,
-                          width: 40,
-                          flexShrink: 0,
-                        }}
+                        className="text-xs text-[var(--c-textS)] w-10 shrink-0"
                       >
                         Price
                       </span>
@@ -3061,38 +2458,18 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                         placeholder={
                           currentMid > 0 ? formatPrice(currentMid) : "--"
                         }
-                        style={{
-                          flex: 1,
-                          background: "transparent",
-                          color: C.textP,
-                          fontSize: 13,
-                          fontFamily: "monospace",
-                          textAlign: "center",
-                          outline: "none",
-                          border: "none",
-                          minWidth: 0,
-                        }}
+                        className="flex-1 bg-transparent text-[var(--c-textP)] text-[13px] font-mono text-center outline-none border-0 min-w-0"
                       />
-                      <span style={{ fontSize: 12, color: C.textS }}>USDT</span>
+                      <span className="text-xs text-[var(--c-textS)]">USDT</span>
                     </div>
                   )}
 
                   {/* Quantity input */}
                   <div
-                    style={{
-                      background: C.inputBg,
-                      borderRadius: 4,
-                      border: `1px solid ${C.border}`,
-                    }}
-                    className="flex items-center px-3 py-2"
+                    className="flex items-center px-3 py-2 bg-[var(--c-inputBg)] rounded border border-[var(--c-border)]"
                   >
                     <span
-                      style={{
-                        fontSize: 12,
-                        color: C.textS,
-                        width: 58,
-                        flexShrink: 0,
-                      }}
+                      className="text-xs text-[var(--c-textS)] w-[58px] shrink-0"
                     >
                       Quantity
                     </span>
@@ -3101,19 +2478,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       value={quantity}
                       onChange={(e) => setQuantity(e.target.value)}
                       placeholder="--"
-                      style={{
-                        flex: 1,
-                        background: "transparent",
-                        color: C.textP,
-                        fontSize: 13,
-                        fontFamily: "monospace",
-                        textAlign: "center",
-                        outline: "none",
-                        border: "none",
-                        minWidth: 0,
-                      }}
+                      className="flex-1 bg-transparent text-[var(--c-textP)] text-[13px] font-mono text-center outline-none border-0 min-w-0"
                     />
-                    <span style={{ fontSize: 12, color: C.textS }}>
+                    <span className="text-xs text-[var(--c-textS)]">
                       {isCrypto ? symbolInfo.base : "Lots"}
                     </span>
                   </div>
@@ -3126,14 +2493,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       max="100"
                       value={sliderPct}
                       onChange={(e) => handleSlider(parseInt(e.target.value))}
-                      className="w-full"
+                      className="w-full h-1 appearance-none rounded-[2px] outline-none cursor-pointer"
                       style={{
-                        height: 4,
-                        appearance: "none",
                         background: `linear-gradient(to right, ${orderSide === "buy" ? C.green : C.red} ${sliderPct}%, ${C.border} ${sliderPct}%)`,
-                        borderRadius: 2,
-                        outline: "none",
-                        cursor: "pointer",
                         accentColor: orderSide === "buy" ? C.green : C.red,
                       }}
                     />
@@ -3142,10 +2504,8 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                         <button
                           key={p}
                           onClick={() => handleSlider(p)}
+                          className="w-2 h-2 rounded-full cursor-pointer transition-all duration-150"
                           style={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: "50%",
                             background:
                               sliderPct >= p
                                 ? orderSide === "buy"
@@ -3153,8 +2513,6 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                                   : C.red
                                 : C.border,
                             border: `1.5px solid ${sliderPct >= p ? (orderSide === "buy" ? C.green : C.red) : C.textT}`,
-                            cursor: "pointer",
-                            transition: "all .15s",
                           }}
                         />
                       ))}
@@ -3163,12 +2521,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       {[0, 25, 50, 75, 100].map((p) => (
                         <span
                           key={p}
-                          style={{
-                            fontSize: 9,
-                            color: C.textT,
-                            width: 24,
-                            textAlign: "center",
-                          }}
+                          className="text-[9px] text-[var(--c-textT)] w-6 text-center"
                         >
                           {p}%
                         </span>
@@ -3179,15 +2532,11 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   {/* Leverage selector */}
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
-                      <span style={{ fontSize: 12, color: C.textS }}>
+                      <span className="text-xs text-[var(--c-textS)]">
                         Leverage
                       </span>
                       <span
-                        style={{
-                          fontSize: 11,
-                          color: C.yellow,
-                          fontWeight: 600,
-                        }}
+                        className="text-[11px] text-[var(--c-yellow)] font-semibold"
                       >
                         {selectedLeverage}x
                       </span>
@@ -3197,21 +2546,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                         <button
                           key={lev}
                           onClick={() => setSelectedLeverage(lev)}
-                          style={{
-                            padding: "4px 0",
-                            borderRadius: 4,
-                            fontSize: 11,
-                            fontWeight: 600,
-                            cursor: "pointer",
-                            border: `1px solid ${selectedLeverage === lev ? C.yellow : C.border}`,
-                            background:
-                              selectedLeverage === lev
-                                ? C.yellowDim
-                                : "transparent",
-                            color:
-                              selectedLeverage === lev ? C.yellow : C.textS,
-                            transition: "all .15s",
-                          }}
+                          className={`py-1 px-0 rounded text-[11px] font-semibold cursor-pointer transition-all duration-150 ${selectedLeverage === lev ? 'border border-[var(--c-yellow)] bg-[var(--c-yellowDim)] text-[var(--c-yellow)]' : 'border border-[var(--c-border)] bg-transparent text-[var(--c-textS)]'}`}
                         >
                           {lev}x
                         </button>
@@ -3222,33 +2557,16 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   {/* TP/SL toggle */}
                   {orderType !== "tp/sl" && (
                     <div className="flex items-center justify-between">
-                      <span style={{ fontSize: 12, color: C.textS }}>
+                      <span className="text-xs text-[var(--c-textS)]">
                         TP/SL
                       </span>
                       <button
                         onClick={() => setShowTpSl(!showTpSl)}
-                        style={{
-                          width: 32,
-                          height: 18,
-                          borderRadius: 9,
-                          background: showTpSl ? C.green : C.border,
-                          position: "relative",
-                          transition: "background .2s",
-                          cursor: "pointer",
-                          border: "none",
-                        }}
+                        className={`w-8 h-[18px] rounded-[9px] relative transition-colors duration-200 cursor-pointer border-0 ${showTpSl ? 'bg-[var(--c-green)]' : 'bg-[var(--c-border)]'}`}
                       >
                         <span
-                          style={{
-                            position: "absolute",
-                            top: 2,
-                            width: 14,
-                            height: 14,
-                            borderRadius: "50%",
-                            background: "#fff",
-                            transition: "left .2s",
-                            left: showTpSl ? 16 : 2,
-                          }}
+                          className="absolute top-0.5 w-3.5 h-3.5 rounded-full bg-white transition-[left] duration-200"
+                          style={{ left: showTpSl ? 16 : 2 }}
                         />
                       </button>
                     </div>
@@ -3258,15 +2576,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   {(showTpSl || orderType === "tp/sl") && (
                     <div className="space-y-2">
                       <div
-                        style={{
-                          background: C.inputBg,
-                          borderRadius: 4,
-                          border: `1px solid ${C.border}`,
-                        }}
-                        className="flex items-center px-3 py-1.5"
+                        className="flex items-center px-3 py-1.5 bg-[var(--c-inputBg)] rounded border border-[var(--c-border)]"
                       >
                         <span
-                          style={{ fontSize: 11, color: C.green, width: 24 }}
+                          className="text-[11px] text-[var(--c-green)] w-6"
                         >
                           TP
                         </span>
@@ -3275,27 +2588,13 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           value={tpPrice}
                           onChange={(e) => setTpPrice(e.target.value)}
                           placeholder="Take Profit"
-                          style={{
-                            flex: 1,
-                            background: "transparent",
-                            color: C.textP,
-                            fontSize: 12,
-                            fontFamily: "monospace",
-                            outline: "none",
-                            border: "none",
-                            minWidth: 0,
-                          }}
+                          className="flex-1 bg-transparent text-[var(--c-textP)] text-xs font-mono outline-none border-0 min-w-0"
                         />
                       </div>
                       <div
-                        style={{
-                          background: C.inputBg,
-                          borderRadius: 4,
-                          border: `1px solid ${C.border}`,
-                        }}
-                        className="flex items-center px-3 py-1.5"
+                        className="flex items-center px-3 py-1.5 bg-[var(--c-inputBg)] rounded border border-[var(--c-border)]"
                       >
-                        <span style={{ fontSize: 11, color: C.red, width: 24 }}>
+                        <span className="text-[11px] text-[var(--c-red)] w-6">
                           SL
                         </span>
                         <input
@@ -3303,16 +2602,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           value={slPrice}
                           onChange={(e) => setSlPrice(e.target.value)}
                           placeholder="Stop Loss"
-                          style={{
-                            flex: 1,
-                            background: "transparent",
-                            color: C.textP,
-                            fontSize: 12,
-                            fontFamily: "monospace",
-                            outline: "none",
-                            border: "none",
-                            minWidth: 0,
-                          }}
+                          className="flex-1 bg-transparent text-[var(--c-textP)] text-xs font-mono outline-none border-0 min-w-0"
                         />
                       </div>
                     </div>
@@ -3320,24 +2610,21 @@ const BybitTradingArea = ({ selectedChallenge }) => {
 
                   {/* Order summary */}
                   <div
-                    className="space-y-1 pt-1"
-                    style={{ borderTop: `1px solid ${C.border}` }}
+                    className="space-y-1 pt-1 border-t border-[var(--c-border)]"
                   >
                     <div
-                      className="flex justify-between"
-                      style={{ fontSize: 12 }}
+                      className="flex justify-between text-xs"
                     >
-                      <span style={{ color: C.textS }}>Order Value</span>
-                      <span style={{ color: C.textP, fontFamily: "monospace" }}>
+                      <span className="text-[var(--c-textS)]">Order Value</span>
+                      <span className="text-[var(--c-textP)] font-mono">
                         {orderValue > 0 ? formatNum(orderValue) : "--"} USDT
                       </span>
                     </div>
                     <div
-                      className="flex justify-between"
-                      style={{ fontSize: 12 }}
+                      className="flex justify-between text-xs"
                     >
-                      <span style={{ color: C.textS }}>Margin</span>
-                      <span style={{ color: C.textP, fontFamily: "monospace" }}>
+                      <span className="text-[var(--c-textS)]">Margin</span>
+                      <span className="text-[var(--c-textP)] font-mono">
                         {orderValue > 0
                           ? formatNum(orderValue / selectedLeverage)
                           : "--"}{" "}
@@ -3345,27 +2632,21 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       </span>
                     </div>
                     <div
-                      className="flex justify-between"
-                      style={{ fontSize: 12 }}
+                      className="flex justify-between text-xs"
                     >
-                      <span style={{ color: C.textS }}>Commission</span>
-                      <span style={{ color: C.textS, fontFamily: "monospace" }}>
+                      <span className="text-[var(--c-textS)]">Commission</span>
+                      <span className="text-[var(--c-textS)] font-mono">
                         {qty > 0 ? `~${commission.toFixed(2)}` : "--"} USDT
                       </span>
                     </div>
                     <div
-                      className="flex justify-between"
-                      style={{ fontSize: 12 }}
+                      className="flex justify-between text-xs"
                     >
-                      <span style={{ color: C.textS }}>
+                      <span className="text-[var(--c-textS)]">
                         Max. {orderSide === "buy" ? "buy" : "sell"} amount
                       </span>
                       <span
-                        style={{
-                          color: orderSide === "buy" ? C.green : C.red,
-                          fontFamily: "monospace",
-                          fontWeight: 600,
-                        }}
+                        className={`font-mono font-semibold ${orderSide === "buy" ? 'text-[var(--c-green)]' : 'text-[var(--c-red)]'}`}
                       >
                         {balance > 0 && effectivePrice > 0
                           ? (
@@ -3382,23 +2663,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   <button
                     onClick={handlePlaceOrder}
                     disabled={isPlacingOrder || !accountId || isAccountLocked}
-                    style={{
-                      width: "100%",
-                      padding: "12px 0",
-                      borderRadius: 4,
-                      fontSize: 14,
-                      fontWeight: 700,
-                      cursor: "pointer",
-                      border: "none",
-                      transition: "opacity .15s",
-                      background: isAccountLocked
-                        ? C.border
-                        : orderSide === "buy"
-                          ? C.green
-                          : C.red,
-                      color: isAccountLocked ? C.textS : "#fff",
-                      opacity: isPlacingOrder || !accountId ? 0.5 : 1,
-                    }}
+                    className={`w-full py-3 px-0 rounded text-sm font-bold cursor-pointer border-0 transition-opacity duration-150 ${isAccountLocked ? 'bg-[var(--c-border)] text-[var(--c-textS)]' : orderSide === 'buy' ? 'bg-[var(--c-green)] text-white' : 'bg-[var(--c-red)] text-white'} ${(isPlacingOrder || !accountId) ? 'opacity-50' : 'opacity-100'}`}
                   >
                     {isPlacingOrder ? (
                       <span className="flex items-center justify-center gap-2">
