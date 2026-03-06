@@ -10,12 +10,12 @@ const firstNames = [
 ];
 
 const locations = [
-  { city: 'New York', country: 'USA', code: 'US' },
+  { city: 'Amsterdam', country: 'Netherlands', code: 'NL' },
   { city: 'London', country: 'UK', code: 'GB' },
   { city: 'Dubai', country: 'UAE', code: 'AE' },
   { city: 'Singapore', country: 'Singapore', code: 'SG' },
   { city: 'Sydney', country: 'Australia', code: 'AU' },
-  { city: 'Toronto', country: 'Canada', code: 'CA' },
+  { city: 'Kuala Lumpur', country: 'Malaysia', code: 'MY' },
   { city: 'Berlin', country: 'Germany', code: 'DE' },
   { city: 'Paris', country: 'France', code: 'FR' },
   { city: 'Mumbai', country: 'India', code: 'IN' },
