@@ -76,7 +76,9 @@ export default function AdminAccounts() {
     onError: (error) => {
       toast({
         title: "Failed to update status",
-        description: error?.message || "An error occurred while updating the account status.",
+        description:
+          error?.message ||
+          "An error occurred while updating the account status.",
         variant: "destructive",
       });
     },
@@ -97,7 +99,9 @@ export default function AdminAccounts() {
     onError: (error) => {
       toast({
         title: "Failed to update phase",
-        description: error?.message || "An error occurred while updating the account phase.",
+        description:
+          error?.message ||
+          "An error occurred while updating the account phase.",
         variant: "destructive",
       });
     },
@@ -144,7 +148,15 @@ export default function AdminAccounts() {
   };
 
   const handlePause = (account) => {
-    if (!window.confirm(t("admin.accounts.confirm.pause", { defaultValue: "Are you sure you want to pause this account? The trader will not be able to trade." }))) return;
+    if (
+      !window.confirm(
+        t("admin.accounts.confirm.pause", {
+          defaultValue:
+            "Are you sure you want to pause this account? The trader will not be able to trade.",
+        }),
+      )
+    )
+      return;
     updateStatusMutation.mutate({
       id: account.id,
       status: "PAUSED",
@@ -159,7 +171,15 @@ export default function AdminAccounts() {
   };
 
   const handleForcePass = (account) => {
-    if (!window.confirm(t("admin.accounts.confirm.forcePass", { defaultValue: "Are you sure you want to force pass this account to the next phase?" }))) return;
+    if (
+      !window.confirm(
+        t("admin.accounts.confirm.forcePass", {
+          defaultValue:
+            "Are you sure you want to force pass this account to the next phase?",
+        }),
+      )
+    )
+      return;
     const currentPhase = account.current_phase || account.phase;
     // Map frontend phase to backend phase enum
     const phaseMap = {
@@ -179,7 +199,15 @@ export default function AdminAccounts() {
   };
 
   const handleForceFail = (account) => {
-    if (!window.confirm(t("admin.accounts.confirm.forceFail", { defaultValue: "Are you sure you want to force fail this account? This action cannot be easily undone." }))) return;
+    if (
+      !window.confirm(
+        t("admin.accounts.confirm.forceFail", {
+          defaultValue:
+            "Are you sure you want to force fail this account? This action cannot be easily undone.",
+        }),
+      )
+    )
+      return;
     updatePhaseMutation.mutate({
       id: account.id,
       phase: "FAILED",
@@ -187,7 +215,15 @@ export default function AdminAccounts() {
   };
 
   const handleResetAccount = (account) => {
-    if (!window.confirm(t("admin.accounts.confirm.reset", { defaultValue: "Are you sure you want to reset this account back to Phase 1?" }))) return;
+    if (
+      !window.confirm(
+        t("admin.accounts.confirm.reset", {
+          defaultValue:
+            "Are you sure you want to reset this account back to Phase 1?",
+        }),
+      )
+    )
+      return;
     // Chain mutations to avoid race condition: update phase first, then status
     updatePhaseMutation.mutate(
       { id: account.id, phase: "PHASE1" },
@@ -326,10 +362,7 @@ export default function AdminAccounts() {
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent
-            align="end"
-            className="bg-card border-border"
-          >
+          <DropdownMenuContent align="end" className="bg-card border-border">
             <DropdownMenuItem
               className="
         cursor-pointer
@@ -584,7 +617,9 @@ export default function AdminAccounts() {
                   {t("admin.accounts.filter.funded")}
                 </SelectItem>
                 <SelectItem value="failed" className="text-foreground">
-                  {t("admin.accounts.filter.failed", { defaultValue: "Failed" })}
+                  {t("admin.accounts.filter.failed", {
+                    defaultValue: "Failed",
+                  })}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -793,7 +828,8 @@ export default function AdminAccounts() {
                   </p>
                   {(() => {
                     const profit =
-                      (accountDetails.equity || 0) - (accountDetails.initialBalance || 0);
+                      (accountDetails.equity || 0) -
+                      (accountDetails.initialBalance || 0);
                     const profitPercent =
                       accountDetails.initialBalance > 0
                         ? (profit / accountDetails.initialBalance) * 100
@@ -817,9 +853,12 @@ export default function AdminAccounts() {
                     })}
                   </p>
                   {(() => {
-                    const dailyDD = accountDetails.peakDailyDrawdownPercent || 0;
+                    const dailyDD =
+                      accountDetails.peakDailyDrawdownPercent || 0;
                     return (
-                      <p className={`font-bold text-sm sm:text-lg ${dailyDD > 0 ? "text-red-500" : "text-foreground"}`}>
+                      <p
+                        className={`font-bold text-sm sm:text-lg ${dailyDD > 0 ? "text-red-500" : "text-foreground"}`}
+                      >
                         {dailyDD.toFixed(2)}%
                       </p>
                     );
@@ -832,9 +871,12 @@ export default function AdminAccounts() {
                     })}
                   </p>
                   {(() => {
-                    const overallDD = accountDetails.peakOverallDrawdownPercent || 0;
+                    const overallDD =
+                      accountDetails.peakOverallDrawdownPercent || 0;
                     return (
-                      <p className={`font-bold text-sm sm:text-lg ${overallDD > 0 ? "text-red-500" : "text-foreground"}`}>
+                      <p
+                        className={`font-bold text-sm sm:text-lg ${overallDD > 0 ? "text-red-500" : "text-foreground"}`}
+                      >
                         {overallDD.toFixed(2)}%
                       </p>
                     );

@@ -533,7 +533,10 @@ export default function AdminDashboard() {
                     <stop offset="95%" stopColor="#a855f7" stopOpacity={0.03} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#334155" : "#e2e8f0"} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={isDark ? "#334155" : "#e2e8f0"}
+                />
                 <XAxis
                   dataKey="date"
                   stroke={isDark ? "#64748b" : "#94a3b8"}
@@ -627,7 +630,7 @@ export default function AdminDashboard() {
             </div>
           )}
         </Card>
-      
+
         {/* Recent Violations */}
         <Card className="bg-card border-border p-4 sm:p-6">
           <div className="flex items-center justify-between mb-3 sm:mb-4">

@@ -119,7 +119,7 @@ export default function AdminChallenges() {
       if (
         rawErrorMessage.includes("linked to existing trading accounts") ||
         rawErrorMessage.includes(
-          "Challenge cannot be deleted because it is linked"
+          "Challenge cannot be deleted because it is linked",
         )
       ) {
         setDeleteError(t("admin.challenges.deleteErrorDesc"));
@@ -195,32 +195,32 @@ export default function AdminChallenges() {
         challenge.isActive !== undefined
           ? challenge.isActive
           : challenge.is_active !== undefined
-          ? challenge.is_active
-          : true,
+            ? challenge.is_active
+            : true,
       news_trading_allowed:
         challenge.newsTradingAllowed !== undefined
           ? challenge.newsTradingAllowed
           : challenge.news_trading_allowed !== undefined
-          ? challenge.news_trading_allowed
-          : true,
+            ? challenge.news_trading_allowed
+            : true,
       weekend_holding_allowed:
         challenge.weekendHoldingAllowed !== undefined
           ? challenge.weekendHoldingAllowed
           : challenge.weekend_holding_allowed !== undefined
-          ? challenge.weekend_holding_allowed
-          : true,
+            ? challenge.weekend_holding_allowed
+            : true,
       ea_allowed:
         challenge.eaAllowed !== undefined
           ? challenge.eaAllowed
           : challenge.ea_allowed !== undefined
-          ? challenge.ea_allowed
-          : true,
+            ? challenge.ea_allowed
+            : true,
       scaling_enabled:
         challenge.scalingEnabled !== undefined
           ? challenge.scalingEnabled
           : challenge.scaling_enabled !== undefined
-          ? challenge.scaling_enabled
-          : false,
+            ? challenge.scaling_enabled
+            : false,
     });
     setIsOpen(true);
   };
@@ -268,56 +268,60 @@ export default function AdminChallenges() {
   };
 
   // Map backend challenges to frontend format
-  const challenges = (Array.isArray(challengesData) ? challengesData : []).map((challenge) => ({
-    id: challenge.id,
-    name: challenge.name,
-    account_size: challenge.accountSize || challenge.account_size,
-    price: challenge.price,
-    challenge_type:
-      challenge.challengeType || challenge.challenge_type || "two_phase",
-    phase1_profit_target:
-      challenge.phase1TargetPercent || challenge.phase1_profit_target || 8,
-    phase2_profit_target:
-      challenge.phase2TargetPercent || challenge.phase2_profit_target || 5,
-    max_daily_drawdown:
-      challenge.dailyDrawdownPercent || challenge.max_daily_drawdown || 5,
-    max_overall_drawdown:
-      challenge.overallDrawdownPercent || challenge.max_overall_drawdown || 10,
-    min_trading_days:
-      challenge.minTradingDays || challenge.min_trading_days || 5,
-    profit_split: challenge.profitSplit || challenge.profit_split || 80,
-    platform: challenge.platform || "MT5",
-    is_active:
-      challenge.isActive !== undefined
-        ? challenge.isActive
-        : challenge.is_active !== undefined
-        ? challenge.is_active
-        : true,
-    news_trading_allowed:
-      challenge.newsTradingAllowed !== undefined
-        ? challenge.newsTradingAllowed
-        : challenge.news_trading_allowed !== undefined
-        ? challenge.news_trading_allowed
-        : true,
-    weekend_holding_allowed:
-      challenge.weekendHoldingAllowed !== undefined
-        ? challenge.weekendHoldingAllowed
-        : challenge.weekend_holding_allowed !== undefined
-        ? challenge.weekend_holding_allowed
-        : true,
-    ea_allowed:
-      challenge.eaAllowed !== undefined
-        ? challenge.eaAllowed
-        : challenge.ea_allowed !== undefined
-        ? challenge.ea_allowed
-        : true,
-    scaling_enabled:
-      challenge.scalingEnabled !== undefined
-        ? challenge.scalingEnabled
-        : challenge.scaling_enabled !== undefined
-        ? challenge.scaling_enabled
-        : false,
-  }));
+  const challenges = (Array.isArray(challengesData) ? challengesData : []).map(
+    (challenge) => ({
+      id: challenge.id,
+      name: challenge.name,
+      account_size: challenge.accountSize || challenge.account_size,
+      price: challenge.price,
+      challenge_type:
+        challenge.challengeType || challenge.challenge_type || "two_phase",
+      phase1_profit_target:
+        challenge.phase1TargetPercent || challenge.phase1_profit_target || 8,
+      phase2_profit_target:
+        challenge.phase2TargetPercent || challenge.phase2_profit_target || 5,
+      max_daily_drawdown:
+        challenge.dailyDrawdownPercent || challenge.max_daily_drawdown || 5,
+      max_overall_drawdown:
+        challenge.overallDrawdownPercent ||
+        challenge.max_overall_drawdown ||
+        10,
+      min_trading_days:
+        challenge.minTradingDays || challenge.min_trading_days || 5,
+      profit_split: challenge.profitSplit || challenge.profit_split || 80,
+      platform: challenge.platform || "MT5",
+      is_active:
+        challenge.isActive !== undefined
+          ? challenge.isActive
+          : challenge.is_active !== undefined
+            ? challenge.is_active
+            : true,
+      news_trading_allowed:
+        challenge.newsTradingAllowed !== undefined
+          ? challenge.newsTradingAllowed
+          : challenge.news_trading_allowed !== undefined
+            ? challenge.news_trading_allowed
+            : true,
+      weekend_holding_allowed:
+        challenge.weekendHoldingAllowed !== undefined
+          ? challenge.weekendHoldingAllowed
+          : challenge.weekend_holding_allowed !== undefined
+            ? challenge.weekend_holding_allowed
+            : true,
+      ea_allowed:
+        challenge.eaAllowed !== undefined
+          ? challenge.eaAllowed
+          : challenge.ea_allowed !== undefined
+            ? challenge.ea_allowed
+            : true,
+      scaling_enabled:
+        challenge.scalingEnabled !== undefined
+          ? challenge.scalingEnabled
+          : challenge.scaling_enabled !== undefined
+            ? challenge.scaling_enabled
+            : false,
+    }),
+  );
 
   const displayChallenges = challenges;
 
@@ -423,13 +427,27 @@ export default function AdminChallenges() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-card border-border text-foreground">
-                    <SelectItem value="MT5" className="text-foreground">MT5</SelectItem>
-                    <SelectItem value="MT4" className="text-foreground">MT4</SelectItem>
-                    <SelectItem value="CTRADER" className="text-foreground">cTrader</SelectItem>
-                    <SelectItem value="DXTRADE" className="text-foreground">DXTrade</SelectItem>
-                    <SelectItem value="TRADELOCKER" className="text-foreground">TradeLocker</SelectItem>
-                    <SelectItem value="PT5" className="text-foreground">PT5</SelectItem>
-                    <SelectItem value="BYBIT" className="text-foreground">Bybit</SelectItem>
+                    <SelectItem value="MT5" className="text-foreground">
+                      MT5
+                    </SelectItem>
+                    <SelectItem value="MT4" className="text-foreground">
+                      MT4
+                    </SelectItem>
+                    <SelectItem value="CTRADER" className="text-foreground">
+                      cTrader
+                    </SelectItem>
+                    <SelectItem value="DXTRADE" className="text-foreground">
+                      DXTrade
+                    </SelectItem>
+                    <SelectItem value="TRADELOCKER" className="text-foreground">
+                      TradeLocker
+                    </SelectItem>
+                    <SelectItem value="PT5" className="text-foreground">
+                      PT5
+                    </SelectItem>
+                    <SelectItem value="BYBIT" className="text-foreground">
+                      Bybit
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -569,7 +587,7 @@ export default function AdminChallenges() {
                     placeholder="4"
                     className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
                   />
-                  
+
                   <p className="text-xs text-muted-foreground">
                     {t("admin.challenges.form.minTradingDaysHint") ||
                       "Minimum days trader must trade"}
@@ -663,8 +681,8 @@ export default function AdminChallenges() {
                 {createMutation.isPending || updateMutation.isPending
                   ? t("admin.challenges.saving")
                   : editingChallenge
-                  ? t("admin.challenges.updateChallenge")
-                  : t("admin.challenges.createChallenge")}
+                    ? t("admin.challenges.updateChallenge")
+                    : t("admin.challenges.createChallenge")}
               </Button>
             </div>
           </DialogContent>
@@ -717,7 +735,7 @@ export default function AdminChallenges() {
                       {t(`admin.challenges.types.${challenge.challenge_type}`, {
                         defaultValue: challenge.challenge_type?.replace(
                           /_/g,
-                          " "
+                          " ",
                         ),
                       })}
                     </p>

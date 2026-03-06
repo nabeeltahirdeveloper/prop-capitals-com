@@ -270,13 +270,21 @@ export default function AdminUsers() {
         />
         <StatsCard
           title={t("admin.users.stats.traders")}
-          value={isLoading ? "..." : displayUsers.filter((u) => u.role === "user").length}
+          value={
+            isLoading
+              ? "..."
+              : displayUsers.filter((u) => u.role === "user").length
+          }
           icon={UserCog}
           iconColor="text-amber-400"
         />
         <StatsCard
           title={t("admin.users.stats.admins")}
-          value={isLoading ? "..." : displayUsers.filter((u) => u.role === "admin").length}
+          value={
+            isLoading
+              ? "..."
+              : displayUsers.filter((u) => u.role === "admin").length
+          }
           icon={Shield}
           iconColor="text-purple-400"
         />
