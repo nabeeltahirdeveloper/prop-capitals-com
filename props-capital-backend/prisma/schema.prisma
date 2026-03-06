@@ -127,9 +127,12 @@ model TradingAccount {
   dailyLossViolated      Boolean              @default(false)
   drawdownViolated       Boolean              @default(false)
   platform               ChallengePlatform?
-  minEquityToday         Float?
-  minEquityOverall       Float?
-  lastDailyReset         DateTime?
+  minEquityToday             Float?
+  minEquityOverall           Float?
+  lastDailyReset             DateTime?
+  peakDailyDrawdownPercent   Float?   @default(0)
+  peakOverallDrawdownPercent Float?   @default(0)
+  peakProfitPercent          Float?   @default(0)
   platformEmail          String?
   platformHashedPassword String?
   platformSessionId      String?
@@ -167,9 +170,9 @@ model Trade {
   breachType                   String?
   breachUnrealizedPnl          Float?
   closeReason                  String?
-  commission                   Float          @default(0)
   positionType                 String         @default("CFD")
   leverage                     Float          @default(100)
+  commission                   Float          @default(0)
   tradingAccount               TradingAccount @relation(fields: [tradingAccountId], references: [id])
 }
 
