@@ -1423,7 +1423,15 @@
         "phaseTransitions": "Phase Transitions",
         "recentViolations": "Recent Violations",
         "error": "Error loading account details",
-        "noDetails": "No account details available"
+        "noDetails": "No account details available",
+        "dailyDrawdown": "Daily Drawdown",
+        "overallDrawdown": "Overall Drawdown"
+      },
+      "confirm": {
+        "pause": "Are you sure you want to pause this account? The trader will not be able to trade.",
+        "forcePass": "Are you sure you want to force pass this account to the next phase?",
+        "forceFail": "Are you sure you want to force fail this account? This action cannot be easily undone.",
+        "reset": "Are you sure you want to reset this account back to Phase 1?"
       },
       "emptyMessage": "No accounts found"
     },

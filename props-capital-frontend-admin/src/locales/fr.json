@@ -1422,7 +1422,15 @@
         "phaseTransitions": "Transitions de phase",
         "recentViolations": "Infractions récentes",
         "error": "Erreur de chargement des détails du compte",
-        "noDetails": "Aucun détail de compte disponible"
+        "noDetails": "Aucun détail de compte disponible",
+        "dailyDrawdown": "Drawdown quotidien",
+        "overallDrawdown": "Drawdown global"
+      },
+      "confirm": {
+        "pause": "Êtes-vous sûr de vouloir mettre ce compte en pause ? Le trader ne pourra pas trader.",
+        "forcePass": "Êtes-vous sûr de vouloir forcer le passage de ce compte à la phase suivante ?",
+        "forceFail": "Êtes-vous sûr de vouloir forcer l'échec de ce compte ? Cette action ne peut pas être facilement annulée.",
+        "reset": "Êtes-vous sûr de vouloir réinitialiser ce compte à la Phase 1 ?"
       },
       "emptyMessage": "Aucun compte trouvé"
     },

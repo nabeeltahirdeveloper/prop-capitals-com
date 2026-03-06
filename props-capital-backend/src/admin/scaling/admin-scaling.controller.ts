@@ -1,7 +1,10 @@
-import { Controller, Get, Post, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../../auth/jwt.guard';
+import { AdminRoleGuard } from '../../auth/admin-role.guard';
 import { AdminScalingService } from './admin-scaling.service';
 
 @Controller('admin/scaling')
+@UseGuards(JwtAuthGuard, AdminRoleGuard)
 export class AdminScalingController {
   constructor(private readonly scalingService: AdminScalingService) {}
 

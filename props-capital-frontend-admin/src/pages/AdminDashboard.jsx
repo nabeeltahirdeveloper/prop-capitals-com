@@ -35,9 +35,11 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { format } from "date-fns";
+import { useTheme } from "../contexts/ThemeContext";
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
+  const { isDark } = useTheme();
   const formatChangePercentLabel = React.useCallback(
     (value) => {
       const numeric = Number(value);
@@ -59,13 +61,12 @@ export default function AdminDashboard() {
     data: overview = {},
     isLoading: overviewLoading,
     isError: overviewError,
-    error: overviewErrorObj,
+    refetch: refetchOverview,
     dataUpdatedAt: overviewUpdatedAt,
   } = useQuery({
     queryKey: ["admin-dashboard-overview"],
     queryFn: adminGetDashboardOverview,
     refetchInterval: 5000,
-    refetchIntervalInBackground: true,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
     retry: 2,
@@ -81,7 +82,6 @@ export default function AdminDashboard() {
     queryKey: ["admin-dashboard-recent-accounts"],
     queryFn: adminGetRecentAccounts,
     refetchInterval: 15000,
-    refetchIntervalInBackground: true,
     refetchOnWindowFocus: true,
     retry: 2,
   });
@@ -95,7 +95,6 @@ export default function AdminDashboard() {
     queryKey: ["admin-dashboard-recent-violations"],
     queryFn: adminGetRecentViolations,
     refetchInterval: 15000,
-    refetchIntervalInBackground: true,
     refetchOnWindowFocus: true,
     retry: 2,
   });
@@ -110,11 +109,10 @@ export default function AdminDashboard() {
     queryKey: ["admin-dashboard-revenue-chart"],
     queryFn: adminGetRevenueChart,
     retry: 1,
-    refetchInterval: 5000,
-    refetchIntervalInBackground: true,
+    refetchInterval: 30000,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
-    staleTime: 2000,
+    staleTime: 10000,
   });
 
   // SAFE: Map revenue chart data with comprehensive error handling
@@ -394,10 +392,9 @@ export default function AdminDashboard() {
           {t("admin.dashboard.messages.loadFailedTitle")}
         </h2>
         <p className="text-muted-foreground mb-4">
-          {overviewErrorObj?.message ||
-            t("admin.dashboard.messages.unexpectedError")}
+          {t("admin.dashboard.messages.unexpectedError")}
         </p>
-        <Button onClick={() => window.location.reload()}>
+        <Button onClick={() => refetchOverview()}>
           {t("admin.dashboard.messages.reload")}
         </Button>
       </div>
@@ -406,17 +403,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Custom styles for hiding scrollbars */}
-      <style>{`
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
-
       {/* Header */}
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">
@@ -438,7 +424,7 @@ export default function AdminDashboard() {
           title={t("admin.dashboard.stats.totalTraders")}
           value={overview.totalTraders ?? overview.totalUsers ?? 0}
           icon={Users}
-          gradient="from-[#020617] to-[#020617]"
+          iconColor="text-blue-400"
           change={formatChangePercentLabel(overview.usersChangePercent)}
           changeType={
             (overview.usersChangePercent || 0) >= 0 ? "positive" : "negative"
@@ -448,13 +434,13 @@ export default function AdminDashboard() {
           title={t("admin.dashboard.stats.activeChallenges")}
           value={overview.activeAccounts || 0}
           icon={TrendingUp}
-          gradient="from-[#0f766e] to-[#14b8a6]"
+          iconColor="text-teal-400"
         />
         <StatsCard
           title={t("admin.dashboard.stats.revenue")}
           value={`$${(overview.totalRevenue || 0).toLocaleString()}`}
           icon={DollarSign}
-          gradient="from-[#15803d] to-[#22c55e]"
+          iconColor="text-emerald-400"
           change={formatChangePercentLabel(overview.revenueChangePercent)}
           changeType={
             (overview.revenueChangePercent || 0) >= 0 ? "positive" : "negative"
@@ -464,19 +450,19 @@ export default function AdminDashboard() {
           title={t("admin.dashboard.stats.payouts")}
           value={`$${(overview.pendingPayoutsAmount || 0).toLocaleString()}`}
           icon={Wallet}
-          gradient="from-[#4c1d95] to-[#ec4899]"
+          iconColor="text-purple-400"
         />
         <StatsCard
           title={t("admin.dashboard.stats.fundedAccounts")}
           value={overview.fundedAccounts || 0}
           icon={Award}
-          gradient="from-[#d97706] to-[#d97706]"
+          iconColor="text-amber-400"
         />
         <StatsCard
           title={t("admin.dashboard.stats.violationsToday")}
           value={overview.violationsToday || 0}
           icon={AlertTriangle}
-          gradient="from-[#991b1b] to-[#e11d48]"
+          iconColor="text-red-400"
         />
       </div>
 
@@ -547,17 +533,17 @@ export default function AdminDashboard() {
                     <stop offset="95%" stopColor="#a855f7" stopOpacity={0.03} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#334155" : "#e2e8f0"} />
                 <XAxis
                   dataKey="date"
-                  stroke="#64748b"
-                  tick={{ fill: "#64748b", fontSize: 10 }}
+                  stroke={isDark ? "#64748b" : "#94a3b8"}
+                  tick={{ fill: isDark ? "#64748b" : "#64748b", fontSize: 10 }}
                   interval={xAxisInterval}
                   minTickGap={18}
                 />
                 <YAxis
-                  stroke="#64748b"
-                  tick={{ fill: "#64748b", fontSize: 10 }}
+                  stroke={isDark ? "#64748b" : "#94a3b8"}
+                  tick={{ fill: isDark ? "#64748b" : "#64748b", fontSize: 10 }}
                   tickFormatter={formatCurrencyTick}
                   width={45}
                   ticks={yAxisTicks}
@@ -566,11 +552,11 @@ export default function AdminDashboard() {
                 />
                 <Tooltip
                   contentStyle={{
-                    background: "#1e293b",
-                    border: "1px solid #334155",
+                    background: isDark ? "#1e293b" : "#ffffff",
+                    border: isDark ? "1px solid #334155" : "1px solid #e2e8f0",
                     borderRadius: "8px",
                   }}
-                  labelStyle={{ color: "#fff" }}
+                  labelStyle={{ color: isDark ? "#fff" : "#0f172a" }}
                   labelFormatter={(label) =>
                     `${t("admin.dashboard.chart.tooltip.date")}: ${label}`
                   }
