@@ -1422,7 +1422,15 @@
         "phaseTransitions": "Aşama geçişleri",
         "recentViolations": "Son ihlaller",
         "error": "Hesap detayları yükleme hatası",
-        "noDetails": "Hesap detayları yok"
+        "noDetails": "Hesap detayları yok",
+        "dailyDrawdown": "Günlük Düşüş",
+        "overallDrawdown": "Toplam Düşüş"
+      },
+      "confirm": {
+        "pause": "Bu hesabı duraklatmak istediğinizden emin misiniz? Trader işlem yapamayacak.",
+        "forcePass": "Bu hesabı bir sonraki aşamaya zorla geçirmek istediğinizden emin misiniz?",
+        "forceFail": "Bu hesabı zorla başarısız kılmak istediğinizden emin misiniz? Bu işlem kolayca geri alınamaz.",
+        "reset": "Bu hesabı Aşama 1'e sıfırlamak istediğinizden emin misiniz?"
       },
       "emptyMessage": "Hesap bulunamadı"
     },

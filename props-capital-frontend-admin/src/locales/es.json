@@ -1422,7 +1422,15 @@
         "phaseTransitions": "Transiciones de fase",
         "recentViolations": "Infracciones recientes",
         "error": "Error al cargar los detalles de la cuenta",
-        "noDetails": "No hay detalles de la cuenta"
+        "noDetails": "No hay detalles de la cuenta",
+        "dailyDrawdown": "Drawdown diario",
+        "overallDrawdown": "Drawdown general"
+      },
+      "confirm": {
+        "pause": "¿Estás seguro de que deseas pausar esta cuenta? El trader no podrá operar.",
+        "forcePass": "¿Estás seguro de que deseas forzar el paso de esta cuenta a la siguiente fase?",
+        "forceFail": "¿Estás seguro de que deseas forzar el fallo de esta cuenta? Esta acción no se puede deshacer fácilmente.",
+        "reset": "¿Estás seguro de que deseas restablecer esta cuenta a la Fase 1?"
       },
       "emptyMessage": "No se encontraron cuentas"
     },

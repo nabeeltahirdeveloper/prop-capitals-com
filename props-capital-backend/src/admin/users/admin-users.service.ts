@@ -1,8 +1,35 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 
 import { PrismaService } from '../../prisma/prisma.service';
 
 import { UserRole } from '@prisma/client';
+
+// Safe fields to expose for trading accounts (excludes credentials)
+const SAFE_TRADING_ACCOUNT_SELECT = {
+  id: true,
+  userId: true,
+  challengeId: true,
+  phase: true,
+  status: true,
+  balance: true,
+  equity: true,
+  initialBalance: true,
+  createdAt: true,
+  updatedAt: true,
+  dailyLockedUntil: true,
+  maxEquityToDate: true,
+  todayStartEquity: true,
+  dailyLossViolated: true,
+  drawdownViolated: true,
+  platform: true,
+  minEquityToday: true,
+  minEquityOverall: true,
+  lastDailyReset: true,
+  peakDailyDrawdownPercent: true,
+  peakOverallDrawdownPercent: true,
+  peakProfitPercent: true,
+  brokerServerId: true,
+} as const;
 
 @Injectable()
 export class AdminUsersService {
@@ -16,8 +43,6 @@ export class AdminUsersService {
 
       include: {
         profile: true,
-
-        tradingAccounts: true,
       },
     });
   }
@@ -31,7 +56,9 @@ export class AdminUsersService {
       include: {
         profile: true,
 
-        tradingAccounts: true,
+        tradingAccounts: {
+          select: SAFE_TRADING_ACCOUNT_SELECT,
+        },
 
         payments: true,
 
@@ -68,8 +95,6 @@ export class AdminUsersService {
 
       include: {
         profile: true,
-
-        tradingAccounts: true,
       },
 
       take: 20,
@@ -80,7 +105,17 @@ export class AdminUsersService {
 
   async updateRole(id: string, role: string) {
     if (!Object.values(UserRole).includes(role as UserRole)) {
-      throw new Error('Invalid role');
+      throw new BadRequestException('Invalid role');
+    }
+
+    // Prevent demoting the last admin
+    if ((role as UserRole) === UserRole.TRADER) {
+      const adminCount = await this.prisma.user.count({
+        where: { role: UserRole.ADMIN },
+      });
+      if (adminCount <= 1) {
+        throw new BadRequestException('Cannot demote the last admin');
+      }
     }
 
     return this.prisma.user.update({

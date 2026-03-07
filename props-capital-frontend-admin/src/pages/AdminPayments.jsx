@@ -332,7 +332,7 @@ export default function AdminPayments() {
           title={t("admin.payments.stats.totalRevenue")}
           value={`$${totalRevenue.toLocaleString()}`}
           icon={DollarSign}
-          gradient="from-emerald-500 to-teal-500"
+          iconColor="text-emerald-400"
           change={
             statistics.revenueChangePercent !== undefined
               ? t("admin.payments.stats.changeThisMonth", {
@@ -348,19 +348,19 @@ export default function AdminPayments() {
           title={t("admin.payments.stats.completed")}
           value={completedCount}
           icon={TrendingUp}
-          gradient="from-blue-500 to-cyan-500"
+          iconColor="text-blue-400"
         />
         <StatsCard
           title={t("admin.payments.stats.pending")}
           value={`$${pendingAmount.toLocaleString()}`}
           icon={CreditCard}
-          gradient="from-[#d97706] to-[#d97706]"
+          iconColor="text-amber-400"
         />
         <StatsCard
           title={t("admin.payments.stats.refunded")}
           value={`$${refundedAmount.toLocaleString()}`}
           icon={RefreshCw}
-          gradient="from-red-500 to-pink-500"
+          iconColor="text-red-400"
         />
       </div>
 

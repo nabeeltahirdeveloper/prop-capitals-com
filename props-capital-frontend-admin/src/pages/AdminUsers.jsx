@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   adminGetAllUsers,
@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import DataTable from "@/components/shared/DataTable";
-import StatusBadge from "@/components/shared/StatusBadge";
+import StatsCard from "@/components/shared/StatsCard";
 import {
   Search,
   Filter,
@@ -27,6 +27,9 @@ import {
   MoreHorizontal,
   UserCog,
   Loader2,
+  Users,
+  Shield,
+  UserPlus,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -42,22 +45,28 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { format } from "date-fns";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminUsers() {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const queryClient = useQueryClient();
 
+  // Debounce search query to avoid hammering the API on every keystroke
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   // Get all users (with search support)
   const { data: usersData = [], isLoading } = useQuery({
-    queryKey: ["admin-users", searchQuery],
+    queryKey: ["admin-users", debouncedSearch],
     queryFn: () => {
-      if (searchQuery.trim()) {
-        return adminSearchUsers(searchQuery);
+      if (debouncedSearch.trim()) {
+        return adminSearchUsers(debouncedSearch);
       } else {
         return adminGetAllUsers();
       }
@@ -139,11 +148,7 @@ export default function AdminUsers() {
   const displayUsers = mappedUsers;
 
   const filteredUsers = displayUsers.filter((user) => {
-    const matchesSearch =
-      user.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesRole = roleFilter === "all" || user.role === roleFilter;
-    return matchesSearch && matchesRole;
+    return roleFilter === "all" || user.role === roleFilter;
   });
 
   const columns = [
@@ -167,10 +172,10 @@ export default function AdminUsers() {
       accessorKey: "role",
       cell: (row) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
+          className={`px-2 py-1 rounded-full text-xs font-medium border ${
             row.role === "admin"
-              ? "bg-amber-500/10 text-amber-600 border border-amber-200"
-              : "bg-amber-500/10 text-amber-600 border border-amber-200"
+              ? "bg-purple-500/20 text-purple-400 border-purple-500/30"
+              : "bg-blue-500/20 text-blue-400 border-blue-500/30"
           }`}
         >
           {t(`admin.users.roles.${row.role}`)}
@@ -256,61 +261,47 @@ export default function AdminUsers() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-        <Card className="bg-card border-border p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-muted-foreground">
-            {t("admin.users.stats.totalUsers")}
-          </p>
-          {isLoading ? (
-            <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
-          ) : (
-            <p className="text-xl sm:text-2xl font-bold text-foreground">
-              {displayUsers.length}
-            </p>
-          )}
-        </Card>
-        <Card className="bg-card border-border p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-muted-foreground">
-            {t("admin.users.stats.traders")}
-          </p>
-          {isLoading ? (
-            <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
-          ) : (
-            <p className="text-xl sm:text-2xl font-bold text-amber-400">
-              {displayUsers.filter((u) => u.role === "user").length}
-            </p>
-          )}
-        </Card>
-        <Card className="bg-card border-border p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-muted-foreground">
-            {t("admin.users.stats.admins")}
-          </p>
-          {isLoading ? (
-            <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
-          ) : (
-            <p className="text-xl sm:text-2xl font-bold text-amber-400">
-              {displayUsers.filter((u) => u.role === "admin").length}
-            </p>
-          )}
-        </Card>
-        <Card className="bg-card border-border p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-muted-foreground">
-            {t("admin.users.stats.newThisWeek")}
-          </p>
-          {isLoading ? (
-            <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
-          ) : (
-            <p className="text-xl sm:text-2xl font-bold text-cyan-400">
-              {
-                displayUsers.filter(
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <StatsCard
+          title={t("admin.users.stats.totalUsers")}
+          value={isLoading ? "..." : displayUsers.length}
+          icon={Users}
+          iconColor="text-blue-400"
+        />
+        <StatsCard
+          title={t("admin.users.stats.traders")}
+          value={
+            isLoading
+              ? "..."
+              : displayUsers.filter((u) => u.role === "user").length
+          }
+          icon={UserCog}
+          iconColor="text-amber-400"
+        />
+        <StatsCard
+          title={t("admin.users.stats.admins")}
+          value={
+            isLoading
+              ? "..."
+              : displayUsers.filter((u) => u.role === "admin").length
+          }
+          icon={Shield}
+          iconColor="text-purple-400"
+        />
+        <StatsCard
+          title={t("admin.users.stats.newThisWeek")}
+          value={
+            isLoading
+              ? "..."
+              : displayUsers.filter(
                   (u) =>
                     new Date(u.created_date) >
                     new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
                 ).length
-              }
-            </p>
-          )}
-        </Card>
+          }
+          icon={UserPlus}
+          iconColor="text-cyan-400"
+        />
       </div>
 
       {/* Filters */}
@@ -403,10 +394,10 @@ export default function AdminUsers() {
                   </p>
 
                   <span
-                    className={`inline-block mt-1.5 sm:mt-2 px-2 py-0.5 sm:py-1 rounded-full text-xs font-medium ${
+                    className={`inline-block mt-1.5 sm:mt-2 px-2 py-0.5 sm:py-1 rounded-full text-xs font-medium border ${
                       userDetails.role === "ADMIN"
-                        ? "bg-amber-500/10 text-amber-600 border border-amber-200"
-                        : "bg-amber-500/10 text-amber-600 border border-amber-200"
+                        ? "bg-purple-500/20 text-purple-400 border-purple-500/30"
+                        : "bg-blue-500/20 text-blue-400 border-blue-500/30"
                     }`}
                   >
                     {t(
@@ -478,6 +469,10 @@ export default function AdminUsers() {
                   </p>
                 </div>
               </div>
+            </div>
+          ) : userDetailsError ? (
+            <div className="text-center py-6 sm:py-8 text-red-400 text-sm">
+              {userDetailsError.message || t("admin.users.dialog.noDetails")}
             </div>
           ) : (
             <div className="text-center py-6 sm:py-8 text-muted-foreground text-sm">

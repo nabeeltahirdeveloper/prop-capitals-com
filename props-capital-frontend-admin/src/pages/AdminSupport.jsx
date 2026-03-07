@@ -308,25 +308,25 @@ export default function AdminSupport() {
           title={t('admin.support.stats.openTickets')}
           value={openCount + waitingForAdminCount}
           icon={AlertCircle}
-          gradient="from-red-500 to-pink-500"
+          iconColor="text-red-400"
         />
         <StatsCard
           title={t('admin.support.stats.inProgress')}
           value={inProgressCount}
           icon={Clock}
-          gradient="from-[#d97706] to-[#d97706]"
+          iconColor="text-amber-400"
         />
         <StatsCard
           title={t('admin.support.stats.resolved')}
           value={resolvedCount}
           icon={CheckCircle}
-          gradient="from-emerald-500 to-teal-500"
+          iconColor="text-emerald-400"
         />
         <StatsCard
           title={t('admin.support.stats.today')}
           value={statistics.todayCount ?? 0}
           icon={MessageCircle}
-          gradient="from-blue-500 to-cyan-500"
+          iconColor="text-blue-400"
         />
       </div>
 

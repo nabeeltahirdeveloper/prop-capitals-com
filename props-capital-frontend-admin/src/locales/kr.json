@@ -1422,7 +1422,15 @@
         "phaseTransitions": "단계 전환",
         "recentViolations": "최근 위반",
         "error": "계정 상세 정보를 불러오는 중 오류가 발생했습니다",
-        "noDetails": "계정 상세 정보가 없습니다"
+        "noDetails": "계정 상세 정보가 없습니다",
+        "dailyDrawdown": "일일 드로다운",
+        "overallDrawdown": "전체 드로다운"
+      },
+      "confirm": {
+        "pause": "이 계정을 일시 중지하시겠습니까? 트레이더가 거래할 수 없게 됩니다.",
+        "forcePass": "이 계정을 다음 단계로 강제 통과시키겠습니까?",
+        "forceFail": "이 계정을 강제 실패 처리하시겠습니까? 이 작업은 쉽게 취소할 수 없습니다.",
+        "reset": "이 계정을 1단계로 재설정하시겠습니까?"
       },
       "emptyMessage": "계정을 찾을 수 없습니다"
     },
