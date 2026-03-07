@@ -199,6 +199,17 @@ export default function AdminProfile() {
       });
       return;
     }
+    const complexityRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])/;
+    if (!complexityRegex.test(passwordForm.newPassword)) {
+      toast({
+        title: t("profile.validationError"),
+        description: t("profile.passwordComplexityRequired", {
+          defaultValue: "Password must include uppercase, lowercase, number, and special character",
+        }),
+        variant: "destructive",
+      });
+      return;
+    }
     changePasswordMutation.mutate({
       currentPassword: passwordForm.currentPassword,
       newPassword: passwordForm.newPassword,
@@ -225,7 +236,7 @@ export default function AdminProfile() {
 
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-[400px]">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
@@ -233,7 +244,7 @@ export default function AdminProfile() {
 
   if (error) {
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="space-y-6">
         <div className="bg-destructive/10 border border-destructive/30 text-destructive px-4 py-3 rounded-lg">
           {t("profile.loadError")}
         </div>
@@ -291,7 +302,7 @@ export default function AdminProfile() {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
@@ -307,7 +318,7 @@ export default function AdminProfile() {
       {/* Profile Card */}
       <Card className="bg-card border-border p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-4 sm:gap-6 text-center sm:text-left">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground text-3xl font-bold flex-shrink-0">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-3xl font-bold flex-shrink-0">
             {initials}
           </div>
           <div className="min-w-0">
@@ -318,7 +329,7 @@ export default function AdminProfile() {
               {user?.email}
             </p>
             <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
-              <span className="px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium text-primary border border-primary/20 bg-primary/5">
+              <span className="px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium text-[#d97706] border border-amber-500/20 bg-amber-500/5">
                 {t("profile.admin")}
               </span>
             </div>
@@ -461,7 +472,7 @@ export default function AdminProfile() {
             <div className="flex items-center gap-3 mt-6 sm:mt-8">
               <Button
                 onClick={handleSave}
-                className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/90 h-10 sm:h-11 text-sm text-primary-foreground"
+                className="bg-gradient-to-r from-[#d97706] to-[#d97706] hover:from-amber-600 hover:to-amber-600 h-10 sm:h-11 text-sm text-white"
                 disabled={updateProfileMutation.isPending}
               >
                 {updateProfileMutation.isPending ? (
@@ -658,7 +669,7 @@ export default function AdminProfile() {
                         </Button>
                         <Button
                           onClick={handlePasswordChange}
-                          className="flex-1 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/90 text-primary-foreground text-sm"
+                          className="flex-1 bg-gradient-to-r from-[#d97706] to-[#d97706] hover:from-amber-600 hover:to-amber-600 text-white text-sm"
                           disabled={changePasswordMutation.isPending}
                         >
                           {changePasswordMutation.isPending ? (
@@ -708,15 +719,15 @@ export default function AdminProfile() {
                     disabled={updateNotificationPrefsMutation.isPending}
                     className={`relative inline-flex w-11 sm:w-12 h-5 sm:h-6 rounded-full flex-shrink-0 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60 disabled:cursor-not-allowed ${
                       notificationPrefs[item.key]
-                        ? "bg-primary"
-                        : "bg-muted-foreground/30"
+                        ? "bg-amber-500"
+                        : "bg-slate-600"
                     }`}
                   >
                     <span
-                      className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-200 ${
+                      className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full shadow-sm transition-all duration-200 ${
                         notificationPrefs[item.key]
-                          ? "right-0.5 sm:right-1"
-                          : "left-0.5 sm:left-1"
+                          ? "right-0.5 sm:right-0.5"
+                          : "left-0.5 sm:left-0.5"
                       }`}
                     />
                   </button>

@@ -121,6 +121,46 @@ export default function AdminSettings() {
   });
 
   const handleSave = () => {
+    // Validate active tab before saving
+    if (activeTab === "general") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (localGeneral.support_email && !emailRegex.test(localGeneral.support_email)) {
+        toast({
+          title: t("common.error"),
+          description: t("admin.settings.validation.invalidEmail", { defaultValue: "Please enter a valid email address" }),
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+    if (activeTab === "branding") {
+      const hexRegex = /^#[0-9A-Fa-f]{6}$/;
+      if (localBranding.primary_color && !hexRegex.test(localBranding.primary_color)) {
+        toast({
+          title: t("common.error"),
+          description: t("admin.settings.validation.invalidColor", { defaultValue: "Please enter a valid hex color (e.g. #10b981)" }),
+          variant: "destructive",
+        });
+        return;
+      }
+      if (localBranding.secondary_color && !hexRegex.test(localBranding.secondary_color)) {
+        toast({
+          title: t("common.error"),
+          description: t("admin.settings.validation.invalidColor", { defaultValue: "Please enter a valid hex color (e.g. #10b981)" }),
+          variant: "destructive",
+        });
+        return;
+      }
+      if (localBranding.logo_url && !/^https?:\/\/.+/.test(localBranding.logo_url)) {
+        toast({
+          title: t("common.error"),
+          description: t("admin.settings.validation.invalidUrl", { defaultValue: "Please enter a valid URL starting with http:// or https://" }),
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     // Save the currently active tab's settings
     let group, settings;
 
@@ -409,7 +449,7 @@ export default function AdminSettings() {
                 </div>
                 <button
                   role="switch"
-                  aria-checked={!!localPayment.striple_enabled}
+                  aria-checked={!!localPayment.stripe_enabled}
                   aria-label={t("admin.settings.payments.stripe")}
                   onClick={() => {
                     const v = !localPayment.stripe_enabled;

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminGetAllSupportTicketsPaginated, adminGetSupportStatistics, adminUpdateTicketStatus } from '@/api/admin';
@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useChatSupportStore } from '@/lib/stores/chat-support.store';
+import supportSocket, { connectSupportSocket } from '@/lib/supportSocket';
 
 export default function AdminSupport() {
   const { t } = useTranslation();
@@ -34,15 +35,40 @@ export default function AdminSupport() {
   const navigate = useNavigate();
   const openChat = useChatSupportStore((state) => state.openChat);
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
   const limit = 20;
+  const debounceRef = useRef(null);
+
+  // Debounce search input (300ms)
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setPage(1);
+    }, 300);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [searchQuery]);
+
+  // WebSocket: listen for admin ticket list updates
+  useEffect(() => {
+    connectSupportSocket();
+    const handleTicketsUpdated = () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-support-tickets'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-support-statistics'] });
+    };
+    supportSocket.on('tickets:updated', handleTicketsUpdated);
+    return () => {
+      supportSocket.off('tickets:updated', handleTicketsUpdated);
+    };
+  }, [queryClient]);
 
   const { data: ticketsResponse = {}, isLoading } = useQuery({
-    queryKey: ['admin-support-tickets', page],
-    queryFn: () => adminGetAllSupportTicketsPaginated(page, limit),
-    refetchInterval: 30000,
+    queryKey: ['admin-support-tickets', page, debouncedSearch, statusFilter],
+    queryFn: () => adminGetAllSupportTicketsPaginated(page, limit, debouncedSearch, statusFilter),
+    refetchInterval: 60000,
   });
 
   const rawTickets = ticketsResponse?.data ?? ticketsResponse;
@@ -53,7 +79,7 @@ export default function AdminSupport() {
   const { data: statistics = {} } = useQuery({
     queryKey: ['admin-support-statistics'],
     queryFn: adminGetSupportStatistics,
-    refetchInterval: 30000,
+    refetchInterval: 60000,
   });
 
   const updateMutation = useMutation({
@@ -138,15 +164,6 @@ export default function AdminSupport() {
     });
   };
 
-  const filteredTickets = displayTickets.filter(ticket => {
-    const matchesSearch =
-      ticket.displayName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ticket.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ticket.subject?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || ticket.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
-
   const priorityColors = {
     low: 'bg-muted text-muted-foreground border border-border',
     medium: 'bg-amber-50 text-[#d97706] border border-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:border-amber-700',
@@ -227,7 +244,7 @@ export default function AdminSupport() {
           >
             <Eye className="w-4 h-4" />
           </Button>
-          {/* Take: open or waiting_for_admin → move to in_progress */}
+          {/* Take: open or waiting_for_admin -> move to in_progress */}
           {(row.status === 'open' || row.status === 'waiting_for_admin') && (
             <Button
               size="sm"
@@ -239,7 +256,7 @@ export default function AdminSupport() {
               {t('admin.support.actions.take')}
             </Button>
           )}
-          {/* Resolve: in_progress or waiting_for_trader → resolved */}
+          {/* Resolve: in_progress or waiting_for_trader -> resolved */}
           {(row.status === 'in_progress' || row.status === 'waiting_for_trader') && (
             <Button
               size="sm"
@@ -284,7 +301,7 @@ export default function AdminSupport() {
         <div className="flex items-center gap-2">
           <Button
             size="sm"
-            className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-xs gap-1.5"
+            className="bg-gradient-to-r from-[#d97706] to-[#d97706] hover:from-amber-600 hover:to-amber-600 text-white text-xs gap-1.5"
             onClick={openChat}
           >
             <MessageCircle className="w-4 h-4" />
@@ -333,7 +350,7 @@ export default function AdminSupport() {
               className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
             />
           </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <Select value={statusFilter} onValueChange={(val) => { setStatusFilter(val); setPage(1); }}>
             <SelectTrigger className="w-full sm:w-[180px] bg-muted border-border text-foreground text-sm">
               <SelectValue placeholder={t('admin.support.filter.status')} />
             </SelectTrigger>
@@ -354,7 +371,7 @@ export default function AdminSupport() {
       <Card className="bg-card border-border p-3 sm:p-4 md:p-6">
         <DataTable
           columns={columns}
-          data={filteredTickets}
+          data={displayTickets}
           isLoading={isLoading}
           emptyMessage={t('admin.support.emptyMessage')}
         />
