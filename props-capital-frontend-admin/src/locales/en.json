@@ -6,7 +6,10 @@
     "allPlatforms": "all platforms",
     "unknown": "Unknown",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleting": "Deleting..."
   },
   "home": {
     "hero": {
@@ -1669,8 +1672,18 @@
         "usage": "Usage",
         "validUntil": "Valid Until",
         "status": "Status",
+        "created": "Created",
         "actions": "Actions"
       },
+      "searchPlaceholder": "Search by coupon code...",
+      "filter": {
+        "all": "All Statuses",
+        "active": "Active",
+        "inactive": "Inactive",
+        "expired": "Expired"
+      },
+      "deleteConfirmTitle": "Delete Coupon",
+      "deleteConfirmMessage": "Are you sure you want to delete this coupon? This action cannot be undone.",
       "status": {
         "active": "Active",
         "inactive": "Inactive"

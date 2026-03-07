@@ -6,7 +6,10 @@
     "allPlatforms": "Toutes les plateformes",
     "unknown": "Inconnu",
     "error": "Erreur",
-    "success": "Succès"
+    "success": "Succès",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "deleting": "Suppression..."
   },
   "home": {
     "hero": {
@@ -1611,8 +1614,18 @@
         "usage": "Utilisation",
         "validUntil": "Valable jusqu’au",
         "status": "Statut",
+        "created": "Créé le",
         "actions": "Actions"
       },
+      "searchPlaceholder": "Rechercher par code promo...",
+      "filter": {
+        "all": "Tous les statuts",
+        "active": "Actif",
+        "inactive": "Inactif",
+        "expired": "Expiré"
+      },
+      "deleteConfirmTitle": "Supprimer le coupon",
+      "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer ce coupon ? Cette action est irréversible.",
       "status": {
         "active": "Actif",
         "inactive": "Inactif"

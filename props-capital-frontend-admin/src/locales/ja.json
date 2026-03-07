@@ -6,7 +6,10 @@
     "allPlatforms": "すべてのプラットフォーム",
     "unknown": "不明",
     "error": "エラー",
-    "success": "成功"
+    "success": "成功",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "deleting": "削除中..."
   },
   "home": {
     "hero": {
@@ -1611,8 +1614,18 @@
         "usage": "使用状況",
         "validUntil": "有効期限",
         "status": "ステータス",
+        "created": "作成日",
         "actions": "操作"
       },
+      "searchPlaceholder": "クーポンコードで検索...",
+      "filter": {
+        "all": "すべてのステータス",
+        "active": "有効",
+        "inactive": "無効",
+        "expired": "期限切れ"
+      },
+      "deleteConfirmTitle": "クーポンを削除",
+      "deleteConfirmMessage": "このクーポンを削除してもよろしいですか？この操作は元に戻せません。",
       "status": {
         "active": "有効",
         "inactive": "無効"

@@ -6,7 +6,10 @@
     "allPlatforms": "Все платформы",
     "unknown": "Неизвестно",
     "error": "Ошибка",
-    "success": "Успех"
+    "success": "Успех",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "deleting": "Удаление..."
   },
   "home": {
     "hero": {
@@ -1611,8 +1614,18 @@
         "usage": "Использование",
         "validUntil": "Действителен до",
         "status": "Статус",
+        "created": "Создан",
         "actions": "Действия"
       },
+      "searchPlaceholder": "Поиск по коду купона...",
+      "filter": {
+        "all": "Все статусы",
+        "active": "Активные",
+        "inactive": "Неактивные",
+        "expired": "Истекшие"
+      },
+      "deleteConfirmTitle": "Удалить купон",
+      "deleteConfirmMessage": "Вы уверены, что хотите удалить этот купон? Это действие нельзя отменить.",
       "status": {
         "active": "Активен",
         "inactive": "Неактивен"

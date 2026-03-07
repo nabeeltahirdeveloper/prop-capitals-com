@@ -6,7 +6,10 @@
     "allPlatforms": "ทุกแพลตฟอร์ม",
     "unknown": "ไม่ทราบ",
     "error": "ข้อผิดพลาด",
-    "success": "สำเร็จ"
+    "success": "สำเร็จ",
+    "cancel": "ยกเลิก",
+    "delete": "ลบ",
+    "deleting": "กำลังลบ..."
   },
   "home": {
     "hero": {
@@ -1613,8 +1616,18 @@
         "usage": "การใช้งาน",
         "validUntil": "ใช้ได้จนถึง",
         "status": "สถานะ",
+        "created": "สร้างเมื่อ",
         "actions": "การดำเนินการ"
       },
+      "searchPlaceholder": "ค้นหาตามรหัสคูปอง...",
+      "filter": {
+        "all": "สถานะทั้งหมด",
+        "active": "ใช้งานอยู่",
+        "inactive": "ไม่ใช้งาน",
+        "expired": "หมดอายุ"
+      },
+      "deleteConfirmTitle": "ลบคูปอง",
+      "deleteConfirmMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบคูปองนี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้",
       "status": {
         "active": "ใช้งานอยู่",
         "inactive": "ไม่ใช้งาน"

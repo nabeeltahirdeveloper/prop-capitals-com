@@ -6,7 +6,10 @@
     "allPlatforms": "Tüm platformlar",
     "unknown": "Bilinmiyor",
     "error": "Hata",
-    "success": "Başarılı"
+    "success": "Başarılı",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "deleting": "Siliniyor..."
   },
   "home": {
     "hero": {
@@ -1611,8 +1614,18 @@
         "usage": "Kullanım",
         "validUntil": "Geçerlilik",
         "status": "Durum",
+        "created": "Oluşturulma",
         "actions": "İşlemler"
       },
+      "searchPlaceholder": "Kupon koduna göre ara...",
+      "filter": {
+        "all": "Tüm durumlar",
+        "active": "Aktif",
+        "inactive": "Pasif",
+        "expired": "Süresi dolmuş"
+      },
+      "deleteConfirmTitle": "Kuponu sil",
+      "deleteConfirmMessage": "Bu kuponu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
       "status": {
         "active": "Aktif",
         "inactive": "Pasif"

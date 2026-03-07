@@ -6,7 +6,10 @@
     "allPlatforms": "Todas las plataformas",
     "unknown": "Desconocido",
     "error": "Error",
-    "success": "Éxito"
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "deleting": "Eliminando..."
   },
   "home": {
     "hero": {
@@ -1611,8 +1614,18 @@
         "usage": "Uso",
         "validUntil": "Válido hasta",
         "status": "Estado",
+        "created": "Creado",
         "actions": "Acciones"
       },
+      "searchPlaceholder": "Buscar por código de cupón...",
+      "filter": {
+        "all": "Todos los estados",
+        "active": "Activo",
+        "inactive": "Inactivo",
+        "expired": "Expirado"
+      },
+      "deleteConfirmTitle": "Eliminar cupón",
+      "deleteConfirmMessage": "¿Estás seguro de que deseas eliminar este cupón? Esta acción no se puede deshacer.",
       "status": {
         "active": "Activo",
         "inactive": "Inactivo"

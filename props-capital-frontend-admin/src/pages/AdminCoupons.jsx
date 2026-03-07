@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   adminGetAllCoupons,
@@ -28,7 +28,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import DataTable from "@/components/shared/DataTable";
-import { Plus, Pencil, Trash2, Copy, Check } from "lucide-react";
+import StatsCard from "@/components/shared/StatsCard";
+import StatusBadge from "@/components/shared/StatusBadge";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  Copy,
+  Check,
+  Search,
+  Tag,
+  CheckCircle,
+  BarChart3,
+  Clock,
+} from "lucide-react";
 import { format } from "date-fns";
 
 export default function AdminCoupons() {
@@ -37,6 +50,10 @@ export default function AdminCoupons() {
   const [isOpen, setIsOpen] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState(null);
   const [copiedCode, setCopiedCode] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletingCoupon, setDeletingCoupon] = useState(null);
   const [formData, setFormData] = useState({
     code: "",
     discountType: "percentage",
@@ -66,7 +83,7 @@ export default function AdminCoupons() {
     onError: (error) => {
       toast({
         title: t("common.error"),
-        description: error?.message || t("admin.coupons.messages.saveError"),
+        description: error?.response?.data?.message || error?.message || t("admin.coupons.messages.saveError"),
         variant: "destructive",
       });
     },
@@ -86,7 +103,7 @@ export default function AdminCoupons() {
     onError: (error) => {
       toast({
         title: t("common.error"),
-        description: error?.message || t("admin.coupons.messages.saveError"),
+        description: error?.response?.data?.message || error?.message || t("admin.coupons.messages.saveError"),
         variant: "destructive",
       });
     },
@@ -96,6 +113,8 @@ export default function AdminCoupons() {
     mutationFn: (id) => adminDeleteCoupon(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-coupons"] });
+      setDeleteDialogOpen(false);
+      setDeletingCoupon(null);
       toast({
         title: t("common.success"),
         description: t("admin.coupons.messages.deleteSuccess"),
@@ -104,7 +123,7 @@ export default function AdminCoupons() {
     onError: (error) => {
       toast({
         title: t("common.error"),
-        description: error?.message || t("admin.coupons.messages.deleteError"),
+        description: error?.response?.data?.message || error?.message || t("admin.coupons.messages.deleteError"),
         variant: "destructive",
       });
     },
@@ -213,12 +232,27 @@ export default function AdminCoupons() {
 
   const generateCode = () => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const randomValues = crypto.getRandomValues(new Uint32Array(8));
     let code = "";
     for (let i = 0; i < 8; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
+      code += chars.charAt(randomValues[i] % chars.length);
     }
     setFormData({ ...formData, code });
   };
+
+  const today = new Date().toISOString().split("T")[0];
+
+  const filteredCoupons = useMemo(() => {
+    return coupons.filter((c) => {
+      if (searchQuery && !c.code.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return false;
+      }
+      if (statusFilter === "active") return c.isActive;
+      if (statusFilter === "inactive") return !c.isActive;
+      if (statusFilter === "expired") return c.expiresAt && new Date(c.expiresAt) < new Date();
+      return true;
+    });
+  }, [coupons, searchQuery, statusFilter]);
 
   const columns = [
     {
@@ -275,18 +309,16 @@ export default function AdminCoupons() {
       header: t("admin.coupons.table.status"),
       accessorKey: "isActive",
       cell: (row) => (
-        <span
-          className={`px-2 py-1 rounded-full text-xs font-medium border ${
-            row.isActive
-              ? "bg-emerald-50 text-emerald-600 border-emerald-200"
-              : "bg-muted text-muted-foreground border-border"
-          }`}
-        >
-          {row.isActive
-            ? t("admin.coupons.status.active")
-            : t("admin.coupons.status.inactive")}
-        </span>
+        <StatusBadge status={row.isActive ? "active" : "closed"} />
       ),
+    },
+    {
+      header: t("admin.coupons.table.created"),
+      accessorKey: "createdAt",
+      cell: (row) =>
+        row.createdAt
+          ? format(new Date(row.createdAt), "MMM d, yyyy")
+          : "—",
     },
     {
       header: t("admin.coupons.table.actions"),
@@ -305,7 +337,10 @@ export default function AdminCoupons() {
             size="sm"
             variant="ghost"
             className="text-red-500 hover:text-red-600"
-            onClick={() => deleteMutation.mutate(row.id)}
+            onClick={() => {
+              setDeletingCoupon(row);
+              setDeleteDialogOpen(true);
+            }}
           >
             <Trash2 className="w-4 h-4" />
           </Button>
@@ -334,7 +369,7 @@ export default function AdminCoupons() {
           }}
         >
           <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-[#d97706] to-[#d97706] hover:from-amber-600 hover:to-amber-600 w-full sm:w-auto h-10 sm:h-11">
+            <Button className="bg-[#d97706] hover:bg-amber-600 w-full sm:w-auto h-10 sm:h-11">
               <Plus className="w-4 h-4 mr-2" />
               {t("admin.coupons.createCoupon")}
             </Button>
@@ -362,6 +397,7 @@ export default function AdminCoupons() {
                       })
                     }
                     placeholder="WELCOME20"
+                    maxLength={20}
                     className="bg-muted border-border font-mono text-foreground placeholder:text-muted-foreground text-sm h-9 sm:h-10"
                   />
                   <Button
@@ -415,6 +451,9 @@ export default function AdminCoupons() {
                     placeholder={
                       formData.discountType === "percentage" ? "20" : "50"
                     }
+                    min="1"
+                    max={formData.discountType === "percentage" ? "100" : undefined}
+                    step="1"
                     className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm h-9 sm:h-10"
                   />
                 </div>
@@ -432,6 +471,8 @@ export default function AdminCoupons() {
                       setFormData({ ...formData, maxUses: e.target.value })
                     }
                     placeholder="100"
+                    min="1"
+                    step="1"
                     className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm h-9 sm:h-10"
                   />
                 </div>
@@ -445,6 +486,7 @@ export default function AdminCoupons() {
                     onChange={(e) =>
                       setFormData({ ...formData, expiresAt: e.target.value })
                     }
+                    min={today}
                     className="
     bg-muted border-border text-foreground text-sm h-9 sm:h-10
     [&::-webkit-calendar-picker-indicator]:invert
@@ -469,7 +511,7 @@ export default function AdminCoupons() {
 
               <Button
                 onClick={handleSubmit}
-                className="cursor-pointer w-full bg-gradient-to-r from-[#d97706] to-[#d97706] hover:from-amber-600 hover:to-amber-600 mt-2 sm:mt-4 h-10 sm:h-11 text-sm font-semibold"
+                className="cursor-pointer w-full bg-[#d97706] hover:bg-amber-600 mt-2 sm:mt-4 h-10 sm:h-11 text-sm font-semibold"
                 disabled={
                   createMutation.isPending ||
                   updateMutation.isPending ||
@@ -490,53 +532,126 @@ export default function AdminCoupons() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <Card className="bg-card border-border p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-muted-foreground truncate">
-            {t("admin.coupons.stats.totalCoupons")}
-          </p>
-          <p className="text-xl sm:text-2xl font-bold text-foreground truncate">
-            {coupons.length}
-          </p>
-        </Card>
-        <Card className="bg-card border-border p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-muted-foreground truncate">
-            {t("admin.coupons.stats.active")}
-          </p>
-          <p className="text-xl sm:text-2xl font-bold text-emerald-500 truncate">
-            {coupons.filter((c) => c.isActive).length}
-          </p>
-        </Card>
-        <Card className="bg-card border-border p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-muted-foreground truncate">
-            {t("admin.coupons.stats.totalUses")}
-          </p>
-          <p className="text-xl sm:text-2xl font-bold text-sky-500 truncate">
-            {coupons.reduce((sum, c) => sum + (c.usedCount || 0), 0)}
-          </p>
-        </Card>
-        <Card className="bg-card border-border p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-muted-foreground truncate">
-            {t("admin.coupons.stats.expired")}
-          </p>
-          <p className="text-xl sm:text-2xl font-bold text-muted-foreground truncate">
-            {
-              coupons.filter(
-                (c) => c.expiresAt && new Date(c.expiresAt) < new Date(),
-              ).length
-            }
-          </p>
-        </Card>
+        <StatsCard
+          title={t("admin.coupons.stats.totalCoupons")}
+          value={coupons.length}
+          icon={Tag}
+          iconColor="text-muted-foreground"
+        />
+        <StatsCard
+          title={t("admin.coupons.stats.active")}
+          value={coupons.filter((c) => c.isActive).length}
+          icon={CheckCircle}
+          iconColor="text-emerald-400"
+        />
+        <StatsCard
+          title={t("admin.coupons.stats.totalUses")}
+          value={coupons.reduce((sum, c) => sum + (c.usedCount || 0), 0)}
+          icon={BarChart3}
+          iconColor="text-sky-400"
+        />
+        <StatsCard
+          title={t("admin.coupons.stats.expired")}
+          value={coupons.filter((c) => c.expiresAt && new Date(c.expiresAt) < new Date()).length}
+          icon={Clock}
+          iconColor="text-muted-foreground"
+        />
       </div>
+
+      {/* Filters */}
+      <Card className="bg-card border-border p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder={t("admin.coupons.searchPlaceholder") || "Search by coupon code..."}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
+            />
+          </div>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-full sm:w-[180px] bg-muted border-border text-foreground text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-card border-border text-foreground z-50">
+              <SelectItem value="all" className="text-foreground">
+                {t("admin.coupons.filter.all") || "All Statuses"}
+              </SelectItem>
+              <SelectItem value="active" className="text-foreground">
+                {t("admin.coupons.filter.active") || "Active"}
+              </SelectItem>
+              <SelectItem value="inactive" className="text-foreground">
+                {t("admin.coupons.filter.inactive") || "Inactive"}
+              </SelectItem>
+              <SelectItem value="expired" className="text-foreground">
+                {t("admin.coupons.filter.expired") || "Expired"}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </Card>
 
       {/* Coupons Table */}
       <Card className="bg-card border-border p-3 sm:p-4 md:p-6 overflow-hidden">
         <DataTable
           columns={columns}
-          data={coupons}
+          data={filteredCoupons}
           isLoading={isLoading}
           emptyMessage={t("admin.coupons.emptyMessage")}
         />
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={(open) => {
+        setDeleteDialogOpen(open);
+        if (!open) setDeletingCoupon(null);
+      }}>
+        <DialogContent className="bg-card border-border w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6">
+          <DialogHeader>
+            <DialogTitle className="text-foreground text-base sm:text-lg">
+              {t("admin.coupons.deleteConfirmTitle") || "Delete Coupon"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-3">
+            <div className="bg-muted/50 rounded-lg p-3">
+              <p className="text-sm text-muted-foreground">
+                {t("admin.coupons.deleteConfirmMessage") || "Are you sure you want to delete this coupon? This action cannot be undone."}
+              </p>
+              {deletingCoupon && (
+                <p className="text-sm font-mono text-foreground mt-2">
+                  {deletingCoupon.code}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 justify-end">
+              <Button
+                variant="outline"
+                className="border-border text-foreground hover:bg-accent w-full sm:w-auto order-2 sm:order-1"
+                onClick={() => {
+                  setDeleteDialogOpen(false);
+                  setDeletingCoupon(null);
+                }}
+              >
+                {t("common.cancel") || "Cancel"}
+              </Button>
+              <Button
+                className="bg-red-500 hover:bg-red-600 text-white w-full sm:w-auto order-1 sm:order-2"
+                disabled={deleteMutation.isPending}
+                onClick={() => {
+                  if (deletingCoupon) {
+                    deleteMutation.mutate(deletingCoupon.id);
+                  }
+                }}
+              >
+                {deleteMutation.isPending
+                  ? (t("common.deleting") || "Deleting...")
+                  : (t("common.delete") || "Delete")}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
