@@ -1564,7 +1564,9 @@
         "weekendHolding": "주말 보유",
         "restrictedInstrument": "제한 종목",
         "lotSize": "로트 크기",
-        "eaDetected": "EA 감지"
+        "eaDetected": "EA 감지",
+        "consistency": "일관성",
+        "ruleBreak": "규칙 위반"
       },
       "severity": {
         "fatal": "중대",
@@ -1578,7 +1580,12 @@
         "weekend_holding": "주말에 포지션 보유",
         "restricted_instrument": "제한 종목으로 거래",
         "lot_size": "로트 크기 한도 초과",
-        "ea_detected": "Expert Advisor 감지"
+        "ea_detected": "Expert Advisor 감지",
+        "consistency": "일관성 규칙 위반",
+        "rule_break": "거래 규칙 위반"
+      },
+      "pagination": {
+        "showing": "{{page}} / {{totalPages}} 페이지 (총 {{total}}개)"
       },
       "emptyMessage": "위반을 찾을 수 없습니다"
     },

@@ -1564,7 +1564,9 @@
         "weekendHolding": "Hafta sonu taşıma",
         "restrictedInstrument": "Kısıtlı enstrüman",
         "lotSize": "Lot boyutu",
-        "eaDetected": "EA tespit edildi"
+        "eaDetected": "EA tespit edildi",
+        "consistency": "Tutarlılık",
+        "ruleBreak": "Kural ihlali"
       },
       "severity": {
         "fatal": "Kritik",
@@ -1578,7 +1580,12 @@
         "weekend_holding": "Hafta sonu pozisyon taşıma",
         "restricted_instrument": "Kısıtlı enstrümanda işlem",
         "lot_size": "Lot boyutu limitini aştı",
-        "ea_detected": "Expert Advisor tespit edildi"
+        "ea_detected": "Expert Advisor tespit edildi",
+        "consistency": "Tutarlılık kuralı ihlal edildi",
+        "rule_break": "İşlem kuralı ihlali"
+      },
+      "pagination": {
+        "showing": "Sayfa {{page}} / {{totalPages}} ({{total}} toplam)"
       },
       "emptyMessage": "İhlal bulunamadı"
     },

@@ -1622,7 +1622,9 @@
         "weekendHolding": "Weekend Holding",
         "restrictedInstrument": "Restricted Instrument",
         "lotSize": "Lot Size",
-        "eaDetected": "EA Detected"
+        "eaDetected": "EA Detected",
+        "consistency": "Consistency",
+        "ruleBreak": "Rule Break"
       },
       "severity": {
         "fatal": "Fatal",
@@ -1636,7 +1638,12 @@
         "weekend_holding": "Position held over weekend",
         "restricted_instrument": "Traded restricted instrument",
         "lot_size": "Lot size limit exceeded",
-        "ea_detected": "Expert Advisor detected"
+        "ea_detected": "Expert Advisor detected",
+        "consistency": "Consistency rule violated",
+        "rule_break": "Trading rule violation"
+      },
+      "pagination": {
+        "showing": "Page {{page}} of {{totalPages}} ({{total}} total)"
       },
       "emptyMessage": "No violations found"
     },

@@ -1564,7 +1564,9 @@
         "weekendHolding": "週末保有",
         "restrictedInstrument": "制限銘柄",
         "lotSize": "ロットサイズ",
-        "eaDetected": "EA検出"
+        "eaDetected": "EA検出",
+        "consistency": "一貫性",
+        "ruleBreak": "ルール違反"
       },
       "severity": {
         "fatal": "重大",
@@ -1578,7 +1580,12 @@
         "weekend_holding": "週末にポジションを保有",
         "restricted_instrument": "制限銘柄で取引",
         "lot_size": "ロットサイズ上限を超過",
-        "ea_detected": "Expert Advisor を検出"
+        "ea_detected": "Expert Advisor を検出",
+        "consistency": "一貫性ルール違反",
+        "rule_break": "取引ルール違反"
+      },
+      "pagination": {
+        "showing": "{{page}} / {{totalPages}} ページ (合計 {{total}})"
       },
       "emptyMessage": "違反が見つかりません"
     },

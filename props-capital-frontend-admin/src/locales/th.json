@@ -1566,7 +1566,9 @@
         "weekendHolding": "ถือครองสุดสัปดาห์",
         "restrictedInstrument": "เครื่องมือที่ถูกจำกัด",
         "lotSize": "ขนาดล็อต",
-        "eaDetected": "ตรวจพบ EA"
+        "eaDetected": "ตรวจพบ EA",
+        "consistency": "ความสม่ำเสมอ",
+        "ruleBreak": "การละเมิดกฎ"
       },
       "severity": {
         "fatal": "ร้ายแรง",
@@ -1580,7 +1582,12 @@
         "weekend_holding": "ถือครองตำแหน่งในช่วงสุดสัปดาห์",
         "restricted_instrument": "เทรดเครื่องมือที่ถูกจำกัด",
         "lot_size": "เกินขีดจำกัดขนาดล็อต",
-        "ea_detected": "ตรวจพบ Expert Advisor"
+        "ea_detected": "ตรวจพบ Expert Advisor",
+        "consistency": "ละเมิดกฎความสม่ำเสมอ",
+        "rule_break": "การละเมิดกฎการเทรด"
+      },
+      "pagination": {
+        "showing": "หน้า {{page}} จาก {{totalPages}} (ทั้งหมด {{total}})"
       },
       "emptyMessage": "ไม่พบการละเมิด"
     },

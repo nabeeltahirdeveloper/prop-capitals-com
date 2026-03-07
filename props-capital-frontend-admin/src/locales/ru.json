@@ -1564,7 +1564,9 @@
         "weekendHolding": "Удержание на выходных",
         "restrictedInstrument": "Ограниченный инструмент",
         "lotSize": "Размер лота",
-        "eaDetected": "Обнаружен EA"
+        "eaDetected": "Обнаружен EA",
+        "consistency": "Последовательность",
+        "ruleBreak": "Нарушение правил"
       },
       "severity": {
         "fatal": "Критическое",
@@ -1578,7 +1580,12 @@
         "weekend_holding": "Удержание позиций на выходных",
         "restricted_instrument": "Торговля по ограниченному инструменту",
         "lot_size": "Превышен лимит размера лота",
-        "ea_detected": "Обнаружен Expert Advisor"
+        "ea_detected": "Обнаружен Expert Advisor",
+        "consistency": "Нарушение правила последовательности",
+        "rule_break": "Нарушение торгового правила"
+      },
+      "pagination": {
+        "showing": "Страница {{page}} из {{totalPages}} ({{total}} всего)"
       },
       "emptyMessage": "Нарушения не найдены"
     },

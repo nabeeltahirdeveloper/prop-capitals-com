@@ -1564,7 +1564,9 @@
         "weekendHolding": "Mantener durante el fin de semana",
         "restrictedInstrument": "Instrumento restringido",
         "lotSize": "Tamaño de lote",
-        "eaDetected": "EA detectado"
+        "eaDetected": "EA detectado",
+        "consistency": "Consistencia",
+        "ruleBreak": "Incumplimiento de reglas"
       },
       "severity": {
         "fatal": "Grave",
@@ -1578,7 +1580,12 @@
         "weekend_holding": "Posiciones mantenidas durante el fin de semana",
         "restricted_instrument": "Operación en un instrumento restringido",
         "lot_size": "Se excedió el límite de tamaño de lote",
-        "ea_detected": "Se detectó un Expert Advisor"
+        "ea_detected": "Se detectó un Expert Advisor",
+        "consistency": "Regla de consistencia violada",
+        "rule_break": "Violación de regla de trading"
+      },
+      "pagination": {
+        "showing": "Página {{page}} de {{totalPages}} ({{total}} total)"
       },
       "emptyMessage": "No se encontraron infracciones"
     },

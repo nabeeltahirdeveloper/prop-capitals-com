@@ -217,8 +217,8 @@ export const adminGetAccountRisk = async (accountId) => {
   return apiGet(`/admin/risk/account/${accountId}`);
 };
 
-export const adminGetAllViolations = async () => {
-  return apiGet("/admin/risk/violations");
+export const adminGetAllViolations = async (page = 1, limit = 50) => {
+  return apiGet(`/admin/risk/violations?page=${page}&limit=${limit}`);
 };
 
 export const adminGetViolation = async (id) => {
