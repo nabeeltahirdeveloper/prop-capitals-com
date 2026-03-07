@@ -227,7 +227,8 @@ export default function AdminSupport() {
           >
             <Eye className="w-4 h-4" />
           </Button>
-          {row.status === 'open' && (
+          {/* Take: open or waiting_for_admin → move to in_progress */}
+          {(row.status === 'open' || row.status === 'waiting_for_admin') && (
             <Button
               size="sm"
               variant="ghost"
@@ -238,7 +239,8 @@ export default function AdminSupport() {
               {t('admin.support.actions.take')}
             </Button>
           )}
-          {row.status === 'in_progress' && (
+          {/* Resolve: in_progress or waiting_for_trader → resolved */}
+          {(row.status === 'in_progress' || row.status === 'waiting_for_trader') && (
             <Button
               size="sm"
               variant="ghost"
@@ -249,7 +251,8 @@ export default function AdminSupport() {
               {t('admin.support.actions.resolve')}
             </Button>
           )}
-          {(row.status !== 'closed') && (
+          {/* Close: any status except already closed */}
+          {row.status !== 'closed' && (
             <Button
               size="sm"
               variant="ghost"
@@ -257,7 +260,7 @@ export default function AdminSupport() {
               onClick={(e) => { e.stopPropagation(); handleUpdateStatus(row, 'closed'); }}
               disabled={updateMutation.isPending}
             >
-              {t('admin.support.actions.close') || 'Close'}
+              {t('admin.support.actions.close')}
             </Button>
           )}
         </div>
@@ -278,27 +281,15 @@ export default function AdminSupport() {
           <h1 className="text-xl sm:text-2xl font-bold text-foreground">{t('admin.support.title')}</h1>
           <p className="text-sm sm:text-base text-muted-foreground">{t('admin.support.subtitle')}</p>
         </div>
-        <div className="flex items-center gap-3">
-          <Card className="bg-card border-border px-4 py-3 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-emerald-500/10 flex items-center justify-center">
-              <MessageCircle className="w-4 h-4 text-emerald-500" />
-            </div>
-            <div className="hidden sm:block">
-              <p className="text-xs font-medium text-foreground">
-                {t('contact.liveChatTitle')}
-              </p>
-              <p className="text-[11px] text-muted-foreground">
-                {t('contact.liveChatDescription')}
-              </p>
-            </div>
-            <Button
-              size="sm"
-              className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-xs"
-              onClick={openChat}
-            >
-              {t('contact.startChat')}
-            </Button>
-          </Card>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-xs gap-1.5"
+            onClick={openChat}
+          >
+            <MessageCircle className="w-4 h-4" />
+            {t('admin.support.chat.openChat')}
+          </Button>
         </div>
       </div>
 
@@ -349,8 +340,8 @@ export default function AdminSupport() {
             <SelectContent className="bg-card border-border text-foreground">
               <SelectItem value="all" className="text-foreground">{t('admin.support.filter.allStatus')}</SelectItem>
               <SelectItem value="open" className="text-foreground">{t('admin.support.filter.open')}</SelectItem>
-              <SelectItem value="waiting_for_admin" className="text-foreground">Waiting for Admin</SelectItem>
-              <SelectItem value="waiting_for_trader" className="text-foreground">Waiting for Trader</SelectItem>
+              <SelectItem value="waiting_for_admin" className="text-foreground">{t('admin.support.filter.waitingForAdmin')}</SelectItem>
+              <SelectItem value="waiting_for_trader" className="text-foreground">{t('admin.support.filter.waitingForTrader')}</SelectItem>
               <SelectItem value="in_progress" className="text-foreground">{t('admin.support.filter.inProgress')}</SelectItem>
               <SelectItem value="resolved" className="text-foreground">{t('admin.support.filter.resolved')}</SelectItem>
               <SelectItem value="closed" className="text-foreground">{t('admin.support.filter.closed')}</SelectItem>
@@ -371,7 +362,7 @@ export default function AdminSupport() {
         {totalPages > 1 && (
           <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
             <p className="text-xs text-muted-foreground">
-              Page {page} of {totalPages} ({totalTickets} tickets)
+              {t('admin.support.pagination.page', { page, totalPages, total: totalTickets })}
             </p>
             <div className="flex items-center gap-2">
               <Button
@@ -381,7 +372,7 @@ export default function AdminSupport() {
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
               >
-                Previous
+                {t('admin.support.pagination.previous')}
               </Button>
               <Button
                 variant="outline"
@@ -390,7 +381,7 @@ export default function AdminSupport() {
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
               >
-                Next
+                {t('admin.support.pagination.next')}
               </Button>
             </div>
           </div>

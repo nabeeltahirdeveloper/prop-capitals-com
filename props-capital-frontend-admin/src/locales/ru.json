@@ -1672,7 +1672,9 @@
         "open": "Открыто",
         "inProgress": "В процессе",
         "resolved": "Решено",
-        "closed": "Закрыто"
+        "closed": "Закрыто",
+        "waitingForAdmin": "Ожидание администратора",
+        "waitingForTrader": "Ожидание трейдера"
       },
       "table": {
         "ticket": "Тикет",
@@ -1712,6 +1714,14 @@
         "questionAboutScalingPlan": "Вопрос о плане масштабирования",
         "refundRequest": "Запрос на возврат",
         "challengeRulesClarification": "Уточнение правил челленджа"
+      },
+      "pagination": {
+        "page": "Страница {{page}} из {{totalPages}} (всего {{total}} тикетов)",
+        "previous": "Назад",
+        "next": "Вперед"
+      },
+      "chat": {
+        "openChat": "Открыть чат"
       }
     },
     "settings": {

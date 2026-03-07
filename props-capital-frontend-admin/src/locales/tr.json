@@ -1672,7 +1672,9 @@
         "open": "Açık",
         "inProgress": "Devam ediyor",
         "resolved": "Çözüldü",
-        "closed": "Kapalı"
+        "closed": "Kapalı",
+        "waitingForAdmin": "Yönetici Bekleniyor",
+        "waitingForTrader": "Trader Bekleniyor"
       },
       "table": {
         "ticket": "Talep",
@@ -1712,6 +1714,14 @@
         "questionAboutScalingPlan": "Ölçekleme planı hakkında soru",
         "refundRequest": "İade talebi",
         "challengeRulesClarification": "Meydan okuma kuralları açıklaması"
+      },
+      "pagination": {
+        "page": "Sayfa {{page}} / {{totalPages}} (Toplam {{total}} talep)",
+        "previous": "Önceki",
+        "next": "Sonraki"
+      },
+      "chat": {
+        "openChat": "Sohbeti Aç"
       }
     },
     "settings": {

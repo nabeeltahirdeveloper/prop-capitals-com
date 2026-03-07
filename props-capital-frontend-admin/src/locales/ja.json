@@ -1672,7 +1672,9 @@
         "open": "オープン",
         "inProgress": "進行中",
         "resolved": "解決済み",
-        "closed": "クローズ"
+        "closed": "クローズ",
+        "waitingForAdmin": "管理者待ち",
+        "waitingForTrader": "トレーダー待ち"
       },
       "table": {
         "ticket": "チケット",
@@ -1712,6 +1714,14 @@
         "questionAboutScalingPlan": "スケーリングプランについての質問",
         "refundRequest": "返金申請",
         "challengeRulesClarification": "チャレンジルールの確認"
+      },
+      "pagination": {
+        "page": "{{totalPages}} ページ中 {{page}} ページ (合計 {{total}} チケット)",
+        "previous": "前へ",
+        "next": "次へ"
+      },
+      "chat": {
+        "openChat": "チャットを開く"
       }
     },
     "settings": {

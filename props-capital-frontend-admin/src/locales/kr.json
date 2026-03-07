@@ -1672,7 +1672,9 @@
         "open": "오픈",
         "inProgress": "처리 중",
         "resolved": "해결됨",
-        "closed": "클로즈"
+        "closed": "클로즈",
+        "waitingForAdmin": "관리자 대기 중",
+        "waitingForTrader": "트레이더 대기 중"
       },
       "table": {
         "ticket": "티켓",
@@ -1712,6 +1714,14 @@
         "questionAboutScalingPlan": "스케일링 플랜 관련 질문",
         "refundRequest": "환불 요청",
         "challengeRulesClarification": "챌린지 규칙 확인"
+      },
+      "pagination": {
+        "page": "{{totalPages}} 페이지 중 {{page}} 페이지 (총 {{total}} 티켓)",
+        "previous": "이전",
+        "next": "다음"
+      },
+      "chat": {
+        "openChat": "채팅 열기"
       }
     },
     "settings": {

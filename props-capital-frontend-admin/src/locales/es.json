@@ -1672,7 +1672,9 @@
         "open": "Abierto",
         "inProgress": "En progreso",
         "resolved": "Resuelto",
-        "closed": "Cerrado"
+        "closed": "Cerrado",
+        "waitingForAdmin": "Esperando al administrador",
+        "waitingForTrader": "Esperando al trader"
       },
       "table": {
         "ticket": "Ticket",
@@ -1723,6 +1725,14 @@
         "questionAboutScalingPlan": "Pregunta sobre el plan de escalado",
         "refundRequest": "Solicitud de reembolso",
         "challengeRulesClarification": "Aclaración de reglas del desafío"
+      },
+      "pagination": {
+        "page": "Página {{page}} de {{totalPages}} ({{total}} tickets)",
+        "previous": "Anterior",
+        "next": "Siguiente"
+      },
+      "chat": {
+        "openChat": "Abrir chat"
       }
     },
     "settings": {

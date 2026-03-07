@@ -1674,7 +1674,9 @@
         "open": "เปิด",
         "inProgress": "กำลังดำเนินการ",
         "resolved": "แก้ไขแล้ว",
-        "closed": "ปิด"
+        "closed": "ปิด",
+        "waitingForAdmin": "รอผู้ดูแลระบบ",
+        "waitingForTrader": "รอเทรดเดอร์"
       },
       "table": {
         "ticket": "ตั๋ว",
@@ -1725,6 +1727,14 @@
         "questionAboutScalingPlan": "คำถามเกี่ยวกับแผนการขยายขนาด",
         "refundRequest": "คำขอคืนเงิน",
         "challengeRulesClarification": "คำชี้แจงกฎความท้าทาย"
+      },
+      "pagination": {
+        "page": "หน้า {{page}} จาก {{totalPages}} (รวม {{total}} ตั๋ว)",
+        "previous": "ก่อนหน้า",
+        "next": "ถัดไป"
+      },
+      "chat": {
+        "openChat": "เปิดแชท"
       }
     },
     "settings": {

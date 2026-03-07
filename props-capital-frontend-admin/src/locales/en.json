@@ -1731,7 +1731,9 @@
         "open": "Open",
         "inProgress": "In Progress",
         "resolved": "Resolved",
-        "closed": "Closed"
+        "closed": "Closed",
+        "waitingForAdmin": "Waiting for Admin",
+        "waitingForTrader": "Waiting for Trader"
       },
       "table": {
         "ticket": "Ticket",
@@ -1774,6 +1776,14 @@
         "errorTitle": "Error",
         "replySent": "Reply sent and ticket resolved.",
         "statusUpdated": "Ticket status updated successfully."
+      },
+      "pagination": {
+        "page": "Page {{page}} of {{totalPages}} ({{total}} tickets)",
+        "previous": "Previous",
+        "next": "Next"
+      },
+      "chat": {
+        "openChat": "Open Chat"
       }
     },
     "settings": {
