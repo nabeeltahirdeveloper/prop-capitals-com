@@ -46,22 +46,6 @@ export default function CRMFTDReport() {
     const fromDateRef = useRef(null);
     const toDateRef = useRef(null);
 
-    useEffect(() => {
-        if (typeof document === 'undefined') return;
-        const styleId = 'crm-ftd-report-inline-styles';
-        if (!document.getElementById(styleId)) {
-            const styleTag = document.createElement('style');
-            styleTag.id = styleId;
-            styleTag.innerHTML = `
-              .no-calendar-icon::-webkit-calendar-picker-indicator {
-                display: none !important;
-                -webkit-appearance: none;
-              }
-            `;
-            document.head.appendChild(styleTag);
-        }
-    }, []);
-
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
@@ -93,7 +77,7 @@ export default function CRMFTDReport() {
             console.error('Error fetching FTD data:', error);
             toast({
                 title: t('common.error'),
-                description: t('crm.ftdReport.loadError'),
+                description: error?.message || t('crm.ftdReport.loadError'),
                 variant: 'destructive'
             });
         } finally {
