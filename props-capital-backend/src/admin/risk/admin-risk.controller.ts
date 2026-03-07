@@ -24,10 +24,11 @@ export class AdminRiskController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    return this.riskService.getAllViolations(
-      page ? parseInt(page, 10) : 1,
-      limit ? parseInt(limit, 10) : 50,
-    );
+    const parsedPage = page ? Math.max(1, parseInt(page, 10) || 1) : 1;
+    const parsedLimit = limit
+      ? Math.min(100, Math.max(1, parseInt(limit, 10) || 50))
+      : 50;
+    return this.riskService.getAllViolations(parsedPage, parsedLimit);
   }
 
   @Get('violations/:id')

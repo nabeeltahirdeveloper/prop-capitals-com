@@ -99,6 +99,7 @@ export default function AdminPayouts() {
   });
 
   const handleApprove = (payout) => {
+    if (!window.confirm(`Approve payout of $${payout.amount?.toLocaleString()} for ${payout.trader_id}?`)) return;
     approveMutation.mutate(payout.id);
   };
 
@@ -109,6 +110,7 @@ export default function AdminPayouts() {
   };
 
   const handleMarkPaid = (payout) => {
+    if (!window.confirm(`Mark payout of $${payout.amount?.toLocaleString()} as paid? This action cannot be undone.`)) return;
     markPaidMutation.mutate(payout.id);
   };
 
@@ -171,16 +173,26 @@ export default function AdminPayouts() {
       ),
     },
     {
-      header: t("admin.payouts.table.amount"),
-      accessorKey: "amount",
+      header: t("admin.payouts.table.account") || "Account",
+      accessorKey: "account_number",
       cell: (row) => (
-        <span className="text-emerald-500 font-bold">
-          ${row.amount?.toLocaleString()}
+        <span className="text-foreground font-mono text-xs">
+          {row.account_number || "N/A"}
         </span>
       ),
     },
     {
-      header: t("admin.payouts.table.method"),
+      header: t("admin.payouts.table.amount"),
+      accessorKey: "amount",
+      cell: (row) => (
+        <span className="text-emerald-500 font-bold">
+          {row.currency === "USD" || !row.currency ? "$" : row.currency}
+          {row.amount?.toLocaleString()}
+        </span>
+      ),
+    },
+    {
+      header: t("admin.payouts.table.platform") || "Platform",
       accessorKey: "platform",
       cell: (row) => (
         <span className="capitalize text-foreground">
@@ -221,7 +233,11 @@ export default function AdminPayouts() {
                   onClick={() => handleApprove(row)}
                   disabled={approveMutation.isPending}
                 >
-                  <CheckCircle className="w-4 h-4" />
+                  {approveMutation.isPending ? (
+                    <Clock className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <CheckCircle className="w-4 h-4" />
+                  )}
                 </Button>
                 <Button
                   size="sm"

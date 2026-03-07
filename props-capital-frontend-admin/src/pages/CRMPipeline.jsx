@@ -238,8 +238,8 @@ export default function CRMPipeline() {
                 convertedAt: transformed.convertedAt ? new Date(transformed.convertedAt).toISOString().split('T')[0] : '',
             });
             setIsLeadModalOpen(true);
-        } catch {
-            toast({ title: t('common.error'), description: t('crm.pipeline.loadError'), variant: 'destructive' });
+        } catch (error) {
+            toast({ title: t('common.error'), description: error?.message || t('crm.pipeline.loadError'), variant: 'destructive' });
         }
     };
 
@@ -359,7 +359,7 @@ export default function CRMPipeline() {
 
                                                                         <div className="flex items-start gap-3">
                                                                             <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shrink-0 ${column.color === 'blue' ? 'bg-blue-600' : column.color === 'purple' ? 'bg-purple-600' : column.color === 'cyan' ? 'bg-cyan-600' : column.color === 'yellow' ? 'bg-yellow-600' : column.color === 'orange' ? 'bg-orange-600' : column.color === 'amber' ? 'bg-amber-600' : 'bg-red-600'}`}>
-                                                                                {lead.name[0]}
+                                                                                {lead.name?.[0] || '?'}
                                                                             </div>
                                                                             <div className="flex-1 min-w-0">
                                                                                 <div className="flex items-center justify-between gap-2">
@@ -398,6 +398,11 @@ export default function CRMPipeline() {
                                                         {colState.loading && (
                                                             <div className="py-4 text-center">
                                                                 <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto" />
+                                                            </div>
+                                                        )}
+                                                        {currentLeads.length === 0 && !colState.loading && (
+                                                            <div className="flex flex-col items-center justify-center py-8 text-center">
+                                                                <p className="text-muted-foreground text-sm">{t('crm.pipeline.noLeadsInStage')}</p>
                                                             </div>
                                                         )}
                                                     </div>
@@ -615,27 +620,6 @@ export default function CRMPipeline() {
                 </DialogContent>
             </Dialog>
 
-            <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 5px;
-          height: 5px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(15, 23, 42, 0.1);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(100, 116, 139, 0.2);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(100, 116, 139, 0.4);
-        }
-        .no-calendar-icon::-webkit-calendar-picker-indicator {
-          display: none;
-          -webkit-appearance: none;
-        }
-      `}</style>
         </div >
     );
 

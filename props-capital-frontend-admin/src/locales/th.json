@@ -6,7 +6,10 @@
     "allPlatforms": "ทุกแพลตฟอร์ม",
     "unknown": "ไม่ทราบ",
     "error": "ข้อผิดพลาด",
-    "success": "สำเร็จ"
+    "success": "สำเร็จ",
+    "cancel": "ยกเลิก",
+    "delete": "ลบ",
+    "deleting": "กำลังลบ..."
   },
   "home": {
     "hero": {
@@ -448,6 +451,9 @@
     "passwordChangeFailed": "เปลี่ยนรหัสผ่านล้มเหลว",
     "passwordChangeError": "เกิดข้อผิดพลาดขณะเปลี่ยนรหัสผ่านของคุณ",
     "validationError": "ข้อผิดพลาดการตรวจสอบความถูกต้อง",
+    "currentPasswordRequired": "โปรดป้อนรหัสผ่านปัจจุบันของคุณ",
+    "showPassword": "แสดงรหัสผ่าน",
+    "hidePassword": "ซ่อนรหัสผ่าน",
     "notificationUpdateError": "อัปเดตการตั้งค่าการแจ้งเตือนล้มเหลว",
     "notificationsUpdated": "อัปเดตการแจ้งเตือนแล้ว",
     "notificationsUpdatedDesc": "บันทึกการตั้งค่าการแจ้งเตือนของคุณแล้ว"
@@ -1563,7 +1569,9 @@
         "weekendHolding": "ถือครองสุดสัปดาห์",
         "restrictedInstrument": "เครื่องมือที่ถูกจำกัด",
         "lotSize": "ขนาดล็อต",
-        "eaDetected": "ตรวจพบ EA"
+        "eaDetected": "ตรวจพบ EA",
+        "consistency": "ความสม่ำเสมอ",
+        "ruleBreak": "การละเมิดกฎ"
       },
       "severity": {
         "fatal": "ร้ายแรง",
@@ -1577,7 +1585,12 @@
         "weekend_holding": "ถือครองตำแหน่งในช่วงสุดสัปดาห์",
         "restricted_instrument": "เทรดเครื่องมือที่ถูกจำกัด",
         "lot_size": "เกินขีดจำกัดขนาดล็อต",
-        "ea_detected": "ตรวจพบ Expert Advisor"
+        "ea_detected": "ตรวจพบ Expert Advisor",
+        "consistency": "ละเมิดกฎความสม่ำเสมอ",
+        "rule_break": "การละเมิดกฎการเทรด"
+      },
+      "pagination": {
+        "showing": "หน้า {{page}} จาก {{totalPages}} (ทั้งหมด {{total}})"
       },
       "emptyMessage": "ไม่พบการละเมิด"
     },
@@ -1613,8 +1626,18 @@
         "usage": "การใช้งาน",
         "validUntil": "ใช้ได้จนถึง",
         "status": "สถานะ",
+        "created": "สร้างเมื่อ",
         "actions": "การดำเนินการ"
       },
+      "searchPlaceholder": "ค้นหาตามรหัสคูปอง...",
+      "filter": {
+        "all": "สถานะทั้งหมด",
+        "active": "ใช้งานอยู่",
+        "inactive": "ไม่ใช้งาน",
+        "expired": "หมดอายุ"
+      },
+      "deleteConfirmTitle": "ลบคูปอง",
+      "deleteConfirmMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบคูปองนี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้",
       "status": {
         "active": "ใช้งานอยู่",
         "inactive": "ไม่ใช้งาน"
@@ -1654,7 +1677,9 @@
         "open": "เปิด",
         "inProgress": "กำลังดำเนินการ",
         "resolved": "แก้ไขแล้ว",
-        "closed": "ปิด"
+        "closed": "ปิด",
+        "waitingForAdmin": "รอผู้ดูแลระบบ",
+        "waitingForTrader": "รอเทรดเดอร์"
       },
       "table": {
         "ticket": "ตั๋ว",
@@ -1705,6 +1730,14 @@
         "questionAboutScalingPlan": "คำถามเกี่ยวกับแผนการขยายขนาด",
         "refundRequest": "คำขอคืนเงิน",
         "challengeRulesClarification": "คำชี้แจงกฎความท้าทาย"
+      },
+      "pagination": {
+        "page": "หน้า {{page}} จาก {{totalPages}} (รวม {{total}} ตั๋ว)",
+        "previous": "ก่อนหน้า",
+        "next": "ถัดไป"
+      },
+      "chat": {
+        "openChat": "เปิดแชท"
       }
     },
     "settings": {
@@ -3026,16 +3059,16 @@
       "whatsapp": "WhatsApp",
       "telegram_activity": "Telegram",
       "toast": {
-        "fetchError": "Failed to fetch leads",
-        "loadError": "Failed to load lead details",
-        "updateSuccess": "Lead updated successfully",
-        "updateError": "Failed to update lead",
-        "activityLogged": "Activity logged: {{type}}",
-        "activityError": "Failed to log activity",
-        "importSuccess": "Imported {{created}} of {{total}} leads",
-        "importError": "Failed to import CSV",
-        "noteAdded": "Note added successfully",
-        "noteError": "Failed to add note"
+        "fetchError": "ไม่สามารถดึงข้อมูลลีดได้",
+        "loadError": "ไม่สามารถโหลดรายละเอียดลีดได้",
+        "updateSuccess": "อัปเดตลีดสำเร็จแล้ว",
+        "updateError": "ไม่สามารถอัปเดตลีดได้",
+        "activityLogged": "บันทึกกิจกรรมแล้ว: {{type}}",
+        "activityError": "ไม่สามารถบันทึกกิจกรรมได้",
+        "importSuccess": "นำเข้า {{created}} จาก {{total}} ลีด",
+        "importError": "ไม่สามารถนำเข้า CSV ได้",
+        "noteAdded": "เพิ่มบันทึกสำเร็จแล้ว",
+        "noteError": "ไม่สามารถเพิ่มบันทึกได้"
       }
     },
     "status": {
@@ -3087,7 +3120,8 @@
       "activityRecorded": "บันทึก {{type}} แล้ว",
       "direct": "โดยตรง",
       "quickActionNote": "พยายาม {{type}} ผ่านการดำเนินการด่วนของไปป์ไลน์",
-      "activityFailed": "บันทึกกิจกรรมไม่สำเร็จ"
+      "activityFailed": "บันทึกกิจกรรมไม่สำเร็จ",
+      "noLeadsInStage": "ไม่มีลูกค้ามุ่งหวังในขั้นตอนนี้"
     },
     "columns": {
       "new": "ลูกค้ามุ่งหวังใหม่",
@@ -3124,37 +3158,37 @@
       "noDescription": "ไม่มีการระบุคำอธิบาย"
     },
     "ftdReport": {
-      "title": "FTD Report",
-      "subtitle": "First Time Deposit tracking from converted leads",
-      "totalFtd": "Total FTD",
-      "totalDeposits": "Total Deposits",
-      "avgFtdAmount": "Avg FTD Amount",
-      "activeAgents": "Active Agents",
-      "searchPlaceholder": "Search by name, email, or country...",
-      "allAgents": "All Agents",
-      "tableTitle": "First Time Deposits",
-      "leadName": "Lead Name",
-      "email": "Email",
-      "phone": "Phone",
-      "country": "Country",
-      "depositAmount": "Deposit Amount",
-      "convertedDate": "Converted Date",
-      "status": "Status",
-      "converted": "Converted",
-      "agent": "Agent",
-      "paymentMethod": "Payment Method",
-      "paymentProvider": "Payment Provider",
-      "source": "Source",
-      "affiliateId": "Affiliate ID",
-      "funnelName": "Funnel Name",
-      "ftdTime": "FTD Time",
-      "subParameters": "Sub Parameters",
-      "na": "N/A",
-      "unassigned": "Unassigned",
-      "loading": "Loading FTD data...",
-      "noData": "No first time deposits found.",
-      "showing": "Showing {{count}} First Time Deposits",
-      "loadError": "Failed to load FTD report data"
+      "title": "รายงานคำสั่งซื้อ",
+      "subtitle": "ติดตามคำสั่งซื้อจากลีดที่เปลี่ยนเป็นลูกค้า",
+      "totalFtd": "FTD ทั้งหมด",
+      "totalDeposits": "คำสั่งซื้อทั้งหมด",
+      "avgFtdAmount": "จำนวนเฉลี่ยต่อคำสั่งซื้อ",
+      "activeAgents": "ตัวแทนที่ใช้งาน",
+      "searchPlaceholder": "ค้นหาตามชื่อ อีเมล หรือประเทศ...",
+      "allAgents": "ตัวแทนทั้งหมด",
+      "tableTitle": "การฝากเงินครั้งแรก",
+      "leadName": "ชื่อลีด",
+      "email": "อีเมล",
+      "phone": "โทรศัพท์",
+      "country": "ประเทศ",
+      "depositAmount": "จำนวนเงินฝาก",
+      "convertedDate": "วันที่เปลี่ยนเป็นลูกค้า",
+      "status": "สถานะ",
+      "converted": "เปลี่ยนเป็นลูกค้าแล้ว",
+      "agent": "ตัวแทน",
+      "paymentMethod": "วิธีการชำระเงิน",
+      "paymentProvider": "ผู้ให้บริการชำระเงิน",
+      "source": "แหล่งที่มา",
+      "affiliateId": "รหัสพันธมิตร",
+      "funnelName": "ชื่อฟันเนล",
+      "ftdTime": "เวลา FTD",
+      "subParameters": "พารามิเตอร์ย่อย",
+      "na": "ไม่มีข้อมูล",
+      "unassigned": "ยังไม่ได้มอบหมาย",
+      "loading": "กำลังโหลดข้อมูล FTD...",
+      "noData": "ไม่พบการฝากเงินครั้งแรก",
+      "showing": "แสดง {{count}} การฝากเงินครั้งแรก",
+      "loadError": "ไม่สามารถโหลดข้อมูลรายงาน FTD ได้"
     },
     "crmCalendar": {
       "title": "ปฏิทินการขาย",
@@ -3194,16 +3228,19 @@
       "placeholderTitle": "เช่น โทรติดตามผล",
       "placeholderClient": "ป้อนชื่อลูกค้า",
       "weekdays": {
-        "sun": "Sun",
-        "mon": "Mon",
-        "tue": "Tue",
-        "wed": "Wed",
-        "thu": "Thu",
-        "fri": "Fri",
-        "sat": "Sat"
+        "sun": "อา",
+        "mon": "จ",
+        "tue": "อ",
+        "wed": "พ",
+        "thu": "พฤ",
+        "fri": "ศ",
+        "sat": "ส"
       },
-      "moreCount": "+ {{count}} more",
-      "minShort": "min"
+      "moreCount": "+ อีก {{count}} รายการ",
+      "minShort": "นาที",
+      "errorDateTimeRequired": "ต้องระบุวันที่และเวลา",
+      "errorInvalidDuration": "ระยะเวลาต้องเป็นจำนวนบวก",
+      "loadError": "ไม่สามารถโหลดข้อมูลปฏิทินได้"
     }
   }
 }

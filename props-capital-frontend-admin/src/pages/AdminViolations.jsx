@@ -272,11 +272,11 @@ export default function AdminViolations() {
             <Input
               placeholder={t("admin.violations.searchPlaceholder")}
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
               className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
             />
           </div>
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
+          <Select value={typeFilter} onValueChange={(v) => { setTypeFilter(v); setPage(1); }}>
             <SelectTrigger className="w-full sm:w-[200px] bg-muted border-border text-foreground text-sm">
               <SelectValue
                 placeholder={t("admin.violations.filter.violationType")}
@@ -311,7 +311,7 @@ export default function AdminViolations() {
       </Card>
 
       {/* Violations Table */}
-      <Card className="bg-card border-border p-3 sm:p-4 md:p-6">
+      <Card className="bg-card border-border p-3 sm:p-4 md:p-6 overflow-hidden">
         <DataTable
           columns={columns}
           data={filteredViolations}
@@ -340,7 +340,7 @@ export default function AdminViolations() {
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm text-slate-300 min-w-[3rem] text-center">
+              <span className="text-sm text-muted-foreground min-w-[3rem] text-center">
                 {page}
               </span>
               <Button

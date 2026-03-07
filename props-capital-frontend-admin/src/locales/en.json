@@ -6,7 +6,10 @@
     "allPlatforms": "all platforms",
     "unknown": "Unknown",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleting": "Deleting..."
   },
   "home": {
     "hero": {
@@ -448,6 +451,9 @@
     "passwordChangeFailed": "Password Change Failed",
     "passwordChangeError": "An error occurred while changing your password.",
     "validationError": "Validation Error",
+    "currentPasswordRequired": "Please enter your current password.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "notificationUpdateError": "Failed to update notification preferences.",
     "notificationsUpdated": "Notifications Updated",
     "notificationsUpdatedDesc": "Your notification preferences have been saved."
@@ -1619,7 +1625,9 @@
         "weekendHolding": "Weekend Holding",
         "restrictedInstrument": "Restricted Instrument",
         "lotSize": "Lot Size",
-        "eaDetected": "EA Detected"
+        "eaDetected": "EA Detected",
+        "consistency": "Consistency",
+        "ruleBreak": "Rule Break"
       },
       "severity": {
         "fatal": "Fatal",
@@ -1633,7 +1641,12 @@
         "weekend_holding": "Position held over weekend",
         "restricted_instrument": "Traded restricted instrument",
         "lot_size": "Lot size limit exceeded",
-        "ea_detected": "Expert Advisor detected"
+        "ea_detected": "Expert Advisor detected",
+        "consistency": "Consistency rule violated",
+        "rule_break": "Trading rule violation"
+      },
+      "pagination": {
+        "showing": "Page {{page}} of {{totalPages}} ({{total}} total)"
       },
       "emptyMessage": "No violations found"
     },
@@ -1669,8 +1682,18 @@
         "usage": "Usage",
         "validUntil": "Valid Until",
         "status": "Status",
+        "created": "Created",
         "actions": "Actions"
       },
+      "searchPlaceholder": "Search by coupon code...",
+      "filter": {
+        "all": "All Statuses",
+        "active": "Active",
+        "inactive": "Inactive",
+        "expired": "Expired"
+      },
+      "deleteConfirmTitle": "Delete Coupon",
+      "deleteConfirmMessage": "Are you sure you want to delete this coupon? This action cannot be undone.",
       "status": {
         "active": "Active",
         "inactive": "Inactive"
@@ -1711,7 +1734,9 @@
         "open": "Open",
         "inProgress": "In Progress",
         "resolved": "Resolved",
-        "closed": "Closed"
+        "closed": "Closed",
+        "waitingForAdmin": "Waiting for Admin",
+        "waitingForTrader": "Waiting for Trader"
       },
       "table": {
         "ticket": "Ticket",
@@ -1754,6 +1779,14 @@
         "errorTitle": "Error",
         "replySent": "Reply sent and ticket resolved.",
         "statusUpdated": "Ticket status updated successfully."
+      },
+      "pagination": {
+        "page": "Page {{page}} of {{totalPages}} ({{total}} tickets)",
+        "previous": "Previous",
+        "next": "Next"
+      },
+      "chat": {
+        "openChat": "Open Chat"
       }
     },
     "settings": {
@@ -3096,7 +3129,8 @@
       "activityRecorded": "{{type}} recorded",
       "direct": "Direct",
       "quickActionNote": "{{type}} attempt made via Pipeline Quick Actions",
-      "activityFailed": "Failed to log activity"
+      "activityFailed": "Failed to log activity",
+      "noLeadsInStage": "No leads in this stage"
     },
     "columns": {
       "new": "New Leads",
@@ -3212,7 +3246,10 @@
         "sat": "Sat"
       },
       "moreCount": "+ {{count}} more",
-      "minShort": "min"
+      "minShort": "min",
+      "errorDateTimeRequired": "Date and time are required",
+      "errorInvalidDuration": "Duration must be a positive number",
+      "loadError": "Failed to load calendar data"
     }
   }
 }

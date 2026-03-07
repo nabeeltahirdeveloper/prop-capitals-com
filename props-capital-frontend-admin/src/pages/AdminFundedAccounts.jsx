@@ -8,6 +8,7 @@ import {
   adminGetAllPayouts,
 } from "@/api/admin";
 import { useTranslation } from "../contexts/LanguageContext";
+import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,7 +41,6 @@ import {
   CheckCircle,
   XCircle,
   RefreshCw,
-  TrendingUp,
   Loader2,
 } from "lucide-react";
 import { format } from "date-fns";
@@ -48,6 +48,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminFundedAccounts() {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedAccountId, setSelectedAccountId] = useState(null);
@@ -71,6 +72,19 @@ export default function AdminFundedAccounts() {
       queryClient.invalidateQueries({
         queryKey: ["admin-account-details", variables.id],
       });
+      toast({
+        title: "Status updated",
+        description: `Account status changed to ${variables.status}.`,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to update status",
+        description:
+          error?.message ||
+          "An error occurred while updating the account status.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -80,6 +94,19 @@ export default function AdminFundedAccounts() {
       queryClient.invalidateQueries({ queryKey: ["admin-accounts"] });
       queryClient.invalidateQueries({
         queryKey: ["admin-account-details", variables.id],
+      });
+      toast({
+        title: "Phase updated",
+        description: `Account phase changed to ${variables.phase}.`,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to update phase",
+        description:
+          error?.message ||
+          "An error occurred while updating the account phase.",
+        variant: "destructive",
       });
     },
   });
@@ -106,6 +133,15 @@ export default function AdminFundedAccounts() {
   };
 
   const handlePause = (account) => {
+    if (
+      !window.confirm(
+        t("admin.accounts.confirm.pause", {
+          defaultValue:
+            "Are you sure you want to pause this account? The trader will not be able to trade.",
+        }),
+      )
+    )
+      return;
     updateStatusMutation.mutate({
       id: account.id,
       status: "PAUSED",
@@ -120,6 +156,15 @@ export default function AdminFundedAccounts() {
   };
 
   const handleForcePass = (account) => {
+    if (
+      !window.confirm(
+        t("admin.accounts.confirm.forcePass", {
+          defaultValue:
+            "Are you sure you want to force pass this account to the next phase?",
+        }),
+      )
+    )
+      return;
     const currentPhase = account.current_phase || account.phase;
     const phaseMap = {
       phase1: "PHASE1",
@@ -138,6 +183,15 @@ export default function AdminFundedAccounts() {
   };
 
   const handleForceFail = (account) => {
+    if (
+      !window.confirm(
+        t("admin.accounts.confirm.forceFail", {
+          defaultValue:
+            "Are you sure you want to force fail this account? This action cannot be easily undone.",
+        }),
+      )
+    )
+      return;
     updatePhaseMutation.mutate({
       id: account.id,
       phase: "FAILED",
@@ -145,14 +199,26 @@ export default function AdminFundedAccounts() {
   };
 
   const handleResetAccount = (account) => {
-    updatePhaseMutation.mutate({
-      id: account.id,
-      phase: "PHASE1",
-    });
-    updateStatusMutation.mutate({
-      id: account.id,
-      status: "ACTIVE",
-    });
+    if (
+      !window.confirm(
+        t("admin.accounts.confirm.reset", {
+          defaultValue:
+            "Are you sure you want to reset this account back to Phase 1?",
+        }),
+      )
+    )
+      return;
+    updatePhaseMutation.mutate(
+      { id: account.id, phase: "PHASE1" },
+      {
+        onSuccess: () => {
+          updateStatusMutation.mutate({
+            id: account.id,
+            status: "ACTIVE",
+          });
+        },
+      },
+    );
   };
 
   const mappedAccounts = accountsData.map((account) => {
@@ -243,15 +309,6 @@ export default function AdminFundedAccounts() {
         </div>
       ),
     },
-    {
-      header: t("admin.accounts.table.trader"),
-      accessorKey: "trader_id",
-      cell: (row) => (
-        <span className="text-xs text-muted-foreground block truncate max-w-[160px] sm:max-w-[220px]">
-          {row.trader_id}
-        </span>
-      ),
-    },
     { header: t("admin.accounts.table.platform"), accessorKey: "platform" },
     {
       header: t("admin.accounts.dialog.initialBalance", {
@@ -293,7 +350,10 @@ export default function AdminFundedAccounts() {
     {
       header: t("admin.accounts.table.created"),
       accessorKey: "created_date",
-      cell: (row) => format(new Date(row.created_date), "MMM d, yyyy"),
+      cell: (row) =>
+        row.created_date
+          ? format(new Date(row.created_date), "MMM d, yyyy")
+          : "N/A",
     },
     {
       header: t("admin.accounts.table.actions"),
@@ -328,7 +388,9 @@ export default function AdminFundedAccounts() {
 
             <DropdownMenuSeparator className="bg-border" />
 
-            {row.status === "active" && row.current_phase !== "failed" && (
+            {row.status === "active" &&
+              row.current_phase !== "funded" &&
+              row.current_phase !== "failed" && (
               <>
                 <DropdownMenuItem
                   className="
@@ -398,22 +460,6 @@ export default function AdminFundedAccounts() {
               </DropdownMenuItem>
             )}
 
-            {row.current_phase === "phase2" && row.status === "active" && (
-              <DropdownMenuItem
-                className="
-          cursor-pointer
-          text-purple-400
-          data-[highlighted]:bg-slate-800
-          data-[highlighted]:text-purple-300
-        "
-                onClick={() =>
-                  updatePhaseMutation.mutate({ id: row.id, phase: "FUNDED" })
-                }
-              >
-                <TrendingUp className="w-4 h-4 mr-2 text-purple-300" />
-                {t("admin.accounts.actions.moveToFunded")}
-              </DropdownMenuItem>
-            )}
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -706,7 +752,7 @@ export default function AdminFundedAccounts() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 p-3 sm:p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 p-3 sm:p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl">
                 <div>
                   <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.initialBalance", {
@@ -743,26 +789,61 @@ export default function AdminFundedAccounts() {
                       defaultValue: "Profit/Loss",
                     })}
                   </p>
-                  {accountDetails.initialBalance > 0 &&
-                    (() => {
-                      const profit =
-                        accountDetails.equity - accountDetails.initialBalance ||
-                        0;
-                      const profitPercent =
-                        accountDetails.initialBalance > 0
-                          ? (profit / accountDetails.initialBalance) * 100
-                          : 0;
-                      return (
-                        <p
-                          className={`font-bold text-sm sm:text-lg ${
-                            profit >= 0 ? "text-emerald-500" : "text-red-500"
-                          }`}
-                        >
-                          {profit >= 0 ? "+" : ""}
-                          {profitPercent.toFixed(2)}%
-                        </p>
-                      );
-                    })()}
+                  {(() => {
+                    const profit =
+                      (accountDetails.equity || 0) -
+                      (accountDetails.initialBalance || 0);
+                    const profitPercent =
+                      accountDetails.initialBalance > 0
+                        ? (profit / accountDetails.initialBalance) * 100
+                        : 0;
+                    return (
+                      <p
+                        className={`font-bold text-sm sm:text-lg ${
+                          profit >= 0 ? "text-emerald-500" : "text-red-500"
+                        }`}
+                      >
+                        {profit >= 0 ? "+" : ""}
+                        {profitPercent.toFixed(2)}%
+                      </p>
+                    );
+                  })()}
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.dailyDrawdown", {
+                      defaultValue: "Daily Drawdown",
+                    })}
+                  </p>
+                  {(() => {
+                    const dailyDD =
+                      accountDetails.peakDailyDrawdownPercent || 0;
+                    return (
+                      <p
+                        className={`font-bold text-sm sm:text-lg ${dailyDD > 0 ? "text-red-500" : "text-foreground"}`}
+                      >
+                        {dailyDD.toFixed(2)}%
+                      </p>
+                    );
+                  })()}
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.overallDrawdown", {
+                      defaultValue: "Overall Drawdown",
+                    })}
+                  </p>
+                  {(() => {
+                    const overallDD =
+                      accountDetails.peakOverallDrawdownPercent || 0;
+                    return (
+                      <p
+                        className={`font-bold text-sm sm:text-lg ${overallDD > 0 ? "text-red-500" : "text-foreground"}`}
+                      >
+                        {overallDD.toFixed(2)}%
+                      </p>
+                    );
+                  })()}
                 </div>
               </div>
 

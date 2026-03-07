@@ -121,7 +121,44 @@ export default function CRMCalendar() {
     }, [searchQuery, typeFilter, statusFilter, fromDate, toDate]);
 
     useEffect(() => {
-        fetchData();
+        let cancelled = false;
+        const doFetch = async () => {
+            setLoading(true);
+            try {
+                const params = new URLSearchParams();
+                if (searchQuery) params.append('search', searchQuery);
+                if (typeFilter && typeFilter !== 'all') params.append('type', typeFilter);
+                if (statusFilter && statusFilter !== 'all') params.append('status', statusFilter);
+                if (fromDate) {
+                    const start = new Date(fromDate);
+                    start.setHours(0, 0, 0, 0);
+                    params.append('fromDate', start.toISOString());
+                }
+                if (toDate) {
+                    const end = new Date(toDate);
+                    end.setHours(23, 59, 59, 999);
+                    params.append('toDate', end.toISOString());
+                }
+                const [meetingsData, statsData] = await Promise.all([
+                    apiGet(`/crm/meetings?${params.toString()}`),
+                    apiGet('/crm/meetings/stats')
+                ]);
+                if (!cancelled) {
+                    setMeetings(meetingsData);
+                    setStats(statsData);
+                }
+            } catch (error) {
+                if (!cancelled) {
+                    console.error('Error fetching calendar data:', error);
+                }
+            } finally {
+                if (!cancelled) {
+                    setLoading(false);
+                }
+            }
+        };
+        doFetch();
+        return () => { cancelled = true; };
     }, [fetchData, currentMonth]);
 
     const handleScheduleMeeting = async () => {
@@ -129,6 +166,24 @@ export default function CRMCalendar() {
             toast({
                 title: t('common.error'),
                 description: t('crm.crmCalendar.errorRequiredFields'),
+                variant: "destructive"
+            });
+            return;
+        }
+
+        if (!newMeeting.date || !newMeeting.time) {
+            toast({
+                title: t('common.error'),
+                description: t('crm.crmCalendar.errorDateTimeRequired', { defaultValue: 'Date and time are required' }),
+                variant: "destructive"
+            });
+            return;
+        }
+
+        if (newMeeting.duration && (isNaN(newMeeting.duration) || parseInt(newMeeting.duration) < 1)) {
+            toast({
+                title: t('common.error'),
+                description: t('crm.crmCalendar.errorInvalidDuration', { defaultValue: 'Duration must be a positive number' }),
                 variant: "destructive"
             });
             return;
@@ -184,7 +239,7 @@ export default function CRMCalendar() {
                     <p className="text-muted-foreground mt-1">{t('crm.crmCalendar.subtitle')}</p>
                 </div>
                 <Button
-                    className="bg-[#d97706] hover:bg-amber-600 text-white shadow-lg shadow-amber-500/20"
+                    className="bg-amber-600 hover:bg-amber-600 text-white shadow-lg shadow-amber-500/20"
                     onClick={() => setIsModalOpen(true)}
                 >
                     <Plus className="w-4 h-4 mr-2" />
@@ -328,13 +383,13 @@ export default function CRMCalendar() {
                         key={day}
                         className={`relative min-h-[100px] p-2 border border-border transition-all cursor-pointer hover:bg-muted/60 group
                             ${!isCurrentMonth ? 'bg-muted/40 text-muted-foreground' : ''}
-                            ${isSelected ? 'bg-amber-50 border-[#d97706] shadow-inner dark:bg-amber-900/50 dark:border-amber-500' : ''}
+                            ${isSelected ? 'bg-amber-50 border-amber-600 shadow-inner dark:bg-amber-900/50 dark:border-amber-500' : ''}
                         `}
                         onClick={() => setSelectedDate(cloneDay)}
                     >
                         <span
                             className={`text-sm font-semibold ${
-                                isSelected ? 'text-[#d97706]' : 'text-foreground'
+                                isSelected ? 'text-amber-600' : 'text-foreground'
                             }`}
                         >
                             {formattedDate}
@@ -432,7 +487,7 @@ export default function CRMCalendar() {
                                 </p>
                                 <Button
                                     variant="link"
-                                    className="text-[#d97706] mt-2 text-sm"
+                                    className="text-amber-600 mt-2 text-sm"
                                     onClick={() => setIsModalOpen(true)}
                                 >
                                     {t('crm.crmCalendar.scheduleOneNow')}
@@ -452,7 +507,7 @@ export default function CRMCalendar() {
                                                 <div className="flex items-center gap-3">
                                                     <div className={`w-2 h-10 rounded-full ${meeting.type === 'Call' ? 'bg-emerald-500/80' : 'bg-blue-500/80'}`} />
                                                     <div>
-                                                        <h4 className="text-sm font-bold text-foreground group-hover:text-[#d97706] transition-colors uppercase tracking-tight">
+                                                        <h4 className="text-sm font-bold text-foreground group-hover:text-amber-600 transition-colors uppercase tracking-tight">
                                                             {meeting.title}
                                                         </h4>
                                                         <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
@@ -530,7 +585,7 @@ export default function CRMCalendar() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className="text-sm font-bold text-foreground uppercase tracking-tight group-hover:text-[#d97706] transition-colors">
+                                            <span className="text-sm font-bold text-foreground uppercase tracking-tight group-hover:text-amber-600 transition-colors">
                                                 {meeting.title}
                                             </span>
                                         </td>
@@ -590,7 +645,7 @@ export default function CRMCalendar() {
 
             {loading && meetings.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-64">
-                    <Loader2 className="w-10 h-10 animate-spin text-[#d97706] mb-4" />
+                    <Loader2 className="w-10 h-10 animate-spin text-amber-600 mb-4" />
                     <p className="text-muted-foreground font-medium">{t('crm.crmCalendar.loading')}</p>
                 </div>
             ) : (
@@ -602,7 +657,7 @@ export default function CRMCalendar() {
                 <DialogContent className="bg-card border-border text-foreground sm:max-w-[425px] overflow-hidden p-0">
                     <DialogHeader className="p-6 bg-muted/60 border-b border-border">
                         <DialogTitle className="flex items-center gap-2 text-xl font-bold text-foreground">
-                            <div className="p-2 rounded-lg bg-amber-50 text-[#d97706]">
+                            <div className="p-2 rounded-lg bg-amber-50 text-amber-600">
                                 <CalendarDays className="w-5 h-5" />
                             </div>
                             {t('crm.crmCalendar.scheduleNewMeeting')}
@@ -711,7 +766,7 @@ export default function CRMCalendar() {
                             {t('crm.crmCalendar.cancel')}
                         </Button>
                         <Button
-                            className="bg-[#d97706] hover:bg-amber-600 text-white font-bold h-11 px-8 rounded-lg shadow-lg shadow-amber-500/20"
+                            className="bg-amber-600 hover:bg-amber-600 text-white font-bold h-11 px-8 rounded-lg shadow-lg shadow-amber-500/20"
                             onClick={handleScheduleMeeting}
                             disabled={isSaving}
                         >
@@ -722,27 +777,6 @@ export default function CRMCalendar() {
                 </DialogContent>
             </Dialog>
 
-            <style>{`
-                .no-calendar-icon::-webkit-calendar-picker-indicator {
-                  display: none !important;
-                  -webkit-appearance: none;
-                }
-                .custom-scrollbar::-webkit-scrollbar {
-                  width: 5px;
-                  height: 5px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                  background: rgba(15, 23, 42, 0.1);
-                  border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                  background: rgba(100, 116, 139, 0.2);
-                  border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                  background: rgba(100, 116, 139, 0.4);
-                }
-            `}</style>
         </div>
     );
 }

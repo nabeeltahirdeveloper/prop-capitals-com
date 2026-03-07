@@ -233,12 +233,12 @@ export default function CRMLeads() {
         phoneNumber: transformed.phone || '',
         country: transformed.country || '',
         source: transformed.source || '',
-        leadStatus: transformed.status.toUpperCase() || 'NEW',
-        onlineStatus: transformed.onlineStatus.toUpperCase() || 'OFFLINE',
+        leadStatus: transformed.status?.toUpperCase() || 'NEW',
+        onlineStatus: transformed.onlineStatus?.toUpperCase() || 'OFFLINE',
         ftdAmount: transformed.ftdAmount?.toString() || '',
         paymentMethod: transformed.ftdMethod?.toUpperCase() || '',
         paymentProvider: transformed.ftdProvider?.toUpperCase() || '',
-        priority: transformed.priority.toUpperCase() || 'MEDIUM',
+        priority: transformed.priority?.toUpperCase() || 'MEDIUM',
         assignedAgent: transformed.agent !== '-' ? transformed.agent : '',
         age: transformed.age?.toString() || '',
         salary: transformed.salary || '',
@@ -250,7 +250,7 @@ export default function CRMLeads() {
       console.error('Error fetching lead details:', error);
       toast({
         title: t('common.error'),
-        description: t('crm.leads.toast.loadError'),
+        description: error?.message || t('crm.leads.toast.loadError'),
         variant: 'destructive',
       });
     }
@@ -332,7 +332,7 @@ export default function CRMLeads() {
       console.error('Error logging activity:', error);
       toast({
         title: t('common.error'),
-        description: t('crm.leads.toast.activityError'),
+        description: error?.message || t('crm.leads.toast.activityError'),
         variant: 'destructive',
       });
     }
@@ -399,7 +399,7 @@ export default function CRMLeads() {
       console.error('Error adding note:', error);
       toast({
         title: t('common.error'),
-        description: t('crm.leads.toast.noteError'),
+        description: error?.message || t('crm.leads.toast.noteError'),
         variant: 'destructive',
       });
     }
@@ -660,7 +660,7 @@ export default function CRMLeads() {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-2xl">
-                      {selectedLead.name[0]}
+                      {selectedLead.name?.[0] || '?'}
                     </div>
 
                     <div>
@@ -671,7 +671,7 @@ export default function CRMLeads() {
                             selectedLead.onlineStatus,
                           )}`}
                         >
-                          {t(`crm.status.${selectedLead.onlineStatus.toLowerCase()}`)}
+                          {t(`crm.status.${(selectedLead.onlineStatus || 'offline').toLowerCase()}`)}
                         </span>
                       </DialogTitle>
                       <p className="text-muted-foreground mt-1">
