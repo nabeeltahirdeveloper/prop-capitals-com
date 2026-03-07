@@ -3129,7 +3129,8 @@
       "activityRecorded": "{{type}} recorded",
       "direct": "Direct",
       "quickActionNote": "{{type}} attempt made via Pipeline Quick Actions",
-      "activityFailed": "Failed to log activity"
+      "activityFailed": "Failed to log activity",
+      "noLeadsInStage": "No leads in this stage"
     },
     "columns": {
       "new": "New Leads",
@@ -3245,7 +3246,10 @@
         "sat": "Sat"
       },
       "moreCount": "+ {{count}} more",
-      "minShort": "min"
+      "minShort": "min",
+      "errorDateTimeRequired": "Date and time are required",
+      "errorInvalidDuration": "Duration must be a positive number",
+      "loadError": "Failed to load calendar data"
     }
   }
 }
