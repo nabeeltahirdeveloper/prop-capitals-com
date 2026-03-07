@@ -451,6 +451,9 @@
     "passwordChangeFailed": "เปลี่ยนรหัสผ่านล้มเหลว",
     "passwordChangeError": "เกิดข้อผิดพลาดขณะเปลี่ยนรหัสผ่านของคุณ",
     "validationError": "ข้อผิดพลาดการตรวจสอบความถูกต้อง",
+    "currentPasswordRequired": "โปรดป้อนรหัสผ่านปัจจุบันของคุณ",
+    "showPassword": "แสดงรหัสผ่าน",
+    "hidePassword": "ซ่อนรหัสผ่าน",
     "notificationUpdateError": "อัปเดตการตั้งค่าการแจ้งเตือนล้มเหลว",
     "notificationsUpdated": "อัปเดตการแจ้งเตือนแล้ว",
     "notificationsUpdatedDesc": "บันทึกการตั้งค่าการแจ้งเตือนของคุณแล้ว"

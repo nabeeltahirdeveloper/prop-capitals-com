@@ -30,14 +30,12 @@ import {
   Loader2,
   Eye,
   EyeOff,
-  CheckCircle,
 } from "lucide-react";
 
 export default function AdminProfile() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [saved, setSaved] = useState(false);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [showPassword, setShowPassword] = useState({
     current: false,
@@ -107,8 +105,6 @@ export default function AdminProfile() {
     mutationFn: updateProfile,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user", "me"] });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
       toast({
         title: t("common.success"),
         description: t("profile.changesSaved"),
@@ -145,7 +141,8 @@ export default function AdminProfile() {
       console.error("Failed to change password:", error);
       toast({
         title: t("profile.passwordChangeFailed"),
-        description: error.response?.data?.message || t("profile.passwordChangeError"),
+        description:
+          error.response?.data?.message || t("profile.passwordChangeError"),
         variant: "destructive",
       });
     },
@@ -177,6 +174,15 @@ export default function AdminProfile() {
   };
 
   const handlePasswordChange = () => {
+    // Validate current password is not empty
+    if (!passwordForm.currentPassword.trim()) {
+      toast({
+        title: t("profile.validationError"),
+        description: t("profile.currentPasswordRequired"),
+        variant: "destructive",
+      });
+      return;
+    }
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
       toast({
         title: t("profile.validationError"),
@@ -199,7 +205,19 @@ export default function AdminProfile() {
     });
   };
 
+  const handlePasswordDialogClose = () => {
+    setIsPasswordDialogOpen(false);
+    setPasswordForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+    setShowPassword({ current: false, new: false, confirm: false });
+  };
+
   const handleNotificationToggle = (key) => {
+    // Guard: don't fire overlapping mutations
+    if (updateNotificationPrefsMutation.isPending) return;
     const updated = { ...notificationPrefs, [key]: !notificationPrefs[key] };
     setNotificationPrefs(updated);
     updateNotificationPrefsMutation.mutate({ [key]: updated[key] });
@@ -228,13 +246,49 @@ export default function AdminProfile() {
       user?.email ||
       t("profile.user")
     : user?.email || t("profile.user");
+
   const initials =
     displayName
       .split(" ")
+      .filter(Boolean)
       .map((n) => n[0])
       .join("")
       .toUpperCase()
-      .substring(0, 2) || "U";
+      .substring(0, 2) || "A";
+
+  // Notification items including emailNotifications
+  const notificationItems = [
+    {
+      key: "tradeNotifications",
+      title: t("profile.tradeNotifications"),
+      desc: t("profile.tradeNotificationsDesc"),
+    },
+    {
+      key: "accountAlerts",
+      title: t("profile.accountAlerts"),
+      desc: t("profile.accountAlertsDesc"),
+    },
+    {
+      key: "payoutUpdates",
+      title: t("profile.payoutUpdates"),
+      desc: t("profile.payoutUpdatesDesc"),
+    },
+    {
+      key: "challengeUpdates",
+      title: t("profile.challengeUpdates"),
+      desc: t("profile.challengeUpdatesDesc"),
+    },
+    {
+      key: "marketingEmails",
+      title: t("profile.marketingEmails"),
+      desc: t("profile.marketingEmailsDesc"),
+    },
+    {
+      key: "emailNotifications",
+      title: t("profile.emailNotifications"),
+      desc: t("profile.emailNotificationsDesc"),
+    },
+  ];
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -253,7 +307,7 @@ export default function AdminProfile() {
       {/* Profile Card */}
       <Card className="bg-card border-border p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center gap-4 sm:gap-6 text-center sm:text-left">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground text-3xl font-bold flex-shrink-0">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground text-3xl font-bold flex-shrink-0">
             {initials}
           </div>
           <div className="min-w-0">
@@ -264,7 +318,7 @@ export default function AdminProfile() {
               {user?.email}
             </p>
             <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
-              <span className="px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium text-primary border border-primary/20">
+              <span className="px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium text-primary border border-primary/20 bg-primary/5">
                 {t("profile.admin")}
               </span>
             </div>
@@ -272,31 +326,36 @@ export default function AdminProfile() {
         </div>
       </Card>
 
+      {/* Tabs — always horizontal, abbreviated on mobile */}
       <Tabs defaultValue="personal" className="space-y-4 sm:space-y-6">
-        <TabsList className="bg-muted border border-border h-auto p-1 grid grid-cols-1 sm:grid-cols-3 gap-1">
+        <TabsList className="bg-muted border border-border h-auto p-1 grid grid-cols-3 gap-1">
           <TabsTrigger
             value="personal"
             className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm text-muted-foreground transition-all text-xs sm:text-sm"
           >
-            <User className="w-4 h-4 mr-2 flex-shrink-0" />
-            {t("profile.personalInfo")}
+            <User className="w-4 h-4 sm:mr-2 flex-shrink-0" />
+            <span className="hidden sm:inline">{t("profile.personalInfo")}</span>
+            <span className="sm:hidden sr-only">{t("profile.personalInfo")}</span>
           </TabsTrigger>
           <TabsTrigger
             value="security"
             className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm text-muted-foreground transition-all text-xs sm:text-sm"
           >
-            <Shield className="w-4 h-4 mr-2 flex-shrink-0" />
-            {t("profile.security")}
+            <Shield className="w-4 h-4 sm:mr-2 flex-shrink-0" />
+            <span className="hidden sm:inline">{t("profile.security")}</span>
+            <span className="sm:hidden sr-only">{t("profile.security")}</span>
           </TabsTrigger>
           <TabsTrigger
             value="notifications"
             className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm text-muted-foreground transition-all text-xs sm:text-sm"
           >
-            <Bell className="w-4 h-4 mr-2 flex-shrink-0" />
-            {t("profile.notifications")}
+            <Bell className="w-4 h-4 sm:mr-2 flex-shrink-0" />
+            <span className="hidden sm:inline">{t("profile.notifications")}</span>
+            <span className="sm:hidden sr-only">{t("profile.notifications")}</span>
           </TabsTrigger>
         </TabsList>
 
+        {/* ── Personal Info ── */}
         <TabsContent value="personal">
           <Card className="bg-card border-border p-4 sm:p-6">
             <h3 className="text-base sm:text-lg font-semibold text-foreground mb-4 sm:mb-6">
@@ -314,6 +373,7 @@ export default function AdminProfile() {
                   }
                   className="bg-muted border-border text-foreground text-sm"
                   placeholder={t("profile.firstNamePlaceholder")}
+                  autoComplete="given-name"
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2">
@@ -327,6 +387,7 @@ export default function AdminProfile() {
                   }
                   className="bg-muted border-border text-foreground text-sm"
                   placeholder={t("profile.lastNamePlaceholder")}
+                  autoComplete="family-name"
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2">
@@ -337,6 +398,7 @@ export default function AdminProfile() {
                   value={user?.email || ""}
                   disabled
                   className="bg-muted border-border text-muted-foreground opacity-70 text-sm"
+                  autoComplete="email"
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2">
@@ -350,6 +412,7 @@ export default function AdminProfile() {
                   }
                   placeholder={t("profile.phonePlaceholder")}
                   className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
+                  autoComplete="tel"
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2">
@@ -363,6 +426,7 @@ export default function AdminProfile() {
                   }
                   placeholder={t("profile.countryPlaceholder")}
                   className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
+                  autoComplete="country-name"
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2">
@@ -376,6 +440,7 @@ export default function AdminProfile() {
                   }
                   placeholder={t("profile.cityPlaceholder")}
                   className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
+                  autoComplete="address-level2"
                 />
               </div>
               <div className="space-y-1.5 sm:space-y-2 md:col-span-2">
@@ -389,10 +454,11 @@ export default function AdminProfile() {
                   }
                   placeholder={t("profile.addressPlaceholder")}
                   className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
+                  autoComplete="street-address"
                 />
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mt-6 sm:mt-8">
+            <div className="flex items-center gap-3 mt-6 sm:mt-8">
               <Button
                 onClick={handleSave}
                 className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/90 h-10 sm:h-11 text-sm text-primary-foreground"
@@ -410,16 +476,11 @@ export default function AdminProfile() {
                   </>
                 )}
               </Button>
-              {saved && (
-                <span className="text-primary flex items-center justify-center gap-2 text-sm">
-                  <CheckCircle className="w-4 h-4" />
-                  {t("profile.changesSaved")}
-                </span>
-              )}
             </div>
           </Card>
         </TabsContent>
 
+        {/* ── Security ── */}
         <TabsContent value="security">
           <Card className="bg-card border-border p-4 sm:p-6">
             <h3 className="text-base sm:text-lg font-semibold text-foreground mb-4 sm:mb-6">
@@ -442,7 +503,10 @@ export default function AdminProfile() {
                 </div>
                 <Dialog
                   open={isPasswordDialogOpen}
-                  onOpenChange={setIsPasswordDialogOpen}
+                  onOpenChange={(open) => {
+                    if (!open) handlePasswordDialogClose();
+                    else setIsPasswordDialogOpen(true);
+                  }}
                 >
                   <DialogTrigger asChild>
                     <Button
@@ -459,6 +523,7 @@ export default function AdminProfile() {
                       </DialogTitle>
                     </DialogHeader>
                     <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
+                      {/* Current Password */}
                       <div className="space-y-1.5 sm:space-y-2">
                         <Label className="text-muted-foreground text-xs sm:text-sm">
                           {t("profile.currentPassword")}
@@ -474,16 +539,22 @@ export default function AdminProfile() {
                               })
                             }
                             className="bg-muted border-border text-foreground pr-10 text-sm h-9 sm:h-10"
+                            autoComplete="current-password"
                           />
                           <button
                             type="button"
+                            aria-label={
+                              showPassword.current
+                                ? t("profile.hidePassword")
+                                : t("profile.showPassword")
+                            }
                             onClick={() =>
                               setShowPassword({
                                 ...showPassword,
                                 current: !showPassword.current,
                               })
                             }
-                            className="absolute right-2 top-2.5 sm:top-3 text-muted-foreground"
+                            className="absolute right-2 top-2.5 sm:top-3 text-muted-foreground hover:text-foreground transition-colors"
                           >
                             {showPassword.current ? (
                               <EyeOff className="w-4 h-4" />
@@ -493,6 +564,7 @@ export default function AdminProfile() {
                           </button>
                         </div>
                       </div>
+                      {/* New Password */}
                       <div className="space-y-1.5 sm:space-y-2">
                         <Label className="text-muted-foreground text-xs sm:text-sm">
                           {t("profile.newPassword")}
@@ -508,16 +580,22 @@ export default function AdminProfile() {
                               })
                             }
                             className="bg-muted border-border text-foreground pr-10 text-sm h-9 sm:h-10"
+                            autoComplete="new-password"
                           />
                           <button
                             type="button"
+                            aria-label={
+                              showPassword.new
+                                ? t("profile.hidePassword")
+                                : t("profile.showPassword")
+                            }
                             onClick={() =>
                               setShowPassword({
                                 ...showPassword,
                                 new: !showPassword.new,
                               })
                             }
-                            className="absolute right-2 top-2.5 sm:top-3 text-muted-foreground"
+                            className="absolute right-2 top-2.5 sm:top-3 text-muted-foreground hover:text-foreground transition-colors"
                           >
                             {showPassword.new ? (
                               <EyeOff className="w-4 h-4" />
@@ -527,6 +605,7 @@ export default function AdminProfile() {
                           </button>
                         </div>
                       </div>
+                      {/* Confirm Password */}
                       <div className="space-y-1.5 sm:space-y-2">
                         <Label className="text-muted-foreground text-xs sm:text-sm">
                           {t("profile.confirmPassword")}
@@ -542,16 +621,22 @@ export default function AdminProfile() {
                               })
                             }
                             className="bg-muted border-border text-foreground pr-10 text-sm h-9 sm:h-10"
+                            autoComplete="new-password"
                           />
                           <button
                             type="button"
+                            aria-label={
+                              showPassword.confirm
+                                ? t("profile.hidePassword")
+                                : t("profile.showPassword")
+                            }
                             onClick={() =>
                               setShowPassword({
                                 ...showPassword,
                                 confirm: !showPassword.confirm,
                               })
                             }
-                            className="absolute right-2 top-2.5 sm:top-3 text-muted-foreground"
+                            className="absolute right-2 top-2.5 sm:top-3 text-muted-foreground hover:text-foreground transition-colors"
                           >
                             {showPassword.confirm ? (
                               <EyeOff className="w-4 h-4" />
@@ -561,20 +646,31 @@ export default function AdminProfile() {
                           </button>
                         </div>
                       </div>
-                      <Button
-                        onClick={handlePasswordChange}
-                        className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/90 text-primary-foreground"
-                        disabled={changePasswordMutation.isPending}
-                      >
-                        {changePasswordMutation.isPending ? (
-                          <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            {t("profile.changing")}
-                          </>
-                        ) : (
-                          t("profile.changePassword")
-                        )}
-                      </Button>
+                      {/* Actions */}
+                      <div className="flex gap-2 pt-1">
+                        <Button
+                          variant="outline"
+                          onClick={handlePasswordDialogClose}
+                          className="flex-1 border-border text-foreground hover:bg-accent text-sm"
+                          disabled={changePasswordMutation.isPending}
+                        >
+                          {t("common.cancel")}
+                        </Button>
+                        <Button
+                          onClick={handlePasswordChange}
+                          className="flex-1 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/90 text-primary-foreground text-sm"
+                          disabled={changePasswordMutation.isPending}
+                        >
+                          {changePasswordMutation.isPending ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              {t("profile.changing")}
+                            </>
+                          ) : (
+                            t("profile.changePassword")
+                          )}
+                        </Button>
+                      </div>
                     </div>
                   </DialogContent>
                 </Dialog>
@@ -583,39 +679,14 @@ export default function AdminProfile() {
           </Card>
         </TabsContent>
 
+        {/* ── Notifications ── */}
         <TabsContent value="notifications">
           <Card className="bg-card border-border p-4 sm:p-6">
             <h3 className="text-base sm:text-lg font-semibold text-foreground mb-4 sm:mb-6">
               {t("profile.notificationPreferences")}
             </h3>
             <div className="space-y-3 sm:space-y-4">
-              {[
-                {
-                  key: "tradeNotifications",
-                  title: t("profile.tradeNotifications"),
-                  desc: t("profile.tradeNotificationsDesc"),
-                },
-                {
-                  key: "accountAlerts",
-                  title: t("profile.accountAlerts"),
-                  desc: t("profile.accountAlertsDesc"),
-                },
-                {
-                  key: "payoutUpdates",
-                  title: t("profile.payoutUpdates"),
-                  desc: t("profile.payoutUpdatesDesc"),
-                },
-                {
-                  key: "challengeUpdates",
-                  title: t("profile.challengeUpdates"),
-                  desc: t("profile.challengeUpdatesDesc"),
-                },
-                {
-                  key: "marketingEmails",
-                  title: t("profile.marketingEmails"),
-                  desc: t("profile.marketingEmailsDesc"),
-                },
-              ].map((item) => (
+              {notificationItems.map((item) => (
                 <div
                   key={item.key}
                   className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-muted/60 rounded-lg gap-3"
@@ -628,22 +699,27 @@ export default function AdminProfile() {
                       {item.desc}
                     </p>
                   </div>
-                  <div
-                    className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
+                  {/* Accessible toggle switch */}
+                  <button
+                    role="switch"
+                    aria-checked={!!notificationPrefs[item.key]}
+                    aria-label={item.title}
+                    onClick={() => handleNotificationToggle(item.key)}
+                    disabled={updateNotificationPrefsMutation.isPending}
+                    className={`relative inline-flex w-11 sm:w-12 h-5 sm:h-6 rounded-full flex-shrink-0 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60 disabled:cursor-not-allowed ${
                       notificationPrefs[item.key]
                         ? "bg-primary"
                         : "bg-muted-foreground/30"
                     }`}
-                    onClick={() => handleNotificationToggle(item.key)}
                   >
-                    <div
-                      className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                    <span
+                      className={`absolute top-0.5 sm:top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-200 ${
                         notificationPrefs[item.key]
                           ? "right-0.5 sm:right-1"
                           : "left-0.5 sm:left-1"
                       }`}
                     />
-                  </div>
+                  </button>
                 </div>
               ))}
             </div>

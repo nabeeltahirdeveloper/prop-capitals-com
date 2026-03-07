@@ -451,6 +451,9 @@
     "passwordChangeFailed": "Password Change Failed",
     "passwordChangeError": "An error occurred while changing your password.",
     "validationError": "Validation Error",
+    "currentPasswordRequired": "Please enter your current password.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "notificationUpdateError": "Failed to update notification preferences.",
     "notificationsUpdated": "Notifications Updated",
     "notificationsUpdatedDesc": "Your notification preferences have been saved."
