@@ -171,6 +171,8 @@ export default function Layout({ children, currentPageName }) {
     "CRMPipeline",
     "CRMFTDReport",
     "CRMCalendar",
+    "CRMApiKeys",
+    "Notifications",
   ];
   const isAdminPage = adminPages.includes(currentPageName);
   const showAdminMenu = isAdmin && isAdminPage;
@@ -207,11 +209,13 @@ export default function Layout({ children, currentPageName }) {
           { name: t("nav.pipeline"), page: "CRMPipeline" },
           { name: t("nav.ftdReport"), page: "CRMFTDReport" },
           { name: t("nav.calendar"), page: "CRMCalendar" },
+          { name: t("nav.crmApiKey"), page: "CRMApiKeys" },
         ],
       },
       { name: t("nav.coupons"), icon: Zap, page: "AdminCoupons" },
       { name: t("nav.violations"), icon: Shield, page: "AdminViolations" },
-      { name: t("nav.support"), icon: HelpCircle, page: "AdminSupport" },
+      { name: t("nav.support"), icon: HelpCircle, page: "AdminSupport", activeFor: ["AdminSupport", "AdminTicketChat"] },
+      { name: t("nav.notifications"), icon: Bell, page: "Notifications" },
       { name: t("nav.settings"), icon: Settings, page: "AdminSettings" },
       { name: t("nav.profile"), icon: User, page: "AdminProfile" },
     ],
@@ -419,7 +423,7 @@ export default function Layout({ children, currentPageName }) {
                 );
               }
 
-              const isActive = currentPageName === item.page;
+              const isActive = currentPageName === item.page || (item.activeFor?.includes(currentPageName) ?? false);
 
               const handleClick = (e) => {
                 if (

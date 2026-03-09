@@ -40,6 +40,7 @@ import CRMLeads from "./CRMLeads";
 import CRMPipeline from "./CRMPipeline";
 import CRMFTDReport from "./CRMFTDReport";
 import CRMCalendar from "./CRMCalendar";
+import CRMApiKeys from "./CRMApiKeys";
 
 import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import ProtectedRoute, { DashboardRedirect, PublicOnlyRoute } from '../components/ProtectedRoute';
@@ -83,6 +84,7 @@ const PAGES = {
     CRMPipeline: CRMPipeline,
     CRMFTDReport: CRMFTDReport,
     CRMCalendar: CRMCalendar,
+    CRMApiKeys: CRMApiKeys,
 }
 
 function _getCurrentPage(url) {
@@ -139,6 +141,7 @@ function PagesContent() {
                                 <Route path="/CRMFTDReport" element={<CRMFTDReport />} />
                                 <Route path="/CRMCalendar" element={<CRMCalendar />} />
                                 <Route path="/Notifications" element={<Notifications />} />
+                                <Route path="/CRMApiKeys" element={<CRMApiKeys />} />
                             </Route>
 
                     </Routes>
