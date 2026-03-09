@@ -73,13 +73,18 @@ export default function AdminPayments() {
       setRefundReason("");
       toast({
         title: t("admin.payments.refundSuccess") || "Refund Successful",
-        description: t("admin.payments.refundSuccessDesc") || "The payment has been refunded successfully.",
+        description:
+          t("admin.payments.refundSuccessDesc") ||
+          "The payment has been refunded successfully.",
       });
     },
     onError: (error) => {
       toast({
         title: t("admin.payments.refundError") || "Refund Failed",
-        description: error.response?.data?.message || t("admin.payments.refundErrorDesc") || "Failed to refund payment. Please try again.",
+        description:
+          error.response?.data?.message ||
+          t("admin.payments.refundErrorDesc") ||
+          "Failed to refund payment. Please try again.",
         variant: "destructive",
       });
     },
@@ -100,28 +105,32 @@ export default function AdminPayments() {
   };
 
   // Map backend payments to frontend format
-  const mappedPayments = (Array.isArray(paymentsData) ? paymentsData : []).map((payment) => {
-    const user = payment.user || {};
-    const statusMap = {
-      succeeded: "completed",
-      pending: "pending",
-      failed: "failed",
-      refunded: "refunded",
-    };
+  const mappedPayments = (Array.isArray(paymentsData) ? paymentsData : []).map(
+    (payment) => {
+      const user = payment.user || {};
+      const statusMap = {
+        succeeded: "completed",
+        pending: "pending",
+        failed: "failed",
+        refunded: "refunded",
+      };
 
-    return {
-      id: payment.id,
-      trader_id: user.email || payment.userId || "N/A",
-      amount: payment.amount,
-      currency: payment.currency || null,
-      status:
-        statusMap[payment.status] || payment.status?.toLowerCase() || "pending",
-      payment_method: payment.provider || "unknown",
-      transaction_id: payment.reference || "-",
-      refund_reason: payment.refundReason || null,
-      created_date: payment.createdAt,
-    };
-  });
+      return {
+        id: payment.id,
+        trader_id: user.email || payment.userId || "N/A",
+        amount: payment.amount,
+        currency: payment.currency || null,
+        status:
+          statusMap[payment.status] ||
+          payment.status?.toLowerCase() ||
+          "pending",
+        payment_method: payment.provider || "unknown",
+        transaction_id: payment.reference || "-",
+        refund_reason: payment.refundReason || null,
+        created_date: payment.createdAt,
+      };
+    },
+  );
 
   const displayPayments = mappedPayments;
 
@@ -157,7 +166,9 @@ export default function AdminPayments() {
       header: t("admin.payments.table.amount"),
       accessorKey: "amount",
       cell: (row) => (
-        <span className="text-emerald-500 font-bold">${row.amount?.toLocaleString()}</span>
+        <span className="text-emerald-500 font-bold">
+          ${row.amount?.toLocaleString()}
+        </span>
       ),
     },
     {
@@ -215,7 +226,9 @@ export default function AdminPayments() {
         try {
           if (!row.created_date) return "-";
           const date = new Date(row.created_date);
-          return isNaN(date.getTime()) ? "-" : format(date, "MMM d, yyyy HH:mm");
+          return isNaN(date.getTime())
+            ? "-"
+            : format(date, "MMM d, yyyy HH:mm");
         } catch (error) {
           return "-";
         }
@@ -261,11 +274,17 @@ export default function AdminPayments() {
                     </p>
                     <div className="bg-muted/50 rounded-lg p-3 space-y-1">
                       <p className="text-sm text-foreground">
-                        <span className="text-muted-foreground">{t("admin.payments.table.amount") || "Amount"}:</span>{" "}
-                        <span className="font-bold text-emerald-500">${row.amount?.toLocaleString()}</span>
+                        <span className="text-muted-foreground">
+                          {t("admin.payments.table.amount") || "Amount"}:
+                        </span>{" "}
+                        <span className="font-bold text-emerald-500">
+                          ${row.amount?.toLocaleString()}
+                        </span>
                       </p>
                       <p className="text-sm text-foreground">
-                        <span className="text-muted-foreground">{t("admin.payments.table.trader") || "Trader"}:</span>{" "}
+                        <span className="text-muted-foreground">
+                          {t("admin.payments.table.trader") || "Trader"}:
+                        </span>{" "}
                         <span className="font-medium">{row.trader_id}</span>
                       </p>
                     </div>

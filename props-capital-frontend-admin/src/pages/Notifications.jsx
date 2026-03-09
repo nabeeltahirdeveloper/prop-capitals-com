@@ -227,16 +227,24 @@ export default function Notifications() {
             <Bell className="w-6 h-6 text-emerald-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">{t("notifications.title")}</h1>
-            <p className="text-muted-foreground">{t("notifications.subtitle")}</p>
+            <h1 className="text-2xl font-bold text-foreground">
+              {t("notifications.title")}
+            </h1>
+            <p className="text-muted-foreground">
+              {t("notifications.subtitle")}
+            </p>
           </div>
         </div>
         <Card className="bg-card border-red-500/30 p-6 md:p-12 text-center">
           <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertTriangle className="w-8 h-8 text-red-400" />
           </div>
-          <h3 className="text-lg font-semibold text-foreground mb-2">{t("notifications.loadError")}</h3>
-          <p className="text-muted-foreground">{t("notifications.loadErrorHint")}</p>
+          <h3 className="text-lg font-semibold text-foreground mb-2">
+            {t("notifications.loadError")}
+          </h3>
+          <p className="text-muted-foreground">
+            {t("notifications.loadErrorHint")}
+          </p>
         </Card>
       </div>
     );
@@ -254,7 +262,9 @@ export default function Notifications() {
             <h1 className="text-2xl font-bold text-foreground">
               {t("notifications.title")}
             </h1>
-            <p className="text-muted-foreground">{t("notifications.subtitle")}</p>
+            <p className="text-muted-foreground">
+              {t("notifications.subtitle")}
+            </p>
           </div>
         </div>
         {unreadCount > 0 && (
@@ -293,7 +303,9 @@ export default function Notifications() {
               <Clock className="w-5 h-5 text-emerald-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground">{unreadCount}</p>
+              <p className="text-2xl font-bold text-foreground">
+                {unreadCount}
+              </p>
               <p className="text-xs text-muted-foreground">
                 {t("notifications.unread")}
               </p>
@@ -390,7 +402,9 @@ export default function Notifications() {
             <h3 className="text-lg font-semibold text-foreground mb-2">
               {t("notifications.noNotifications")}
             </h3>
-            <p className="text-muted-foreground">{t("notifications.allCaughtUp")}</p>
+            <p className="text-muted-foreground">
+              {t("notifications.allCaughtUp")}
+            </p>
           </Card>
         ) : (
           filteredNotifications.map((notification) => (

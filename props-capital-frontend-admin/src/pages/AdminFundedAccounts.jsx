@@ -241,7 +241,9 @@ export default function AdminFundedAccounts() {
     const balance = account.balance || initialBalance;
     const equity = account.equity || balance;
     const profitPercent =
-      initialBalance > 0 ? ((equity - initialBalance) / initialBalance) * 100 : 0;
+      initialBalance > 0
+        ? ((equity - initialBalance) / initialBalance) * 100
+        : 0;
 
     return {
       id: account.id,
@@ -370,10 +372,7 @@ export default function AdminFundedAccounts() {
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent
-            align="end"
-            className="bg-card border-border"
-          >
+          <DropdownMenuContent align="end" className="bg-card border-border">
             <DropdownMenuItem
               className="
         cursor-pointer
@@ -391,32 +390,32 @@ export default function AdminFundedAccounts() {
             {row.status === "active" &&
               row.current_phase !== "funded" &&
               row.current_phase !== "failed" && (
-              <>
-                <DropdownMenuItem
-                  className="
+                <>
+                  <DropdownMenuItem
+                    className="
         cursor-pointer
         text-emerald-500
         data-[highlighted]:bg-accent
           "
-                  onClick={() => handleForcePass(row)}
-                >
-                  <CheckCircle className="w-4 h-4 mr-2 data-[highlighted]:text-emerald-300" />
-                  {t("admin.accounts.actions.forcePass")}
-                </DropdownMenuItem>
+                    onClick={() => handleForcePass(row)}
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2 data-[highlighted]:text-emerald-300" />
+                    {t("admin.accounts.actions.forcePass")}
+                  </DropdownMenuItem>
 
-                <DropdownMenuItem
-                  className="
+                  <DropdownMenuItem
+                    className="
         cursor-pointer
         text-red-500
         data-[highlighted]:bg-accent
           "
-                  onClick={() => handleForceFail(row)}
-                >
-                  <XCircle className="w-4 h-4 mr-2 data-[highlighted]:text-red-300" />
-                  {t("admin.accounts.actions.forceFail")}
-                </DropdownMenuItem>
-              </>
-            )}
+                    onClick={() => handleForceFail(row)}
+                  >
+                    <XCircle className="w-4 h-4 mr-2 data-[highlighted]:text-red-300" />
+                    {t("admin.accounts.actions.forceFail")}
+                  </DropdownMenuItem>
+                </>
+              )}
 
             {row.status === "paused" && (
               <DropdownMenuItem
@@ -459,7 +458,6 @@ export default function AdminFundedAccounts() {
                 {t("admin.accounts.actions.resetAccount")}
               </DropdownMenuItem>
             )}
-
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -1013,7 +1011,8 @@ export default function AdminFundedAccounts() {
                 })}
               </p>
               <p className="text-muted-foreground text-xs sm:text-sm">
-                {accountDetailsError.message || "Failed to load account details"}
+                {accountDetailsError.message ||
+                  "Failed to load account details"}
               </p>
             </div>
           ) : (
@@ -1028,4 +1027,3 @@ export default function AdminFundedAccounts() {
     </div>
   );
 }
-

@@ -362,10 +362,14 @@ export default function AdminUsers() {
             </DialogTitle>
             <DialogDescription className="text-muted-foreground text-sm">
               {t("admin.users.confirmRoleChange.description", {
-                name: pendingRoleChange?.user?.full_name || pendingRoleChange?.user?.email || "",
-                newRole: pendingRoleChange?.newRole === "ADMIN"
-                  ? t("admin.users.roles.admin")
-                  : t("admin.users.roles.user"),
+                name:
+                  pendingRoleChange?.user?.full_name ||
+                  pendingRoleChange?.user?.email ||
+                  "",
+                newRole:
+                  pendingRoleChange?.newRole === "ADMIN"
+                    ? t("admin.users.roles.admin")
+                    : t("admin.users.roles.user"),
               })}
             </DialogDescription>
           </DialogHeader>

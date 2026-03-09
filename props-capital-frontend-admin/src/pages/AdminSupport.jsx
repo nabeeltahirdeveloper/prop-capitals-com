@@ -1,12 +1,16 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminGetAllSupportTicketsPaginated, adminGetSupportStatistics, adminUpdateTicketStatus } from '@/api/admin';
+import { useState, useMemo, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  adminGetAllSupportTicketsPaginated,
+  adminGetSupportStatistics,
+  adminUpdateTicketStatus,
+} from "@/api/admin";
 import { useTranslation } from "../contexts/LanguageContext";
-import { useToast } from '@/components/ui/use-toast';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useToast } from "@/components/ui/use-toast";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -24,19 +28,19 @@ import {
   CheckCircle,
   AlertCircle,
   Eye,
-} from 'lucide-react';
-import { format } from 'date-fns';
-import { useChatSupportStore } from '@/lib/stores/chat-support.store';
-import supportSocket, { connectSupportSocket } from '@/lib/supportSocket';
+} from "lucide-react";
+import { format } from "date-fns";
+import { useChatSupportStore } from "@/lib/stores/chat-support.store";
+import supportSocket, { connectSupportSocket } from "@/lib/supportSocket";
 
 export default function AdminSupport() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const openChat = useChatSupportStore((state) => state.openChat);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
   const limit = 20;
@@ -49,25 +53,33 @@ export default function AdminSupport() {
       setDebouncedSearch(searchQuery);
       setPage(1);
     }, 300);
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
   }, [searchQuery]);
 
   // WebSocket: listen for admin ticket list updates
   useEffect(() => {
     connectSupportSocket();
     const handleTicketsUpdated = () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-support-tickets'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-support-statistics'] });
+      queryClient.invalidateQueries({ queryKey: ["admin-support-tickets"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-support-statistics"] });
     };
-    supportSocket.on('tickets:updated', handleTicketsUpdated);
+    supportSocket.on("tickets:updated", handleTicketsUpdated);
     return () => {
-      supportSocket.off('tickets:updated', handleTicketsUpdated);
+      supportSocket.off("tickets:updated", handleTicketsUpdated);
     };
   }, [queryClient]);
 
   const { data: ticketsResponse = {}, isLoading } = useQuery({
-    queryKey: ['admin-support-tickets', page, debouncedSearch, statusFilter],
-    queryFn: () => adminGetAllSupportTicketsPaginated(page, limit, debouncedSearch, statusFilter),
+    queryKey: ["admin-support-tickets", page, debouncedSearch, statusFilter],
+    queryFn: () =>
+      adminGetAllSupportTicketsPaginated(
+        page,
+        limit,
+        debouncedSearch,
+        statusFilter,
+      ),
     refetchInterval: 60000,
   });
 
@@ -77,7 +89,7 @@ export default function AdminSupport() {
   const totalPages = Math.ceil(totalTickets / limit) || 1;
 
   const { data: statistics = {} } = useQuery({
-    queryKey: ['admin-support-statistics'],
+    queryKey: ["admin-support-statistics"],
     queryFn: adminGetSupportStatistics,
     refetchInterval: 60000,
   });
@@ -85,18 +97,21 @@ export default function AdminSupport() {
   const updateMutation = useMutation({
     mutationFn: ({ id, status }) => adminUpdateTicketStatus(id, status),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-support-tickets'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-support-statistics'] });
+      queryClient.invalidateQueries({ queryKey: ["admin-support-tickets"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-support-statistics"] });
       toast({
-        title: t('admin.support.toast.successTitle') || 'Ticket Updated',
-        description: t('admin.support.toast.statusUpdated') || 'Ticket status updated successfully.',
+        title: t("admin.support.toast.successTitle") || "Ticket Updated",
+        description:
+          t("admin.support.toast.statusUpdated") ||
+          "Ticket status updated successfully.",
       });
     },
     onError: (error) => {
       toast({
-        title: t('admin.support.toast.errorTitle') || 'Update Failed',
-        description: error?.message || 'Something went wrong. Please try again.',
-        variant: 'destructive',
+        title: t("admin.support.toast.errorTitle") || "Update Failed",
+        description:
+          error?.message || "Something went wrong. Please try again.",
+        variant: "destructive",
       });
     },
   });
@@ -105,33 +120,35 @@ export default function AdminSupport() {
     if (user) {
       const profile = user.profile;
       if (profile?.firstName || profile?.lastName) {
-        return [profile.firstName, profile.lastName].filter(Boolean).join(' ');
+        return [profile.firstName, profile.lastName].filter(Boolean).join(" ");
       }
-      return user.email || 'N/A';
+      return user.email || "N/A";
     }
     if (ticket?.guestName || ticket?.guestEmail) {
-      return ticket.guestName || ticket.guestEmail || 'Guest';
+      return ticket.guestName || ticket.guestEmail || "Guest";
     }
-    return 'Guest';
+    return "Guest";
   };
 
   const getUserEmail = (user, ticket) =>
-    user?.email || ticket?.guestEmail || 'N/A';
+    user?.email || ticket?.guestEmail || "N/A";
 
   const mapStatusToFrontend = (status) => {
     const statusMap = {
-      'OPEN': 'open',
-      'IN_PROGRESS': 'in_progress',
-      'RESOLVED': 'resolved',
-      'CLOSED': 'closed',
-      'WAITING_FOR_ADMIN': 'waiting_for_admin',
-      'WAITING_FOR_TRADER': 'waiting_for_trader',
+      OPEN: "open",
+      IN_PROGRESS: "in_progress",
+      RESOLVED: "resolved",
+      CLOSED: "closed",
+      WAITING_FOR_ADMIN: "waiting_for_admin",
+      WAITING_FOR_TRADER: "waiting_for_trader",
     };
-    return statusMap[status] || status?.toLowerCase() || 'open';
+    return statusMap[status] || status?.toLowerCase() || "open";
   };
 
-  const mapCategoryToFrontend = (category) => category ? category.toLowerCase() : 'other';
-  const mapPriorityToFrontend = (priority) => priority ? priority.toLowerCase() : 'medium';
+  const mapCategoryToFrontend = (category) =>
+    category ? category.toLowerCase() : "other";
+  const mapPriorityToFrontend = (priority) =>
+    priority ? priority.toLowerCase() : "medium";
 
   const displayTickets = useMemo(() => {
     return (Array.isArray(ticketsData) ? ticketsData : []).map((ticket) => ({
@@ -151,12 +168,12 @@ export default function AdminSupport() {
 
   const handleUpdateStatus = (ticket, status) => {
     const statusMap = {
-      'open': 'OPEN',
-      'in_progress': 'IN_PROGRESS',
-      'resolved': 'RESOLVED',
-      'closed': 'CLOSED',
-      'waiting_for_admin': 'WAITING_FOR_ADMIN',
-      'waiting_for_trader': 'WAITING_FOR_TRADER',
+      open: "OPEN",
+      in_progress: "IN_PROGRESS",
+      resolved: "RESOLVED",
+      closed: "CLOSED",
+      waiting_for_admin: "WAITING_FOR_ADMIN",
+      waiting_for_trader: "WAITING_FOR_TRADER",
     };
     updateMutation.mutate({
       id: ticket.id,
@@ -165,9 +182,10 @@ export default function AdminSupport() {
   };
 
   const priorityColors = {
-    low: 'bg-muted text-muted-foreground border border-border',
-    medium: 'bg-amber-50 text-[#d97706] border border-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:border-amber-700',
-    high: 'bg-red-50 text-red-600 border border-red-200 dark:bg-red-950/60 dark:text-red-400 dark:border-red-800',
+    low: "bg-muted text-muted-foreground border border-border",
+    medium:
+      "bg-amber-50 text-[#d97706] border border-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:border-amber-700",
+    high: "bg-red-50 text-red-600 border border-red-200 dark:bg-red-950/60 dark:text-red-400 dark:border-red-800",
   };
 
   const getPriorityClass = (priority) =>
@@ -175,22 +193,24 @@ export default function AdminSupport() {
 
   const formatDate = (dateStr) => {
     try {
-      if (!dateStr) return '-';
+      if (!dateStr) return "-";
       const date = new Date(dateStr);
-      if (isNaN(date.getTime())) return '-';
-      return format(date, 'MMM d, HH:mm');
+      if (isNaN(date.getTime())) return "-";
+      return format(date, "MMM d, HH:mm");
     } catch {
-      return '-';
+      return "-";
     }
   };
 
   const columns = [
     {
-      header: t('admin.support.table.ticket'),
-      accessorKey: 'subject',
+      header: t("admin.support.table.ticket"),
+      accessorKey: "subject",
       cell: (row) => (
         <div>
-          <p className="text-foreground font-medium line-clamp-1">{row.subject}</p>
+          <p className="text-foreground font-medium line-clamp-1">
+            {row.subject}
+          </p>
           <p className="text-xs text-muted-foreground flex items-center gap-1">
             <span>{row.displayName}</span>
             {row.isGuest && (
@@ -201,39 +221,45 @@ export default function AdminSupport() {
           </p>
           <p className="text-xs text-muted-foreground/70">{row.email}</p>
         </div>
-      )
+      ),
     },
     {
-      header: t('admin.support.table.category'),
-      accessorKey: 'category',
+      header: t("admin.support.table.category"),
+      accessorKey: "category",
       cell: (row) => (
         <span className="capitalize text-foreground">
-          {t(`admin.support.category.${row.category}`, { defaultValue: row.category })}
+          {t(`admin.support.category.${row.category}`, {
+            defaultValue: row.category,
+          })}
         </span>
-      )
+      ),
     },
     {
-      header: t('admin.support.table.priority'),
-      accessorKey: 'priority',
+      header: t("admin.support.table.priority"),
+      accessorKey: "priority",
       cell: (row) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${getPriorityClass(row.priority)}`}>
-          {t(`admin.support.priority.${row.priority}`, { defaultValue: row.priority })}
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${getPriorityClass(row.priority)}`}
+        >
+          {t(`admin.support.priority.${row.priority}`, {
+            defaultValue: row.priority,
+          })}
         </span>
-      )
+      ),
     },
     {
-      header: t('admin.support.table.status'),
-      accessorKey: 'status',
-      cell: (row) => <StatusBadge status={row.status} />
+      header: t("admin.support.table.status"),
+      accessorKey: "status",
+      cell: (row) => <StatusBadge status={row.status} />,
     },
     {
-      header: t('admin.support.table.created'),
-      accessorKey: 'created_date',
+      header: t("admin.support.table.created"),
+      accessorKey: "created_date",
       cell: (row) => formatDate(row.created_date),
     },
     {
-      header: t('admin.support.table.actions'),
-      accessorKey: 'id',
+      header: t("admin.support.table.actions"),
+      accessorKey: "id",
       cell: (row) => (
         <div className="flex items-center gap-1 flex-wrap">
           <Button
@@ -245,43 +271,53 @@ export default function AdminSupport() {
             <Eye className="w-4 h-4" />
           </Button>
           {/* Take: open or waiting_for_admin -> move to in_progress */}
-          {(row.status === 'open' || row.status === 'waiting_for_admin') && (
+          {(row.status === "open" || row.status === "waiting_for_admin") && (
             <Button
               size="sm"
               variant="ghost"
               className="text-[#d97706] hover:text-amber-600 h-7 px-2 text-xs"
-              onClick={(e) => { e.stopPropagation(); handleUpdateStatus(row, 'in_progress'); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleUpdateStatus(row, "in_progress");
+              }}
               disabled={updateMutation.isPending}
             >
-              {t('admin.support.actions.take')}
+              {t("admin.support.actions.take")}
             </Button>
           )}
           {/* Resolve: in_progress or waiting_for_trader -> resolved */}
-          {(row.status === 'in_progress' || row.status === 'waiting_for_trader') && (
+          {(row.status === "in_progress" ||
+            row.status === "waiting_for_trader") && (
             <Button
               size="sm"
               variant="ghost"
               className="text-emerald-500 hover:text-emerald-600 h-7 px-2 text-xs"
-              onClick={(e) => { e.stopPropagation(); handleUpdateStatus(row, 'resolved'); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleUpdateStatus(row, "resolved");
+              }}
               disabled={updateMutation.isPending}
             >
-              {t('admin.support.actions.resolve')}
+              {t("admin.support.actions.resolve")}
             </Button>
           )}
           {/* Close: any status except already closed */}
-          {row.status !== 'closed' && (
+          {row.status !== "closed" && (
             <Button
               size="sm"
               variant="ghost"
               className="text-muted-foreground hover:text-foreground h-7 px-2 text-xs"
-              onClick={(e) => { e.stopPropagation(); handleUpdateStatus(row, 'closed'); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleUpdateStatus(row, "closed");
+              }}
               disabled={updateMutation.isPending}
             >
-              {t('admin.support.actions.close')}
+              {t("admin.support.actions.close")}
             </Button>
           )}
         </div>
-      )
+      ),
     },
   ];
 
@@ -295,8 +331,12 @@ export default function AdminSupport() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground">{t('admin.support.title')}</h1>
-          <p className="text-sm sm:text-base text-muted-foreground">{t('admin.support.subtitle')}</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">
+            {t("admin.support.title")}
+          </h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
+            {t("admin.support.subtitle")}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -305,7 +345,7 @@ export default function AdminSupport() {
             onClick={openChat}
           >
             <MessageCircle className="w-4 h-4" />
-            {t('admin.support.chat.openChat')}
+            {t("admin.support.chat.openChat")}
           </Button>
         </div>
       </div>
@@ -313,25 +353,25 @@ export default function AdminSupport() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatsCard
-          title={t('admin.support.stats.openTickets')}
+          title={t("admin.support.stats.openTickets")}
           value={openCount + waitingForAdminCount}
           icon={AlertCircle}
           iconColor="text-red-400"
         />
         <StatsCard
-          title={t('admin.support.stats.inProgress')}
+          title={t("admin.support.stats.inProgress")}
           value={inProgressCount}
           icon={Clock}
           iconColor="text-amber-400"
         />
         <StatsCard
-          title={t('admin.support.stats.resolved')}
+          title={t("admin.support.stats.resolved")}
           value={resolvedCount}
           icon={CheckCircle}
           iconColor="text-emerald-400"
         />
         <StatsCard
-          title={t('admin.support.stats.today')}
+          title={t("admin.support.stats.today")}
           value={statistics.todayCount ?? 0}
           icon={MessageCircle}
           iconColor="text-blue-400"
@@ -344,24 +384,47 @@ export default function AdminSupport() {
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder={t('admin.support.searchPlaceholder')}
+              placeholder={t("admin.support.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
             />
           </div>
-          <Select value={statusFilter} onValueChange={(val) => { setStatusFilter(val); setPage(1); }}>
+          <Select
+            value={statusFilter}
+            onValueChange={(val) => {
+              setStatusFilter(val);
+              setPage(1);
+            }}
+          >
             <SelectTrigger className="w-full sm:w-[180px] bg-muted border-border text-foreground text-sm">
-              <SelectValue placeholder={t('admin.support.filter.status')} />
+              <SelectValue placeholder={t("admin.support.filter.status")} />
             </SelectTrigger>
             <SelectContent className="bg-card border-border text-foreground">
-              <SelectItem value="all" className="text-foreground">{t('admin.support.filter.allStatus')}</SelectItem>
-              <SelectItem value="open" className="text-foreground">{t('admin.support.filter.open')}</SelectItem>
-              <SelectItem value="waiting_for_admin" className="text-foreground">{t('admin.support.filter.waitingForAdmin')}</SelectItem>
-              <SelectItem value="waiting_for_trader" className="text-foreground">{t('admin.support.filter.waitingForTrader')}</SelectItem>
-              <SelectItem value="in_progress" className="text-foreground">{t('admin.support.filter.inProgress')}</SelectItem>
-              <SelectItem value="resolved" className="text-foreground">{t('admin.support.filter.resolved')}</SelectItem>
-              <SelectItem value="closed" className="text-foreground">{t('admin.support.filter.closed')}</SelectItem>
+              <SelectItem value="all" className="text-foreground">
+                {t("admin.support.filter.allStatus")}
+              </SelectItem>
+              <SelectItem value="open" className="text-foreground">
+                {t("admin.support.filter.open")}
+              </SelectItem>
+              <SelectItem value="waiting_for_admin" className="text-foreground">
+                {t("admin.support.filter.waitingForAdmin")}
+              </SelectItem>
+              <SelectItem
+                value="waiting_for_trader"
+                className="text-foreground"
+              >
+                {t("admin.support.filter.waitingForTrader")}
+              </SelectItem>
+              <SelectItem value="in_progress" className="text-foreground">
+                {t("admin.support.filter.inProgress")}
+              </SelectItem>
+              <SelectItem value="resolved" className="text-foreground">
+                {t("admin.support.filter.resolved")}
+              </SelectItem>
+              <SelectItem value="closed" className="text-foreground">
+                {t("admin.support.filter.closed")}
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -373,13 +436,17 @@ export default function AdminSupport() {
           columns={columns}
           data={displayTickets}
           isLoading={isLoading}
-          emptyMessage={t('admin.support.emptyMessage')}
+          emptyMessage={t("admin.support.emptyMessage")}
         />
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
             <p className="text-xs text-muted-foreground">
-              {t('admin.support.pagination.page', { page, totalPages, total: totalTickets })}
+              {t("admin.support.pagination.page", {
+                page,
+                totalPages,
+                total: totalTickets,
+              })}
             </p>
             <div className="flex items-center gap-2">
               <Button
@@ -389,7 +456,7 @@ export default function AdminSupport() {
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
               >
-                {t('admin.support.pagination.previous')}
+                {t("admin.support.pagination.previous")}
               </Button>
               <Button
                 variant="outline"
@@ -398,7 +465,7 @@ export default function AdminSupport() {
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
               >
-                {t('admin.support.pagination.next')}
+                {t("admin.support.pagination.next")}
               </Button>
             </div>
           </div>

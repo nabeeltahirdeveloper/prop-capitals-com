@@ -16,7 +16,15 @@ export function Toaster() {
 
   return (
     <ToastProvider>
-      {openToasts.map(function ({ id, title, description, action, onOpenChange, open, ...props }) {
+      {openToasts.map(function ({
+        id,
+        title,
+        description,
+        action,
+        onOpenChange,
+        open,
+        ...props
+      }) {
         const handleClose = (e) => {
           e?.preventDefault();
           e?.stopPropagation();
@@ -29,8 +37,8 @@ export function Toaster() {
         };
 
         return (
-          <Toast 
-            key={id} 
+          <Toast
+            key={id}
             {...props}
             data-toast-id={id}
             onOpenChange={onOpenChange}
@@ -50,4 +58,4 @@ export function Toaster() {
       <ToastViewport />
     </ToastProvider>
   );
-} 
+}

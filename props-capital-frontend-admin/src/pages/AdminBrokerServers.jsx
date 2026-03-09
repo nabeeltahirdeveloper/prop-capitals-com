@@ -92,11 +92,15 @@ export default function AdminBrokerServers() {
       if (data.success) {
         toast.success(t("admin.brokerServers.toast.connectionSuccess"));
       } else {
-        toast.warning(data.message || t("admin.brokerServers.toast.connectionFailed"));
+        toast.warning(
+          data.message || t("admin.brokerServers.toast.connectionFailed"),
+        );
       }
     },
     onError: (error) => {
-      toast.error(error.message || t("admin.brokerServers.toast.connectionError"));
+      toast.error(
+        error.message || t("admin.brokerServers.toast.connectionError"),
+      );
     },
   });
 
@@ -193,7 +197,9 @@ export default function AdminBrokerServers() {
             {error.message || t("admin.brokerServers.error.description")}
           </p>
           <Button
-            onClick={() => queryClient.invalidateQueries({ queryKey: ["broker-servers"] })}
+            onClick={() =>
+              queryClient.invalidateQueries({ queryKey: ["broker-servers"] })
+            }
             className="bg-gradient-to-r from-[#d97706] to-[#d97706] text-[#0a0d12] hover:brightness-110"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
@@ -253,7 +259,7 @@ export default function AdminBrokerServers() {
                     }
                     className="bg-muted border-border text-foreground text-sm placeholder:text-muted-foreground"
                     placeholder={t(
-                      "admin.brokerServers.dialog.serverNamePlaceholder"
+                      "admin.brokerServers.dialog.serverNamePlaceholder",
                     )}
                   />
                 </div>
@@ -303,7 +309,7 @@ export default function AdminBrokerServers() {
                     }
                     className="bg-muted border-border text-foreground text-sm placeholder:text-muted-foreground"
                     placeholder={t(
-                      "admin.brokerServers.dialog.serverAddressPlaceholder"
+                      "admin.brokerServers.dialog.serverAddressPlaceholder",
                     )}
                   />
                 </div>
@@ -318,7 +324,9 @@ export default function AdminBrokerServers() {
                       const val = parseInt(e.target.value);
                       setFormData({
                         ...formData,
-                        server_port: isNaN(val) ? 443 : Math.min(65535, Math.max(1, val)),
+                        server_port: isNaN(val)
+                          ? 443
+                          : Math.min(65535, Math.max(1, val)),
                       });
                     }}
                     className="bg-muted border-border text-foreground text-sm"
@@ -331,7 +339,11 @@ export default function AdminBrokerServers() {
               <Button
                 onClick={() => createServerMutation.mutate(formData)}
                 className="w-full bg-gradient-to-r from-[#d97706] to-[#d97706] text-[#0a0d12] hover:brightness-110"
-                disabled={createServerMutation.isPending || !formData.name || !formData.server_address}
+                disabled={
+                  createServerMutation.isPending ||
+                  !formData.name ||
+                  !formData.server_address
+                }
               >
                 {createServerMutation.isPending
                   ? t("admin.brokerServers.adding")
@@ -345,7 +357,10 @@ export default function AdminBrokerServers() {
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="bg-card border-border p-4 sm:p-6 animate-pulse">
+            <Card
+              key={i}
+              className="bg-card border-border p-4 sm:p-6 animate-pulse"
+            >
               <div className="flex items-start justify-between mb-4">
                 <div className="w-12 h-12 rounded-xl bg-muted"></div>
                 <div className="w-20 h-6 rounded bg-muted"></div>
@@ -362,14 +377,11 @@ export default function AdminBrokerServers() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {servers.map((server) => (
-            <Card
-              key={server.id}
-              className="bg-card border-border p-4 sm:p-6"
-            >
+            <Card key={server.id} className="bg-card border-border p-4 sm:p-6">
               <div className="flex items-start justify-between mb-4">
                 <div
                   className={`w-12 h-12 rounded-xl bg-gradient-to-br ${getPlatformColor(
-                    server.platform
+                    server.platform,
                   )} flex items-center justify-center`}
                 >
                   <Server className="w-6 h-6 text-white" />

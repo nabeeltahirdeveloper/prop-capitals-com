@@ -214,7 +214,12 @@ export default function Layout({ children, currentPageName }) {
       },
       { name: t("nav.coupons"), icon: Zap, page: "AdminCoupons" },
       { name: t("nav.violations"), icon: Shield, page: "AdminViolations" },
-      { name: t("nav.support"), icon: HelpCircle, page: "AdminSupport", activeFor: ["AdminSupport", "AdminTicketChat"] },
+      {
+        name: t("nav.support"),
+        icon: HelpCircle,
+        page: "AdminSupport",
+        activeFor: ["AdminSupport", "AdminTicketChat"],
+      },
       { name: t("nav.notifications"), icon: Bell, page: "Notifications" },
       { name: t("nav.settings"), icon: Settings, page: "AdminSettings" },
       { name: t("nav.profile"), icon: User, page: "AdminProfile" },
@@ -296,7 +301,11 @@ export default function Layout({ children, currentPageName }) {
             >
               <div className="w-10 h-10 shrink-0 mx-auto rounded-xl overflow-hidden flex items-center justify-center">
                 <img
-                  src={isDark ? "/assets/images/logo-dark.png" : "/assets/images/logo-light.png"}
+                  src={
+                    isDark
+                      ? "/assets/images/logo-dark.png"
+                      : "/assets/images/logo-light.png"
+                  }
                   alt="Logo"
                   className="w-full h-full object-contain"
                 />
@@ -423,7 +432,9 @@ export default function Layout({ children, currentPageName }) {
                 );
               }
 
-              const isActive = currentPageName === item.page || (item.activeFor?.includes(currentPageName) ?? false);
+              const isActive =
+                currentPageName === item.page ||
+                (item.activeFor?.includes(currentPageName) ?? false);
 
               const handleClick = (e) => {
                 if (
@@ -660,6 +671,3 @@ export default function Layout({ children, currentPageName }) {
     </div>
   );
 }
-
-
-

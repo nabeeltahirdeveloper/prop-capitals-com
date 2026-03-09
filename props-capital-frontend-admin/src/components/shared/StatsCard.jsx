@@ -14,7 +14,9 @@ export default function StatsCard({
     <Card className="bg-card border-border p-3 sm:p-4">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <p className="text-xs sm:text-sm text-muted-foreground mb-1">{title}</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-1">
+            {title}
+          </p>
           <p className="text-base sm:text-lg md:text-xl font-bold text-foreground">
             {value}
           </p>

@@ -16,7 +16,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor: normalize errors and handle 401 gracefully
@@ -53,7 +53,7 @@ api.interceptors.response.use(
         (page) =>
           currentPath === page ||
           currentPath === page + "/" ||
-          currentPath.startsWith(page + "?")
+          currentPath.startsWith(page + "?"),
       );
 
       // Only redirect if we're on a protected page
@@ -69,7 +69,7 @@ api.interceptors.response.use(
       data: error.response?.data,
     };
     return Promise.reject(normalizedError);
-  }
+  },
 );
 
 // Typed helper wrappers

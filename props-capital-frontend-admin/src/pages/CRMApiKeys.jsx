@@ -37,7 +37,8 @@ export default function CRMApiKeys() {
   const [showKey, setShowKey] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const baseUrl = import.meta.env.VITE_API_URL || "http://api.prop-capitals.com";
+  const baseUrl =
+    import.meta.env.VITE_API_URL || "http://api.prop-capitals.com";
 
   const { data: apiKeys = [], isLoading } = useQuery({
     queryKey: ["crm-api-keys"],
@@ -140,7 +141,9 @@ export default function CRMApiKeys() {
     {
       header: "Name",
       accessorKey: "name",
-      cell: (row) => <span className="text-foreground font-medium">{row.name}</span>,
+      cell: (row) => (
+        <span className="text-foreground font-medium">{row.name}</span>
+      ),
     },
     {
       header: "Status",
@@ -212,39 +215,58 @@ export default function CRMApiKeys() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground">{t("admin.apiKeys.title", { defaultValue: "API Keys" })}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">
+            {t("admin.apiKeys.title", { defaultValue: "API Keys" })}
+          </h1>
           <p className="text-sm sm:text-base text-muted-foreground">
-            {t("admin.apiKeys.subtitle", { defaultValue: "Manage API keys for third-party lead ingestion" })}
+            {t("admin.apiKeys.subtitle", {
+              defaultValue: "Manage API keys for third-party lead ingestion",
+            })}
           </p>
         </div>
         <Dialog open={isCreateOpen} onOpenChange={handleCloseCreate}>
           <DialogTrigger asChild>
             <Button className="bg-gradient-to-r from-[#d97706] to-[#d97706] text-[#0a0d12] hover:brightness-110 w-full sm:w-auto h-10 sm:h-11">
               <Plus className="w-4 h-4 mr-2" />
-              {t("admin.apiKeys.generate", { defaultValue: "Generate API Key" })}
+              {t("admin.apiKeys.generate", {
+                defaultValue: "Generate API Key",
+              })}
             </Button>
           </DialogTrigger>
           <DialogContent className="bg-card border-border w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6 max-h-[90vh] overflow-y-auto [&>button]:text-foreground [&>button:hover]:opacity-100">
             <DialogHeader>
               <DialogTitle className="text-foreground text-base sm:text-lg">
-                {generatedKey ? t("admin.apiKeys.keyGenerated", { defaultValue: "API Key Generated" }) : t("admin.apiKeys.generateNew", { defaultValue: "Generate New API Key" })}
+                {generatedKey
+                  ? t("admin.apiKeys.keyGenerated", {
+                      defaultValue: "API Key Generated",
+                    })
+                  : t("admin.apiKeys.generateNew", {
+                      defaultValue: "Generate New API Key",
+                    })}
               </DialogTitle>
             </DialogHeader>
 
             {!generatedKey ? (
               <div className="space-y-4 mt-4">
                 <div className="space-y-2">
-                  <Label className="text-muted-foreground text-sm">{t("admin.apiKeys.keyName", { defaultValue: "Key Name" })}</Label>
+                  <Label className="text-muted-foreground text-sm">
+                    {t("admin.apiKeys.keyName", { defaultValue: "Key Name" })}
+                  </Label>
                   <Input
                     value={keyName}
                     onChange={(e) => setKeyName(e.target.value)}
-                    placeholder={t("admin.apiKeys.keyNamePlaceholder", { defaultValue: "e.g. Partner Integration" })}
+                    placeholder={t("admin.apiKeys.keyNamePlaceholder", {
+                      defaultValue: "e.g. Partner Integration",
+                    })}
                     className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm h-10"
                     maxLength={100}
                     onKeyDown={(e) => e.key === "Enter" && handleCreate()}
                   />
                   <p className="text-xs text-muted-foreground">
-                    {t("admin.apiKeys.keyNameHint", { defaultValue: "A label to identify this key (e.g. the partner name)" })}
+                    {t("admin.apiKeys.keyNameHint", {
+                      defaultValue:
+                        "A label to identify this key (e.g. the partner name)",
+                    })}
                   </p>
                 </div>
                 <Button
@@ -252,19 +274,32 @@ export default function CRMApiKeys() {
                   className="w-full bg-gradient-to-r from-[#d97706] to-[#d97706] text-[#0a0d12] hover:brightness-110 h-10 sm:h-11 text-sm font-semibold"
                   disabled={createMutation.isPending || !keyName.trim()}
                 >
-                  {createMutation.isPending ? t("admin.apiKeys.generating", { defaultValue: "Generating..." }) : t("admin.apiKeys.generateKey", { defaultValue: "Generate Key" })}
+                  {createMutation.isPending
+                    ? t("admin.apiKeys.generating", {
+                        defaultValue: "Generating...",
+                      })
+                    : t("admin.apiKeys.generateKey", {
+                        defaultValue: "Generate Key",
+                      })}
                 </Button>
               </div>
             ) : (
               <div className="space-y-4 mt-4">
                 <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
                   <p className="text-amber-400 text-xs font-medium">
-                    {t("admin.apiKeys.copyWarning", { defaultValue: "Copy this key now. It will not be shown again." })}
+                    {t("admin.apiKeys.copyWarning", {
+                      defaultValue:
+                        "Copy this key now. It will not be shown again.",
+                    })}
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-muted-foreground text-sm">{t("admin.apiKeys.yourKey", { defaultValue: "Your API Key" })}</Label>
+                  <Label className="text-muted-foreground text-sm">
+                    {t("admin.apiKeys.yourKey", {
+                      defaultValue: "Your API Key",
+                    })}
+                  </Label>
                   <div className="flex gap-2">
                     <div className="flex-1 bg-muted border border-border rounded-md px-3 py-2 font-mono text-sm text-emerald-400 break-all">
                       {showKey
@@ -294,12 +329,16 @@ export default function CRMApiKeys() {
                   {copiedKey ? (
                     <>
                       <Check className="w-4 h-4 mr-2 text-emerald-400" />
-                      <span className="text-emerald-400">{t("admin.apiKeys.copied", { defaultValue: "Copied!" })}</span>
+                      <span className="text-emerald-400">
+                        {t("admin.apiKeys.copied", { defaultValue: "Copied!" })}
+                      </span>
                     </>
                   ) : (
                     <>
                       <Copy className="w-4 h-4 mr-2" />
-                      {t("admin.apiKeys.copyToClipboard", { defaultValue: "Copy to Clipboard" })}
+                      {t("admin.apiKeys.copyToClipboard", {
+                        defaultValue: "Copy to Clipboard",
+                      })}
                     </>
                   )}
                 </Button>
@@ -327,13 +366,17 @@ export default function CRMApiKeys() {
           </p>
         </Card>
         <Card className="bg-card border-border p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-muted-foreground truncate">{t("admin.apiKeys.active", { defaultValue: "Active" })}</p>
+          <p className="text-xs sm:text-sm text-muted-foreground truncate">
+            {t("admin.apiKeys.active", { defaultValue: "Active" })}
+          </p>
           <p className="text-xl sm:text-2xl font-bold text-emerald-400 truncate">
             {activeKeys.length}
           </p>
         </Card>
         <Card className="bg-card border-border p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-muted-foreground truncate">{t("admin.apiKeys.revoked", { defaultValue: "Revoked" })}</p>
+          <p className="text-xs sm:text-sm text-muted-foreground truncate">
+            {t("admin.apiKeys.revoked", { defaultValue: "Revoked" })}
+          </p>
           <p className="text-xl sm:text-2xl font-bold text-red-400 truncate">
             {revokedKeys.length}
           </p>
@@ -346,7 +389,9 @@ export default function CRMApiKeys() {
           columns={columns}
           data={apiKeys}
           isLoading={isLoading}
-          emptyMessage={t("admin.apiKeys.emptyMessage", { defaultValue: "No API keys yet. Generate one to get started." })}
+          emptyMessage={t("admin.apiKeys.emptyMessage", {
+            defaultValue: "No API keys yet. Generate one to get started.",
+          })}
           onRowClick={(row) => setSelectedKey(row)}
         />
       </Card>
@@ -378,7 +423,11 @@ export default function CRMApiKeys() {
                           : "bg-red-500/20 text-red-400"
                       }`}
                     >
-                      {selectedKey.isActive ? t("admin.apiKeys.active", { defaultValue: "Active" }) : t("admin.apiKeys.revoked", { defaultValue: "Revoked" })}
+                      {selectedKey.isActive
+                        ? t("admin.apiKeys.active", { defaultValue: "Active" })
+                        : t("admin.apiKeys.revoked", {
+                            defaultValue: "Revoked",
+                          })}
                     </span>
                   </div>
                 </DialogHeader>
@@ -386,7 +435,9 @@ export default function CRMApiKeys() {
                 {/* Key metadata */}
                 <div className="grid grid-cols-2 gap-4 mt-5">
                   <div className="bg-muted/50 rounded-lg p-3">
-                    <p className="text-xs text-muted-foreground mb-1">{t("admin.apiKeys.created", { defaultValue: "Created" })}</p>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      {t("admin.apiKeys.created", { defaultValue: "Created" })}
+                    </p>
                     <p className="text-sm text-foreground">
                       {selectedKey.createdAt
                         ? format(
@@ -397,7 +448,11 @@ export default function CRMApiKeys() {
                     </p>
                   </div>
                   <div className="bg-muted/50 rounded-lg p-3">
-                    <p className="text-xs text-muted-foreground mb-1">{t("admin.apiKeys.lastUsed", { defaultValue: "Last Used" })}</p>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      {t("admin.apiKeys.lastUsed", {
+                        defaultValue: "Last Used",
+                      })}
+                    </p>
                     <p className="text-sm text-foreground">
                       {selectedKey.lastUsedAt
                         ? format(
@@ -412,7 +467,9 @@ export default function CRMApiKeys() {
 
               {/* Endpoints section */}
               <div className="p-4 sm:p-6 pt-4 space-y-4">
-                <h3 className="text-foreground font-semibold text-sm">{t("admin.apiKeys.endpoints", { defaultValue: "Endpoints" })}</h3>
+                <h3 className="text-foreground font-semibold text-sm">
+                  {t("admin.apiKeys.endpoints", { defaultValue: "Endpoints" })}
+                </h3>
 
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-3">
@@ -423,7 +480,9 @@ export default function CRMApiKeys() {
                       /api/v1/leads
                     </code>
                     <span className="text-xs text-muted-foreground hidden sm:block">
-                      {t("admin.apiKeys.singleLead", { defaultValue: "Single lead" })}
+                      {t("admin.apiKeys.singleLead", {
+                        defaultValue: "Single lead",
+                      })}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-3">
@@ -434,7 +493,9 @@ export default function CRMApiKeys() {
                       /api/v1/leads/bulk
                     </code>
                     <span className="text-xs text-muted-foreground hidden sm:block">
-                      {t("admin.apiKeys.upTo100", { defaultValue: "Up to 100 leads" })}
+                      {t("admin.apiKeys.upTo100", {
+                        defaultValue: "Up to 100 leads",
+                      })}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-3">
@@ -445,14 +506,18 @@ export default function CRMApiKeys() {
                       /api/v1/leads/:id
                     </code>
                     <span className="text-xs text-muted-foreground hidden sm:block">
-                      {t("admin.apiKeys.checkStatus", { defaultValue: "Check status" })}
+                      {t("admin.apiKeys.checkStatus", {
+                        defaultValue: "Check status",
+                      })}
                     </span>
                   </div>
                 </div>
 
                 {/* cURL examples */}
                 <h3 className="text-foreground font-semibold text-sm pt-2">
-                  {t("admin.apiKeys.singleExample", { defaultValue: "Single Lead Example" })}
+                  {t("admin.apiKeys.singleExample", {
+                    defaultValue: "Single Lead Example",
+                  })}
                 </h3>
                 <div className="relative">
                   <pre className="bg-muted/50 rounded-lg p-3 text-xs overflow-x-auto border border-border">
@@ -473,7 +538,9 @@ export default function CRMApiKeys() {
                 </div>
 
                 <h3 className="text-foreground font-semibold text-sm pt-2">
-                  {t("admin.apiKeys.bulkExample", { defaultValue: "Bulk Example" })}
+                  {t("admin.apiKeys.bulkExample", {
+                    defaultValue: "Bulk Example",
+                  })}
                 </h3>
                 <div className="relative">
                   <pre className="bg-muted/50 rounded-lg p-3 text-xs overflow-x-auto border border-border">
@@ -495,7 +562,9 @@ export default function CRMApiKeys() {
 
                 {/* Required fields */}
                 <h3 className="text-foreground font-semibold text-sm pt-2">
-                  {t("admin.apiKeys.fieldsReference", { defaultValue: "Fields Reference" })}
+                  {t("admin.apiKeys.fieldsReference", {
+                    defaultValue: "Fields Reference",
+                  })}
                 </h3>
                 <div className="bg-muted/50 rounded-lg overflow-hidden">
                   <table className="w-full text-xs sm:text-sm">
@@ -508,7 +577,9 @@ export default function CRMApiKeys() {
                           {t("admin.apiKeys.type", { defaultValue: "Type" })}
                         </th>
                         <th className="text-left text-muted-foreground font-medium p-2 px-3">
-                          {t("admin.apiKeys.required", { defaultValue: "Required" })}
+                          {t("admin.apiKeys.required", {
+                            defaultValue: "Required",
+                          })}
                         </th>
                       </tr>
                     </thead>
@@ -518,41 +589,55 @@ export default function CRMApiKeys() {
                           personName
                         </td>
                         <td className="p-2 px-3">string</td>
-                        <td className="p-2 px-3 text-amber-400">{t("admin.apiKeys.yes", { defaultValue: "Yes" })}</td>
+                        <td className="p-2 px-3 text-amber-400">
+                          {t("admin.apiKeys.yes", { defaultValue: "Yes" })}
+                        </td>
                       </tr>
                       <tr className="border-b border-border/50">
                         <td className="p-2 px-3 font-mono text-emerald-400">
                           email
                         </td>
                         <td className="p-2 px-3">string</td>
-                        <td className="p-2 px-3 text-amber-400">{t("admin.apiKeys.yes", { defaultValue: "Yes" })}</td>
+                        <td className="p-2 px-3 text-amber-400">
+                          {t("admin.apiKeys.yes", { defaultValue: "Yes" })}
+                        </td>
                       </tr>
                       <tr className="border-b border-border/50">
                         <td className="p-2 px-3 font-mono">phoneNumber</td>
                         <td className="p-2 px-3">string</td>
-                        <td className="p-2 px-3 text-muted-foreground">{t("admin.apiKeys.no", { defaultValue: "No" })}</td>
+                        <td className="p-2 px-3 text-muted-foreground">
+                          {t("admin.apiKeys.no", { defaultValue: "No" })}
+                        </td>
                       </tr>
                       <tr className="border-b border-border/50">
                         <td className="p-2 px-3 font-mono">country</td>
                         <td className="p-2 px-3">string</td>
-                        <td className="p-2 px-3 text-muted-foreground">{t("admin.apiKeys.no", { defaultValue: "No" })}</td>
+                        <td className="p-2 px-3 text-muted-foreground">
+                          {t("admin.apiKeys.no", { defaultValue: "No" })}
+                        </td>
                       </tr>
                       <tr className="border-b border-border/50">
                         <td className="p-2 px-3 font-mono">source</td>
                         <td className="p-2 px-3">string</td>
-                        <td className="p-2 px-3 text-muted-foreground">{t("admin.apiKeys.no", { defaultValue: "No" })}</td>
+                        <td className="p-2 px-3 text-muted-foreground">
+                          {t("admin.apiKeys.no", { defaultValue: "No" })}
+                        </td>
                       </tr>
                       <tr className="border-b border-border/50">
                         <td className="p-2 px-3 font-mono">priority</td>
                         <td className="p-2 px-3">
                           LOW | MEDIUM | HIGH | URGENT
                         </td>
-                        <td className="p-2 px-3 text-muted-foreground">{t("admin.apiKeys.no", { defaultValue: "No" })}</td>
+                        <td className="p-2 px-3 text-muted-foreground">
+                          {t("admin.apiKeys.no", { defaultValue: "No" })}
+                        </td>
                       </tr>
                       <tr>
                         <td className="p-2 px-3 font-mono">affiliateId</td>
                         <td className="p-2 px-3">string</td>
-                        <td className="p-2 px-3 text-muted-foreground">{t("admin.apiKeys.no", { defaultValue: "No" })}</td>
+                        <td className="p-2 px-3 text-muted-foreground">
+                          {t("admin.apiKeys.no", { defaultValue: "No" })}
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -569,8 +654,12 @@ export default function CRMApiKeys() {
                     >
                       <Trash2 className="w-4 h-4 mr-2" />
                       {revokeMutation.isPending
-                        ? t("admin.apiKeys.revoking", { defaultValue: "Revoking..." })
-                        : t("admin.apiKeys.revokeThisKey", { defaultValue: "Revoke This Key" })}
+                        ? t("admin.apiKeys.revoking", {
+                            defaultValue: "Revoking...",
+                          })
+                        : t("admin.apiKeys.revokeThisKey", {
+                            defaultValue: "Revoke This Key",
+                          })}
                     </Button>
                   )}
                   <Button
@@ -592,11 +681,15 @@ export default function CRMApiKeys() {
       {/* Quick Integration Guide (bottom of page) */}
       <Card className="bg-card border-border p-4 sm:p-6">
         <h3 className="text-foreground font-semibold text-sm sm:text-base mb-3">
-          {t("admin.apiKeys.quickGuide", { defaultValue: "Quick Integration Guide" })}
+          {t("admin.apiKeys.quickGuide", {
+            defaultValue: "Quick Integration Guide",
+          })}
         </h3>
         <div className="space-y-3 text-sm text-muted-foreground">
           <p>
-            {t("admin.apiKeys.guideText", { defaultValue: "Third parties send leads to your API using the" })}{" "}
+            {t("admin.apiKeys.guideText", {
+              defaultValue: "Third parties send leads to your API using the",
+            })}{" "}
             <code className="bg-muted px-1.5 py-0.5 rounded text-emerald-400 text-xs">
               x-api-key
             </code>{" "}
@@ -616,7 +709,10 @@ x-api-key: pc_your_key_here
 }`}</code>
           </pre>
           <p className="text-xs text-muted-foreground">
-            {t("admin.apiKeys.guideNote", { defaultValue: "Leads will appear automatically in the CRM Leads page with status NEW." })}
+            {t("admin.apiKeys.guideNote", {
+              defaultValue:
+                "Leads will appear automatically in the CRM Leads page with status NEW.",
+            })}
           </p>
         </div>
       </Card>

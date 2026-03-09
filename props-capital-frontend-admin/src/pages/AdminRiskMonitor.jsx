@@ -104,7 +104,8 @@ export default function AdminRiskMonitor() {
     onError: (error) => {
       toast({
         title: "Failed to pause account",
-        description: error?.message || "An error occurred while pausing the account.",
+        description:
+          error?.message || "An error occurred while pausing the account.",
         variant: "destructive",
       });
     },
@@ -198,9 +199,7 @@ export default function AdminRiskMonitor() {
 
   const recentViolations = Array.isArray(violations)
     ? violations
-    : violations?.data ||
-      violations?.items ||
-      [];
+    : violations?.data || violations?.items || [];
 
   return (
     <div className="space-y-6">
@@ -361,7 +360,9 @@ export default function AdminRiskMonitor() {
                     <div className="flex items-center justify-center gap-2">
                       <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
                       <span className="text-muted-foreground text-sm">
-                        {t("admin.riskMonitor.loading", { defaultValue: "Loading accounts..." })}
+                        {t("admin.riskMonitor.loading", {
+                          defaultValue: "Loading accounts...",
+                        })}
                       </span>
                     </div>
                   </TableCell>
@@ -371,7 +372,10 @@ export default function AdminRiskMonitor() {
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-8">
                     <p className="text-muted-foreground text-sm">
-                      {t("admin.riskMonitor.noAccounts", { defaultValue: "No accounts found matching your criteria." })}
+                      {t("admin.riskMonitor.noAccounts", {
+                        defaultValue:
+                          "No accounts found matching your criteria.",
+                      })}
                     </p>
                   </TableCell>
                 </TableRow>
@@ -423,7 +427,7 @@ export default function AdminRiskMonitor() {
                           value={Math.min(
                             100,
                             (dailyDD / (account.daily_drawdown_limit || 5)) *
-                              100
+                              100,
                           )}
                           className="h-1 sm:h-1.5 bg-muted"
                         />
@@ -450,7 +454,7 @@ export default function AdminRiskMonitor() {
                           value={Math.min(
                             100,
                             (maxDD / (account.overall_drawdown_limit || 10)) *
-                              100
+                              100,
                           )}
                           className="h-1 sm:h-1.5 bg-muted"
                         />
@@ -507,7 +511,11 @@ export default function AdminRiskMonitor() {
         </h2>
         <div className="space-y-2 sm:space-y-3">
           {recentViolations.slice(0, 10).map((violation) => {
-            const isFatal = ["OVERALL_DRAWDOWN", "DAILY_DRAWDOWN", "CONSISTENCY"].includes(violation.type);
+            const isFatal = [
+              "OVERALL_DRAWDOWN",
+              "DAILY_DRAWDOWN",
+              "CONSISTENCY",
+            ].includes(violation.type);
             const accountNumber =
               violation.tradingAccount?.brokerLogin ||
               violation.tradingAccountId?.slice(0, 8);
@@ -534,7 +542,10 @@ export default function AdminRiskMonitor() {
                       {accountNumber}...
                       {violation.createdAt && (
                         <span className="ml-2 text-muted-foreground/70">
-                          {format(new Date(violation.createdAt), "MMM d, HH:mm")}
+                          {format(
+                            new Date(violation.createdAt),
+                            "MMM d, HH:mm",
+                          )}
                         </span>
                       )}
                     </p>
