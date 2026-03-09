@@ -93,43 +93,35 @@ export default function TradingPanel({
   };
 
   const handleTrade = () => {
-    console.log('=== TradingPanel handleTrade START ===');
-    console.log('Symbol:', symbol);
-    console.log('onExecuteTrade:', typeof onExecuteTrade);
-    
     if (isSubmitting) {
-      console.log('Already submitting, returning');
       return;
     }
-    
+
     // Get market price - prefer chart price (real-time), then symbol data, then fallback
     const basePrice = chartPrice || symbol.bid || 1.08542;
     // Add small spread for ask price
     const spread = isCrypto ? basePrice * 0.001 : 0.00015;
-    const marketPrice = tradeDirection === 'buy' 
+    const marketPrice = tradeDirection === 'buy'
       ? basePrice + spread
       : basePrice;
-    
-    console.log('Chart price:', chartPrice, 'Market price:', marketPrice);
-    
+
     if (!marketPrice || marketPrice <= 0) {
-      console.error('Invalid market price');
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     // Parse limit price from input - if user typed a custom price
     const inputLimitPrice = limitPrice && limitPrice.trim() !== '' ? parseFloat(limitPrice) : null;
-    
+
     // Check if this is a pending limit order (user entered a specific price)
-    const isPendingOrder = inputLimitPrice !== null && 
-      !isNaN(inputLimitPrice) && 
+    const isPendingOrder = inputLimitPrice !== null &&
+      !isNaN(inputLimitPrice) &&
       inputLimitPrice > 0;
-    
+
     // For pending orders, use the limit price; for market orders, use current market price
     const executionPrice = isPendingOrder ? inputLimitPrice : marketPrice;
-    
+
     const trade = {
       symbol: symbol.symbol || 'EUR/USD',
       type: tradeDirection,
@@ -142,19 +134,12 @@ export default function TradingPanel({
       timestamp: new Date().toISOString()
     };
 
-    console.log('Trade object created:', trade);
-
     if (onExecuteTrade) {
-      console.log('Calling onExecuteTrade...');
       onExecuteTrade(trade);
-      console.log('onExecuteTrade called successfully');
-    } else {
-      console.error('onExecuteTrade is not defined!');
     }
-    
+
     setLimitPrice('');
     setIsSubmitting(false);
-    console.log('=== TradingPanel handleTrade END ===');
   };
 
   const adjustLotSize = (delta) => {

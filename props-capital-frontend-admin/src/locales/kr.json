@@ -1354,6 +1354,12 @@
         "makeAdmin": "관리자로 지정",
         "makeTrader": "트레이더로 지정"
       },
+      "confirmRoleChange": {
+        "title": "역할 변경 확인",
+        "description": "{{name}}의 역할을 {{newRole}}(으)로 변경하시겠습니까? 이 변경은 패널 접근에 즉시 영향을 미칩니다.",
+        "confirm": "확인",
+        "cancel": "취소"
+      },
       "dialog": {
         "title": "사용자 상세",
         "userId": "사용자 ID",

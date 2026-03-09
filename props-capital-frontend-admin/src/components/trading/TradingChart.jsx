@@ -147,10 +147,6 @@ export default function TradingChart({
       const height = container.clientHeight || container.offsetHeight;
 
       if (width > 0 && height > 0 && !chartRef.current) {
-        console.log("Container ready, initializing chart...", {
-          width,
-          height,
-        });
         initializeChart();
         if (dimensionCheckInterval) {
           clearInterval(dimensionCheckInterval);
@@ -201,8 +197,6 @@ export default function TradingChart({
       const rightScaleMinWidth = isNarrow ? 44 : 92;
       const barSpacing = isNarrow ? 8 : 14;
       const rightOffset = isNarrow ? 4 : 9;
-
-      console.log("Creating chart with dimensions:", { width, height, isNarrow: isNarrow });
 
       // Create chart with TradingView-like styling
       // Use autoSize if dimensions are invalid, otherwise use explicit dimensions
@@ -341,12 +335,6 @@ export default function TradingChart({
 
           // Create candlestick series with TradingView colors (v5 API)
           try {
-            console.log("Adding candlestick series...", {
-              chartWidth: width,
-              chartHeight: height,
-              priceFormat: priceFormatConfig,
-            });
-
             // Use the imported CandlestickSeries class (v5 API)
             const candlestickSeries = chart.addSeries(CandlestickSeries, {
               upColor: "#26a69a",
@@ -362,8 +350,6 @@ export default function TradingChart({
                 minMove: priceFormatConfig.minMove,
               },
             });
-            console.log("Candlestick series created successfully");
-
             candlestickSeriesRef.current = candlestickSeries;
           } catch (err) {
             console.error("Failed to create candlestick series:", err);
@@ -380,7 +366,6 @@ export default function TradingChart({
 
           // Create line series (for line chart mode) (v5 API)
           try {
-            console.log("Adding line series...");
             const lineSeries = chart.addSeries(LineSeries, {
               color: "#2962ff",
               lineWidth: 2,
@@ -393,7 +378,6 @@ export default function TradingChart({
               },
             });
             lineSeriesRef.current = lineSeries;
-            console.log("Line series created successfully");
           } catch (err) {
             console.error("Failed to create line series:", err);
             setError("Failed to create line series. Please refresh.");
@@ -403,7 +387,6 @@ export default function TradingChart({
           // Create volume series (will be updated with colors per bar) (v5 API)
           // Volume series uses its own price scale and stays at bottom 15-20%
           try {
-            console.log("Adding volume series...");
             const volumeSeries = chart.addSeries(HistogramSeries, {
               priceScaleId: "", // Empty string for separate volume scale (overlay)
               lastValueVisible: false, // Hide volume last value label on price scale
@@ -413,7 +396,6 @@ export default function TradingChart({
               },
             });
             volumeSeriesRef.current = volumeSeries;
-            console.log("Volume series created successfully");
           } catch (err) {
             console.warn(
               "Failed to create volume series, continuing without it:",
@@ -425,7 +407,6 @@ export default function TradingChart({
           // Mark series as ready
           if (candlestickSeriesRef.current && lineSeriesRef.current) {
             seriesReadyRef.current = true;
-            console.log("All series initialized and ready");
           }
         }, 200); // Increased delay to ensure chart is fully ready
       });
@@ -517,11 +498,6 @@ export default function TradingChart({
         !candlestickSeriesRef.current ||
         !lineSeriesRef.current
       ) {
-        console.log("Chart not ready, waiting...", {
-          hasChart: !!chartRef.current,
-          hasCandleSeries: !!candlestickSeriesRef.current,
-          hasLineSeries: !!lineSeriesRef.current,
-        });
         return;
       }
 
@@ -562,7 +538,6 @@ export default function TradingChart({
 
         // Check if request was aborted
         if (fetchAbortControllerRef.current?.signal.aborted) {
-          console.log("Request aborted for:", symbolName);
           return;
         }
 
@@ -579,25 +554,6 @@ export default function TradingChart({
         }
 
         if (Array.isArray(historyData) && historyData.length > 0) {
-          // Debug: Log received data
-          console.log(
-            `[TradingChart] Received ${historyData.length} candles for ${symbolName} ${tf}`,
-          );
-          if (historyData.length > 0) {
-            const first = historyData[0];
-            const last = historyData[historyData.length - 1];
-            console.log(
-              `[TradingChart] First candle time: ${first.time} (${new Date(
-                first.time * 1000,
-              ).toISOString()})`,
-            );
-            console.log(
-              `[TradingChart] Last candle time: ${last.time} (${new Date(
-                last.time * 1000,
-              ).toISOString()})`,
-            );
-          }
-
           // Convert to lightweight-charts format with validation
           const candles = historyData
             .map((candle) => {
@@ -812,32 +768,6 @@ export default function TradingChart({
                 candlestickSeriesRef.current &&
                 finalCandles.length > 0
               ) {
-                console.log(
-                  `[TradingChart] Setting candlestick data for ${symbol?.symbol} ${tf}: ${finalCandles.length} candles`,
-                );
-
-                // Frontend validation: Log last 5 candles to check structure
-                const last5 = finalCandles.slice(-5);
-                console.log(
-                  "[TradingChart] Last 5 candles structure:",
-                  last5.map((c) => ({
-                    time: c.time,
-                    open: c.open,
-                    high: c.high,
-                    low: c.low,
-                    close: c.close,
-                    hasValue: "value" in c, // Should NOT have 'value' field
-                    allNumeric:
-                      typeof c.open === "number" &&
-                      typeof c.high === "number" &&
-                      typeof c.low === "number" &&
-                      typeof c.close === "number",
-                    isFlat:
-                      c.open === c.high &&
-                      c.high === c.low &&
-                      c.low === c.close,
-                  })),
-                );
 
                 // Verify first candle is valid
                 const firstCandle = finalCandles[0];
@@ -895,11 +825,6 @@ export default function TradingChart({
                 lineSeriesRef.current &&
                 finalLineData.length > 0
               ) {
-                console.log(
-                  "Setting line data:",
-                  finalLineData.length,
-                  "points",
-                );
                 // Verify first point is valid
                 const firstPoint = finalLineData[0];
                 if (
@@ -998,7 +923,6 @@ export default function TradingChart({
       } catch (err) {
         // Don't show error if request was aborted
         if (fetchAbortControllerRef.current?.signal.aborted) {
-          console.log("Request aborted, ignoring error");
           return;
         }
 
@@ -1352,9 +1276,6 @@ export default function TradingChart({
             } catch (err) {
               // If setData fails, the series might not be initialized yet - that's okay
               // The fetchHistory will populate it soon
-              console.log(
-                `[Chart] Cannot initialize empty chart yet for ${symbol.symbol}, waiting for data...`,
-              );
             }
           }
         }

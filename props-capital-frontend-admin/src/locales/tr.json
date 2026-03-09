@@ -1354,6 +1354,12 @@
         "makeAdmin": "Yönetici yap",
         "makeTrader": "Trader yap"
       },
+      "confirmRoleChange": {
+        "title": "Rol değişikliğini onayla",
+        "description": "{{name}} kullanıcısının rolünü {{newRole}} olarak değiştirmek istediğinizden emin misiniz? Bu, panele erişimlerini hemen etkileyecektir.",
+        "confirm": "Onayla",
+        "cancel": "İptal"
+      },
       "dialog": {
         "title": "Kullanıcı detayları",
         "userId": "Kullanıcı ID",

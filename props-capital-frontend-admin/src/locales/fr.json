@@ -1354,6 +1354,12 @@
         "makeAdmin": "Rendre administrateur",
         "makeTrader": "Rendre trader"
       },
+      "confirmRoleChange": {
+        "title": "Confirmer le changement de rôle",
+        "description": "Êtes-vous sûr de vouloir changer le rôle de {{name}} en {{newRole}} ? Cela affectera immédiatement son accès au panneau.",
+        "confirm": "Confirmer",
+        "cancel": "Annuler"
+      },
       "dialog": {
         "title": "Détails de l’utilisateur",
         "userId": "ID utilisateur",

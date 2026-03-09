@@ -20,7 +20,6 @@ export function Toaster() {
         const handleClose = (e) => {
           e?.preventDefault();
           e?.stopPropagation();
-          console.log('Dismissing toast:', id);
           // Call onOpenChange if it exists (Radix UI pattern)
           if (onOpenChange) {
             onOpenChange(false);

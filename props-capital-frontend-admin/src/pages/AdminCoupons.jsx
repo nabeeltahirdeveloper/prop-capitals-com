@@ -83,7 +83,7 @@ export default function AdminCoupons() {
     onError: (error) => {
       toast({
         title: t("common.error"),
-        description: error?.response?.data?.message || error?.message || t("admin.coupons.messages.saveError"),
+        description: error?.message || t("admin.coupons.messages.saveError"),
         variant: "destructive",
       });
     },
@@ -103,7 +103,7 @@ export default function AdminCoupons() {
     onError: (error) => {
       toast({
         title: t("common.error"),
-        description: error?.response?.data?.message || error?.message || t("admin.coupons.messages.saveError"),
+        description: error?.message || t("admin.coupons.messages.saveError"),
         variant: "destructive",
       });
     },
@@ -123,7 +123,7 @@ export default function AdminCoupons() {
     onError: (error) => {
       toast({
         title: t("common.error"),
-        description: error?.response?.data?.message || error?.message || t("admin.coupons.messages.deleteError"),
+        description: error?.message || t("admin.coupons.messages.deleteError"),
         variant: "destructive",
       });
     },

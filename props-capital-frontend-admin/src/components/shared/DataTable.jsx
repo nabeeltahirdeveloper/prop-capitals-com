@@ -89,7 +89,7 @@ export default function DataTable({
                 {columns.map((col, j) => (
                   <TableCell
                     key={j}
-                    className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 text-slate-800 dark:text-foreground"
+                    className="text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 text-slate-800 dark:text-foreground"
                   >
                     {col.cell ? col.cell(row) : row[col.accessorKey]}
                   </TableCell>

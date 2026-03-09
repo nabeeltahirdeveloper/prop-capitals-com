@@ -1354,6 +1354,12 @@
         "makeAdmin": "管理者にする",
         "makeTrader": "トレーダーにする"
       },
+      "confirmRoleChange": {
+        "title": "役割変更の確認",
+        "description": "{{name}}の役割を{{newRole}}に変更してもよろしいですか？この変更はすぐに管理パネルへのアクセスに影響します。",
+        "confirm": "確認",
+        "cancel": "キャンセル"
+      },
       "dialog": {
         "title": "ユーザー詳細",
         "userId": "ユーザーID",

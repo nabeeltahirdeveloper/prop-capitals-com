@@ -1356,6 +1356,12 @@
         "makeAdmin": "Make Admin",
         "makeTrader": "Make Trader"
       },
+      "confirmRoleChange": {
+        "title": "Confirm Role Change",
+        "description": "Are you sure you want to change {{name}}'s role to {{newRole}}? This will immediately affect their access to this panel.",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
+      },
       "dialog": {
         "title": "User Details",
         "userId": "User ID",

@@ -8,6 +8,7 @@ import {
   adminMarkPayoutAsPaid,
 } from "@/api/admin";
 import { useTranslation } from "../contexts/LanguageContext";
+import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +41,7 @@ import { format } from "date-fns";
 
 export default function AdminPayouts() {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedPayout, setSelectedPayout] = useState(null);
@@ -67,8 +69,7 @@ export default function AdminPayouts() {
       queryClient.invalidateQueries({ queryKey: ["admin-payout-statistics"] });
     },
     onError: (error) => {
-      console.error("Failed to approve payout:", error);
-      alert(error.response?.data?.message || "Failed to approve payout");
+      toast({ title: t("admin.payouts.toast.errorTitle") || "Action Failed", description: error.message || "Failed to approve payout", variant: "destructive" });
     },
   });
 
@@ -81,8 +82,7 @@ export default function AdminPayouts() {
       setRejectReason("");
     },
     onError: (error) => {
-      console.error("Failed to reject payout:", error);
-      alert(error.response?.data?.message || "Failed to reject payout");
+      toast({ title: t("admin.payouts.toast.errorTitle") || "Action Failed", description: error.message || "Failed to reject payout", variant: "destructive" });
     },
   });
 
@@ -93,8 +93,7 @@ export default function AdminPayouts() {
       queryClient.invalidateQueries({ queryKey: ["admin-payout-statistics"] });
     },
     onError: (error) => {
-      console.error("Failed to mark payout as paid:", error);
-      alert(error.response?.data?.message || "Failed to mark payout as paid");
+      toast({ title: t("admin.payouts.toast.errorTitle") || "Action Failed", description: error.message || "Failed to mark payout as paid", variant: "destructive" });
     },
   });
 
