@@ -115,23 +115,23 @@ export class AdminScalingService {
       throw new Error('Only approved requests can be processed');
     }
 
-    // Update trading account balance
-    await this.prisma.tradingAccount.update({
-      where: { id: request.tradingAccountId },
-      data: {
-        balance: request.newBalance,
-        initialBalance: request.newBalance,
-      },
-    });
-
-    // Mark request as completed
-    const updatedRequest = await this.prisma.scalingRequest.update({
-      where: { id },
-      data: {
-        status: 'COMPLETED',
-        processedAt: new Date(),
-      },
-    });
+    // Atomically update trading account balance and mark request as completed
+    const [, updatedRequest] = await this.prisma.$transaction([
+      this.prisma.tradingAccount.update({
+        where: { id: request.tradingAccountId },
+        data: {
+          balance: request.newBalance,
+          initialBalance: request.newBalance,
+        },
+      }),
+      this.prisma.scalingRequest.update({
+        where: { id },
+        data: {
+          status: 'COMPLETED',
+          processedAt: new Date(),
+        },
+      }),
+    ]);
 
     // Create notification for scaling completion
     if (request.tradingAccount?.user?.id) {
@@ -178,7 +178,6 @@ export class AdminScalingService {
       data: {
         status: 'REJECTED',
         reason: reason || null,
-        approvedAt: new Date(),
       },
     });
 

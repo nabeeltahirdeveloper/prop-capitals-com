@@ -1,7 +1,11 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt.guard';
+import { AdminRoleGuard } from '../auth/admin-role.guard';
 import { BrokerServersService } from './broker-servers.service';
+import { CreateBrokerServerDto } from './dto/create-broker-server.dto';
 
 @Controller('admin/broker-servers')
+@UseGuards(JwtAuthGuard, AdminRoleGuard)
 export class BrokerServersController {
   constructor(private readonly brokerServersService: BrokerServersService) {}
 
@@ -19,13 +23,13 @@ export class BrokerServersController {
 
   // Create a broker server
   @Post()
-  create(@Body() data: any) {
+  create(@Body() data: CreateBrokerServerDto) {
     return this.brokerServersService.create(data);
   }
 
   // Update a broker server
   @Patch(':id')
-  update(@Param('id') id: string, @Body() data: any) {
+  update(@Param('id') id: string, @Body() data: Partial<CreateBrokerServerDto>) {
     return this.brokerServersService.update(id, data);
   }
 

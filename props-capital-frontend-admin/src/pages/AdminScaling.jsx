@@ -29,6 +29,7 @@ import {
   TrendingUp,
   Loader2,
 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 // Transform backend response to frontend expected format
 const transformRequest = (request) => {
@@ -80,6 +81,7 @@ const transformRequest = (request) => {
 
 export default function AdminScaling() {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [notes, setNotes] = useState("");
   const queryClient = useQueryClient();
@@ -100,6 +102,10 @@ export default function AdminScaling() {
       queryClient.invalidateQueries({ queryKey: ["scaling-requests"] });
       setSelectedRequest(null);
       setNotes("");
+      toast({ title: t("common.success", { defaultValue: "Success" }), description: t("admin.scaling.toast.approved", { defaultValue: "Scaling request approved successfully." }) });
+    },
+    onError: (error) => {
+      toast({ title: t("common.error", { defaultValue: "Error" }), description: error?.message || t("admin.scaling.toast.approveError", { defaultValue: "Failed to approve scaling request." }), variant: "destructive" });
     },
   });
 
@@ -109,6 +115,10 @@ export default function AdminScaling() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["scaling-requests"] });
+      toast({ title: t("common.success", { defaultValue: "Success" }), description: t("admin.scaling.toast.processed", { defaultValue: "Scaling request processed successfully." }) });
+    },
+    onError: (error) => {
+      toast({ title: t("common.error", { defaultValue: "Error" }), description: error?.message || t("admin.scaling.toast.processError", { defaultValue: "Failed to process scaling request." }), variant: "destructive" });
     },
   });
 
@@ -120,6 +130,10 @@ export default function AdminScaling() {
       queryClient.invalidateQueries({ queryKey: ["scaling-requests"] });
       setSelectedRequest(null);
       setNotes("");
+      toast({ title: t("common.success", { defaultValue: "Success" }), description: t("admin.scaling.toast.rejected", { defaultValue: "Scaling request rejected." }) });
+    },
+    onError: (error) => {
+      toast({ title: t("common.error", { defaultValue: "Error" }), description: error?.message || t("admin.scaling.toast.rejectError", { defaultValue: "Failed to reject scaling request." }), variant: "destructive" });
     },
   });
 

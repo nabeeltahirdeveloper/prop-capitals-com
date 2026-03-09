@@ -34,7 +34,6 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  Settings,
   Trash2,
   TestTube,
 } from "lucide-react";
@@ -49,12 +48,6 @@ export default function AdminBrokerServers() {
     platform: "MT5",
     server_address: "",
     server_port: 443,
-    manager_login: "",
-    manager_password: "",
-    api_key: "",
-    api_secret: "",
-    is_demo: true,
-    timezone: "UTC",
   });
 
   const queryClient = useQueryClient();
@@ -113,12 +106,6 @@ export default function AdminBrokerServers() {
       platform: "MT5",
       server_address: "",
       server_port: 443,
-      manager_login: "",
-      manager_password: "",
-      api_key: "",
-      api_secret: "",
-      is_demo: true,
-      timezone: "UTC",
     });
   };
 
@@ -329,96 +316,18 @@ export default function AdminBrokerServers() {
                   <Input
                     type="number"
                     value={formData.server_port}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value);
                       setFormData({
                         ...formData,
-                        server_port: parseInt(e.target.value) || 443,
-                      })
-                    }
+                        server_port: isNaN(val) ? 443 : Math.min(65535, Math.max(1, val)),
+                      });
+                    }}
                     className="bg-muted border-border text-foreground text-sm"
+                    min={1}
+                    max={65535}
                   />
                 </div>
-              </div>
-
-              {(formData.platform === "MT4" || formData.platform === "MT5") && (
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <Label className="text-muted-foreground text-xs sm:text-sm">
-                      {t("admin.brokerServers.dialog.managerLogin")}
-                    </Label>
-                    <Input
-                      value={formData.manager_login}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          manager_login: e.target.value,
-                        })
-                      }
-                      className="bg-muted border-border text-foreground text-sm"
-                    />
-                  </div>
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <Label className="text-muted-foreground text-xs sm:text-sm">
-                      {t("admin.brokerServers.dialog.managerPassword")}
-                    </Label>
-                    <Input
-                      type="password"
-                      value={formData.manager_password}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          manager_password: e.target.value,
-                        })
-                      }
-                      className="bg-muted border-border text-foreground text-sm"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {(formData.platform === "CTRADER" ||
-                formData.platform === "DXTRADE") && (
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <Label className="text-muted-foreground text-xs sm:text-sm">
-                      {t("admin.brokerServers.dialog.apiKey")}
-                    </Label>
-                    <Input
-                      value={formData.api_key}
-                      onChange={(e) =>
-                        setFormData({ ...formData, api_key: e.target.value })
-                      }
-                      className="bg-muted border-border text-foreground text-sm"
-                    />
-                  </div>
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <Label className="text-muted-foreground text-xs sm:text-sm">
-                      {t("admin.brokerServers.dialog.apiSecret")}
-                    </Label>
-                    <Input
-                      type="password"
-                      value={formData.api_secret}
-                      onChange={(e) =>
-                        setFormData({ ...formData, api_secret: e.target.value })
-                      }
-                      className="bg-muted border-border text-foreground text-sm"
-                    />
-                  </div>
-                </div>
-              )}
-
-              <div className="flex items-center gap-4 py-1">
-                <label className="flex items-center gap-2 text-muted-foreground text-sm sm:text-base cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.is_demo}
-                    onChange={(e) =>
-                      setFormData({ ...formData, is_demo: e.target.checked })
-                    }
-                    className="rounded border-border bg-muted"
-                  />
-                  {t("admin.brokerServers.dialog.demoServer")}
-                </label>
               </div>
 
               <Button
@@ -535,13 +444,6 @@ export default function AdminBrokerServers() {
                     <TestTube className="w-4 h-4 mr-1" />
                   )}
                   {t("admin.brokerServers.actions.test")}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-border text-foreground hover:bg-accent"
-                >
-                  <Settings className="w-4 h-4" />
                 </Button>
                 <Button
                   variant="outline"
