@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   adminGetAllAccounts,
@@ -164,10 +164,32 @@ export default function AdminAccounts() {
   };
 
   const handleResume = (account) => {
+    if (
+      !window.confirm(
+        t("admin.accounts.confirm.resume", {
+          defaultValue:
+            "Are you sure you want to resume this account? The trader will be able to trade again.",
+        }),
+      )
+    )
+      return;
     updateStatusMutation.mutate({
       id: account.id,
       status: "ACTIVE",
     });
+  };
+
+  const handleMoveToFunded = (account) => {
+    if (
+      !window.confirm(
+        t("admin.accounts.confirm.moveToFunded", {
+          defaultValue:
+            "Are you sure you want to move this account to Funded? This action cannot be undone.",
+        }),
+      )
+    )
+      return;
+    updatePhaseMutation.mutate({ id: account.id, phase: "FUNDED" });
   };
 
   const handleForcePass = (account) => {
@@ -462,9 +484,7 @@ export default function AdminAccounts() {
           data-[highlighted]:bg-slate-800
           data-[highlighted]:text-purple-300
         "
-                onClick={() =>
-                  updatePhaseMutation.mutate({ id: row.id, phase: "FUNDED" })
-                }
+                onClick={() => handleMoveToFunded(row)}
               >
                 <TrendingUp className="w-4 h-4 mr-2 text-purple-300" />
                 {t("admin.accounts.actions.moveToFunded")}

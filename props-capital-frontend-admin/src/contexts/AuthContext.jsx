@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useState, useCallback } from 'react';
+import { createContext, useContext, useMemo, useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getCurrentUser } from '@/api/auth';
 
@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
   });
 
   // Fetch current user - enabled only if token exists
-  const { data: user, isLoading, isError, error } = useQuery({
+  const { data: user, isLoading, isError } = useQuery({
     queryKey: ['user', 'me'],
     queryFn: getCurrentUser,
     retry: false,

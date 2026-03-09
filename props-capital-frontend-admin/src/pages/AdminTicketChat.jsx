@@ -1,26 +1,29 @@
-import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { adminGetTicket, adminGetAllSupportTicketsPaginated } from '@/api/admin';
-import TicketSidebar from '@/components/support/TicketSidebar';
-import TicketChatPanel from '@/components/support/TicketChatPanel';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import {
+  adminGetTicket,
+  adminGetAllSupportTicketsPaginated,
+} from "@/api/admin";
+import TicketSidebar from "@/components/support/TicketSidebar";
+import TicketChatPanel from "@/components/support/TicketChatPanel";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 export default function AdminTicketChat() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const { data: ticket, isLoading: ticketLoading } = useQuery({
-    queryKey: ['admin-ticket', id],
+    queryKey: ["admin-ticket", id],
     queryFn: () => adminGetTicket(id),
     enabled: !!id,
   });
 
   const { data: ticketsResponse, isLoading: listLoading } = useQuery({
-    queryKey: ['admin-support-tickets'],
+    queryKey: ["admin-support-tickets"],
     queryFn: () => adminGetAllSupportTicketsPaginated(1, 100),
   });
 
@@ -48,9 +51,7 @@ export default function AdminTicketChat() {
   return (
     <div className="flex h-[calc(100vh-8rem)] -m-4 lg:-m-8 rounded-lg overflow-hidden border border-border bg-card">
       {/* Desktop sidebar */}
-      <div className="hidden lg:block w-[340px] shrink-0">
-        {sidebarContent}
-      </div>
+      <div className="hidden lg:block w-[340px] shrink-0">{sidebarContent}</div>
 
       {/* Mobile sidebar drawer */}
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>

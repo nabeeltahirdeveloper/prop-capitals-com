@@ -83,7 +83,7 @@ export default function AdminCoupons() {
     onError: (error) => {
       toast({
         title: t("common.error"),
-        description: error?.response?.data?.message || error?.message || t("admin.coupons.messages.saveError"),
+        description: error?.message || t("admin.coupons.messages.saveError"),
         variant: "destructive",
       });
     },
@@ -103,7 +103,7 @@ export default function AdminCoupons() {
     onError: (error) => {
       toast({
         title: t("common.error"),
-        description: error?.response?.data?.message || error?.message || t("admin.coupons.messages.saveError"),
+        description: error?.message || t("admin.coupons.messages.saveError"),
         variant: "destructive",
       });
     },
@@ -123,7 +123,7 @@ export default function AdminCoupons() {
     onError: (error) => {
       toast({
         title: t("common.error"),
-        description: error?.response?.data?.message || error?.message || t("admin.coupons.messages.deleteError"),
+        description: error?.message || t("admin.coupons.messages.deleteError"),
         variant: "destructive",
       });
     },
@@ -244,12 +244,16 @@ export default function AdminCoupons() {
 
   const filteredCoupons = useMemo(() => {
     return coupons.filter((c) => {
-      if (searchQuery && !c.code.toLowerCase().includes(searchQuery.toLowerCase())) {
+      if (
+        searchQuery &&
+        !c.code.toLowerCase().includes(searchQuery.toLowerCase())
+      ) {
         return false;
       }
       if (statusFilter === "active") return c.isActive;
       if (statusFilter === "inactive") return !c.isActive;
-      if (statusFilter === "expired") return c.expiresAt && new Date(c.expiresAt) < new Date();
+      if (statusFilter === "expired")
+        return c.expiresAt && new Date(c.expiresAt) < new Date();
       return true;
     });
   }, [coupons, searchQuery, statusFilter]);
@@ -316,9 +320,7 @@ export default function AdminCoupons() {
       header: t("admin.coupons.table.created"),
       accessorKey: "createdAt",
       cell: (row) =>
-        row.createdAt
-          ? format(new Date(row.createdAt), "MMM d, yyyy")
-          : "—",
+        row.createdAt ? format(new Date(row.createdAt), "MMM d, yyyy") : "—",
     },
     {
       header: t("admin.coupons.table.actions"),
@@ -425,7 +427,10 @@ export default function AdminCoupons() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-card border-border text-foreground">
-                      <SelectItem value="percentage" className="text-foreground">
+                      <SelectItem
+                        value="percentage"
+                        className="text-foreground"
+                      >
                         {t("admin.coupons.form.percentage")}
                       </SelectItem>
                       <SelectItem value="fixed" className="text-foreground">
@@ -452,7 +457,9 @@ export default function AdminCoupons() {
                       formData.discountType === "percentage" ? "20" : "50"
                     }
                     min="1"
-                    max={formData.discountType === "percentage" ? "100" : undefined}
+                    max={
+                      formData.discountType === "percentage" ? "100" : undefined
+                    }
                     step="1"
                     className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm h-9 sm:h-10"
                   />
@@ -552,7 +559,11 @@ export default function AdminCoupons() {
         />
         <StatsCard
           title={t("admin.coupons.stats.expired")}
-          value={coupons.filter((c) => c.expiresAt && new Date(c.expiresAt) < new Date()).length}
+          value={
+            coupons.filter(
+              (c) => c.expiresAt && new Date(c.expiresAt) < new Date(),
+            ).length
+          }
           icon={Clock}
           iconColor="text-muted-foreground"
         />
@@ -564,7 +575,10 @@ export default function AdminCoupons() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder={t("admin.coupons.searchPlaceholder") || "Search by coupon code..."}
+              placeholder={
+                t("admin.coupons.searchPlaceholder") ||
+                "Search by coupon code..."
+              }
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
@@ -603,10 +617,13 @@ export default function AdminCoupons() {
       </Card>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={(open) => {
-        setDeleteDialogOpen(open);
-        if (!open) setDeletingCoupon(null);
-      }}>
+      <Dialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+          if (!open) setDeletingCoupon(null);
+        }}
+      >
         <DialogContent className="bg-card border-border w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle className="text-foreground text-base sm:text-lg">
@@ -616,7 +633,8 @@ export default function AdminCoupons() {
           <div className="space-y-4 mt-3">
             <div className="bg-muted/50 rounded-lg p-3">
               <p className="text-sm text-muted-foreground">
-                {t("admin.coupons.deleteConfirmMessage") || "Are you sure you want to delete this coupon? This action cannot be undone."}
+                {t("admin.coupons.deleteConfirmMessage") ||
+                  "Are you sure you want to delete this coupon? This action cannot be undone."}
               </p>
               {deletingCoupon && (
                 <p className="text-sm font-mono text-foreground mt-2">
@@ -645,8 +663,8 @@ export default function AdminCoupons() {
                 }}
               >
                 {deleteMutation.isPending
-                  ? (t("common.deleting") || "Deleting...")
-                  : (t("common.delete") || "Delete")}
+                  ? t("common.deleting") || "Deleting..."
+                  : t("common.delete") || "Delete"}
               </Button>
             </div>
           </div>

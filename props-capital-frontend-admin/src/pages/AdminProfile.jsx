@@ -199,12 +199,14 @@ export default function AdminProfile() {
       });
       return;
     }
-    const complexityRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])/;
+    const complexityRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])/;
     if (!complexityRegex.test(passwordForm.newPassword)) {
       toast({
         title: t("profile.validationError"),
         description: t("profile.passwordComplexityRequired", {
-          defaultValue: "Password must include uppercase, lowercase, number, and special character",
+          defaultValue:
+            "Password must include uppercase, lowercase, number, and special character",
         }),
         variant: "destructive",
       });
@@ -345,8 +347,12 @@ export default function AdminProfile() {
             className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm text-muted-foreground transition-all text-xs sm:text-sm"
           >
             <User className="w-4 h-4 sm:mr-2 flex-shrink-0" />
-            <span className="hidden sm:inline">{t("profile.personalInfo")}</span>
-            <span className="sm:hidden sr-only">{t("profile.personalInfo")}</span>
+            <span className="hidden sm:inline">
+              {t("profile.personalInfo")}
+            </span>
+            <span className="sm:hidden sr-only">
+              {t("profile.personalInfo")}
+            </span>
           </TabsTrigger>
           <TabsTrigger
             value="security"
@@ -361,8 +367,12 @@ export default function AdminProfile() {
             className="flex items-center justify-center py-2 sm:py-2.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm text-muted-foreground transition-all text-xs sm:text-sm"
           >
             <Bell className="w-4 h-4 sm:mr-2 flex-shrink-0" />
-            <span className="hidden sm:inline">{t("profile.notifications")}</span>
-            <span className="sm:hidden sr-only">{t("profile.notifications")}</span>
+            <span className="hidden sm:inline">
+              {t("profile.notifications")}
+            </span>
+            <span className="sm:hidden sr-only">
+              {t("profile.notifications")}
+            </span>
           </TabsTrigger>
         </TabsList>
 

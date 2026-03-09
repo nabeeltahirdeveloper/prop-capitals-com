@@ -1,8 +1,8 @@
-import { apiGet, apiPost, apiPatch } from '@/lib/api';
+import { apiGet, apiPost, apiPatch } from "@/lib/api";
 
 // API Functions
 export const createSupportTicket = async (data) => {
-  return apiPost('/support-tickets', data);
+  return apiPost("/support-tickets", data);
 };
 
 export const getUserTickets = async (userId) => {
@@ -16,4 +16,3 @@ export const getTicket = async (id) => {
 export const updateTicketStatus = async (id, status) => {
   return apiPatch(`/support-tickets/${id}/status`, { status });
 };
-

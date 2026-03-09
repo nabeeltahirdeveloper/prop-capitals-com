@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   adminGetAllUsers,
@@ -43,6 +43,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { format } from "date-fns";
 
@@ -53,6 +54,7 @@ export default function AdminUsers() {
   const [roleFilter, setRoleFilter] = useState("all");
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
+  const [pendingRoleChange, setPendingRoleChange] = useState(null); // { user, newRole }
   const queryClient = useQueryClient();
 
   // Debounce search query to avoid hammering the API on every keystroke
@@ -108,19 +110,21 @@ export default function AdminUsers() {
     setSelectedUserId(null);
   };
 
-  // Handler for role switching
+  // Handler for role switching — opens confirmation dialog first
   const handleSwitchRole = (user) => {
     const newRole = user.role === "admin" ? "TRADER" : "ADMIN";
+    setPendingRoleChange({ user, newRole });
+  };
+
+  const handleConfirmRoleChange = () => {
+    if (!pendingRoleChange) return;
     updateRoleMutation.mutate(
-      {
-        userId: user.id,
-        role: newRole,
-      },
+      { userId: pendingRoleChange.user.id, role: pendingRoleChange.newRole },
       {
         onError: (error) => {
           console.error("Failed to update user role:", error);
-          // You could add a toast notification here
         },
+        onSettled: () => setPendingRoleChange(null),
       },
     );
   };
@@ -345,6 +349,51 @@ export default function AdminUsers() {
           emptyMessage={t("admin.users.emptyMessage")}
         />
       </Card>
+
+      {/* Role Change Confirmation Dialog */}
+      <Dialog
+        open={!!pendingRoleChange}
+        onOpenChange={() => setPendingRoleChange(null)}
+      >
+        <DialogContent className="bg-card border-border w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6 [&>button]:text-foreground [&>button]:hover:text-foreground">
+          <DialogHeader>
+            <DialogTitle className="text-foreground text-base sm:text-lg">
+              {t("admin.users.confirmRoleChange.title")}
+            </DialogTitle>
+            <DialogDescription className="text-muted-foreground text-sm">
+              {t("admin.users.confirmRoleChange.description", {
+                name:
+                  pendingRoleChange?.user?.full_name ||
+                  pendingRoleChange?.user?.email ||
+                  "",
+                newRole:
+                  pendingRoleChange?.newRole === "ADMIN"
+                    ? t("admin.users.roles.admin")
+                    : t("admin.users.roles.user"),
+              })}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4">
+            <Button
+              variant="outline"
+              className="flex-1 border-border text-foreground hover:bg-accent order-2 sm:order-1"
+              onClick={() => setPendingRoleChange(null)}
+              disabled={updateRoleMutation.isPending}
+            >
+              {t("admin.users.confirmRoleChange.cancel")}
+            </Button>
+            <Button
+              className="flex-1 bg-amber-500 hover:bg-amber-600 text-[#0a0d12] order-1 sm:order-2"
+              onClick={handleConfirmRoleChange}
+              disabled={updateRoleMutation.isPending}
+            >
+              {updateRoleMutation.isPending
+                ? t("common.loading")
+                : t("admin.users.confirmRoleChange.confirm")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* User Details Dialog */}
       <Dialog open={isDetailsDialogOpen} onOpenChange={handleCloseDetails}>
