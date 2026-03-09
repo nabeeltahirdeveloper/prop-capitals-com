@@ -21,7 +21,6 @@ import {
   Check,
   Eye,
   EyeOff,
-  ExternalLink,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { format } from "date-fns";

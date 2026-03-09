@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { adminGetAllViolations } from "@/api/admin";
 import { useTranslation } from "../contexts/LanguageContext";
