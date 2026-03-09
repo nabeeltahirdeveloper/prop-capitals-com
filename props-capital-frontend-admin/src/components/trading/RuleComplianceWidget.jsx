@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -115,7 +114,6 @@ export default function RuleComplianceWidget({ account }) {
 
   const violations = rules.filter(r => r.status === 'violated');
   const warnings = rules.filter(r => r.status === 'warning');
-  const completed = rules.filter(r => r.status === 'completed' || r.status === 'ok');
 
   return (
     <Card className="bg-slate-900 border-slate-800 p-6">

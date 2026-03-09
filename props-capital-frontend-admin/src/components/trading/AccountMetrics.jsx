@@ -1,16 +1,11 @@
-import React, { useState, useEffect } from "react";
+
+import React from "react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import {
-  calculatePositionsWithPnL,
-  getPositionDuration,
-} from "@/utils/positionCalculations";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  DollarSign,
   TrendingUp,
-  TrendingDown,
   Shield,
   Target,
   AlertTriangle,
@@ -25,16 +20,9 @@ import {
   Calendar,
 } from "lucide-react";
 import { useTranslation } from "../../contexts/LanguageContext";
-import { PnlDisplay } from "../PnlDisplay";
-import { getChallenge } from "@/api/challenges";
-import { useQuery } from "@tanstack/react-query";
 
 export default function AccountMetrics({
   account,
-  positions = [],
-  currentPrices = {},
-  getPriceForPosition,
-  isCryptoSymbol,
   isLoading = false,
 }) {
   const { t } = useTranslation();
@@ -46,9 +34,6 @@ export default function AccountMetrics({
     account?.floatingPnL || 0,
   );
 
-  const [displayProfitPercent, setDisplayProfitPercent] = React.useState(
-    account?.profitPercent || 0,
-  );
   const [displayDailyDrawdown, setDisplayDailyDrawdown] = React.useState(
     account?.dailyDrawdown || 0,
   );
@@ -72,7 +57,7 @@ export default function AccountMetrics({
   // Store frozen drawdown values when limit is reached (so bars stay at 100%)
   // Get from sessionStorage if available (set when violation occurs), otherwise use current values
   // Use namespaced keys: violation:${accountId}:... to prevent overwrites across accounts
-  const getFrozenDrawdown = (key, currentValue) => {
+  const getFrozenDrawdown = (key) => {
     if (typeof window === "undefined") return null;
     const stored = sessionStorage.getItem(key);
     return stored ? parseFloat(stored) : null;
@@ -93,7 +78,7 @@ export default function AccountMetrics({
 
   // Update refs from sessionStorage if available (use namespaced keys)
   // Also check for breach snapshot values from trades if available
-  React.useEffect(() => {
+  useEffect(() => {
     if (accountId) {
       const dailyDD = getFrozenDrawdown(
         `violation:${accountId}:daily_dd`,
@@ -123,43 +108,10 @@ export default function AccountMetrics({
         }
       }
     }
-  }, [accountId, displayDailyDrawdown, displayOverallDrawdown]);
+  }, [accountId, displayDailyDrawdown, displayOverallDrawdown, account?.status]);
 
   // Real-time updates for all metrics - updates every 1 second for responsiveness
-  React.useEffect(() => {
-    // Calculate real-time "used" balance based on positions
-    // const realTimeBalance = calculateRealTimeBalance();
-    const baseBalance = account?.balance || 100000;
-
-    // Calculate real-time equity from positions (balance + floating PnL)
-    let calculatedRealTimeEquity = baseBalance;
-    if (positions && positions.length > 0) {
-      let totalFloatingPnL = 0;
-      positions.forEach((pos) => {
-        const currentPrice = getPriceForPosition(
-          pos.symbol,
-          pos.type,
-          pos.entryPrice,
-        );
-        if (currentPrice && currentPrice > 0) {
-          const isCrypto =
-            typeof isCryptoSymbol === "function"
-              ? isCryptoSymbol(pos.symbol)
-              : /BTC|ETH|SOL|XRP|ADA|DOGE/.test(pos.symbol || "");
-          const contractSize = isCrypto ? 1 : 100000;
-          const priceDiff =
-            pos.type === "BUY"
-              ? currentPrice - pos.entryPrice
-              : pos.entryPrice - currentPrice;
-          const positionPnL = isCrypto
-            ? priceDiff * pos.lotSize
-            : priceDiff * pos.lotSize * contractSize;
-          totalFloatingPnL += positionPnL;
-        }
-      });
-      calculatedRealTimeEquity = baseBalance + totalFloatingPnL;
-    }
-
+  useEffect(() => {
     // Equity from backend (settled equity – updated when trades close)
     const currentEquity = account?.equity;
     const currentFloatingPnL = account?.floatingPnL || 0;
@@ -308,14 +260,8 @@ export default function AccountMetrics({
   ]);
 
   const {
-    balance = 100000,
-    equity = 100850,
     margin = 0, // Use backend value
     freeMargin = 100000, // Use backend value
-    floatingPnL = 850,
-    profitPercent = 0.85,
-    realizedProfitPercent = 0, // ✅ Added from earliest version
-    liveProfitPercent = 0, // ✅ Added from earliest version
     profitForTarget = 0, // ✅ Added from earliest version
     dailyDrawdown = 0,
     maxDailyDrawdown = 5,
@@ -332,10 +278,7 @@ export default function AccountMetrics({
   // Determine if account is locked or disqualified
   // Handle all possible failure statuses: DAILY_LOCKED, DISQUALIFIED, FAILED, CHALLENGE_FAILED, ACCOUNT_FAILED, etc.
   const statusUpper = String(status || "").toUpperCase();
-  const isLocked =
-    statusUpper.includes("DAILY") ||
-    statusUpper.includes("FAIL") ||
-    statusUpper.includes("DISQUAL");
+
   const isDailyLocked = statusUpper.includes("DAILY");
   const isDisqualified =
     statusUpper.includes("FAIL") || statusUpper.includes("DISQUAL");
@@ -935,8 +878,8 @@ export default function AccountMetrics({
             <Skeleton className="h-6 w-16 bg-slate-800" />
           ) : (
             <p className="text-sm sm:text-lg font-bold font-mono text-emerald-400">
-              {/* ✅ Show liveProfitPercent from earliest version */}+
-              {liveProfitPercent.toFixed(2)}%
+              {/* ✅ Show profitPercent since liveProfitPercent is removed */}+
+              {(account?.profitPercent || 0).toFixed(2)}%
             </p>
           )}
         </Card>

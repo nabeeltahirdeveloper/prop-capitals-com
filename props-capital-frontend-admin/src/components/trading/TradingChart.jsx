@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   createChart,
   ColorType,
@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BarChart2, Clock, LineChart as LineChartIcon } from "lucide-react";
 import { useTranslation } from "../../contexts/LanguageContext";
-import { getMarketHistory, getCurrentPrice } from "@/api/market-data";
+import { getMarketHistory } from "@/api/market-data";
 import { usePrices } from "@/contexts/PriceContext";
 
 // Timeframe to milliseconds mapping
@@ -487,7 +487,7 @@ export default function TradingChart({
         }
       };
     }
-  }, []);
+  }, [symbol.symbol]);
 
   // Fetch historical data
   const fetchHistory = useCallback(
@@ -514,21 +514,21 @@ export default function TradingChart({
       if (candlestickSeriesRef.current) {
         try {
           candlestickSeriesRef.current.setData([]);
-        } catch (e) {
+        } catch {
           // Ignore errors when clearing
         }
       }
       if (lineSeriesRef.current) {
         try {
           lineSeriesRef.current.setData([]);
-        } catch (e) {
+        } catch {
           // Ignore errors when clearing
         }
       }
       if (volumeSeriesRef.current) {
         try {
           volumeSeriesRef.current.setData([]);
-        } catch (e) {
+        } catch {
           // Ignore errors when clearing
         }
       }
@@ -653,11 +653,6 @@ export default function TradingChart({
             setIsLoading(false);
             return;
           }
-
-          const lineData = uniqueCandles.map((c) => ({
-            time: c.time,
-            value: c.close,
-          }));
 
           // Create volume data matching the unique candles by time
           const candleTimeMap = new Map(candles.map((c) => [c.time, c]));
@@ -866,7 +861,7 @@ export default function TradingChart({
               if (chartRef.current && typeof chartRef.current.timeScale === "function") {
                 chartRef.current.timeScale().fitContent();
               }
-            } catch (e) {
+            } catch {
               // ignore if API not available
             }
           });
@@ -1011,7 +1006,7 @@ export default function TradingChart({
     }, 200);
 
     return () => clearTimeout(timer);
-  }, [chartType]); // Only depend on chartType, not symbol or timeframe
+  }, [chartType, symbol.symbol, timeframe, fetchHistory]); // Only depend on chartType, not symbol or timeframe
 
   // Update current price line
   const updateCurrentPriceLine = useCallback(
@@ -1273,7 +1268,7 @@ export default function TradingChart({
 
               // Update volume tracking
               currentVolumeRef.current = 1;
-            } catch (err) {
+            } catch {
               // If setData fails, the series might not be initialized yet - that's okay
               // The fetchHistory will populate it soon
             }

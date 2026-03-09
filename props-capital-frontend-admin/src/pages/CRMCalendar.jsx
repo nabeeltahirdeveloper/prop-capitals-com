@@ -164,7 +164,7 @@ export default function CRMCalendar() {
     return () => {
       cancelled = true;
     };
-  }, [fetchData, currentMonth]);
+  }, [currentMonth, searchQuery, typeFilter, statusFilter, fromDate, toDate]);
 
   const handleScheduleMeeting = async () => {
     if (!newMeeting.title || !newMeeting.clientName) {

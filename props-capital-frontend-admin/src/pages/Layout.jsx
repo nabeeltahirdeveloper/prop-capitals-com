@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "../utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
@@ -22,20 +22,14 @@ import {
   ChevronLeft,
   ChevronRight,
   Users,
-  FileText,
   CreditCard,
-  BarChart3,
   Shield,
   HelpCircle,
-  Home,
   Award,
   Zap,
   Server,
   Activity,
-  Target,
   Check,
-  Calendar,
-  UserPlus,
   DollarSign,
   Sun,
   Moon,
@@ -67,7 +61,6 @@ export default function Layout({ children, currentPageName }) {
   const [openSubmenu, setOpenSubmenu] = useState(null);
 
   const location = useLocation();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   // Close mobile sidebar on route change (nice UX)

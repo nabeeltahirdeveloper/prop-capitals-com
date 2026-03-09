@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
   });
 
   // Fetch current user - enabled only if token exists
-  const { data: user, isLoading, isError, error } = useQuery({
+  const { data: user, isLoading, isError } = useQuery({
     queryKey: ['user', 'me'],
     queryFn: getCurrentUser,
     retry: false,

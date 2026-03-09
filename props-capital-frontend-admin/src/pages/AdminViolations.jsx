@@ -57,7 +57,7 @@ export default function AdminViolations() {
 
   // Map backend violation data to frontend format
   const displayViolations = useMemo(() => {
-    const data = Array.isArray(violationsData) ? violationsData : [];
+    const data = Array.isArray(response?.data) ? response?.data : [];
     return data.map((violation) => {
       // Convert backend enum type to frontend lowercase format
       const violationType = violation.type?.toLowerCase() || "unknown";
@@ -95,7 +95,7 @@ export default function AdminViolations() {
         created_date: violation.createdAt,
       };
     });
-  }, [violationsData]);
+  }, [response?.data]);
 
   const filteredViolations = displayViolations.filter((violation) => {
     const query = searchQuery.toLowerCase();
@@ -211,7 +211,7 @@ export default function AdminViolations() {
           const date = new Date(row.created_date);
           if (isNaN(date.getTime())) return "-";
           return format(date, "MMM d, HH:mm");
-        } catch (error) {
+        } catch {
           return "-";
         }
       },

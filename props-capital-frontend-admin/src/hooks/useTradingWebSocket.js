@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { io, Socket } from "socket.io-client";
+import { io } from "socket.io-client";
 
 const WEBSOCKET_URL =
   import.meta.env.VITE_WEBSOCKET_URL || "http://localhost:5002";
@@ -174,8 +174,9 @@ export function useTradingWebSocket({
 
     // Cleanup on unmount
     return () => {
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
+      const timeoutRef = reconnectTimeoutRef.current;
+      if (timeoutRef) {
+        clearTimeout(timeoutRef);
       }
 
       if (socketRef.current) {
@@ -186,7 +187,7 @@ export function useTradingWebSocket({
 
       subscribedAccountRef.current = null;
     };
-  }, []); // Only run once on mount
+  }, [connect]); //  run once on mount
 
   // Manual reconnect function
   const reconnect = useCallback(() => {

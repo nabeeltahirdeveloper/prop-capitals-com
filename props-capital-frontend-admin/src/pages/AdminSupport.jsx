@@ -151,7 +151,7 @@ export default function AdminSupport() {
     priority ? priority.toLowerCase() : "medium";
 
   const displayTickets = useMemo(() => {
-    return (Array.isArray(ticketsData) ? ticketsData : []).map((ticket) => ({
+    return (Array.isArray(rawTickets) ? rawTickets : []).map((ticket) => ({
       id: ticket.id,
       displayName: getUserDisplayName(ticket.user, ticket),
       email: getUserEmail(ticket.user, ticket),
@@ -164,7 +164,7 @@ export default function AdminSupport() {
       created_date: ticket.createdAt,
       updated_date: ticket.updatedAt,
     }));
-  }, [ticketsData]);
+  }, [rawTickets]);
 
   const handleUpdateStatus = (ticket, status) => {
     const statusMap = {
