@@ -1860,7 +1860,9 @@
       "severity": {
         "fatal": "Fatal",
         "warning": "Warning"
-      }
+      },
+      "loading": "กำลังโหลดบัญชี...",
+      "noAccounts": "ไม่พบบัญชีที่ตรงกับเกณฑ์ของคุณ"
     },
     "brokerServers": {
       "title": "เซิร์ฟเวอร์โบรกเกอร์",

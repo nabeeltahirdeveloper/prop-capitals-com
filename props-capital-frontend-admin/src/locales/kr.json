@@ -1847,7 +1847,9 @@
       "severity": {
         "fatal": "Fatal",
         "warning": "Warning"
-      }
+      },
+      "loading": "계정 로드 중...",
+      "noAccounts": "조건에 맞는 계정을 찾을 수 없습니다."
     },
     "brokerServers": {
       "title": "브로커 서버",

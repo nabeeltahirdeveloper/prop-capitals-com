@@ -30,14 +30,12 @@ import {
   Eye,
 } from "lucide-react";
 import { format } from "date-fns";
-import { useChatSupportStore } from "@/lib/stores/chat-support.store";
 import supportSocket, { connectSupportSocket } from "@/lib/supportSocket";
 
 export default function AdminSupport() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const openChat = useChatSupportStore((state) => state.openChat);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -342,7 +340,19 @@ export default function AdminSupport() {
           <Button
             size="sm"
             className="bg-gradient-to-r from-[#d97706] to-[#d97706] hover:from-amber-600 hover:to-amber-600 text-white text-xs gap-1.5"
-            onClick={openChat}
+            onClick={() => {
+              // Find the first open or waiting_for_admin ticket
+              const firstOpenTicket = ticketsData.find(
+                (t) => t.status === "open" || t.status === "waiting_for_admin"
+              );
+              if (firstOpenTicket) {
+                navigate(`/AdminSupport/tickets/${firstOpenTicket.id}`);
+              } else if (ticketsData.length > 0) {
+                // If no open tickets, open the first ticket regardless of status
+                navigate(`/AdminSupport/tickets/${ticketsData[0].id}`);
+              }
+            }}
+            disabled={ticketsData.length === 0}
           >
             <MessageCircle className="w-4 h-4" />
             {t("admin.support.chat.openChat")}

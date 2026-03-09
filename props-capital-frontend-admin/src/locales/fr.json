@@ -1847,7 +1847,9 @@
       "severity": {
         "fatal": "Fatal",
         "warning": "Warning"
-      }
+      },
+      "loading": "Chargement des comptes...",
+      "noAccounts": "Aucun compte ne correspond à vos critères."
     },
     "brokerServers": {
       "title": "Serveurs broker",

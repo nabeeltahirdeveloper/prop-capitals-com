@@ -1847,7 +1847,9 @@
       "severity": {
         "fatal": "Fatal",
         "warning": "Warning"
-      }
+      },
+      "loading": "Загрузка учетных записей...",
+      "noAccounts": "Не найдены учетные записи, соответствующие условиям поиска."
     },
     "brokerServers": {
       "title": "Серверы брокера",
