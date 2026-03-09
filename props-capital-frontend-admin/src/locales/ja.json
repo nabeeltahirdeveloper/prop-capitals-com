@@ -1847,7 +1847,9 @@
       "severity": {
         "fatal": "Fatal",
         "warning": "Warning"
-      }
+      },
+      "loading": "アカウントを読み込み中...",
+      "noAccounts": "条件に一致するアカウントが見つかりません。"
     },
     "brokerServers": {
       "title": "ブローカーサーバー",

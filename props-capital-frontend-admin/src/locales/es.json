@@ -1858,7 +1858,9 @@
       "severity": {
         "fatal": "Fatal",
         "warning": "Warning"
-      }
+      },
+      "loading": "Cargando cuentas...",
+      "noAccounts": "No se encontraron cuentas que coincidan con tus criterios."
     },
     "brokerServers": {
       "title": "Servidores del bróker",

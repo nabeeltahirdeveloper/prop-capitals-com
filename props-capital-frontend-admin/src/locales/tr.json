@@ -1847,7 +1847,9 @@
       "severity": {
         "fatal": "Fatal",
         "warning": "Warning"
-      }
+      },
+      "loading": "Hesaplar yükleniyor...",
+      "noAccounts": "Ölçütlerinize uyan hesap bulunamadı."
     },
     "brokerServers": {
       "title": "Broker sunucuları",

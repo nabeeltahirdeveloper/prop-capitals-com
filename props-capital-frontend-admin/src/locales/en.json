@@ -1507,7 +1507,9 @@
       "severity": {
         "fatal": "Fatal",
         "warning": "Warning"
-      }
+      },
+      "loading": "Loading accounts...",
+      "noAccounts": "No accounts found matching your criteria."
     },
     "payouts": {
       "title": "Payout Management",
