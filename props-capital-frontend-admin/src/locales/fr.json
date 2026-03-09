@@ -6,7 +6,10 @@
     "allPlatforms": "Toutes les plateformes",
     "unknown": "Inconnu",
     "error": "Erreur",
-    "success": "Succès"
+    "success": "Succès",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "deleting": "Suppression..."
   },
   "home": {
     "hero": {
@@ -442,8 +445,11 @@
     "marketingEmailsDesc": "Actualités, promotions et offres spéciales",
     "passwordChangedDesc": "Votre mot de passe a été mis à jour avec succès.",
     "passwordChangeFailed": "Échec du changement de mot de passe",
-    "passwordChangeError": "Une erreur s'est produite lors du changement de votre mot de passe.",
+    "passwordChangeError": "Une erreur s'est produite lors de la modification de votre mot de passe.",
     "validationError": "Erreur de validation",
+    "currentPasswordRequired": "Veuillez entrer votre mot de passe actuel.",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
     "notificationUpdateError": "Échec de la mise à jour des préférences de notification.",
     "notificationsUpdated": "Notifications mises à jour",
     "notificationsUpdatedDesc": "Vos préférences de notification ont été enregistrées.",
@@ -1561,7 +1567,9 @@
         "weekendHolding": "Maintien le week-end",
         "restrictedInstrument": "Instrument restreint",
         "lotSize": "Taille de lot",
-        "eaDetected": "EA détecté"
+        "eaDetected": "EA détecté",
+        "consistency": "Cohérence",
+        "ruleBreak": "Infraction aux règles"
       },
       "severity": {
         "fatal": "Grave",
@@ -1575,7 +1583,12 @@
         "weekend_holding": "Position maintenue pendant le week-end",
         "restricted_instrument": "Trading sur un instrument restreint",
         "lot_size": "La limite de taille de lot a été dépassée",
-        "ea_detected": "Expert Advisor détecté"
+        "ea_detected": "Expert Advisor détecté",
+        "consistency": "Règle de cohérence violée",
+        "rule_break": "Violation de règle de trading"
+      },
+      "pagination": {
+        "showing": "Page {{page}} de {{totalPages}} ({{total}} au total)"
       },
       "emptyMessage": "Aucune infraction trouvée"
     },
@@ -1611,8 +1624,18 @@
         "usage": "Utilisation",
         "validUntil": "Valable jusqu’au",
         "status": "Statut",
+        "created": "Créé le",
         "actions": "Actions"
       },
+      "searchPlaceholder": "Rechercher par code promo...",
+      "filter": {
+        "all": "Tous les statuts",
+        "active": "Actif",
+        "inactive": "Inactif",
+        "expired": "Expiré"
+      },
+      "deleteConfirmTitle": "Supprimer le coupon",
+      "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer ce coupon ? Cette action est irréversible.",
       "status": {
         "active": "Actif",
         "inactive": "Inactif"
@@ -1652,7 +1675,9 @@
         "open": "Ouvert",
         "inProgress": "En cours",
         "resolved": "Résolu",
-        "closed": "Fermé"
+        "closed": "Fermé",
+        "waitingForAdmin": "En attente de l'administrateur",
+        "waitingForTrader": "En attente du trader"
       },
       "table": {
         "ticket": "Ticket",
@@ -1692,6 +1717,14 @@
         "questionAboutScalingPlan": "Question sur le plan de scaling",
         "refundRequest": "Demande de remboursement",
         "challengeRulesClarification": "Clarification des règles du challenge"
+      },
+      "pagination": {
+        "page": "Page {{page}} sur {{totalPages}} ({{total}} tickets)",
+        "previous": "Précédent",
+        "next": "Suivant"
+      },
+      "chat": {
+        "openChat": "Ouvrir le chat"
       }
     },
     "settings": {
@@ -3013,16 +3046,16 @@
       "whatsapp": "WhatsApp",
       "telegram_activity": "Telegram",
       "toast": {
-        "fetchError": "Failed to fetch leads",
-        "loadError": "Failed to load lead details",
-        "updateSuccess": "Lead updated successfully",
-        "updateError": "Failed to update lead",
-        "activityLogged": "Activity logged: {{type}}",
-        "activityError": "Failed to log activity",
-        "importSuccess": "Imported {{created}} of {{total}} leads",
-        "importError": "Failed to import CSV",
-        "noteAdded": "Note added successfully",
-        "noteError": "Failed to add note"
+        "fetchError": "Échec de la récupération des leads",
+        "loadError": "Échec du chargement des détails du lead",
+        "updateSuccess": "Lead mis à jour avec succès",
+        "updateError": "Échec de la mise à jour du lead",
+        "activityLogged": "Activité enregistrée : {{type}}",
+        "activityError": "Échec de l'enregistrement de l'activité",
+        "importSuccess": "{{created}} sur {{total}} leads importés",
+        "importError": "Échec de l'importation du CSV",
+        "noteAdded": "Note ajoutée avec succès",
+        "noteError": "Échec de l'ajout de la note"
       }
     },
     "status": {
@@ -3074,7 +3107,8 @@
       "activityRecorded": "{{type}} enregistré",
       "direct": "Direct",
       "quickActionNote": "Tentative de {{type}} effectuée via les actions rapides du pipeline",
-      "activityFailed": "Échec de l'enregistrement de l'activité"
+      "activityFailed": "Échec de l'enregistrement de l'activité",
+      "noLeadsInStage": "Aucun prospect dans cette étape"
     },
     "columns": {
       "new": "Nouveaux Prospects",
@@ -3111,37 +3145,37 @@
       "noDescription": "Aucune description fournie"
     },
     "ftdReport": {
-      "title": "FTD Report",
-      "subtitle": "First Time Deposit tracking from converted leads",
+      "title": "Rapport des Commandes",
+      "subtitle": "Suivi des commandes des leads convertis",
       "totalFtd": "Total FTD",
-      "totalDeposits": "Total Deposits",
-      "avgFtdAmount": "Avg FTD Amount",
-      "activeAgents": "Active Agents",
-      "searchPlaceholder": "Search by name, email, or country...",
-      "allAgents": "All Agents",
-      "tableTitle": "First Time Deposits",
-      "leadName": "Lead Name",
+      "totalDeposits": "Total des Commandes",
+      "avgFtdAmount": "Montant Moyen de Commande",
+      "activeAgents": "Agents Actifs",
+      "searchPlaceholder": "Rechercher par nom, email ou pays...",
+      "allAgents": "Tous les Agents",
+      "tableTitle": "Premiers Dépôts",
+      "leadName": "Nom du Lead",
       "email": "Email",
-      "phone": "Phone",
-      "country": "Country",
-      "depositAmount": "Deposit Amount",
-      "convertedDate": "Converted Date",
-      "status": "Status",
-      "converted": "Converted",
+      "phone": "Téléphone",
+      "country": "Pays",
+      "depositAmount": "Montant du Dépôt",
+      "convertedDate": "Date de Conversion",
+      "status": "Statut",
+      "converted": "Converti",
       "agent": "Agent",
-      "paymentMethod": "Payment Method",
-      "paymentProvider": "Payment Provider",
+      "paymentMethod": "Mode de Paiement",
+      "paymentProvider": "Fournisseur de Paiement",
       "source": "Source",
-      "affiliateId": "Affiliate ID",
-      "funnelName": "Funnel Name",
-      "ftdTime": "FTD Time",
-      "subParameters": "Sub Parameters",
-      "na": "N/A",
-      "unassigned": "Unassigned",
-      "loading": "Loading FTD data...",
-      "noData": "No first time deposits found.",
-      "showing": "Showing {{count}} First Time Deposits",
-      "loadError": "Failed to load FTD report data"
+      "affiliateId": "ID Affilié",
+      "funnelName": "Nom du Tunnel",
+      "ftdTime": "Heure FTD",
+      "subParameters": "Sous-Paramètres",
+      "na": "N/D",
+      "unassigned": "Non assigné",
+      "loading": "Chargement des données FTD...",
+      "noData": "Aucun premier dépôt trouvé.",
+      "showing": "Affichage de {{count}} Premiers Dépôts",
+      "loadError": "Échec du chargement des données du rapport FTD"
     },
     "crmCalendar": {
       "title": "Calendrier des Ventes",
@@ -3181,16 +3215,19 @@
       "placeholderTitle": "ex: Appel de suivi",
       "placeholderClient": "Entrez le nom du client",
       "weekdays": {
-        "sun": "Sun",
-        "mon": "Mon",
-        "tue": "Tue",
-        "wed": "Wed",
-        "thu": "Thu",
-        "fri": "Fri",
-        "sat": "Sat"
+        "sun": "Dim",
+        "mon": "Lun",
+        "tue": "Mar",
+        "wed": "Mer",
+        "thu": "Jeu",
+        "fri": "Ven",
+        "sat": "Sam"
       },
-      "moreCount": "+ {{count}} more",
-      "minShort": "min"
+      "moreCount": "+ {{count}} de plus",
+      "minShort": "min",
+      "errorDateTimeRequired": "La date et l'heure sont obligatoires",
+      "errorInvalidDuration": "La durée doit être un nombre positif",
+      "loadError": "Échec du chargement des données du calendrier"
     }
   }
 }

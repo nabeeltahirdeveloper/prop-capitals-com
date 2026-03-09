@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 
 import { PrismaService } from '../../prisma/prisma.service';
 import { NotificationsService } from '../../notifications/notifications.service';
@@ -159,7 +159,7 @@ export class AdminPayoutsService {
     if (!payout) throw new NotFoundException('Payout not found');
 
     if (payout.status !== PayoutStatus.APPROVED) {
-      throw new Error('Only approved payouts can be marked as paid');
+      throw new BadRequestException('Only approved payouts can be marked as paid');
     }
 
     const updatedPayout = await this.prisma.payout.update({

@@ -128,6 +128,8 @@ export default function Support() {
       IN_PROGRESS: "in_progress",
       RESOLVED: "resolved",
       CLOSED: "closed",
+      WAITING_FOR_ADMIN: "waiting_for_admin",
+      WAITING_FOR_TRADER: "waiting_for_trader",
     };
 
     // Map category enum to lowercase
@@ -326,7 +328,7 @@ export default function Support() {
             </div>
             <div>
               <p className="text-xl sm:text-2xl font-bold text-white">
-                {displayTickets.filter((t) => t.status === "open").length}
+                {displayTickets.filter((t) => t.status === "open" || t.status === "waiting_for_admin").length}
               </p>
               <p className="text-xs text-slate-400">
                 {t("support.openTickets")}

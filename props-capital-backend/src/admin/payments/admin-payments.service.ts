@@ -40,82 +40,59 @@ export class AdminPaymentsService {
     const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
-    // Get all payments for statistics
-    const allPayments = await this.prisma.payment.findMany({
-
-      select: {
-
-        amount: true,
-
-        status: true,
-
-        createdAt: true,
-
-      },
-
-    });
-
-    // Calculate current month revenue
-    const currentMonthRevenue = await this.prisma.payment.aggregate({
-
-      _sum: { amount: true },
-
-      where: {
-
-        status: 'succeeded',
-
-        createdAt: { gte: currentMonthStart },
-
-      },
-
-    });
-
-    // Calculate last month revenue
-    const lastMonthRevenue = await this.prisma.payment.aggregate({
-
-      _sum: { amount: true },
-
-      where: {
-
-        status: 'succeeded',
-
-        createdAt: { gte: lastMonthStart, lt: currentMonthStart },
-
-      },
-
-    });
+    // Run all aggregate queries in parallel
+    const [
+      succeededAgg,
+      refundedAgg,
+      pendingAgg,
+      currentMonthRevenue,
+      lastMonthRevenue,
+    ] = await Promise.all([
+      this.prisma.payment.aggregate({
+        _sum: { amount: true },
+        _count: true,
+        where: { status: 'succeeded' },
+      }),
+      this.prisma.payment.aggregate({
+        _sum: { amount: true },
+        where: { status: 'refunded' },
+      }),
+      this.prisma.payment.aggregate({
+        _sum: { amount: true },
+        where: { status: 'pending' },
+      }),
+      this.prisma.payment.aggregate({
+        _sum: { amount: true },
+        where: {
+          status: 'succeeded',
+          createdAt: { gte: currentMonthStart },
+        },
+      }),
+      this.prisma.payment.aggregate({
+        _sum: { amount: true },
+        where: {
+          status: 'succeeded',
+          createdAt: { gte: lastMonthStart, lt: currentMonthStart },
+        },
+      }),
+    ]);
 
     // Calculate percentage change
     const revenueChangePercent = lastMonthRevenue._sum.amount && lastMonthRevenue._sum.amount > 0
       ? ((Number(currentMonthRevenue._sum.amount || 0) - Number(lastMonthRevenue._sum.amount)) / Number(lastMonthRevenue._sum.amount)) * 100
       : 0;
 
-    // Calculate statistics
-    const totalRevenue = allPayments
-      .filter(p => p.status === 'succeeded')
-      .reduce((sum, p) => sum + Number(p.amount), 0);
-
-    const refundedAmount = allPayments
-      .filter(p => p.status === 'refunded')
-      .reduce((sum, p) => sum + Number(p.amount), 0);
-
-    const pendingAmount = allPayments
-      .filter(p => p.status === 'pending')
-      .reduce((sum, p) => sum + Number(p.amount), 0);
-
-    const completedCount = allPayments.filter(p => p.status === 'succeeded').length;
-
     return {
 
-      totalRevenue: Number(totalRevenue),
+      totalRevenue: Number(succeededAgg._sum.amount || 0),
 
       revenueChangePercent: Math.round(revenueChangePercent * 10) / 10,
 
-      completedCount,
+      completedCount: succeededAgg._count,
 
-      pendingAmount: Number(pendingAmount),
+      pendingAmount: Number(pendingAgg._sum.amount || 0),
 
-      refundedAmount: Number(refundedAmount),
+      refundedAmount: Number(refundedAgg._sum.amount || 0),
 
     };
 

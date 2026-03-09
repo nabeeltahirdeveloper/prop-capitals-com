@@ -36,9 +36,11 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { format } from "date-fns";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function AdminPayments() {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [refundDialogOpen, setRefundDialogOpen] = useState(false);
@@ -69,10 +71,17 @@ export default function AdminPayments() {
       setRefundDialogOpen(false);
       setSelectedPayment(null);
       setRefundReason("");
+      toast({
+        title: t("admin.payments.refundSuccess") || "Refund Successful",
+        description: t("admin.payments.refundSuccessDesc") || "The payment has been refunded successfully.",
+      });
     },
     onError: (error) => {
-      console.error("Failed to refund payment:", error);
-      alert(error.response?.data?.message || "Failed to refund payment");
+      toast({
+        title: t("admin.payments.refundError") || "Refund Failed",
+        description: error.response?.data?.message || t("admin.payments.refundErrorDesc") || "Failed to refund payment. Please try again.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -148,7 +157,7 @@ export default function AdminPayments() {
       header: t("admin.payments.table.amount"),
       accessorKey: "amount",
       cell: (row) => (
-        <span className="text-emerald-500 font-bold">${row.amount}</span>
+        <span className="text-emerald-500 font-bold">${row.amount?.toLocaleString()}</span>
       ),
     },
     {
@@ -206,7 +215,7 @@ export default function AdminPayments() {
         try {
           if (!row.created_date) return "-";
           const date = new Date(row.created_date);
-          return isNaN(date.getTime()) ? "-" : format(date, "MMM d, HH:mm");
+          return isNaN(date.getTime()) ? "-" : format(date, "MMM d, yyyy HH:mm");
         } catch (error) {
           return "-";
         }
@@ -245,11 +254,21 @@ export default function AdminPayments() {
                   </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
-                  <div>
+                  <div className="space-y-2">
                     <p className="text-muted-foreground text-xs sm:text-sm">
                       {t("admin.payments.refundConfirm") ||
-                        `Are you sure you want to refund $${row.amount} to ${row.trader_id}?`}
+                        "Are you sure you want to refund this payment?"}
                     </p>
+                    <div className="bg-muted/50 rounded-lg p-3 space-y-1">
+                      <p className="text-sm text-foreground">
+                        <span className="text-muted-foreground">{t("admin.payments.table.amount") || "Amount"}:</span>{" "}
+                        <span className="font-bold text-emerald-500">${row.amount?.toLocaleString()}</span>
+                      </p>
+                      <p className="text-sm text-foreground">
+                        <span className="text-muted-foreground">{t("admin.payments.table.trader") || "Trader"}:</span>{" "}
+                        <span className="font-medium">{row.trader_id}</span>
+                      </p>
+                    </div>
                   </div>
                   <div className="space-y-1.5 sm:space-y-2">
                     <Label className="text-muted-foreground text-xs sm:text-sm">

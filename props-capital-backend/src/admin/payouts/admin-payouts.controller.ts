@@ -3,6 +3,7 @@ import { Controller, Get, Param, Patch, Body, UseGuards } from '@nestjs/common';
 import { AdminPayoutsService } from './admin-payouts.service';
 import { JwtAuthGuard } from '../../auth/jwt.guard';
 import { AdminRoleGuard } from '../../auth/admin-role.guard';
+import { RejectPayoutDto } from './dto/reject-payout.dto';
 
 @Controller('admin/payouts')
 @UseGuards(JwtAuthGuard, AdminRoleGuard)
@@ -25,7 +26,7 @@ export class AdminPayoutsController {
   }
 
   @Patch(':id/reject')
-  async reject(@Param('id') id: string, @Body() body: { reason?: string }) {
+  async reject(@Param('id') id: string, @Body() body: RejectPayoutDto) {
     return this.adminPayoutsService.updateStatus(id, 'REJECTED', body?.reason);
   }
 
