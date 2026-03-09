@@ -23,7 +23,6 @@ const Auth = () => {
   const { isDark } = useTheme();
   const [activeTab, setActiveTab] = useState(initialTab);
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
   // OTP State
@@ -51,10 +50,11 @@ const Auth = () => {
 
   const requestOtpMutation = useMutation({
     mutationFn: async (payload) => {
-      return api.post('/auth/register/request-otp', payload);
+      const response = await api.post('/auth/register/request-otp', payload);
+      return response.data;
     },
-    onSuccess: (response) => {
-      const raw = response.data?.resendAvailableAt;
+    onSuccess: (data) => {
+      const raw = data?.resendAvailableAt;
       setResendAvailableAt(raw ? new Date(raw) : null);
       setOtp('');
       setStep('otp');
@@ -67,11 +67,12 @@ const Auth = () => {
 
   const verifyOtpMutation = useMutation({
     mutationFn: async (payload) => {
-      return api.post('/auth/register/verify-otp', payload);
+      const response = await api.post('/auth/register/verify-otp', payload);
+      return response.data;
     },
-    onSuccess: async (response) => {
-      const accessToken = response.data?.accessToken;
-      const user = response.data?.user;
+    onSuccess: async (data) => {
+      const accessToken = data?.accessToken;
+      const user = data?.user;
 
       if (accessToken) {
         login(accessToken, user);
@@ -97,12 +98,7 @@ const Auth = () => {
       navigate(createPageUrl('TraderDashboard'));
     },
     onError: (error) => {
-      // Extract error message from response
-      const errorMessage = error.response?.data?.message ||
-        error.response?.data?.error ||
-        error.message ||
-        t('signIn.errors.invalidCredentials');
-      setError(errorMessage);
+      setError(error.message || t('signIn.errors.invalidCredentials'));
     },
   });
 

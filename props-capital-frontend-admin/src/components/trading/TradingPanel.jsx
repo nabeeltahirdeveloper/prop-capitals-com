@@ -1,14 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Slider } from '@/components/ui/slider';
-import {
-  Minus,
-  Plus,
-  X,
-  ChevronDown
-} from 'lucide-react';
 import { useTranslation } from '../../contexts/LanguageContext';
 
 export default function TradingPanel({ 
@@ -16,11 +8,9 @@ export default function TradingPanel({
   accountBalance = 100000,
   onExecuteTrade,
   maxLotSize = 100,
-  chartPrice,
-  disabled = false
+  chartPrice
 }) {
   const { t } = useTranslation();
-  const [orderType, setOrderType] = useState('limit');
   const [tradeDirection, setTradeDirection] = useState('buy');
   const [lotSize, setLotSize] = useState(0.01);
   const [stopLoss, setStopLoss] = useState('');
@@ -71,65 +61,36 @@ export default function TradingPanel({
     return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
   
-  // Calculate lot size from percentage of account balance (as margin)
-  const calculateLotSizeFromPercent = (percent) => {
-    // With 100x leverage:
-    // margin = lotSize * contractSize * price / leverage
-    // So: lotSize = (margin * leverage) / (contractSize * price)
-    const marginToUse = accountBalance * (percent / 100);
-    const price = symbol.bid;
-    
-    if (!price || price === 0) return isCrypto ? 0.01 : 0.1;
-    
-    // lotSize = (marginToUse * leverage) / (contractSize * price)
-    const newLotSize = (marginToUse * leverage) / (contractSize * price);
-    
-    // For crypto, round to 4 decimals; for forex, round to 2 decimals
-    const decimals = isCrypto ? 4 : 2;
-    const minLot = isCrypto ? 0.0001 : 0.01;
-    
-    const result = Math.max(minLot, Math.min(newLotSize, maxLotSize));
-    return parseFloat(result.toFixed(decimals));
-  };
-
   const handleTrade = () => {
-    console.log('=== TradingPanel handleTrade START ===');
-    console.log('Symbol:', symbol);
-    console.log('onExecuteTrade:', typeof onExecuteTrade);
-    
     if (isSubmitting) {
-      console.log('Already submitting, returning');
       return;
     }
-    
+
     // Get market price - prefer chart price (real-time), then symbol data, then fallback
     const basePrice = chartPrice || symbol.bid || 1.08542;
     // Add small spread for ask price
     const spread = isCrypto ? basePrice * 0.001 : 0.00015;
-    const marketPrice = tradeDirection === 'buy' 
+    const marketPrice = tradeDirection === 'buy'
       ? basePrice + spread
       : basePrice;
-    
-    console.log('Chart price:', chartPrice, 'Market price:', marketPrice);
-    
+
     if (!marketPrice || marketPrice <= 0) {
-      console.error('Invalid market price');
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     // Parse limit price from input - if user typed a custom price
     const inputLimitPrice = limitPrice && limitPrice.trim() !== '' ? parseFloat(limitPrice) : null;
-    
+
     // Check if this is a pending limit order (user entered a specific price)
-    const isPendingOrder = inputLimitPrice !== null && 
-      !isNaN(inputLimitPrice) && 
+    const isPendingOrder = inputLimitPrice !== null &&
+      !isNaN(inputLimitPrice) &&
       inputLimitPrice > 0;
-    
+
     // For pending orders, use the limit price; for market orders, use current market price
     const executionPrice = isPendingOrder ? inputLimitPrice : marketPrice;
-    
+
     const trade = {
       symbol: symbol.symbol || 'EUR/USD',
       type: tradeDirection,
@@ -142,28 +103,12 @@ export default function TradingPanel({
       timestamp: new Date().toISOString()
     };
 
-    console.log('Trade object created:', trade);
-
     if (onExecuteTrade) {
-      console.log('Calling onExecuteTrade...');
       onExecuteTrade(trade);
-      console.log('onExecuteTrade called successfully');
-    } else {
-      console.error('onExecuteTrade is not defined!');
     }
-    
+
     setLimitPrice('');
     setIsSubmitting(false);
-    console.log('=== TradingPanel handleTrade END ===');
-  };
-
-  const adjustLotSize = (delta) => {
-    const decimals = isCrypto ? 4 : 2;
-    const minLot = isCrypto ? 0.0001 : 0.01;
-    const step = isCrypto ? 0.01 : 0.1;
-    const actualDelta = delta > 0 ? step : -step;
-    const newSize = Math.max(minLot, Math.min(maxLotSize, lotSize + actualDelta));
-    setLotSize(parseFloat(newSize.toFixed(decimals)));
   };
 
   const formatPrice = (price) => {

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+
 import { Search, Star, RefreshCw, Wifi, WifiOff, Loader2 } from "lucide-react";
 import { useTranslation } from "../../contexts/LanguageContext";
 import { usePrices } from "@/contexts/PriceContext";
@@ -166,9 +166,7 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol }) {
   const { t } = useTranslation();
   const {
     prices: unifiedPrices,
-    isConnected,
     lastUpdate,
-    priceSource,
     connectionStatus,
     failedAttempts,
     maxReconnectAttempts,
@@ -178,7 +176,6 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [favorites, setFavorites] = useState(["EUR/USD", "BTC/USD", "ETH/USD"]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
 
   // Handle manual retry
@@ -231,8 +228,6 @@ export default function MarketWatchlist({ onSymbolSelect, selectedSymbol }) {
         return s;
       }),
     );
-
-    setIsLoading(false);
   }, [unifiedPrices]);
 
   // No simulation needed - unified price context provides real-time updates every 800ms

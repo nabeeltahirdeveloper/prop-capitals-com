@@ -721,7 +721,6 @@ export default function OpenPositions({
   onTotalPnlChange,
 }) {
   const { t } = useTranslation();
-  const [positionColors, setPositionColors] = useState({});
 
   const isAccountLocked = accountStatus === 'DAILY_LOCKED' || accountStatus === 'DISQUALIFIED';
 

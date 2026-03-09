@@ -140,7 +140,7 @@ export function useLivePrices(activeSymbols = []) {
         pollingIntervalRef.current = null;
       }
     };
-  }, [activeSymbols.join(','), fetchPrices]);
+  }, [activeSymbols.join(','), fetchPrices, activeSymbols]);
 
   return {
     prices,

@@ -124,10 +124,15 @@ export default function AdminSettings() {
     // Validate active tab before saving
     if (activeTab === "general") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (localGeneral.support_email && !emailRegex.test(localGeneral.support_email)) {
+      if (
+        localGeneral.support_email &&
+        !emailRegex.test(localGeneral.support_email)
+      ) {
         toast({
           title: t("common.error"),
-          description: t("admin.settings.validation.invalidEmail", { defaultValue: "Please enter a valid email address" }),
+          description: t("admin.settings.validation.invalidEmail", {
+            defaultValue: "Please enter a valid email address",
+          }),
           variant: "destructive",
         });
         return;
@@ -135,26 +140,42 @@ export default function AdminSettings() {
     }
     if (activeTab === "branding") {
       const hexRegex = /^#[0-9A-Fa-f]{6}$/;
-      if (localBranding.primary_color && !hexRegex.test(localBranding.primary_color)) {
+      if (
+        localBranding.primary_color &&
+        !hexRegex.test(localBranding.primary_color)
+      ) {
         toast({
           title: t("common.error"),
-          description: t("admin.settings.validation.invalidColor", { defaultValue: "Please enter a valid hex color (e.g. #10b981)" }),
+          description: t("admin.settings.validation.invalidColor", {
+            defaultValue: "Please enter a valid hex color (e.g. #10b981)",
+          }),
           variant: "destructive",
         });
         return;
       }
-      if (localBranding.secondary_color && !hexRegex.test(localBranding.secondary_color)) {
+      if (
+        localBranding.secondary_color &&
+        !hexRegex.test(localBranding.secondary_color)
+      ) {
         toast({
           title: t("common.error"),
-          description: t("admin.settings.validation.invalidColor", { defaultValue: "Please enter a valid hex color (e.g. #10b981)" }),
+          description: t("admin.settings.validation.invalidColor", {
+            defaultValue: "Please enter a valid hex color (e.g. #10b981)",
+          }),
           variant: "destructive",
         });
         return;
       }
-      if (localBranding.logo_url && !/^https?:\/\/.+/.test(localBranding.logo_url)) {
+      if (
+        localBranding.logo_url &&
+        !/^https?:\/\/.+/.test(localBranding.logo_url)
+      ) {
         toast({
           title: t("common.error"),
-          description: t("admin.settings.validation.invalidUrl", { defaultValue: "Please enter a valid URL starting with http:// or https://" }),
+          description: t("admin.settings.validation.invalidUrl", {
+            defaultValue:
+              "Please enter a valid URL starting with http:// or https://",
+          }),
           variant: "destructive",
         });
         return;
@@ -532,7 +553,9 @@ export default function AdminSettings() {
               {localPayment.paypal_enabled && (
                 <div className="space-y-1.5 sm:space-y-2 pl-2 sm:pl-4">
                   <Label className="text-muted-foreground text-xs sm:text-sm">
-                    {t("admin.settings.payments.paypalClientId", { defaultValue: "PayPal Client ID" })}
+                    {t("admin.settings.payments.paypalClientId", {
+                      defaultValue: "PayPal Client ID",
+                    })}
                   </Label>
                   <Input
                     type="password"
@@ -624,7 +647,9 @@ export default function AdminSettings() {
                   <button
                     role="switch"
                     aria-checked={!!localIntegration[platform.key]}
-                    aria-label={t(`admin.settings.integrations.${platform.nameKey}`)}
+                    aria-label={t(
+                      `admin.settings.integrations.${platform.nameKey}`,
+                    )}
                     onClick={() => {
                       const v = !localIntegration[platform.key];
                       setLocalIntegration({

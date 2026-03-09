@@ -790,6 +790,9 @@
     "noNotifications": "No notifications",
     "noNewNotifications": "No new notifications",
     "allCaughtUp": "You're all caught up!",
+    "delete": "Delete notification",
+    "loadError": "Failed to load notifications",
+    "loadErrorHint": "Please refresh the page and try again.",
     "challenge": "Challenge",
     "payout": "Payout",
     "system": "System",
@@ -1208,7 +1211,9 @@
     "pipeline": "Pipeline",
     "ftdReport": "Orders Report",
     "calendar": "Calendar",
-    "fundedAccounts": "Funded Accounts"
+    "fundedAccounts": "Funded Accounts",
+    "propServer": "Prop Server",
+    "crmApiKey": "CRM API Keys"
   },
   "status": {
     "active": "Active",
@@ -1350,6 +1355,12 @@
         "sendEmail": "Send Email",
         "makeAdmin": "Make Admin",
         "makeTrader": "Make Trader"
+      },
+      "confirmRoleChange": {
+        "title": "Confirm Role Change",
+        "description": "Are you sure you want to change {{name}}'s role to {{newRole}}? This will immediately affect their access to this panel.",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
       },
       "dialog": {
         "title": "User Details",
@@ -1496,7 +1507,9 @@
       "severity": {
         "fatal": "Fatal",
         "warning": "Warning"
-      }
+      },
+      "loading": "Loading accounts...",
+      "noAccounts": "No accounts found matching your criteria."
     },
     "payouts": {
       "title": "Payout Management",
@@ -2033,6 +2046,49 @@
       "deleteErrorDesc": "Challenge cannot be deleted because it is linked to existing trading accounts.",
       "understand": "I Understand",
       "noChallenges": "No challenges available"
+    },
+    "apiKeys": {
+      "title": "API Keys",
+      "subtitle": "Manage API keys for third-party lead ingestion",
+      "generate": "Generate API Key",
+      "keyGenerated": "API Key Generated",
+      "generateNew": "Generate New API Key",
+      "keyName": "Key Name",
+      "keyNamePlaceholder": "e.g. Partner Integration",
+      "keyNameHint": "A label to identify this key (e.g. the partner name)",
+      "generating": "Generating...",
+      "generateKey": "Generate Key",
+      "copyWarning": "Copy this key now. It will not be shown again.",
+      "yourKey": "Your API Key",
+      "copied": "Copied!",
+      "copyToClipboard": "Copy to Clipboard",
+      "done": "Done",
+      "totalKeys": "Total Keys",
+      "active": "Active",
+      "revoked": "Revoked",
+      "emptyMessage": "No API keys yet. Generate one to get started.",
+      "created": "Created",
+      "lastUsed": "Last Used",
+      "never": "Never",
+      "endpoints": "Endpoints",
+      "singleLead": "Single lead",
+      "upTo100": "Up to 100 leads",
+      "checkStatus": "Check status",
+      "singleExample": "Single Lead Example",
+      "bulkExample": "Bulk Example",
+      "fieldsReference": "Fields Reference",
+      "field": "Field",
+      "type": "Type",
+      "required": "Required",
+      "yes": "Yes",
+      "no": "No",
+      "revoking": "Revoking...",
+      "revokeThisKey": "Revoke This Key",
+      "close": "Close",
+      "quickGuide": "Quick Integration Guide",
+      "guideText": "Third parties send leads to your API using the",
+      "header": "header:",
+      "guideNote": "Leads will appear automatically in the CRM Leads page with status NEW."
     }
   },
   "signIn": {

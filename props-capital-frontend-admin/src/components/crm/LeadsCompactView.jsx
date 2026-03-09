@@ -1,10 +1,9 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Phone, MessageCircle, Globe } from 'lucide-react';
 
-export default function LeadsCompactView({ leads, onLeadClick, getStatusColor, getPriorityColor, maskPhone }) {
+export default function LeadsCompactView({ leads, onLeadClick, getStatusColor, getPriorityColor }) {
     const { t } = useTranslation();
 
     return (

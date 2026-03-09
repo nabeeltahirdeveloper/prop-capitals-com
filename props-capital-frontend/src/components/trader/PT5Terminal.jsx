@@ -91,7 +91,7 @@ const PT5Terminal = ({
     <div className="flex flex-col gap-4 p-0.5 overflow-y-auto">
       <div className="grid grid-cols-12 gap-3 auto-rows-[minmax(250px,1fr)] lg:grid-rows-1 lg:h-[580px] items-stretch">
         <div
-          className={`${sidebarCollapsed ? "hidden lg:flex lg:col-span-1" : "col-span-12 lg:col-span-2"} transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] relative flex flex-col rounded-2xl overflow-hidden shadow-sm border bg-card border-border h-full`}
+          className={`${sidebarCollapsed ? "hidden lg:flex lg:col-span-1" : "col-span-12 lg:col-span-2"} transition-all duration-500 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] relative flex flex-col rounded-2xl overflow-hidden shadow-sm border bg-card border-border h-full`}
         >
           <div
             className={`${sidebarCollapsed ? "px-2 justify-center" : "px-4 justify-between"} py-2.5 border-b flex items-center transition-colors ${isDark ? "bg-white/[0.02]" : "bg-slate-50"}`}
@@ -132,7 +132,7 @@ const PT5Terminal = ({
         </div>
 
         <div
-          className={`${sidebarCollapsed ? "col-span-12 lg:col-span-8" : "col-span-12 lg:col-span-7"} flex flex-col transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] rounded-2xl overflow-hidden shadow-sm border bg-card border-border h-full`}
+          className={`${sidebarCollapsed ? "col-span-12 lg:col-span-8" : "col-span-12 lg:col-span-7"} flex flex-col transition-all duration-500 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] rounded-2xl overflow-hidden shadow-sm border bg-card border-border h-full`}
         >
           <div
             className={`border-b transition-colors ${isDark ? "bg-white/[0.02]" : "bg-slate-50/50"}`}

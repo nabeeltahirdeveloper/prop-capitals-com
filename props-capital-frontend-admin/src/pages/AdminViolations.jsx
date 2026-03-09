@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { adminGetAllViolations } from "@/api/admin";
 import { useTranslation } from "../contexts/LanguageContext";
@@ -57,7 +57,7 @@ export default function AdminViolations() {
 
   // Map backend violation data to frontend format
   const displayViolations = useMemo(() => {
-    const data = Array.isArray(violationsData) ? violationsData : [];
+    const data = Array.isArray(response?.data) ? response?.data : [];
     return data.map((violation) => {
       // Convert backend enum type to frontend lowercase format
       const violationType = violation.type?.toLowerCase() || "unknown";
@@ -95,7 +95,7 @@ export default function AdminViolations() {
         created_date: violation.createdAt,
       };
     });
-  }, [violationsData]);
+  }, [response?.data]);
 
   const filteredViolations = displayViolations.filter((violation) => {
     const query = searchQuery.toLowerCase();
@@ -211,7 +211,7 @@ export default function AdminViolations() {
           const date = new Date(row.created_date);
           if (isNaN(date.getTime())) return "-";
           return format(date, "MMM d, HH:mm");
-        } catch (error) {
+        } catch {
           return "-";
         }
       },
@@ -272,11 +272,20 @@ export default function AdminViolations() {
             <Input
               placeholder={t("admin.violations.searchPlaceholder")}
               value={searchQuery}
-              onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setPage(1);
+              }}
               className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
             />
           </div>
-          <Select value={typeFilter} onValueChange={(v) => { setTypeFilter(v); setPage(1); }}>
+          <Select
+            value={typeFilter}
+            onValueChange={(v) => {
+              setTypeFilter(v);
+              setPage(1);
+            }}
+          >
             <SelectTrigger className="w-full sm:w-[200px] bg-muted border-border text-foreground text-sm">
               <SelectValue
                 placeholder={t("admin.violations.filter.violationType")}
@@ -336,7 +345,7 @@ export default function AdminViolations() {
                 size="sm"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                  className="bg-muted border-border text-foreground hover:bg-accent disabled:opacity-50"
+                className="bg-muted border-border text-foreground hover:bg-accent disabled:opacity-50"
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
@@ -348,7 +357,7 @@ export default function AdminViolations() {
                 size="sm"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                  className="bg-muted border-border text-foreground hover:bg-accent disabled:opacity-50"
+                className="bg-muted border-border text-foreground hover:bg-accent disabled:opacity-50"
               >
                 <ChevronRight className="w-4 h-4" />
               </Button>

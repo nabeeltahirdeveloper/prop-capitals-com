@@ -1,4 +1,4 @@
-import { apiGet } from '@/lib/api';
+import { apiGet } from "@/lib/api";
 
 /**
  * Get historical candlestick data for a symbol
@@ -6,20 +6,28 @@ import { apiGet } from '@/lib/api';
  * @param {string} timeframe - Timeframe (M1, M5, M15, M30, H1, H4, D1)
  * @param {number} limit - Number of candles to return (default: 100)
  */
-export const getMarketHistory = async (symbol, timeframe = 'M5', limit = 100) => {
+export const getMarketHistory = async (
+  symbol,
+  timeframe = "M5",
+  limit = 100,
+) => {
   // For crypto symbols, use Binance API endpoint (real candles, no aggregation)
-  const isCrypto = symbol.includes('BTC') || symbol.includes('ETH') || 
-                   symbol.includes('SOL') || symbol.includes('XRP') ||
-                   symbol.includes('ADA') || symbol.includes('DOGE');
-  
+  const isCrypto =
+    symbol.includes("BTC") ||
+    symbol.includes("ETH") ||
+    symbol.includes("SOL") ||
+    symbol.includes("XRP") ||
+    symbol.includes("ADA") ||
+    symbol.includes("DOGE");
+
   if (isCrypto) {
-    return apiGet('/market-data/crypto/candles', {
+    return apiGet("/market-data/crypto/candles", {
       params: { symbol, timeframe, limit },
     });
   }
-  
+
   // For forex, use the standard endpoint (Frankfurter API)
-  return apiGet('/market-data/history', {
+  return apiGet("/market-data/history", {
     params: { symbol, timeframe, limit },
   });
 };
@@ -29,7 +37,7 @@ export const getMarketHistory = async (symbol, timeframe = 'M5', limit = 100) =>
  * @param {string} symbol - Symbol (e.g., 'EUR/USD', 'BTC/USD')
  */
 export const getCurrentPrice = async (symbol) => {
-  return apiGet('/market-data/current', {
+  return apiGet("/market-data/current", {
     params: { symbol },
   });
 };
@@ -39,7 +47,7 @@ export const getCurrentPrice = async (symbol) => {
  * This is used by MarketWatchlist to get all prices at once
  */
 export const getAllPrices = async () => {
-  return apiGet('/prices');
+  return apiGet("/prices");
 };
 
 /**
@@ -48,7 +56,8 @@ export const getAllPrices = async () => {
  * @param {string[]} symbols - Optional array of symbols to fetch. If empty, returns all available symbols
  */
 export const getUnifiedPrices = async (symbols = []) => {
-  const symbolsParam = symbols.length > 0 ? `?symbols=${symbols.join(',')}` : '';
+  const symbolsParam =
+    symbols.length > 0 ? `?symbols=${symbols.join(",")}` : "";
   return apiGet(`/market-data/prices${symbolsParam}`);
 };
 
@@ -60,8 +69,7 @@ export const getCryptoQuotes = async (symbols) => {
   if (!symbols || symbols.length === 0) {
     return [];
   }
-  return apiGet('/market-data/crypto/quote', {
-    params: { symbols: symbols.join(',') },
+  return apiGet("/market-data/crypto/quote", {
+    params: { symbols: symbols.join(",") },
   });
 };
-

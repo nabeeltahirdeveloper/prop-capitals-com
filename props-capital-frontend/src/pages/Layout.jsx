@@ -1,98 +1,25 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { createPageUrl } from "../utils";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import {
-  markNotificationAsRead,
-  getUserNotifications,
-} from "@/api/notifications";
-import {
-  LayoutDashboard,
-  TrendingUp,
-  Wallet,
-  User,
-  Settings,
-  Bell,
-  Menu,
-  X,
-  LogOut,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Users,
-  FileText,
-  CreditCard,
-  BarChart3,
-  Shield,
-  HelpCircle,
-  Home,
-  Award,
-  Zap,
-  Server,
-  Activity,
-  Target,
-  Check,
-  Calendar,
-  UserPlus,
-  DollarSign,
-  KeyRound,
-} from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useTranslation } from "../contexts/LanguageContext";
-import { translateNotification } from "../utils/notificationTranslations";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 
 export default function Layout({ children, currentPageName }) {
   const { t } = useTranslation();
-
-  // Mobile drawer open/close
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  // Desktop collapse (icon-only)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-
-  const [openSubmenu, setOpenSubmenu] = useState(null);
-  const [user, setUser] = useState(null);
-
   const location = useLocation();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const { status } = useAuth();
 
   // Close mobile sidebar on route change (nice UX)
   useEffect(() => {
-    setSidebarOpen(false);
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // Escape key closes mobile sidebar; body scroll lock when drawer is open
-  useEffect(() => {
-    if (!sidebarOpen) return;
-    const handleEscape = (e) => e.key === "Escape" && setSidebarOpen(false);
-    document.addEventListener("keydown", handleEscape);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-      document.body.style.overflow = prev;
-    };
-  }, [sidebarOpen]);
-
-  // Full-screen pages with no layout
+  // Full-screen pages with no layout (have their own full-page UI)
   const noLayoutPages = ["SignIn", "SignUp"];
   const isNoLayoutPage = noLayoutPages.includes(currentPageName);
 
-  // Public pages that don't need authentication
+  // Public pages that render with Navbar + Footer
   const publicPages = [
     "Home",
     "Challenges",
@@ -105,83 +32,20 @@ export default function Layout({ children, currentPageName }) {
     "Rules",
     "BuyChallenge",
     "ScalingPlan",
+    "Payouts",
   ];
   const isPublicPage = publicPages.includes(currentPageName);
 
-  const { status, user: authUser } = useAuth();
-
-  // Map auth user to local user state for compatibility
-  useEffect(() => {
-    if (authUser) {
-      setUser({
-        id: authUser.userId,
-        email: authUser.email,
-        role: authUser.role?.toLowerCase() || "trader",
-        full_name: authUser.profile?.firstName || authUser.full_name || null,
-      });
-    } else {
-      setUser(null);
-    }
-  }, [authUser]);
-
-  const currentUser = authUser;
-
-  const traderNavItems = useMemo(
-    () => [
-      {
-        name: t("nav.dashboard"),
-        icon: LayoutDashboard,
-        page: "TraderDashboard",
-      },
-      {
-        name: t("nav.tradingTerminal"),
-        icon: Activity,
-        page: "TradingTerminal",
-      },
-      { name: t("nav.buyChallenge"), icon: Award, page: "TraderBuyChallenge" },
-      { name: t("nav.myAccounts"), icon: TrendingUp, page: "MyAccounts" },
-      { name: t("nav.accountDetails"), icon: FileText, page: "AccountDetails" },
-      {
-        name: t("nav.challengeProgress"),
-        icon: Target,
-        page: "ChallengeProgress",
-      },
-      { name: t("nav.ruleCompliance"), icon: Shield, page: "RuleCompliance" },
-      { name: t("nav.tradeHistory"), icon: FileText, page: "TradeHistory" },
-      { name: t("nav.analytics"), icon: BarChart3, page: "Analytics" },
-      { name: t("nav.payouts"), icon: Wallet, page: "TraderPayouts" },
-      { name: t("nav.notifications"), icon: Bell, page: "Notifications" },
-      { name: t("nav.profile"), icon: User, page: "Profile" },
-      { name: t("nav.support"), icon: HelpCircle, page: "Support" },
-    ],
-    [t],
-  );
-
-  const navItems = traderNavItems;
-
-  // Auto-open submenu if a child is active (only meaningful when you actually have item.children)
-  useEffect(() => {
-    let activeSubmenu = null;
-    navItems.forEach((item) => {
-      if (
-        item.children &&
-        item.children.some((child) => child.page === currentPageName)
-      ) {
-        activeSubmenu = item.name;
-      }
-    });
-    if (activeSubmenu) setOpenSubmenu(activeSubmenu);
-  }, [currentPageName, navItems]);
-
-  // Early returns
+  // Early returns for no-layout pages (SignIn, SignUp have their own full-screen UI)
   if (isNoLayoutPage) return <>{children}</>;
 
-  // All /traderdashboard/* routes use TraderPanelLayout only — no public header/footer
+  // All /traderdashboard/* routes use TraderPanelLayout — no public header/footer
   if (location.pathname.startsWith("/traderdashboard")) {
     return <>{children}</>;
   }
 
   const isProtectedPage = !isPublicPage && !isNoLayoutPage;
+
   if (isProtectedPage && status === "checking") {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -193,7 +57,8 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  if (isProtectedPage && status !== "authenticated") return <>{children}</>;
+  // Unauthenticated on a protected page — let ProtectedRoute handle the redirect
+  if (isProtectedPage && status !== "authenticated") return null;
 
   // Public pages layout
   if (isPublicPage) {
@@ -206,8 +71,14 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // Protected layout (responsive + collapsible sidebar)
+  // Protected authenticated pages (old standalone routes like /Notifications, /MyAccounts, etc.)
+  // Wrap with Navbar so users always have navigation context
   return (
-    <>{children}</>
+    <div className="min-h-screen bg-slate-950 transition-colors duration-300">
+      <Navbar />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {children}
+      </div>
+    </div>
   );
 }

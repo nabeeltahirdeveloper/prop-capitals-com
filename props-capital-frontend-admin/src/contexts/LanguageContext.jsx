@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import enTranslations from '../locales/en.json';
 import thTranslations from '../locales/th.json';
 import frTranslations from '../locales/fr.json';

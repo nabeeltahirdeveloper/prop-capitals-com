@@ -1,16 +1,11 @@
-import React, { useState, useEffect } from "react";
+
+import React from "react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import {
-  calculatePositionsWithPnL,
-  getPositionDuration,
-} from "@/utils/positionCalculations";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  DollarSign,
   TrendingUp,
-  TrendingDown,
   Shield,
   Target,
   AlertTriangle,
@@ -25,16 +20,9 @@ import {
   Calendar,
 } from "lucide-react";
 import { useTranslation } from "../../contexts/LanguageContext";
-import { PnlDisplay } from "../PnlDisplay";
-import { getChallenge } from "@/api/challenges";
-import { useQuery } from "@tanstack/react-query";
 
 export default function AccountMetrics({
   account,
-  positions = [],
-  currentPrices = {},
-  getPriceForPosition,
-  isCryptoSymbol,
   isLoading = false,
 }) {
   const { t } = useTranslation();
@@ -46,93 +34,6 @@ export default function AccountMetrics({
     account?.floatingPnL || 0,
   );
 
-  console.log(account);
-  // const [disp
-  // layBalance, setDisplayBalance] = React.useState(
-  //   account?.balance || 100000,
-  // );
-
-
-
-
-
-
-
-
-
-
-  // console.log(account?.balance)
-  // Calculate real-time margin and "used" balance: baseBalance - totalMarginUsed
-  // This updates in real-time as positions open/close.
-  // NOTE: Backend balance is the ledger balance and should only change when trades close.
-  // We use this computed balance only for non-funded/demo-style views; real accounts keep balance static.
-  // const calculateRealTimeMarginAndBalance = React.useCallback(() => {
-  //   const baseBalance = account?.balance || 100000;
-
-  //   // If no positions, balance equals base balance, margin is 0
-  //   if (!positions || positions.length === 0) {
-  //     return { margin: 0, balance: baseBalance };
-  //     // return { margin: 0 };
-  //   }
-
-  //   // Calculate total margin used by all open positions
-  //   // Margin is based on entry price (doesn't change as price moves)
-  //   let totalMargin = 0;
-  //   const leverage = 100;
-
-  //   positions.forEach((pos) => {
-  //     // Get current price for margin calculation
-  //     // For margin calculation, we use the entry price side (ask for BUY, bid for SELL)
-  //     // But we need current market price, so we use getPriceForPosition with the position type
-  //     const currentPrice = getPriceForPosition(
-  //       pos.symbol,
-  //       pos.type,
-  //       pos.entryPrice,
-  //     );
-
-  //     if (!currentPrice || currentPrice <= 0) {
-  //       // Fallback to entry price if current price unavailable
-  //       const fallbackPrice = pos.entryPrice;
-  //       const contractSize = isCryptoSymbol(pos.symbol) ? 1 : 100000;
-  //       const positionMargin =
-  //         (pos.lotSize * contractSize * fallbackPrice) / leverage;
-  //       totalMargin += positionMargin;
-  //     } else {
-  //       // Calculate margin using current price (margin changes as price moves)
-  //       const contractSize = isCryptoSymbol(pos.symbol) ? 1 : 100000;
-  //       const positionMargin =
-  //         (pos.lotSize * contractSize * currentPrice) / leverage;
-  //       totalMargin += positionMargin;
-  //     }
-  //   });
-
-  //   // Real-time "used" balance = base balance - margin used
-  //   return {
-  //     margin: totalMargin,
-  //     balance: Math.max(0, baseBalance - totalMargin),
-  //   };
-  // }, [account?.balance, positions, getPriceForPosition, isCryptoSymbol]);
-
-  // Calculate real-time "used" balance (for backward compatibility)
-  // const calculateRealTimeBalance = React.useCallback(() => {
-  //   return calculateRealTimeMarginAndBalance().balance;
-
-  // }, [calculateRealTimeMarginAndBalance]);
-
-  // Calculate real-time margin for display
-  // const realTimeMargin = React.useMemo(() => {
-  //   return calculateRealTimeMarginAndBalance().margin;
-  // }, [calculateRealTimeMarginAndBalance]);
-
-  // Calculate real-time free margin: equity - margin used
-  // const realTimeFreeMargin = React.useMemo(() => {
-  //   const currentEquity = account?.equity || 100000;
-  //   return Math.max(0, currentEquity - realTimeMargin);
-  // }, [account?.equity, realTimeMargin]);
-
-  const [displayProfitPercent, setDisplayProfitPercent] = React.useState(
-    account?.profitPercent || 0,
-  );
   const [displayDailyDrawdown, setDisplayDailyDrawdown] = React.useState(
     account?.dailyDrawdown || 0,
   );
@@ -156,7 +57,7 @@ export default function AccountMetrics({
   // Store frozen drawdown values when limit is reached (so bars stay at 100%)
   // Get from sessionStorage if available (set when violation occurs), otherwise use current values
   // Use namespaced keys: violation:${accountId}:... to prevent overwrites across accounts
-  const getFrozenDrawdown = (key, currentValue) => {
+  const getFrozenDrawdown = (key) => {
     if (typeof window === "undefined") return null;
     const stored = sessionStorage.getItem(key);
     return stored ? parseFloat(stored) : null;
@@ -177,7 +78,7 @@ export default function AccountMetrics({
 
   // Update refs from sessionStorage if available (use namespaced keys)
   // Also check for breach snapshot values from trades if available
-  React.useEffect(() => {
+  useEffect(() => {
     if (accountId) {
       const dailyDD = getFrozenDrawdown(
         `violation:${accountId}:daily_dd`,
@@ -207,43 +108,10 @@ export default function AccountMetrics({
         }
       }
     }
-  }, [accountId, displayDailyDrawdown, displayOverallDrawdown]);
+  }, [accountId, displayDailyDrawdown, displayOverallDrawdown, account?.status]);
 
   // Real-time updates for all metrics - updates every 1 second for responsiveness
-  React.useEffect(() => {
-    // Calculate real-time "used" balance based on positions
-    // const realTimeBalance = calculateRealTimeBalance();
-    const baseBalance = account?.balance || 100000;
-
-    // Calculate real-time equity from positions (balance + floating PnL)
-    let calculatedRealTimeEquity = baseBalance;
-    if (positions && positions.length > 0) {
-      let totalFloatingPnL = 0;
-      positions.forEach((pos) => {
-        const currentPrice = getPriceForPosition(
-          pos.symbol,
-          pos.type,
-          pos.entryPrice,
-        );
-        if (currentPrice && currentPrice > 0) {
-          const isCrypto =
-            typeof isCryptoSymbol === "function"
-              ? isCryptoSymbol(pos.symbol)
-              : /BTC|ETH|SOL|XRP|ADA|DOGE/.test(pos.symbol || "");
-          const contractSize = isCrypto ? 1 : 100000;
-          const priceDiff =
-            pos.type === "BUY"
-              ? currentPrice - pos.entryPrice
-              : pos.entryPrice - currentPrice;
-          const positionPnL = isCrypto
-            ? priceDiff * pos.lotSize
-            : priceDiff * pos.lotSize * contractSize;
-          totalFloatingPnL += positionPnL;
-        }
-      });
-      calculatedRealTimeEquity = baseBalance + totalFloatingPnL;
-    }
-
+  useEffect(() => {
     // Equity from backend (settled equity – updated when trades close)
     const currentEquity = account?.equity;
     const currentFloatingPnL = account?.floatingPnL || 0;
@@ -309,8 +177,6 @@ export default function AccountMetrics({
       dailyDrawdown: currentDailyDrawdown,
       overallDrawdown: currentOverallDrawdown,
     };
-    console.log(account.profitPercent);
-
     // Update all metrics in real-time with smooth transitions
     // Use threshold checks to prevent flickering from tiny changes
     const interval = setInterval(() => {
@@ -394,14 +260,8 @@ export default function AccountMetrics({
   ]);
 
   const {
-    balance = 100000,
-    equity = 100850,
     margin = 0, // Use backend value
     freeMargin = 100000, // Use backend value
-    floatingPnL = 850,
-    profitPercent = 0.85,
-    realizedProfitPercent = 0, // ✅ Added from earliest version
-    liveProfitPercent = 0, // ✅ Added from earliest version
     profitForTarget = 0, // ✅ Added from earliest version
     dailyDrawdown = 0,
     maxDailyDrawdown = 5,
@@ -418,10 +278,7 @@ export default function AccountMetrics({
   // Determine if account is locked or disqualified
   // Handle all possible failure statuses: DAILY_LOCKED, DISQUALIFIED, FAILED, CHALLENGE_FAILED, ACCOUNT_FAILED, etc.
   const statusUpper = String(status || "").toUpperCase();
-  const isLocked =
-    statusUpper.includes("DAILY") ||
-    statusUpper.includes("FAIL") ||
-    statusUpper.includes("DISQUAL");
+
   const isDailyLocked = statusUpper.includes("DAILY");
   const isDisqualified =
     statusUpper.includes("FAIL") || statusUpper.includes("DISQUAL");
@@ -624,14 +481,15 @@ export default function AccountMetrics({
     <div className="space-y-3">
       {/* Challenge Status Banner */}
       <Card
-        className={`border-2 p-4 ${isFailed
-          ? "bg-red-500/10 border-red-500/50"
-          : isFunded
-            ? "bg-purple-500/10 border-purple-500/50"
-            : phase1Passed && isPhase1
-              ? "bg-emerald-500/10 border-emerald-500/50"
-              : "bg-slate-900 border-slate-800"
-          }`}
+        className={`border-2 p-4 ${
+          isFailed
+            ? "bg-red-500/10 border-red-500/50"
+            : isFunded
+              ? "bg-purple-500/10 border-purple-500/50"
+              : phase1Passed && isPhase1
+                ? "bg-emerald-500/10 border-emerald-500/50"
+                : "bg-slate-900 border-slate-800"
+        }`}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -642,29 +500,29 @@ export default function AccountMetrics({
                   <h3 className="text-lg font-bold text-red-400">
                     {isDailyLocked
                       ? t(
-                        "terminal.accountMetrics.dailyLimitViolated",
-                        "Daily Limit Violated (Locked)",
-                      )
+                          "terminal.accountMetrics.dailyLimitViolated",
+                          "Daily Limit Violated (Locked)",
+                        )
                       : isDisqualified
                         ? t(
-                          "terminal.accountMetrics.challengeFailed",
-                          "Challenge Failed / Disqualified",
-                        )
+                            "terminal.accountMetrics.challengeFailed",
+                            "Challenge Failed / Disqualified",
+                          )
                         : t(
-                          "terminal.accountMetrics.challengeFailed",
-                          "Challenge Failed",
-                        )}
+                            "terminal.accountMetrics.challengeFailed",
+                            "Challenge Failed",
+                          )}
                   </h3>
                   <p className="text-sm text-slate-400">
                     {isDailyLocked
                       ? t(
-                        "terminal.accountMetrics.accountLockedUntilTomorrow",
-                        "Account has been locked until tomorrow due to daily loss limit violation",
-                      )
+                          "terminal.accountMetrics.accountLockedUntilTomorrow",
+                          "Account has been locked until tomorrow due to daily loss limit violation",
+                        )
                       : t(
-                        "terminal.accountMetrics.accountViolatedRules",
-                        "Account has violated challenge rules",
-                      )}
+                          "terminal.accountMetrics.accountViolatedRules",
+                          "Account has violated challenge rules",
+                        )}
                   </p>
                 </div>
               </>
@@ -709,14 +567,15 @@ export default function AccountMetrics({
             )}
           </div>
           <Badge
-            className={` min-w-[60px] text-xs sm:text-sm px-1 sm:px-3 py-1 ${isFailed
-              ? "bg-red-500/20 text-red-400"
-              : isFunded
-                ? "bg-purple-500/20 text-purple-400"
-                : phase1Passed && isPhase1
-                  ? "bg-emerald-500/20 text-emerald-400"
-                  : "bg-blue-500/20 text-blue-400"
-              }`}
+            className={` min-w-[60px] text-xs sm:text-sm px-1 sm:px-3 py-1 ${
+              isFailed
+                ? "bg-red-500/20 text-red-400"
+                : isFunded
+                  ? "bg-purple-500/20 text-purple-400"
+                  : phase1Passed && isPhase1
+                    ? "bg-emerald-500/20 text-emerald-400"
+                    : "bg-blue-500/20 text-blue-400"
+            }`}
           >
             {isFailed
               ? t("terminal.failedBadge")
@@ -743,12 +602,13 @@ export default function AccountMetrics({
           {/* Phase 1 */}
           <div
             className={`w-full md:flex-1 p-3 rounded-lg border-2 transition-all
-        ${getPhaseStatus("phase1") === "completed"
-                ? "bg-emerald-500/10 border-emerald-500/50"
-                : getPhaseStatus("phase1") === "active"
-                  ? "bg-blue-500/10 border-blue-500/50"
-                  : "bg-slate-800/50 border-slate-700"
-              }`}
+        ${
+          getPhaseStatus("phase1") === "completed"
+            ? "bg-emerald-500/10 border-emerald-500/50"
+            : getPhaseStatus("phase1") === "active"
+              ? "bg-blue-500/10 border-blue-500/50"
+              : "bg-slate-800/50 border-slate-700"
+        }`}
           >
             <div className="flex items-center gap-2 mb-2">
               {getPhaseStatus("phase1") === "completed" ? (
@@ -760,12 +620,13 @@ export default function AccountMetrics({
               )}
               <span
                 className={`text-xs font-semibold
-            ${getPhaseStatus("phase1") === "completed"
-                    ? "text-emerald-400"
-                    : getPhaseStatus("phase1") === "active"
-                      ? "text-blue-400"
-                      : "text-slate-400"
-                  }`}
+            ${
+              getPhaseStatus("phase1") === "completed"
+                ? "text-emerald-400"
+                : getPhaseStatus("phase1") === "active"
+                  ? "text-blue-400"
+                  : "text-slate-400"
+            }`}
               >
                 {t("terminal.accountMetrics.phase1")}
               </span>
@@ -811,14 +672,15 @@ export default function AccountMetrics({
           {/* Phase 2 */}
           <div
             className={`w-full md:flex-1 p-3 rounded-lg border-2 transition-all
-        ${getPhaseStatus("phase2") === "completed"
-                ? "bg-emerald-500/10 border-emerald-500/50"
-                : getPhaseStatus("phase2") === "active"
-                  ? "bg-cyan-500/10 border-cyan-500/50"
-                  : getPhaseStatus("phase2") === "locked"
-                    ? "bg-slate-800/30 border-slate-700 opacity-50"
-                    : "bg-slate-800/50 border-slate-700"
-              }`}
+        ${
+          getPhaseStatus("phase2") === "completed"
+            ? "bg-emerald-500/10 border-emerald-500/50"
+            : getPhaseStatus("phase2") === "active"
+              ? "bg-cyan-500/10 border-cyan-500/50"
+              : getPhaseStatus("phase2") === "locked"
+                ? "bg-slate-800/30 border-slate-700 opacity-50"
+                : "bg-slate-800/50 border-slate-700"
+        }`}
           >
             <div className="flex items-center gap-2 mb-2">
               {getPhaseStatus("phase2") === "completed" ? (
@@ -830,12 +692,13 @@ export default function AccountMetrics({
               )}
               <span
                 className={`text-xs font-semibold
-            ${getPhaseStatus("phase2") === "completed"
-                    ? "text-emerald-400"
-                    : getPhaseStatus("phase2") === "active"
-                      ? "text-cyan-400"
-                      : "text-slate-400"
-                  }`}
+            ${
+              getPhaseStatus("phase2") === "completed"
+                ? "text-emerald-400"
+                : getPhaseStatus("phase2") === "active"
+                  ? "text-cyan-400"
+                  : "text-slate-400"
+            }`}
               >
                 {t("terminal.accountMetrics.phase2")}
               </span>
@@ -854,10 +717,11 @@ export default function AccountMetrics({
           {/* Funded */}
           <div
             className={`w-full md:flex-1 p-3 rounded-lg border-2 transition-all
-        ${getPhaseStatus("funded") === "completed"
-                ? "bg-purple-500/10 border-purple-500/50"
-                : "bg-slate-800/30 border-slate-700 opacity-50"
-              }`}
+        ${
+          getPhaseStatus("funded") === "completed"
+            ? "bg-purple-500/10 border-purple-500/50"
+            : "bg-slate-800/30 border-slate-700 opacity-50"
+        }`}
           >
             <div className="flex items-center gap-2 mb-2">
               {getPhaseStatus("funded") === "completed" ? (
@@ -867,10 +731,11 @@ export default function AccountMetrics({
               )}
               <span
                 className={`text-xs font-semibold
-            ${getPhaseStatus("funded") === "completed"
-                    ? "text-purple-400"
-                    : "text-slate-400"
-                  }`}
+            ${
+              getPhaseStatus("funded") === "completed"
+                ? "text-purple-400"
+                : "text-slate-400"
+            }`}
               >
                 {t("terminal.accountMetrics.funded")}
               </span>
@@ -1013,8 +878,8 @@ export default function AccountMetrics({
             <Skeleton className="h-6 w-16 bg-slate-800" />
           ) : (
             <p className="text-sm sm:text-lg font-bold font-mono text-emerald-400">
-              {/* ✅ Show liveProfitPercent from earliest version */}+
-              {liveProfitPercent.toFixed(2)}%
+              {/* ✅ Show profitPercent since liveProfitPercent is removed */}+
+              {(account?.profitPercent || 0).toFixed(2)}%
             </p>
           )}
         </Card>
@@ -1041,18 +906,19 @@ export default function AccountMetrics({
                   <CheckCircle className="w-4 h-4 text-emerald-400" />
                 )}
                 <Badge
-                  className={`${profitStatus.statusKey === "loss"
-                    ? "bg-red-500/20 text-red-400"
-                    : profitStatus.statusKey === "reached"
-                      ? "bg-emerald-500/20 text-emerald-400"
-                      : profitStatus.statusKey === "safe"
+                  className={`${
+                    profitStatus.statusKey === "loss"
+                      ? "bg-red-500/20 text-red-400"
+                      : profitStatus.statusKey === "reached"
                         ? "bg-emerald-500/20 text-emerald-400"
-                        : profitStatus.statusKey === "warning"
-                          ? "bg-amber-500/20 text-amber-400"
-                          : profitStatus.statusKey === "danger"
-                            ? "bg-red-500/20 text-red-400"
-                            : "bg-slate-500/20 text-slate-400"
-                    }`}
+                        : profitStatus.statusKey === "safe"
+                          ? "bg-emerald-500/20 text-emerald-400"
+                          : profitStatus.statusKey === "warning"
+                            ? "bg-amber-500/20 text-amber-400"
+                            : profitStatus.statusKey === "danger"
+                              ? "bg-red-500/20 text-red-400"
+                              : "bg-slate-500/20 text-slate-400"
+                  }`}
                 >
                   {t(`dashboard.rulesPanel.status.${profitStatus.statusKey}`)}
                 </Badge>
@@ -1089,12 +955,13 @@ export default function AccountMetrics({
 
         {/* Daily Loss Limit */}
         <Card
-          className={`bg-slate-900 border-slate-800 p-4 ${dailyDDUsage >= 80
-            ? "border-red-500/50"
-            : phase1DailyDDMet
-              ? "border-emerald-500/30"
-              : ""
-            }`}
+          className={`bg-slate-900 border-slate-800 p-4 ${
+            dailyDDUsage >= 80
+              ? "border-red-500/50"
+              : phase1DailyDDMet
+                ? "border-emerald-500/30"
+                : ""
+          }`}
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
@@ -1111,12 +978,13 @@ export default function AccountMetrics({
                   <CheckCircle className="w-4 h-4 text-emerald-400" />
                 )}
                 <Badge
-                  className={`${dailyStatus.statusKey === "danger"
-                    ? "bg-red-500/20 text-red-400"
-                    : dailyStatus.statusKey === "warning"
-                      ? "bg-amber-500/20 text-amber-400"
-                      : "bg-emerald-500/20 text-emerald-400"
-                    }`}
+                  className={`${
+                    dailyStatus.statusKey === "danger"
+                      ? "bg-red-500/20 text-red-400"
+                      : dailyStatus.statusKey === "warning"
+                        ? "bg-amber-500/20 text-amber-400"
+                        : "bg-emerald-500/20 text-emerald-400"
+                  }`}
                 >
                   {t(`dashboard.rulesPanel.status.${dailyStatus.statusKey}`)}
                 </Badge>
@@ -1159,12 +1027,13 @@ export default function AccountMetrics({
 
         {/* Overall Drawdown */}
         <Card
-          className={`bg-slate-900 border-slate-800 p-4 ${overallDDUsage >= 80
-            ? "border-red-500/50"
-            : phase1OverallDDMet
-              ? "border-emerald-500/30"
-              : ""
-            }`}
+          className={`bg-slate-900 border-slate-800 p-4 ${
+            overallDDUsage >= 80
+              ? "border-red-500/50"
+              : phase1OverallDDMet
+                ? "border-emerald-500/30"
+                : ""
+          }`}
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
@@ -1181,12 +1050,13 @@ export default function AccountMetrics({
                   <CheckCircle className="w-4 h-4 text-emerald-400" />
                 )}
                 <Badge
-                  className={`${overallStatus.statusKey === "danger"
-                    ? "bg-red-500/20 text-red-400"
-                    : overallStatus.statusKey === "warning"
-                      ? "bg-amber-500/20 text-amber-400"
-                      : "bg-emerald-500/20 text-emerald-400"
-                    }`}
+                  className={`${
+                    overallStatus.statusKey === "danger"
+                      ? "bg-red-500/20 text-red-400"
+                      : overallStatus.statusKey === "warning"
+                        ? "bg-amber-500/20 text-amber-400"
+                        : "bg-emerald-500/20 text-emerald-400"
+                  }`}
                 >
                   {t(`dashboard.rulesPanel.status.${overallStatus.statusKey}`)}
                 </Badge>
@@ -1282,11 +1152,11 @@ export default function AccountMetrics({
                 <p className="text-[9px] text-slate-500 mt-0.5">
                   {daysRemaining === 1
                     ? t("terminal.accountMetrics.daysRemaining_one", {
-                      count: daysRemaining,
-                    })
+                        count: daysRemaining,
+                      })
                     : t("terminal.accountMetrics.daysRemaining_other", {
-                      count: daysRemaining,
-                    })}
+                        count: daysRemaining,
+                      })}
                 </p>
               )}
             </>
@@ -1300,12 +1170,13 @@ export default function AccountMetrics({
             <Skeleton className="h-5 w-16 bg-slate-700" />
           ) : (
             <Badge
-              className={`text-xs ${phase === "funded"
-                ? "bg-purple-500/20 text-purple-400"
-                : phase === "phase2"
-                  ? "bg-cyan-500/20 text-cyan-400"
-                  : "bg-blue-500/20 text-blue-400"
-                }`}
+              className={`text-xs ${
+                phase === "funded"
+                  ? "bg-purple-500/20 text-purple-400"
+                  : phase === "phase2"
+                    ? "bg-cyan-500/20 text-cyan-400"
+                    : "bg-blue-500/20 text-blue-400"
+              }`}
             >
               {phase === "phase1"
                 ? t("status.phase1")

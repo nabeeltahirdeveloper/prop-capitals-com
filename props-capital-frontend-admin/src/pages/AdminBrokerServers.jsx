@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "../contexts/LanguageContext";
 import {
@@ -34,7 +34,6 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  Settings,
   Trash2,
   TestTube,
 } from "lucide-react";
@@ -49,12 +48,6 @@ export default function AdminBrokerServers() {
     platform: "MT5",
     server_address: "",
     server_port: 443,
-    manager_login: "",
-    manager_password: "",
-    api_key: "",
-    api_secret: "",
-    is_demo: true,
-    timezone: "UTC",
   });
 
   const queryClient = useQueryClient();
@@ -99,11 +92,15 @@ export default function AdminBrokerServers() {
       if (data.success) {
         toast.success(t("admin.brokerServers.toast.connectionSuccess"));
       } else {
-        toast.warning(data.message || t("admin.brokerServers.toast.connectionFailed"));
+        toast.warning(
+          data.message || t("admin.brokerServers.toast.connectionFailed"),
+        );
       }
     },
     onError: (error) => {
-      toast.error(error.message || t("admin.brokerServers.toast.connectionError"));
+      toast.error(
+        error.message || t("admin.brokerServers.toast.connectionError"),
+      );
     },
   });
 
@@ -113,12 +110,6 @@ export default function AdminBrokerServers() {
       platform: "MT5",
       server_address: "",
       server_port: 443,
-      manager_login: "",
-      manager_password: "",
-      api_key: "",
-      api_secret: "",
-      is_demo: true,
-      timezone: "UTC",
     });
   };
 
@@ -206,7 +197,9 @@ export default function AdminBrokerServers() {
             {error.message || t("admin.brokerServers.error.description")}
           </p>
           <Button
-            onClick={() => queryClient.invalidateQueries({ queryKey: ["broker-servers"] })}
+            onClick={() =>
+              queryClient.invalidateQueries({ queryKey: ["broker-servers"] })
+            }
             className="bg-gradient-to-r from-[#d97706] to-[#d97706] text-[#0a0d12] hover:brightness-110"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
@@ -247,16 +240,14 @@ export default function AdminBrokerServers() {
           >
             <DialogHeader>
               <DialogTitle className="text-foreground text-base sm:text-lg md:text-xl">
-                Prop Server
+                {t("admin.brokerServers.dialog.title")}
               </DialogTitle>
               <DialogDescription className="text-muted-foreground text-sm">
-              Configure a new Prop Server connection for trading accounts.
-
-
+                {t("admin.brokerServers.dialog.description")}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5 sm:space-y-2">
                   <Label className="text-muted-foreground text-xs sm:text-sm">
                     {t("admin.brokerServers.dialog.serverName")}
@@ -268,7 +259,7 @@ export default function AdminBrokerServers() {
                     }
                     className="bg-muted border-border text-foreground text-sm placeholder:text-muted-foreground"
                     placeholder={t(
-                      "admin.brokerServers.dialog.serverNamePlaceholder"
+                      "admin.brokerServers.dialog.serverNamePlaceholder",
                     )}
                   />
                 </div>
@@ -303,7 +294,7 @@ export default function AdminBrokerServers() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5 sm:space-y-2">
                   <Label className="text-muted-foreground text-xs sm:text-sm">
                     {t("admin.brokerServers.dialog.serverAddress")}
@@ -318,7 +309,7 @@ export default function AdminBrokerServers() {
                     }
                     className="bg-muted border-border text-foreground text-sm placeholder:text-muted-foreground"
                     placeholder={t(
-                      "admin.brokerServers.dialog.serverAddressPlaceholder"
+                      "admin.brokerServers.dialog.serverAddressPlaceholder",
                     )}
                   />
                 </div>
@@ -329,102 +320,30 @@ export default function AdminBrokerServers() {
                   <Input
                     type="number"
                     value={formData.server_port}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value);
                       setFormData({
                         ...formData,
-                        server_port: parseInt(e.target.value) || 443,
-                      })
-                    }
+                        server_port: isNaN(val)
+                          ? 443
+                          : Math.min(65535, Math.max(1, val)),
+                      });
+                    }}
                     className="bg-muted border-border text-foreground text-sm"
+                    min={1}
+                    max={65535}
                   />
                 </div>
-              </div>
-
-              {(formData.platform === "MT4" || formData.platform === "MT5") && (
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <Label className="text-muted-foreground text-xs sm:text-sm">
-                      {t("admin.brokerServers.dialog.managerLogin")}
-                    </Label>
-                    <Input
-                      value={formData.manager_login}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          manager_login: e.target.value,
-                        })
-                      }
-                      className="bg-muted border-border text-foreground text-sm"
-                    />
-                  </div>
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <Label className="text-muted-foreground text-xs sm:text-sm">
-                      {t("admin.brokerServers.dialog.managerPassword")}
-                    </Label>
-                    <Input
-                      type="password"
-                      value={formData.manager_password}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          manager_password: e.target.value,
-                        })
-                      }
-                      className="bg-muted border-border text-foreground text-sm"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {(formData.platform === "CTRADER" ||
-                formData.platform === "DXTRADE") && (
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <Label className="text-muted-foreground text-xs sm:text-sm">
-                      {t("admin.brokerServers.dialog.apiKey")}
-                    </Label>
-                    <Input
-                      value={formData.api_key}
-                      onChange={(e) =>
-                        setFormData({ ...formData, api_key: e.target.value })
-                      }
-                      className="bg-muted border-border text-foreground text-sm"
-                    />
-                  </div>
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <Label className="text-muted-foreground text-xs sm:text-sm">
-                      {t("admin.brokerServers.dialog.apiSecret")}
-                    </Label>
-                    <Input
-                      type="password"
-                      value={formData.api_secret}
-                      onChange={(e) =>
-                        setFormData({ ...formData, api_secret: e.target.value })
-                      }
-                      className="bg-muted border-border text-foreground text-sm"
-                    />
-                  </div>
-                </div>
-              )}
-
-              <div className="flex items-center gap-4 py-1">
-                <label className="flex items-center gap-2 text-muted-foreground text-sm sm:text-base cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.is_demo}
-                    onChange={(e) =>
-                      setFormData({ ...formData, is_demo: e.target.checked })
-                    }
-                    className="rounded border-border bg-muted"
-                  />
-                  {t("admin.brokerServers.dialog.demoServer")}
-                </label>
               </div>
 
               <Button
                 onClick={() => createServerMutation.mutate(formData)}
                 className="w-full bg-gradient-to-r from-[#d97706] to-[#d97706] text-[#0a0d12] hover:brightness-110"
-                disabled={createServerMutation.isPending || !formData.name || !formData.server_address}
+                disabled={
+                  createServerMutation.isPending ||
+                  !formData.name ||
+                  !formData.server_address
+                }
               >
                 {createServerMutation.isPending
                   ? t("admin.brokerServers.adding")
@@ -438,7 +357,10 @@ export default function AdminBrokerServers() {
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="bg-card border-border p-4 sm:p-6 animate-pulse">
+            <Card
+              key={i}
+              className="bg-card border-border p-4 sm:p-6 animate-pulse"
+            >
               <div className="flex items-start justify-between mb-4">
                 <div className="w-12 h-12 rounded-xl bg-muted"></div>
                 <div className="w-20 h-6 rounded bg-muted"></div>
@@ -455,14 +377,11 @@ export default function AdminBrokerServers() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {servers.map((server) => (
-            <Card
-              key={server.id}
-              className="bg-card border-border p-4 sm:p-6"
-            >
+            <Card key={server.id} className="bg-card border-border p-4 sm:p-6">
               <div className="flex items-start justify-between mb-4">
                 <div
                   className={`w-12 h-12 rounded-xl bg-gradient-to-br ${getPlatformColor(
-                    server.platform
+                    server.platform,
                   )} flex items-center justify-center`}
                 >
                   <Server className="w-6 h-6 text-white" />
@@ -539,13 +458,6 @@ export default function AdminBrokerServers() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-border text-foreground hover:bg-accent"
-                >
-                  <Settings className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
                   className="border-red-500/60 text-red-500 hover:bg-red-500/10"
                   onClick={() => handleDeleteServer(server)}
                   disabled={deleteServerMutation.isPending}
@@ -560,10 +472,10 @@ export default function AdminBrokerServers() {
             <Card className="bg-card border-border p-8 sm:p-12 col-span-full text-center">
               <Server className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
               <h3 className="text-base sm:text-lg font-semibold text-foreground mb-1.5 sm:mb-2">
-                No Prop Servers
+                {t("admin.brokerServers.empty.title")}
               </h3>
               <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">
-              Add your first Prop Server to start creating trading accounts
+                {t("admin.brokerServers.empty.description")}
               </p>
               <Button
                 onClick={() => setShowAddDialog(true)}

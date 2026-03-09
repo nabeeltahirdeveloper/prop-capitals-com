@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Table,
   TableBody,
@@ -35,7 +34,10 @@ export default function DataTable({
             </TableHeader>
             <TableBody>
               {[...Array(5)].map((_, i) => (
-                <TableRow key={i} className="border-slate-200 dark:border-border">
+                <TableRow
+                  key={i}
+                  className="border-slate-200 dark:border-border"
+                >
                   {columns.map((_, j) => (
                     <TableCell key={j}>
                       <Skeleton className="h-4 w-full bg-slate-100 dark:bg-muted" />
@@ -53,7 +55,9 @@ export default function DataTable({
   if (!data || data.length === 0) {
     return (
       <div className="rounded-xl border border-slate-200 dark:border-border p-8 sm:p-12 text-center">
-        <p className="text-muted-foreground text-sm sm:text-base">{emptyMessage}</p>
+        <p className="text-muted-foreground text-sm sm:text-base">
+          {emptyMessage}
+        </p>
       </div>
     );
   }
@@ -89,7 +93,7 @@ export default function DataTable({
                 {columns.map((col, j) => (
                   <TableCell
                     key={j}
-                    className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 text-slate-800 dark:text-foreground"
+                    className="text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-3 text-slate-800 dark:text-foreground"
                   >
                     {col.cell ? col.cell(row) : row[col.accessorKey]}
                   </TableCell>
