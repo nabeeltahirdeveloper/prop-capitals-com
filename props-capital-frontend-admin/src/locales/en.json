@@ -790,6 +790,9 @@
     "noNotifications": "No notifications",
     "noNewNotifications": "No new notifications",
     "allCaughtUp": "You're all caught up!",
+    "delete": "Delete notification",
+    "loadError": "Failed to load notifications",
+    "loadErrorHint": "Please refresh the page and try again.",
     "challenge": "Challenge",
     "payout": "Payout",
     "system": "System",
@@ -1208,7 +1211,8 @@
     "pipeline": "Pipeline",
     "ftdReport": "Orders Report",
     "calendar": "Calendar",
-    "fundedAccounts": "Funded Accounts"
+    "fundedAccounts": "Funded Accounts",
+    "propServer": "Prop Server"
   },
   "status": {
     "active": "Active",

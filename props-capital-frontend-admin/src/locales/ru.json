@@ -789,6 +789,9 @@
     "account": "Аккаунт",
     "noNotifications": "Уведомлений нет",
     "noNewNotifications": "Новых уведомлений нет",
+    "delete": "Delete notification",
+    "loadError": "Failed to load notifications",
+    "loadErrorHint": "Please refresh the page and try again.",
     "allCaughtUp": "Всё просмотрено!",
     "challenge": "Челлендж",
     "payout": "Вывод",
@@ -1207,7 +1210,9 @@
     "crmLeads": "CRM Лиды",
     "pipeline": "Pipeline",
     "ftdReport": "FTD Report",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "fundedAccounts": "Funded Accounts",
+    "propServer": "Prop Server"
   },
   "status": {
     "active": "Активен",

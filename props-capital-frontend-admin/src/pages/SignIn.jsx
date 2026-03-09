@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { createPageUrl } from '../utils';
@@ -29,12 +29,6 @@ export default function SignIn() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Clean up any redirect state when component mounts
-  useEffect(() => {
-    if (location.state?.from) {
-      navigate(createPageUrl('SignIn'), { replace: true, state: null });
-    }
-  }, [location.state?.from, navigate]);
 
   const loginMutation = useMutation({
     mutationFn: async (credentials) => {
@@ -55,7 +49,7 @@ export default function SignIn() {
       }
 
       login(data.accessToken, data.user);
-      navigate(createPageUrl('AdminDashboard'));
+      navigate(location.state?.from?.pathname || createPageUrl('AdminDashboard'), { replace: true });
     },
     onError: (error) => {
       const errorMessage = error.response?.data?.message ||
@@ -69,7 +63,7 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    loginMutation.mutate({ email, password });
+    loginMutation.mutate({ email: email.trim().toLowerCase(), password });
   };
 
   return (
@@ -85,8 +79,11 @@ export default function SignIn() {
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-3 mb-6">
             <div className="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center">
-              <img src="/assets/images/logo-light.png" alt="Logo" className="block dark:hidden w-full h-full object-contain" />
-              <img src="/assets/images/logo-dark.png" alt="Logo Dark" className="hidden dark:block w-full h-full object-contain" />
+              <img
+                src={isDark ? "/assets/images/logo-dark.png" : "/assets/images/logo-light.png"}
+                alt="Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
             <div className="flex flex-col items-start">
               <span className={`font-bold text-xl tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>PROP<span className="text-amber-400">CAPITALS</span></span>

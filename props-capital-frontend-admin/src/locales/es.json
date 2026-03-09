@@ -789,6 +789,9 @@
     "account": "Cuenta",
     "noNotifications": "No hay notificaciones",
     "noNewNotifications": "No hay nuevas notificaciones",
+    "delete": "Delete notification",
+    "loadError": "Failed to load notifications",
+    "loadErrorHint": "Please refresh the page and try again.",
     "allCaughtUp": "¡Estás al día!",
     "challenge": "Desafío",
     "payout": "Retiro",
@@ -1207,7 +1210,9 @@
     "crmLeads": "Leads CRM",
     "pipeline": "Canalizaci?n",
     "ftdReport": "Informe FTD",
-    "calendar": "Calendario"
+    "calendar": "Calendario",
+    "fundedAccounts": "Funded Accounts",
+    "propServer": "Prop Server"
   },
   "status": {
     "active": "Activo",

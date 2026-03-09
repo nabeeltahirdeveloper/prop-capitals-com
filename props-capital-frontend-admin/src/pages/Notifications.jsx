@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getCurrentUser } from "@/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   getUserNotifications,
   markNotificationAsRead,
@@ -12,6 +12,7 @@ import { translateNotification } from "../utils/notificationTranslations";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -32,45 +33,54 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { enUS, th, fr, ja, ru, ko, es, tr } from "date-fns/locale";
 
+// Defined outside component — constant, no need to recreate on every render
+const localeMap = {
+  en: enUS,
+  th: th,
+  fr: fr,
+  ja: ja,
+  ru: ru,
+  ko: ko,
+  es: es,
+  tr: tr,
+};
+
 export default function Notifications() {
   const { t, language } = useTranslation();
   const [filter, setFilter] = useState("all");
 
   const queryClient = useQueryClient();
-
-  // Get current user
-  const { data: user } = useQuery({
-    queryKey: ["user", "me"],
-    queryFn: getCurrentUser,
-  });
+  const { user } = useAuth();
 
   // Get user notifications
-  const { data: notifications = [] } = useQuery({
+  const {
+    data: notifications = [],
+    isLoading: notificationsLoading,
+    isError: notificationsError,
+  } = useQuery({
     queryKey: ["notifications", user?.userId],
     queryFn: () => getUserNotifications(user?.userId),
     enabled: !!user?.userId,
-    refetchInterval: 5000, // Real-time updates every 5 seconds
+    refetchInterval: 5000,
+    refetchIntervalInBackground: false,
   });
 
   // Mark notification as read
   const markAsReadMutation = useMutation({
     mutationFn: (id) => markNotificationAsRead(id),
     onSuccess: (_, id) => {
-      // Optimistically update the cache - mark notification as read
       queryClient.setQueryData(
         ["notifications", user?.userId],
         (oldData = []) => {
           return oldData.map((n) => (n.id === id ? { ...n, read: true } : n));
         },
       );
-      // Invalidate and refetch to ensure consistency with backend
       queryClient.invalidateQueries({
         queryKey: ["notifications", user?.userId],
       });
     },
     onError: (error) => {
       console.error("Failed to mark notification as read:", error);
-      // Revert optimistic update on error by invalidating cache
       queryClient.invalidateQueries({
         queryKey: ["notifications", user?.userId],
       });
@@ -93,11 +103,23 @@ export default function Notifications() {
     },
   });
 
+  // Mark all as read — uses mutation for proper loading state
+  const markAllAsReadMutation = useMutation({
+    mutationFn: () => markAllNotificationsAsRead(user.userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["notifications", user?.userId],
+      });
+    },
+    onError: (error) => {
+      console.error("Failed to mark all notifications as read:", error);
+    },
+  });
+
   // Map backend notifications to frontend format
   // Sort: unread first, then by createdAt descending
   const mappedNotifications = notifications
     .map((notification) => {
-      // Use backend-provided type and category (with fallback for backward compatibility)
       const type = notification.type?.toLowerCase() || "info";
       const category = notification.category?.toLowerCase() || "system";
       const translated = translateNotification(
@@ -117,26 +139,22 @@ export default function Notifications() {
       };
     })
     .sort((a, b) => {
-      // Unread first
       if (a.is_read !== b.is_read) {
         return a.is_read ? 1 : -1;
       }
-      // Then by date (newest first)
       return (
         new Date(b.created_date).getTime() - new Date(a.created_date).getTime()
       );
     });
 
-  const displayNotifications = mappedNotifications;
-
   const filteredNotifications =
     filter === "all"
-      ? displayNotifications
+      ? mappedNotifications
       : filter === "unread"
-        ? displayNotifications.filter((n) => !n.is_read)
-        : displayNotifications.filter((n) => n.category === filter);
+        ? mappedNotifications.filter((n) => !n.is_read)
+        : mappedNotifications.filter((n) => n.category === filter);
 
-  const unreadCount = displayNotifications.filter((n) => !n.is_read).length;
+  const unreadCount = mappedNotifications.filter((n) => !n.is_read).length;
 
   const getIcon = (type) => {
     switch (type) {
@@ -173,33 +191,56 @@ export default function Notifications() {
       case "error":
         return "border-red-500/30 bg-red-500/5";
       default:
-        return "border-slate-700 bg-slate-800/50";
+        return "border-border bg-accent/50";
     }
   };
 
-  const markAllAsRead = async () => {
-    if (unreadCount === 0 || !user?.userId) return;
+  if (notificationsLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <Skeleton className="w-12 h-12 rounded-xl bg-accent" />
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-48 bg-accent" />
+            <Skeleton className="h-4 w-64 bg-accent" />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} className="h-20 rounded-xl bg-accent" />
+          ))}
+        </div>
+        <div className="space-y-3">
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} className="h-24 rounded-xl bg-accent" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
-    try {
-      await markAllNotificationsAsRead(user.userId);
-      // Invalidate and refetch notifications
-      queryClient.invalidateQueries({
-        queryKey: ["notifications", user?.userId],
-      });
-    } catch (error) {
-      console.error("Failed to mark all notifications as read:", error);
-    }
-  };
-  const localeMap = {
-    en: enUS,
-    th: th,
-    fr: fr,
-    ja: ja,
-    ru: ru,
-    ko: ko,
-    es: es,
-    tr: tr,
-  };
+  if (notificationsError) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-xl flex items-center justify-center">
+            <Bell className="w-6 h-6 text-emerald-400" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">{t("notifications.title")}</h1>
+            <p className="text-muted-foreground">{t("notifications.subtitle")}</p>
+          </div>
+        </div>
+        <Card className="bg-card border-red-500/30 p-6 md:p-12 text-center">
+          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertTriangle className="w-8 h-8 text-red-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-foreground mb-2">{t("notifications.loadError")}</h3>
+          <p className="text-muted-foreground">{t("notifications.loadErrorHint")}</p>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -210,17 +251,18 @@ export default function Notifications() {
             <Bell className="w-6 h-6 text-emerald-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">
+            <h1 className="text-2xl font-bold text-foreground">
               {t("notifications.title")}
             </h1>
-            <p className="text-slate-400">{t("notifications.subtitle")}</p>
+            <p className="text-muted-foreground">{t("notifications.subtitle")}</p>
           </div>
         </div>
         {unreadCount > 0 && (
           <Button
             variant="outline"
-            className="border-slate-700 bg-slate-800/50 text-white hover:bg-slate-700 hover:text-white"
-            onClick={markAllAsRead}
+            className="border-border bg-card hover:bg-accent"
+            onClick={() => markAllAsReadMutation.mutate()}
+            disabled={markAllAsReadMutation.isPending}
           >
             <Check className="w-4 h-4 mr-2" />
             {t("notifications.markAllAsRead")}
@@ -230,62 +272,59 @@ export default function Notifications() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-        <Card className="bg-slate-900 border-slate-800 p-4">
+        <Card className="bg-card border-border p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
               <Bell className="w-5 h-5 text-blue-400" />
             </div>
             <div>
-              <p className="text-xl sm:text-2xl font-bold text-white">
-                {displayNotifications.length}
+              <p className="text-xl sm:text-2xl font-bold text-foreground">
+                {mappedNotifications.length}
               </p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-muted-foreground">
                 {t("notifications.total")}
               </p>
             </div>
           </div>
         </Card>
-        <Card className="bg-slate-900 border-slate-800 p-4">
+        <Card className="bg-card border-border p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
               <Clock className="w-5 h-5 text-emerald-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{unreadCount}</p>
-              <p className="text-xs text-slate-400">
+              <p className="text-2xl font-bold text-foreground">{unreadCount}</p>
+              <p className="text-xs text-muted-foreground">
                 {t("notifications.unread")}
               </p>
             </div>
           </div>
         </Card>
-        <Card className="bg-slate-900 border-slate-800 p-4">
+        <Card className="bg-card border-border p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center">
               <AlertTriangle className="w-5 h-5 text-amber-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">
-                {
-                  displayNotifications.filter((n) => n.type === "warning")
-                    .length
-                }
+              <p className="text-2xl font-bold text-foreground">
+                {mappedNotifications.filter((n) => n.type === "warning").length}
               </p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-muted-foreground">
                 {t("notifications.warnings")}
               </p>
             </div>
           </div>
         </Card>
-        <Card className="bg-slate-900 border-slate-800 p-4">
+        <Card className="bg-card border-border p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center">
               <Shield className="w-5 h-5 text-red-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">
-                {displayNotifications.filter((n) => n.type === "error").length}
+              <p className="text-2xl font-bold text-foreground">
+                {mappedNotifications.filter((n) => n.type === "error").length}
               </p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-muted-foreground">
                 {t("notifications.violations")}
               </p>
             </div>
@@ -295,21 +334,21 @@ export default function Notifications() {
 
       {/* Filters */}
       <div className="flex items-center gap-2 overflow-hidden">
-        <div className="bg-slate-800/20 p-1.5 rounded-lg flex-shrink-0">
+        <div className="bg-accent/50 p-1.5 rounded-lg flex-shrink-0">
           <Filter className="w-4 h-4 text-emerald-400" />
         </div>
         <div className="flex-1 overflow-x-auto no-scrollbar">
           <Tabs value={filter} onValueChange={setFilter} className="w-full">
-            <TabsList className="bg-slate-900 border border-slate-800 w-full sm:w-auto justify-start inline-flex h-auto p-1 overflow-x-auto">
+            <TabsList className="bg-card border border-border w-full sm:w-auto justify-start inline-flex h-auto p-1 overflow-x-auto">
               <TabsTrigger
                 value="all"
-                className="data-[state=active]:bg-slate-800 text-slate-300 data-[state=active]:text-white whitespace-nowrap px-4 py-2 text-xs sm:text-sm"
+                className="data-[state=active]:bg-accent text-muted-foreground data-[state=active]:text-foreground whitespace-nowrap px-4 py-2 text-xs sm:text-sm"
               >
                 {t("notifications.all")}
               </TabsTrigger>
               <TabsTrigger
                 value="unread"
-                className="data-[state=active]:bg-slate-800 text-slate-300 data-[state=active]:text-white whitespace-nowrap px-4 py-2 text-xs sm:text-sm"
+                className="data-[state=active]:bg-accent text-muted-foreground data-[state=active]:text-foreground whitespace-nowrap px-4 py-2 text-xs sm:text-sm"
               >
                 {t("notifications.unread")}{" "}
                 {unreadCount > 0 && (
@@ -320,19 +359,19 @@ export default function Notifications() {
               </TabsTrigger>
               <TabsTrigger
                 value="challenge"
-                className="data-[state=active]:bg-slate-800 text-slate-300 data-[state=active]:text-white whitespace-nowrap px-4 py-2 text-xs sm:text-sm"
+                className="data-[state=active]:bg-accent text-muted-foreground data-[state=active]:text-foreground whitespace-nowrap px-4 py-2 text-xs sm:text-sm"
               >
                 {t("notifications.challenges")}
               </TabsTrigger>
               <TabsTrigger
                 value="payout"
-                className="data-[state=active]:bg-slate-800 text-slate-300 data-[state=active]:text-white whitespace-nowrap px-4 py-2 text-xs sm:text-sm"
+                className="data-[state=active]:bg-accent text-muted-foreground data-[state=active]:text-foreground whitespace-nowrap px-4 py-2 text-xs sm:text-sm"
               >
                 {t("notifications.payouts")}
               </TabsTrigger>
               <TabsTrigger
                 value="account"
-                className="data-[state=active]:bg-slate-800 text-slate-300 data-[state=active]:text-white whitespace-nowrap px-4 py-2 text-xs sm:text-sm"
+                className="data-[state=active]:bg-accent text-muted-foreground data-[state=active]:text-foreground whitespace-nowrap px-4 py-2 text-xs sm:text-sm"
               >
                 {t("notifications.account")}
               </TabsTrigger>
@@ -344,20 +383,20 @@ export default function Notifications() {
       {/* Notifications List */}
       <div className="space-y-3">
         {filteredNotifications.length === 0 ? (
-          <Card className="bg-slate-900 border-slate-800 p-6 md:p-12 text-center">
-            <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Bell className="w-8 h-8 text-slate-600" />
+          <Card className="bg-card border-border p-6 md:p-12 text-center">
+            <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
+              <Bell className="w-8 h-8 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2">
+            <h3 className="text-lg font-semibold text-foreground mb-2">
               {t("notifications.noNotifications")}
             </h3>
-            <p className="text-slate-400">{t("notifications.allCaughtUp")}</p>
+            <p className="text-muted-foreground">{t("notifications.allCaughtUp")}</p>
           </Card>
         ) : (
           filteredNotifications.map((notification) => (
             <Card
               key={notification.id}
-              className={`border p-4 transition-all hover:border-slate-600 ${getBorderColor(notification.type)} ${!notification.is_read ? "ring-1 ring-emerald-500/30" : ""}`}
+              className={`border p-4 transition-all hover:border-border/80 ${getBorderColor(notification.type)} ${!notification.is_read ? "ring-1 ring-emerald-500/30" : ""}`}
             >
               <div className="flex items-start gap-4">
                 <div
@@ -377,14 +416,14 @@ export default function Notifications() {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-white font-semibold">
+                        <h3 className="text-foreground font-semibold">
                           {notification.title}
                         </h3>
                         {!notification.is_read && (
                           <span className="w-2 h-2 bg-emerald-500 rounded-full" />
                         )}
                       </div>
-                      <p className="text-slate-400 text-sm leading-relaxed">
+                      <p className="text-muted-foreground text-sm leading-relaxed">
                         {notification.message}
                       </p>
                     </div>
@@ -393,7 +432,8 @@ export default function Notifications() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="text-slate-400  h-8 w-8"
+                          className="text-muted-foreground h-8 w-8"
+                          aria-label={t("notifications.markAsRead")}
                           onClick={() =>
                             markAsReadMutation.mutate(notification.id)
                           }
@@ -404,7 +444,8 @@ export default function Notifications() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-slate-400 hover:text-red-400 h-8 w-8"
+                        className="text-muted-foreground hover:text-red-400 h-8 w-8"
+                        aria-label={t("notifications.delete")}
                         onClick={() =>
                           deleteNotificationMutation.mutate(notification.id)
                         }
@@ -416,7 +457,7 @@ export default function Notifications() {
                   <div className="flex items-center gap-3 mt-3">
                     <Badge
                       variant="outline"
-                      className="text-xs border-slate-700 text-slate-400"
+                      className="text-xs border-border text-muted-foreground"
                     >
                       {getCategoryIcon(notification.category)}
                       <span className="ml-1 capitalize">
@@ -431,7 +472,7 @@ export default function Notifications() {
                     </Badge>
                     <span
                       key={language + notification.id}
-                      className="text-xs text-slate-500"
+                      className="text-xs text-muted-foreground"
                     >
                       {formatDistanceToNow(
                         new Date(notification.created_date),

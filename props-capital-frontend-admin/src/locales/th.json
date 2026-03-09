@@ -789,6 +789,9 @@
     "account": "บัญชี",
     "noNotifications": "ไม่มีการแจ้งเตือน",
     "noNewNotifications": "ไม่มีการแจ้งเตือนใหม่",
+    "delete": "Delete notification",
+    "loadError": "Failed to load notifications",
+    "loadErrorHint": "Please refresh the page and try again.",
     "allCaughtUp": "คุณอัปเดตแล้ว!",
     "challenge": "ความท้าทาย",
     "payout": "การจ่ายเงิน",
@@ -1207,7 +1210,9 @@
     "crmLeads": "ลีด CRM",
     "pipeline": "ไปป์ไลน์",
     "ftdReport": "รายงาน FTD",
-    "calendar": "ปฏิทิน"
+    "calendar": "ปฏิทิน",
+    "fundedAccounts": "Funded Accounts",
+    "propServer": "Prop Server"
   },
   "status": {
     "active": "ใช้งาน",

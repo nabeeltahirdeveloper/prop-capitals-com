@@ -789,6 +789,9 @@
     "account": "アカウント",
     "noNotifications": "通知はありません",
     "noNewNotifications": "新しい通知はありません",
+    "delete": "Delete notification",
+    "loadError": "Failed to load notifications",
+    "loadErrorHint": "Please refresh the page and try again.",
     "allCaughtUp": "すべて確認済みです！",
     "challenge": "チャレンジ",
     "payout": "出金",
@@ -1207,7 +1210,9 @@
     "crmLeads": "CRMリード",
     "pipeline": "Pipeline",
     "ftdReport": "FTD Report",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "fundedAccounts": "Funded Accounts",
+    "propServer": "Prop Server"
   },
   "status": {
     "active": "有効",

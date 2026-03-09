@@ -65,7 +65,6 @@ export default function Layout({ children, currentPageName }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const [openSubmenu, setOpenSubmenu] = useState(null);
-  const [user, setUser] = useState(null);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -94,25 +93,7 @@ export default function Layout({ children, currentPageName }) {
   const noLayoutPages = ["SignIn"];
   const isNoLayoutPage = noLayoutPages.includes(currentPageName);
 
-  // No public pages in admin panel
-  const publicPages = [];
-  const isPublicPage = publicPages.includes(currentPageName);
-
-  const { status, user: authUser, isAdmin } = useAuth();
-
-  // Map auth user to local user state for compatibility
-  useEffect(() => {
-    if (authUser) {
-      setUser({
-        id: authUser.userId,
-        email: authUser.email,
-        role: authUser.role?.toLowerCase() || "trader",
-        full_name: authUser.profile?.firstName || authUser.full_name || null,
-      });
-    } else {
-      setUser(null);
-    }
-  }, [authUser]);
+  const { status, user: authUser, isAdmin, logout } = useAuth();
 
   const currentUser = authUser;
 
@@ -194,37 +175,6 @@ export default function Layout({ children, currentPageName }) {
   const isAdminPage = adminPages.includes(currentPageName);
   const showAdminMenu = isAdmin && isAdminPage;
 
-  const traderNavItems = useMemo(
-    () => [
-      {
-        name: t("nav.dashboard"),
-        icon: LayoutDashboard,
-        page: "TraderDashboard",
-      },
-      {
-        name: t("nav.tradingTerminal"),
-        icon: Activity,
-        page: "TradingTerminal",
-      },
-      { name: t("nav.buyChallenge"), icon: Award, page: "TraderBuyChallenge" },
-      { name: t("nav.myAccounts"), icon: TrendingUp, page: "MyAccounts" },
-      { name: t("nav.accountDetails"), icon: FileText, page: "AccountDetails" },
-      {
-        name: t("nav.challengeProgress"),
-        icon: Target,
-        page: "ChallengeProgress",
-      },
-      { name: t("nav.ruleCompliance"), icon: Shield, page: "RuleCompliance" },
-      { name: t("nav.tradeHistory"), icon: FileText, page: "TradeHistory" },
-      { name: t("nav.analytics"), icon: BarChart3, page: "Analytics" },
-      { name: t("nav.payouts"), icon: Wallet, page: "TraderPayouts" },
-      { name: t("nav.notifications"), icon: Bell, page: "Notifications" },
-      { name: t("nav.profile"), icon: User, page: "Profile" },
-      { name: t("nav.support"), icon: HelpCircle, page: "Support" },
-    ],
-    [t],
-  );
-
   const adminNavItems = useMemo(
     () => [
       {
@@ -242,7 +192,7 @@ export default function Layout({ children, currentPageName }) {
       },
       { name: t("nav.riskMonitor"), icon: Activity, page: "AdminRiskMonitor" },
       {
-        name: "Prop Server",
+        name: t("nav.propServer"),
         icon: Server,
         page: "AdminBrokerServers",
       },
@@ -268,10 +218,7 @@ export default function Layout({ children, currentPageName }) {
     [t],
   );
 
-  const navItems = useMemo(
-    () => (showAdminMenu ? adminNavItems : traderNavItems),
-    [showAdminMenu, adminNavItems, traderNavItems],
-  );
+  const navItems = adminNavItems;
 
   // Auto-open submenu if a child is active (only meaningful when you actually have item.children)
   useEffect(() => {
@@ -290,8 +237,7 @@ export default function Layout({ children, currentPageName }) {
   // Early returns
   if (isNoLayoutPage) return <>{children}</>;
 
-  const isProtectedPage = !isPublicPage && !isNoLayoutPage;
-  if (isProtectedPage && status === "checking") {
+  if (status === "checking") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -303,208 +249,7 @@ export default function Layout({ children, currentPageName }) {
       </div>
     );
   }
-  if (isProtectedPage && status !== "authenticated") return <>{children}</>;
-
-  // Public pages layout
-  if (isPublicPage) {
-    return (
-      <div className="min-h-screen bg-slate-950">
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800  ">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <Link
-                to={createPageUrl("Home")}
-                className="flex items-center gap-2"
-              >
-                <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-cyan-500 rounded-xl flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-lg sm:text-xl font-bold text-white">
-                  Prop Capitals
-                </span>
-              </Link>
-
-              {/* Desktop nav should start from lg+, but hide on XL screens */}
-              <div className="hidden lg:flex xl:hidden items-center gap-6 lg:gap-8">
-                <Link
-                  to={createPageUrl("Home")}
-                  className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors"
-                >
-                  {t("nav.home")}
-                </Link>
-                <Link
-                  to={createPageUrl("Challenges")}
-                  className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors"
-                >
-                  {t("nav.challenges")}
-                </Link>
-                <Link
-                  to={createPageUrl("HowItWorks")}
-                  className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors"
-                >
-                  {t("nav.howItWorks")}
-                </Link>
-                <Link
-                  to={createPageUrl("ScalingPlan")}
-                  className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors"
-                >
-                  {t("nav.scaling")}
-                </Link>
-                <Link
-                  to={createPageUrl("Rules")}
-                  className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors"
-                >
-                  {t("nav.rules")}
-                </Link>
-                <Link
-                  to={createPageUrl("FAQ")}
-                  className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors"
-                >
-                  {t("nav.faq")}
-                </Link>
-                <Link
-                  to={createPageUrl("Contact")}
-                  className="text-sm lg:text-base text-slate-300 hover:text-white transition-colors"
-                >
-                  {t("nav.contact")}
-                </Link>
-              </div>
-
-              <div className="flex items-center gap-2 sm:gap-4">
-                <div className="hidden sm:block">
-                  <LanguageSwitcher />
-                </div>
-
-                {currentUser ? (
-                  <Link
-                    to={createPageUrl(
-                      currentUser.role === "ADMIN" ||
-                        currentUser.role === "admin"
-                        ? "AdminDashboard"
-                        : "TraderDashboard",
-                    )}
-                  >
-                    <Button
-                      size="sm"
-                      className="bg-gradient-to-r from-amber-500 to-cyan-500 hover:from-amber-600 hover:to-cyan-600 text-white text-xs sm:text-sm px-3 sm:px-4"
-                    >
-                      {t("nav.dashboard")}
-                    </Button>
-                  </Link>
-                ) : (
-                  <>
-                    <Link
-                      to={createPageUrl("SignIn")}
-                      className="hidden sm:block"
-                    >
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-slate-300 hover:text-black text-xs sm:text-sm"
-                      >
-                        {t("nav.login")}
-                      </Button>
-                    </Link>
-                    <Link to={createPageUrl("SignUp")}>
-                      <Button
-                        size="sm"
-                        className="bg-gradient-to-r from-amber-500 to-cyan-500 hover:from-amber-600 hover:to-cyan-600 text-white text-xs sm:text-sm px-3 sm:px-4"
-                      >
-                        {t("nav.getStarted")}
-                      </Button>
-                    </Link>
-                  </>
-                )}
-
-                <button
-                  onClick={() => setSidebarOpen(true)}
-                  className=" text-slate-400 hover:text-white p-2"
-                  aria-label="Open menu"
-                >
-                  <Menu className="w-6 h-6" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </nav>
-
-        {sidebarOpen && (
-          <>
-            <div
-              className="fixed inset-0 bg-black/50 z-50 "
-              onClick={() => setSidebarOpen(false)}
-            />
-            <div className="fixed top-0 right-0 bottom-0 w-72 bg-slate-900 z-50  overflow-y-auto">
-              <div className="flex flex-col h-full">
-                <div className="flex items-center justify-between p-4 border-b border-slate-800">
-                  <Link
-                    to={createPageUrl("Home")}
-                    className="flex items-center gap-2"
-                    onClick={() => setSidebarOpen(false)}
-                  >
-                    <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-cyan-500 rounded-xl flex items-center justify-center">
-                      <TrendingUp className="w-6 h-6 text-white" />
-                    </div>
-                    <span className="text-xl font-bold text-white">
-                      Prop Capitals
-                    </span>
-                  </Link>
-                  <button
-                    onClick={() => setSidebarOpen(false)}
-                    className="text-slate-400 hover:text-white"
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
-                </div>
-
-                <nav className="flex-1 px-4 py-6 space-y-2">
-                  {[
-                    ["Home", t("nav.home")],
-                    ["Challenges", t("nav.challenges")],
-                    ["HowItWorks", t("nav.howItWorks")],
-                    ["ScalingPlan", t("nav.scaling")],
-                    ["Rules", t("nav.rules")],
-                    ["FAQ", t("nav.faq")],
-                    ["Contact", t("nav.contact")],
-                  ].map(([page, label]) => (
-                    <Link
-                      key={page}
-                      to={createPageUrl(page)}
-                      className="block px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
-                      onClick={() => setSidebarOpen(false)}
-                    >
-                      {label}
-                    </Link>
-                  ))}
-                </nav>
-
-                <div className="p-4 border-t border-slate-800 space-y-3">
-                  <div className="mb-3">
-                    <LanguageSwitcher />
-                  </div>
-                  {!currentUser && (
-                    <Link
-                      to={createPageUrl("SignIn")}
-                      onClick={() => setSidebarOpen(false)}
-                    >
-                      <Button
-                        variant="outline"
-                        className="w-full border-slate-700 text-black"
-                      >
-                        {t("nav.login")}
-                      </Button>
-                    </Link>
-                  )}
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-
-        <main className="pt-16">{children}</main>
-      </div>
-    );
-  }
+  if (status !== "authenticated") return <>{children}</>;
 
   // Protected layout (responsive + collapsible sidebar)
   return (
@@ -546,8 +291,11 @@ export default function Layout({ children, currentPageName }) {
               title="Admin Dashboard"
             >
               <div className="w-10 h-10 shrink-0 mx-auto rounded-xl overflow-hidden flex items-center justify-center">
-                <img src="/assets/images/logo-light.png" alt="Logo" className="block dark:hidden w-full h-full object-contain" />
-                <img src="/assets/images/logo-dark.png" alt="Logo Dark" className="hidden dark:block w-full h-full object-contain" />
+                <img
+                  src={isDark ? "/assets/images/logo-dark.png" : "/assets/images/logo-light.png"}
+                  alt="Logo"
+                  className="w-full h-full object-contain"
+                />
               </div>
               {!sidebarCollapsed && (
                 <span className="min-w-0 block truncate text-base font-bold text-sidebar-foreground lg:text-xl">
@@ -572,7 +320,7 @@ export default function Layout({ children, currentPageName }) {
           >
             {showAdminMenu && !sidebarCollapsed && (
               <div className="mb-4 px-2">
-                <Badge className="bg-amber-500/20 text-black-400 border-amber-500/30">
+                <Badge className="bg-amber-500/20 text-amber-600 border-amber-500/30">
                   {t("nav.adminPanel")}
                 </Badge>
               </div>
@@ -779,11 +527,11 @@ export default function Layout({ children, currentPageName }) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="relative h-15 w-15 text-foreground hover:text-[#d97706]"
+                  className="relative h-9 w-9 text-foreground hover:text-[#d97706]"
                 >
-                  <Bell className="w-10 h-10" strokeWidth={2.4} />
+                  <Bell className="w-5 h-5" />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-3 -right-3 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center font-semibold">
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center font-semibold">
                       {unreadCount}
                     </span>
                   )}
@@ -881,10 +629,7 @@ export default function Layout({ children, currentPageName }) {
 
                 <DropdownMenuItem
                   className="cursor-pointer text-red-500 data-[highlighted]:bg-accent"
-                  onClick={() => {
-                    localStorage.removeItem("token");
-                    window.location.href = createPageUrl("SignIn");
-                  }}
+                  onClick={logout}
                 >
                   <LogOut className="w-4 h-4 mr-2" />
                   {t("nav.logout")}

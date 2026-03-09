@@ -43,7 +43,6 @@ import CRMCalendar from "./CRMCalendar";
 
 import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import ProtectedRoute, { DashboardRedirect, PublicOnlyRoute } from '../components/ProtectedRoute';
-import { PriceProviderWithRouter } from '../contexts/PriceContext';
 
 const PAGES = {
 
@@ -106,11 +105,10 @@ function PagesContent() {
     const currentPage = _getCurrentPage(location.pathname);
 
     return (
-        <PriceProviderWithRouter>
-            <LanguageProvider>
-                <ErrorBoundary>
-                    <Layout currentPageName={currentPage}>
-                        <Routes key={location.pathname}>
+        <LanguageProvider>
+            <ErrorBoundary>
+                <Layout currentPageName={currentPage}>
+                    <Routes>
 
                             {/* Login Route - Public */}
                             <Route path="/" element={<PublicOnlyRoute><SignIn /></PublicOnlyRoute>} />
@@ -143,11 +141,10 @@ function PagesContent() {
                                 <Route path="/Notifications" element={<Notifications />} />
                             </Route>
 
-                        </Routes>
-                    </Layout>
-                </ErrorBoundary>
-            </LanguageProvider>
-        </PriceProviderWithRouter>
+                    </Routes>
+                </Layout>
+            </ErrorBoundary>
+        </LanguageProvider>
     );
 }
 

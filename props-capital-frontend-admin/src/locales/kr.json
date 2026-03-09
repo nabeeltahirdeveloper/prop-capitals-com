@@ -789,6 +789,9 @@
     "account": "계정",
     "noNotifications": "알림이 없습니다",
     "noNewNotifications": "새로운 알림이 없습니다",
+    "delete": "Delete notification",
+    "loadError": "Failed to load notifications",
+    "loadErrorHint": "Please refresh the page and try again.",
     "allCaughtUp": "모두 확인했습니다!",
     "challenge": "챌린지",
     "payout": "출금",
@@ -1207,7 +1210,9 @@
     "crmLeads": "CRM 리드",
     "pipeline": "Pipeline",
     "ftdReport": "FTD Report",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "fundedAccounts": "Funded Accounts",
+    "propServer": "Prop Server"
   },
   "status": {
     "active": "활성",

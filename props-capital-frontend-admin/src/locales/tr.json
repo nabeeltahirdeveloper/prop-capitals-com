@@ -789,6 +789,9 @@
     "account": "Hesap",
     "noNotifications": "Bildirim yok",
     "noNewNotifications": "Yeni bildirim yok",
+    "delete": "Delete notification",
+    "loadError": "Failed to load notifications",
+    "loadErrorHint": "Please refresh the page and try again.",
     "allCaughtUp": "Hepsi bu kadar!",
     "challenge": "Meydan okuma",
     "payout": "Çekim",
@@ -1207,7 +1210,9 @@
     "crmLeads": "CRM Leadleri",
     "pipeline": "Pipeline",
     "ftdReport": "FTD Raporu",
-    "calendar": "Takvim"
+    "calendar": "Takvim",
+    "fundedAccounts": "Funded Accounts",
+    "propServer": "Prop Server"
   },
   "status": {
     "active": "Aktif",

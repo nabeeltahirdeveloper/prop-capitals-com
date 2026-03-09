@@ -789,6 +789,9 @@
     "account": "Compte",
     "noNotifications": "Aucune notification",
     "noNewNotifications": "Aucune nouvelle notification",
+    "delete": "Delete notification",
+    "loadError": "Failed to load notifications",
+    "loadErrorHint": "Please refresh the page and try again.",
     "allCaughtUp": "Vous êtes à jour !",
     "challenge": "Challenge",
     "payout": "Retrait",
@@ -1207,7 +1210,9 @@
     "crmLeads": "Prospects CRM",
     "pipeline": "Pipeline",
     "ftdReport": "Rapport FTD",
-    "calendar": "Calendrier"
+    "calendar": "Calendrier",
+    "fundedAccounts": "Funded Accounts",
+    "propServer": "Prop Server"
   },
   "status": {
     "active": "Actif",
