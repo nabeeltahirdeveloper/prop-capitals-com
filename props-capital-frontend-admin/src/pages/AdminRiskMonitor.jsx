@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   adminGetRiskOverview,
   adminGetAllViolations,
@@ -7,6 +7,7 @@ import {
 } from "@/api/admin";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "../contexts/LanguageContext";
+import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,6 +44,7 @@ import StatusBadge from "@/components/shared/StatusBadge";
 
 export default function AdminRiskMonitor() {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [riskFilter, setRiskFilter] = useState("all");
   const [selectedAccountId, setSelectedAccountId] = useState(null);
@@ -80,7 +82,7 @@ export default function AdminRiskMonitor() {
     setSelectedAccountId(null);
   };
 
-  const { data: violations = [] } = useQuery({
+  const { data: violations = {} } = useQuery({
     queryKey: ["risk-violations"],
     queryFn: adminGetAllViolations,
     refetchInterval: 60000, // Refresh every minute
@@ -88,8 +90,24 @@ export default function AdminRiskMonitor() {
 
   const lockAccountMutation = useMutation({
     mutationFn: (accountId) => adminUpdateAccountStatus(accountId, "PAUSED"),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["risk-overview"]);
+    onSuccess: (data, accountId) => {
+      queryClient.invalidateQueries({ queryKey: ["risk-overview"] });
+      queryClient.invalidateQueries({ queryKey: ["risk-violations"] });
+      queryClient.invalidateQueries({
+        queryKey: ["admin-account-details", accountId],
+      });
+      toast({
+        title: "Account paused",
+        description: "The account has been paused successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to pause account",
+        description:
+          error?.message || "An error occurred while pausing the account.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -152,7 +170,7 @@ export default function AdminRiskMonitor() {
         );
       default:
         return (
-          <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">
+          <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
             {t("admin.riskMonitor.riskBadges.low")}
           </Badge>
         );
@@ -162,11 +180,10 @@ export default function AdminRiskMonitor() {
   const handleEmergencyClose = async (accountId) => {
     if (!confirm(t("admin.riskMonitor.confirmations.emergencyClose"))) return;
 
-    // Pause the account - in a real implementation this would also close positions via broker API
     try {
       await lockAccountMutation.mutateAsync(accountId);
-    } catch (error) {
-      console.error("Failed to pause account:", error);
+    } catch {
+      // Error handled by mutation onError
     }
   };
 
@@ -175,17 +192,14 @@ export default function AdminRiskMonitor() {
 
     try {
       await lockAccountMutation.mutateAsync(accountId);
-    } catch (error) {
-      console.error("Failed to lock account:", error);
+    } catch {
+      // Error handled by mutation onError
     }
   };
 
-  // Ensure violations is always treated as an array for rendering
   const recentViolations = Array.isArray(violations)
     ? violations
-    : violations?.items ||
-      violations?.data ||
-      [];
+    : violations?.data || violations?.items || [];
 
   return (
     <div className="space-y-6">
@@ -279,16 +293,16 @@ export default function AdminRiskMonitor() {
 
         <Card
           className={`bg-card border-border p-3 sm:p-4 cursor-pointer transition-all ${
-            riskFilter === "low" ? "ring-2 ring-amber-500" : ""
+            riskFilter === "low" ? "ring-2 ring-green-500" : ""
           }`}
           onClick={() => setRiskFilter(riskFilter === "low" ? "all" : "low")}
         >
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-amber-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
             </div>
             <div className="min-w-0">
-              <p className="text-xl sm:text-2xl font-bold text-amber-500">
+              <p className="text-xl sm:text-2xl font-bold text-green-500">
                 {riskCounts.low}
               </p>
               <p className="text-xs text-muted-foreground truncate">
@@ -340,6 +354,32 @@ export default function AdminRiskMonitor() {
               </TableRow>
             </TableHeader>
             <TableBody>
+              {isLoading && (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    <div className="flex items-center justify-center gap-2">
+                      <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+                      <span className="text-muted-foreground text-sm">
+                        {t("admin.riskMonitor.loading", {
+                          defaultValue: "Loading accounts...",
+                        })}
+                      </span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+              {!isLoading && filteredAccounts.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    <p className="text-muted-foreground text-sm">
+                      {t("admin.riskMonitor.noAccounts", {
+                        defaultValue:
+                          "No accounts found matching your criteria.",
+                      })}
+                    </p>
+                  </TableCell>
+                </TableRow>
+              )}
               {filteredAccounts.map((account) => {
                 const riskLevel = getRiskLevel(account);
                 const dailyDD = account.daily_drawdown_percent || 0;
@@ -384,10 +424,11 @@ export default function AdminRiskMonitor() {
                           </span>
                         </div>
                         <Progress
-                          value={
+                          value={Math.min(
+                            100,
                             (dailyDD / (account.daily_drawdown_limit || 5)) *
-                            100
-                          }
+                              100,
+                          )}
                           className="h-1 sm:h-1.5 bg-muted"
                         />
                       </div>
@@ -410,10 +451,11 @@ export default function AdminRiskMonitor() {
                           </span>
                         </div>
                         <Progress
-                          value={
+                          value={Math.min(
+                            100,
                             (maxDD / (account.overall_drawdown_limit || 10)) *
-                            100
-                          }
+                              100,
+                          )}
                           className="h-1 sm:h-1.5 bg-muted"
                         />
                       </div>
@@ -469,7 +511,11 @@ export default function AdminRiskMonitor() {
         </h2>
         <div className="space-y-2 sm:space-y-3">
           {recentViolations.slice(0, 10).map((violation) => {
-            const isFatal = violation.type === "OVERALL_DRAWDOWN";
+            const isFatal = [
+              "OVERALL_DRAWDOWN",
+              "DAILY_DRAWDOWN",
+              "CONSISTENCY",
+            ].includes(violation.type);
             const accountNumber =
               violation.tradingAccount?.brokerLogin ||
               violation.tradingAccountId?.slice(0, 8);
@@ -494,6 +540,14 @@ export default function AdminRiskMonitor() {
                         {t("admin.riskMonitor.recentViolations.account")}:{" "}
                       </span>
                       {accountNumber}...
+                      {violation.createdAt && (
+                        <span className="ml-2 text-muted-foreground/70">
+                          {format(
+                            new Date(violation.createdAt),
+                            "MMM d, HH:mm",
+                          )}
+                        </span>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -671,7 +725,7 @@ export default function AdminRiskMonitor() {
               </div>
 
               {/* Balance Information */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 p-3 sm:p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 p-3 sm:p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl">
                 <div>
                   <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.initialBalance", {
@@ -708,26 +762,61 @@ export default function AdminRiskMonitor() {
                       defaultValue: "Profit/Loss",
                     })}
                   </p>
-                  {accountDetails.initialBalance > 0 &&
-                    (() => {
-                      const profit =
-                        accountDetails.equity - accountDetails.initialBalance ||
-                        0;
-                      const profitPercent =
-                        accountDetails.initialBalance > 0
-                          ? (profit / accountDetails.initialBalance) * 100
-                          : 0;
-                      return (
-                        <p
-                          className={`font-bold text-sm sm:text-lg ${
-                            profit >= 0 ? "text-amber-500" : "text-red-500"
-                          }`}
-                        >
-                          {profit >= 0 ? "+" : ""}
-                          {profitPercent.toFixed(2)}%
-                        </p>
-                      );
-                    })()}
+                  {(() => {
+                    const profit =
+                      (accountDetails.equity || 0) -
+                      (accountDetails.initialBalance || 0);
+                    const profitPercent =
+                      accountDetails.initialBalance > 0
+                        ? (profit / accountDetails.initialBalance) * 100
+                        : 0;
+                    return (
+                      <p
+                        className={`font-bold text-sm sm:text-lg ${
+                          profit >= 0 ? "text-emerald-500" : "text-red-500"
+                        }`}
+                      >
+                        {profit >= 0 ? "+" : ""}
+                        {profitPercent.toFixed(2)}%
+                      </p>
+                    );
+                  })()}
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.dailyDrawdown", {
+                      defaultValue: "Daily Drawdown",
+                    })}
+                  </p>
+                  {(() => {
+                    const dailyDD =
+                      accountDetails.peakDailyDrawdownPercent || 0;
+                    return (
+                      <p
+                        className={`font-bold text-sm sm:text-lg ${dailyDD > 0 ? "text-red-500" : "text-foreground"}`}
+                      >
+                        {dailyDD.toFixed(2)}%
+                      </p>
+                    );
+                  })()}
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.overallDrawdown", {
+                      defaultValue: "Overall Drawdown",
+                    })}
+                  </p>
+                  {(() => {
+                    const overallDD =
+                      accountDetails.peakOverallDrawdownPercent || 0;
+                    return (
+                      <p
+                        className={`font-bold text-sm sm:text-lg ${overallDD > 0 ? "text-red-500" : "text-foreground"}`}
+                      >
+                        {overallDD.toFixed(2)}%
+                      </p>
+                    );
+                  })()}
                 </div>
               </div>
 

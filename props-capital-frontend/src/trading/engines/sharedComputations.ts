@@ -141,12 +141,14 @@ export const computeComplianceBarsShared = (
     activeDailyDrawdownPercent,
     activeOverallDrawdownPercent,
     hasTradeHistory,
+    backendPeaks,
   } = input;
 
-  // Clone mutable peak values
-  let profitBarPeak = input.profitBarPeak;
-  let overallDrawdownBarPeak = input.overallDrawdownBarPeak;
+  // Clone mutable peak values — initialize from backend peaks (survive page refresh)
+  let profitBarPeak = Math.max(input.profitBarPeak, backendPeaks?.peakProfitPercent ?? 0);
+  let overallDrawdownBarPeak = Math.max(input.overallDrawdownBarPeak, backendPeaks?.peakOverallDrawdownPercent ?? 0);
   let dailyDrawdownBarPeak = { ...input.dailyDrawdownBarPeak };
+  dailyDrawdownBarPeak.value = Math.max(dailyDrawdownBarPeak.value, backendPeaks?.peakDailyDrawdownPercent ?? 0);
 
   if (!baseCompliance) {
     return {

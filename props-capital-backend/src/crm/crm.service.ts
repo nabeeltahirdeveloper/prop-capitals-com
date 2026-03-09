@@ -102,7 +102,7 @@ export class CrmService {
     source?: string;
     leadStatus?: LeadStatus;
     onlineStatus?: LeadOnlineStatus;
-    leadReceivedDate?: Date;
+    leadReceivedDate?: string | Date;
     ftdAmount?: number;
     paymentMethod?: PaymentMethod;
     paymentProvider?: PaymentProvider;
@@ -112,7 +112,7 @@ export class CrmService {
     salary?: string;
     jobIndustry?: string;
     workTitle?: string;
-    convertedAt?: Date;
+    convertedAt?: string | Date;
     affiliateId?: string;
     funnelName?: string;
     subParameters?: string;
@@ -126,7 +126,7 @@ export class CrmService {
         source: data.source,
         leadStatus: data.leadStatus || LeadStatus.NEW,
         onlineStatus: data.onlineStatus || LeadOnlineStatus.OFFLINE,
-        leadReceivedDate: data.leadReceivedDate || new Date(),
+        leadReceivedDate: data.leadReceivedDate ? new Date(data.leadReceivedDate) : new Date(),
         ftdAmount: data.ftdAmount,
         paymentMethod: data.paymentMethod,
         paymentProvider: data.paymentProvider,
@@ -136,7 +136,7 @@ export class CrmService {
         salary: data.salary,
         jobIndustry: data.jobIndustry,
         workTitle: data.workTitle,
-        convertedAt: data.convertedAt,
+        convertedAt: data.convertedAt ? new Date(data.convertedAt) : undefined,
         affiliateId: data.affiliateId,
         funnelName: data.funnelName,
         subParameters: data.subParameters,
@@ -154,7 +154,7 @@ export class CrmService {
       source?: string;
       leadStatus?: LeadStatus;
       onlineStatus?: LeadOnlineStatus;
-      leadReceivedDate?: Date;
+      leadReceivedDate?: string | Date;
       ftdAmount?: number;
       paymentMethod?: PaymentMethod;
       paymentProvider?: PaymentProvider;
@@ -165,7 +165,7 @@ export class CrmService {
       salary?: string;
       jobIndustry?: string;
       workTitle?: string;
-      convertedAt?: Date;
+      convertedAt?: string | Date;
       affiliateId?: string;
       funnelName?: string;
       subParameters?: string;
@@ -203,7 +203,11 @@ export class CrmService {
 
     const updatedLead = await this.prisma.lead.update({
       where: { id },
-      data,
+      data: {
+        ...data,
+        leadReceivedDate: data.leadReceivedDate ? new Date(data.leadReceivedDate) : undefined,
+        convertedAt: data.convertedAt ? new Date(data.convertedAt) : undefined,
+      },
     });
 
     // Log field updates as activity

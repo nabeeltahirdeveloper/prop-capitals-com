@@ -67,7 +67,7 @@ const RiskDisclosurePage = () => {
                 CFD Availability
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Prop Capitals does not offer Contracts for Difference to residents of certain jurisdictions including the USA, Canada and Russia.
+                Prop Capitals does not offer Contracts for Difference to residents of certain restricted jurisdictions. Please refer to our Terms of Service for the full list of restricted regions.
               </p>
             </section>
 

@@ -76,8 +76,8 @@ export const adminApprovePayout = async (id) => {
   return apiPatch(`/admin/payouts/${id}/approve`);
 };
 
-export const adminRejectPayout = async (id) => {
-  return apiPatch(`/admin/payouts/${id}/reject`);
+export const adminRejectPayout = async (id, reason) => {
+  return apiPatch(`/admin/payouts/${id}/reject`, { reason });
 };
 
 export const adminMarkPayoutAsPaid = async (id) => {
@@ -217,8 +217,8 @@ export const adminGetAccountRisk = async (accountId) => {
   return apiGet(`/admin/risk/account/${accountId}`);
 };
 
-export const adminGetAllViolations = async () => {
-  return apiGet("/admin/risk/violations");
+export const adminGetAllViolations = async (page = 1, limit = 50) => {
+  return apiGet(`/admin/risk/violations?page=${page}&limit=${limit}`);
 };
 
 export const adminGetViolation = async (id) => {
@@ -238,14 +238,29 @@ export const adminGetSupportStatistics = async () => {
 
 export const adminUpdateTicketStatus = async (id, status, adminReply) => {
   const body = { status };
-  if (adminReply !== undefined && adminReply !== null && adminReply.trim() !== '') {
+  if (
+    adminReply !== undefined &&
+    adminReply !== null &&
+    adminReply.trim() !== ""
+  ) {
     body.adminReply = adminReply.trim();
   }
   return apiPatch(`/admin/support/tickets/${id}/status`, body);
 };
 
-export const adminGetAllSupportTicketsPaginated = async (page = 1, limit = 50) => {
-  return apiGet(`/admin/support/tickets?page=${page}&limit=${limit}`);
+export const adminGetAllSupportTicketsPaginated = async (
+  page = 1,
+  limit = 50,
+  search = "",
+  status = "",
+) => {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+  if (search) params.set("search", search);
+  if (status && status !== "all") params.set("status", status);
+  return apiGet(`/admin/support/tickets?${params.toString()}`);
 };
 
 export const adminGetTicket = async (ticketId) => {

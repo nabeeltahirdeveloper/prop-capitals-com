@@ -5,10 +5,10 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "https://api.prop-capitals.com",
 });
 
-// Request interceptor: automatically attach JWT token from localStorage
+// Request interceptor: automatically attach JWT token from localStorage or sessionStorage
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -39,8 +39,9 @@ api.interceptors.response.use(
       error.response?.status === 401 &&
       !(allowPlatformUnauthorized && isPlatformAccessUnauthorized)
     ) {
-      // Clear token from localStorage
+      // Clear token from both storages
       localStorage.removeItem("token");
+      sessionStorage.removeItem("token");
       // Only redirect to sign in page if we're on a protected page
       const currentPath = window.location.pathname.toLowerCase();
       const publicPages = [

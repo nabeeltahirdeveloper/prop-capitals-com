@@ -139,14 +139,14 @@ const FAQPage = () => {
           <button
             key={cat.id}
             onClick={() => setActiveCategory(cat.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all ${activeCategory === cat.id
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${activeCategory === cat.id
                 ? 'bg-amber-500 text-[#0a0d12]'
                 : isDark
                   ? 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
               }`}
           >
-            <cat.icon className="w-4 h-4" />
+            <cat.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             {cat.label}
           </button>
         ))}

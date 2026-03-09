@@ -16,11 +16,29 @@ export class AdminSupportService {
     private supportGateway: SupportEventsGateway,
   ) {}
 
-  async getAll(page = 1, limit = 20) {
+  async getAll(page = 1, limit = 20, search?: string, status?: TicketStatus) {
     const skip = (page - 1) * limit;
+
+    const where: any = {};
+
+    if (status) {
+      where.status = status;
+    }
+
+    if (search) {
+      where.OR = [
+        { subject: { contains: search, mode: 'insensitive' } },
+        { guestEmail: { contains: search, mode: 'insensitive' } },
+        { guestName: { contains: search, mode: 'insensitive' } },
+        { user: { email: { contains: search, mode: 'insensitive' } } },
+        { user: { profile: { firstName: { contains: search, mode: 'insensitive' } } } },
+        { user: { profile: { lastName: { contains: search, mode: 'insensitive' } } } },
+      ];
+    }
 
     const [data, total] = await Promise.all([
       this.prisma.supportTicket.findMany({
+        where,
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
@@ -30,7 +48,7 @@ export class AdminSupportService {
           _count: { select: { messages: true } },
         },
       }),
-      this.prisma.supportTicket.count(),
+      this.prisma.supportTicket.count({ where }),
     ]);
 
     return { data, total, page, limit };
@@ -106,6 +124,7 @@ export class AdminSupportService {
 
         this.supportGateway.emitNewMessage(id, result.msg);
         this.supportGateway.emitStatusChanged(id, TicketStatus.WAITING_FOR_TRADER);
+        this.supportGateway.emitTicketsUpdated();
         return result.updated;
       }
     }
@@ -117,6 +136,7 @@ export class AdminSupportService {
     });
 
     this.supportGateway.emitStatusChanged(id, normalizedStatus);
+    this.supportGateway.emitTicketsUpdated();
     return updated;
   }
 
@@ -170,6 +190,7 @@ export class AdminSupportService {
 
     this.supportGateway.emitNewMessage(ticketId, msg);
     this.supportGateway.emitStatusChanged(ticketId, TicketStatus.WAITING_FOR_TRADER);
+    this.supportGateway.emitTicketsUpdated();
     return msg;
   }
 }

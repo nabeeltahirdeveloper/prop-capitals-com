@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   adminGetAllPayouts,
@@ -8,6 +8,7 @@ import {
   adminMarkPayoutAsPaid,
 } from "@/api/admin";
 import { useTranslation } from "../contexts/LanguageContext";
+import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +41,7 @@ import { format } from "date-fns";
 
 export default function AdminPayouts() {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedPayout, setSelectedPayout] = useState(null);
@@ -67,8 +69,11 @@ export default function AdminPayouts() {
       queryClient.invalidateQueries({ queryKey: ["admin-payout-statistics"] });
     },
     onError: (error) => {
-      console.error("Failed to approve payout:", error);
-      alert(error.response?.data?.message || "Failed to approve payout");
+      toast({
+        title: t("admin.payouts.toast.errorTitle") || "Action Failed",
+        description: error.message || "Failed to approve payout",
+        variant: "destructive",
+      });
     },
   });
 
@@ -81,8 +86,11 @@ export default function AdminPayouts() {
       setRejectReason("");
     },
     onError: (error) => {
-      console.error("Failed to reject payout:", error);
-      alert(error.response?.data?.message || "Failed to reject payout");
+      toast({
+        title: t("admin.payouts.toast.errorTitle") || "Action Failed",
+        description: error.message || "Failed to reject payout",
+        variant: "destructive",
+      });
     },
   });
 
@@ -93,12 +101,21 @@ export default function AdminPayouts() {
       queryClient.invalidateQueries({ queryKey: ["admin-payout-statistics"] });
     },
     onError: (error) => {
-      console.error("Failed to mark payout as paid:", error);
-      alert(error.response?.data?.message || "Failed to mark payout as paid");
+      toast({
+        title: t("admin.payouts.toast.errorTitle") || "Action Failed",
+        description: error.message || "Failed to mark payout as paid",
+        variant: "destructive",
+      });
     },
   });
 
   const handleApprove = (payout) => {
+    if (
+      !window.confirm(
+        `Approve payout of $${payout.amount?.toLocaleString()} for ${payout.trader_id}?`,
+      )
+    )
+      return;
     approveMutation.mutate(payout.id);
   };
 
@@ -109,38 +126,46 @@ export default function AdminPayouts() {
   };
 
   const handleMarkPaid = (payout) => {
+    if (
+      !window.confirm(
+        `Mark payout of $${payout.amount?.toLocaleString()} as paid? This action cannot be undone.`,
+      )
+    )
+      return;
     markPaidMutation.mutate(payout.id);
   };
 
   // Map backend payouts to frontend format
-  const mappedPayouts = (Array.isArray(payoutsData) ? payoutsData : []).map((payout) => {
-    const user = payout.user || {};
-    const statusMap = {
-      PENDING: "pending",
-      APPROVED: "approved",
-      REJECTED: "rejected",
-      PAID: "paid",
-    };
-    return {
-      id: payout.id,
-      trader_id: user.email || payout.userId || "N/A",
-      amount: payout.amount,
-      currency: payout.currency || null,
-      status:
-        statusMap[payout.status] || payout.status?.toLowerCase() || "pending",
-      trading_account_id: payout.tradingAccountId,
-      account_number:
-        payout.tradingAccount?.brokerLogin ||
-        payout.tradingAccountId?.slice(0, 8),
-      platform: payout.tradingAccount?.challenge?.platform || "N/A",
-      payment_method: null, // Not stored in backend, can be removed from display or made optional
-      created_date: payout.createdAt,
-      updated_date: payout.updatedAt,
-      processed_date:
-        payout.processedAt ||
-        (payout.status === "PAID" ? payout.updatedAt : null),
-    };
-  });
+  const mappedPayouts = (Array.isArray(payoutsData) ? payoutsData : []).map(
+    (payout) => {
+      const user = payout.user || {};
+      const statusMap = {
+        PENDING: "pending",
+        APPROVED: "approved",
+        REJECTED: "rejected",
+        PAID: "paid",
+      };
+      return {
+        id: payout.id,
+        trader_id: user.email || payout.userId || "N/A",
+        amount: payout.amount,
+        currency: payout.currency || null,
+        status:
+          statusMap[payout.status] || payout.status?.toLowerCase() || "pending",
+        trading_account_id: payout.tradingAccountId,
+        account_number:
+          payout.tradingAccount?.brokerLogin ||
+          payout.tradingAccountId?.slice(0, 8),
+        platform: payout.tradingAccount?.challenge?.platform || "N/A",
+        payment_method: null, // Not stored in backend, can be removed from display or made optional
+        created_date: payout.createdAt,
+        updated_date: payout.updatedAt,
+        processed_date:
+          payout.processedAt ||
+          (payout.status === "PAID" ? payout.updatedAt : null),
+      };
+    },
+  );
 
   const filteredPayouts = mappedPayouts.filter((payout) => {
     const matchesSearch = payout.trader_id
@@ -171,16 +196,26 @@ export default function AdminPayouts() {
       ),
     },
     {
-      header: t("admin.payouts.table.amount"),
-      accessorKey: "amount",
+      header: t("admin.payouts.table.account") || "Account",
+      accessorKey: "account_number",
       cell: (row) => (
-        <span className="text-emerald-500 font-bold">
-          ${row.amount?.toLocaleString()}
+        <span className="text-foreground font-mono text-xs">
+          {row.account_number || "N/A"}
         </span>
       ),
     },
     {
-      header: t("admin.payouts.table.method"),
+      header: t("admin.payouts.table.amount"),
+      accessorKey: "amount",
+      cell: (row) => (
+        <span className="text-emerald-500 font-bold">
+          {row.currency === "USD" || !row.currency ? "$" : row.currency}
+          {row.amount?.toLocaleString()}
+        </span>
+      ),
+    },
+    {
+      header: t("admin.payouts.table.platform") || "Platform",
       accessorKey: "platform",
       cell: (row) => (
         <span className="capitalize text-foreground">
@@ -221,7 +256,11 @@ export default function AdminPayouts() {
                   onClick={() => handleApprove(row)}
                   disabled={approveMutation.isPending}
                 >
-                  <CheckCircle className="w-4 h-4" />
+                  {approveMutation.isPending ? (
+                    <Clock className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <CheckCircle className="w-4 h-4" />
+                  )}
                 </Button>
                 <Button
                   size="sm"
@@ -299,25 +338,25 @@ export default function AdminPayouts() {
           title={t("admin.payouts.stats.pending")}
           value={`$${pendingAmount.toLocaleString()}`}
           icon={Clock}
-          gradient="from-[#d97706] to-[#d97706]"
+          iconColor="text-amber-400"
         />
         <StatsCard
           title={t("admin.payouts.stats.approved")}
           value={`$${approvedAmount.toLocaleString()}`}
           icon={CheckCircle}
-          gradient="from-blue-500 to-cyan-500"
+          iconColor="text-blue-400"
         />
         <StatsCard
           title={t("admin.payouts.stats.totalPaid")}
           value={`$${paidAmount.toLocaleString()}`}
           icon={DollarSign}
-          gradient="from-emerald-500 to-teal-500"
+          iconColor="text-emerald-400"
         />
         <StatsCard
           title={t("admin.payouts.stats.pendingRequests")}
           value={pendingCount}
           icon={Wallet}
-          gradient="from-purple-500 to-pink-500"
+          iconColor="text-purple-400"
         />
       </div>
 

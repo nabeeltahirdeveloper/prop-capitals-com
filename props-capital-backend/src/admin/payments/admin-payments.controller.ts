@@ -3,6 +3,7 @@ import { Controller, Get, Patch, Param, Body, UseGuards } from '@nestjs/common';
 import { AdminPaymentsService } from './admin-payments.service';
 import { JwtAuthGuard } from '../../auth/jwt.guard';
 import { AdminRoleGuard } from '../../auth/admin-role.guard';
+import { RefundPaymentDto } from './dto/refund-payment.dto';
 
 @Controller('admin/payments')
 @UseGuards(JwtAuthGuard, AdminRoleGuard)
@@ -28,7 +29,7 @@ export class AdminPaymentsController {
 
   @Patch(':id/refund')
 
-  async refundPayment(@Param('id') id: string, @Body() body: { reason?: string }) {
+  async refundPayment(@Param('id') id: string, @Body() body: RefundPaymentDto) {
 
     return this.service.refundPayment(id, body.reason);
 

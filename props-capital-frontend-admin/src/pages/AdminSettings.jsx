@@ -14,7 +14,6 @@ import {
   CreditCard,
   Link,
   Save,
-  CheckCircle,
   Loader2,
 } from "lucide-react";
 
@@ -22,7 +21,6 @@ export default function AdminSettings() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [saved, setSaved] = useState(false);
   const [activeTab, setActiveTab] = useState("general");
 
   // Default settings (used as fallback if backend doesn't have values)
@@ -108,8 +106,6 @@ export default function AdminSettings() {
       adminUpdateSettingsGroup(group, settings),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-settings-all"] });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
       toast({
         title: t("admin.settings.settingsSaved"),
         description: t("admin.settings.settingsSaveDescription"),
@@ -125,6 +121,67 @@ export default function AdminSettings() {
   });
 
   const handleSave = () => {
+    // Validate active tab before saving
+    if (activeTab === "general") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (
+        localGeneral.support_email &&
+        !emailRegex.test(localGeneral.support_email)
+      ) {
+        toast({
+          title: t("common.error"),
+          description: t("admin.settings.validation.invalidEmail", {
+            defaultValue: "Please enter a valid email address",
+          }),
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+    if (activeTab === "branding") {
+      const hexRegex = /^#[0-9A-Fa-f]{6}$/;
+      if (
+        localBranding.primary_color &&
+        !hexRegex.test(localBranding.primary_color)
+      ) {
+        toast({
+          title: t("common.error"),
+          description: t("admin.settings.validation.invalidColor", {
+            defaultValue: "Please enter a valid hex color (e.g. #10b981)",
+          }),
+          variant: "destructive",
+        });
+        return;
+      }
+      if (
+        localBranding.secondary_color &&
+        !hexRegex.test(localBranding.secondary_color)
+      ) {
+        toast({
+          title: t("common.error"),
+          description: t("admin.settings.validation.invalidColor", {
+            defaultValue: "Please enter a valid hex color (e.g. #10b981)",
+          }),
+          variant: "destructive",
+        });
+        return;
+      }
+      if (
+        localBranding.logo_url &&
+        !/^https?:\/\/.+/.test(localBranding.logo_url)
+      ) {
+        toast({
+          title: t("common.error"),
+          description: t("admin.settings.validation.invalidUrl", {
+            defaultValue:
+              "Please enter a valid URL starting with http:// or https://",
+          }),
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     // Save the currently active tab's settings
     let group, settings;
 
@@ -152,6 +209,9 @@ export default function AdminSettings() {
     saveMutation.mutate({ group, settings });
   };
 
+  // Helper check for fully disabling inputs
+  const isPending = isLoading || saveMutation.isPending;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -165,16 +225,10 @@ export default function AdminSettings() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-          {saved && (
-            <span className="text-amber-500 flex items-center gap-2 justify-center text-sm">
-              <CheckCircle className="w-4 h-4" />
-              {t("admin.settings.settingsSaved")}
-            </span>
-          )}
           <Button
             onClick={handleSave}
             className="bg-gradient-to-r from-[#d97706] to-[#d97706] hover:from-amber-600 hover:to-amber-600 w-full sm:w-auto text-white"
-            disabled={isLoading || saveMutation.isPending}
+            disabled={isPending}
           >
             {saveMutation.isPending ? (
               <>
@@ -226,13 +280,6 @@ export default function AdminSettings() {
               <Link className="w-4 h-4 mr-2 flex-shrink-0" />
               {t("admin.settings.tabs.integrations")}
             </TabsTrigger>
-            {/* <TabsTrigger
-              value="email"
-              className="data-[state=active]:bg-card text-muted-foreground data-[state=active]:text-foreground text-xs sm:text-sm px-3 sm:px-4 py-2"
-            >
-              <Mail className="w-4 h-4 mr-2 flex-shrink-0" />
-              {t("admin.settings.tabs.email")}
-            </TabsTrigger> */}
           </TabsList>
         </div>
 
@@ -256,7 +303,7 @@ export default function AdminSettings() {
                       })
                     }
                     className="bg-muted border-border text-foreground"
-                    disabled={isLoading}
+                    disabled={isPending}
                   />
                 </div>
                 <div className="space-y-1.5 sm:space-y-2">
@@ -273,7 +320,7 @@ export default function AdminSettings() {
                       })
                     }
                     className="bg-muted border-border text-foreground text-sm"
-                    disabled={isLoading}
+                    disabled={isPending}
                   />
                 </div>
               </div>
@@ -286,26 +333,29 @@ export default function AdminSettings() {
                     {t("admin.settings.general.maintenanceModeDesc")}
                   </p>
                 </div>
-                <div
-                  className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
-                    localGeneral.maintenance_mode
-                      ? "bg-amber-500"
-                      : "bg-slate-600"
-                  } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
+                <button
+                  role="switch"
+                  aria-checked={!!localGeneral.maintenance_mode}
+                  aria-label={t("admin.settings.general.maintenanceMode")}
                   onClick={() => {
-                    if (isLoading) return;
                     const v = !localGeneral.maintenance_mode;
                     setLocalGeneral({ ...localGeneral, maintenance_mode: v });
                   }}
+                  disabled={isPending}
+                  className={`relative inline-flex w-11 sm:w-12 h-5 sm:h-6 rounded-full flex-shrink-0 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60 disabled:cursor-not-allowed ${
+                    localGeneral.maintenance_mode
+                      ? "bg-amber-500"
+                      : "bg-slate-600"
+                  }`}
                 >
-                  <div
-                    className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all ${
+                  <span
+                    className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full shadow-sm transition-all duration-200 ${
                       localGeneral.maintenance_mode
                         ? "right-0.5 sm:right-0.5"
                         : "left-0.5 sm:left-0.5"
                     }`}
                   />
-                </div>
+                </button>
               </div>
             </div>
           </Card>
@@ -333,7 +383,7 @@ export default function AdminSettings() {
                         })
                       }
                       className="w-10 sm:w-12 h-9 sm:h-10 p-1 bg-muted border-border rounded cursor-pointer"
-                      disabled={isLoading}
+                      disabled={isPending}
                     />
                     <Input
                       value={localBranding.primary_color || ""}
@@ -344,7 +394,7 @@ export default function AdminSettings() {
                         })
                       }
                       className="bg-muted border-border text-foreground text-sm"
-                      disabled={isLoading}
+                      disabled={isPending}
                     />
                   </div>
                 </div>
@@ -363,7 +413,7 @@ export default function AdminSettings() {
                         })
                       }
                       className="w-10 sm:w-12 h-9 sm:h-10 p-1 bg-muted border-border rounded cursor-pointer"
-                      disabled={isLoading}
+                      disabled={isPending}
                     />
                     <Input
                       value={localBranding.secondary_color || ""}
@@ -374,7 +424,7 @@ export default function AdminSettings() {
                         })
                       }
                       className="bg-muted border-border text-foreground text-sm"
-                      disabled={isLoading}
+                      disabled={isPending}
                     />
                   </div>
                 </div>
@@ -395,7 +445,7 @@ export default function AdminSettings() {
                   }
                   placeholder={t("admin.settings.branding.logoUrlPlaceholder")}
                   className="bg-muted border-border text-foreground text-sm"
-                  disabled={isLoading}
+                  disabled={isPending}
                 />
               </div>
             </div>
@@ -408,6 +458,7 @@ export default function AdminSettings() {
               {t("admin.settings.payments.title")}
             </h3>
             <div className="space-y-3 sm:space-y-4">
+              {/* Stripe */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-muted/60 rounded-lg gap-3">
                 <div className="min-w-0">
                   <p className="text-foreground font-medium text-sm sm:text-base">
@@ -417,26 +468,29 @@ export default function AdminSettings() {
                     {t("admin.settings.payments.stripeDesc")}
                   </p>
                 </div>
-                <div
-                  className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
-                    localPayment.stripe_enabled
-                      ? "bg-amber-500"
-                      : "bg-slate-600"
-                  } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
+                <button
+                  role="switch"
+                  aria-checked={!!localPayment.stripe_enabled}
+                  aria-label={t("admin.settings.payments.stripe")}
                   onClick={() => {
-                    if (isLoading) return;
                     const v = !localPayment.stripe_enabled;
                     setLocalPayment({ ...localPayment, stripe_enabled: v });
                   }}
+                  disabled={isPending}
+                  className={`relative inline-flex w-11 sm:w-12 h-5 sm:h-6 rounded-full flex-shrink-0 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60 disabled:cursor-not-allowed ${
+                    localPayment.stripe_enabled
+                      ? "bg-amber-500"
+                      : "bg-slate-600"
+                  }`}
                 >
-                  <div
-                    className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all ${
+                  <span
+                    className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full shadow-sm transition-all duration-200 ${
                       localPayment.stripe_enabled
                         ? "right-0.5 sm:right-0.5"
                         : "left-0.5 sm:left-0.5"
                     }`}
                   />
-                </div>
+                </button>
               </div>
               {localPayment.stripe_enabled && (
                 <div className="space-y-1.5 sm:space-y-2 pl-2 sm:pl-4">
@@ -445,6 +499,7 @@ export default function AdminSettings() {
                   </Label>
                   <Input
                     type="password"
+                    autoComplete="off"
                     value={localPayment.stripe_key || ""}
                     onChange={(e) =>
                       setLocalPayment({
@@ -456,11 +511,12 @@ export default function AdminSettings() {
                       "admin.settings.payments.stripeApiKeyPlaceholder",
                     )}
                     className="bg-muted border-border text-foreground text-sm"
-                    disabled={isLoading}
+                    disabled={isPending}
                   />
                 </div>
               )}
 
+              {/* PayPal */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-muted/60 rounded-lg gap-3">
                 <div className="min-w-0">
                   <p className="text-foreground font-medium text-sm sm:text-base">
@@ -470,34 +526,40 @@ export default function AdminSettings() {
                     {t("admin.settings.payments.paypalDesc")}
                   </p>
                 </div>
-                <div
-                  className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
-                    localPayment.paypal_enabled
-                      ? "bg-amber-500"
-                      : "bg-slate-600"
-                  } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
+                <button
+                  role="switch"
+                  aria-checked={!!localPayment.paypal_enabled}
+                  aria-label={t("admin.settings.payments.paypal")}
                   onClick={() => {
-                    if (isLoading) return;
                     const v = !localPayment.paypal_enabled;
                     setLocalPayment({ ...localPayment, paypal_enabled: v });
                   }}
+                  disabled={isPending}
+                  className={`relative inline-flex w-11 sm:w-12 h-5 sm:h-6 rounded-full flex-shrink-0 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60 disabled:cursor-not-allowed ${
+                    localPayment.paypal_enabled
+                      ? "bg-amber-500"
+                      : "bg-slate-600"
+                  }`}
                 >
-                  <div
-                    className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all ${
+                  <span
+                    className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full shadow-sm transition-all duration-200 ${
                       localPayment.paypal_enabled
                         ? "right-0.5 sm:right-0.5"
                         : "left-0.5 sm:left-0.5"
                     }`}
                   />
-                </div>
+                </button>
               </div>
               {localPayment.paypal_enabled && (
                 <div className="space-y-1.5 sm:space-y-2 pl-2 sm:pl-4">
                   <Label className="text-muted-foreground text-xs sm:text-sm">
-                    {t("admin.settings.payments.paypalClientId", { defaultValue: "PayPal Client ID" })}
+                    {t("admin.settings.payments.paypalClientId", {
+                      defaultValue: "PayPal Client ID",
+                    })}
                   </Label>
                   <Input
                     type="password"
+                    autoComplete="off"
                     value={localPayment.paypal_client_id || ""}
                     onChange={(e) =>
                       setLocalPayment({
@@ -507,11 +569,12 @@ export default function AdminSettings() {
                     }
                     placeholder="Enter PayPal Client ID"
                     className="bg-muted border-border text-foreground text-sm"
-                    disabled={isLoading}
+                    disabled={isPending}
                   />
                 </div>
               )}
 
+              {/* Crypto */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-muted/60 rounded-lg gap-3">
                 <div className="min-w-0">
                   <p className="text-foreground font-medium text-sm sm:text-base">
@@ -521,26 +584,29 @@ export default function AdminSettings() {
                     {t("admin.settings.payments.cryptocurrencyDesc")}
                   </p>
                 </div>
-                <div
-                  className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
-                    localPayment.crypto_enabled
-                      ? "bg-amber-500"
-                      : "bg-slate-600"
-                  } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
+                <button
+                  role="switch"
+                  aria-checked={!!localPayment.crypto_enabled}
+                  aria-label={t("admin.settings.payments.cryptocurrency")}
                   onClick={() => {
-                    if (isLoading) return;
                     const v = !localPayment.crypto_enabled;
                     setLocalPayment({ ...localPayment, crypto_enabled: v });
                   }}
+                  disabled={isPending}
+                  className={`relative inline-flex w-11 sm:w-12 h-5 sm:h-6 rounded-full flex-shrink-0 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60 disabled:cursor-not-allowed ${
+                    localPayment.crypto_enabled
+                      ? "bg-amber-500"
+                      : "bg-slate-600"
+                  }`}
                 >
-                  <div
-                    className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all ${
+                  <span
+                    className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full shadow-sm transition-all duration-200 ${
                       localPayment.crypto_enabled
                         ? "right-0.5 sm:right-0.5"
                         : "left-0.5 sm:left-0.5"
                     }`}
                   />
-                </div>
+                </button>
               </div>
             </div>
           </Card>
@@ -578,79 +644,40 @@ export default function AdminSettings() {
                       {t(`admin.settings.integrations.${platform.descKey}`)}
                     </p>
                   </div>
-                  <div
-                    className={`w-11 sm:w-12 h-5 sm:h-6 rounded-full relative cursor-pointer transition-colors flex-shrink-0 ${
-                      localIntegration[platform.key]
-                        ? "bg-amber-500"
-                        : "bg-slate-600"
-                    } ${isLoading ? "opacity-60 cursor-not-allowed" : ""}`}
+                  <button
+                    role="switch"
+                    aria-checked={!!localIntegration[platform.key]}
+                    aria-label={t(
+                      `admin.settings.integrations.${platform.nameKey}`,
+                    )}
                     onClick={() => {
-                      if (isLoading) return;
                       const v = !localIntegration[platform.key];
                       setLocalIntegration({
                         ...localIntegration,
                         [platform.key]: v,
                       });
                     }}
+                    disabled={isPending}
+                    className={`relative inline-flex w-11 sm:w-12 h-5 sm:h-6 rounded-full flex-shrink-0 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60 disabled:cursor-not-allowed ${
+                      localIntegration[platform.key]
+                        ? "bg-amber-500"
+                        : "bg-slate-600"
+                    }`}
                   >
-                    <div
-                      className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full transition-all ${
+                    <span
+                      className={`absolute top-0.5 sm:top-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full shadow-sm transition-all duration-200 ${
                         localIntegration[platform.key]
                           ? "right-0.5 sm:right-0.5"
                           : "left-0.5 sm:left-0.5"
                       }`}
                     />
-                  </div>
+                  </button>
                 </div>
               ))}
             </div>
             <p className="text-xs sm:text-sm text-muted-foreground mt-4 leading-tight">
               {t("admin.settings.integrations.note")}
             </p>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="email">
-          <Card className="bg-card border-border p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-foreground mb-4 sm:mb-6">
-              {t("admin.settings.email.title")}
-            </h3>
-            <div className="space-y-3 sm:space-y-4">
-              {[
-                { nameKey: "welcomeEmail", descKey: "welcomeEmailDesc" },
-                {
-                  nameKey: "challengePurchase",
-                  descKey: "challengePurchaseDesc",
-                },
-                {
-                  nameKey: "accountCredentials",
-                  descKey: "accountCredentialsDesc",
-                },
-                { nameKey: "phasePassed", descKey: "phasePassedDesc" },
-                { nameKey: "accountFailed", descKey: "accountFailedDesc" },
-                { nameKey: "payoutApproved", descKey: "payoutApprovedDesc" },
-              ].map((template, i) => (
-                <div
-                  key={i}
-                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-muted/60 rounded-lg gap-4"
-                >
-                  <div className="min-w-0">
-                    <p className="text-foreground font-medium text-sm sm:text-base">
-                      {t(`admin.settings.email.${template.nameKey}`)}
-                    </p>
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
-                      {t(`admin.settings.email.${template.descKey}`)}
-                    </p>
-                  </div>
-                  <Button
-                    variant="outline"
-                    className="w-full sm:w-auto border-border text-foreground bg-card hover:bg-accent h-9 sm:h-10 text-xs sm:text-sm"
-                  >
-                    {t("admin.settings.email.editTemplate")}
-                  </Button>
-                </div>
-              ))}
-            </div>
           </Card>
         </TabsContent>
       </Tabs>

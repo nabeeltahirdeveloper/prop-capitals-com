@@ -84,7 +84,7 @@ const TermsPage = () => {
             <section>
               <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>9. Governing Law</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                These Terms shall be governed by and construed in accordance with the laws of the United Arab Emirates, without regard to its conflict of law provisions.
+                These Terms shall be governed by and construed in accordance with the laws of England and Wales, without regard to its conflict of law provisions.
               </p>
             </section>
 
@@ -93,7 +93,7 @@ const TermsPage = () => {
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
                 If you have any questions about these Terms, please contact us at:<br />
                 Email: legal@prop-capitals.com<br />
-                Address: International Business Center, Dubai, UAE
+                Address: 60 TOTTENHAM COURT ROAD, OFFICE 469, LONDON, ENGLAND
               </p>
             </section>
           </div>

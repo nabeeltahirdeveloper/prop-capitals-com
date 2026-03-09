@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -10,7 +9,6 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '../../contexts/LanguageContext';
-import { isForex } from '../../utils/instrumentType';
 
 export default function OpenPositionsWidget({ trades = [], onRefresh }) {
   const { t } = useTranslation();

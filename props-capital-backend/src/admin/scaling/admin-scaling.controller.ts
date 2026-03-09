@@ -1,7 +1,11 @@
-import { Controller, Get, Post, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../../auth/jwt.guard';
+import { AdminRoleGuard } from '../../auth/admin-role.guard';
 import { AdminScalingService } from './admin-scaling.service';
+import { RejectScalingDto } from './dto/reject-scaling.dto';
 
 @Controller('admin/scaling')
+@UseGuards(JwtAuthGuard, AdminRoleGuard)
 export class AdminScalingController {
   constructor(private readonly scalingService: AdminScalingService) {}
 
@@ -26,7 +30,7 @@ export class AdminScalingController {
   }
 
   @Post('reject/:id')
-  rejectRequest(@Param('id') id: string, @Body('reason') reason?: string) {
-    return this.scalingService.rejectRequest(id, reason);
+  rejectRequest(@Param('id') id: string, @Body() body: RejectScalingDto) {
+    return this.scalingService.rejectRequest(id, body.reason);
   }
 }

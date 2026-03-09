@@ -140,7 +140,8 @@ const Footer = () => {
                 { name: 'Risk Disclosure', path: '/risk-disclosure' },
                 { name: 'Refund Policy', path: '/refund-policy' },
                 { name: 'Withdrawal Policy', path: '/withdrawal-policy' },
-                { name: 'KYC Policy', path: '/kyc-policy' }
+                { name: 'KYC Policy', path: '/kyc-policy' },
+                { name: 'AML Policy', path: '/aml-policy' }
               ].map((item) => (
                 <li key={item.path}>
                   <Link
@@ -177,7 +178,8 @@ const Footer = () => {
                 { name: 'Risk', path: '/risk-disclosure' },
                 { name: 'Refunds', path: '/refund-policy' },
                 { name: 'Withdrawals', path: '/withdrawal-policy' },
-                { name: 'KYC', path: '/kyc-policy' }
+                { name: 'KYC', path: '/kyc-policy' },
+                { name: 'AML', path: '/aml-policy' }
               ].map((item) => (
                 <Link
                   key={item.path}

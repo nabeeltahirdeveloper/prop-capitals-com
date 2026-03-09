@@ -281,7 +281,7 @@ const AccountSettings = () => {
                   name="country"
                   value={profile.country}
                   onChange={handleInputChange}
-                  placeholder="e.g. United States"
+                  placeholder="e.g. United Kingdom"
                   className={`w-full rounded-xl pl-9 pr-4 py-3 focus:outline-none focus:border-amber-500/50 border ${
                     isDark
                       ? 'bg-[#0d1117] border-white/10 text-white placeholder-white/30'

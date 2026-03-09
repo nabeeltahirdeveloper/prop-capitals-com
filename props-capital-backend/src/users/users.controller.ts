@@ -1,6 +1,8 @@
 import { Controller, Get, Patch, Body, UseGuards, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/jwt.guard';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { UpdateNotificationPreferencesDto } from './dto/update-notification-preferences.dto';
 
 @Controller('users')
 export class UsersController {
@@ -14,7 +16,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('me/profile')
-  async updateProfile(@Req() req: any, @Body() body: any) {
+  async updateProfile(@Req() req: any, @Body() body: UpdateProfileDto) {
     return this.usersService.updateProfile(req.user.userId, body);
   }
 
@@ -26,7 +28,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('me/notification-preferences')
-  async updateNotificationPreferences(@Req() req: any, @Body() body: any) {
+  async updateNotificationPreferences(@Req() req: any, @Body() body: UpdateNotificationPreferencesDto) {
     return this.usersService.updateNotificationPreferences(req.user.userId, body);
   }
 

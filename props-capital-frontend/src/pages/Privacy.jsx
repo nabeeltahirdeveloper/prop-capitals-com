@@ -104,7 +104,7 @@ const PrivacyPage = () => {
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
                 If you have any questions about this Privacy Policy, please contact us at:<br />
                 Email: privacy@prop-capitals.com<br />
-                Address: International Business Center, Dubai, UAE
+                Address: 60 TOTTENHAM COURT ROAD, OFFICE 469, LONDON, ENGLAND
               </p>
             </section>
           </div>
