@@ -1,7 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     darkMode: ["class"],
-    content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
+    content: [
+      "./index.html",
+      "./src/**/*.{ts,tsx,js,jsx}",
+      // Include SDK source so Tailwind generates all SDK component classes
+      "../../chart-sdk/src/**/*.{js,jsx}",
+    ],
   theme: {
   	extend: {
   		borderRadius: {

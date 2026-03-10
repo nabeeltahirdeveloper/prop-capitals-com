@@ -9,6 +9,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { EvaluationService } from '../evaluation/evaluation.service';
 import { TradingEventsGateway } from '../websocket/trading-events.gateway';
+import { MarketDataService } from '../market-data/market-data.service';
 
 interface CreateTradeData {
   accountId: string;
@@ -41,6 +42,7 @@ export class TradesService {
     @Inject(forwardRef(() => EvaluationService))
     private evaluationService: EvaluationService,
     private tradingEventsGateway: TradingEventsGateway,
+    private marketDataService: MarketDataService,
   ) {}
   private static readonly COMMISSION_PER_LOT = 6;
   private static readonly COMMISSION_PER_SIDE =
@@ -584,6 +586,62 @@ export class TradesService {
     // Only allow modification of open trades
     if (trade.closePrice !== null) {
       throw new BadRequestException('Cannot modify closed positions');
+    }
+
+    // ── Server-side price validation ─────────────────────────────────────────
+    // Fetch current market prices to ensure submitted TP/SL won't trigger
+    // immediately. This guards against the race window between UI submission
+    // and the per-second TP/SL monitor.
+    if (stopLoss != null || takeProfit != null) {
+      try {
+        const pricesData = await this.marketDataService.getUnifiedPrices([trade.symbol]);
+        const prices = pricesData?.find?.(
+          (p: any) => p?.symbol?.toUpperCase() === trade.symbol?.toUpperCase(),
+        );
+
+        if (prices && prices.bid > 0 && prices.ask > 0) {
+          // BUY closes at BID; SELL closes at ASK — use the same side as the monitor
+          const exitPrice: number =
+            trade.type === 'BUY' ? Number(prices.bid) : Number(prices.ask);
+
+          // Minimum safe distance: 5 pips for JPY pairs, 2 pips for others.
+          // Prevents TP/SL sitting right on current price and triggering in the next tick.
+          const isJpy = trade.symbol.toUpperCase().includes('JPY');
+          const isXau = trade.symbol.toUpperCase().includes('XAU');
+          const minPips = isXau ? 0.5 : isJpy ? 0.05 : 0.0002; // 2 pips min distance
+
+          if (stopLoss != null) {
+            const sl = Number(stopLoss);
+            if (trade.type === 'BUY' && sl >= exitPrice - minPips) {
+              throw new BadRequestException(
+                `Stop Loss (${sl}) must be at least ${minPips} below current bid (${exitPrice}) for BUY`,
+              );
+            }
+            if (trade.type === 'SELL' && sl <= exitPrice + minPips) {
+              throw new BadRequestException(
+                `Stop Loss (${sl}) must be at least ${minPips} above current ask (${exitPrice}) for SELL`,
+              );
+            }
+          }
+
+          if (takeProfit != null) {
+            const tp = Number(takeProfit);
+            if (trade.type === 'BUY' && tp <= exitPrice + minPips) {
+              throw new BadRequestException(
+                `Take Profit (${tp}) must be at least ${minPips} above current bid (${exitPrice}) for BUY`,
+              );
+            }
+            if (trade.type === 'SELL' && tp >= exitPrice - minPips) {
+              throw new BadRequestException(
+                `Take Profit (${tp}) must be at least ${minPips} below current ask (${exitPrice}) for SELL`,
+              );
+            }
+          }
+        }
+      } catch (e) {
+        // Re-throw validation errors; swallow price-fetch errors so modify still proceeds
+        if (e instanceof BadRequestException) throw e;
+      }
     }
 
     // Build update data object
