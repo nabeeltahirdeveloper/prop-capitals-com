@@ -113,7 +113,7 @@ const WatchDemoPage = () => {
               <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
                 <video
                   ref={videoRef}
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-contain"
                   poster="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1920&h=1080&fit=crop"
                   onTimeUpdate={handleTimeUpdate}
                   onLoadedMetadata={handleLoadedMetadata}
