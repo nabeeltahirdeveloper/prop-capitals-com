@@ -921,7 +921,7 @@ const CommonTerminalWrapper = ({
   };
 
   return (
-    <div className="space-y-3 sm:space-y-6 p-2 sm:p-6">
+    <div className="w-full space-y-3 sm:space-y-5 px-2 sm:px-4 lg:px-6 py-2 sm:py-4">
       {/* ==================== CHALLENGE ACTIVE BANNER ==================== */}
       <ChallengeActiveBanner
         challenge={selectedChallenge}
@@ -1005,7 +1005,7 @@ const CommonTerminalWrapper = ({
       )}
 
       {/* ==================== PLATFORM-SPECIFIC TRADING AREA ==================== */}
-      <div className="my-6">
+      <div className="w-full overflow-hidden rounded-xl">
         {React.Children.map(children, (child) =>
           React.isValidElement(child)
             ? React.cloneElement(child, {
@@ -1025,7 +1025,7 @@ const CommonTerminalWrapper = ({
       </div>
 
       {/* ==================== POSITIONS / PENDING / HISTORY ==================== */}
-      { platformKey !== "mt5" &&  (
+   { platformKey !== "mt5" &&  (
             <div className={cardClass}>
         <div className={`flex ${borderColor} border-b overflow-x-auto`}>
           {tabs.map((tab) => (
