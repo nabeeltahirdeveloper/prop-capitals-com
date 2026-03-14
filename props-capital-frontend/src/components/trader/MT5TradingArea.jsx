@@ -1044,7 +1044,8 @@ const MT5TradingArea = ({
 
             {/* Market Execution Modal — at COLUMN level so z-[998] beats LeftSidebar z-50 */}
             <div
-              className="absolute top-0 left-0 w-80 z-[99] pointer-events-none h-full"
+              // className="absolute top-0 left-0 w-80 z-[99] pointer-events-none h-full"
+              className="absolute top-0 left-0 w-[400px] z-[99] pointer-events-none h-full"
               style={{
                 transition: "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
                 transform: isOrderModalOpen
