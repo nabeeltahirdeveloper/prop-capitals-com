@@ -11,8 +11,9 @@ export class SocketIoAdapter extends IoAdapter {
     const server = super.createIOServer(port, {
       ...options,
       cors: {
-        origin: true,
-        credentials: true,
+        origin: '*',
+        methods: ['GET', 'POST'],
+        credentials: false,
       },
       allowEIO3: true,
       transports: ['polling', 'websocket'],

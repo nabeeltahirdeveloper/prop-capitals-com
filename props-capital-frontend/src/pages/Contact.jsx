@@ -76,9 +76,9 @@ const ContactPage = () => {
                   <div>
                     <h3 className={`font-bold text-lg mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>Headquarters</h3>
                     <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                      Prop Capitals Ltd.<br />
-                      International Business Center<br />
-                      Dubai, United Arab Emirates
+                      BLUEHAVEN MANAGEMENT LTD.<br />
+                      60 TOTTENHAM COURT ROAD, OFFICE 469<br />
+                      LONDON, ENGLAND
                     </p>
                   </div>
                 </div>

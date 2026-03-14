@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 
 import { PrismaService } from '../../prisma/prisma.service';
 import { NotificationsService } from '../../notifications/notifications.service';
@@ -24,13 +24,22 @@ export class AdminAccountsService {
 
       include: {
 
-        user: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            role: true,
+          },
+        },
 
         challenge: true,
 
-        trades: true,
-
-        violations: true,
+        _count: {
+          select: {
+            trades: true,
+            violations: true,
+          },
+        },
 
       },
 
@@ -76,7 +85,7 @@ export class AdminAccountsService {
 
     if (!Object.values(TradingAccountStatus).includes(status as TradingAccountStatus)) {
 
-      throw new Error('Invalid status');
+      throw new BadRequestException('Invalid status');
 
     }
 
@@ -145,7 +154,7 @@ export class AdminAccountsService {
 
     if (!Object.values(TradingPhase).includes(phase as TradingPhase)) {
 
-      throw new Error('Invalid phase');
+      throw new BadRequestException('Invalid phase');
 
     }
 

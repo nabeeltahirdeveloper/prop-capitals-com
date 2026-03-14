@@ -71,6 +71,12 @@ export class SupportEventsGateway
       client.data.role = payload.role || 'TRADER';
       client.data.email = payload.email;
 
+      // Auto-join admins to the admin:tickets room for broadcast updates
+      if (client.data.role === 'ADMIN') {
+        client.join('admin:tickets');
+        this.logger.log(`Admin ${client.id} auto-joined admin:tickets room`);
+      }
+
       this.logger.log(
         `Client connected: ${client.id} (User: ${payload.email}, Role: ${client.data.role})`,
       );
@@ -161,5 +167,10 @@ export class SupportEventsGateway
     this.server
       .to(roomName)
       .emit('ticket:statusChanged', { ticketId, status });
+  }
+
+  emitTicketsUpdated() {
+    this.logger.log('Emitting tickets:updated to admin:tickets room');
+    this.server.to('admin:tickets').emit('tickets:updated');
   }
 }

@@ -209,16 +209,16 @@ const EconomicCalendar = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Economic Calendar</h2>
-        <div className="flex items-center gap-2">
-          <span className={`flex items-center gap-2 text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <h2 className={`text-xl sm:text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Economic Calendar</h2>
+        <div className="flex flex-wrap items-center gap-3 sm:gap-2">
+          <span className={`flex items-center gap-1.5 text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
             <span className="w-2 h-2 bg-red-500 rounded-full"></span> High Impact
           </span>
-          <span className={`flex items-center gap-2 text-sm ml-4 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
+          <span className={`flex items-center gap-1.5 text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
             <span className="w-2 h-2 bg-amber-500 rounded-full"></span> Medium
           </span>
-          <span className={`flex items-center gap-2 text-sm ml-4 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
+          <span className={`flex items-center gap-1.5 text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
             <span className="w-2 h-2 bg-emerald-500 rounded-full"></span> Low
           </span>
         </div>
@@ -226,7 +226,7 @@ const EconomicCalendar = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:items-start">
         {/* Calendar */}
-        <div ref={calendarPanelRef} className={`lg:col-span-2 rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
+        <div ref={calendarPanelRef} className={`lg:col-span-2 rounded-2xl border p-3 sm:p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           {/* Month Navigation */}
           <div className="flex items-center justify-between mb-6">
             <button onClick={prevMonth} className={`p-2 rounded-lg transition-all ${isDark ? 'hover:bg-white/10 text-gray-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-slate-900'}`}>

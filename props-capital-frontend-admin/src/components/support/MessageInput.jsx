@@ -31,6 +31,7 @@ export default function MessageInput({ onSend, disabled, isPending }) {
         onKeyDown={handleKeyDown}
         placeholder={disabled ? 'This ticket is closed' : 'Type your message...'}
         disabled={disabled}
+        maxLength={5000}
         className="min-h-[40px] max-h-[120px] resize-none bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm flex-1"
         rows={1}
       />

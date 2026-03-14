@@ -1,8 +1,8 @@
-import { apiGet, apiPost, apiPatch, apiDelete } from '@/lib/api';
+import { apiGet, apiPost, apiPatch, apiDelete } from "@/lib/api";
 
 // API Functions
 export const getChallenges = async () => {
-  return apiGet('/challenges');
+  return apiGet("/challenges");
 };
 
 export const getChallenge = async (id) => {
@@ -10,7 +10,7 @@ export const getChallenge = async (id) => {
 };
 
 export const createChallenge = async (data) => {
-  return apiPost('/challenges', data);
+  return apiPost("/challenges", data);
 };
 
 export const updateChallenge = async (id, data) => {
@@ -20,4 +20,3 @@ export const updateChallenge = async (id, data) => {
 export const deleteChallenge = async (id) => {
   return apiDelete(`/challenges/${id}`);
 };
-

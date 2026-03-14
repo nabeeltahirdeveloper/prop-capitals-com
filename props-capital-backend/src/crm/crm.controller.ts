@@ -15,17 +15,16 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CrmService } from './crm.service';
 import { JwtAuthGuard } from '../auth/jwt.guard';
+import { AdminRoleGuard } from '../auth/admin-role.guard';
+import { CreateLeadCrmDto } from './dto/create-lead.dto';
+import { UpdateLeadCrmDto } from './dto/update-lead.dto';
 import {
   LeadStatus,
-  // LeadOnlineStatus,
-  // PaymentMethod,
-  // PaymentProvider,
-  // LeadPriority,
   LeadActivityType,
 } from '@prisma/client';
 
 @Controller('crm/leads')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, AdminRoleGuard)
 export class CrmController {
   constructor(private readonly crmService: CrmService) {}
 
@@ -43,8 +42,8 @@ export class CrmController {
     if (search) filters.search = search;
     if (fromDate) filters.fromDate = new Date(fromDate);
     if (toDate) filters.toDate = new Date(toDate);
-    if (skip) filters.skip = parseInt(skip);
-    if (take) filters.take = parseInt(take);
+    if (skip) filters.skip = parseInt(skip) || 0;
+    if (take) filters.take = Math.min(parseInt(take) || 10, 100);
 
     return this.crmService.getAllLeads(filters);
   }
@@ -68,8 +67,8 @@ export class CrmController {
     if (agent) filters.agent = agent;
     if (fromDate) filters.fromDate = fromDate;
     if (toDate) filters.toDate = toDate;
-    if (skip) filters.skip = parseInt(skip);
-    if (take) filters.take = parseInt(take);
+    if (skip) filters.skip = parseInt(skip) || 0;
+    if (take) filters.take = Math.min(parseInt(take) || 10, 100);
 
     return this.crmService.getFtdReport(filters);
   }
@@ -115,7 +114,7 @@ export class CrmController {
   }
 
   @Patch(':id')
-  async updateLead(@Param('id') id: string, @Body() body: any) {
+  async updateLead(@Param('id') id: string, @Body() body: UpdateLeadCrmDto) {
     return this.crmService.updateLead(id, body);
   }
 
@@ -125,7 +124,7 @@ export class CrmController {
   }
 
   @Post()
-  async createLead(@Body() body: any) {
+  async createLead(@Body() body: CreateLeadCrmDto) {
     return this.crmService.createLead(body);
   }
 

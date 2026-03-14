@@ -108,41 +108,44 @@ model Challenge {
 }
 
 model TradingAccount {
-  id                     String               @id @default(cuid())
-  userId                 String
-  challengeId            String
-  phase                  TradingPhase         @default(PHASE1)
-  status                 TradingAccountStatus @default(ACTIVE)
-  balance                Float                @default(0)
-  equity                 Float                @default(0)
-  brokerLogin            String?
-  brokerPassword         String?
-  brokerServerId         String?
-  initialBalance         Float                @default(0)
-  createdAt              DateTime             @default(now())
-  updatedAt              DateTime             @updatedAt
-  dailyLockedUntil       DateTime?
-  maxEquityToDate        Float?
-  todayStartEquity       Float?
-  dailyLossViolated      Boolean              @default(false)
-  drawdownViolated       Boolean              @default(false)
-  platform               ChallengePlatform?
-  minEquityToday         Float?
-  minEquityOverall       Float?
-  lastDailyReset         DateTime?
-  platformEmail          String?
-  platformHashedPassword String?
-  platformSessionId      String?
-  equityShots            EquitySnapshot[]
-  payouts                Payout[]
-  pendingOrders          PendingOrder[]
-  phaseHistory           PhaseTransition[]
-  scalingRequests        ScalingRequest[]
-  trades                 Trade[]
-  brokerServer           BrokerServer?        @relation("BrokerServerAccounts", fields: [brokerServerId], references: [id])
-  challenge              Challenge            @relation(fields: [challengeId], references: [id])
-  user                   User                 @relation(fields: [userId], references: [id])
-  violations             Violation[]
+  id                         String               @id @default(cuid())
+  userId                     String
+  challengeId                String
+  phase                      TradingPhase         @default(PHASE1)
+  status                     TradingAccountStatus @default(ACTIVE)
+  balance                    Float                @default(0)
+  equity                     Float                @default(0)
+  brokerLogin                String?
+  brokerPassword             String?
+  brokerServerId             String?
+  initialBalance             Float                @default(0)
+  createdAt                  DateTime             @default(now())
+  updatedAt                  DateTime             @updatedAt
+  dailyLockedUntil           DateTime?
+  maxEquityToDate            Float?
+  todayStartEquity           Float?
+  dailyLossViolated          Boolean              @default(false)
+  drawdownViolated           Boolean              @default(false)
+  platform                   ChallengePlatform?
+  minEquityToday             Float?
+  minEquityOverall           Float?
+  lastDailyReset             DateTime?
+  platformEmail              String?
+  platformHashedPassword     String?
+  platformSessionId          String?
+  peakDailyDrawdownPercent   Float?               @default(0)
+  peakOverallDrawdownPercent Float?               @default(0)
+  peakProfitPercent          Float?               @default(0)
+  equityShots                EquitySnapshot[]
+  payouts                    Payout[]
+  pendingOrders              PendingOrder[]
+  phaseHistory               PhaseTransition[]
+  scalingRequests            ScalingRequest[]
+  trades                     Trade[]
+  brokerServer               BrokerServer?        @relation("BrokerServerAccounts", fields: [brokerServerId], references: [id])
+  challenge                  Challenge            @relation(fields: [challengeId], references: [id])
+  user                       User                 @relation(fields: [userId], references: [id])
+  violations                 Violation[]
 }
 
 model Trade {
@@ -169,6 +172,7 @@ model Trade {
   closeReason                  String?
   positionType                 String         @default("CFD")
   leverage                     Float          @default(100)
+  commission                   Float          @default(0)
   tradingAccount               TradingAccount @relation(fields: [tradingAccountId], references: [id])
 }
 
@@ -265,8 +269,6 @@ model Notification {
 model SupportTicket {
   id         String                 @id @default(cuid())
   userId     String?
-  guestName  String?
-  guestEmail String?
   subject    String
   message    String
   createdAt  DateTime               @default(now())
@@ -274,9 +276,11 @@ model SupportTicket {
   category   TicketCategory         @default(OTHER)
   priority   TicketPriority         @default(MEDIUM)
   status     TicketStatus           @default(OPEN)
-  adminReply String? // @legacy – kept for backward compat; use messages relation instead
-  repliedAt  DateTime? // @legacy – kept for backward compat
-  user       User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  adminReply String?
+  repliedAt  DateTime?
+  guestEmail String?
+  guestName  String?
+  user       User?                  @relation(fields: [userId], references: [id])
   messages   SupportTicketMessage[]
 }
 

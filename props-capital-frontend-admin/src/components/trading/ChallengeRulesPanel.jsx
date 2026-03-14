@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "../../contexts/LanguageContext";
@@ -113,11 +113,6 @@ export default function ChallengeRulesPanel({ account, challenge }) {
   );
   const maxDays = parseInt(challenge?.maxTradingDays || 30);
 
-  // Use account.daysRemaining if available (updated via WebSocket/polling), otherwise calculate from daysElapsed
-  const daysRemaining =
-    account.daysRemaining !== undefined
-      ? parseInt(account.daysRemaining)
-      : Math.max(0, maxDays - (parseInt(account.daysElapsed) || 0));
 
   const {
     profitPercent,

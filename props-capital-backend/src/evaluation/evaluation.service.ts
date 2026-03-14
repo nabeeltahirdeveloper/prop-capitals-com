@@ -111,6 +111,10 @@ export class EvaluationService {
     dailyDrawdownPercent?: number;
     overallDrawdownPercent?: number;
     profitPercent?: number;
+    // ✅ Peak values for monotonic progress bars
+    peakDailyDrawdownPercent?: number;
+    peakOverallDrawdownPercent?: number;
+    peakProfitPercent?: number;
   }> {
     // Store price in cache and clean stale prices
     if (!this.priceCache.has(accountId)) {
@@ -220,7 +224,7 @@ export class EvaluationService {
     // CRITICAL: Fallback to initialBalance (not equity) for todayStartEquity and minEquityToday
     // Using current equity as fallback is WRONG because it already includes losses,
     // which would make drawdown calculations start from the wrong base
-    const todayStartEquity =
+    let todayStartEquity =
       (account as any).todayStartEquity ?? initialBalance;
     let maxEquityToDate = (account as any).maxEquityToDate ?? initialBalance;
     let minEquityToday = (account as any).minEquityToday ?? initialBalance;
@@ -236,10 +240,11 @@ export class EvaluationService {
 
     if (lastResetDate !== today) {
       // New day - reset daily metrics
+      todayStartEquity = equity;
       minEquityToday = equity;
       dailyReset = true;
       this.logger.debug(
-        `[processPriceTick] Reset daily metrics for new day. minEquityToday=${equity}`,
+        `[processPriceTick] Reset daily metrics for new day. todayStartEquity=${equity}, minEquityToday=${equity}`,
       );
     }
 
@@ -266,27 +271,10 @@ export class EvaluationService {
       minOverallChanged = true;
     }
 
-    // SINGLE ATOMIC DB WRITE - ALWAYS update equity + any changed tracking fields
-    // Equity must always be written so the DB reflects the latest known equity
-    // This ensures page reloads and account syncs show current values
-    const updateData: any = { equity };
-    if (dailyReset) {
-      updateData.minEquityToday = minEquityToday;
-      updateData.lastDailyReset = new Date();
-    }
-    if (maxEquityChanged) updateData.maxEquityToDate = maxEquityToDate;
-    if (minTodayChanged) updateData.minEquityToday = minEquityToday;
-    if (minOverallChanged) updateData.minEquityOverall = minEquityOverall;
-
-    await this.prisma.tradingAccount.update({
-      where: { id: accountId },
-      data: updateData,
-    });
-
     // Note: account.trades already filtered to only open trades (closePrice: null) in the query above
     const openTrades = account.trades;
 
-    // Evaluate rules immediately
+    // Evaluate rules BEFORE DB write so we can include peak values in the same atomic write
     const ruleInputs: RuleInputs = {
       startingBalance: initialBalance,
       currentBalance: balance,
@@ -304,6 +292,35 @@ export class EvaluationService {
     };
 
     const ruleOutputs = this.challengeRulesService.calculateRules(ruleInputs);
+
+    // Calculate peak values (monotonic - can only increase, never decrease)
+    const prevPeakDaily = dailyReset ? 0 : ((account as any).peakDailyDrawdownPercent ?? 0);
+    const prevPeakOverall = (account as any).peakOverallDrawdownPercent ?? 0;
+    const prevPeakProfit = (account as any).peakProfitPercent ?? 0;
+    const peakDailyDrawdownPercent = Math.max(prevPeakDaily, ruleOutputs.dailyLossPercent);
+    const peakOverallDrawdownPercent = Math.max(prevPeakOverall, ruleOutputs.drawdownPercent);
+    const peakProfitPercent = Math.max(prevPeakProfit, ruleOutputs.profitPercent);
+
+    // SINGLE ATOMIC DB WRITE - equity + tracking fields + peak values
+    const updateData: any = {
+      equity,
+      peakDailyDrawdownPercent,
+      peakOverallDrawdownPercent,
+      peakProfitPercent,
+    };
+    if (dailyReset) {
+      updateData.todayStartEquity = todayStartEquity;
+      updateData.minEquityToday = minEquityToday;
+      updateData.lastDailyReset = new Date();
+    }
+    if (maxEquityChanged) updateData.maxEquityToDate = maxEquityToDate;
+    if (minTodayChanged) updateData.minEquityToday = minEquityToday;
+    if (minOverallChanged) updateData.minEquityOverall = minEquityOverall;
+
+    await this.prisma.tradingAccount.update({
+      where: { id: accountId },
+      data: updateData,
+    });
 
     // Check for drawdown warnings (80% threshold) - only if not already violated
     // Note: 'today' variable already declared above
@@ -601,6 +618,10 @@ export class EvaluationService {
       dailyDrawdownPercent: ruleOutputs.dailyLossPercent,
       overallDrawdownPercent: ruleOutputs.drawdownPercent,
       profitPercent: ruleOutputs.profitPercent,
+      // ✅ Return peak values (monotonic - bars never decrease)
+      peakDailyDrawdownPercent,
+      peakOverallDrawdownPercent,
+      peakProfitPercent,
     };
   }
 
@@ -995,6 +1016,19 @@ export class EvaluationService {
     };
 
     const ruleOutputs = this.challengeRulesService.calculateRules(ruleInputs);
+
+    // Update peak values (monotonic - can only increase)
+    const peakDailyDD = Math.max((account as any).peakDailyDrawdownPercent ?? 0, ruleOutputs.dailyLossPercent);
+    const peakOverallDD = Math.max((account as any).peakOverallDrawdownPercent ?? 0, ruleOutputs.drawdownPercent);
+    const peakProfit = Math.max((account as any).peakProfitPercent ?? 0, ruleOutputs.profitPercent);
+    await this.prisma.tradingAccount.update({
+      where: { id: accountId },
+      data: {
+        peakDailyDrawdownPercent: peakDailyDD,
+        peakOverallDrawdownPercent: peakOverallDD,
+        peakProfitPercent: peakProfit,
+      } as any,
+    });
 
     // Check violation flags first - if already violated, skip evaluation
     const drawdownViolatedFlag = (account as any).drawdownViolated ?? false;
@@ -1525,6 +1559,7 @@ export class EvaluationService {
           todayStartEquity: equity, // Reset daily starting point
           minEquityToday: equity, // Reset daily minimum equity tracking
           lastDailyReset: new Date(), // Update timestamp
+          peakDailyDrawdownPercent: 0, // Reset daily peak (new day)
         } as any,
       });
     }

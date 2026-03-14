@@ -113,7 +113,7 @@ const WatchDemoPage = () => {
               <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
                 <video
                   ref={videoRef}
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-contain"
                   poster="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1920&h=1080&fit=crop"
                   onTimeUpdate={handleTimeUpdate}
                   onLoadedMetadata={handleLoadedMetadata}
@@ -123,7 +123,7 @@ const WatchDemoPage = () => {
                   playsInline
                 >
                   {/* Demo video - using a sample trading video */}
-                  <source src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4" />
+                  <source src="/assets/videos/demo-video.mp4" type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
 

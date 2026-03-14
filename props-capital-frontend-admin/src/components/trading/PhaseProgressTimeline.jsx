@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,7 +18,6 @@ export default function PhaseProgressTimeline({
   phase2Passed = false,
   challengeRules = {},
   metrics = {},
-  phaseTransitions = [],
   onProceedToNextPhase 
 }) {
   const { t } = useTranslation();
@@ -29,13 +27,10 @@ export default function PhaseProgressTimeline({
   const phase2Target = challengeRules.phase2TargetPercent || 5;
   const minTradingDays = challengeRules.minTradingDays || 5;
   const maxDailyDD = challengeRules.dailyDrawdownPercent || 5;
-  const maxOverallDD = challengeRules.overallDrawdownPercent || 10;
   
   // Get current metrics
   const profitPercent = metrics.profitPercent || 0;
-  const tradingDaysCompleted = metrics.tradingDaysCompleted || 0;
   const dailyDrawdownPercent = metrics.dailyDrawdownPercent || 0;
-  const overallDrawdownPercent = metrics.overallDrawdownPercent || 0;
   
   const phases = [
     {
@@ -214,7 +209,6 @@ export default function PhaseProgressTimeline({
         <div className="grid grid-cols-4 gap-4 relative">
           {phases.map((phase) => {
             const status = getPhaseStatus(phase.id);
-            const Icon = phase.icon;
             return (
               <div key={phase.id} className="flex flex-col items-center">
                 {renderPhaseIcon(status, phase)}

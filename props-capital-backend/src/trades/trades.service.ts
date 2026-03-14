@@ -9,7 +9,6 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { EvaluationService } from '../evaluation/evaluation.service';
 import { TradingEventsGateway } from '../websocket/trading-events.gateway';
-import { MarketDataService } from '../market-data/market-data.service';
 
 interface CreateTradeData {
   accountId: string;
@@ -22,6 +21,7 @@ interface CreateTradeData {
   takeProfit?: number | null;
   positionType?: string;
   type?: string;
+  commission?: number;
   leverage?: number;
 }
 
@@ -41,8 +41,10 @@ export class TradesService {
     @Inject(forwardRef(() => EvaluationService))
     private evaluationService: EvaluationService,
     private tradingEventsGateway: TradingEventsGateway,
-    private marketDataService: MarketDataService,
   ) {}
+  private static readonly COMMISSION_PER_LOT = 6;
+  private static readonly COMMISSION_PER_SIDE =
+    TradesService.COMMISSION_PER_LOT / 2; // 3
 
   private static readonly SPOT_SYMBOLS = [
     'BTCUSDT',
@@ -165,9 +167,12 @@ export class TradesService {
               : isCrypto
                 ? 1
                 : 100000;
-          const tradeLeverage = Number((t as any).leverage) > 0 ? Number((t as any).leverage) : 100;
+          const tradeLeverage =
+            Number((t as any).leverage) > 0 ? Number((t as any).leverage) : 100;
           return (
-            sum + (Number(t.volume) * contractSize * Number(t.openPrice)) / tradeLeverage
+            sum +
+            (Number(t.volume) * contractSize * Number(t.openPrice)) /
+              tradeLeverage
           );
         }, 0);
 
@@ -187,6 +192,13 @@ export class TradesService {
       }
     }
 
+    const openCommission =
+      positionType === 'SPOT'
+        ? 0
+        : Number(volume || 0) * TradesService.COMMISSION_PER_SIDE;
+    // const closeCommission = positionType === 'SPOT' ? 0 : (closePrice ? TradesService.COMMISSION_PER_SIDE : 0);
+    // const totalCommission = openCommission + closeCommission;
+
     // 1️⃣ Store trade
     const trade = await this.prisma.trade.create({
       data: {
@@ -199,6 +211,7 @@ export class TradesService {
         stopLoss: stopLoss ?? null,
         takeProfit: takeProfit ?? null,
         profit: profit || 0,
+        commission: openCommission,
         openedAt: new Date(),
         closedAt: closePrice ? new Date() : null,
         positionType,
@@ -210,7 +223,9 @@ export class TradesService {
     // When opening a trade, profit is undefined/0 — balance stays the same
     const effectiveProfit = profit || 0;
     const newBalance =
-      (account.balance ?? account.initialBalance) + effectiveProfit;
+      (account.balance ?? account.initialBalance) +
+      effectiveProfit -
+      openCommission;
     const newEquity = newBalance;
 
     // Update maxEquityToDate if equity increased
@@ -305,9 +320,24 @@ export class TradesService {
     const { closePrice, profit, stopLoss, takeProfit, closeReason } = data;
 
     // Get the trade first
+    // const trade = await this.prisma.trade.findUnique({
+    //   where: { id: tradeId },
+    //   include: { tradingAccount: true },
+    // });
     const trade = await this.prisma.trade.findUnique({
       where: { id: tradeId },
-      include: { tradingAccount: true },
+      select: {
+        id: true,
+        symbol: true,
+        type: true,
+        volume: true,
+        openPrice: true,
+        closePrice: true,
+        positionType: true,
+        commission: true, // ✅ THIS FIXES trade.commission red line
+        closeReason: true,
+        tradingAccount: true,
+      },
     });
 
     if (!trade) {
@@ -323,22 +353,57 @@ export class TradesService {
       profit: number;
       stopLoss: number | null;
       takeProfit: number | null;
+      commission: number;
       closeReason: string;
     }> = {};
 
     // If closing the trade
+    // if (closePrice !== undefined) {
+    //   // If trade is already closed, return it idempotently (treat as success)
+    //   // This handles the case where auto-close already closed the trade
+    //   if (trade.closePrice !== null) {
+    //     // Trade is already closed - return the existing trade data in the expected format
+    //     return {
+    //       trade: trade,
+    //       evaluation: null, // No need to re-evaluate if already closed
+    //     };
+    //   }
+    //   updateData.closePrice = closePrice;
+    //   updateData.closedAt = new Date();
+    //   if (profit !== undefined) {
+    //     updateData.profit = profit;
+    //   } else {
+    //     const symbolUpper = String(trade.symbol || '').toUpperCase();
+    //     const isCrypto =
+    //       symbolUpper.includes('BTC') ||
+    //       symbolUpper.includes('ETH') ||
+    //       symbolUpper.includes('SOL') ||
+    //       symbolUpper.includes('XRP') ||
+    //       symbolUpper.includes('ADA') ||
+    //       symbolUpper.includes('DOGE') ||
+    //       symbolUpper.includes('BNB') ||
+    //       symbolUpper.includes('AVAX') ||
+    //       symbolUpper.includes('DOT') ||
+    //       symbolUpper.includes('LINK');
+    //     const isXAU = symbolUpper.includes('XAU');
+    //     const isXAG = symbolUpper.includes('XAG');
+    //     const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 1 : 100000;
+    //     const priceDiff =
+    //       trade.type === 'BUY'
+    //         ? closePrice - trade.openPrice
+    //         : trade.openPrice - closePrice;
+    //     updateData.profit = priceDiff * (trade.volume || 0) * contractSize;
+    //   }
+    // }
     if (closePrice !== undefined) {
-      // If trade is already closed, return it idempotently (treat as success)
-      // This handles the case where auto-close already closed the trade
       if (trade.closePrice !== null) {
-        // Trade is already closed - return the existing trade data in the expected format
-        return {
-          trade: trade,
-          evaluation: null, // No need to re-evaluate if already closed
-        };
+        return { trade, evaluation: null };
       }
+
       updateData.closePrice = closePrice;
       updateData.closedAt = new Date();
+
+      // Profit calc (existing)
       if (profit !== undefined) {
         updateData.profit = profit;
       } else {
@@ -357,14 +422,23 @@ export class TradesService {
         const isXAU = symbolUpper.includes('XAU');
         const isXAG = symbolUpper.includes('XAG');
         const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 1 : 100000;
+
         const priceDiff =
           trade.type === 'BUY'
             ? closePrice - trade.openPrice
             : trade.openPrice - closePrice;
+
         updateData.profit = priceDiff * (trade.volume || 0) * contractSize;
       }
-    }
 
+      // ✅ CLOSE commission (3/lot) + cumulative store
+      const closeCommission =
+        trade.positionType === 'SPOT'
+          ? 0
+          : Number(trade.volume || 0) * TradesService.COMMISSION_PER_SIDE;
+
+      updateData.commission = (trade.commission ?? 0) + closeCommission;
+    }
     // Allow updating stopLoss and takeProfit for open trades
     if (stopLoss !== undefined) {
       // Only allow SL/TP updates for open trades
@@ -409,9 +483,18 @@ export class TradesService {
 
     // 2️⃣ Update balance/equity only when closing the trade
     if (closePrice !== undefined) {
-      const profitToAdd = updatedTrade.profit ?? 0;
-      const previousBalance = account.balance ?? account.initialBalance;
-      const newBalance = previousBalance + profitToAdd;
+      const grossProfit = updatedTrade.profit ?? 0;
+
+      // same closeCommission calc (or reuse by recalculating)
+      const closeCommission =
+        trade.positionType === 'SPOT'
+          ? 0
+          : Number(trade.volume || 0) * TradesService.COMMISSION_PER_SIDE;
+
+      const newBalance =
+        (account.balance ?? account.initialBalance) +
+        grossProfit -
+        closeCommission;
 
       const nextEquity = newBalance;
 
@@ -501,62 +584,6 @@ export class TradesService {
     // Only allow modification of open trades
     if (trade.closePrice !== null) {
       throw new BadRequestException('Cannot modify closed positions');
-    }
-
-    // ── Server-side price validation ─────────────────────────────────────────
-    // Fetch current market prices to ensure submitted TP/SL won't trigger
-    // immediately. This guards against the race window between UI submission
-    // and the per-second TP/SL monitor.
-    if (stopLoss != null || takeProfit != null) {
-      try {
-        const pricesData = await this.marketDataService.getUnifiedPrices([trade.symbol]);
-        const prices = pricesData?.find?.(
-          (p: any) => p?.symbol?.toUpperCase() === trade.symbol?.toUpperCase(),
-        );
-
-        if (prices && prices.bid > 0 && prices.ask > 0) {
-          // BUY closes at BID; SELL closes at ASK — use the same side as the monitor
-          const exitPrice: number =
-            trade.type === 'BUY' ? Number(prices.bid) : Number(prices.ask);
-
-          // Minimum safe distance: 5 pips for JPY pairs, 2 pips for others.
-          // Prevents TP/SL sitting right on current price and triggering in the next tick.
-          const isJpy = trade.symbol.toUpperCase().includes('JPY');
-          const isXau = trade.symbol.toUpperCase().includes('XAU');
-          const minPips = isXau ? 0.5 : isJpy ? 0.05 : 0.0002; // 2 pips min distance
-
-          if (stopLoss != null) {
-            const sl = Number(stopLoss);
-            if (trade.type === 'BUY' && sl >= exitPrice - minPips) {
-              throw new BadRequestException(
-                `Stop Loss (${sl}) must be at least ${minPips} below current bid (${exitPrice}) for BUY`,
-              );
-            }
-            if (trade.type === 'SELL' && sl <= exitPrice + minPips) {
-              throw new BadRequestException(
-                `Stop Loss (${sl}) must be at least ${minPips} above current ask (${exitPrice}) for SELL`,
-              );
-            }
-          }
-
-          if (takeProfit != null) {
-            const tp = Number(takeProfit);
-            if (trade.type === 'BUY' && tp <= exitPrice + minPips) {
-              throw new BadRequestException(
-                `Take Profit (${tp}) must be at least ${minPips} above current bid (${exitPrice}) for BUY`,
-              );
-            }
-            if (trade.type === 'SELL' && tp >= exitPrice - minPips) {
-              throw new BadRequestException(
-                `Take Profit (${tp}) must be at least ${minPips} below current ask (${exitPrice}) for SELL`,
-              );
-            }
-          }
-        }
-      } catch (e) {
-        // Re-throw validation errors; swallow price-fetch errors so modify still proceeds
-        if (e instanceof BadRequestException) throw e;
-      }
     }
 
     // Build update data object

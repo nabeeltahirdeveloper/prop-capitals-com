@@ -11,9 +11,11 @@ import {
 } from '@nestjs/common';
 import { CrmService } from './crm.service';
 import { JwtAuthGuard } from '../auth/jwt.guard';
+import { AdminRoleGuard } from '../auth/admin-role.guard';
+import { CreateMeetingDto } from './dto/create-meeting.dto';
 
 @Controller('crm/meetings')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, AdminRoleGuard)
 export class CrmMeetingsController {
     constructor(private readonly crmService: CrmService) { }
 
@@ -40,7 +42,7 @@ export class CrmMeetingsController {
     }
 
     @Post()
-    async createMeeting(@Body() body: any) {
+    async createMeeting(@Body() body: CreateMeetingDto) {
         return this.crmService.createMeeting(body);
     }
 }

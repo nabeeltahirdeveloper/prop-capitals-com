@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useContext,
   useState,
@@ -15,7 +15,7 @@ import { useLocation } from "react-router-dom";
 const PriceContext = createContext(undefined);
 
 const WEBSOCKET_URL =
-  import.meta.env.VITE_WEBSOCKET_URL || "https://api-dev.prop-capitals.com";
+  import.meta.env.VITE_WEBSOCKET_URL || "http://localhost:5002";
 
 // Unified price polling interval: 1000ms for smooth updates
 const POLL_INTERVAL = 1000;
@@ -58,7 +58,7 @@ export function PriceProvider({ children, currentPathname = null }) {
 
   const [prices, setPrices] = useState({});
   const [isConnected, setIsConnected] = useState(false);
-  const [lastUpdate, setLastUpdate] = useState(null);
+  const [lastUpdate] = useState(null);
   const [priceSource, setPriceSource] = useState("rest"); // 'websocket' or 'rest'
 
   // Connection status: 'connected' | 'reconnecting' | 'offline'
@@ -71,7 +71,6 @@ export function PriceProvider({ children, currentPathname = null }) {
   const backoffTimeoutRef = useRef(null);
   const isRetryingRef = useRef(false);
   const forexSocketRef = useRef(null); // WebSocket for forex prices
-  const forexSymbolsRef = useRef(new Set()); // Track forex symbols we're interested in
   const authStatusRef = useRef(authStatus); // Track current auth status for polling checks
   const locationRef = useRef(getCurrentPathname()); // Track current location for polling checks
 
@@ -144,11 +143,9 @@ export function PriceProvider({ children, currentPathname = null }) {
   const fetchPrices = useCallback(
     async (symbols = []) => {
       try {
-        const startTime = Date.now();
         const response = await getUnifiedPrices(symbols);
-        const fetchTime = Date.now() - startTime;
 
-        if (process.env.NODE_ENV !== "production") {
+        if (import.meta.env.DEV) {
           // console.log(
           //   `[PriceContext] Fetched ${
           //     response?.prices?.length || 0
@@ -171,27 +168,23 @@ export function PriceProvider({ children, currentPathname = null }) {
           }
 
           // Update all prices
-          let updateCount = 0;
           response.prices.forEach((priceData) => {
             if (priceData && priceData.symbol) {
-              const updated = updatePrice(
+              updatePrice(
                 priceData.symbol,
                 priceData.bid,
                 priceData.ask,
                 priceData.timestamp || Date.now()
               );
-              if (updated) {
-                updateCount++;
-              }
             }
           });
 
           // if (updateCount > 0) {
           //   setLastUpdate(Date.now());
-          //   if (process.env.NODE_ENV !== "production") {
+          //   if (import.meta.env.DEV) {
           //     console.log(`[PriceContext] Updated ${updateCount} prices`);
           //   }
-          // } else if (process.env.NODE_ENV !== "production") {
+          // } else if (import.meta.env.DEV) {
           //   console.warn(
           //     `[PriceContext] No price updates (${response.prices.length} prices received, but none passed validation)`
           //   );
@@ -289,7 +282,7 @@ export function PriceProvider({ children, currentPathname = null }) {
 
     const token = getAuthToken();
     if (!token) {
-      if (process.env.NODE_ENV !== "production") {
+      if (import.meta.env.DEV) {
         console.log(
           "[PriceContext] No auth token, skipping forex WebSocket connection"
         );
@@ -310,7 +303,7 @@ export function PriceProvider({ children, currentPathname = null }) {
     forexSocketRef.current = socket;
 
     socket.on("connect", () => {
-      if (process.env.NODE_ENV !== "production") {
+      if (import.meta.env.DEV) {
         console.log("[PriceContext] Forex WebSocket connected");
       }
 
@@ -329,14 +322,14 @@ export function PriceProvider({ children, currentPathname = null }) {
         );
 
         // Mark that we received a WebSocket update
-        if (process.env.NODE_ENV !== "production") {
+        if (import.meta.env.DEV) {
           console.log(`[PriceContext] Forex WS update: ${priceData.symbol}`);
         }
       }
     });
 
     socket.on("subscription:confirmed", (data) => {
-      if (process.env.NODE_ENV !== "production") {
+      if (import.meta.env.DEV) {
         console.log(
           "[PriceContext] Forex WebSocket subscription confirmed:",
           data
@@ -345,13 +338,13 @@ export function PriceProvider({ children, currentPathname = null }) {
     });
 
     socket.on("disconnect", () => {
-      if (process.env.NODE_ENV !== "production") {
+      if (import.meta.env.DEV) {
         console.log("[PriceContext] Forex WebSocket disconnected");
       }
     });
 
     socket.on("connect_error", (error) => {
-      if (process.env.NODE_ENV !== "production") {
+      if (import.meta.env.DEV) {
         console.warn(
           "[PriceContext] Forex WebSocket connection error:",
           error.message
@@ -408,7 +401,7 @@ export function PriceProvider({ children, currentPathname = null }) {
         backoffTimeoutRef.current = null;
       }
 
-      if (process.env.NODE_ENV !== "production") {
+      if (import.meta.env.DEV) {
         if (authStatus !== "authenticated") {
           console.log(
             "[PriceContext] User not authenticated, skipping price polling"
@@ -432,7 +425,7 @@ export function PriceProvider({ children, currentPathname = null }) {
         authStatusRef.current !== "authenticated" ||
         !isPriceRequiredPage(locationRef.current)
       ) {
-        if (process.env.NODE_ENV !== "production") {
+        if (import.meta.env.DEV) {
           console.log(
             "[PriceContext] Authentication status or page changed, stopping polling"
           );
@@ -463,7 +456,7 @@ export function PriceProvider({ children, currentPathname = null }) {
         const currentAttempts = failedAttempts;
         if (currentAttempts < MAX_RECONNECT_ATTEMPTS) {
           nextPollDelay = getBackoffDelay(currentAttempts);
-          if (process.env.NODE_ENV !== "production") {
+          if (import.meta.env.DEV) {
             console.log(
               `[PriceContext] Retry ${currentAttempts + 1
               }/${MAX_RECONNECT_ATTEMPTS} in ${nextPollDelay}ms`
@@ -471,7 +464,7 @@ export function PriceProvider({ children, currentPathname = null }) {
           }
         } else {
           // Stop polling after max attempts - require manual retry
-          if (process.env.NODE_ENV !== "production") {
+          if (import.meta.env.DEV) {
             console.log(
               `[PriceContext] Max retry attempts reached. Manual retry required.`
             );
@@ -488,7 +481,7 @@ export function PriceProvider({ children, currentPathname = null }) {
     poll();
 
     // Debug: Log polling status
-    // if (process.env.NODE_ENV !== "production") {
+    // if (import.meta.env.DEV) {
     //   console.log(
     //     `[PriceContext] Started polling with base interval ${
     //       POLL_INTERVAL * 2

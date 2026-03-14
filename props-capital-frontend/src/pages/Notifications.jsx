@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getCurrentUser } from "@/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   getUserNotifications,
   markNotificationAsRead,
@@ -12,6 +12,7 @@ import { translateNotification } from "../utils/notificationTranslations";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -37,15 +38,10 @@ export default function Notifications() {
   const [filter, setFilter] = useState("all");
 
   const queryClient = useQueryClient();
-
-  // Get current user
-  const { data: user } = useQuery({
-    queryKey: ["user", "me"],
-    queryFn: getCurrentUser,
-  });
+  const { user } = useAuth();
 
   // Get user notifications
-  const { data: notifications = [] } = useQuery({
+  const { data: notifications = [], isLoading: notificationsLoading, isError: notificationsError } = useQuery({
     queryKey: ["notifications", user?.userId],
     queryFn: () => getUserNotifications(user?.userId),
     enabled: !!user?.userId,
@@ -200,6 +196,53 @@ export default function Notifications() {
     es: es,
     tr: tr,
   };
+
+  if (notificationsLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <Skeleton className="w-12 h-12 rounded-xl bg-slate-800" />
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-48 bg-slate-800" />
+            <Skeleton className="h-4 w-64 bg-slate-800" />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} className="h-20 rounded-xl bg-slate-800" />
+          ))}
+        </div>
+        <div className="space-y-3">
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} className="h-24 rounded-xl bg-slate-800" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (notificationsError) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-xl flex items-center justify-center">
+            <Bell className="w-6 h-6 text-emerald-400" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-white">{t("notifications.title")}</h1>
+            <p className="text-slate-400">{t("notifications.subtitle")}</p>
+          </div>
+        </div>
+        <Card className="bg-slate-900 border-red-500/30 p-6 md:p-12 text-center">
+          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertTriangle className="w-8 h-8 text-red-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-white mb-2">Failed to load notifications</h3>
+          <p className="text-slate-400">Please refresh the page and try again.</p>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -393,7 +436,8 @@ export default function Notifications() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="text-slate-400  h-8 w-8"
+                          className="text-slate-400 h-8 w-8"
+                          aria-label="Mark as read"
                           onClick={() =>
                             markAsReadMutation.mutate(notification.id)
                           }
@@ -405,6 +449,7 @@ export default function Notifications() {
                         variant="ghost"
                         size="icon"
                         className="text-slate-400 hover:text-red-400 h-8 w-8"
+                        aria-label="Delete notification"
                         onClick={() =>
                           deleteNotificationMutation.mutate(notification.id)
                         }

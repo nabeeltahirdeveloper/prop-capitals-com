@@ -476,34 +476,34 @@ const TraderPanelLayoutInner = () => {
               <div className="relative">
                 <button
                   onClick={() => setShowAccountDropdown(!showAccountDropdown)}
-                  className={`flex items-center gap-2 sm:gap-3 px-3 py-1.5 rounded-xl transition-all ${isDark ? "hover:bg-white/5" : "hover:bg-slate-100"}`}
+                  className={`flex items-center gap-2 sm:gap-3 px-3 py-1.5 rounded-xl transition-all overflow-hidden min-w-0 ${isDark ? "hover:bg-white/5" : "hover:bg-slate-100"}`}
                 >
                   {selectedChallenge && (
                     <>
                       <h1
-                        className={`font-bold text-base sm:hidden ${isDark ? "text-white" : "text-slate-900"}`}
+                        className={`font-bold text-sm sm:hidden truncate max-w-[140px] ${isDark ? "text-white" : "text-slate-900"}`}
                       >
                         {`Account #${selectedChallenge.accountId.substring(0, 4)}`}
                       </h1>
-                      <div className="hidden sm:flex flex-col gap-1">
-                        <div className="flex items-center gap-2">
+                      <div className="hidden sm:flex flex-col gap-1 min-w-0">
+                        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                           <h1
-                            className={`font-bold text-xl ${isDark ? "text-white" : "text-slate-900"}`}
+                            className={`font-bold text-lg sm:text-xl ${isDark ? "text-white" : "text-slate-900"}`}
                           >
                             {`Account #${selectedChallenge.accountId.substring(0, 4)}`}
                           </h1>
                           <span
-                            className={`px-2 py-1 text-xs font-medium rounded ${isDark ? "bg-white/10 text-gray-300" : "bg-slate-100 text-slate-700"}`}
+                            className={`px-1.5 py-0.5 text-[10px] sm:px-2 sm:py-1 sm:text-xs font-medium rounded ${isDark ? "bg-white/10 text-gray-300" : "bg-slate-100 text-slate-700"}`}
                           >
                             ${selectedChallenge.accountSize?.toLocaleString()}
                           </span>
                           <span
-                            className={`px-2 py-1 text-xs font-medium rounded ${isDark ? "bg-blue-500/10 text-blue-400" : "bg-blue-50 text-blue-600"}`}
+                            className={`px-1.5 py-0.5 text-[10px] sm:px-2 sm:py-1 sm:text-xs font-medium rounded ${isDark ? "bg-blue-500/10 text-blue-400" : "bg-blue-50 text-blue-600"}`}
                           >
                             {(selectedChallenge.platform || "").toUpperCase()}
                           </span>
                           <span
-                            className={`px-2 py-1 text-xs font-medium rounded ${
+                            className={`px-1.5 py-0.5 text-[10px] sm:px-2 sm:py-1 sm:text-xs font-medium rounded ${
                               statusColor === "emerald"
                                 ? "bg-emerald-500/10 text-emerald-500"
                                 : statusColor === "red"
@@ -514,7 +514,7 @@ const TraderPanelLayoutInner = () => {
                             {phaseLabel}
                           </span>
                           <span
-                            className={`px-2 py-1 text-xs font-medium rounded ${
+                            className={`px-1.5 py-0.5 text-[10px] sm:px-2 sm:py-1 sm:text-xs font-medium rounded ${
                               selectedChallenge.status === "active"
                                 ? "bg-emerald-500/10 text-emerald-500"
                                 : "bg-red-500/10 text-red-500"
@@ -543,7 +543,7 @@ const TraderPanelLayoutInner = () => {
                       onClick={() => setShowAccountDropdown(false)}
                     />
                     <div
-                      className={`absolute left-0 top-full mt-2 max-w-2xl rounded-xl shadow-2xl border z-[9999999] ${isDark ? "bg-[#12161d] border-white/10" : "bg-white border-slate-200"}`}
+                      className={`absolute left-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-96 rounded-xl shadow-2xl border z-[9999999] ${isDark ? "bg-[#12161d] border-white/10" : "bg-white border-slate-200"}`}
                     >
                       <div
                         className={`p-3 border-b ${isDark ? "border-white/5" : "border-slate-200"}`}
@@ -586,14 +586,14 @@ const TraderPanelLayoutInner = () => {
                               }`}
                             >
                               <div className="flex flex-col items-start gap-1">
-                                <div className="flex items-center gap-2 flex-wrap">
+                                <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                                   <span
                                     className={`text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}
                                   >
                                     Account #{challenge.accountId.substr(0, 4)}
                                   </span>
                                   <span
-                                    className={`px-2 py-0.5 text-xs font-medium rounded ${
+                                    className={`px-1.5 py-0.5 text-[10px] sm:px-2 sm:text-xs font-medium rounded ${
                                       isDark
                                         ? "bg-white/10 text-gray-300"
                                         : "bg-slate-100 text-slate-700"
@@ -602,7 +602,7 @@ const TraderPanelLayoutInner = () => {
                                     ${challenge.accountSize?.toLocaleString()}
                                   </span>
                                   <span
-                                    className={`px-2 py-0.5 text-xs font-medium rounded ${
+                                    className={`px-1.5 py-0.5 text-[10px] sm:px-2 sm:text-xs font-medium rounded ${
                                       isDark
                                         ? "bg-blue-500/10 text-blue-400"
                                         : "bg-blue-50 text-blue-600"
@@ -611,7 +611,7 @@ const TraderPanelLayoutInner = () => {
                                     {(challenge.platform || "").toUpperCase()}
                                   </span>
                                   <span
-                                    className={`px-2 py-0.5 text-xs font-medium rounded ${
+                                    className={`px-1.5 py-0.5 text-[10px] sm:px-2 sm:text-xs font-medium rounded ${
                                       color === "emerald"
                                         ? "bg-emerald-500/10 text-emerald-500"
                                         : color === "red"
@@ -622,7 +622,7 @@ const TraderPanelLayoutInner = () => {
                                     {label}
                                   </span>
                                   <span
-                                    className={`px-2 py-0.5 text-xs font-medium rounded ${
+                                    className={`px-1.5 py-0.5 text-[10px] sm:px-2 sm:text-xs font-medium rounded ${
                                       challenge.status === "active"
                                         ? "bg-emerald-500/10 text-emerald-500"
                                         : "bg-red-500/10 text-red-500"
@@ -740,8 +740,13 @@ const TraderPanelLayoutInner = () => {
 
                 {/* Notifications Dropdown */}
                 {showNotifications && (
+                  <>
                   <div
-                    className={`absolute right-0 top-12 w-80 rounded-xl shadow-2xl border z-50 ${
+                    className="fixed inset-0 z-40"
+                    onClick={() => setShowNotifications(false)}
+                  />
+                  <div
+                    className={`fixed inset-x-4 top-16 sm:absolute sm:inset-auto sm:right-0 sm:top-12 sm:w-80 rounded-xl shadow-2xl border z-50 ${
                       isDark
                         ? "bg-[#12161d] border-white/10"
                         : "bg-white border-slate-200"
@@ -763,7 +768,7 @@ const TraderPanelLayoutInner = () => {
                         </span>
                       </div>
                     </div>
-                    <div className="max-h-80 overflow-y-auto">
+                    <div className="max-h-[60vh] overflow-y-auto">
                       {notifications.length === 0 ? (
                         <div className="p-8 text-center">
                           <div
@@ -856,6 +861,7 @@ const TraderPanelLayoutInner = () => {
                       </Link>
                     </div>
                   </div>
+                  </>
                 )}
               </div>
 
@@ -869,14 +875,14 @@ const TraderPanelLayoutInner = () => {
                   <div className="w-9 h-9 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center text-[#0a0d12] font-bold text-sm">
                     {userState.fullname.charAt(0) || "U"}
                   </div>
-                  <div className="hidden sm:block text-left">
+                  <div className="hidden sm:block text-left max-w-[120px]">
                     <p
-                      className={`text-sm font-medium ${isDark ? "text-white" : "text-slate-900"}`}
+                      className={`text-sm font-medium truncate ${isDark ? "text-white" : "text-slate-900"}`}
                     >
                       {userState.fullname || "User"}
                     </p>
                     <p
-                      className={`text-xs ${isDark ? "text-gray-500" : "text-slate-500"}`}
+                      className={`text-xs truncate ${isDark ? "text-gray-500" : "text-slate-500"}`}
                     >
                       Demo Account
                     </p>

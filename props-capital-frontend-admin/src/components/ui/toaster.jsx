@@ -16,11 +16,18 @@ export function Toaster() {
 
   return (
     <ToastProvider>
-      {openToasts.map(function ({ id, title, description, action, onOpenChange, open, ...props }) {
+      {openToasts.map(function ({
+        id,
+        title,
+        description,
+        action,
+        onOpenChange,
+        open,
+        ...props
+      }) {
         const handleClose = (e) => {
           e?.preventDefault();
           e?.stopPropagation();
-          console.log('Dismissing toast:', id);
           // Call onOpenChange if it exists (Radix UI pattern)
           if (onOpenChange) {
             onOpenChange(false);
@@ -30,8 +37,8 @@ export function Toaster() {
         };
 
         return (
-          <Toast 
-            key={id} 
+          <Toast
+            key={id}
             {...props}
             data-toast-id={id}
             onOpenChange={onOpenChange}
@@ -51,4 +58,4 @@ export function Toaster() {
       <ToastViewport />
     </ToastProvider>
   );
-} 
+}

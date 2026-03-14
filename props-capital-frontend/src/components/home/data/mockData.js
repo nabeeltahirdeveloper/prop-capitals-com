@@ -4,14 +4,14 @@ export const payoutCertificates = [
   {
     id: 1,
     name: "Michael T.",
-    country: "US",
+    country: "DE",
     amount: 31362.0,
     date: "Jan 2025",
   },
   { id: 2, name: "Sarah K.", country: "UK", amount: 10086.8, date: "Jan 2025" },
   { id: 3, name: "Ahmed R.", country: "AE", amount: 29260.2, date: "Dec 2024" },
   { id: 4, name: "Lucas M.", country: "BR", amount: 15554.0, date: "Jan 2025" },
-  { id: 5, name: "Elena V.", country: "RU", amount: 45496.0, date: "Dec 2024" },
+  { id: 5, name: "Elena V.", country: "NL", amount: 45496.0, date: "Dec 2024" },
   {
     id: 6,
     name: "Carlos P.",
@@ -43,7 +43,7 @@ export const testimonials = [
   {
     id: 1,
     name: "Derex",
-    country: "US",
+    country: "UK",
     quote:
       "I just want to express my gratitude to Prop Capitals for being such an outstanding firm!",
     highlight: "outstanding firm",
@@ -57,7 +57,7 @@ export const testimonials = [
   {
     id: 2,
     name: "Chad Johnson",
-    country: "US",
+    country: "AU",
     quote:
       "The fastest payout I've ever received! Prop Capitals truly cares about their traders.",
     highlight: "fastest payout",
@@ -72,7 +72,7 @@ export const testimonials = [
   {
     id: 3,
     name: "Josh",
-    country: "Canada",
+    country: "DE",
     quote:
       "Incredible support team and amazing trading conditions. Best prop firm hands down!",
     highlight: "Best prop firm",
@@ -87,7 +87,7 @@ export const testimonials = [
   {
     id: 4,
     name: "Nova",
-    country: "US",
+    country: "SG",
     quote:
       "From $25K to $200K funded account. Prop Capitals changed my trading career completely!",
     highlight: "changed my trading career",

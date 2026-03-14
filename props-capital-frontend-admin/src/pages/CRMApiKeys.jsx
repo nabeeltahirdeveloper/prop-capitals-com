@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiGet, apiPost, apiDelete } from "@/lib/api";
+import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,12 +21,12 @@ import {
   Check,
   Eye,
   EyeOff,
-  ExternalLink,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { format } from "date-fns";
 
 export default function CRMApiKeys() {
+  const { t } = useTranslation();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedKey, setSelectedKey] = useState(null);
   const [keyName, setKeyName] = useState("");
@@ -35,7 +36,8 @@ export default function CRMApiKeys() {
   const [showKey, setShowKey] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const baseUrl = import.meta.env.VITE_API_URL || "http://api.prop-capitals.com";
+  const baseUrl =
+    import.meta.env.VITE_API_URL || "http://api.prop-capitals.com";
 
   const { data: apiKeys = [], isLoading } = useQuery({
     queryKey: ["crm-api-keys"],
@@ -120,7 +122,7 @@ export default function CRMApiKeys() {
     "personName": "John Doe",
     "email": "john@example.com",
     "phoneNumber": "+1234567890",
-    "country": "United States",
+    "country": "United Kingdom",
     "source": "Partner Name"
   }'`;
 
@@ -138,7 +140,9 @@ export default function CRMApiKeys() {
     {
       header: "Name",
       accessorKey: "name",
-      cell: (row) => <span className="text-white font-medium">{row.name}</span>,
+      cell: (row) => (
+        <span className="text-foreground font-medium">{row.name}</span>
+      ),
     },
     {
       header: "Status",
@@ -182,7 +186,7 @@ export default function CRMApiKeys() {
           <Button
             size="sm"
             variant="ghost"
-            className="text-slate-400 hover:text-white"
+            className="text-muted-foreground hover:text-foreground"
             onClick={() => setSelectedKey(row)}
           >
             <Eye className="w-4 h-4 mr-1" />
@@ -210,60 +214,93 @@ export default function CRMApiKeys() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">API Keys</h1>
-          <p className="text-sm sm:text-base text-slate-400">
-            Manage API keys for third-party lead ingestion
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">
+            {t("admin.apiKeys.title", { defaultValue: "API Keys" })}
+          </h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
+            {t("admin.apiKeys.subtitle", {
+              defaultValue: "Manage API keys for third-party lead ingestion",
+            })}
           </p>
         </div>
         <Dialog open={isCreateOpen} onOpenChange={handleCloseCreate}>
           <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500 w-full sm:w-auto h-10 sm:h-11">
+            <Button className="bg-gradient-to-r from-[#d97706] to-[#d97706] text-[#0a0d12] hover:brightness-110 w-full sm:w-auto h-10 sm:h-11">
               <Plus className="w-4 h-4 mr-2" />
-              Generate API Key
+              {t("admin.apiKeys.generate", {
+                defaultValue: "Generate API Key",
+              })}
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-slate-900 border-slate-800 w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6 max-h-[90vh] overflow-y-auto [&>button]:text-white [&>button]:hover:text-white">
+          <DialogContent className="bg-card border-border w-[95vw] sm:w-full sm:max-w-md p-4 sm:p-6 max-h-[90vh] overflow-y-auto [&>button]:text-foreground [&>button:hover]:opacity-100">
             <DialogHeader>
-              <DialogTitle className="text-white text-base sm:text-lg">
-                {generatedKey ? "API Key Generated" : "Generate New API Key"}
+              <DialogTitle className="text-foreground text-base sm:text-lg">
+                {generatedKey
+                  ? t("admin.apiKeys.keyGenerated", {
+                      defaultValue: "API Key Generated",
+                    })
+                  : t("admin.apiKeys.generateNew", {
+                      defaultValue: "Generate New API Key",
+                    })}
               </DialogTitle>
             </DialogHeader>
 
             {!generatedKey ? (
               <div className="space-y-4 mt-4">
                 <div className="space-y-2">
-                  <Label className="text-slate-300 text-sm">Key Name</Label>
+                  <Label className="text-muted-foreground text-sm">
+                    {t("admin.apiKeys.keyName", { defaultValue: "Key Name" })}
+                  </Label>
                   <Input
                     value={keyName}
                     onChange={(e) => setKeyName(e.target.value)}
-                    placeholder="e.g. Partner Integration"
-                    className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 text-sm h-10"
+                    placeholder={t("admin.apiKeys.keyNamePlaceholder", {
+                      defaultValue: "e.g. Partner Integration",
+                    })}
+                    className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm h-10"
+                    maxLength={100}
                     onKeyDown={(e) => e.key === "Enter" && handleCreate()}
                   />
-                  <p className="text-xs text-slate-500">
-                    A label to identify this key (e.g. the partner name)
+                  <p className="text-xs text-muted-foreground">
+                    {t("admin.apiKeys.keyNameHint", {
+                      defaultValue:
+                        "A label to identify this key (e.g. the partner name)",
+                    })}
                   </p>
                 </div>
                 <Button
                   onClick={handleCreate}
-                  className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 h-10 sm:h-11 text-sm font-semibold"
+                  className="w-full bg-gradient-to-r from-[#d97706] to-[#d97706] text-[#0a0d12] hover:brightness-110 h-10 sm:h-11 text-sm font-semibold"
                   disabled={createMutation.isPending || !keyName.trim()}
                 >
-                  {createMutation.isPending ? "Generating..." : "Generate Key"}
+                  {createMutation.isPending
+                    ? t("admin.apiKeys.generating", {
+                        defaultValue: "Generating...",
+                      })
+                    : t("admin.apiKeys.generateKey", {
+                        defaultValue: "Generate Key",
+                      })}
                 </Button>
               </div>
             ) : (
               <div className="space-y-4 mt-4">
                 <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
                   <p className="text-amber-400 text-xs font-medium">
-                    Copy this key now. It will not be shown again.
+                    {t("admin.apiKeys.copyWarning", {
+                      defaultValue:
+                        "Copy this key now. It will not be shown again.",
+                    })}
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-slate-300 text-sm">Your API Key</Label>
+                  <Label className="text-muted-foreground text-sm">
+                    {t("admin.apiKeys.yourKey", {
+                      defaultValue: "Your API Key",
+                    })}
+                  </Label>
                   <div className="flex gap-2">
-                    <div className="flex-1 bg-slate-800 border border-slate-700 rounded-md px-3 py-2 font-mono text-sm text-emerald-400 break-all">
+                    <div className="flex-1 bg-muted border border-border rounded-md px-3 py-2 font-mono text-sm text-emerald-400 break-all">
                       {showKey
                         ? generatedKey.key
                         : generatedKey.key.substring(0, 8) + "••••••••••••••••"}
@@ -271,7 +308,7 @@ export default function CRMApiKeys() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 h-auto"
+                      className="border-border text-muted-foreground hover:text-foreground hover:bg-muted h-auto"
                       onClick={() => setShowKey(!showKey)}
                     >
                       {showKey ? (
@@ -286,26 +323,30 @@ export default function CRMApiKeys() {
                 <Button
                   onClick={() => copyToClipboard(generatedKey.key)}
                   variant="outline"
-                  className="w-full border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 h-10"
+                  className="w-full border-border text-muted-foreground hover:text-foreground hover:bg-muted h-10"
                 >
                   {copiedKey ? (
                     <>
                       <Check className="w-4 h-4 mr-2 text-emerald-400" />
-                      <span className="text-emerald-400">Copied!</span>
+                      <span className="text-emerald-400">
+                        {t("admin.apiKeys.copied", { defaultValue: "Copied!" })}
+                      </span>
                     </>
                   ) : (
                     <>
                       <Copy className="w-4 h-4 mr-2" />
-                      Copy to Clipboard
+                      {t("admin.apiKeys.copyToClipboard", {
+                        defaultValue: "Copy to Clipboard",
+                      })}
                     </>
                   )}
                 </Button>
 
                 <Button
                   onClick={() => handleCloseCreate(false)}
-                  className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 h-10 sm:h-11 text-sm font-semibold"
+                  className="w-full bg-gradient-to-r from-[#d97706] to-[#d97706] text-[#0a0d12] hover:brightness-110 h-10 sm:h-11 text-sm font-semibold"
                 >
-                  Done
+                  {t("admin.apiKeys.done", { defaultValue: "Done" })}
                 </Button>
               </div>
             )}
@@ -315,22 +356,26 @@ export default function CRMApiKeys() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-        <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400 truncate">
-            Total Keys
+        <Card className="bg-card border-border p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-muted-foreground truncate">
+            {t("admin.apiKeys.totalKeys", { defaultValue: "Total Keys" })}
           </p>
-          <p className="text-xl sm:text-2xl font-bold text-white truncate">
+          <p className="text-xl sm:text-2xl font-bold text-foreground truncate">
             {apiKeys.length}
           </p>
         </Card>
-        <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400 truncate">Active</p>
+        <Card className="bg-card border-border p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-muted-foreground truncate">
+            {t("admin.apiKeys.active", { defaultValue: "Active" })}
+          </p>
           <p className="text-xl sm:text-2xl font-bold text-emerald-400 truncate">
             {activeKeys.length}
           </p>
         </Card>
-        <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400 truncate">Revoked</p>
+        <Card className="bg-card border-border p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-muted-foreground truncate">
+            {t("admin.apiKeys.revoked", { defaultValue: "Revoked" })}
+          </p>
           <p className="text-xl sm:text-2xl font-bold text-red-400 truncate">
             {revokedKeys.length}
           </p>
@@ -338,12 +383,14 @@ export default function CRMApiKeys() {
       </div>
 
       {/* API Keys Table */}
-      <Card className="bg-slate-900 border-slate-800 p-3 sm:p-4 md:p-6 overflow-hidden">
+      <Card className="bg-card border-border p-3 sm:p-4 md:p-6 overflow-hidden">
         <DataTable
           columns={columns}
           data={apiKeys}
           isLoading={isLoading}
-          emptyMessage="No API keys yet. Generate one to get started."
+          emptyMessage={t("admin.apiKeys.emptyMessage", {
+            defaultValue: "No API keys yet. Generate one to get started.",
+          })}
           onRowClick={(row) => setSelectedKey(row)}
         />
       </Card>
@@ -358,14 +405,14 @@ export default function CRMApiKeys() {
           }
         }}
       >
-        <DialogContent className="bg-slate-900 border-slate-800 w-[95vw] sm:w-full sm:max-w-2xl p-0 max-h-[90vh] overflow-y-auto [&>button]:text-white [&>button]:hover:text-white">
+        <DialogContent className="bg-card border-border w-[95vw] sm:w-full sm:max-w-2xl p-0 max-h-[90vh] overflow-y-auto [&>button]:text-foreground [&>button:hover]:opacity-100">
           {selectedKey && (
             <>
               {/* Header section */}
               <div className="p-4 sm:p-6 pb-0">
                 <DialogHeader>
                   <div className="flex items-center justify-between">
-                    <DialogTitle className="text-white text-lg sm:text-xl font-bold">
+                    <DialogTitle className="text-foreground text-lg sm:text-xl font-bold">
                       {selectedKey.name}
                     </DialogTitle>
                     <span
@@ -375,16 +422,22 @@ export default function CRMApiKeys() {
                           : "bg-red-500/20 text-red-400"
                       }`}
                     >
-                      {selectedKey.isActive ? "Active" : "Revoked"}
+                      {selectedKey.isActive
+                        ? t("admin.apiKeys.active", { defaultValue: "Active" })
+                        : t("admin.apiKeys.revoked", {
+                            defaultValue: "Revoked",
+                          })}
                     </span>
                   </div>
                 </DialogHeader>
 
                 {/* Key metadata */}
                 <div className="grid grid-cols-2 gap-4 mt-5">
-                  <div className="bg-slate-800/50 rounded-lg p-3">
-                    <p className="text-xs text-slate-500 mb-1">Created</p>
-                    <p className="text-sm text-white">
+                  <div className="bg-muted/50 rounded-lg p-3">
+                    <p className="text-xs text-muted-foreground mb-1">
+                      {t("admin.apiKeys.created", { defaultValue: "Created" })}
+                    </p>
+                    <p className="text-sm text-foreground">
                       {selectedKey.createdAt
                         ? format(
                             new Date(selectedKey.createdAt),
@@ -393,15 +446,19 @@ export default function CRMApiKeys() {
                         : "—"}
                     </p>
                   </div>
-                  <div className="bg-slate-800/50 rounded-lg p-3">
-                    <p className="text-xs text-slate-500 mb-1">Last Used</p>
-                    <p className="text-sm text-white">
+                  <div className="bg-muted/50 rounded-lg p-3">
+                    <p className="text-xs text-muted-foreground mb-1">
+                      {t("admin.apiKeys.lastUsed", {
+                        defaultValue: "Last Used",
+                      })}
+                    </p>
+                    <p className="text-sm text-foreground">
                       {selectedKey.lastUsedAt
                         ? format(
                             new Date(selectedKey.lastUsedAt),
                             "MMM d, yyyy 'at' HH:mm",
                           )
-                        : "Never"}
+                        : t("admin.apiKeys.never", { defaultValue: "Never" })}
                     </p>
                   </div>
                 </div>
@@ -409,56 +466,66 @@ export default function CRMApiKeys() {
 
               {/* Endpoints section */}
               <div className="p-4 sm:p-6 pt-4 space-y-4">
-                <h3 className="text-white font-semibold text-sm">Endpoints</h3>
+                <h3 className="text-foreground font-semibold text-sm">
+                  {t("admin.apiKeys.endpoints", { defaultValue: "Endpoints" })}
+                </h3>
 
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg p-3">
+                  <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-3">
                     <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400">
                       POST
                     </span>
-                    <code className="text-sm text-slate-300 flex-1 font-mono">
+                    <code className="text-sm text-foreground flex-1 font-mono">
                       /api/v1/leads
                     </code>
-                    <span className="text-xs text-slate-500 hidden sm:block">
-                      Single lead
+                    <span className="text-xs text-muted-foreground hidden sm:block">
+                      {t("admin.apiKeys.singleLead", {
+                        defaultValue: "Single lead",
+                      })}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg p-3">
+                  <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-3">
                     <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400">
                       POST
                     </span>
-                    <code className="text-sm text-slate-300 flex-1 font-mono">
+                    <code className="text-sm text-foreground flex-1 font-mono">
                       /api/v1/leads/bulk
                     </code>
-                    <span className="text-xs text-slate-500 hidden sm:block">
-                      Up to 100 leads
+                    <span className="text-xs text-muted-foreground hidden sm:block">
+                      {t("admin.apiKeys.upTo100", {
+                        defaultValue: "Up to 100 leads",
+                      })}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg p-3">
+                  <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-3">
                     <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-500/20 text-cyan-400">
                       GET
                     </span>
-                    <code className="text-sm text-slate-300 flex-1 font-mono">
+                    <code className="text-sm text-foreground flex-1 font-mono">
                       /api/v1/leads/:id
                     </code>
-                    <span className="text-xs text-slate-500 hidden sm:block">
-                      Check status
+                    <span className="text-xs text-muted-foreground hidden sm:block">
+                      {t("admin.apiKeys.checkStatus", {
+                        defaultValue: "Check status",
+                      })}
                     </span>
                   </div>
                 </div>
 
                 {/* cURL examples */}
-                <h3 className="text-white font-semibold text-sm pt-2">
-                  Single Lead Example
+                <h3 className="text-foreground font-semibold text-sm pt-2">
+                  {t("admin.apiKeys.singleExample", {
+                    defaultValue: "Single Lead Example",
+                  })}
                 </h3>
                 <div className="relative">
-                  <pre className="bg-slate-950 rounded-lg p-3 text-xs overflow-x-auto border border-slate-800">
-                    <code className="text-slate-300">{curlSnippet}</code>
+                  <pre className="bg-muted/50 rounded-lg p-3 text-xs overflow-x-auto border border-border">
+                    <code className="text-foreground">{curlSnippet}</code>
                   </pre>
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="absolute top-2 right-2 h-7 px-2 text-slate-400 hover:text-white"
+                    className="absolute top-2 right-2 h-7 px-2 text-muted-foreground hover:text-foreground"
                     onClick={() => copyToClipboard(curlSnippet, "curl")}
                   >
                     {copiedSnippet === "curl" ? (
@@ -469,17 +536,19 @@ export default function CRMApiKeys() {
                   </Button>
                 </div>
 
-                <h3 className="text-white font-semibold text-sm pt-2">
-                  Bulk Example
+                <h3 className="text-foreground font-semibold text-sm pt-2">
+                  {t("admin.apiKeys.bulkExample", {
+                    defaultValue: "Bulk Example",
+                  })}
                 </h3>
                 <div className="relative">
-                  <pre className="bg-slate-950 rounded-lg p-3 text-xs overflow-x-auto border border-slate-800">
-                    <code className="text-slate-300">{bulkSnippet}</code>
+                  <pre className="bg-muted/50 rounded-lg p-3 text-xs overflow-x-auto border border-border">
+                    <code className="text-foreground">{bulkSnippet}</code>
                   </pre>
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="absolute top-2 right-2 h-7 px-2 text-slate-400 hover:text-white"
+                    className="absolute top-2 right-2 h-7 px-2 text-muted-foreground hover:text-foreground"
                     onClick={() => copyToClipboard(bulkSnippet, "bulk")}
                   >
                     {copiedSnippet === "bulk" ? (
@@ -491,65 +560,83 @@ export default function CRMApiKeys() {
                 </div>
 
                 {/* Required fields */}
-                <h3 className="text-white font-semibold text-sm pt-2">
-                  Fields Reference
+                <h3 className="text-foreground font-semibold text-sm pt-2">
+                  {t("admin.apiKeys.fieldsReference", {
+                    defaultValue: "Fields Reference",
+                  })}
                 </h3>
-                <div className="bg-slate-800/50 rounded-lg overflow-hidden">
+                <div className="bg-muted/50 rounded-lg overflow-hidden">
                   <table className="w-full text-xs sm:text-sm">
                     <thead>
-                      <tr className="border-b border-slate-700">
-                        <th className="text-left text-slate-400 font-medium p-2 px-3">
-                          Field
+                      <tr className="border-b border-border">
+                        <th className="text-left text-muted-foreground font-medium p-2 px-3">
+                          {t("admin.apiKeys.field", { defaultValue: "Field" })}
                         </th>
-                        <th className="text-left text-slate-400 font-medium p-2 px-3">
-                          Type
+                        <th className="text-left text-muted-foreground font-medium p-2 px-3">
+                          {t("admin.apiKeys.type", { defaultValue: "Type" })}
                         </th>
-                        <th className="text-left text-slate-400 font-medium p-2 px-3">
-                          Required
+                        <th className="text-left text-muted-foreground font-medium p-2 px-3">
+                          {t("admin.apiKeys.required", {
+                            defaultValue: "Required",
+                          })}
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="text-slate-300">
-                      <tr className="border-b border-slate-700/50">
+                    <tbody className="text-foreground">
+                      <tr className="border-b border-border/50">
                         <td className="p-2 px-3 font-mono text-emerald-400">
                           personName
                         </td>
                         <td className="p-2 px-3">string</td>
-                        <td className="p-2 px-3 text-amber-400">Yes</td>
+                        <td className="p-2 px-3 text-amber-400">
+                          {t("admin.apiKeys.yes", { defaultValue: "Yes" })}
+                        </td>
                       </tr>
-                      <tr className="border-b border-slate-700/50">
+                      <tr className="border-b border-border/50">
                         <td className="p-2 px-3 font-mono text-emerald-400">
                           email
                         </td>
                         <td className="p-2 px-3">string</td>
-                        <td className="p-2 px-3 text-amber-400">Yes</td>
+                        <td className="p-2 px-3 text-amber-400">
+                          {t("admin.apiKeys.yes", { defaultValue: "Yes" })}
+                        </td>
                       </tr>
-                      <tr className="border-b border-slate-700/50">
+                      <tr className="border-b border-border/50">
                         <td className="p-2 px-3 font-mono">phoneNumber</td>
                         <td className="p-2 px-3">string</td>
-                        <td className="p-2 px-3 text-slate-500">No</td>
+                        <td className="p-2 px-3 text-muted-foreground">
+                          {t("admin.apiKeys.no", { defaultValue: "No" })}
+                        </td>
                       </tr>
-                      <tr className="border-b border-slate-700/50">
+                      <tr className="border-b border-border/50">
                         <td className="p-2 px-3 font-mono">country</td>
                         <td className="p-2 px-3">string</td>
-                        <td className="p-2 px-3 text-slate-500">No</td>
+                        <td className="p-2 px-3 text-muted-foreground">
+                          {t("admin.apiKeys.no", { defaultValue: "No" })}
+                        </td>
                       </tr>
-                      <tr className="border-b border-slate-700/50">
+                      <tr className="border-b border-border/50">
                         <td className="p-2 px-3 font-mono">source</td>
                         <td className="p-2 px-3">string</td>
-                        <td className="p-2 px-3 text-slate-500">No</td>
+                        <td className="p-2 px-3 text-muted-foreground">
+                          {t("admin.apiKeys.no", { defaultValue: "No" })}
+                        </td>
                       </tr>
-                      <tr className="border-b border-slate-700/50">
+                      <tr className="border-b border-border/50">
                         <td className="p-2 px-3 font-mono">priority</td>
                         <td className="p-2 px-3">
                           LOW | MEDIUM | HIGH | URGENT
                         </td>
-                        <td className="p-2 px-3 text-slate-500">No</td>
+                        <td className="p-2 px-3 text-muted-foreground">
+                          {t("admin.apiKeys.no", { defaultValue: "No" })}
+                        </td>
                       </tr>
                       <tr>
                         <td className="p-2 px-3 font-mono">affiliateId</td>
                         <td className="p-2 px-3">string</td>
-                        <td className="p-2 px-3 text-slate-500">No</td>
+                        <td className="p-2 px-3 text-muted-foreground">
+                          {t("admin.apiKeys.no", { defaultValue: "No" })}
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -566,8 +653,12 @@ export default function CRMApiKeys() {
                     >
                       <Trash2 className="w-4 h-4 mr-2" />
                       {revokeMutation.isPending
-                        ? "Revoking..."
-                        : "Revoke This Key"}
+                        ? t("admin.apiKeys.revoking", {
+                            defaultValue: "Revoking...",
+                          })
+                        : t("admin.apiKeys.revokeThisKey", {
+                            defaultValue: "Revoke This Key",
+                          })}
                     </Button>
                   )}
                   <Button
@@ -575,9 +666,9 @@ export default function CRMApiKeys() {
                       setSelectedKey(null);
                       setCopiedSnippet(null);
                     }}
-                    className={`${selectedKey.isActive ? "flex-1" : "w-full"} bg-gradient-to-r from-emerald-500 to-cyan-500 h-10 text-sm font-semibold`}
+                    className={`${selectedKey.isActive ? "flex-1" : "w-full"} bg-gradient-to-r from-[#d97706] to-[#d97706] text-[#0a0d12] hover:brightness-110 h-10 text-sm font-semibold`}
                   >
-                    Close
+                    {t("admin.apiKeys.close", { defaultValue: "Close" })}
                   </Button>
                 </div>
               </div>
@@ -587,20 +678,24 @@ export default function CRMApiKeys() {
       </Dialog>
 
       {/* Quick Integration Guide (bottom of page) */}
-      <Card className="bg-slate-900 border-slate-800 p-4 sm:p-6">
-        <h3 className="text-white font-semibold text-sm sm:text-base mb-3">
-          Quick Integration Guide
+      <Card className="bg-card border-border p-4 sm:p-6">
+        <h3 className="text-foreground font-semibold text-sm sm:text-base mb-3">
+          {t("admin.apiKeys.quickGuide", {
+            defaultValue: "Quick Integration Guide",
+          })}
         </h3>
-        <div className="space-y-3 text-sm text-slate-400">
+        <div className="space-y-3 text-sm text-muted-foreground">
           <p>
-            Third parties send leads to your API using the{" "}
-            <code className="bg-slate-800 px-1.5 py-0.5 rounded text-emerald-400 text-xs">
+            {t("admin.apiKeys.guideText", {
+              defaultValue: "Third parties send leads to your API using the",
+            })}{" "}
+            <code className="bg-muted px-1.5 py-0.5 rounded text-emerald-400 text-xs">
               x-api-key
             </code>{" "}
-            header:
+            {t("admin.apiKeys.header", { defaultValue: "header:" })}
           </p>
-          <pre className="bg-slate-800 rounded-lg p-3 text-xs sm:text-sm overflow-x-auto">
-            <code className="text-slate-300">{`POST /api/v1/leads
+          <pre className="bg-muted rounded-lg p-3 text-xs sm:text-sm overflow-x-auto">
+            <code className="text-foreground">{`POST /api/v1/leads
 Content-Type: application/json
 x-api-key: pc_your_key_here
 
@@ -608,13 +703,15 @@ x-api-key: pc_your_key_here
   "personName": "John Doe",
   "email": "john@example.com",
   "phoneNumber": "+1234567890",
-  "country": "United States",
+  "country": "United Kingdom",
   "source": "Partner Name"
 }`}</code>
           </pre>
-          <p className="text-xs text-slate-500">
-            Leads will appear automatically in the CRM Leads page with status
-            NEW.
+          <p className="text-xs text-muted-foreground">
+            {t("admin.apiKeys.guideNote", {
+              defaultValue:
+                "Leads will appear automatically in the CRM Leads page with status NEW.",
+            })}
           </p>
         </div>
       </Card>

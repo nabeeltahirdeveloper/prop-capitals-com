@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   adminGetAllPayments,
@@ -36,9 +36,11 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { format } from "date-fns";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function AdminPayments() {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [refundDialogOpen, setRefundDialogOpen] = useState(false);
@@ -69,10 +71,22 @@ export default function AdminPayments() {
       setRefundDialogOpen(false);
       setSelectedPayment(null);
       setRefundReason("");
+      toast({
+        title: t("admin.payments.refundSuccess") || "Refund Successful",
+        description:
+          t("admin.payments.refundSuccessDesc") ||
+          "The payment has been refunded successfully.",
+      });
     },
     onError: (error) => {
-      console.error("Failed to refund payment:", error);
-      alert(error.response?.data?.message || "Failed to refund payment");
+      toast({
+        title: t("admin.payments.refundError") || "Refund Failed",
+        description:
+          error.response?.data?.message ||
+          t("admin.payments.refundErrorDesc") ||
+          "Failed to refund payment. Please try again.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -91,28 +105,32 @@ export default function AdminPayments() {
   };
 
   // Map backend payments to frontend format
-  const mappedPayments = (Array.isArray(paymentsData) ? paymentsData : []).map((payment) => {
-    const user = payment.user || {};
-    const statusMap = {
-      succeeded: "completed",
-      pending: "pending",
-      failed: "failed",
-      refunded: "refunded",
-    };
+  const mappedPayments = (Array.isArray(paymentsData) ? paymentsData : []).map(
+    (payment) => {
+      const user = payment.user || {};
+      const statusMap = {
+        succeeded: "completed",
+        pending: "pending",
+        failed: "failed",
+        refunded: "refunded",
+      };
 
-    return {
-      id: payment.id,
-      trader_id: user.email || payment.userId || "N/A",
-      amount: payment.amount,
-      currency: payment.currency || null,
-      status:
-        statusMap[payment.status] || payment.status?.toLowerCase() || "pending",
-      payment_method: payment.provider || "unknown",
-      transaction_id: payment.reference || "-",
-      refund_reason: payment.refundReason || null,
-      created_date: payment.createdAt,
-    };
-  });
+      return {
+        id: payment.id,
+        trader_id: user.email || payment.userId || "N/A",
+        amount: payment.amount,
+        currency: payment.currency || null,
+        status:
+          statusMap[payment.status] ||
+          payment.status?.toLowerCase() ||
+          "pending",
+        payment_method: payment.provider || "unknown",
+        transaction_id: payment.reference || "-",
+        refund_reason: payment.refundReason || null,
+        created_date: payment.createdAt,
+      };
+    },
+  );
 
   const displayPayments = mappedPayments;
 
@@ -148,7 +166,9 @@ export default function AdminPayments() {
       header: t("admin.payments.table.amount"),
       accessorKey: "amount",
       cell: (row) => (
-        <span className="text-emerald-500 font-bold">${row.amount}</span>
+        <span className="text-emerald-500 font-bold">
+          ${row.amount?.toLocaleString()}
+        </span>
       ),
     },
     {
@@ -206,7 +226,9 @@ export default function AdminPayments() {
         try {
           if (!row.created_date) return "-";
           const date = new Date(row.created_date);
-          return isNaN(date.getTime()) ? "-" : format(date, "MMM d, HH:mm");
+          return isNaN(date.getTime())
+            ? "-"
+            : format(date, "MMM d, yyyy HH:mm");
         } catch (error) {
           return "-";
         }
@@ -245,11 +267,27 @@ export default function AdminPayments() {
                   </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
-                  <div>
+                  <div className="space-y-2">
                     <p className="text-muted-foreground text-xs sm:text-sm">
                       {t("admin.payments.refundConfirm") ||
-                        `Are you sure you want to refund $${row.amount} to ${row.trader_id}?`}
+                        "Are you sure you want to refund this payment?"}
                     </p>
+                    <div className="bg-muted/50 rounded-lg p-3 space-y-1">
+                      <p className="text-sm text-foreground">
+                        <span className="text-muted-foreground">
+                          {t("admin.payments.table.amount") || "Amount"}:
+                        </span>{" "}
+                        <span className="font-bold text-emerald-500">
+                          ${row.amount?.toLocaleString()}
+                        </span>
+                      </p>
+                      <p className="text-sm text-foreground">
+                        <span className="text-muted-foreground">
+                          {t("admin.payments.table.trader") || "Trader"}:
+                        </span>{" "}
+                        <span className="font-medium">{row.trader_id}</span>
+                      </p>
+                    </div>
                   </div>
                   <div className="space-y-1.5 sm:space-y-2">
                     <Label className="text-muted-foreground text-xs sm:text-sm">
@@ -332,7 +370,7 @@ export default function AdminPayments() {
           title={t("admin.payments.stats.totalRevenue")}
           value={`$${totalRevenue.toLocaleString()}`}
           icon={DollarSign}
-          gradient="from-emerald-500 to-teal-500"
+          iconColor="text-emerald-400"
           change={
             statistics.revenueChangePercent !== undefined
               ? t("admin.payments.stats.changeThisMonth", {
@@ -348,19 +386,19 @@ export default function AdminPayments() {
           title={t("admin.payments.stats.completed")}
           value={completedCount}
           icon={TrendingUp}
-          gradient="from-blue-500 to-cyan-500"
+          iconColor="text-blue-400"
         />
         <StatsCard
           title={t("admin.payments.stats.pending")}
           value={`$${pendingAmount.toLocaleString()}`}
           icon={CreditCard}
-          gradient="from-[#d97706] to-[#d97706]"
+          iconColor="text-amber-400"
         />
         <StatsCard
           title={t("admin.payments.stats.refunded")}
           value={`$${refundedAmount.toLocaleString()}`}
           icon={RefreshCw}
-          gradient="from-red-500 to-pink-500"
+          iconColor="text-red-400"
         />
       </div>
 

@@ -6,7 +6,10 @@
     "allPlatforms": "all platforms",
     "unknown": "Unknown",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleting": "Deleting..."
   },
   "home": {
     "hero": {
@@ -384,11 +387,11 @@
     "lastNamePlaceholder": "Doe",
     "email": "Email",
     "phoneNumber": "Phone Number",
-    "phonePlaceholder": "+1 234 567 8900",
+    "phonePlaceholder": "+44 20 1234 5678",
     "country": "Country",
-    "countryPlaceholder": "United States",
+    "countryPlaceholder": "United Kingdom",
     "city": "City",
-    "cityPlaceholder": "New York",
+    "cityPlaceholder": "London",
     "address": "Address",
     "addressPlaceholder": "123 Main St",
     "saving": "Saving...",
@@ -448,6 +451,9 @@
     "passwordChangeFailed": "Password Change Failed",
     "passwordChangeError": "An error occurred while changing your password.",
     "validationError": "Validation Error",
+    "currentPasswordRequired": "Please enter your current password.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "notificationUpdateError": "Failed to update notification preferences.",
     "notificationsUpdated": "Notifications Updated",
     "notificationsUpdatedDesc": "Your notification preferences have been saved."
@@ -784,6 +790,9 @@
     "noNotifications": "No notifications",
     "noNewNotifications": "No new notifications",
     "allCaughtUp": "You're all caught up!",
+    "delete": "Delete notification",
+    "loadError": "Failed to load notifications",
+    "loadErrorHint": "Please refresh the page and try again.",
     "challenge": "Challenge",
     "payout": "Payout",
     "system": "System",
@@ -1202,7 +1211,9 @@
     "pipeline": "Pipeline",
     "ftdReport": "Orders Report",
     "calendar": "Calendar",
-    "fundedAccounts": "Funded Accounts"
+    "fundedAccounts": "Funded Accounts",
+    "propServer": "Prop Server",
+    "crmApiKey": "CRM API Keys"
   },
   "status": {
     "active": "Active",
@@ -1345,6 +1356,12 @@
         "makeAdmin": "Make Admin",
         "makeTrader": "Make Trader"
       },
+      "confirmRoleChange": {
+        "title": "Confirm Role Change",
+        "description": "Are you sure you want to change {{name}}'s role to {{newRole}}? This will immediately affect their access to this panel.",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
+      },
       "dialog": {
         "title": "User Details",
         "userId": "User ID",
@@ -1423,7 +1440,15 @@
         "phaseTransitions": "Phase Transitions",
         "recentViolations": "Recent Violations",
         "error": "Error loading account details",
-        "noDetails": "No account details available"
+        "noDetails": "No account details available",
+        "dailyDrawdown": "Daily Drawdown",
+        "overallDrawdown": "Overall Drawdown"
+      },
+      "confirm": {
+        "pause": "Are you sure you want to pause this account? The trader will not be able to trade.",
+        "forcePass": "Are you sure you want to force pass this account to the next phase?",
+        "forceFail": "Are you sure you want to force fail this account? This action cannot be easily undone.",
+        "reset": "Are you sure you want to reset this account back to Phase 1?"
       },
       "emptyMessage": "No accounts found"
     },
@@ -1482,7 +1507,9 @@
       "severity": {
         "fatal": "Fatal",
         "warning": "Warning"
-      }
+      },
+      "loading": "Loading accounts...",
+      "noAccounts": "No accounts found matching your criteria."
     },
     "payouts": {
       "title": "Payout Management",
@@ -1611,7 +1638,9 @@
         "weekendHolding": "Weekend Holding",
         "restrictedInstrument": "Restricted Instrument",
         "lotSize": "Lot Size",
-        "eaDetected": "EA Detected"
+        "eaDetected": "EA Detected",
+        "consistency": "Consistency",
+        "ruleBreak": "Rule Break"
       },
       "severity": {
         "fatal": "Fatal",
@@ -1625,7 +1654,12 @@
         "weekend_holding": "Position held over weekend",
         "restricted_instrument": "Traded restricted instrument",
         "lot_size": "Lot size limit exceeded",
-        "ea_detected": "Expert Advisor detected"
+        "ea_detected": "Expert Advisor detected",
+        "consistency": "Consistency rule violated",
+        "rule_break": "Trading rule violation"
+      },
+      "pagination": {
+        "showing": "Page {{page}} of {{totalPages}} ({{total}} total)"
       },
       "emptyMessage": "No violations found"
     },
@@ -1661,8 +1695,18 @@
         "usage": "Usage",
         "validUntil": "Valid Until",
         "status": "Status",
+        "created": "Created",
         "actions": "Actions"
       },
+      "searchPlaceholder": "Search by coupon code...",
+      "filter": {
+        "all": "All Statuses",
+        "active": "Active",
+        "inactive": "Inactive",
+        "expired": "Expired"
+      },
+      "deleteConfirmTitle": "Delete Coupon",
+      "deleteConfirmMessage": "Are you sure you want to delete this coupon? This action cannot be undone.",
       "status": {
         "active": "Active",
         "inactive": "Inactive"
@@ -1703,7 +1747,9 @@
         "open": "Open",
         "inProgress": "In Progress",
         "resolved": "Resolved",
-        "closed": "Closed"
+        "closed": "Closed",
+        "waitingForAdmin": "Waiting for Admin",
+        "waitingForTrader": "Waiting for Trader"
       },
       "table": {
         "ticket": "Ticket",
@@ -1746,6 +1792,14 @@
         "errorTitle": "Error",
         "replySent": "Reply sent and ticket resolved.",
         "statusUpdated": "Ticket status updated successfully."
+      },
+      "pagination": {
+        "page": "Page {{page}} of {{totalPages}} ({{total}} tickets)",
+        "previous": "Previous",
+        "next": "Next"
+      },
+      "chat": {
+        "openChat": "Open Chat"
       }
     },
     "settings": {
@@ -1992,6 +2046,49 @@
       "deleteErrorDesc": "Challenge cannot be deleted because it is linked to existing trading accounts.",
       "understand": "I Understand",
       "noChallenges": "No challenges available"
+    },
+    "apiKeys": {
+      "title": "API Keys",
+      "subtitle": "Manage API keys for third-party lead ingestion",
+      "generate": "Generate API Key",
+      "keyGenerated": "API Key Generated",
+      "generateNew": "Generate New API Key",
+      "keyName": "Key Name",
+      "keyNamePlaceholder": "e.g. Partner Integration",
+      "keyNameHint": "A label to identify this key (e.g. the partner name)",
+      "generating": "Generating...",
+      "generateKey": "Generate Key",
+      "copyWarning": "Copy this key now. It will not be shown again.",
+      "yourKey": "Your API Key",
+      "copied": "Copied!",
+      "copyToClipboard": "Copy to Clipboard",
+      "done": "Done",
+      "totalKeys": "Total Keys",
+      "active": "Active",
+      "revoked": "Revoked",
+      "emptyMessage": "No API keys yet. Generate one to get started.",
+      "created": "Created",
+      "lastUsed": "Last Used",
+      "never": "Never",
+      "endpoints": "Endpoints",
+      "singleLead": "Single lead",
+      "upTo100": "Up to 100 leads",
+      "checkStatus": "Check status",
+      "singleExample": "Single Lead Example",
+      "bulkExample": "Bulk Example",
+      "fieldsReference": "Fields Reference",
+      "field": "Field",
+      "type": "Type",
+      "required": "Required",
+      "yes": "Yes",
+      "no": "No",
+      "revoking": "Revoking...",
+      "revokeThisKey": "Revoke This Key",
+      "close": "Close",
+      "quickGuide": "Quick Integration Guide",
+      "guideText": "Third parties send leads to your API using the",
+      "header": "header:",
+      "guideNote": "Leads will appear automatically in the CRM Leads page with status NEW."
     }
   },
   "signIn": {
@@ -3088,7 +3185,8 @@
       "activityRecorded": "{{type}} recorded",
       "direct": "Direct",
       "quickActionNote": "{{type}} attempt made via Pipeline Quick Actions",
-      "activityFailed": "Failed to log activity"
+      "activityFailed": "Failed to log activity",
+      "noLeadsInStage": "No leads in this stage"
     },
     "columns": {
       "new": "New Leads",
@@ -3204,7 +3302,10 @@
         "sat": "Sat"
       },
       "moreCount": "+ {{count}} more",
-      "minShort": "min"
+      "minShort": "min",
+      "errorDateTimeRequired": "Date and time are required",
+      "errorInvalidDuration": "Duration must be a positive number",
+      "loadError": "Failed to load calendar data"
     }
   }
 }
