@@ -67,7 +67,6 @@ const ToastClose = React.forwardRef(({ className, onClick, ...props }, ref) => {
   const handleClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("ToastClose clicked", onClick);
     if (onClick) {
       onClick(e);
     }

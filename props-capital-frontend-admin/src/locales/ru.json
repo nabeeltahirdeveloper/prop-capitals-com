@@ -6,7 +6,10 @@
     "allPlatforms": "Все платформы",
     "unknown": "Неизвестно",
     "error": "Ошибка",
-    "success": "Успех"
+    "success": "Успех",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "deleting": "Удаление..."
   },
   "home": {
     "hero": {
@@ -445,6 +448,9 @@
     "passwordChangeFailed": "Ошибка смены пароля",
     "passwordChangeError": "Произошла ошибка при смене пароля.",
     "validationError": "Ошибка валидации",
+    "currentPasswordRequired": "Пожалуйста, введите ваш текущий пароль.",
+    "showPassword": "Показать пароль",
+    "hidePassword": "Скрыть пароль",
     "notificationUpdateError": "Ошибка обновления настроек уведомлений.",
     "notificationsUpdated": "Уведомления обновлены",
     "notificationsUpdatedDesc": "Настройки уведомлений сохранены.",
@@ -783,6 +789,9 @@
     "account": "Аккаунт",
     "noNotifications": "Уведомлений нет",
     "noNewNotifications": "Новых уведомлений нет",
+    "delete": "Delete notification",
+    "loadError": "Failed to load notifications",
+    "loadErrorHint": "Please refresh the page and try again.",
     "allCaughtUp": "Всё просмотрено!",
     "challenge": "Челлендж",
     "payout": "Вывод",
@@ -1201,7 +1210,10 @@
     "crmLeads": "CRM Лиды",
     "pipeline": "Pipeline",
     "ftdReport": "FTD Report",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "fundedAccounts": "Funded Accounts",
+    "propServer": "Prop Server",
+    "crmApiKey": "CRM API Keys"
   },
   "status": {
     "active": "Активен",
@@ -1342,6 +1354,12 @@
         "makeAdmin": "Сделать администратором",
         "makeTrader": "Сделать трейдером"
       },
+      "confirmRoleChange": {
+        "title": "Подтверждение смены роли",
+        "description": "Вы уверены, что хотите изменить роль {{name}} на {{newRole}}? Это немедленно повлияет на их доступ к панели.",
+        "confirm": "Подтвердить",
+        "cancel": "Отмена"
+      },
       "dialog": {
         "title": "Детали пользователя",
         "userId": "ID пользователя",
@@ -1422,7 +1440,15 @@
         "phaseTransitions": "Переходы фаз",
         "recentViolations": "Недавние нарушения",
         "error": "Ошибка загрузки деталей аккаунта",
-        "noDetails": "Детали аккаунта отсутствуют"
+        "noDetails": "Детали аккаунта отсутствуют",
+        "dailyDrawdown": "Дневная просадка",
+        "overallDrawdown": "Общая просадка"
+      },
+      "confirm": {
+        "pause": "Вы уверены, что хотите приостановить этот аккаунт? Трейдер не сможет торговать.",
+        "forcePass": "Вы уверены, что хотите принудительно перевести этот аккаунт на следующий этап?",
+        "forceFail": "Вы уверены, что хотите принудительно провалить этот аккаунт? Это действие нельзя легко отменить.",
+        "reset": "Вы уверены, что хотите сбросить этот аккаунт до Фазы 1?"
       },
       "emptyMessage": "Аккаунты не найдены"
     },
@@ -1553,7 +1579,9 @@
         "weekendHolding": "Удержание на выходных",
         "restrictedInstrument": "Ограниченный инструмент",
         "lotSize": "Размер лота",
-        "eaDetected": "Обнаружен EA"
+        "eaDetected": "Обнаружен EA",
+        "consistency": "Последовательность",
+        "ruleBreak": "Нарушение правил"
       },
       "severity": {
         "fatal": "Критическое",
@@ -1567,7 +1595,12 @@
         "weekend_holding": "Удержание позиций на выходных",
         "restricted_instrument": "Торговля по ограниченному инструменту",
         "lot_size": "Превышен лимит размера лота",
-        "ea_detected": "Обнаружен Expert Advisor"
+        "ea_detected": "Обнаружен Expert Advisor",
+        "consistency": "Нарушение правила последовательности",
+        "rule_break": "Нарушение торгового правила"
+      },
+      "pagination": {
+        "showing": "Страница {{page}} из {{totalPages}} ({{total}} всего)"
       },
       "emptyMessage": "Нарушения не найдены"
     },
@@ -1603,8 +1636,18 @@
         "usage": "Использование",
         "validUntil": "Действителен до",
         "status": "Статус",
+        "created": "Создан",
         "actions": "Действия"
       },
+      "searchPlaceholder": "Поиск по коду купона...",
+      "filter": {
+        "all": "Все статусы",
+        "active": "Активные",
+        "inactive": "Неактивные",
+        "expired": "Истекшие"
+      },
+      "deleteConfirmTitle": "Удалить купон",
+      "deleteConfirmMessage": "Вы уверены, что хотите удалить этот купон? Это действие нельзя отменить.",
       "status": {
         "active": "Активен",
         "inactive": "Неактивен"
@@ -1644,7 +1687,9 @@
         "open": "Открыто",
         "inProgress": "В процессе",
         "resolved": "Решено",
-        "closed": "Закрыто"
+        "closed": "Закрыто",
+        "waitingForAdmin": "Ожидание администратора",
+        "waitingForTrader": "Ожидание трейдера"
       },
       "table": {
         "ticket": "Тикет",
@@ -1684,6 +1729,14 @@
         "questionAboutScalingPlan": "Вопрос о плане масштабирования",
         "refundRequest": "Запрос на возврат",
         "challengeRulesClarification": "Уточнение правил челленджа"
+      },
+      "pagination": {
+        "page": "Страница {{page}} из {{totalPages}} (всего {{total}} тикетов)",
+        "previous": "Назад",
+        "next": "Вперед"
+      },
+      "chat": {
+        "openChat": "Открыть чат"
       }
     },
     "settings": {
@@ -1794,7 +1847,9 @@
       "severity": {
         "fatal": "Fatal",
         "warning": "Warning"
-      }
+      },
+      "loading": "Загрузка учетных записей...",
+      "noAccounts": "Не найдены учетные записи, соответствующие условиям поиска."
     },
     "brokerServers": {
       "title": "Серверы брокера",
@@ -1970,6 +2025,49 @@
       "deleteErrorDesc": "Невозможно удалить, так как он связан с существующими торговыми аккаунтами",
       "understand": "Понятно",
       "noChallenges": "No challenges available"
+    },
+    "apiKeys": {
+      "title": "API Keys",
+      "subtitle": "Manage API keys for third-party lead ingestion",
+      "generate": "Generate API Key",
+      "keyGenerated": "API Key Generated",
+      "generateNew": "Generate New API Key",
+      "keyName": "Key Name",
+      "keyNamePlaceholder": "e.g. Partner Integration",
+      "keyNameHint": "A label to identify this key (e.g. the partner name)",
+      "generating": "Generating...",
+      "generateKey": "Generate Key",
+      "copyWarning": "Copy this key now. It will not be shown again.",
+      "yourKey": "Your API Key",
+      "copied": "Copied!",
+      "copyToClipboard": "Copy to Clipboard",
+      "done": "Done",
+      "totalKeys": "Total Keys",
+      "active": "Active",
+      "revoked": "Revoked",
+      "emptyMessage": "No API keys yet. Generate one to get started.",
+      "created": "Created",
+      "lastUsed": "Last Used",
+      "never": "Never",
+      "endpoints": "Endpoints",
+      "singleLead": "Single lead",
+      "upTo100": "Up to 100 leads",
+      "checkStatus": "Check status",
+      "singleExample": "Single Lead Example",
+      "bulkExample": "Bulk Example",
+      "fieldsReference": "Fields Reference",
+      "field": "Field",
+      "type": "Type",
+      "required": "Required",
+      "yes": "Yes",
+      "no": "No",
+      "revoking": "Revoking...",
+      "revokeThisKey": "Revoke This Key",
+      "close": "Close",
+      "quickGuide": "Quick Integration Guide",
+      "guideText": "Third parties send leads to your API using the",
+      "header": "header:",
+      "guideNote": "Leads will appear automatically in the CRM Leads page with status NEW."
     }
   },
   "signIn": {
@@ -3005,16 +3103,16 @@
       "whatsapp": "WhatsApp",
       "telegram_activity": "Telegram",
       "toast": {
-        "fetchError": "Failed to fetch leads",
-        "loadError": "Failed to load lead details",
-        "updateSuccess": "Lead updated successfully",
-        "updateError": "Failed to update lead",
-        "activityLogged": "Activity logged: {{type}}",
-        "activityError": "Failed to log activity",
-        "importSuccess": "Imported {{created}} of {{total}} leads",
-        "importError": "Failed to import CSV",
-        "noteAdded": "Note added successfully",
-        "noteError": "Failed to add note"
+        "fetchError": "Не удалось получить лиды",
+        "loadError": "Не удалось загрузить данные лида",
+        "updateSuccess": "Лид успешно обновлен",
+        "updateError": "Не удалось обновить лид",
+        "activityLogged": "Активность записана: {{type}}",
+        "activityError": "Не удалось записать активность",
+        "importSuccess": "Импортировано {{created}} из {{total}} лидов",
+        "importError": "Не удалось импортировать CSV",
+        "noteAdded": "Заметка успешно добавлена",
+        "noteError": "Не удалось добавить заметку"
       }
     },
     "status": {
@@ -3066,7 +3164,8 @@
       "activityRecorded": "{{type}} зафиксирован(а)",
       "direct": "Прямой",
       "quickActionNote": "Попытка {{type}}, сделанная через быстрые действия воронки",
-      "activityFailed": "Не удалось записать активность"
+      "activityFailed": "Не удалось записать активность",
+      "noLeadsInStage": "Нет лидов на этом этапе"
     },
     "columns": {
       "new": "Новые лиды",
@@ -3103,37 +3202,37 @@
       "noDescription": "Описание не предоставлено"
     },
     "ftdReport": {
-      "title": "FTD Report",
-      "subtitle": "First Time Deposit tracking from converted leads",
-      "totalFtd": "Total FTD",
-      "totalDeposits": "Total Deposits",
-      "avgFtdAmount": "Avg FTD Amount",
-      "activeAgents": "Active Agents",
-      "searchPlaceholder": "Search by name, email, or country...",
-      "allAgents": "All Agents",
-      "tableTitle": "First Time Deposits",
-      "leadName": "Lead Name",
+      "title": "Отчет по заказам",
+      "subtitle": "Отслеживание заказов от конвертированных лидов",
+      "totalFtd": "Всего FTD",
+      "totalDeposits": "Всего заказов",
+      "avgFtdAmount": "Средняя сумма заказа",
+      "activeAgents": "Активные агенты",
+      "searchPlaceholder": "Поиск по имени, email или стране...",
+      "allAgents": "Все агенты",
+      "tableTitle": "Первые депозиты",
+      "leadName": "Имя лида",
       "email": "Email",
-      "phone": "Phone",
-      "country": "Country",
-      "depositAmount": "Deposit Amount",
-      "convertedDate": "Converted Date",
-      "status": "Status",
-      "converted": "Converted",
-      "agent": "Agent",
-      "paymentMethod": "Payment Method",
-      "paymentProvider": "Payment Provider",
-      "source": "Source",
-      "affiliateId": "Affiliate ID",
-      "funnelName": "Funnel Name",
-      "ftdTime": "FTD Time",
-      "subParameters": "Sub Parameters",
-      "na": "N/A",
-      "unassigned": "Unassigned",
-      "loading": "Loading FTD data...",
-      "noData": "No first time deposits found.",
-      "showing": "Showing {{count}} First Time Deposits",
-      "loadError": "Failed to load FTD report data"
+      "phone": "Телефон",
+      "country": "Страна",
+      "depositAmount": "Сумма депозита",
+      "convertedDate": "Дата конвертации",
+      "status": "Статус",
+      "converted": "Конвертирован",
+      "agent": "Агент",
+      "paymentMethod": "Способ оплаты",
+      "paymentProvider": "Платежный провайдер",
+      "source": "Источник",
+      "affiliateId": "ID партнера",
+      "funnelName": "Название воронки",
+      "ftdTime": "Время FTD",
+      "subParameters": "Подпараметры",
+      "na": "Н/Д",
+      "unassigned": "Не назначен",
+      "loading": "Загрузка данных FTD...",
+      "noData": "Первые депозиты не найдены.",
+      "showing": "Показано {{count}} первых депозитов",
+      "loadError": "Не удалось загрузить данные отчета FTD"
     },
     "crmCalendar": {
       "title": "Календарь продаж",
@@ -3173,16 +3272,19 @@
       "placeholderTitle": "напр., Последующий звонок",
       "placeholderClient": "Введите имя клиента",
       "weekdays": {
-        "sun": "Sun",
-        "mon": "Mon",
-        "tue": "Tue",
-        "wed": "Wed",
-        "thu": "Thu",
-        "fri": "Fri",
-        "sat": "Sat"
+        "sun": "Вс",
+        "mon": "Пн",
+        "tue": "Вт",
+        "wed": "Ср",
+        "thu": "Чт",
+        "fri": "Пт",
+        "sat": "Сб"
       },
-      "moreCount": "+ {{count}} more",
-      "minShort": "min"
+      "moreCount": "+ ещё {{count}}",
+      "minShort": "мин",
+      "errorDateTimeRequired": "Дата и время обязательны",
+      "errorInvalidDuration": "Длительность должна быть положительным числом",
+      "loadError": "Не удалось загрузить данные календаря"
     }
   }
 }

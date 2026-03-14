@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ChallengePlatform } from '@prisma/client';
+import { CreateBrokerServerDto } from './dto/create-broker-server.dto';
 
 @Injectable()
 export class BrokerServersService {
@@ -68,27 +69,13 @@ export class BrokerServersService {
   }
 
   // Create a broker server
-  async create(data: any) {
-    // Validate required fields
-    if (!data.name) {
-      throw new BadRequestException('Server name is required');
-    }
-    if (!data.server_address && !data.host) {
-      throw new BadRequestException('Server address is required');
-    }
-
-    // Validate and normalize platform
-    const platformValue = data.platform?.toUpperCase();
-    if (!['MT4', 'MT5', 'CTRADER', 'DXTRADE'].includes(platformValue)) {
-      throw new BadRequestException('Invalid platform. Must be MT4, MT5, CTRADER, or DXTRADE');
-    }
-
+  async create(data: CreateBrokerServerDto) {
     const server = await this.prisma.brokerServer.create({
       data: {
         name: data.name,
-        platform: platformValue as ChallengePlatform,
-        host: data.server_address || data.host,
-        port: parseInt(String(data.server_port || data.port || 443)),
+        platform: data.platform,
+        host: data.server_address,
+        port: data.server_port ?? 443,
         description: data.description || null,
       },
     });

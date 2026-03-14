@@ -123,7 +123,7 @@ const WatchDemoPage = () => {
                   playsInline
                 >
                   {/* Demo video - using a sample trading video */}
-                  <source src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4" />
+                  <source src="/assets/videos/demo-video.mp4" type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
 

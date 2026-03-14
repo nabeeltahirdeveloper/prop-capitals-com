@@ -1,8 +1,8 @@
-import { apiGet, apiPost, apiPatch } from '@/lib/api';
+import { apiGet, apiPost, apiPatch } from "@/lib/api";
 
 // API Functions
 export const createTrade = async (data) => {
-  return apiPost('/trades', data);
+  return apiPost("/trades", data);
 };
 
 export const getAccountTrades = async (accountId) => {
@@ -23,4 +23,3 @@ export const updateTrade = async (tradeId, data) => {
 export const modifyPosition = async (tradeId, data) => {
   return apiPatch(`/trades/${tradeId}/modify`, data);
 };
-

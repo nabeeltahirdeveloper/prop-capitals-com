@@ -6,7 +6,10 @@
     "allPlatforms": "모든 플랫폼",
     "unknown": "알 수 없음",
     "error": "에러",
-    "success": "성공"
+    "success": "성공",
+    "cancel": "취소",
+    "delete": "삭제",
+    "deleting": "삭제 중..."
   },
   "home": {
     "hero": {
@@ -445,6 +448,9 @@
     "passwordChangeFailed": "비밀번호 변경 실패",
     "passwordChangeError": "비밀번호를 변경하는 중 오류가 발생했습니다.",
     "validationError": "유효성 검사 오류",
+    "currentPasswordRequired": "현재 비밀번호를 입력해주세요.",
+    "showPassword": "비밀번호 표시",
+    "hidePassword": "비밀번호 숨기기",
     "notificationUpdateError": "알림 설정을 업데이트하지 못했습니다.",
     "notificationsUpdated": "알림 업데이트됨",
     "notificationsUpdatedDesc": "알림 설정이 저장되었습니다.",
@@ -783,6 +789,9 @@
     "account": "계정",
     "noNotifications": "알림이 없습니다",
     "noNewNotifications": "새로운 알림이 없습니다",
+    "delete": "Delete notification",
+    "loadError": "Failed to load notifications",
+    "loadErrorHint": "Please refresh the page and try again.",
     "allCaughtUp": "모두 확인했습니다!",
     "challenge": "챌린지",
     "payout": "출금",
@@ -1201,7 +1210,10 @@
     "crmLeads": "CRM 리드",
     "pipeline": "Pipeline",
     "ftdReport": "FTD Report",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "fundedAccounts": "Funded Accounts",
+    "propServer": "Prop Server",
+    "crmApiKey": "CRM API Keys"
   },
   "status": {
     "active": "활성",
@@ -1342,6 +1354,12 @@
         "makeAdmin": "관리자로 지정",
         "makeTrader": "트레이더로 지정"
       },
+      "confirmRoleChange": {
+        "title": "역할 변경 확인",
+        "description": "{{name}}의 역할을 {{newRole}}(으)로 변경하시겠습니까? 이 변경은 패널 접근에 즉시 영향을 미칩니다.",
+        "confirm": "확인",
+        "cancel": "취소"
+      },
       "dialog": {
         "title": "사용자 상세",
         "userId": "사용자 ID",
@@ -1422,7 +1440,15 @@
         "phaseTransitions": "단계 전환",
         "recentViolations": "최근 위반",
         "error": "계정 상세 정보를 불러오는 중 오류가 발생했습니다",
-        "noDetails": "계정 상세 정보가 없습니다"
+        "noDetails": "계정 상세 정보가 없습니다",
+        "dailyDrawdown": "일일 드로다운",
+        "overallDrawdown": "전체 드로다운"
+      },
+      "confirm": {
+        "pause": "이 계정을 일시 중지하시겠습니까? 트레이더가 거래할 수 없게 됩니다.",
+        "forcePass": "이 계정을 다음 단계로 강제 통과시키겠습니까?",
+        "forceFail": "이 계정을 강제 실패 처리하시겠습니까? 이 작업은 쉽게 취소할 수 없습니다.",
+        "reset": "이 계정을 1단계로 재설정하시겠습니까?"
       },
       "emptyMessage": "계정을 찾을 수 없습니다"
     },
@@ -1553,7 +1579,9 @@
         "weekendHolding": "주말 보유",
         "restrictedInstrument": "제한 종목",
         "lotSize": "로트 크기",
-        "eaDetected": "EA 감지"
+        "eaDetected": "EA 감지",
+        "consistency": "일관성",
+        "ruleBreak": "규칙 위반"
       },
       "severity": {
         "fatal": "중대",
@@ -1567,7 +1595,12 @@
         "weekend_holding": "주말에 포지션 보유",
         "restricted_instrument": "제한 종목으로 거래",
         "lot_size": "로트 크기 한도 초과",
-        "ea_detected": "Expert Advisor 감지"
+        "ea_detected": "Expert Advisor 감지",
+        "consistency": "일관성 규칙 위반",
+        "rule_break": "거래 규칙 위반"
+      },
+      "pagination": {
+        "showing": "{{page}} / {{totalPages}} 페이지 (총 {{total}}개)"
       },
       "emptyMessage": "위반을 찾을 수 없습니다"
     },
@@ -1603,8 +1636,18 @@
         "usage": "사용 현황",
         "validUntil": "유효기간",
         "status": "상태",
+        "created": "생성일",
         "actions": "작업"
       },
+      "searchPlaceholder": "쿠폰 코드로 검색...",
+      "filter": {
+        "all": "모든 상태",
+        "active": "활성",
+        "inactive": "비활성",
+        "expired": "만료됨"
+      },
+      "deleteConfirmTitle": "쿠폰 삭제",
+      "deleteConfirmMessage": "이 쿠폰을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
       "status": {
         "active": "활성",
         "inactive": "비활성"
@@ -1644,7 +1687,9 @@
         "open": "오픈",
         "inProgress": "처리 중",
         "resolved": "해결됨",
-        "closed": "클로즈"
+        "closed": "클로즈",
+        "waitingForAdmin": "관리자 대기 중",
+        "waitingForTrader": "트레이더 대기 중"
       },
       "table": {
         "ticket": "티켓",
@@ -1684,6 +1729,14 @@
         "questionAboutScalingPlan": "스케일링 플랜 관련 질문",
         "refundRequest": "환불 요청",
         "challengeRulesClarification": "챌린지 규칙 확인"
+      },
+      "pagination": {
+        "page": "{{totalPages}} 페이지 중 {{page}} 페이지 (총 {{total}} 티켓)",
+        "previous": "이전",
+        "next": "다음"
+      },
+      "chat": {
+        "openChat": "채팅 열기"
       }
     },
     "settings": {
@@ -1794,7 +1847,9 @@
       "severity": {
         "fatal": "Fatal",
         "warning": "Warning"
-      }
+      },
+      "loading": "계정 로드 중...",
+      "noAccounts": "조건에 맞는 계정을 찾을 수 없습니다."
     },
     "brokerServers": {
       "title": "브로커 서버",
@@ -1970,6 +2025,49 @@
       "deleteErrorDesc": "기존 거래 계정과 연결되어 있어 삭제할 수 없습니다",
       "understand": "확인",
       "noChallenges": "No challenges available"
+    },
+    "apiKeys": {
+      "title": "API Keys",
+      "subtitle": "Manage API keys for third-party lead ingestion",
+      "generate": "Generate API Key",
+      "keyGenerated": "API Key Generated",
+      "generateNew": "Generate New API Key",
+      "keyName": "Key Name",
+      "keyNamePlaceholder": "e.g. Partner Integration",
+      "keyNameHint": "A label to identify this key (e.g. the partner name)",
+      "generating": "Generating...",
+      "generateKey": "Generate Key",
+      "copyWarning": "Copy this key now. It will not be shown again.",
+      "yourKey": "Your API Key",
+      "copied": "Copied!",
+      "copyToClipboard": "Copy to Clipboard",
+      "done": "Done",
+      "totalKeys": "Total Keys",
+      "active": "Active",
+      "revoked": "Revoked",
+      "emptyMessage": "No API keys yet. Generate one to get started.",
+      "created": "Created",
+      "lastUsed": "Last Used",
+      "never": "Never",
+      "endpoints": "Endpoints",
+      "singleLead": "Single lead",
+      "upTo100": "Up to 100 leads",
+      "checkStatus": "Check status",
+      "singleExample": "Single Lead Example",
+      "bulkExample": "Bulk Example",
+      "fieldsReference": "Fields Reference",
+      "field": "Field",
+      "type": "Type",
+      "required": "Required",
+      "yes": "Yes",
+      "no": "No",
+      "revoking": "Revoking...",
+      "revokeThisKey": "Revoke This Key",
+      "close": "Close",
+      "quickGuide": "Quick Integration Guide",
+      "guideText": "Third parties send leads to your API using the",
+      "header": "header:",
+      "guideNote": "Leads will appear automatically in the CRM Leads page with status NEW."
     }
   },
   "signIn": {
@@ -3005,16 +3103,16 @@
       "whatsapp": "WhatsApp",
       "telegram_activity": "Telegram",
       "toast": {
-        "fetchError": "Failed to fetch leads",
-        "loadError": "Failed to load lead details",
-        "updateSuccess": "Lead updated successfully",
-        "updateError": "Failed to update lead",
-        "activityLogged": "Activity logged: {{type}}",
-        "activityError": "Failed to log activity",
-        "importSuccess": "Imported {{created}} of {{total}} leads",
-        "importError": "Failed to import CSV",
-        "noteAdded": "Note added successfully",
-        "noteError": "Failed to add note"
+        "fetchError": "리드를 가져오지 못했습니다",
+        "loadError": "리드 세부 정보를 불러오지 못했습니다",
+        "updateSuccess": "리드가 성공적으로 업데이트되었습니다",
+        "updateError": "리드 업데이트에 실패했습니다",
+        "activityLogged": "활동 기록됨: {{type}}",
+        "activityError": "활동 기록에 실패했습니다",
+        "importSuccess": "{{total}}개 중 {{created}}개의 리드를 가져왔습니다",
+        "importError": "CSV 가져오기에 실패했습니다",
+        "noteAdded": "메모가 성공적으로 추가되었습니다",
+        "noteError": "메모 추가에 실패했습니다"
       }
     },
     "status": {
@@ -3066,7 +3164,8 @@
       "activityRecorded": "{{type}} 활동이 기록되었습니다",
       "direct": "직접",
       "quickActionNote": "파이프라인 퀵 액션을 통해 {{type}} 시도됨",
-      "activityFailed": "활동 기록 실패"
+      "activityFailed": "활동 기록 실패",
+      "noLeadsInStage": "이 단계에 리드가 없습니다"
     },
     "columns": {
       "new": "신규 리드",
@@ -3103,37 +3202,37 @@
       "noDescription": "설명이 없습니다"
     },
     "ftdReport": {
-      "title": "FTD Report",
-      "subtitle": "First Time Deposit tracking from converted leads",
-      "totalFtd": "Total FTD",
-      "totalDeposits": "Total Deposits",
-      "avgFtdAmount": "Avg FTD Amount",
-      "activeAgents": "Active Agents",
-      "searchPlaceholder": "Search by name, email, or country...",
-      "allAgents": "All Agents",
-      "tableTitle": "First Time Deposits",
-      "leadName": "Lead Name",
-      "email": "Email",
-      "phone": "Phone",
-      "country": "Country",
-      "depositAmount": "Deposit Amount",
-      "convertedDate": "Converted Date",
-      "status": "Status",
-      "converted": "Converted",
-      "agent": "Agent",
-      "paymentMethod": "Payment Method",
-      "paymentProvider": "Payment Provider",
-      "source": "Source",
-      "affiliateId": "Affiliate ID",
-      "funnelName": "Funnel Name",
-      "ftdTime": "FTD Time",
-      "subParameters": "Sub Parameters",
-      "na": "N/A",
-      "unassigned": "Unassigned",
-      "loading": "Loading FTD data...",
-      "noData": "No first time deposits found.",
-      "showing": "Showing {{count}} First Time Deposits",
-      "loadError": "Failed to load FTD report data"
+      "title": "주문 보고서",
+      "subtitle": "전환된 리드의 주문 추적",
+      "totalFtd": "총 FTD",
+      "totalDeposits": "총 주문",
+      "avgFtdAmount": "평균 주문 금액",
+      "activeAgents": "활성 에이전트",
+      "searchPlaceholder": "이름, 이메일 또는 국가로 검색...",
+      "allAgents": "모든 에이전트",
+      "tableTitle": "첫 입금",
+      "leadName": "리드 이름",
+      "email": "이메일",
+      "phone": "전화번호",
+      "country": "국가",
+      "depositAmount": "입금 금액",
+      "convertedDate": "전환일",
+      "status": "상태",
+      "converted": "전환됨",
+      "agent": "에이전트",
+      "paymentMethod": "결제 방식",
+      "paymentProvider": "결제 제공업체",
+      "source": "출처",
+      "affiliateId": "제휴 ID",
+      "funnelName": "퍼널명",
+      "ftdTime": "FTD 시간",
+      "subParameters": "하위 매개변수",
+      "na": "해당 없음",
+      "unassigned": "미배정",
+      "loading": "FTD 데이터 로딩 중...",
+      "noData": "첫 입금이 없습니다.",
+      "showing": "{{count}}건의 첫 입금 표시 중",
+      "loadError": "FTD 보고서 데이터를 불러오지 못했습니다"
     },
     "crmCalendar": {
       "title": "영업 캘린더",
@@ -3173,16 +3272,19 @@
       "placeholderTitle": "예: 후속 전화",
       "placeholderClient": "고객 이름 입력",
       "weekdays": {
-        "sun": "Sun",
-        "mon": "Mon",
-        "tue": "Tue",
-        "wed": "Wed",
-        "thu": "Thu",
-        "fri": "Fri",
-        "sat": "Sat"
+        "sun": "일",
+        "mon": "월",
+        "tue": "화",
+        "wed": "수",
+        "thu": "목",
+        "fri": "금",
+        "sat": "토"
       },
-      "moreCount": "+ {{count}} more",
-      "minShort": "min"
+      "moreCount": "+ {{count}}개 더",
+      "minShort": "분",
+      "errorDateTimeRequired": "날짜와 시간은 필수입니다",
+      "errorInvalidDuration": "소요 시간은 양수여야 합니다",
+      "loadError": "캘린더 데이터를 불러오지 못했습니다"
     }
   }
 }

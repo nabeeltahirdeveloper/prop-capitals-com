@@ -1,8 +1,8 @@
-import { apiGet, apiPost, apiPatch } from '@/lib/api';
+import { apiGet, apiPost, apiPatch } from "@/lib/api";
 
 // API Functions
 export const createAccount = async (data) => {
-  return apiPost('/trading-accounts', data);
+  return apiPost("/trading-accounts", data);
 };
 
 export const getUserAccounts = async (userId) => {
@@ -22,15 +22,17 @@ export const getAccountRules = async (id) => {
 };
 
 export const evaluateAccountRealTime = async (id, currentEquity) => {
-  return apiPost(`/trading-accounts/${id}/evaluate-real-time`, { currentEquity });
+  return apiPost(`/trading-accounts/${id}/evaluate-real-time`, {
+    currentEquity,
+  });
 };
 
 export const processPriceTick = async (id, symbol, bid, ask, timestamp) => {
-  return apiPost(`/trading-accounts/${id}/price-tick`, { 
-    symbol, 
-    bid, 
-    ask, 
-    ts: timestamp || Date.now() 
+  return apiPost(`/trading-accounts/${id}/price-tick`, {
+    symbol,
+    bid,
+    ask,
+    ts: timestamp || Date.now(),
   });
 };
 
@@ -49,8 +51,7 @@ export const getAnalytics = async (userId, accountId = null) => {
   if (accountId) {
     params.accountId = accountId;
   }
-  return apiGet('/trading-accounts/analytics', {
+  return apiGet("/trading-accounts/analytics", {
     params,
   });
 };
-

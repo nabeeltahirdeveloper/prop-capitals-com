@@ -75,6 +75,12 @@ body {
   /* slate-500 */
 }
 
+/* Hide default calendar picker indicator */
+.no-calendar-icon::-webkit-calendar-picker-indicator {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
 /* ========================================
    TABLE RESPONSIVE STYLES
    ======================================== */

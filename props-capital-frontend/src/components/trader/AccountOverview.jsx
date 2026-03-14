@@ -53,7 +53,7 @@ const ComplianceIndicator = ({ label, data, icon: Icon, type = 'progress', isDar
           color === 'amber' ? 'text-amber-500' :
             color === 'red' ? 'text-red-500' : isDark ? 'text-white' : 'text-slate-900'
           }`}>
-          {type === 'progress' ? `${data.current.toFixed(2)}%` : `${data.current}/${data.required || data.limit}`}
+          {type === 'progress' ? `${Number(data.current).toFixed(2)}%` : type === 'days' ? `${data.current}/${data.required || data.limit}` : `${Number(data.current).toFixed(2)}/${data.required || data.limit}`}
         </span>
         <span className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
           {type === 'progress' ? `Target: ${data.target}%` : type === 'limit' ? `Limit: ${data.limit}%` : `Required: ${data.required}`}

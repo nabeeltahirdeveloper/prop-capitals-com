@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   adminGetAllAccounts,
@@ -7,6 +7,7 @@ import {
   adminGetAccount,
 } from "@/api/admin";
 import { useTranslation } from "../contexts/LanguageContext";
+import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,7 +35,6 @@ import DataTable from "@/components/shared/DataTable";
 import StatusBadge from "@/components/shared/StatusBadge";
 import {
   Search,
-  Filter,
   MoreHorizontal,
   Eye,
   CheckCircle,
@@ -48,6 +48,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminAccounts() {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [phaseFilter, setPhaseFilter] = useState("all");
@@ -67,6 +68,19 @@ export default function AdminAccounts() {
       queryClient.invalidateQueries({
         queryKey: ["admin-account-details", variables.id],
       });
+      toast({
+        title: "Status updated",
+        description: `Account status changed to ${variables.status}.`,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to update status",
+        description:
+          error?.message ||
+          "An error occurred while updating the account status.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -76,6 +90,19 @@ export default function AdminAccounts() {
       queryClient.invalidateQueries({ queryKey: ["admin-accounts"] });
       queryClient.invalidateQueries({
         queryKey: ["admin-account-details", variables.id],
+      });
+      toast({
+        title: "Phase updated",
+        description: `Account phase changed to ${variables.phase}.`,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to update phase",
+        description:
+          error?.message ||
+          "An error occurred while updating the account phase.",
+        variant: "destructive",
       });
     },
   });
@@ -121,6 +148,15 @@ export default function AdminAccounts() {
   };
 
   const handlePause = (account) => {
+    if (
+      !window.confirm(
+        t("admin.accounts.confirm.pause", {
+          defaultValue:
+            "Are you sure you want to pause this account? The trader will not be able to trade.",
+        }),
+      )
+    )
+      return;
     updateStatusMutation.mutate({
       id: account.id,
       status: "PAUSED",
@@ -128,13 +164,44 @@ export default function AdminAccounts() {
   };
 
   const handleResume = (account) => {
+    if (
+      !window.confirm(
+        t("admin.accounts.confirm.resume", {
+          defaultValue:
+            "Are you sure you want to resume this account? The trader will be able to trade again.",
+        }),
+      )
+    )
+      return;
     updateStatusMutation.mutate({
       id: account.id,
       status: "ACTIVE",
     });
   };
 
+  const handleMoveToFunded = (account) => {
+    if (
+      !window.confirm(
+        t("admin.accounts.confirm.moveToFunded", {
+          defaultValue:
+            "Are you sure you want to move this account to Funded? This action cannot be undone.",
+        }),
+      )
+    )
+      return;
+    updatePhaseMutation.mutate({ id: account.id, phase: "FUNDED" });
+  };
+
   const handleForcePass = (account) => {
+    if (
+      !window.confirm(
+        t("admin.accounts.confirm.forcePass", {
+          defaultValue:
+            "Are you sure you want to force pass this account to the next phase?",
+        }),
+      )
+    )
+      return;
     const currentPhase = account.current_phase || account.phase;
     // Map frontend phase to backend phase enum
     const phaseMap = {
@@ -154,7 +221,15 @@ export default function AdminAccounts() {
   };
 
   const handleForceFail = (account) => {
-    // Force fail changes the phase to FAILED, not the status
+    if (
+      !window.confirm(
+        t("admin.accounts.confirm.forceFail", {
+          defaultValue:
+            "Are you sure you want to force fail this account? This action cannot be easily undone.",
+        }),
+      )
+    )
+      return;
     updatePhaseMutation.mutate({
       id: account.id,
       phase: "FAILED",
@@ -162,15 +237,27 @@ export default function AdminAccounts() {
   };
 
   const handleResetAccount = (account) => {
-    // Reset failed account back to PHASE1 and set status to ACTIVE
-    updatePhaseMutation.mutate({
-      id: account.id,
-      phase: "PHASE1",
-    });
-    updateStatusMutation.mutate({
-      id: account.id,
-      status: "ACTIVE",
-    });
+    if (
+      !window.confirm(
+        t("admin.accounts.confirm.reset", {
+          defaultValue:
+            "Are you sure you want to reset this account back to Phase 1?",
+        }),
+      )
+    )
+      return;
+    // Chain mutations to avoid race condition: update phase first, then status
+    updatePhaseMutation.mutate(
+      { id: account.id, phase: "PHASE1" },
+      {
+        onSuccess: () => {
+          updateStatusMutation.mutate({
+            id: account.id,
+            status: "ACTIVE",
+          });
+        },
+      },
+    );
   };
 
   // Map backend accounts to frontend format
@@ -277,7 +364,10 @@ export default function AdminAccounts() {
     {
       header: t("admin.accounts.table.created"),
       accessorKey: "created_date",
-      cell: (row) => format(new Date(row.created_date), "MMM d, yyyy"),
+      cell: (row) =>
+        row.created_date
+          ? format(new Date(row.created_date), "MMM d, yyyy")
+          : "N/A",
     },
     {
       header: t("admin.accounts.table.actions"),
@@ -294,10 +384,7 @@ export default function AdminAccounts() {
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent
-            align="end"
-            className="bg-card border-border"
-          >
+          <DropdownMenuContent align="end" className="bg-card border-border">
             <DropdownMenuItem
               className="
         cursor-pointer
@@ -397,9 +484,7 @@ export default function AdminAccounts() {
           data-[highlighted]:bg-slate-800
           data-[highlighted]:text-purple-300
         "
-                onClick={() =>
-                  updatePhaseMutation.mutate({ id: row.id, phase: "FUNDED" })
-                }
+                onClick={() => handleMoveToFunded(row)}
               >
                 <TrendingUp className="w-4 h-4 mr-2 text-purple-300" />
                 {t("admin.accounts.actions.moveToFunded")}
@@ -550,6 +635,11 @@ export default function AdminAccounts() {
                 </SelectItem>
                 <SelectItem value="funded" className="text-foreground">
                   {t("admin.accounts.filter.funded")}
+                </SelectItem>
+                <SelectItem value="failed" className="text-foreground">
+                  {t("admin.accounts.filter.failed", {
+                    defaultValue: "Failed",
+                  })}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -719,7 +809,7 @@ export default function AdminAccounts() {
               </div>
 
               {/* Balance Information */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 p-3 sm:p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 p-3 sm:p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl">
                 <div>
                   <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.initialBalance", {
@@ -756,26 +846,61 @@ export default function AdminAccounts() {
                       defaultValue: "Profit/Loss",
                     })}
                   </p>
-                  {accountDetails.initialBalance > 0 &&
-                    (() => {
-                      const profit =
-                        accountDetails.equity - accountDetails.initialBalance ||
-                        0;
-                      const profitPercent =
-                        accountDetails.initialBalance > 0
-                          ? (profit / accountDetails.initialBalance) * 100
-                          : 0;
-                      return (
-                        <p
-                          className={`font-bold text-sm sm:text-lg ${
-                            profit >= 0 ? "text-emerald-500" : "text-red-500"
-                          }`}
-                        >
-                          {profit >= 0 ? "+" : ""}
-                          {profitPercent.toFixed(2)}%
-                        </p>
-                      );
-                    })()}
+                  {(() => {
+                    const profit =
+                      (accountDetails.equity || 0) -
+                      (accountDetails.initialBalance || 0);
+                    const profitPercent =
+                      accountDetails.initialBalance > 0
+                        ? (profit / accountDetails.initialBalance) * 100
+                        : 0;
+                    return (
+                      <p
+                        className={`font-bold text-sm sm:text-lg ${
+                          profit >= 0 ? "text-emerald-500" : "text-red-500"
+                        }`}
+                      >
+                        {profit >= 0 ? "+" : ""}
+                        {profitPercent.toFixed(2)}%
+                      </p>
+                    );
+                  })()}
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.dailyDrawdown", {
+                      defaultValue: "Daily Drawdown",
+                    })}
+                  </p>
+                  {(() => {
+                    const dailyDD =
+                      accountDetails.peakDailyDrawdownPercent || 0;
+                    return (
+                      <p
+                        className={`font-bold text-sm sm:text-lg ${dailyDD > 0 ? "text-red-500" : "text-foreground"}`}
+                      >
+                        {dailyDD.toFixed(2)}%
+                      </p>
+                    );
+                  })()}
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                    {t("admin.accounts.dialog.overallDrawdown", {
+                      defaultValue: "Overall Drawdown",
+                    })}
+                  </p>
+                  {(() => {
+                    const overallDD =
+                      accountDetails.peakOverallDrawdownPercent || 0;
+                    return (
+                      <p
+                        className={`font-bold text-sm sm:text-lg ${overallDD > 0 ? "text-red-500" : "text-foreground"}`}
+                      >
+                        {overallDD.toFixed(2)}%
+                      </p>
+                    );
+                  })()}
                 </div>
               </div>
 
@@ -837,10 +962,12 @@ export default function AdminAccounts() {
                               {violation.message}
                             </p>
                             <p className="text-muted-foreground/70 text-xs mt-1">
-                              {format(
-                                new Date(violation.createdAt),
-                                "MMM d, yyyy HH:mm",
-                              )}
+                              {violation.createdAt
+                                ? format(
+                                    new Date(violation.createdAt),
+                                    "MMM d, yyyy HH:mm",
+                                  )
+                                : "N/A"}
                             </p>
                           </div>
                         ))}

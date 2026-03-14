@@ -25,20 +25,21 @@ export class AdminRiskService {
     });
 
     return accounts.map((acc) => {
-      // Calculate daily drawdown percentage
-      const todayStartEquity = acc.todayStartEquity || acc.initialBalance;
-      const currentEquity = acc.equity || acc.balance;
-      const dailyLoss = todayStartEquity - currentEquity;
+      // Calculate daily drawdown from min equity tracked by backend (monotonic)
+      const todayStart = acc.todayStartEquity ?? acc.initialBalance;
+      const minToday = acc.minEquityToday ?? todayStart;
       const dailyDrawdownPercent =
-        todayStartEquity > 0
-          ? Math.max(0, (dailyLoss / todayStartEquity) * 100)
+        todayStart > 0
+          ? Math.max(0, ((todayStart - minToday) / todayStart) * 100)
           : 0;
 
-      // Calculate overall drawdown percentage
-      const maxEquity = acc.maxEquityToDate || acc.initialBalance;
-      const overallLoss = maxEquity - currentEquity;
+      // Calculate overall drawdown from min equity tracked by backend (monotonic)
+      const initialBal = acc.initialBalance;
+      const minOverall = acc.minEquityOverall ?? initialBal;
       const overallDrawdownPercent =
-        maxEquity > 0 ? Math.max(0, (overallLoss / maxEquity) * 100) : 0;
+        initialBal > 0
+          ? Math.max(0, ((initialBal - minOverall) / initialBal) * 100)
+          : 0;
 
       return {
         id: acc.id,

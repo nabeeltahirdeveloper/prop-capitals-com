@@ -201,6 +201,10 @@ export class PaymentsService {
         minEquityToday: initial, // Lowest equity today - starts at initial balance
         todayStartEquity: initial, // Equity at start of trading day
         lastDailyReset: new Date(), // Track when daily metrics were last reset
+        // ✅ Initialize peak tracking for monotonic progress bars
+        peakDailyDrawdownPercent: 0,
+        peakOverallDrawdownPercent: 0,
+        peakProfitPercent: 0,
 
         brokerLogin: null,
 

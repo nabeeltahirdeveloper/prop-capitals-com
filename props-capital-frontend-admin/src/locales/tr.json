@@ -6,7 +6,10 @@
     "allPlatforms": "Tüm platformlar",
     "unknown": "Bilinmiyor",
     "error": "Hata",
-    "success": "Başarılı"
+    "success": "Başarılı",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "deleting": "Siliniyor..."
   },
   "home": {
     "hero": {
@@ -443,8 +446,11 @@
     "notif": "Bildirimler",
     "passwordChangedDesc": "Şifreniz başarıyla güncellendi.",
     "passwordChangeFailed": "Şifre Değiştirme Başarısız",
-    "passwordChangeError": "Şifreniz değiştirilirken bir hata oluştu.",
+    "passwordChangeError": "Parolanızı değiştirirken bir hata oluştu.",
     "validationError": "Doğrulama Hatası",
+    "currentPasswordRequired": "Lütfen mevcut parolanızı girin.",
+    "showPassword": "Parolayı göster",
+    "hidePassword": "Parolayı gizle",
     "notificationUpdateError": "Bildirim tercihleri güncellenemedi.",
     "notificationsUpdated": "Bildirimler Güncellendi",
     "notificationsUpdatedDesc": "Bildirim tercihleriniz kaydedildi.",
@@ -783,6 +789,9 @@
     "account": "Hesap",
     "noNotifications": "Bildirim yok",
     "noNewNotifications": "Yeni bildirim yok",
+    "delete": "Delete notification",
+    "loadError": "Failed to load notifications",
+    "loadErrorHint": "Please refresh the page and try again.",
     "allCaughtUp": "Hepsi bu kadar!",
     "challenge": "Meydan okuma",
     "payout": "Çekim",
@@ -1201,7 +1210,10 @@
     "crmLeads": "CRM Leadleri",
     "pipeline": "Pipeline",
     "ftdReport": "FTD Raporu",
-    "calendar": "Takvim"
+    "calendar": "Takvim",
+    "fundedAccounts": "Funded Accounts",
+    "propServer": "Prop Server",
+    "crmApiKey": "CRM API Keys"
   },
   "status": {
     "active": "Aktif",
@@ -1342,6 +1354,12 @@
         "makeAdmin": "Yönetici yap",
         "makeTrader": "Trader yap"
       },
+      "confirmRoleChange": {
+        "title": "Rol değişikliğini onayla",
+        "description": "{{name}} kullanıcısının rolünü {{newRole}} olarak değiştirmek istediğinizden emin misiniz? Bu, panele erişimlerini hemen etkileyecektir.",
+        "confirm": "Onayla",
+        "cancel": "İptal"
+      },
       "dialog": {
         "title": "Kullanıcı detayları",
         "userId": "Kullanıcı ID",
@@ -1422,7 +1440,15 @@
         "phaseTransitions": "Aşama geçişleri",
         "recentViolations": "Son ihlaller",
         "error": "Hesap detayları yükleme hatası",
-        "noDetails": "Hesap detayları yok"
+        "noDetails": "Hesap detayları yok",
+        "dailyDrawdown": "Günlük Düşüş",
+        "overallDrawdown": "Toplam Düşüş"
+      },
+      "confirm": {
+        "pause": "Bu hesabı duraklatmak istediğinizden emin misiniz? Trader işlem yapamayacak.",
+        "forcePass": "Bu hesabı bir sonraki aşamaya zorla geçirmek istediğinizden emin misiniz?",
+        "forceFail": "Bu hesabı zorla başarısız kılmak istediğinizden emin misiniz? Bu işlem kolayca geri alınamaz.",
+        "reset": "Bu hesabı Aşama 1'e sıfırlamak istediğinizden emin misiniz?"
       },
       "emptyMessage": "Hesap bulunamadı"
     },
@@ -1553,7 +1579,9 @@
         "weekendHolding": "Hafta sonu taşıma",
         "restrictedInstrument": "Kısıtlı enstrüman",
         "lotSize": "Lot boyutu",
-        "eaDetected": "EA tespit edildi"
+        "eaDetected": "EA tespit edildi",
+        "consistency": "Tutarlılık",
+        "ruleBreak": "Kural ihlali"
       },
       "severity": {
         "fatal": "Kritik",
@@ -1567,7 +1595,12 @@
         "weekend_holding": "Hafta sonu pozisyon taşıma",
         "restricted_instrument": "Kısıtlı enstrümanda işlem",
         "lot_size": "Lot boyutu limitini aştı",
-        "ea_detected": "Expert Advisor tespit edildi"
+        "ea_detected": "Expert Advisor tespit edildi",
+        "consistency": "Tutarlılık kuralı ihlal edildi",
+        "rule_break": "İşlem kuralı ihlali"
+      },
+      "pagination": {
+        "showing": "Sayfa {{page}} / {{totalPages}} ({{total}} toplam)"
       },
       "emptyMessage": "İhlal bulunamadı"
     },
@@ -1603,8 +1636,18 @@
         "usage": "Kullanım",
         "validUntil": "Geçerlilik",
         "status": "Durum",
+        "created": "Oluşturulma",
         "actions": "İşlemler"
       },
+      "searchPlaceholder": "Kupon koduna göre ara...",
+      "filter": {
+        "all": "Tüm durumlar",
+        "active": "Aktif",
+        "inactive": "Pasif",
+        "expired": "Süresi dolmuş"
+      },
+      "deleteConfirmTitle": "Kuponu sil",
+      "deleteConfirmMessage": "Bu kuponu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
       "status": {
         "active": "Aktif",
         "inactive": "Pasif"
@@ -1644,7 +1687,9 @@
         "open": "Açık",
         "inProgress": "Devam ediyor",
         "resolved": "Çözüldü",
-        "closed": "Kapalı"
+        "closed": "Kapalı",
+        "waitingForAdmin": "Yönetici Bekleniyor",
+        "waitingForTrader": "Trader Bekleniyor"
       },
       "table": {
         "ticket": "Talep",
@@ -1684,6 +1729,14 @@
         "questionAboutScalingPlan": "Ölçekleme planı hakkında soru",
         "refundRequest": "İade talebi",
         "challengeRulesClarification": "Meydan okuma kuralları açıklaması"
+      },
+      "pagination": {
+        "page": "Sayfa {{page}} / {{totalPages}} (Toplam {{total}} talep)",
+        "previous": "Önceki",
+        "next": "Sonraki"
+      },
+      "chat": {
+        "openChat": "Sohbeti Aç"
       }
     },
     "settings": {
@@ -1794,7 +1847,9 @@
       "severity": {
         "fatal": "Fatal",
         "warning": "Warning"
-      }
+      },
+      "loading": "Hesaplar yükleniyor...",
+      "noAccounts": "Ölçütlerinize uyan hesap bulunamadı."
     },
     "brokerServers": {
       "title": "Broker sunucuları",
@@ -1970,6 +2025,49 @@
       "deleteErrorDesc": "Mevcut işlem hesaplarına bağlı olduğu için silinemez",
       "understand": "Anladım",
       "noChallenges": "No challenges available"
+    },
+    "apiKeys": {
+      "title": "API Keys",
+      "subtitle": "Manage API keys for third-party lead ingestion",
+      "generate": "Generate API Key",
+      "keyGenerated": "API Key Generated",
+      "generateNew": "Generate New API Key",
+      "keyName": "Key Name",
+      "keyNamePlaceholder": "e.g. Partner Integration",
+      "keyNameHint": "A label to identify this key (e.g. the partner name)",
+      "generating": "Generating...",
+      "generateKey": "Generate Key",
+      "copyWarning": "Copy this key now. It will not be shown again.",
+      "yourKey": "Your API Key",
+      "copied": "Copied!",
+      "copyToClipboard": "Copy to Clipboard",
+      "done": "Done",
+      "totalKeys": "Total Keys",
+      "active": "Active",
+      "revoked": "Revoked",
+      "emptyMessage": "No API keys yet. Generate one to get started.",
+      "created": "Created",
+      "lastUsed": "Last Used",
+      "never": "Never",
+      "endpoints": "Endpoints",
+      "singleLead": "Single lead",
+      "upTo100": "Up to 100 leads",
+      "checkStatus": "Check status",
+      "singleExample": "Single Lead Example",
+      "bulkExample": "Bulk Example",
+      "fieldsReference": "Fields Reference",
+      "field": "Field",
+      "type": "Type",
+      "required": "Required",
+      "yes": "Yes",
+      "no": "No",
+      "revoking": "Revoking...",
+      "revokeThisKey": "Revoke This Key",
+      "close": "Close",
+      "quickGuide": "Quick Integration Guide",
+      "guideText": "Third parties send leads to your API using the",
+      "header": "header:",
+      "guideNote": "Leads will appear automatically in the CRM Leads page with status NEW."
     }
   },
   "signIn": {
@@ -3005,16 +3103,16 @@
       "whatsapp": "WhatsApp",
       "telegram_activity": "Telegram",
       "toast": {
-        "fetchError": "Failed to fetch leads",
-        "loadError": "Failed to load lead details",
-        "updateSuccess": "Lead updated successfully",
-        "updateError": "Failed to update lead",
-        "activityLogged": "Activity logged: {{type}}",
-        "activityError": "Failed to log activity",
-        "importSuccess": "Imported {{created}} of {{total}} leads",
-        "importError": "Failed to import CSV",
-        "noteAdded": "Note added successfully",
-        "noteError": "Failed to add note"
+        "fetchError": "Müşteri adayları alınamadı",
+        "loadError": "Müşteri adayı detayları yüklenemedi",
+        "updateSuccess": "Müşteri adayı başarıyla güncellendi",
+        "updateError": "Müşteri adayı güncellenemedi",
+        "activityLogged": "Aktivite kaydedildi: {{type}}",
+        "activityError": "Aktivite kaydedilemedi",
+        "importSuccess": "{{total}} adaydan {{created}} tanesi içe aktarıldı",
+        "importError": "CSV içe aktarılamadı",
+        "noteAdded": "Not başarıyla eklendi",
+        "noteError": "Not eklenemedi"
       }
     },
     "status": {
@@ -3066,7 +3164,8 @@
       "activityRecorded": "{{type}} kaydedildi",
       "direct": "Doğrudan",
       "quickActionNote": "Pipeline Hızlı İşlemleri aracılığıyla {{type}} denemesi yapıldı",
-      "activityFailed": "Aktivite kaydedilemedi"
+      "activityFailed": "Aktivite kaydedilemedi",
+      "noLeadsInStage": "Bu aşamada aday yok"
     },
     "columns": {
       "new": "Yeni Adaylar",
@@ -3103,37 +3202,37 @@
       "noDescription": "Açıklama girilmedi"
     },
     "ftdReport": {
-      "title": "FTD Report",
-      "subtitle": "First Time Deposit tracking from converted leads",
-      "totalFtd": "Total FTD",
-      "totalDeposits": "Total Deposits",
-      "avgFtdAmount": "Avg FTD Amount",
-      "activeAgents": "Active Agents",
-      "searchPlaceholder": "Search by name, email, or country...",
-      "allAgents": "All Agents",
-      "tableTitle": "First Time Deposits",
-      "leadName": "Lead Name",
-      "email": "Email",
-      "phone": "Phone",
-      "country": "Country",
-      "depositAmount": "Deposit Amount",
-      "convertedDate": "Converted Date",
-      "status": "Status",
-      "converted": "Converted",
-      "agent": "Agent",
-      "paymentMethod": "Payment Method",
-      "paymentProvider": "Payment Provider",
-      "source": "Source",
-      "affiliateId": "Affiliate ID",
-      "funnelName": "Funnel Name",
-      "ftdTime": "FTD Time",
-      "subParameters": "Sub Parameters",
-      "na": "N/A",
-      "unassigned": "Unassigned",
-      "loading": "Loading FTD data...",
-      "noData": "No first time deposits found.",
-      "showing": "Showing {{count}} First Time Deposits",
-      "loadError": "Failed to load FTD report data"
+      "title": "Sipariş Raporu",
+      "subtitle": "Dönüştürülmüş adaylardan sipariş takibi",
+      "totalFtd": "Toplam FTD",
+      "totalDeposits": "Toplam Siparişler",
+      "avgFtdAmount": "Ortalama Sipariş Tutarı",
+      "activeAgents": "Aktif Temsilciler",
+      "searchPlaceholder": "Ad, e-posta veya ülkeye göre ara...",
+      "allAgents": "Tüm Temsilciler",
+      "tableTitle": "İlk Yatırımlar",
+      "leadName": "Aday Adı",
+      "email": "E-posta",
+      "phone": "Telefon",
+      "country": "Ülke",
+      "depositAmount": "Yatırım Tutarı",
+      "convertedDate": "Dönüşüm Tarihi",
+      "status": "Durum",
+      "converted": "Dönüştürüldü",
+      "agent": "Temsilci",
+      "paymentMethod": "Ödeme Yöntemi",
+      "paymentProvider": "Ödeme Sağlayıcısı",
+      "source": "Kaynak",
+      "affiliateId": "Ortaklık Kimliği",
+      "funnelName": "Huni Adı",
+      "ftdTime": "FTD Zamanı",
+      "subParameters": "Alt Parametreler",
+      "na": "Yok",
+      "unassigned": "Atanmamış",
+      "loading": "FTD verileri yükleniyor...",
+      "noData": "İlk yatırım bulunamadı.",
+      "showing": "{{count}} İlk Yatırım gösteriliyor",
+      "loadError": "FTD rapor verileri yüklenemedi"
     },
     "crmCalendar": {
       "title": "Satış Takvimi",
@@ -3173,16 +3272,19 @@
       "placeholderTitle": "örneğin, Takip Araması",
       "placeholderClient": "Müşteri adını girin",
       "weekdays": {
-        "sun": "Sun",
-        "mon": "Mon",
-        "tue": "Tue",
-        "wed": "Wed",
-        "thu": "Thu",
-        "fri": "Fri",
-        "sat": "Sat"
+        "sun": "Paz",
+        "mon": "Pzt",
+        "tue": "Sal",
+        "wed": "Çar",
+        "thu": "Per",
+        "fri": "Cum",
+        "sat": "Cmt"
       },
-      "moreCount": "+ {{count}} more",
-      "minShort": "min"
+      "moreCount": "+ {{count}} daha",
+      "minShort": "dk",
+      "errorDateTimeRequired": "Tarih ve saat zorunludur",
+      "errorInvalidDuration": "Süre pozitif bir sayı olmalıdır",
+      "loadError": "Takvim verileri yüklenemedi"
     }
   }
 }

@@ -6,7 +6,10 @@
     "allPlatforms": "Toutes les plateformes",
     "unknown": "Inconnu",
     "error": "Erreur",
-    "success": "Succès"
+    "success": "Succès",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "deleting": "Suppression..."
   },
   "home": {
     "hero": {
@@ -442,8 +445,11 @@
     "marketingEmailsDesc": "Actualités, promotions et offres spéciales",
     "passwordChangedDesc": "Votre mot de passe a été mis à jour avec succès.",
     "passwordChangeFailed": "Échec du changement de mot de passe",
-    "passwordChangeError": "Une erreur s'est produite lors du changement de votre mot de passe.",
+    "passwordChangeError": "Une erreur s'est produite lors de la modification de votre mot de passe.",
     "validationError": "Erreur de validation",
+    "currentPasswordRequired": "Veuillez entrer votre mot de passe actuel.",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
     "notificationUpdateError": "Échec de la mise à jour des préférences de notification.",
     "notificationsUpdated": "Notifications mises à jour",
     "notificationsUpdatedDesc": "Vos préférences de notification ont été enregistrées.",
@@ -783,6 +789,9 @@
     "account": "Compte",
     "noNotifications": "Aucune notification",
     "noNewNotifications": "Aucune nouvelle notification",
+    "delete": "Delete notification",
+    "loadError": "Failed to load notifications",
+    "loadErrorHint": "Please refresh the page and try again.",
     "allCaughtUp": "Vous êtes à jour !",
     "challenge": "Challenge",
     "payout": "Retrait",
@@ -1201,7 +1210,10 @@
     "crmLeads": "Prospects CRM",
     "pipeline": "Pipeline",
     "ftdReport": "Rapport FTD",
-    "calendar": "Calendrier"
+    "calendar": "Calendrier",
+    "fundedAccounts": "Funded Accounts",
+    "propServer": "Prop Server",
+    "crmApiKey": "CRM API Keys"
   },
   "status": {
     "active": "Actif",
@@ -1342,6 +1354,12 @@
         "makeAdmin": "Rendre administrateur",
         "makeTrader": "Rendre trader"
       },
+      "confirmRoleChange": {
+        "title": "Confirmer le changement de rôle",
+        "description": "Êtes-vous sûr de vouloir changer le rôle de {{name}} en {{newRole}} ? Cela affectera immédiatement son accès au panneau.",
+        "confirm": "Confirmer",
+        "cancel": "Annuler"
+      },
       "dialog": {
         "title": "Détails de l’utilisateur",
         "userId": "ID utilisateur",
@@ -1422,7 +1440,15 @@
         "phaseTransitions": "Transitions de phase",
         "recentViolations": "Infractions récentes",
         "error": "Erreur de chargement des détails du compte",
-        "noDetails": "Aucun détail de compte disponible"
+        "noDetails": "Aucun détail de compte disponible",
+        "dailyDrawdown": "Drawdown quotidien",
+        "overallDrawdown": "Drawdown global"
+      },
+      "confirm": {
+        "pause": "Êtes-vous sûr de vouloir mettre ce compte en pause ? Le trader ne pourra pas trader.",
+        "forcePass": "Êtes-vous sûr de vouloir forcer le passage de ce compte à la phase suivante ?",
+        "forceFail": "Êtes-vous sûr de vouloir forcer l'échec de ce compte ? Cette action ne peut pas être facilement annulée.",
+        "reset": "Êtes-vous sûr de vouloir réinitialiser ce compte à la Phase 1 ?"
       },
       "emptyMessage": "Aucun compte trouvé"
     },
@@ -1553,7 +1579,9 @@
         "weekendHolding": "Maintien le week-end",
         "restrictedInstrument": "Instrument restreint",
         "lotSize": "Taille de lot",
-        "eaDetected": "EA détecté"
+        "eaDetected": "EA détecté",
+        "consistency": "Cohérence",
+        "ruleBreak": "Infraction aux règles"
       },
       "severity": {
         "fatal": "Grave",
@@ -1567,7 +1595,12 @@
         "weekend_holding": "Position maintenue pendant le week-end",
         "restricted_instrument": "Trading sur un instrument restreint",
         "lot_size": "La limite de taille de lot a été dépassée",
-        "ea_detected": "Expert Advisor détecté"
+        "ea_detected": "Expert Advisor détecté",
+        "consistency": "Règle de cohérence violée",
+        "rule_break": "Violation de règle de trading"
+      },
+      "pagination": {
+        "showing": "Page {{page}} de {{totalPages}} ({{total}} au total)"
       },
       "emptyMessage": "Aucune infraction trouvée"
     },
@@ -1603,8 +1636,18 @@
         "usage": "Utilisation",
         "validUntil": "Valable jusqu’au",
         "status": "Statut",
+        "created": "Créé le",
         "actions": "Actions"
       },
+      "searchPlaceholder": "Rechercher par code promo...",
+      "filter": {
+        "all": "Tous les statuts",
+        "active": "Actif",
+        "inactive": "Inactif",
+        "expired": "Expiré"
+      },
+      "deleteConfirmTitle": "Supprimer le coupon",
+      "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer ce coupon ? Cette action est irréversible.",
       "status": {
         "active": "Actif",
         "inactive": "Inactif"
@@ -1644,7 +1687,9 @@
         "open": "Ouvert",
         "inProgress": "En cours",
         "resolved": "Résolu",
-        "closed": "Fermé"
+        "closed": "Fermé",
+        "waitingForAdmin": "En attente de l'administrateur",
+        "waitingForTrader": "En attente du trader"
       },
       "table": {
         "ticket": "Ticket",
@@ -1684,6 +1729,14 @@
         "questionAboutScalingPlan": "Question sur le plan de scaling",
         "refundRequest": "Demande de remboursement",
         "challengeRulesClarification": "Clarification des règles du challenge"
+      },
+      "pagination": {
+        "page": "Page {{page}} sur {{totalPages}} ({{total}} tickets)",
+        "previous": "Précédent",
+        "next": "Suivant"
+      },
+      "chat": {
+        "openChat": "Ouvrir le chat"
       }
     },
     "settings": {
@@ -1794,7 +1847,9 @@
       "severity": {
         "fatal": "Fatal",
         "warning": "Warning"
-      }
+      },
+      "loading": "Chargement des comptes...",
+      "noAccounts": "Aucun compte ne correspond à vos critères."
     },
     "brokerServers": {
       "title": "Serveurs broker",
@@ -1970,6 +2025,49 @@
       "deleteErrorDesc": "Il est lié à des comptes de trading existants",
       "understand": "Compris",
       "noChallenges": "No challenges available"
+    },
+    "apiKeys": {
+      "title": "API Keys",
+      "subtitle": "Manage API keys for third-party lead ingestion",
+      "generate": "Generate API Key",
+      "keyGenerated": "API Key Generated",
+      "generateNew": "Generate New API Key",
+      "keyName": "Key Name",
+      "keyNamePlaceholder": "e.g. Partner Integration",
+      "keyNameHint": "A label to identify this key (e.g. the partner name)",
+      "generating": "Generating...",
+      "generateKey": "Generate Key",
+      "copyWarning": "Copy this key now. It will not be shown again.",
+      "yourKey": "Your API Key",
+      "copied": "Copied!",
+      "copyToClipboard": "Copy to Clipboard",
+      "done": "Done",
+      "totalKeys": "Total Keys",
+      "active": "Active",
+      "revoked": "Revoked",
+      "emptyMessage": "No API keys yet. Generate one to get started.",
+      "created": "Created",
+      "lastUsed": "Last Used",
+      "never": "Never",
+      "endpoints": "Endpoints",
+      "singleLead": "Single lead",
+      "upTo100": "Up to 100 leads",
+      "checkStatus": "Check status",
+      "singleExample": "Single Lead Example",
+      "bulkExample": "Bulk Example",
+      "fieldsReference": "Fields Reference",
+      "field": "Field",
+      "type": "Type",
+      "required": "Required",
+      "yes": "Yes",
+      "no": "No",
+      "revoking": "Revoking...",
+      "revokeThisKey": "Revoke This Key",
+      "close": "Close",
+      "quickGuide": "Quick Integration Guide",
+      "guideText": "Third parties send leads to your API using the",
+      "header": "header:",
+      "guideNote": "Leads will appear automatically in the CRM Leads page with status NEW."
     }
   },
   "signIn": {
@@ -3005,16 +3103,16 @@
       "whatsapp": "WhatsApp",
       "telegram_activity": "Telegram",
       "toast": {
-        "fetchError": "Failed to fetch leads",
-        "loadError": "Failed to load lead details",
-        "updateSuccess": "Lead updated successfully",
-        "updateError": "Failed to update lead",
-        "activityLogged": "Activity logged: {{type}}",
-        "activityError": "Failed to log activity",
-        "importSuccess": "Imported {{created}} of {{total}} leads",
-        "importError": "Failed to import CSV",
-        "noteAdded": "Note added successfully",
-        "noteError": "Failed to add note"
+        "fetchError": "Échec de la récupération des leads",
+        "loadError": "Échec du chargement des détails du lead",
+        "updateSuccess": "Lead mis à jour avec succès",
+        "updateError": "Échec de la mise à jour du lead",
+        "activityLogged": "Activité enregistrée : {{type}}",
+        "activityError": "Échec de l'enregistrement de l'activité",
+        "importSuccess": "{{created}} sur {{total}} leads importés",
+        "importError": "Échec de l'importation du CSV",
+        "noteAdded": "Note ajoutée avec succès",
+        "noteError": "Échec de l'ajout de la note"
       }
     },
     "status": {
@@ -3066,7 +3164,8 @@
       "activityRecorded": "{{type}} enregistré",
       "direct": "Direct",
       "quickActionNote": "Tentative de {{type}} effectuée via les actions rapides du pipeline",
-      "activityFailed": "Échec de l'enregistrement de l'activité"
+      "activityFailed": "Échec de l'enregistrement de l'activité",
+      "noLeadsInStage": "Aucun prospect dans cette étape"
     },
     "columns": {
       "new": "Nouveaux Prospects",
@@ -3103,37 +3202,37 @@
       "noDescription": "Aucune description fournie"
     },
     "ftdReport": {
-      "title": "FTD Report",
-      "subtitle": "First Time Deposit tracking from converted leads",
+      "title": "Rapport des Commandes",
+      "subtitle": "Suivi des commandes des leads convertis",
       "totalFtd": "Total FTD",
-      "totalDeposits": "Total Deposits",
-      "avgFtdAmount": "Avg FTD Amount",
-      "activeAgents": "Active Agents",
-      "searchPlaceholder": "Search by name, email, or country...",
-      "allAgents": "All Agents",
-      "tableTitle": "First Time Deposits",
-      "leadName": "Lead Name",
+      "totalDeposits": "Total des Commandes",
+      "avgFtdAmount": "Montant Moyen de Commande",
+      "activeAgents": "Agents Actifs",
+      "searchPlaceholder": "Rechercher par nom, email ou pays...",
+      "allAgents": "Tous les Agents",
+      "tableTitle": "Premiers Dépôts",
+      "leadName": "Nom du Lead",
       "email": "Email",
-      "phone": "Phone",
-      "country": "Country",
-      "depositAmount": "Deposit Amount",
-      "convertedDate": "Converted Date",
-      "status": "Status",
-      "converted": "Converted",
+      "phone": "Téléphone",
+      "country": "Pays",
+      "depositAmount": "Montant du Dépôt",
+      "convertedDate": "Date de Conversion",
+      "status": "Statut",
+      "converted": "Converti",
       "agent": "Agent",
-      "paymentMethod": "Payment Method",
-      "paymentProvider": "Payment Provider",
+      "paymentMethod": "Mode de Paiement",
+      "paymentProvider": "Fournisseur de Paiement",
       "source": "Source",
-      "affiliateId": "Affiliate ID",
-      "funnelName": "Funnel Name",
-      "ftdTime": "FTD Time",
-      "subParameters": "Sub Parameters",
-      "na": "N/A",
-      "unassigned": "Unassigned",
-      "loading": "Loading FTD data...",
-      "noData": "No first time deposits found.",
-      "showing": "Showing {{count}} First Time Deposits",
-      "loadError": "Failed to load FTD report data"
+      "affiliateId": "ID Affilié",
+      "funnelName": "Nom du Tunnel",
+      "ftdTime": "Heure FTD",
+      "subParameters": "Sous-Paramètres",
+      "na": "N/D",
+      "unassigned": "Non assigné",
+      "loading": "Chargement des données FTD...",
+      "noData": "Aucun premier dépôt trouvé.",
+      "showing": "Affichage de {{count}} Premiers Dépôts",
+      "loadError": "Échec du chargement des données du rapport FTD"
     },
     "crmCalendar": {
       "title": "Calendrier des Ventes",
@@ -3173,16 +3272,19 @@
       "placeholderTitle": "ex: Appel de suivi",
       "placeholderClient": "Entrez le nom du client",
       "weekdays": {
-        "sun": "Sun",
-        "mon": "Mon",
-        "tue": "Tue",
-        "wed": "Wed",
-        "thu": "Thu",
-        "fri": "Fri",
-        "sat": "Sat"
+        "sun": "Dim",
+        "mon": "Lun",
+        "tue": "Mar",
+        "wed": "Mer",
+        "thu": "Jeu",
+        "fri": "Ven",
+        "sat": "Sam"
       },
-      "moreCount": "+ {{count}} more",
-      "minShort": "min"
+      "moreCount": "+ {{count}} de plus",
+      "minShort": "min",
+      "errorDateTimeRequired": "La date et l'heure sont obligatoires",
+      "errorInvalidDuration": "La durée doit être un nombre positif",
+      "loadError": "Échec du chargement des données du calendrier"
     }
   }
 }
