@@ -189,11 +189,15 @@ model PendingOrder {
   status           OrderStatus    @default(PENDING)
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
+  triggeredAt      DateTime?
   filledAt         DateTime?
   cancelledAt      DateTime?
   positionType     String         @default("CFD")
   leverage         Float          @default(100)
   tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
+
+  @@index([symbol, status])
+  @@index([tradingAccountId, status])
 }
 
 model Violation {
@@ -488,6 +492,7 @@ enum OrderType {
 
 enum OrderStatus {
   PENDING
+  TRIGGERED
   FILLED
   CANCELLED
   REJECTED
