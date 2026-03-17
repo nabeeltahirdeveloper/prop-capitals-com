@@ -18,7 +18,7 @@ import TradingPanel from "../trading/TradingPanel";
 import { Card } from "../ui/card";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "../ui/use-toast";
-// import chartSdkPkg from "@nabeeltahirdeveloper/chart-sdk/package.json";
+import sdkVersion from "@/config/sdkVersion.json";
 import {
   Chart,
   useTrading,
@@ -139,7 +139,7 @@ const MT5TradingArea = ({
     queryFn: async () => getUserAccounts(user?.userId),
     enabled: !!user?.userId,
   });
-
+console.log("SDK VERSION:", sdkVersion.mt5SdkVersion);
   // console.log("MT5", userAccounts)
   // console.log("USER:", user);
   // console.log("USER ID:", user?.id);
@@ -695,7 +695,7 @@ const MT5TradingArea = ({
                       : undefined
                   }
                   UserId={user?.userId}
-                  sdkVersion={typeof __CHART_SDK_VERSION__ !== 'undefined' ? __CHART_SDK_VERSION__ : undefined}
+                  sdkVersion={sdkVersion.mt5SdkVersion}
                 />
               </div>
 
@@ -878,6 +878,7 @@ const MT5TradingArea = ({
                 : undefined
             }
             UserId={user?.userId}
+            sdkVersion = {sdkVersion.mt5SdkVersion}
           />
         </div>
 
