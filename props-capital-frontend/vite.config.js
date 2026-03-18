@@ -4,10 +4,10 @@ import path from 'path'
 import { readFileSync } from 'fs'
 
 // Read chart-sdk version at build time (works with file: link)
-const chartSdkPkg = JSON.parse(
-  readFileSync(path.resolve(__dirname, '../../chart-sdk/package.json'), 'utf-8')
-)
-
+//const chartSdkPkg = JSON.parse(
+//  readFileSync(path.resolve(__dirname, '../../chart-sdk/package.json'), 'utf-8')
+//)
+//
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
