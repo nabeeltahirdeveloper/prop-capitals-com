@@ -13,9 +13,9 @@ import { WebsocketModule } from '../websocket/websocket.module';
 @Module({
 
   imports: [
-    PrismaModule, 
+    PrismaModule,
     forwardRef(() => EvaluationModule),
-    MarketDataModule,
+    forwardRef(() => MarketDataModule),
     WebsocketModule,
   ],
 

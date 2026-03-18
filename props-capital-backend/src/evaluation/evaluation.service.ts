@@ -56,6 +56,7 @@ export class EvaluationService {
 
   constructor(
     private prisma: PrismaService,
+    @Inject(forwardRef(() => MarketDataService))
     private marketDataService: MarketDataService,
     @Inject(forwardRef(() => TradesService))
     private tradesService: TradesService,

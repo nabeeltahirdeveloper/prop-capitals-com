@@ -1257,6 +1257,7 @@ export class TradesService {
     @Inject(forwardRef(() => EvaluationService))
     private evaluationService: EvaluationService,
     private tradingEventsGateway: TradingEventsGateway,
+    @Inject(forwardRef(() => MarketDataService))
     private marketDataService: MarketDataService,
   ) {}
 
