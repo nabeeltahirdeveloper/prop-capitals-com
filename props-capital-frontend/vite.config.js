@@ -29,9 +29,9 @@ export default defineConfig({
     },
     extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx', '.json']
   },
-  define: {
-    __CHART_SDK_VERSION__: JSON.stringify(chartSdkPkg.version),
-  },
+//  define: {
+//    __CHART_SDK_VERSION__: JSON.stringify(chartSdkPkg.version),
+//  },
   optimizeDeps: {
     esbuildOptions: {
       loader: {
