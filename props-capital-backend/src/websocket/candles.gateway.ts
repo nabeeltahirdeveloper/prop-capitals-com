@@ -235,61 +235,127 @@ export class CandlesGateway
    * Emit candle updates to all subscribed clients
    * Uses /prices API (already being called every second) to build candles
    */
+  // private async emitCandleUpdates() {
+  //   if (this.subscriptions.size === 0) {
+  //     return; // No subscriptions, skip
+  //   }
+
+  //   // Get all prices from PricesService (uses existing /prices API data)
+  //   // This is the API that's already being called every second!
+  //   let allPrices: any;
+  //   try {
+  //     allPrices = await this.pricesService.getAllPrices();
+  //     this.logger.debug(
+  //       `📊 Got prices from /prices API: ${(allPrices.forex || []).length} forex, ${(allPrices.crypto || []).length} crypto, ${(allPrices.metals || []).length} metals`,
+  //     );
+  //   } catch (error) {
+  //     this.logger.error(`❌ Error getting prices: ${error.message}`);
+  //     return;
+  //   }
+
+  //   // Iterate through all client subscriptions
+  //   const promises: Promise<void>[] = [];
+
+  //   this.subscriptions.forEach((clientSubs, clientId) => {
+  //     clientSubs.forEach((subscription, key) => {
+  //       const { symbol, timeframe } = subscription;
+
+  //       // Build fresh candle from current prices instead of using getHistory
+  //       // This ensures we always emit candles with current/future timestamps
+  //      const promise = Promise.resolve()
+  // .then(async () => {
+  //   const candle = this.buildCandleFromPrice(
+  //     symbol,
+  //     timeframe,
+  //     allPrices,
+  //   );
+
+  //   if (candle) {
+  //     await this.marketDataService.processPendingOrdersForSymbol(symbol);
+
+  //     this.emitCandleUpdate(clientId, symbol, timeframe, candle);
+  //   } else {
+  //     this.logger.debug(`⚠️ No candle data for ${symbol}@${timeframe}`);
+  //   }
+  // })
+  // .catch((error) => {
+  //   this.logger.error(
+  //     `❌ Error building candle for ${symbol}@${timeframe}: ${error.message}`,
+  //   );
+  // });
+
+  //       promises.push(promise);
+  //     });
+  //   });
+
+  //   // Wait for all candle updates to complete
+  //   await Promise.allSettled(promises);
+  // }
   private async emitCandleUpdates() {
-    if (this.subscriptions.size === 0) {
-      return; // No subscriptions, skip
-    }
-
-    // Get all prices from PricesService (uses existing /prices API data)
-    // This is the API that's already being called every second!
-    let allPrices: any;
-    try {
-      allPrices = await this.pricesService.getAllPrices();
-      this.logger.debug(
-        `📊 Got prices from /prices API: ${(allPrices.forex || []).length} forex, ${(allPrices.crypto || []).length} crypto, ${(allPrices.metals || []).length} metals`,
-      );
-    } catch (error) {
-      this.logger.error(`❌ Error getting prices: ${error.message}`);
-      return;
-    }
-
-    // Iterate through all client subscriptions
-    const promises: Promise<void>[] = [];
-
-    this.subscriptions.forEach((clientSubs, clientId) => {
-      clientSubs.forEach((subscription, key) => {
-        const { symbol, timeframe } = subscription;
-
-        // Build fresh candle from current prices instead of using getHistory
-        // This ensures we always emit candles with current/future timestamps
-        const promise = Promise.resolve()
-          .then(() => {
-            const candle = this.buildCandleFromPrice(
-              symbol,
-              timeframe,
-              allPrices,
-            );
-
-            if (candle) {
-              // Emit candle update to this client
-              this.emitCandleUpdate(clientId, symbol, timeframe, candle);
-            } else {
-              this.logger.debug(`⚠️ No candle data for ${symbol}@${timeframe}`);
-            }
-          })
-          .catch((error) => {
-            this.logger.error(
-              `❌ Error building candle for ${symbol}@${timeframe}: ${error.message}`,
-            );
-          });
-
-        promises.push(promise);
-      });
-    });
-
-    // Wait for all candle updates to complete
-    await Promise.allSettled(promises);
+  if (this.subscriptions.size === 0) {
+    return;
   }
+
+  let allPrices: any;
+  try {
+    allPrices = await this.pricesService.getAllPrices();
+    this.logger.debug(
+      `📊 Got prices from /prices API: ${(allPrices.forex || []).length} forex, ${(allPrices.crypto || []).length} crypto, ${(allPrices.metals || []).length} metals`,
+    );
+  } catch (error) {
+    this.logger.error(`❌ Error getting prices: ${error.message}`);
+    return;
+  }
+
+  // Step 1: collect unique symbols from all subscriptions
+  const uniqueSymbols = new Set<string>();
+
+  this.subscriptions.forEach((clientSubs) => {
+    clientSubs.forEach((subscription) => {
+      uniqueSymbols.add(subscription.symbol);
+    });
+  });
+
+  // Step 2: process pending orders once per symbol
+  for (const symbol of uniqueSymbols) {
+    try {
+      await this.marketDataService.processPendingOrdersForSymbol(symbol);
+    } catch (error) {
+      this.logger.warn(
+        `Failed processing pending orders for ${symbol}: ${error.message}`,
+      );
+    }
+  }
+
+  // Step 3: emit candle updates to subscribed clients
+  const promises: Promise<void>[] = [];
+
+  this.subscriptions.forEach((clientSubs, clientId) => {
+    clientSubs.forEach((subscription) => {
+      const { symbol, timeframe } = subscription;
+
+      const promise = Promise.resolve()
+        .then(() => {
+          const candle = this.buildCandleFromPrice(symbol, timeframe, allPrices);
+
+          if (candle) {
+            this.emitCandleUpdate(clientId, symbol, timeframe, candle);
+          } else {
+            this.logger.debug(`⚠️ No candle data for ${symbol}@${timeframe}`);
+          }
+        })
+        .catch((error) => {
+          this.logger.error(
+            `❌ Error building candle for ${symbol}@${timeframe}: ${error.message}`,
+          );
+        });
+
+      promises.push(promise);
+    });
+  });
+
+  await Promise.allSettled(promises);
+}
 
   /**
    * Build candle from current price (fallback when no history available)

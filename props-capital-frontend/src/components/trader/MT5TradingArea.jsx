@@ -18,6 +18,7 @@ import TradingPanel from "../trading/TradingPanel";
 import { Card } from "../ui/card";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "../ui/use-toast";
+import sdkVersion from "@/config/sdkVersion.json";
 import {
   Chart,
   useTrading,
@@ -27,6 +28,7 @@ import {
   MarketWatch,
   BuySellPanel,
   AccountPanel,
+  ModifyTradeModal,
 } from "@nabeeltahirdeveloper/chart-sdk";
 import MT5Login from "./MT5Login";
 import { usePlatformTokensStore } from "@/lib/stores/platform-tokens.store";
@@ -67,11 +69,13 @@ const MT5TradingArea = ({
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-
+  
   const navigate = useNavigate();
-
+  // const chartVersion  = chartSdkPkg?.version || "Local"
+  // console.log(`📈 Chart SDK version: ${chartVersion}`);
+  
   const accountId = selectedChallenge?.id;
-
+  
   /* ── Own data queries (self-contained, no dependency on CommonTerminalWrapper props) ── */
   const { data: accountSummaryData } = useQuery({
     queryKey: ["accountSummary", accountId],
@@ -122,10 +126,6 @@ const MT5TradingArea = ({
       }),
   });
 
-  /* ── Modify TP/SL dialog state ── */
-  const [modifyTPSLTrade, setModifyTPSLTrade] = useState(null);
-  const [modifyTP, setModifyTP] = useState("");
-  const [modifySL, setModifySL] = useState("");
 
   const balance = Number.isFinite(accountSummaryData?.account?.balance)
     ? accountSummaryData.account.balance
@@ -139,7 +139,7 @@ const MT5TradingArea = ({
     queryFn: async () => getUserAccounts(user?.userId),
     enabled: !!user?.userId,
   });
-
+console.log("SDK VERSION:", sdkVersion.mt5SdkVersion);
   // console.log("MT5", userAccounts)
   // console.log("USER:", user);
   // console.log("USER ID:", user?.id);
@@ -539,16 +539,6 @@ const MT5TradingArea = ({
     [sdkOrdersFromBackend, unifiedPrices, closePositionMutation, toast],
   );
 
-  /* ── Modify TP/SL submit handler ── */
-  const handleModifyTPSLSubmit = useCallback(() => {
-    if (!modifyTPSLTrade) return;
-    const sl = modifySL !== "" ? parseFloat(modifySL) : null;
-    const tp = modifyTP !== "" ? parseFloat(modifyTP) : null;
-    modifyTPSLMutation.mutate(
-      { tradeId: modifyTPSLTrade.id, stopLoss: sl, takeProfit: tp },
-      { onSuccess: () => setModifyTPSLTrade(null) },
-    );
-  }, [modifyTPSLTrade, modifySL, modifyTP, modifyTPSLMutation]);
 
   // Market Execution Modal state (Professional Trading Terminal - Side Panel)
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
@@ -705,6 +695,7 @@ const MT5TradingArea = ({
                       : undefined
                   }
                   UserId={user?.userId}
+                  sdkVersion={sdkVersion.mt5SdkVersion}
                 />
               </div>
 
@@ -790,6 +781,20 @@ const MT5TradingArea = ({
                   />
                 </div>
               </div>
+
+              {/* SDK ModifyTradeModal (mobile) */}
+              <div className="absolute top-0 left-0 w-80 z-[98] pointer-events-none h-full">
+                <div className="pointer-events-auto h-full">
+                  <ModifyTradeModal
+                    onModify={async (tradeId, { stopLoss, takeProfit }) => {
+                      await modifyTPSLMutation.mutateAsync({ tradeId, stopLoss, takeProfit });
+                    }}
+                    onClosePosition={async (tradeId, closePrice) => {
+                      await closePositionMutation.mutateAsync({ tradeId, closePrice });
+                    }}
+                  />
+                </div>
+              </div>
             </div>
 
             {/* ── QUOTES TAB ── */}
@@ -821,11 +826,6 @@ const MT5TradingArea = ({
                 accountSummary={accountSummaryProps}
                 orders={sdkOrdersFromBackend}
                 onClose={handleClosePosition}
-                onModify={(trade) => {
-                  setModifyTPSLTrade(trade);
-                  setModifyTP(trade.takeProfit ? String(trade.takeProfit) : "");
-                  setModifySL(trade.stopLoss ? String(trade.stopLoss) : "");
-                }}
               />
             </div>
           </div>
@@ -858,65 +858,6 @@ const MT5TradingArea = ({
           </div>
         </div>
 
-        {/* Modify TP/SL Dialog (mobile) */}
-        {modifyTPSLTrade && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60">
-            <div
-              className={`rounded-lg p-6 w-80 shadow-xl ${isLight ? "bg-white" : "bg-[#1a2332] border border-[#2a3a4a]"}`}
-            >
-              <h3
-                className={`text-sm font-semibold mb-4 ${isLight ? "text-slate-800" : "text-slate-100"}`}
-              >
-                Modify {modifyTPSLTrade.symbol} {modifyTPSLTrade.type}
-              </h3>
-              <div className="space-y-3">
-                <div>
-                  <label
-                    className={`text-xs mb-1 block ${isLight ? "text-slate-500" : "text-slate-400"}`}
-                  >
-                    Stop Loss
-                  </label>
-                  <input
-                    type="number"
-                    value={modifySL}
-                    onChange={(e) => setModifySL(e.target.value)}
-                    placeholder="0.00000"
-                    className={`w-full px-3 py-2 rounded text-sm font-mono ${isLight ? "bg-slate-100 border border-slate-300 text-slate-800" : "bg-[#0f172a] border border-[#2a3a4a] text-slate-200"}`}
-                  />
-                </div>
-                <div>
-                  <label
-                    className={`text-xs mb-1 block ${isLight ? "text-slate-500" : "text-slate-400"}`}
-                  >
-                    Take Profit
-                  </label>
-                  <input
-                    type="number"
-                    value={modifyTP}
-                    onChange={(e) => setModifyTP(e.target.value)}
-                    placeholder="0.00000"
-                    className={`w-full px-3 py-2 rounded text-sm font-mono ${isLight ? "bg-slate-100 border border-slate-300 text-slate-800" : "bg-[#0f172a] border border-[#2a3a4a] text-slate-200"}`}
-                  />
-                </div>
-              </div>
-              <div className="flex gap-2 mt-4">
-                <button
-                  onClick={handleModifyTPSLSubmit}
-                  disabled={modifyTPSLMutation.isPending}
-                  className="flex-1 py-2 rounded text-sm font-semibold bg-sky-600 hover:bg-sky-500 text-white disabled:opacity-50"
-                >
-                  {modifyTPSLMutation.isPending ? "Saving…" : "Save"}
-                </button>
-                <button
-                  onClick={() => setModifyTPSLTrade(null)}
-                  className={`flex-1 py-2 rounded text-sm font-semibold ${isLight ? "bg-slate-200 hover:bg-slate-300 text-slate-700" : "bg-[#2a3a4a] hover:bg-[#3a4a5a] text-slate-200"}`}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </>
     );
   }
@@ -937,6 +878,7 @@ const MT5TradingArea = ({
                 : undefined
             }
             UserId={user?.userId}
+            sdkVersion = {sdkVersion.mt5SdkVersion}
           />
         </div>
 
@@ -1035,11 +977,6 @@ const MT5TradingArea = ({
               accountSummary={accountSummaryProps}
               orders={sdkOrdersFromBackend}
               onClose={handleClosePosition}
-              onModify={(trade) => {
-                setModifyTPSLTrade(trade);
-                setModifyTP(trade.takeProfit ? String(trade.takeProfit) : "");
-                setModifySL(trade.stopLoss ? String(trade.stopLoss) : "");
-              }}
             />
 
             {/* Market Execution Modal — at COLUMN level so z-[998] beats LeftSidebar z-50 */}
@@ -1075,6 +1012,22 @@ const MT5TradingArea = ({
                 />
               </div>
             </div>
+
+            {/* SDK ModifyTradeModal — slide-in panel for modifying TP/SL with chart drag lines */}
+            <div
+              className="absolute top-0 left-0 w-[400px] z-[98] pointer-events-none h-full"
+            >
+              <div className="pointer-events-auto h-full">
+                <ModifyTradeModal
+                  onModify={async (tradeId, { stopLoss, takeProfit }) => {
+                    await modifyTPSLMutation.mutateAsync({ tradeId, stopLoss, takeProfit });
+                  }}
+                  onClosePosition={async (tradeId, closePrice) => {
+                    await closePositionMutation.mutateAsync({ tradeId, closePrice });
+                  }}
+                />
+              </div>
+            </div>
           </div>
           {/* end flex-1 flex flex-col relative (column) */}
         </div>
@@ -1082,65 +1035,6 @@ const MT5TradingArea = ({
       </div>
       {/* end h-screen flex flex-col root */}
 
-      {/* Modify TP/SL Dialog */}
-      {modifyTPSLTrade && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60">
-          <div
-            className={`rounded-lg p-6 w-80 shadow-xl ${isLight ? "bg-white" : "bg-[#1a2332] border border-[#2a3a4a]"}`}
-          >
-            <h3
-              className={`text-sm font-semibold mb-4 ${isLight ? "text-slate-800" : "text-slate-100"}`}
-            >
-              Modify {modifyTPSLTrade.symbol} {modifyTPSLTrade.type}
-            </h3>
-            <div className="space-y-3">
-              <div>
-                <label
-                  className={`text-xs mb-1 block ${isLight ? "text-slate-500" : "text-slate-400"}`}
-                >
-                  Stop Loss
-                </label>
-                <input
-                  type="number"
-                  value={modifySL}
-                  onChange={(e) => setModifySL(e.target.value)}
-                  placeholder="0.00000"
-                  className={`w-full px-3 py-2 rounded text-sm font-mono ${isLight ? "bg-slate-100 border border-slate-300 text-slate-800" : "bg-[#0f172a] border border-[#2a3a4a] text-slate-200"}`}
-                />
-              </div>
-              <div>
-                <label
-                  className={`text-xs mb-1 block ${isLight ? "text-slate-500" : "text-slate-400"}`}
-                >
-                  Take Profit
-                </label>
-                <input
-                  type="number"
-                  value={modifyTP}
-                  onChange={(e) => setModifyTP(e.target.value)}
-                  placeholder="0.00000"
-                  className={`w-full px-3 py-2 rounded text-sm font-mono ${isLight ? "bg-slate-100 border border-slate-300 text-slate-800" : "bg-[#0f172a] border border-[#2a3a4a] text-slate-200"}`}
-                />
-              </div>
-            </div>
-            <div className="flex gap-2 mt-4">
-              <button
-                onClick={handleModifyTPSLSubmit}
-                disabled={modifyTPSLMutation.isPending}
-                className="flex-1 py-2 rounded text-sm font-semibold bg-sky-600 hover:bg-sky-500 text-white disabled:opacity-50"
-              >
-                {modifyTPSLMutation.isPending ? "Saving…" : "Save"}
-              </button>
-              <button
-                onClick={() => setModifyTPSLTrade(null)}
-                className={`flex-1 py-2 rounded text-sm font-semibold ${isLight ? "bg-slate-200 hover:bg-slate-300 text-slate-700" : "bg-[#2a3a4a] hover:bg-[#3a4a5a] text-slate-200"}`}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };
