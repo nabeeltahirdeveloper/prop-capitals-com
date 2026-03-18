@@ -41,6 +41,9 @@ const MT5Terminal = () => {
     symbols: "/market-data/prices?symbols",
     trades: "/trades",
     account: "/trades/account/${accountId}",
+    pendingOrders: "/pending-orders",
+    pendingOrdersByAccount: "/pending-orders/account",
+    cancelPendingOrder: "/pending-orders",
   };
 
   return (
