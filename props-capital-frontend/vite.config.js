@@ -20,6 +20,12 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      // Force a single React instance — prevents "Should have a queue" error
+      // when the linked chart-sdk has its own node_modules/react
+      'react': path.resolve(__dirname, '../node_modules/react'),
+      'react-dom': path.resolve(__dirname, '../node_modules/react-dom'),
+      'react/jsx-runtime': path.resolve(__dirname, '../node_modules/react/jsx-runtime'),
+      'react/jsx-dev-runtime': path.resolve(__dirname, '../node_modules/react/jsx-dev-runtime'),
     },
     extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx', '.json']
   },
