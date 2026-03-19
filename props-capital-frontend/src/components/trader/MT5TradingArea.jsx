@@ -10,7 +10,6 @@ import { useMediaQuery } from "usehooks-ts";
 import { usePrices } from "@/contexts/PriceContext";
 import { alignToTimeframe } from "@/utils/timeEngine";
 import { timeframeToSeconds } from "@/utils/candleEngine";
-import { io } from "socket.io-client";
 // import TopBar from '../trading/Topbar';
 // import LeftSidebar from '../trading/LeftSidebar';
 // import MarketExecutionModal from './MarketExecutionModal';
@@ -130,9 +129,6 @@ const MT5TradingArea = ({
   const balance = Number.isFinite(accountSummaryData?.account?.balance)
     ? accountSummaryData.account.balance
     : selectedChallenge?.currentBalance || 0;
-
-  // WebSocket connection for real-time candle updates
-  const candlesSocketRef = useRef(null);
 
   const { data: userAccounts } = useQuery({
     queryKey: ["userAccounts", user?.userId],
@@ -379,90 +375,9 @@ console.log("SDK VERSION:", sdkVersion.mt5SdkVersion);
     if (Number.isFinite(askNum) && askNum > 0) setRealTimeAskPrice(askNum);
   }, [unifiedPrices, selectedSymbol]);
 
-  // WebSocket connection for real-time candle updates from backend
-  useEffect(() => {
-    if (!selectedSymbol || !selectedTimeframe) return;
-
-    const WEBSOCKET_URL =
-      import.meta.env.VITE_WEBSOCKET_URL || "https://api-dev.prop-capitals.com";
-    const symbolStr = selectedSymbol.symbol || selectedSymbol;
-    const timeframeStr = selectedTimeframe || "M1";
-
-    const getAuthToken = () =>
-      localStorage.getItem("token") ||
-      localStorage.getItem("accessToken") ||
-      localStorage.getItem("authToken") ||
-      localStorage.getItem("jwt_token");
-
-    const socket = io(WEBSOCKET_URL, {
-      auth: (cb) => cb({ token: getAuthToken() }),
-      // polling-first: works through nginx proxies and Windows firewall
-      transports: ["polling", "websocket"],
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      reconnectionAttempts: 10,
-    });
-
-    candlesSocketRef.current = socket;
-
-    socket.on("connect", () => {
-      console.log("[MT5TradingArea] ✅ Connected to candles WebSocket");
-      socket.emit("subscribeCandles", {
-        symbol: symbolStr,
-        timeframe: timeframeStr,
-      });
-      console.log(
-        `[MT5TradingArea] 📡 Subscribed to candles: ${symbolStr}@${timeframeStr}`,
-      );
-    });
-
-    // If already connected, subscribe immediately (symbol/timeframe change without reconnect)
-    if (socket.connected) {
-      socket.emit("subscribeCandles", {
-        symbol: symbolStr,
-        timeframe: timeframeStr,
-      });
-    }
-
-    socket.on("disconnect", (reason) => {
-      console.log(
-        "[MT5TradingArea] ❌ Candles WebSocket disconnected:",
-        reason,
-      );
-    });
-
-    socket.on("connect_error", (error) => {
-      console.warn("[MT5] Candles WebSocket error:", error.message);
-    });
-
-    socket.on("candleUpdate", (data) => {
-      if (!data?.candle || !data?.symbol || !data?.timeframe) return;
-
-      const normalizedSymbol = (data.symbol || "")
-        .toUpperCase()
-        .replace(/[^A-Z0-9]/g, "");
-      const currentSymbolNormalized = (symbolStr || "")
-        .toUpperCase()
-        .replace(/[^A-Z0-9]/g, "");
-      if (
-        normalizedSymbol !== currentSymbolNormalized ||
-        data.timeframe !== timeframeStr
-      )
-        return;
-
-      // Update bid price from latest candle close for real-time accuracy
-      const close = data.candle.close;
-      if (close > 0) {
-        setRealTimeBidPrice(close);
-      }
-    });
-
-    return () => {
-      socket.disconnect();
-      candlesSocketRef.current = null;
-    };
-  }, [selectedSymbol, selectedTimeframe]);
+  // Candle WebSocket is handled by chart-sdk's TradingProvider/socketService
+  // (singleton socket via baseUrl prop). No extra connection needed here.
+  // Real-time bid/ask prices are derived from PriceContext above.
 
   // Enrich selected symbol with real-time price data
   const enrichedSelectedSymbol =
