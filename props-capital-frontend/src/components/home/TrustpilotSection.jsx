@@ -158,37 +158,45 @@ const StarRating = ({ rating }) => (
 );
 
 const PartialStarRating = ({ rating, size = 24 }) => {
-  const id = `tp-grad-${rating}`;
+  const gap = 4;
+  const totalWidth = size * 5 + gap * 4;
+  const r = size / 2;
+  const outerR = r * 0.9;
+  const innerR = r * 0.38;
+
+  const getStarPath = (offsetX) => {
+    const cx = offsetX + r;
+    const cy = r;
+    const pts = [];
+    for (let i = 0; i < 10; i++) {
+      const angle = (i * Math.PI) / 5 - Math.PI / 2;
+      const radius = i % 2 === 0 ? outerR : innerR;
+      pts.push(`${cx + radius * Math.cos(angle)},${cy + radius * Math.sin(angle)}`);
+    }
+    return `M${pts.join('L')}Z`;
+  };
+
   return (
-    <svg width={size * 5 + 4 * 4} height={size} viewBox={`0 0 ${size * 5 + 4 * 4} ${size}`} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width={totalWidth} height={size} viewBox={`0 0 ${totalWidth} ${size}`} fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        {[1, 2, 3, 4, 5].map((star) => {
-          const fill = Math.min(1, Math.max(0, rating - (star - 1)));
+        {[0, 1, 2, 3, 4].map((i) => {
+          const x = i * (size + gap);
+          const fillWidth = size * Math.min(1, Math.max(0, rating - i));
           return (
-            <linearGradient key={star} id={`${id}-${star}`} x1="0" x2="1" y1="0" y2="0">
-              <stop offset={`${fill * 100}%`} stopColor="#00b67a" />
-              <stop offset={`${fill * 100}%`} stopColor="#d1d5db" />
-            </linearGradient>
+            <clipPath key={i} id={`tp-clip-${i}`}>
+              <rect x={x} y={0} width={fillWidth} height={size} />
+            </clipPath>
           );
         })}
       </defs>
-      {[1, 2, 3, 4, 5].map((star) => {
-        const x = (star - 1) * (size + 4);
-        const half = size / 2;
-        const points = [
-          [half, 0],
-          [half * 0.38, half * 0.69],
-          [0, half * 0.76],
-          [half * 0.59, half * 1.24],
-          [half * 0.47, size],
-          [half, half * 1.5],
-          [half * 1.53, size],
-          [half * 1.41, half * 1.24],
-          [size, half * 0.76],
-          [half * 1.62, half * 0.69],
-        ].map(([px, py]) => `${x + px},${py}`).join(' ');
+      {[0, 1, 2, 3, 4].map((i) => {
+        const x = i * (size + gap);
+        const d = getStarPath(x);
         return (
-          <polygon key={star} points={points} fill={`url(#${id}-${star})`} />
+          <g key={i}>
+            <path d={d} fill="#d1d5db" />
+            <path d={d} fill="#00b67a" clipPath={`url(#tp-clip-${i})`} />
+          </g>
         );
       })}
     </svg>
