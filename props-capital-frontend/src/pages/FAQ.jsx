@@ -97,7 +97,7 @@ const faqData = {
     },
     {
       question: "Can I use copy trading services?",
-      answer: "Yes, copy trading is allowed. However, you must be the account owner and cannot share your account credentials with others."
+      answer: "No, copy trading is not allowed. Each trader must execute their own trades independently. Sharing account credentials or using third-party copy trading services is strictly prohibited and may result in account termination."
     },
     {
       question: "What instruments can I trade?",
