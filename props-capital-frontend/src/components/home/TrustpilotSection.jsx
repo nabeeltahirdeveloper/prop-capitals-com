@@ -254,7 +254,7 @@ const ReviewCard = ({ review }) => (
 
     {/* Footer */}
     <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100">
-      <svg viewBox="0 0 126 31" className="h-5 w-auto">
+      <svg viewBox="0 0 32 32" className="h-5 w-auto">
         <path
           fill="#00b67a"
           d="M15.5 0L19.1 9.8H29.4L21.1 15.9L24.7 25.7L15.5 19.2L6.3 25.7L9.9 15.9L1.6 9.8H11.9L15.5 0Z"
