@@ -38,6 +38,7 @@ import { CommonModule } from './common/common.module';
 import { ContactModule } from './contact/contact.module';
 import { ChatModule } from './chat/chat.module';
 import { WalletsModule } from './wallets/wallets.module';
+import { ChatbotModule } from './chatbot/chatbot.module';
 
 @Module({
   imports: [
@@ -118,6 +119,8 @@ import { WalletsModule } from './wallets/wallets.module';
     ChatModule,
 
     WalletsModule,
+
+    ChatbotModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }
