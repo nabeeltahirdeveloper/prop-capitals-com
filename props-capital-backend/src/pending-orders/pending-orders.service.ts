@@ -177,6 +177,25 @@ export class PendingOrdersService {
    * Execute a pending order - convert it to a trade when price hits
    */
   async executePendingOrder(orderId: string, executionPrice?: number) {
+    // Step 1: atomically claim the order
+    const claimResult = await this.prisma.pendingOrder.updateMany({
+      where: {
+        id: orderId,
+        status: 'PENDING',
+      },
+      data: {
+        status: 'TRIGGERED',
+        triggeredAt: new Date(),
+      },
+    });
+
+    if (claimResult.count === 0) {
+      return null; // 🔥 THIS LINE IS CRITICAL
+    }
+
+  
+
+    // Step 2: fetch the claimed order
     const pendingOrder = await this.prisma.pendingOrder.findUnique({
       where: { id: orderId },
       include: { tradingAccount: true },
@@ -186,20 +205,7 @@ export class PendingOrdersService {
       throw new NotFoundException('Pending order not found');
     }
 
-    if (pendingOrder.status !== 'PENDING') {
-      throw new BadRequestException(
-        `Cannot execute order with status: ${pendingOrder.status}`,
-      );
-    }
-
-    await this.prisma.pendingOrder.update({
-      where: { id: orderId },
-      data: {
-        status: 'TRIGGERED',
-        triggeredAt: new Date(),
-      },
-    });
-
+    // Step 3: remove from in-memory registry
     this.pendingOrderRegistryService.removeOrder(orderId);
 
     const finalPrice = executionPrice ?? pendingOrder.price;
@@ -217,20 +223,48 @@ export class PendingOrdersService {
       leverage: (pendingOrder as any).leverage ?? 100,
     };
 
-    const tradeResult = await this.tradesService.createTrade(tradeData);
+    try {
+      // Step 4: create trade
+      const tradeResult = await this.tradesService.createTrade(tradeData);
 
-    const filledOrder = await this.prisma.pendingOrder.update({
-      where: { id: orderId },
-      data: {
-        status: 'FILLED',
-        filledAt: new Date(),
-      },
-    });
+      // Step 5: mark order as filled
+      const filledOrder = await this.prisma.pendingOrder.update({
+        where: { id: orderId },
+        data: {
+          status: 'FILLED',
+          filledAt: new Date(),
+        },
+      });
 
-    return {
-      order: filledOrder,
-      trade: tradeResult.trade,
-      evaluation: tradeResult.evaluation,
-    };
+      return {
+        order: filledOrder,
+        trade: tradeResult.trade,
+        evaluation: tradeResult.evaluation,
+      };
+    } catch (error) {
+      // Step 6: rollback order back to PENDING if trade creation failed
+      await this.prisma.pendingOrder.update({
+        where: { id: orderId },
+        data: {
+          status: 'PENDING',
+          triggeredAt: null,
+        },
+      });
+
+      this.pendingOrderRegistryService.registerOrder({
+        id: pendingOrder.id,
+        tradingAccountId: pendingOrder.tradingAccountId,
+        symbol: pendingOrder.symbol,
+        type: pendingOrder.type,
+        orderType: pendingOrder.orderType,
+        volume: pendingOrder.volume,
+        price: pendingOrder.price,
+        stopLoss: pendingOrder.stopLoss,
+        takeProfit: pendingOrder.takeProfit,
+        status: 'PENDING',
+      });
+
+      throw error;
+    }
   }
 }
