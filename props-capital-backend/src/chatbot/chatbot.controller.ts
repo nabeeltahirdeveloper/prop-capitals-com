@@ -22,11 +22,11 @@ export class ChatbotController {
 
   @Get('sessions/:sessionId')
   async getSession(@Req() req: any, @Param('sessionId') sessionId: string): Promise<ChatSessionDto> {
-    return this.chatbotService.getSessionMessages(sessionId, req.user.id);
+    return this.chatbotService.getSessionMessages(sessionId, req.user.userId);
   }
 
   @Delete('sessions/:sessionId')
   async deleteSession(@Req() req: any, @Param('sessionId') sessionId: string): Promise<void> {
-    return this.chatbotService.deleteSession(sessionId, req.user.id);
+    return this.chatbotService.deleteSession(sessionId, req.user.userId);
   }
 }
