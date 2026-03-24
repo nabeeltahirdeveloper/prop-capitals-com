@@ -24,6 +24,7 @@ model User {
   tradingAccounts        TradingAccount[]
   profile                UserProfile?
   verificationDocuments  VerificationDocument[]
+  chatSessions           ChatSession[]
 }
 
 model SignupOtp {
@@ -189,11 +190,11 @@ model PendingOrder {
   status           OrderStatus    @default(PENDING)
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
-  triggeredAt      DateTime?
   filledAt         DateTime?
   cancelledAt      DateTime?
   positionType     String         @default("CFD")
   leverage         Float          @default(100)
+  triggeredAt      DateTime?
   tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
 
   @@index([symbol, status])
@@ -492,11 +493,11 @@ enum OrderType {
 
 enum OrderStatus {
   PENDING
-  TRIGGERED
   FILLED
   CANCELLED
   REJECTED
   PARTIALLY_FILLED
+  TRIGGERED
 }
 
 enum VerificationDocType {
@@ -609,4 +610,29 @@ enum ContactCategory {
 enum SenderType {
   ADMIN
   TRADER
+}
+
+model ChatSession {
+  id        String        @id @default(cuid())
+  userId    String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  ChatMessage[]
+
+  @@index([userId])
+}
+
+model ChatMessage {
+  id         String      @id @default(cuid())
+  sessionId  String
+  role       String      
+  content    String
+  tokensUsed Int?
+  createdAt  DateTime    @default(now())
+  
+  session    ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
 }

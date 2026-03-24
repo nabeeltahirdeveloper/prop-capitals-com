@@ -228,6 +228,34 @@ export class EmailService {
   }
 
   /**
+   * Send welcome email after successful registration
+   */
+  async sendWelcomeEmail(to: string, firstName?: string): Promise<EmailResult> {
+    const name = firstName || 'Trader';
+    return this.sendWithTimeout({
+      to,
+      from: this.fromEmail,
+      subject: 'Welcome to Props Capital!',
+      text: `Welcome to Props Capital, ${name}! Your account has been verified. Start your trading journey by choosing a challenge at propscapital.com.`,
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.5;">
+          <h2 style="margin: 0 0 12px;">Welcome to Props Capital, ${name}!</h2>
+          <p style="margin: 0 0 12px;">Your email has been verified and your account is ready to go.</p>
+          <p style="margin: 0 0 12px;">Start your trading journey by choosing a challenge that suits your style:</p>
+          <ul style="margin: 0 0 12px; padding-left: 20px;">
+            <li>1-Step Challenge — fast evaluation, 85% profit split</li>
+            <li>2-Step Challenge — traditional evaluation, up to 90% profit split</li>
+          </ul>
+          <p style="margin: 0 0 12px; color: #555;">All programs include no time limit, all strategies allowed, and 100% fee refund on your first payout.</p>
+          <a href="https://propscapital.com/challenges" style="display: inline-block; padding: 12px 24px; background-color: #F59E0B; color: #0a0d12; text-decoration: none; border-radius: 4px; font-weight: bold; margin: 4px 0;">
+            Start a Challenge
+          </a>
+        </div>
+      `,
+    });
+  }
+
+  /**
    * Send generic notification email
    */
   async sendNotificationEmail(to: string, subject: string, message: string): Promise<EmailResult> {

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User, Minimize2, Maximize2, Loader2, UserCheck } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useChatSupportStore } from '@/lib/stores/chat-support.store';
+import ReactMarkdown from 'react-markdown';
 
 const ChatSupport = () => {
   const { isDark } = useTheme();
@@ -21,7 +22,7 @@ const ChatSupport = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [showHumanForm, setShowHumanForm] = useState(false);
   const [humanFormData, setHumanFormData] = useState({ name: '', email: '', message: '', category: 'OTHER' });
-  const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+  const [sessionId, setSessionId] = useState(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -33,7 +34,45 @@ const ChatSupport = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isTyping]);
+  }, [messages, isTyping, showHumanForm]);
+
+  useEffect(() => {
+    if (isOpen) {
+      const fetchChatHistory = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        try {
+          const response = await fetch(`${BACKEND_URL}/chatbot/sessions`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          if (response.ok) {
+            const sessions = await response.json();
+            if (sessions && sessions.length > 0) {
+              const latestSession = sessions[0];
+              setSessionId(latestSession.id);
+              if (latestSession.messages && latestSession.messages.length > 0) {
+                const history = latestSession.messages.map(m => ({
+                  type: m.role === 'user' ? 'user' : 'bot',
+                  text: m.content,
+                  timestamp: new Date(m.createdAt)
+                }));
+                if (history.length > 0) {
+                  setMessages(history);
+                }
+              }
+            }
+          }
+        } catch (err) {
+          console.error('Failed to fetch chat history:', err);
+        }
+      };
+
+      fetchChatHistory();
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen && !isMinimized && inputRef.current) {
@@ -56,6 +95,17 @@ const ChatSupport = () => {
   const handleSend = async () => {
     if (!message.trim()) return;
 
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setMessages(prev => [...prev, {
+        type: 'bot',
+        text: "you must login before chat",
+        timestamp: new Date()
+      }]);
+      setMessage('');
+      return;
+    }
+
     const userMessage = {
       type: 'user',
       text: message.trim(),
@@ -68,11 +118,14 @@ const ChatSupport = () => {
     setIsTyping(true);
 
     try {
-      const response = await fetch(`${BACKEND_URL}/chat`, {
+      const response = await fetch(`${BACKEND_URL}/chatbot/message`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({
-          session_id: sessionId,
+          sessionId: sessionId || undefined,
           message: currentMessage
         })
       });
@@ -81,20 +134,15 @@ const ChatSupport = () => {
 
       setIsTyping(false);
 
-      if (data.transfer_to_human) {
-        setShowHumanForm(true);
-        setMessages(prev => [...prev, {
-          type: 'bot',
-          text: data.response,
-          timestamp: new Date()
-        }]);
-      } else {
-        setMessages(prev => [...prev, {
-          type: 'bot',
-          text: data.response,
-          timestamp: new Date()
-        }]);
+      if (data.sessionId && !sessionId) {
+        setSessionId(data.sessionId);
       }
+
+      setMessages(prev => [...prev, {
+        type: 'bot',
+        text: data.reply || "I could not generate a response.",
+        timestamp: new Date()
+      }]);
     } catch (error) {
       console.error('Chat error:', error);
       setIsTyping(false);
@@ -260,7 +308,24 @@ const ChatSupport = () => {
                               : 'bg-white text-slate-700 border border-slate-200 rounded-bl-md shadow-sm'
                             }`}
                         >
-                          <p className="whitespace-pre-wrap text-sm leading-relaxed break-words">{msg.text}</p>
+                          {msg.type === 'bot' ? (
+                            <div className="text-sm leading-relaxed break-words">
+                              <ReactMarkdown
+                                components={{
+                                  p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+                                  h3: ({ node, ...props }) => <h3 className="font-bold text-sm mt-3 mb-1" {...props} />,
+                                  strong: ({ node, ...props }) => <strong className="font-semibold" {...props} />,
+                                  ul: ({ node, ...props }) => <ul className="list-disc pl-4 mb-2 space-y-1" {...props} />,
+                                  ol: ({ node, ...props }) => <ol className="list-decimal pl-4 mb-2 space-y-1" {...props} />,
+                                  li: ({ node, ...props }) => <li className="" {...props} />,
+                                }}
+                              >
+                                {msg.text}
+                              </ReactMarkdown>
+                            </div>
+                          ) : (
+                            <p className="whitespace-pre-wrap text-sm leading-relaxed break-words">{msg.text}</p>
+                          )}
                           {msg.ticketId && msg.isLoggedIn && (
                             <a
                               href={`/traderdashboard/support/tickets/${msg.ticketId}`}
@@ -288,9 +353,19 @@ const ChatSupport = () => {
                 {/* Human Support Form */}
                 {showHumanForm && (
                   <div className={`rounded-xl p-3 border ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <UserCheck className="w-4 h-4 text-amber-500" />
-                      <span className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>Human Support</span>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <UserCheck className="w-4 h-4 text-amber-500" />
+                        <span className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>Human Support</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowHumanForm(false)}
+                        className={`p-1 rounded-md transition-colors ${isDark ? 'hover:bg-white/10 text-gray-400' : 'hover:bg-slate-100 text-slate-500'}`}
+                        aria-label="Close form"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
                     </div>
                     <form onSubmit={handleHumanFormSubmit} className="space-y-2">
                       <input
