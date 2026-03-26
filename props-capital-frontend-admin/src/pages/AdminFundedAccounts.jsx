@@ -56,8 +56,8 @@ export default function AdminFundedAccounts() {
   const queryClient = useQueryClient();
 
   const { data: accountsData = [], isLoading } = useQuery({
-    queryKey: ["admin-accounts"],
-    queryFn: adminGetAllAccounts,
+    queryKey: ["admin-accounts", "funded-all"],
+    queryFn: () => adminGetAllAccounts({ phase: "funded", limit: 500 }).then((r) => r.data || []),
   });
 
   const { data: payoutsData = [] } = useQuery({
