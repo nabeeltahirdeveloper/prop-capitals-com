@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryState, parseAsString, parseAsInteger } from "nuqs";
 import {
   adminGetAllUsers,
-  adminSearchUsers,
   adminUpdateUserRole,
   adminGetUser,
 } from "@/api/admin";
@@ -46,33 +46,40 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { format } from "date-fns";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
 
 export default function AdminUsers() {
   const { t } = useTranslation();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("all");
+  const [search, setSearch] = useQueryState("search", parseAsString.withDefault(""));
+  const [roleFilter, setRoleFilter] = useQueryState("role", parseAsString.withDefault("all"));
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
+  const [searchQuery, setSearchQuery] = useState(search); // local input state
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const [pendingRoleChange, setPendingRoleChange] = useState(null); // { user, newRole }
   const queryClient = useQueryClient();
 
-  // Debounce search query to avoid hammering the API on every keystroke
+  // Debounce search input → URL
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 300);
+    const timer = setTimeout(() => setSearch(searchQuery || null), 300);
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Get all users (with search support)
-  const { data: usersData = [], isLoading } = useQuery({
-    queryKey: ["admin-users", debouncedSearch],
-    queryFn: () => {
-      if (debouncedSearch.trim()) {
-        return adminSearchUsers(debouncedSearch);
-      } else {
-        return adminGetAllUsers();
-      }
-    },
+  // Reset to page 1 when filters change
+  useEffect(() => { setPage(1); }, [search, roleFilter]);
+
+  // Get all users (paginated, server-side search + filter)
+  const { data: usersData = { data: [], total: 0, totalPages: 1, summary: { traders: 0, admins: 0, newThisWeek: 0 } }, isLoading } = useQuery({
+    queryKey: ["admin-users", page, search, roleFilter],
+    queryFn: () => adminGetAllUsers({ page, limit: 20, search, role: roleFilter }),
   });
 
   // Update role mutation
@@ -130,7 +137,7 @@ export default function AdminUsers() {
   };
 
   // Map backend users to frontend format
-  const mappedUsers = usersData.map((user) => {
+  const mappedUsers = (usersData.data || []).map((user) => {
     const profile = user.profile || {};
     const fullName =
       `${profile.firstName || ""} ${profile.lastName || ""}`.trim() || "User";
@@ -149,11 +156,7 @@ export default function AdminUsers() {
     };
   });
 
-  const displayUsers = mappedUsers;
-
-  const filteredUsers = displayUsers.filter((user) => {
-    return roleFilter === "all" || user.role === roleFilter;
-  });
+  const filteredUsers = mappedUsers;
 
   const columns = [
     {
@@ -268,16 +271,14 @@ export default function AdminUsers() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatsCard
           title={t("admin.users.stats.totalUsers")}
-          value={isLoading ? "..." : displayUsers.length}
+          value={isLoading ? "..." : usersData.total}
           icon={Users}
           iconColor="text-blue-400"
         />
         <StatsCard
           title={t("admin.users.stats.traders")}
           value={
-            isLoading
-              ? "..."
-              : displayUsers.filter((u) => u.role === "user").length
+            isLoading ? "..." : usersData.summary?.traders ?? 0
           }
           icon={UserCog}
           iconColor="text-amber-400"
@@ -285,9 +286,7 @@ export default function AdminUsers() {
         <StatsCard
           title={t("admin.users.stats.admins")}
           value={
-            isLoading
-              ? "..."
-              : displayUsers.filter((u) => u.role === "admin").length
+            isLoading ? "..." : usersData.summary?.admins ?? 0
           }
           icon={Shield}
           iconColor="text-purple-400"
@@ -295,13 +294,7 @@ export default function AdminUsers() {
         <StatsCard
           title={t("admin.users.stats.newThisWeek")}
           value={
-            isLoading
-              ? "..."
-              : displayUsers.filter(
-                  (u) =>
-                    new Date(u.created_date) >
-                    new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-                ).length
+            isLoading ? "..." : usersData.summary?.newThisWeek ?? 0
           }
           icon={UserPlus}
           iconColor="text-cyan-400"
@@ -348,6 +341,53 @@ export default function AdminUsers() {
           isLoading={isLoading}
           emptyMessage={t("admin.users.emptyMessage")}
         />
+        {usersData.totalPages > 1 && (
+          <div className="mt-4 flex items-center justify-between gap-4">
+            <p className="text-sm text-muted-foreground whitespace-nowrap">
+              Page {page} of {usersData.totalPages} ({usersData.total} total)
+            </p>
+            <Pagination className="w-auto mx-0">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+                {Array.from({ length: usersData.totalPages }, (_, i) => i + 1)
+                  .filter((p) => p === 1 || p === usersData.totalPages || Math.abs(p - page) <= 1)
+                  .reduce((acc, p, idx, arr) => {
+                    if (idx > 0 && p - arr[idx - 1] > 1) acc.push("ellipsis");
+                    acc.push(p);
+                    return acc;
+                  }, [])
+                  .map((p, idx) =>
+                    p === "ellipsis" ? (
+                      <PaginationItem key={`ellipsis-${idx}`}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    ) : (
+                      <PaginationItem key={p}>
+                        <PaginationLink
+                          isActive={p === page}
+                          onClick={() => setPage(p)}
+                          className="cursor-pointer"
+                        >
+                          {p}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  )}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => setPage((p) => Math.min(usersData.totalPages, p + 1))}
+                    className={page === usersData.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </Card>
 
       {/* Role Change Confirmation Dialog */}

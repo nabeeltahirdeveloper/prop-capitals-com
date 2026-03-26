@@ -3,8 +3,11 @@ import { apiGet, apiPost, apiPatch, apiDelete } from "@/lib/api";
 // ============================================================================
 // Admin Users
 // ============================================================================
-export const adminGetAllUsers = async () => {
-  return apiGet("/admin/users");
+export const adminGetAllUsers = async ({ page = 1, limit = 20, search = '', role = '' } = {}) => {
+  const params = { page, limit };
+  if (search) params.search = search;
+  if (role && role !== 'all') params.role = role;
+  return apiGet("/admin/users", { params });
 };
 
 export const adminGetUser = async (userId) => {
