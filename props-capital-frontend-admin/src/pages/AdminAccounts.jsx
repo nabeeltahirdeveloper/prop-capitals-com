@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useQueryState, parseAsString, parseAsInteger } from "nuqs";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   adminGetAllAccounts,
@@ -58,12 +59,12 @@ import {
 export default function AdminAccounts() {
   const { t } = useTranslation();
   const { toast } = useToast();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [phaseFilter, setPhaseFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useQueryState("search", parseAsString.withDefault(""));
+  const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault("all"));
+  const [phaseFilter, setPhaseFilter] = useQueryState("phase", parseAsString.withDefault("all"));
   const [selectedAccountId, setSelectedAccountId] = useState(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const queryClient = useQueryClient();
 
   // Reset to page 1 when filters change
