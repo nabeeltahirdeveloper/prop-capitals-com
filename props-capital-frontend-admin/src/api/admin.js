@@ -45,8 +45,12 @@ export const adminDeleteChallenge = async (id) => {
 // ============================================================================
 // Admin Accounts
 // ============================================================================
-export const adminGetAllAccounts = async () => {
-  return apiGet("/admin/accounts");
+export const adminGetAllAccounts = async ({ page = 1, limit = 20, search = '', status = '', phase = '' } = {}) => {
+  const params = { page, limit };
+  if (search) params.search = search;
+  if (status && status !== 'all') params.status = status;
+  if (phase && phase !== 'all') params.phase = phase;
+  return apiGet("/admin/accounts", { params });
 };
 
 export const adminGetAccount = async (id) => {
