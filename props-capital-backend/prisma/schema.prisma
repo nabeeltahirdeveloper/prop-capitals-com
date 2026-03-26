@@ -187,6 +187,7 @@ model PendingOrder {
   price            Float
   stopLoss         Float?
   takeProfit       Float?
+  limitPrice       Float?
   status           OrderStatus    @default(PENDING)
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
@@ -613,26 +614,26 @@ enum SenderType {
 }
 
 model ChatSession {
-  id        String        @id @default(cuid())
+  id        String   @id @default(cuid())
   userId    String
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  
-  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages  ChatMessage[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages ChatMessage[]
 
   @@index([userId])
 }
 
 model ChatMessage {
-  id         String      @id @default(cuid())
+  id         String   @id @default(cuid())
   sessionId  String
-  role       String      
+  role       String
   content    String
   tokensUsed Int?
-  createdAt  DateTime    @default(now())
-  
-  session    ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@index([sessionId])
 }

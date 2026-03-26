@@ -1,10 +1,12 @@
-import { Injectable, Inject, forwardRef, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { TradesService } from '../trades/trades.service';
 import { PendingOrderRegistryService } from './pending-order-registry.service';
 
 @Injectable()
 export class PendingOrdersService {
+  private readonly logger = new Logger(PendingOrdersService.name);
+
   constructor(
     private prisma: PrismaService,
     @Inject(forwardRef(() => TradesService))
@@ -28,13 +30,33 @@ export class PendingOrdersService {
     orderType: 'LIMIT' | 'STOP' | 'STOP_LIMIT';
     volume: number;
     price: number;
+    limitPrice?: number;
     stopLoss?: number;
     takeProfit?: number;
     positionType?: string;
     leverage?: number;
   }) {
     if (data.orderType === 'STOP_LIMIT') {
-      throw new BadRequestException('STOP_LIMIT is not supported yet in runtime registry');
+      if (!Number.isFinite(Number(data.limitPrice)) || Number(data.limitPrice) <= 0) {
+        throw new BadRequestException('limitPrice is required for STOP_LIMIT orders.');
+      }
+    }
+
+    if (data.orderType === 'STOP_LIMIT') {
+      const triggerPrice = Number(data.price);
+      const limitPrice = Number(data.limitPrice);
+
+      if (data.type === 'BUY') {
+        if (limitPrice > triggerPrice) {
+          throw new BadRequestException('For BUY STOP_LIMIT, limitPrice should be less than or equal to trigger price.');
+        }
+      }
+
+      if (data.type === 'SELL') {
+        if (limitPrice < triggerPrice) {
+          throw new BadRequestException('For SELL STOP_LIMIT, limitPrice should be greater than or equal to trigger price.');
+        }
+      }
     }
 
     const account = await this.prisma.tradingAccount.findUnique({
@@ -78,6 +100,7 @@ export class PendingOrdersService {
         orderType: data.orderType,
         volume: data.volume,
         price: data.price,
+        limitPrice: data.limitPrice ?? null,
         stopLoss: data.stopLoss ?? null,
         takeProfit: data.takeProfit ?? null,
         status: 'PENDING',
@@ -94,6 +117,7 @@ export class PendingOrdersService {
       orderType: pendingOrder.orderType,
       volume: pendingOrder.volume,
       price: pendingOrder.price,
+      limitPrice: pendingOrder.limitPrice,
       stopLoss: pendingOrder.stopLoss,
       takeProfit: pendingOrder.takeProfit,
       status: pendingOrder.status,
@@ -193,7 +217,7 @@ export class PendingOrdersService {
       return null; // 🔥 THIS LINE IS CRITICAL
     }
 
-  
+
 
     // Step 2: fetch the claimed order
     const pendingOrder = await this.prisma.pendingOrder.findUnique({
@@ -207,6 +231,64 @@ export class PendingOrdersService {
 
     // Step 3: remove from in-memory registry
     this.pendingOrderRegistryService.removeOrder(orderId);
+
+    // STOP_LIMIT activation: convert to LIMIT order instead of executing a trade
+    if (pendingOrder.orderType === 'STOP_LIMIT') {
+      const newLimitPrice = (pendingOrder as any).limitPrice;
+      if (!Number.isFinite(Number(newLimitPrice)) || Number(newLimitPrice) <= 0) {
+        // Invalid limitPrice — rollback to PENDING as STOP_LIMIT
+        await this.prisma.pendingOrder.update({
+          where: { id: orderId },
+          data: { status: 'PENDING', triggeredAt: null },
+        });
+        this.pendingOrderRegistryService.registerOrder({
+          id: pendingOrder.id,
+          tradingAccountId: pendingOrder.tradingAccountId,
+          symbol: pendingOrder.symbol,
+          type: pendingOrder.type,
+          orderType: 'STOP_LIMIT',
+          volume: pendingOrder.volume,
+          price: pendingOrder.price,
+          limitPrice: newLimitPrice,
+          stopLoss: pendingOrder.stopLoss,
+          takeProfit: pendingOrder.takeProfit,
+          status: 'PENDING',
+        });
+        throw new BadRequestException('STOP_LIMIT order has invalid limitPrice, cannot activate.');
+      }
+
+      // Convert to LIMIT order in DB
+      await this.prisma.pendingOrder.update({
+        where: { id: orderId },
+        data: {
+          orderType: 'LIMIT',
+          price: Number(newLimitPrice),
+          status: 'PENDING',
+          // keep triggeredAt so we know it was activated
+        } as any,
+      });
+
+      // Re-register as LIMIT order in memory
+      this.pendingOrderRegistryService.registerOrder({
+        id: pendingOrder.id,
+        tradingAccountId: pendingOrder.tradingAccountId,
+        symbol: pendingOrder.symbol,
+        type: pendingOrder.type,
+        orderType: 'LIMIT',
+        volume: pendingOrder.volume,
+        price: Number(newLimitPrice),
+        limitPrice: newLimitPrice,
+        stopLoss: pendingOrder.stopLoss,
+        takeProfit: pendingOrder.takeProfit,
+        status: 'PENDING',
+      });
+
+      this.logger.log(
+        `STOP_LIMIT activated: order ${orderId} converted to ${pendingOrder.type} LIMIT at price ${newLimitPrice}`,
+      );
+
+      return { activated: true, order: { id: orderId, orderType: 'LIMIT', price: Number(newLimitPrice) } };
+    }
 
     const finalPrice = executionPrice ?? pendingOrder.price;
 
@@ -259,6 +341,7 @@ export class PendingOrdersService {
         orderType: pendingOrder.orderType,
         volume: pendingOrder.volume,
         price: pendingOrder.price,
+        limitPrice: (pendingOrder as any).limitPrice ?? null,
         stopLoss: pendingOrder.stopLoss,
         takeProfit: pendingOrder.takeProfit,
         status: 'PENDING',
