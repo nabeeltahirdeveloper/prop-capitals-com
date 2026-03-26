@@ -649,11 +649,11 @@ export default function AdminAccounts() {
           emptyMessage={t("admin.accounts.emptyMessage")}
         />
         {accountsData.totalPages > 1 && (
-          <div className="mt-4 flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
+          <div className="mt-4 flex items-center justify-between gap-4">
+            <p className="text-sm text-muted-foreground whitespace-nowrap">
               Page {page} of {accountsData.totalPages} ({accountsData.total} total)
             </p>
-            <Pagination>
+            <Pagination className="w-auto mx-0">
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
