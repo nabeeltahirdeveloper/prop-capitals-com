@@ -33,7 +33,9 @@ export class AdminAccountsService {
       where.phase = phase.toUpperCase() as TradingPhase;
     }
 
-    const [data, total, activeCount, phase2Count, fundedCount, failedCount] = await Promise.all([
+    const isFundedView = phase === 'funded';
+
+    const baseQueries: Promise<any>[] = [
       this.prisma.tradingAccount.findMany({
         skip,
         take: limit,
@@ -50,14 +52,31 @@ export class AdminAccountsService {
       this.prisma.tradingAccount.count({ where: { phase: TradingPhase.PHASE2 } }),
       this.prisma.tradingAccount.count({ where: { phase: TradingPhase.FUNDED } }),
       this.prisma.tradingAccount.count({ where: { phase: TradingPhase.FAILED } }),
-    ]);
+    ];
+
+    const [data, total, activeCount, phase2Count, fundedCount, failedCount] = await Promise.all(baseQueries);
+
+    let fundedSummary: Record<string, number> = {};
+    if (isFundedView) {
+      const [activeFundedCount, balanceAgg, payoutAgg] = await Promise.all([
+        this.prisma.tradingAccount.count({ where: { phase: TradingPhase.FUNDED, status: TradingAccountStatus.ACTIVE } }),
+        this.prisma.tradingAccount.aggregate({ where: { phase: TradingPhase.FUNDED }, _sum: { initialBalance: true, balance: true } }),
+        this.prisma.payout.aggregate({ where: { tradingAccount: { phase: TradingPhase.FUNDED }, status: 'PAID' as any }, _sum: { amount: true } }),
+      ]);
+      fundedSummary = {
+        activeFunded: activeFundedCount,
+        totalAllocatedCapital: balanceAgg._sum.initialBalance || 0,
+        totalCurrentValue: balanceAgg._sum.balance || 0,
+        totalPayouts: payoutAgg._sum.amount || 0,
+      };
+    }
 
     return {
       data,
       total,
       page,
       totalPages: Math.ceil(total / limit),
-      summary: { active: activeCount, phase2: phase2Count, funded: fundedCount, failed: failedCount },
+      summary: { active: activeCount, phase2: phase2Count, funded: fundedCount, failed: failedCount, ...fundedSummary },
     };
   }
 

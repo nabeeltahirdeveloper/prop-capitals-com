@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQueryState, parseAsString, parseAsInteger } from "nuqs";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   adminGetAllAccounts,
@@ -45,19 +46,37 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
 
 export default function AdminFundedAccounts() {
   const { t } = useTranslation();
   const { toast } = useToast();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [search, setSearch] = useQueryState("search", parseAsString.withDefault(""));
+  const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault("all"));
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
+  const [searchQuery, setSearchQuery] = useState(search);
   const [selectedAccountId, setSelectedAccountId] = useState(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const queryClient = useQueryClient();
 
-  const { data: accountsData = [], isLoading } = useQuery({
-    queryKey: ["admin-accounts", "funded-all"],
-    queryFn: () => adminGetAllAccounts({ phase: "funded", limit: 500 }).then((r) => r.data || []),
+  useEffect(() => {
+    const timer = setTimeout(() => setSearch(searchQuery || null), 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => { setPage(1); }, [search, statusFilter]);
+
+  const { data: accountsData = { data: [], total: 0, totalPages: 1, summary: {} }, isLoading } = useQuery({
+    queryKey: ["admin-funded-accounts", page, search, statusFilter],
+    queryFn: () => adminGetAllAccounts({ phase: "funded", page, limit: 20, search, status: statusFilter }),
   });
 
   const { data: payoutsData = [] } = useQuery({
@@ -221,7 +240,7 @@ export default function AdminFundedAccounts() {
     );
   };
 
-  const mappedAccounts = accountsData.map((account) => {
+  const mappedAccounts = (accountsData.data || []).map((account) => {
     const challenge = account.challenge || {};
     const user = account.user || {};
     const statusMap = {
@@ -263,42 +282,14 @@ export default function AdminFundedAccounts() {
     };
   });
 
-  const fundedAccounts = mappedAccounts.filter(
-    (account) => account.current_phase === "funded",
-  );
+  const filteredAccounts = mappedAccounts;
 
-  const fundedAccountIds = fundedAccounts.map((a) => a.id);
-
-  const filteredAccounts = fundedAccounts.filter((account) => {
-    const matchesSearch =
-      account.account_number?.includes(searchQuery) ||
-      account.trader_id?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" || account.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
-
-  const totalFundedAccounts = fundedAccounts.length;
-  const totalActiveFundedAccounts = fundedAccounts.filter(
-    (a) => a.status === "active",
-  ).length;
-  const totalAllocatedCapital = fundedAccounts.reduce(
-    (sum, a) => sum + (a.initial_balance || 0),
-    0,
-  );
-  const totalCurrentProfit = fundedAccounts.reduce(
-    (sum, a) => sum + ((a.current_balance || 0) - (a.initial_balance || 0)),
-    0,
-  );
-
-  const totalPayoutsAmount = (payoutsData || [])
-    .filter(
-      (payout) =>
-        payout &&
-        fundedAccountIds.includes(payout.tradingAccountId) &&
-        payout.status === "PAID",
-    )
-    .reduce((sum, payout) => sum + (payout.amount || 0), 0);
+  const summary = accountsData.summary || {};
+  const totalFundedAccounts = accountsData.total;
+  const totalActiveFundedAccounts = summary.activeFunded ?? 0;
+  const totalAllocatedCapital = summary.totalAllocatedCapital ?? 0;
+  const totalCurrentProfit = (summary.totalCurrentValue ?? 0) - (summary.totalAllocatedCapital ?? 0);
+  const totalPayoutsAmount = summary.totalPayouts ?? 0;
 
   const columns = [
     {
@@ -600,6 +591,51 @@ export default function AdminFundedAccounts() {
           isLoading={isLoading}
           emptyMessage={t("admin.accounts.emptyMessage")}
         />
+        <div className="mt-4 flex items-center justify-between gap-4">
+            <p className="text-sm text-muted-foreground whitespace-nowrap">
+              Page {page} of {accountsData.totalPages} ({accountsData.total} total)
+            </p>
+            <Pagination className="w-auto mx-0">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+                {Array.from({ length: accountsData.totalPages }, (_, i) => i + 1)
+                  .filter((p) => p === 1 || p === accountsData.totalPages || Math.abs(p - page) <= 1)
+                  .reduce((acc, p, idx, arr) => {
+                    if (idx > 0 && p - arr[idx - 1] > 1) acc.push("ellipsis");
+                    acc.push(p);
+                    return acc;
+                  }, [])
+                  .map((p, idx) =>
+                    p === "ellipsis" ? (
+                      <PaginationItem key={`ellipsis-${idx}`}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    ) : (
+                      <PaginationItem key={p}>
+                        <PaginationLink
+                          isActive={p === page}
+                          onClick={() => setPage(p)}
+                          className="cursor-pointer"
+                        >
+                          {p}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  )}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => setPage((p) => Math.min(accountsData.totalPages, p + 1))}
+                    className={page === accountsData.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+        </div>
       </Card>
 
       <Dialog open={isDetailsDialogOpen} onOpenChange={handleCloseDetails}>

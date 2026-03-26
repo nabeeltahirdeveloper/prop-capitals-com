@@ -649,8 +649,7 @@ export default function AdminAccounts() {
           isLoading={isLoading}
           emptyMessage={t("admin.accounts.emptyMessage")}
         />
-        {accountsData.totalPages > 1 && (
-          <div className="mt-4 flex items-center justify-between gap-4">
+        <div className="mt-4 flex items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground whitespace-nowrap">
               Page {page} of {accountsData.totalPages} ({accountsData.total} total)
             </p>
@@ -694,8 +693,7 @@ export default function AdminAccounts() {
                 </PaginationItem>
               </PaginationContent>
             </Pagination>
-          </div>
-        )}
+        </div>
       </Card>
 
       {/* Account Details Dialog */}

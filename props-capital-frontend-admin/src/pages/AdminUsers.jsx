@@ -341,8 +341,7 @@ export default function AdminUsers() {
           isLoading={isLoading}
           emptyMessage={t("admin.users.emptyMessage")}
         />
-        {usersData.totalPages > 1 && (
-          <div className="mt-4 flex items-center justify-between gap-4">
+        <div className="mt-4 flex items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground whitespace-nowrap">
               Page {page} of {usersData.totalPages} ({usersData.total} total)
             </p>
@@ -386,8 +385,7 @@ export default function AdminUsers() {
                 </PaginationItem>
               </PaginationContent>
             </Pagination>
-          </div>
-        )}
+        </div>
       </Card>
 
       {/* Role Change Confirmation Dialog */}

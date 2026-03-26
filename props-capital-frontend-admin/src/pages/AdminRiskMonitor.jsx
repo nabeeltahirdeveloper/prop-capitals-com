@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryState, parseAsInteger } from "nuqs";
 import {
   adminGetRiskOverview,
   adminGetAllViolations,
@@ -6,6 +7,15 @@ import {
   adminGetAccount,
 } from "@/api/admin";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { useTranslation } from "../contexts/LanguageContext";
 import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
@@ -47,6 +57,8 @@ export default function AdminRiskMonitor() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [riskFilter, setRiskFilter] = useState("all");
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
+  const ITEMS_PER_PAGE = 20;
   const [selectedAccountId, setSelectedAccountId] = useState(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -141,6 +153,12 @@ export default function AdminRiskMonitor() {
     return matchesSearch && matchesRisk;
   });
 
+  const totalPages = Math.max(1, Math.ceil(filteredAccounts.length / ITEMS_PER_PAGE));
+  const paginatedAccounts = filteredAccounts.slice(
+    (page - 1) * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE,
+  );
+
   const riskCounts = {
     critical: accounts.filter((a) => getRiskLevel(a) === "critical").length,
     high: accounts.filter((a) => getRiskLevel(a) === "high").length,
@@ -228,9 +246,10 @@ export default function AdminRiskMonitor() {
           className={`bg-card border-border p-3 sm:p-4 cursor-pointer transition-all ${
             riskFilter === "critical" ? "ring-2 ring-red-500" : ""
           }`}
-          onClick={() =>
-            setRiskFilter(riskFilter === "critical" ? "all" : "critical")
-          }
+          onClick={() => {
+            setRiskFilter(riskFilter === "critical" ? "all" : "critical");
+            setPage(1);
+          }}
         >
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-red-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -251,7 +270,7 @@ export default function AdminRiskMonitor() {
           className={`bg-card border-border p-3 sm:p-4 cursor-pointer transition-all ${
             riskFilter === "high" ? "ring-2 ring-amber-500" : ""
           }`}
-          onClick={() => setRiskFilter(riskFilter === "high" ? "all" : "high")}
+          onClick={() => { setRiskFilter(riskFilter === "high" ? "all" : "high"); setPage(1); }}
         >
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-amber-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -272,9 +291,10 @@ export default function AdminRiskMonitor() {
           className={`bg-card border-border p-3 sm:p-4 cursor-pointer transition-all ${
             riskFilter === "medium" ? "ring-2 ring-yellow-500" : ""
           }`}
-          onClick={() =>
-            setRiskFilter(riskFilter === "medium" ? "all" : "medium")
-          }
+          onClick={() => {
+            setRiskFilter(riskFilter === "medium" ? "all" : "medium");
+            setPage(1);
+          }}
         >
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -295,7 +315,7 @@ export default function AdminRiskMonitor() {
           className={`bg-card border-border p-3 sm:p-4 cursor-pointer transition-all ${
             riskFilter === "low" ? "ring-2 ring-green-500" : ""
           }`}
-          onClick={() => setRiskFilter(riskFilter === "low" ? "all" : "low")}
+          onClick={() => { setRiskFilter(riskFilter === "low" ? "all" : "low"); setPage(1); }}
         >
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -319,7 +339,7 @@ export default function AdminRiskMonitor() {
         <Input
           placeholder={t("admin.riskMonitor.searchPlaceholder")}
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
           className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
         />
       </div>
@@ -380,7 +400,7 @@ export default function AdminRiskMonitor() {
                   </TableCell>
                 </TableRow>
               )}
-              {filteredAccounts.map((account) => {
+              {paginatedAccounts.map((account) => {
                 const riskLevel = getRiskLevel(account);
                 const dailyDD = account.daily_drawdown_percent || 0;
                 const maxDD = account.overall_drawdown_percent || 0;
@@ -500,6 +520,51 @@ export default function AdminRiskMonitor() {
               })}
             </TableBody>
           </Table>
+        </div>
+        <div className="mt-4 flex items-center justify-between gap-4 px-4 pb-4">
+          <p className="text-sm text-muted-foreground whitespace-nowrap">
+            Page {page} of {totalPages} ({filteredAccounts.length} total)
+          </p>
+          <Pagination className="w-auto mx-0">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+                .reduce((acc, p, idx, arr) => {
+                  if (idx > 0 && p - arr[idx - 1] > 1) acc.push("ellipsis");
+                  acc.push(p);
+                  return acc;
+                }, [])
+                .map((p, idx) =>
+                  p === "ellipsis" ? (
+                    <PaginationItem key={`ellipsis-${idx}`}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  ) : (
+                    <PaginationItem key={p}>
+                      <PaginationLink
+                        isActive={p === page}
+                        onClick={() => setPage(p)}
+                        className="cursor-pointer"
+                      >
+                        {p}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )
+                )}
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  className={page === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
       </Card>
 
