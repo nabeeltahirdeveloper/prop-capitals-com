@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Patch, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Patch, Body, UseGuards, Query, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
 
 import { AdminAccountsService } from './admin-accounts.service';
 import { JwtAuthGuard } from '../../auth/jwt.guard';
@@ -14,8 +14,14 @@ export class AdminAccountsController {
   // Get all accounts
 
   @Get()
-  async getAll() {
-    return this.adminAccountsService.getAll();
+  async getAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
+    @Query('search') search?: string,
+    @Query('status') status?: string,
+    @Query('phase') phase?: string,
+  ) {
+    return this.adminAccountsService.getAll({ page, limit, search, status, phase });
   }
 
   // Get one account

@@ -16,7 +16,7 @@ export class MarketDataController {
     private readonly marketDataService: MarketDataService,
     private readonly binanceWebSocketService: BinanceWebSocketService,
     private readonly massiveWebSocketService: MassiveWebSocketService,
-  ) {}
+  ) { }
 
   /**
    * Test endpoint to verify controller is working
@@ -99,11 +99,11 @@ export class MarketDataController {
     if (!symbol) {
       throw new BadRequestException('Symbol parameter is required');
     }
-    
+
     const limitNum = Math.min(parseInt(limit, 10) || 100, 5000); // Cap at 5000
     const validTimeframes = ['M1', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1', 'W1', 'MN'];
     const tf = validTimeframes.includes(timeframe) ? timeframe : 'M5';
-    
+
     return this.marketDataService.getHistory(symbol, tf, limitNum);
   }
 
@@ -150,7 +150,14 @@ export class MarketDataController {
     const symbolList = symbols.split(',').map((s) => s.trim());
     return this.marketDataService.getCryptoQuotes(symbolList);
   }
+  @Get('process-pending')
+  async processPendingOrders(@Query('symbol') symbol: string) {
+    if (!symbol) {
+      throw new BadRequestException('Symbol parameter is required');
+    }
 
+    return this.marketDataService.processPendingOrdersForSymbol(symbol);
+  }
   /**
    * Unified price endpoint - returns all prices with WebSocket priority
    * GET /market-data/prices?symbols=BTC/USD,EUR/USD,ETH/USD

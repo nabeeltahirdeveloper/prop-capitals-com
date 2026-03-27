@@ -14,37 +14,70 @@ export class AdminAccountsService {
     private notificationsService: NotificationsService,
   ) {}
 
-  // List all trading accounts
+  // List all trading accounts with pagination and filtering
 
-  async getAll() {
+  async getAll({ page, limit, search, status, phase }: { page: number; limit: number; search?: string; status?: string; phase?: string }) {
+    const skip = (page - 1) * limit;
 
-    return this.prisma.tradingAccount.findMany({
+    const where: any = {};
+    if (search) {
+      where.OR = [
+        { brokerLogin: { contains: search, mode: 'insensitive' } },
+        { user: { email: { contains: search, mode: 'insensitive' } } },
+      ];
+    }
+    if (status && status !== 'all') {
+      where.status = status.toUpperCase() as TradingAccountStatus;
+    }
+    if (phase && phase !== 'all') {
+      where.phase = phase.toUpperCase() as TradingPhase;
+    }
 
-      orderBy: { createdAt: 'desc' },
+    const isFundedView = phase === 'funded';
 
-      include: {
-
-        user: {
-          select: {
-            id: true,
-            email: true,
-            role: true,
-          },
+    const baseQueries: Promise<any>[] = [
+      this.prisma.tradingAccount.findMany({
+        skip,
+        take: limit,
+        where,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: { select: { id: true, email: true, role: true } },
+          challenge: true,
+          _count: { select: { trades: true, violations: true } },
         },
+      }),
+      this.prisma.tradingAccount.count({ where }),
+      this.prisma.tradingAccount.count({ where: { status: TradingAccountStatus.ACTIVE } }),
+      this.prisma.tradingAccount.count({ where: { phase: TradingPhase.PHASE2 } }),
+      this.prisma.tradingAccount.count({ where: { phase: TradingPhase.FUNDED } }),
+      this.prisma.tradingAccount.count({ where: { phase: TradingPhase.FAILED } }),
+    ];
 
-        challenge: true,
+    const [data, total, activeCount, phase2Count, fundedCount, failedCount] = await Promise.all(baseQueries);
 
-        _count: {
-          select: {
-            trades: true,
-            violations: true,
-          },
-        },
+    let fundedSummary: Record<string, number> = {};
+    if (isFundedView) {
+      const [activeFundedCount, balanceAgg, payoutAgg] = await Promise.all([
+        this.prisma.tradingAccount.count({ where: { phase: TradingPhase.FUNDED, status: TradingAccountStatus.ACTIVE } }),
+        this.prisma.tradingAccount.aggregate({ where: { phase: TradingPhase.FUNDED }, _sum: { initialBalance: true, balance: true } }),
+        this.prisma.payout.aggregate({ where: { tradingAccount: { phase: TradingPhase.FUNDED }, status: 'PAID' as any }, _sum: { amount: true } }),
+      ]);
+      fundedSummary = {
+        activeFunded: activeFundedCount,
+        totalAllocatedCapital: balanceAgg._sum.initialBalance || 0,
+        totalCurrentValue: balanceAgg._sum.balance || 0,
+        totalPayouts: payoutAgg._sum.amount || 0,
+      };
+    }
 
-      },
-
-    });
-
+    return {
+      data,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+      summary: { active: activeCount, phase2: phase2Count, funded: fundedCount, failed: failedCount, ...fundedSummary },
+    };
   }
 
   // Get one account with details
