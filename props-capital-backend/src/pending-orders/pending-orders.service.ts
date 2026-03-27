@@ -22,7 +22,6 @@ export class PendingOrdersService {
     'BNBUSDT', 'ADAUSDT', 'AVAXUSDT', 'DOTUSDT',
     'LINKUSDT',
   ];
-
   async createPendingOrder(data: {
     tradingAccountId: string;
     symbol: string;
