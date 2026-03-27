@@ -29,7 +29,6 @@ import {
   Eye,
   EyeOff,
   Calendar,
-  ArrowRight,
   Send,
   User,
   DollarSign,
@@ -42,6 +41,9 @@ import {
   Loader2,
 } from "lucide-react";
 import { format } from "date-fns";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import LeadsCardsView from "@/components/crm/LeadsCardsView";
 import LeadsListView from "@/components/crm/LeadsListView";
 import LeadsCompactView from "@/components/crm/LeadsCompactView";
@@ -128,8 +130,8 @@ export default function CRMLeads() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [importing, setImporting] = useState(false);
   const fileInputRef = useRef(null);
-  const fromDateRef = useRef(null);
-  const toDateRef = useRef(null);
+  const [dateRange, setDateRange] = useState({ from: undefined, to: undefined });
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   // Fetch leads from backend
   const fetchLeads = useCallback(async () => {
@@ -186,6 +188,27 @@ export default function CRMLeads() {
     fetchLeads();
     fetchStats();
   }, [fetchLeads, fetchStats]);
+
+  const handleDateRangeSelect = (range) => {
+    setDateRange(range || { from: undefined, to: undefined });
+    if (range?.from) {
+      setFromDate(format(range.from, "yyyy-MM-dd"));
+    } else {
+      setFromDate("");
+    }
+    if (range?.to) {
+      setToDate(format(range.to, "yyyy-MM-dd"));
+      setIsDatePickerOpen(false);
+    } else {
+      setToDate("");
+    }
+  };
+
+  const handleClearDateRange = () => {
+    setDateRange({ from: undefined, to: undefined });
+    setFromDate("");
+    setToDate("");
+  };
 
   // Handle search with debounce
   useEffect(() => {
@@ -623,36 +646,52 @@ export default function CRMLeads() {
             </SelectContent>
           </Select>
 
-          {/* Date Range Filters */}
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <div className="relative w-full sm:w-40">
-              <Calendar
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground hover:text-foreground cursor-pointer z-10"
-                onClick={() => fromDateRef.current?.showPicker()}
+          {/* Date Range Filter */}
+          <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full sm:w-auto justify-start text-left font-normal bg-muted border-border text-xs h-9",
+                  !dateRange.from && "text-muted-foreground"
+                )}
+              >
+                <Calendar className="mr-2 h-4 w-4" />
+                {dateRange.from ? (
+                  dateRange.to ? (
+                    <>
+                      {format(dateRange.from, "MMM dd, yyyy")} -{" "}
+                      {format(dateRange.to, "MMM dd, yyyy")}
+                    </>
+                  ) : (
+                    format(dateRange.from, "MMM dd, yyyy")
+                  )
+                ) : (
+                  <span>{t("crm.leads.selectDateRange", "Select date range")}</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <CalendarComponent
+                mode="range"
+                selected={dateRange}
+                onSelect={handleDateRangeSelect}
+                numberOfMonths={2}
+                initialFocus
               />
-              <Input
-                ref={fromDateRef}
-                type="date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                className="pl-10 bg-muted border-border text-foreground text-xs h-9 no-calendar-icon"
-              />
-            </div>
-            <ArrowRight className="w-4 h-4 text-muted-foreground shrink-0" />
-            <div className="relative w-full sm:w-40">
-              <Calendar
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground hover:text-foreground cursor-pointer z-10"
-                onClick={() => toDateRef.current?.showPicker()}
-              />
-              <Input
-                ref={toDateRef}
-                type="date"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-                className="pl-10 bg-muted border-border text-foreground text-xs h-9 no-calendar-icon"
-              />
-            </div>
-          </div>
+              {dateRange.from && (
+                <div className="p-3 border-t border-border flex justify-end">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClearDateRange}
+                  >
+                    {t("common.clear", "Clear")}
+                  </Button>
+                </div>
+              )}
+            </PopoverContent>
+          </Popover>
         </div>
       </Card>
 
