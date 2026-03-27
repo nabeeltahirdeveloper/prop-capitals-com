@@ -211,6 +211,7 @@ export default function CRMCalendar() {
 
       await apiPost("/crm/meetings", {
         ...newMeeting,
+        duration: parseInt(newMeeting.duration, 10),
         startTime,
       });
 
