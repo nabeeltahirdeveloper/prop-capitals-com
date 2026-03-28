@@ -9,7 +9,12 @@
     "success": "สำเร็จ",
     "cancel": "ยกเลิก",
     "delete": "ลบ",
-    "deleting": "กำลังลบ..."
+    "deleting": "กำลังลบ...",
+    "pagination": {
+      "previous": "ก่อนหน้า",
+      "next": "ถัดไป",
+      "pageOf": "หน้า {{current}} จาก {{total}}"
+    }
   },
   "home": {
     "hero": {
@@ -1400,10 +1405,10 @@
         "suspended": "ระงับ",
         "phase1": "เฟส 1",
         "phase2": "เฟส 2",
-        "closed": "Closed",
-        "dailyLocked": "Daily Locked",
-        "disqualified": "Disqualified",
-        "paused": "Paused"
+        "closed": "ปิดแล้ว",
+        "dailyLocked": "ล็อครายวัน",
+        "disqualified": "ถูกตัดสิทธิ์",
+        "paused": "หยุดชั่วคราว"
       },
       "table": {
         "account": "บัญชี",
@@ -1452,7 +1457,17 @@
         "forceFail": "คุณแน่ใจหรือไม่ว่าต้องการทำให้บัญชีนี้ล้มเหลว? การดำเนินการนี้ไม่สามารถย้อนกลับได้ง่าย",
         "reset": "คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตบัญชีนี้กลับไปที่เฟส 1?"
       },
-      "emptyMessage": "ไม่พบบัญชี"
+      "emptyMessage": "ไม่พบบัญชี",
+      "toast": {
+        "statusUpdated": "อัปเดตสถานะแล้ว",
+        "statusUpdatedDesc": "สถานะบัญชีเปลี่ยนเป็น {{status}}",
+        "statusUpdateFailed": "อัปเดตสถานะล้มเหลว",
+        "statusUpdateFailedDesc": "เกิดข้อผิดพลาดขณะอัปเดตสถานะบัญชี",
+        "phaseUpdated": "อัปเดตเฟสแล้ว",
+        "phaseUpdatedDesc": "เฟสบัญชีเปลี่ยนเป็น {{phase}}",
+        "phaseUpdateFailed": "อัปเดตเฟสล้มเหลว",
+        "phaseUpdateFailedDesc": "เกิดข้อผิดพลาดขณะอัปเดตเฟสบัญชี"
+      }
     },
     "payouts": {
       "title": "การจัดการการจ่ายเงิน",
@@ -1539,7 +1554,11 @@
       "refundReasonPlaceholder": "ใส่เหตุผลในการคืนเงิน...",
       "cancel": "ยกเลิก",
       "confirmRefund": "ยืนยันการคืนเงิน",
-      "refunding": "กำลังดำเนินการ..."
+      "refunding": "กำลังดำเนินการ...",
+      "refundSuccess": "คืนเงินสำเร็จ",
+      "refundSuccessDesc": "การชำระเงินได้รับการคืนเงินเรียบร้อยแล้ว",
+      "refundError": "คืนเงินล้มเหลว",
+      "refundErrorDesc": "ไม่สามารถคืนเงินได้ กรุณาลองอีกครั้ง"
     },
     "violations": {
       "title": "การละเมิดกฎ",
@@ -1657,19 +1676,19 @@
       "noExpiry": "ไม่มีวันหมดอายุ",
       "emptyMessage": "ไม่พบคูปอง",
       "messages": {
-        "copySuccess": "Coupon code copied",
-        "copyError": "Failed to copy coupon code",
-        "createSuccess": "Coupon created successfully",
-        "updateSuccess": "Coupon updated successfully",
-        "deleteSuccess": "Coupon deleted successfully",
-        "saveError": "Failed to save coupon",
-        "deleteError": "Failed to delete coupon"
+        "copySuccess": "คัดลอกรหัสไปยังคลิปบอร์ดแล้ว",
+        "copyError": "เกิดข้อผิดพลาดในการคัดลอกรหัส",
+        "createSuccess": "สร้างคูปองสำเร็จ",
+        "updateSuccess": "อัปเดตคูปองสำเร็จ",
+        "deleteSuccess": "ลบคูปองสำเร็จ",
+        "saveError": "เกิดข้อผิดพลาดในการบันทึกคูปอง",
+        "deleteError": "เกิดข้อผิดพลาดในการลบคูปอง"
       },
       "validation": {
-        "codeRequired": "Coupon code is required",
-        "discountRequired": "Discount value must be greater than 0",
-        "discountRangePercent": "Percentage discount cannot exceed 100",
-        "maxUsesInvalid": "Max uses must be at least 1"
+        "codeRequired": "ต้องระบุรหัสคูปอง",
+        "discountRequired": "ต้องระบุค่าส่วนลด",
+        "discountRangePercent": "เปอร์เซ็นต์ส่วนลดต้องอยู่ระหว่าง 1 ถึง 100",
+        "maxUsesInvalid": "จำนวนการใช้งานสูงสุดต้องเป็นจำนวนบวก"
       }
     },
     "support": {
@@ -1858,8 +1877,8 @@
         "account": "บัญชี"
       },
       "severity": {
-        "fatal": "Fatal",
-        "warning": "Warning"
+        "fatal": "ร้ายแรง",
+        "warning": "คำเตือน"
       },
       "loading": "กำลังโหลดบัญชี...",
       "noAccounts": "ไม่พบบัญชีที่ตรงกับเกณฑ์ของคุณ"
@@ -2039,48 +2058,65 @@
       "understand": "เข้าใจแล้ว",
       "noChallenges": "No challenges available"
     },
+    "fundedAccounts": {
+      "title": "บัญชีที่ได้รับทุน",
+      "subtitle": "ภาพรวมของบัญชีเทรดที่ได้รับทุนทั้งหมด",
+      "stats": {
+        "totalFunded": "บัญชีที่ได้รับทุนทั้งหมด",
+        "activeFunded": "บัญชีที่ได้รับทุนที่ใช้งานอยู่",
+        "totalCapital": "เงินทุนที่จัดสรรทั้งหมด",
+        "totalProfit": "กำไรปัจจุบันทั้งหมด",
+        "totalPayouts": "การจ่ายเงินทั้งหมด"
+      },
+      "details": {
+        "profitSplitLabel": "การแบ่งกำไร",
+        "totalPayoutsLabel": "การจ่ายเงินทั้งหมด",
+        "withdrawableProfitLabel": "กำไรที่ถอนได้",
+        "lastPayoutDateLabel": "วันที่จ่ายเงินล่าสุด"
+      }
+    },
     "apiKeys": {
-      "title": "API Keys",
-      "subtitle": "Manage API keys for third-party lead ingestion",
-      "generate": "Generate API Key",
-      "keyGenerated": "API Key Generated",
-      "generateNew": "Generate New API Key",
-      "keyName": "Key Name",
-      "keyNamePlaceholder": "e.g. Partner Integration",
-      "keyNameHint": "A label to identify this key (e.g. the partner name)",
-      "generating": "Generating...",
-      "generateKey": "Generate Key",
-      "copyWarning": "Copy this key now. It will not be shown again.",
-      "yourKey": "Your API Key",
-      "copied": "Copied!",
-      "copyToClipboard": "Copy to Clipboard",
-      "done": "Done",
-      "totalKeys": "Total Keys",
-      "active": "Active",
-      "revoked": "Revoked",
-      "emptyMessage": "No API keys yet. Generate one to get started.",
-      "created": "Created",
-      "lastUsed": "Last Used",
-      "never": "Never",
-      "endpoints": "Endpoints",
-      "singleLead": "Single lead",
-      "upTo100": "Up to 100 leads",
-      "checkStatus": "Check status",
-      "singleExample": "Single Lead Example",
-      "bulkExample": "Bulk Example",
-      "fieldsReference": "Fields Reference",
-      "field": "Field",
-      "type": "Type",
-      "required": "Required",
-      "yes": "Yes",
-      "no": "No",
-      "revoking": "Revoking...",
-      "revokeThisKey": "Revoke This Key",
-      "close": "Close",
-      "quickGuide": "Quick Integration Guide",
-      "guideText": "Third parties send leads to your API using the",
-      "header": "header:",
-      "guideNote": "Leads will appear automatically in the CRM Leads page with status NEW."
+      "title": "คีย์ API",
+      "subtitle": "จัดการคีย์ API สำหรับการเชื่อมต่อภายนอก",
+      "generate": "สร้าง",
+      "keyGenerated": "สร้างคีย์แล้ว",
+      "generateNew": "สร้างคีย์ใหม่",
+      "keyName": "ชื่อคีย์",
+      "keyNamePlaceholder": "เช่น: การเชื่อมต่อ CRM",
+      "keyNameHint": "เลือกชื่อที่สื่อความหมายเพื่อระบุคีย์นี้",
+      "generating": "กำลังสร้าง...",
+      "generateKey": "สร้างคีย์",
+      "copyWarning": "โปรดคัดลอกคีย์นี้ตอนนี้ คุณจะไม่สามารถดูมันอีกครั้ง",
+      "yourKey": "คีย์ API ของคุณ",
+      "copied": "คัดลอกแล้ว!",
+      "copyToClipboard": "คัดลอกไปยังคลิปบอร์ด",
+      "done": "เสร็จสิ้น",
+      "totalKeys": "คีย์ทั้งหมด",
+      "active": "ใช้งาน",
+      "revoked": "ถูกเพิกถอน",
+      "emptyMessage": "ยังไม่มีคีย์ API สร้างคีย์เพื่อเริ่มต้น",
+      "created": "สร้างเมื่อ",
+      "lastUsed": "ใช้ล่าสุด",
+      "never": "ไม่เคย",
+      "endpoints": "จุดเชื่อมต่อ",
+      "singleLead": "ลีดเดี่ยว",
+      "upTo100": "สูงสุด 100",
+      "checkStatus": "ตรวจสอบสถานะ",
+      "singleExample": "ตัวอย่างเดี่ยว",
+      "bulkExample": "ตัวอย่างจำนวนมาก",
+      "fieldsReference": "อ้างอิงฟิลด์",
+      "field": "ฟิลด์",
+      "type": "ประเภท",
+      "required": "จำเป็น",
+      "yes": "ใช่",
+      "no": "ไม่ใช่",
+      "revoking": "กำลังเพิกถอน...",
+      "revokeThisKey": "เพิกถอนคีย์นี้",
+      "close": "ปิด",
+      "quickGuide": "คู่มือด่วน",
+      "guideText": "ใช้ API นี้เพื่อส่งลีดจากฟอร์มภายนอกหรือการเชื่อมต่อ CRM",
+      "header": "ส่วนหัว",
+      "guideNote": "หมายเหตุ: คีย์ API แต่ละตัวมีสิทธิ์เข้าถึงเฉพาะจุดเชื่อมต่อลีดเท่านั้น"
     }
   },
   "signIn": {

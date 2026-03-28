@@ -73,16 +73,16 @@ export default function AdminFundedAccounts() {
         queryKey: ["admin-account-details", variables.id],
       });
       toast({
-        title: "Status updated",
-        description: `Account status changed to ${variables.status}.`,
+        title: t("admin.accounts.toast.statusUpdated"),
+        description: t("admin.accounts.toast.statusUpdatedDesc", { status: variables.status }),
       });
     },
     onError: (error) => {
       toast({
-        title: "Failed to update status",
+        title: t("admin.accounts.toast.statusUpdateFailed"),
         description:
           error?.message ||
-          "An error occurred while updating the account status.",
+          t("admin.accounts.toast.statusUpdateFailedDesc"),
         variant: "destructive",
       });
     },
@@ -96,16 +96,16 @@ export default function AdminFundedAccounts() {
         queryKey: ["admin-account-details", variables.id],
       });
       toast({
-        title: "Phase updated",
-        description: `Account phase changed to ${variables.phase}.`,
+        title: t("admin.accounts.toast.phaseUpdated"),
+        description: t("admin.accounts.toast.phaseUpdatedDesc", { phase: variables.phase }),
       });
     },
     onError: (error) => {
       toast({
-        title: "Failed to update phase",
+        title: t("admin.accounts.toast.phaseUpdateFailed"),
         description:
           error?.message ||
-          "An error occurred while updating the account phase.",
+          t("admin.accounts.toast.phaseUpdateFailedDesc"),
         variant: "destructive",
       });
     },

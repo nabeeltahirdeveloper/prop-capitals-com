@@ -9,7 +9,12 @@
     "success": "Success",
     "cancel": "Cancel",
     "delete": "Delete",
-    "deleting": "Deleting..."
+    "deleting": "Deleting...",
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "pageOf": "Page {{current}} of {{total}}"
+    }
   },
   "home": {
     "hero": {
@@ -1450,7 +1455,17 @@
         "forceFail": "Are you sure you want to force fail this account? This action cannot be easily undone.",
         "reset": "Are you sure you want to reset this account back to Phase 1?"
       },
-      "emptyMessage": "No accounts found"
+      "emptyMessage": "No accounts found",
+      "toast": {
+        "statusUpdated": "Status updated",
+        "statusUpdatedDesc": "Account status changed to {{status}}.",
+        "statusUpdateFailed": "Failed to update status",
+        "statusUpdateFailedDesc": "An error occurred while updating the account status.",
+        "phaseUpdated": "Phase updated",
+        "phaseUpdatedDesc": "Account phase changed to {{phase}}.",
+        "phaseUpdateFailed": "Failed to update phase",
+        "phaseUpdateFailedDesc": "An error occurred while updating the account phase."
+      }
     },
     "fundedAccounts": {
       "title": "Funded Accounts",
@@ -1596,7 +1611,11 @@
       "refundReasonPlaceholder": "Enter reason for refund...",
       "cancel": "Cancel",
       "confirmRefund": "Confirm Refund",
-      "refunding": "Processing..."
+      "refunding": "Processing...",
+      "refundSuccess": "Refund Successful",
+      "refundSuccessDesc": "The payment has been refunded successfully.",
+      "refundError": "Refund Failed",
+      "refundErrorDesc": "Failed to refund payment. Please try again."
     },
     "violations": {
       "title": "Rule Violations",

@@ -9,7 +9,12 @@
     "success": "성공",
     "cancel": "취소",
     "delete": "삭제",
-    "deleting": "삭제 중..."
+    "deleting": "삭제 중...",
+    "pagination": {
+      "previous": "이전",
+      "next": "다음",
+      "pageOf": "페이지 {{current}} / {{total}}"
+    }
   },
   "home": {
     "hero": {
@@ -1398,10 +1403,10 @@
         "suspended": "정지",
         "phase1": "1단계",
         "phase2": "2단계",
-        "closed": "Closed",
-        "dailyLocked": "Daily Locked",
-        "disqualified": "Disqualified",
-        "paused": "Paused"
+        "closed": "종료",
+        "dailyLocked": "일일 잠금",
+        "disqualified": "실격",
+        "paused": "일시정지"
       },
       "table": {
         "account": "계정",
@@ -1450,7 +1455,17 @@
         "forceFail": "이 계정을 강제 실패 처리하시겠습니까? 이 작업은 쉽게 취소할 수 없습니다.",
         "reset": "이 계정을 1단계로 재설정하시겠습니까?"
       },
-      "emptyMessage": "계정을 찾을 수 없습니다"
+      "emptyMessage": "계정을 찾을 수 없습니다",
+      "toast": {
+        "statusUpdated": "상태 업데이트 완료",
+        "statusUpdatedDesc": "계정 상태가 {{status}}(으)로 변경되었습니다.",
+        "statusUpdateFailed": "상태 업데이트 실패",
+        "statusUpdateFailedDesc": "계정 상태 업데이트 중 오류가 발생했습니다.",
+        "phaseUpdated": "단계 업데이트 완료",
+        "phaseUpdatedDesc": "계정 단계가 {{phase}}(으)로 변경되었습니다.",
+        "phaseUpdateFailed": "단계 업데이트 실패",
+        "phaseUpdateFailedDesc": "계정 단계 업데이트 중 오류가 발생했습니다."
+      }
     },
     "payouts": {
       "title": "지급 관리",
@@ -1537,7 +1552,11 @@
       "refundReasonPlaceholder": "환불 사유 입력...",
       "cancel": "취소",
       "confirmRefund": "환불 확정",
-      "refunding": "처리 중..."
+      "refunding": "처리 중...",
+      "refundSuccess": "환불 성공",
+      "refundSuccessDesc": "결제가 성공적으로 환불되었습니다.",
+      "refundError": "환불 실패",
+      "refundErrorDesc": "결제 환불에 실패했습니다. 다시 시도해주세요."
     },
     "violations": {
       "title": "규칙 위반",
@@ -1655,19 +1674,19 @@
       "noExpiry": "유효기간 없음",
       "emptyMessage": "쿠폰을 찾을 수 없습니다",
       "messages": {
-        "copySuccess": "Coupon code copied",
-        "copyError": "Failed to copy coupon code",
-        "createSuccess": "Coupon created successfully",
-        "updateSuccess": "Coupon updated successfully",
-        "deleteSuccess": "Coupon deleted successfully",
-        "saveError": "Failed to save coupon",
-        "deleteError": "Failed to delete coupon"
+        "copySuccess": "코드가 클립보드에 복사되었습니다",
+        "copyError": "코드 복사에 실패했습니다",
+        "createSuccess": "쿠폰이 성공적으로 생성되었습니다",
+        "updateSuccess": "쿠폰이 성공적으로 업데이트되었습니다",
+        "deleteSuccess": "쿠폰이 성공적으로 삭제되었습니다",
+        "saveError": "쿠폰 저장에 실패했습니다",
+        "deleteError": "쿠폰 삭제에 실패했습니다"
       },
       "validation": {
-        "codeRequired": "Coupon code is required",
-        "discountRequired": "Discount value must be greater than 0",
-        "discountRangePercent": "Percentage discount cannot exceed 100",
-        "maxUsesInvalid": "Max uses must be at least 1"
+        "codeRequired": "쿠폰 코드는 필수입니다",
+        "discountRequired": "할인 값은 필수입니다",
+        "discountRangePercent": "할인율은 1에서 100 사이여야 합니다",
+        "maxUsesInvalid": "최대 사용 횟수는 양수여야 합니다"
       }
     },
     "support": {
@@ -1713,14 +1732,25 @@
       },
       "actions": {
         "take": "담당하기",
-        "resolve": "해결"
+        "resolve": "해결",
+        "close": "닫기"
       },
       "dialog": {
         "from": "보낸 사람",
         "writeResponse": "답변을 작성해 주세요...",
         "close": "닫기",
         "sending": "전송 중...",
-        "sendAndResolve": "전송하고 해결"
+        "sendAndResolve": "전송하고 해결",
+        "submitted": "제출됨",
+        "userMessage": "사용자 메시지",
+        "previousReply": "이전 답변",
+        "sendNewReply": "새 답변 보내기"
+      },
+      "toast": {
+        "successTitle": "성공",
+        "errorTitle": "오류",
+        "replySent": "답변이 성공적으로 전송되었습니다",
+        "statusUpdated": "티켓 상태가 업데이트되었습니다"
       },
       "emptyMessage": "티켓을 찾을 수 없습니다",
       "subjects": {
@@ -1845,8 +1875,8 @@
         "account": "계정"
       },
       "severity": {
-        "fatal": "Fatal",
-        "warning": "Warning"
+        "fatal": "치명적",
+        "warning": "경고"
       },
       "loading": "계정 로드 중...",
       "noAccounts": "조건에 맞는 계정을 찾을 수 없습니다."
@@ -2027,47 +2057,64 @@
       "noChallenges": "No challenges available"
     },
     "apiKeys": {
-      "title": "API Keys",
-      "subtitle": "Manage API keys for third-party lead ingestion",
-      "generate": "Generate API Key",
-      "keyGenerated": "API Key Generated",
-      "generateNew": "Generate New API Key",
-      "keyName": "Key Name",
-      "keyNamePlaceholder": "e.g. Partner Integration",
-      "keyNameHint": "A label to identify this key (e.g. the partner name)",
-      "generating": "Generating...",
-      "generateKey": "Generate Key",
-      "copyWarning": "Copy this key now. It will not be shown again.",
-      "yourKey": "Your API Key",
-      "copied": "Copied!",
-      "copyToClipboard": "Copy to Clipboard",
-      "done": "Done",
-      "totalKeys": "Total Keys",
-      "active": "Active",
-      "revoked": "Revoked",
-      "emptyMessage": "No API keys yet. Generate one to get started.",
-      "created": "Created",
-      "lastUsed": "Last Used",
-      "never": "Never",
-      "endpoints": "Endpoints",
-      "singleLead": "Single lead",
-      "upTo100": "Up to 100 leads",
-      "checkStatus": "Check status",
-      "singleExample": "Single Lead Example",
-      "bulkExample": "Bulk Example",
-      "fieldsReference": "Fields Reference",
-      "field": "Field",
-      "type": "Type",
-      "required": "Required",
-      "yes": "Yes",
-      "no": "No",
-      "revoking": "Revoking...",
-      "revokeThisKey": "Revoke This Key",
-      "close": "Close",
-      "quickGuide": "Quick Integration Guide",
-      "guideText": "Third parties send leads to your API using the",
-      "header": "header:",
-      "guideNote": "Leads will appear automatically in the CRM Leads page with status NEW."
+      "title": "API 키",
+      "subtitle": "외부 연동을 위한 API 키 관리",
+      "generate": "생성",
+      "keyGenerated": "키 생성 완료",
+      "generateNew": "새 키 생성",
+      "keyName": "키 이름",
+      "keyNamePlaceholder": "예: CRM 연동",
+      "keyNameHint": "이 키를 식별할 수 있는 이름을 입력하세요",
+      "generating": "생성 중...",
+      "generateKey": "키 생성",
+      "copyWarning": "이 키를 지금 복사하세요. 다시 볼 수 없습니다.",
+      "yourKey": "API 키",
+      "copied": "복사됨!",
+      "copyToClipboard": "클립보드에 복사",
+      "done": "완료",
+      "totalKeys": "총 키 수",
+      "active": "활성",
+      "revoked": "폐기됨",
+      "emptyMessage": "아직 API 키가 없습니다. 시작하려면 키를 생성하세요.",
+      "created": "생성일",
+      "lastUsed": "마지막 사용",
+      "never": "사용 안 함",
+      "endpoints": "엔드포인트",
+      "singleLead": "단일 리드",
+      "upTo100": "최대 100건",
+      "checkStatus": "상태 확인",
+      "singleExample": "단일 예제",
+      "bulkExample": "대량 예제",
+      "fieldsReference": "필드 참조",
+      "field": "필드",
+      "type": "유형",
+      "required": "필수",
+      "yes": "예",
+      "no": "아니오",
+      "revoking": "폐기 중...",
+      "revokeThisKey": "이 키 폐기",
+      "close": "닫기",
+      "quickGuide": "빠른 가이드",
+      "guideText": "이 API를 사용하여 외부 양식이나 CRM 연동에서 리드를 전송하세요.",
+      "header": "헤더",
+      "guideNote": "참고: 각 API 키는 리드 엔드포인트에만 접근이 제한됩니다."
+    },
+    "fundedAccounts": {
+      "title": "펀딩 계정",
+      "subtitle": "모든 펀딩 트레이딩 계정 개요",
+      "stats": {
+        "totalFunded": "총 펀딩 계정",
+        "activeFunded": "활성 펀딩 계정",
+        "totalCapital": "총 할당 자본",
+        "totalProfit": "현재 총 수익",
+        "totalPayouts": "총 지급액"
+      },
+      "details": {
+        "profitSplitLabel": "수익 분배",
+        "totalPayoutsLabel": "총 지급액",
+        "withdrawableProfitLabel": "인출 가능 수익",
+        "lastPayoutDateLabel": "마지막 지급일"
+      }
     }
   },
   "signIn": {

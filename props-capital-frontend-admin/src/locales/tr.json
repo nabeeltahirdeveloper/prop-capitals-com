@@ -9,7 +9,12 @@
     "success": "Başarılı",
     "cancel": "İptal",
     "delete": "Sil",
-    "deleting": "Siliniyor..."
+    "deleting": "Siliniyor...",
+    "pagination": {
+      "previous": "Önceki",
+      "next": "Sonraki",
+      "pageOf": "Sayfa {{current}} / {{total}}"
+    }
   },
   "home": {
     "hero": {
@@ -1398,10 +1403,10 @@
         "suspended": "Askıya alındı",
         "phase1": "Aşama 1",
         "phase2": "Aşama 2",
-        "closed": "Closed",
-        "dailyLocked": "Daily Locked",
-        "disqualified": "Disqualified",
-        "paused": "Paused"
+        "closed": "Kapatılmış",
+        "dailyLocked": "Günlük Kilitli",
+        "disqualified": "Diskalifiye",
+        "paused": "Duraklatılmış"
       },
       "table": {
         "account": "Hesap",
@@ -1450,7 +1455,17 @@
         "forceFail": "Bu hesabı zorla başarısız kılmak istediğinizden emin misiniz? Bu işlem kolayca geri alınamaz.",
         "reset": "Bu hesabı Aşama 1'e sıfırlamak istediğinizden emin misiniz?"
       },
-      "emptyMessage": "Hesap bulunamadı"
+      "emptyMessage": "Hesap bulunamadı",
+      "toast": {
+        "statusUpdated": "Durum güncellendi",
+        "statusUpdatedDesc": "Hesap durumu {{status}} olarak değiştirildi.",
+        "statusUpdateFailed": "Durum güncelleme başarısız",
+        "statusUpdateFailedDesc": "Hesap durumu güncellenirken bir hata oluştu.",
+        "phaseUpdated": "Aşama güncellendi",
+        "phaseUpdatedDesc": "Hesap aşaması {{phase}} olarak değiştirildi.",
+        "phaseUpdateFailed": "Aşama güncelleme başarısız",
+        "phaseUpdateFailedDesc": "Hesap aşaması güncellenirken bir hata oluştu."
+      }
     },
     "payouts": {
       "title": "Ödeme yönetimi",
@@ -1537,7 +1552,11 @@
       "refundReasonPlaceholder": "İade nedenini girin...",
       "cancel": "İptal",
       "confirmRefund": "İadeyi onayla",
-      "refunding": "İşleniyor..."
+      "refunding": "İşleniyor...",
+      "refundSuccess": "İade Başarılı",
+      "refundSuccessDesc": "Ödeme başarıyla iade edildi.",
+      "refundError": "İade Başarısız",
+      "refundErrorDesc": "Ödeme iadesi yapılamadı. Lütfen tekrar deneyin."
     },
     "violations": {
       "title": "Kural ihlalleri",
@@ -1655,19 +1674,19 @@
       "noExpiry": "Süresiz",
       "emptyMessage": "Kupon bulunamadı",
       "messages": {
-        "copySuccess": "Coupon code copied",
-        "copyError": "Failed to copy coupon code",
-        "createSuccess": "Coupon created successfully",
-        "updateSuccess": "Coupon updated successfully",
-        "deleteSuccess": "Coupon deleted successfully",
-        "saveError": "Failed to save coupon",
-        "deleteError": "Failed to delete coupon"
+        "copySuccess": "Kod panoya kopyalandı",
+        "copyError": "Kod kopyalanırken hata oluştu",
+        "createSuccess": "Kupon başarıyla oluşturuldu",
+        "updateSuccess": "Kupon başarıyla güncellendi",
+        "deleteSuccess": "Kupon başarıyla silindi",
+        "saveError": "Kupon kaydedilirken hata oluştu",
+        "deleteError": "Kupon silinirken hata oluştu"
       },
       "validation": {
-        "codeRequired": "Coupon code is required",
-        "discountRequired": "Discount value must be greater than 0",
-        "discountRangePercent": "Percentage discount cannot exceed 100",
-        "maxUsesInvalid": "Max uses must be at least 1"
+        "codeRequired": "Kupon kodu zorunludur",
+        "discountRequired": "İndirim değeri zorunludur",
+        "discountRangePercent": "İndirim yüzdesi 1 ile 100 arasında olmalıdır",
+        "maxUsesInvalid": "Maksimum kullanım sayısı pozitif bir sayı olmalıdır"
       }
     },
     "support": {
@@ -1713,14 +1732,25 @@
       },
       "actions": {
         "take": "Üstlen",
-        "resolve": "Çöz"
+        "resolve": "Çöz",
+        "close": "Kapat"
       },
       "dialog": {
         "from": "Gönderen",
         "writeResponse": "Yanıtınızı yazın...",
         "close": "Kapat",
         "sending": "Gönderiliyor...",
-        "sendAndResolve": "Gönder ve çöz"
+        "sendAndResolve": "Gönder ve çöz",
+        "submitted": "Gönderildi",
+        "userMessage": "Kullanıcı Mesajı",
+        "previousReply": "Önceki Yanıt",
+        "sendNewReply": "Yeni Yanıt Gönder"
+      },
+      "toast": {
+        "successTitle": "Başarılı",
+        "errorTitle": "Hata",
+        "replySent": "Yanıt başarıyla gönderildi",
+        "statusUpdated": "Bilet durumu güncellendi"
       },
       "emptyMessage": "Talep bulunamadı",
       "subjects": {
@@ -1845,8 +1875,8 @@
         "account": "Hesap"
       },
       "severity": {
-        "fatal": "Fatal",
-        "warning": "Warning"
+        "fatal": "Ölümcül",
+        "warning": "Uyarı"
       },
       "loading": "Hesaplar yükleniyor...",
       "noAccounts": "Ölçütlerinize uyan hesap bulunamadı."
@@ -2027,47 +2057,64 @@
       "noChallenges": "No challenges available"
     },
     "apiKeys": {
-      "title": "API Keys",
-      "subtitle": "Manage API keys for third-party lead ingestion",
-      "generate": "Generate API Key",
-      "keyGenerated": "API Key Generated",
-      "generateNew": "Generate New API Key",
-      "keyName": "Key Name",
-      "keyNamePlaceholder": "e.g. Partner Integration",
-      "keyNameHint": "A label to identify this key (e.g. the partner name)",
-      "generating": "Generating...",
-      "generateKey": "Generate Key",
-      "copyWarning": "Copy this key now. It will not be shown again.",
-      "yourKey": "Your API Key",
-      "copied": "Copied!",
-      "copyToClipboard": "Copy to Clipboard",
-      "done": "Done",
-      "totalKeys": "Total Keys",
-      "active": "Active",
-      "revoked": "Revoked",
-      "emptyMessage": "No API keys yet. Generate one to get started.",
-      "created": "Created",
-      "lastUsed": "Last Used",
-      "never": "Never",
-      "endpoints": "Endpoints",
-      "singleLead": "Single lead",
-      "upTo100": "Up to 100 leads",
-      "checkStatus": "Check status",
-      "singleExample": "Single Lead Example",
-      "bulkExample": "Bulk Example",
-      "fieldsReference": "Fields Reference",
-      "field": "Field",
-      "type": "Type",
-      "required": "Required",
-      "yes": "Yes",
-      "no": "No",
-      "revoking": "Revoking...",
-      "revokeThisKey": "Revoke This Key",
-      "close": "Close",
-      "quickGuide": "Quick Integration Guide",
-      "guideText": "Third parties send leads to your API using the",
-      "header": "header:",
-      "guideNote": "Leads will appear automatically in the CRM Leads page with status NEW."
+      "title": "API Anahtarları",
+      "subtitle": "Harici entegrasyonlar için API anahtarlarını yönetin",
+      "generate": "Oluştur",
+      "keyGenerated": "Anahtar Oluşturuldu",
+      "generateNew": "Yeni Anahtar Oluştur",
+      "keyName": "Anahtar Adı",
+      "keyNamePlaceholder": "Örn: CRM Entegrasyonu",
+      "keyNameHint": "Bu anahtarı tanımlamak için açıklayıcı bir ad seçin",
+      "generating": "Oluşturuluyor...",
+      "generateKey": "Anahtar Oluştur",
+      "copyWarning": "Bu anahtarı şimdi kopyaladığınızdan emin olun. Tekrar göremeyeceksiniz.",
+      "yourKey": "API Anahtarınız",
+      "copied": "Kopyalandı!",
+      "copyToClipboard": "Panoya kopyala",
+      "done": "Tamam",
+      "totalKeys": "Toplam Anahtar",
+      "active": "Aktif",
+      "revoked": "İptal Edilmiş",
+      "emptyMessage": "Henüz API anahtarı yok. Başlamak için bir tane oluşturun.",
+      "created": "Oluşturulma",
+      "lastUsed": "Son Kullanım",
+      "never": "Hiç",
+      "endpoints": "Uç Noktalar",
+      "singleLead": "Tekli Müşteri Adayı",
+      "upTo100": "100'e kadar",
+      "checkStatus": "Durum Kontrol",
+      "singleExample": "Tekli Örnek",
+      "bulkExample": "Toplu Örnek",
+      "fieldsReference": "Alan Referansı",
+      "field": "Alan",
+      "type": "Tür",
+      "required": "Zorunlu",
+      "yes": "Evet",
+      "no": "Hayır",
+      "revoking": "İptal ediliyor...",
+      "revokeThisKey": "Bu Anahtarı İptal Et",
+      "close": "Kapat",
+      "quickGuide": "Hızlı Kılavuz",
+      "guideText": "Bu API'yi harici formlardan veya CRM entegrasyonlarından müşteri adayları göndermek için kullanın.",
+      "header": "Başlık",
+      "guideNote": "Not: Her API anahtarı yalnızca müşteri adayı uç noktalarına sınırlı erişime sahiptir."
+    },
+    "fundedAccounts": {
+      "title": "Fonlanmış Hesaplar",
+      "subtitle": "Tüm fonlanmış işlem hesaplarına genel bakış",
+      "stats": {
+        "totalFunded": "Toplam Fonlanmış Hesaplar",
+        "activeFunded": "Aktif Fonlanmış Hesaplar",
+        "totalCapital": "Toplam Tahsis Edilen Sermaye",
+        "totalProfit": "Toplam Mevcut Kâr",
+        "totalPayouts": "Toplam Ödemeler"
+      },
+      "details": {
+        "profitSplitLabel": "Kâr Paylaşımı",
+        "totalPayoutsLabel": "Toplam Ödemeler",
+        "withdrawableProfitLabel": "Çekilebilir Kâr",
+        "lastPayoutDateLabel": "Son Ödeme Tarihi"
+      }
     }
   },
   "signIn": {

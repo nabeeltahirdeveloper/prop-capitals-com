@@ -9,7 +9,12 @@
     "success": "Успех",
     "cancel": "Отмена",
     "delete": "Удалить",
-    "deleting": "Удаление..."
+    "deleting": "Удаление...",
+    "pagination": {
+      "previous": "Назад",
+      "next": "Вперёд",
+      "pageOf": "Страница {{current}} из {{total}}"
+    }
   },
   "home": {
     "hero": {
@@ -1398,10 +1403,10 @@
         "suspended": "Приостановлено",
         "phase1": "Фаза 1",
         "phase2": "Фаза 2",
-        "closed": "Closed",
-        "dailyLocked": "Daily Locked",
-        "disqualified": "Disqualified",
-        "paused": "Paused"
+        "closed": "Закрыт",
+        "dailyLocked": "Дневная Блокировка",
+        "disqualified": "Дисквалифицирован",
+        "paused": "Приостановлен"
       },
       "table": {
         "account": "Аккаунт",
@@ -1450,7 +1455,17 @@
         "forceFail": "Вы уверены, что хотите принудительно провалить этот аккаунт? Это действие нельзя легко отменить.",
         "reset": "Вы уверены, что хотите сбросить этот аккаунт до Фазы 1?"
       },
-      "emptyMessage": "Аккаунты не найдены"
+      "emptyMessage": "Аккаунты не найдены",
+      "toast": {
+        "statusUpdated": "Статус обновлён",
+        "statusUpdatedDesc": "Статус аккаунта изменён на {{status}}.",
+        "statusUpdateFailed": "Ошибка обновления статуса",
+        "statusUpdateFailedDesc": "Произошла ошибка при обновлении статуса аккаунта.",
+        "phaseUpdated": "Фаза обновлена",
+        "phaseUpdatedDesc": "Фаза аккаунта изменена на {{phase}}.",
+        "phaseUpdateFailed": "Ошибка обновления фазы",
+        "phaseUpdateFailedDesc": "Произошла ошибка при обновлении фазы аккаунта."
+      }
     },
     "payouts": {
       "title": "Управление выплатами",
@@ -1537,7 +1552,11 @@
       "refundReasonPlaceholder": "Введите причину возврата...",
       "cancel": "Отмена",
       "confirmRefund": "Подтвердить возврат",
-      "refunding": "Обработка..."
+      "refunding": "Обработка...",
+      "refundSuccess": "Возврат Выполнен",
+      "refundSuccessDesc": "Платёж был успешно возвращён.",
+      "refundError": "Ошибка Возврата",
+      "refundErrorDesc": "Не удалось выполнить возврат платежа. Попробуйте снова."
     },
     "violations": {
       "title": "Нарушения правил",
@@ -1655,19 +1674,19 @@
       "noExpiry": "Без срока действия",
       "emptyMessage": "Купоны не найдены",
       "messages": {
-        "copySuccess": "Coupon code copied",
-        "copyError": "Failed to copy coupon code",
-        "createSuccess": "Coupon created successfully",
-        "updateSuccess": "Coupon updated successfully",
-        "deleteSuccess": "Coupon deleted successfully",
-        "saveError": "Failed to save coupon",
-        "deleteError": "Failed to delete coupon"
+        "copySuccess": "Код скопирован в буфер обмена",
+        "copyError": "Ошибка копирования кода",
+        "createSuccess": "Купон успешно создан",
+        "updateSuccess": "Купон успешно обновлён",
+        "deleteSuccess": "Купон успешно удалён",
+        "saveError": "Ошибка сохранения купона",
+        "deleteError": "Ошибка удаления купона"
       },
       "validation": {
-        "codeRequired": "Coupon code is required",
-        "discountRequired": "Discount value must be greater than 0",
-        "discountRangePercent": "Percentage discount cannot exceed 100",
-        "maxUsesInvalid": "Max uses must be at least 1"
+        "codeRequired": "Код купона обязателен",
+        "discountRequired": "Значение скидки обязательно",
+        "discountRangePercent": "Процент скидки должен быть от 1 до 100",
+        "maxUsesInvalid": "Максимальное количество использований должно быть положительным числом"
       }
     },
     "support": {
@@ -1713,14 +1732,25 @@
       },
       "actions": {
         "take": "Взять в работу",
-        "resolve": "Решить"
+        "resolve": "Решить",
+        "close": "Закрыть"
       },
       "dialog": {
         "from": "От",
         "writeResponse": "Напишите ответ...",
         "close": "Закрыть",
         "sending": "Отправка...",
-        "sendAndResolve": "Отправить и закрыть"
+        "sendAndResolve": "Отправить и закрыть",
+        "submitted": "Отправлено",
+        "userMessage": "Сообщение Пользователя",
+        "previousReply": "Предыдущий Ответ",
+        "sendNewReply": "Отправить Новый Ответ"
+      },
+      "toast": {
+        "successTitle": "Успешно",
+        "errorTitle": "Ошибка",
+        "replySent": "Ответ успешно отправлен",
+        "statusUpdated": "Статус тикета обновлён"
       },
       "emptyMessage": "Тикеты не найдены",
       "subjects": {
@@ -1845,8 +1875,8 @@
         "account": "Аккаунт"
       },
       "severity": {
-        "fatal": "Fatal",
-        "warning": "Warning"
+        "fatal": "Критический",
+        "warning": "Предупреждение"
       },
       "loading": "Загрузка учетных записей...",
       "noAccounts": "Не найдены учетные записи, соответствующие условиям поиска."
@@ -2027,47 +2057,64 @@
       "noChallenges": "No challenges available"
     },
     "apiKeys": {
-      "title": "API Keys",
-      "subtitle": "Manage API keys for third-party lead ingestion",
-      "generate": "Generate API Key",
-      "keyGenerated": "API Key Generated",
-      "generateNew": "Generate New API Key",
-      "keyName": "Key Name",
-      "keyNamePlaceholder": "e.g. Partner Integration",
-      "keyNameHint": "A label to identify this key (e.g. the partner name)",
-      "generating": "Generating...",
-      "generateKey": "Generate Key",
-      "copyWarning": "Copy this key now. It will not be shown again.",
-      "yourKey": "Your API Key",
-      "copied": "Copied!",
-      "copyToClipboard": "Copy to Clipboard",
-      "done": "Done",
-      "totalKeys": "Total Keys",
-      "active": "Active",
-      "revoked": "Revoked",
-      "emptyMessage": "No API keys yet. Generate one to get started.",
-      "created": "Created",
-      "lastUsed": "Last Used",
-      "never": "Never",
-      "endpoints": "Endpoints",
-      "singleLead": "Single lead",
-      "upTo100": "Up to 100 leads",
-      "checkStatus": "Check status",
-      "singleExample": "Single Lead Example",
-      "bulkExample": "Bulk Example",
-      "fieldsReference": "Fields Reference",
-      "field": "Field",
-      "type": "Type",
-      "required": "Required",
-      "yes": "Yes",
-      "no": "No",
-      "revoking": "Revoking...",
-      "revokeThisKey": "Revoke This Key",
-      "close": "Close",
-      "quickGuide": "Quick Integration Guide",
-      "guideText": "Third parties send leads to your API using the",
-      "header": "header:",
-      "guideNote": "Leads will appear automatically in the CRM Leads page with status NEW."
+      "title": "API Ключи",
+      "subtitle": "Управление API ключами для внешних интеграций",
+      "generate": "Сгенерировать",
+      "keyGenerated": "Ключ Сгенерирован",
+      "generateNew": "Сгенерировать Новый Ключ",
+      "keyName": "Имя Ключа",
+      "keyNamePlaceholder": "Напр.: Интеграция CRM",
+      "keyNameHint": "Выберите описательное имя для идентификации этого ключа",
+      "generating": "Генерация...",
+      "generateKey": "Сгенерировать Ключ",
+      "copyWarning": "Обязательно скопируйте этот ключ сейчас. Вы не сможете увидеть его снова.",
+      "yourKey": "Ваш API Ключ",
+      "copied": "Скопировано!",
+      "copyToClipboard": "Скопировать в буфер обмена",
+      "done": "Готово",
+      "totalKeys": "Всего Ключей",
+      "active": "Активен",
+      "revoked": "Отозван",
+      "emptyMessage": "API ключей пока нет. Сгенерируйте один, чтобы начать.",
+      "created": "Создан",
+      "lastUsed": "Последнее Использование",
+      "never": "Никогда",
+      "endpoints": "Конечные Точки",
+      "singleLead": "Одиночный Лид",
+      "upTo100": "До 100",
+      "checkStatus": "Проверить Статус",
+      "singleExample": "Пример Одиночного",
+      "bulkExample": "Пример Массового",
+      "fieldsReference": "Справочник Полей",
+      "field": "Поле",
+      "type": "Тип",
+      "required": "Обязательно",
+      "yes": "Да",
+      "no": "Нет",
+      "revoking": "Отзыв...",
+      "revokeThisKey": "Отозвать этот Ключ",
+      "close": "Закрыть",
+      "quickGuide": "Краткое Руководство",
+      "guideText": "Используйте этот API для отправки лидов из внешних форм или CRM интеграций.",
+      "header": "Заголовок",
+      "guideNote": "Примечание: Каждый API ключ имеет ограниченный доступ только к конечным точкам лидов."
+    },
+    "fundedAccounts": {
+      "title": "Финансируемые Аккаунты",
+      "subtitle": "Обзор всех финансируемых торговых аккаунтов",
+      "stats": {
+        "totalFunded": "Всего Финансируемых Аккаунтов",
+        "activeFunded": "Активных Финансируемых Аккаунтов",
+        "totalCapital": "Общий Выделенный Капитал",
+        "totalProfit": "Текущая Общая Прибыль",
+        "totalPayouts": "Общая Сумма Выплат"
+      },
+      "details": {
+        "profitSplitLabel": "Распределение Прибыли",
+        "totalPayoutsLabel": "Общая Сумма Выплат",
+        "withdrawableProfitLabel": "Доступная для Вывода Прибыль",
+        "lastPayoutDateLabel": "Дата Последней Выплаты"
+      }
     }
   },
   "signIn": {
