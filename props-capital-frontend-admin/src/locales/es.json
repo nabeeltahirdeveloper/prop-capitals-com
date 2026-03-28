@@ -9,7 +9,12 @@
     "success": "Éxito",
     "cancel": "Cancelar",
     "delete": "Eliminar",
-    "deleting": "Eliminando..."
+    "deleting": "Eliminando...",
+    "pagination": {
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "pageOf": "Página {{current}} de {{total}}"
+    }
   },
   "home": {
     "hero": {
@@ -1211,7 +1216,7 @@
     "pipeline": "Canalizaci?n",
     "ftdReport": "Informe FTD",
     "calendar": "Calendario",
-    "fundedAccounts": "Funded Accounts",
+    "fundedAccounts": "Cuentas Financiadas",
     "propServer": "Prop Server",
     "crmApiKey": "CRM API Keys"
   },
@@ -1327,7 +1332,7 @@
       "subtitle": "Ver y gestionar todos los usuarios de la plataforma",
       "stats": {
         "totalUsers": "Total de usuarios",
-        "traders": "Traders",
+        "traders": "Operadores",
         "admins": "Administradores",
         "newThisWeek": "Nuevos esta semana"
       },
@@ -1335,7 +1340,7 @@
       "filter": {
         "role": "Rol",
         "allRoles": "Todos los roles",
-        "traders": "Traders",
+        "traders": "Operadores",
         "admins": "Administradores"
       },
       "table": {
@@ -1398,10 +1403,10 @@
         "suspended": "Suspendidas",
         "phase1": "Fase 1",
         "phase2": "Fase 2",
-        "closed": "Closed",
-        "dailyLocked": "Daily Locked",
-        "disqualified": "Disqualified",
-        "paused": "Paused"
+        "closed": "Cerrada",
+        "dailyLocked": "Bloqueo Diario",
+        "disqualified": "Descalificada",
+        "paused": "Pausada"
       },
       "table": {
         "account": "Cuenta",
@@ -1450,7 +1455,34 @@
         "forceFail": "¿Estás seguro de que deseas forzar el fallo de esta cuenta? Esta acción no se puede deshacer fácilmente.",
         "reset": "¿Estás seguro de que deseas restablecer esta cuenta a la Fase 1?"
       },
-      "emptyMessage": "No se encontraron cuentas"
+      "emptyMessage": "No se encontraron cuentas",
+      "toast": {
+        "statusUpdated": "Estado actualizado",
+        "statusUpdatedDesc": "El estado de la cuenta ha cambiado a {{status}}.",
+        "statusUpdateFailed": "Error al actualizar estado",
+        "statusUpdateFailedDesc": "Ocurrió un error al actualizar el estado de la cuenta.",
+        "phaseUpdated": "Fase actualizada",
+        "phaseUpdatedDesc": "La fase de la cuenta ha cambiado a {{phase}}.",
+        "phaseUpdateFailed": "Error al actualizar fase",
+        "phaseUpdateFailedDesc": "Ocurrió un error al actualizar la fase de la cuenta."
+      }
+    },
+    "fundedAccounts": {
+      "title": "Cuentas Financiadas",
+      "subtitle": "Resumen de todas las cuentas de trading financiadas",
+      "stats": {
+        "totalFunded": "Total de Cuentas Financiadas",
+        "activeFunded": "Cuentas Financiadas Activas",
+        "totalCapital": "Capital Total Asignado",
+        "totalProfit": "Beneficio Total Actual",
+        "totalPayouts": "Total de Pagos"
+      },
+      "details": {
+        "profitSplitLabel": "Reparto de Beneficios",
+        "totalPayoutsLabel": "Total de Pagos",
+        "withdrawableProfitLabel": "Beneficio Retirable",
+        "lastPayoutDateLabel": "Fecha del Último Pago"
+      }
     },
     "payouts": {
       "title": "Gestión de pagos",
@@ -1537,7 +1569,11 @@
       "refundReasonPlaceholder": "Ingresa el motivo del reembolso...",
       "cancel": "Cancelar",
       "confirmRefund": "Confirmar reembolso",
-      "refunding": "Procesando..."
+      "refunding": "Procesando...",
+      "refundSuccess": "Reembolso Exitoso",
+      "refundSuccessDesc": "El pago ha sido reembolsado exitosamente.",
+      "refundError": "Error en el Reembolso",
+      "refundErrorDesc": "No se pudo reembolsar el pago. Inténtelo de nuevo."
     },
     "violations": {
       "title": "Infracciones de reglas",
@@ -1655,19 +1691,19 @@
       "noExpiry": "Sin caducidad",
       "emptyMessage": "No se encontraron cupones",
       "messages": {
-        "copySuccess": "Coupon code copied",
-        "copyError": "Failed to copy coupon code",
-        "createSuccess": "Coupon created successfully",
-        "updateSuccess": "Coupon updated successfully",
-        "deleteSuccess": "Coupon deleted successfully",
-        "saveError": "Failed to save coupon",
-        "deleteError": "Failed to delete coupon"
+        "copySuccess": "Código copiado al portapapeles",
+        "copyError": "Error al copiar el código",
+        "createSuccess": "Cupón creado exitosamente",
+        "updateSuccess": "Cupón actualizado exitosamente",
+        "deleteSuccess": "Cupón eliminado exitosamente",
+        "saveError": "Error al guardar el cupón",
+        "deleteError": "Error al eliminar el cupón"
       },
       "validation": {
-        "codeRequired": "Coupon code is required",
-        "discountRequired": "Discount value must be greater than 0",
-        "discountRangePercent": "Percentage discount cannot exceed 100",
-        "maxUsesInvalid": "Max uses must be at least 1"
+        "codeRequired": "El código del cupón es obligatorio",
+        "discountRequired": "El valor del descuento es obligatorio",
+        "discountRangePercent": "El porcentaje de descuento debe estar entre 1 y 100",
+        "maxUsesInvalid": "El uso máximo debe ser un número positivo"
       }
     },
     "support": {
@@ -1781,8 +1817,8 @@
       "payments": {
         "title": "Configuración de pagos",
         "stripe": "Stripe",
-        "stripeDesc": "Aceptar pagos con tarjeta de crédito",
-        "stripeApiKey": "Stripe API Key",
+        "stripeDesc": "Aceptar pagos con tarjeta de crédito y débito",
+        "stripeApiKey": "Clave API de Stripe",
         "stripeApiKeyPlaceholder": "sk_live_...",
         "paypal": "PayPal",
         "paypalDesc": "Aceptar pagos con PayPal",
@@ -1818,7 +1854,7 @@
         "payoutApprovedDesc": "Se envía cuando se aprueba un retiro",
         "editTemplate": "Editar plantilla"
       },
-      "saveError": "Failed to save settings"
+      "saveError": "Error al guardar la configuración"
     },
     "riskMonitor": {
       "title": "Monitoreo de riesgo",
@@ -1857,7 +1893,7 @@
       },
       "severity": {
         "fatal": "Fatal",
-        "warning": "Warning"
+        "warning": "Advertencia"
       },
       "loading": "Cargando cuentas...",
       "noAccounts": "No se encontraron cuentas que coincidan con tus criterios."
@@ -2038,47 +2074,47 @@
       "noChallenges": "No challenges available"
     },
     "apiKeys": {
-      "title": "API Keys",
-      "subtitle": "Manage API keys for third-party lead ingestion",
-      "generate": "Generate API Key",
-      "keyGenerated": "API Key Generated",
-      "generateNew": "Generate New API Key",
-      "keyName": "Key Name",
-      "keyNamePlaceholder": "e.g. Partner Integration",
-      "keyNameHint": "A label to identify this key (e.g. the partner name)",
-      "generating": "Generating...",
-      "generateKey": "Generate Key",
-      "copyWarning": "Copy this key now. It will not be shown again.",
-      "yourKey": "Your API Key",
-      "copied": "Copied!",
-      "copyToClipboard": "Copy to Clipboard",
-      "done": "Done",
-      "totalKeys": "Total Keys",
-      "active": "Active",
-      "revoked": "Revoked",
-      "emptyMessage": "No API keys yet. Generate one to get started.",
-      "created": "Created",
-      "lastUsed": "Last Used",
-      "never": "Never",
+      "title": "Claves API",
+      "subtitle": "Gestionar claves API para integraciones externas",
+      "generate": "Generar",
+      "keyGenerated": "Clave Generada",
+      "generateNew": "Generar Nueva Clave",
+      "keyName": "Nombre de la Clave",
+      "keyNamePlaceholder": "Ej: Integración CRM",
+      "keyNameHint": "Elija un nombre descriptivo para identificar esta clave",
+      "generating": "Generando...",
+      "generateKey": "Generar Clave",
+      "copyWarning": "Asegúrese de copiar esta clave ahora. No podrá verla de nuevo.",
+      "yourKey": "Su Clave API",
+      "copied": "¡Copiado!",
+      "copyToClipboard": "Copiar al portapapeles",
+      "done": "Listo",
+      "totalKeys": "Total de Claves",
+      "active": "Activa",
+      "revoked": "Revocada",
+      "emptyMessage": "No hay claves API aún. Genere una para comenzar.",
+      "created": "Creada",
+      "lastUsed": "Último Uso",
+      "never": "Nunca",
       "endpoints": "Endpoints",
-      "singleLead": "Single lead",
-      "upTo100": "Up to 100 leads",
-      "checkStatus": "Check status",
-      "singleExample": "Single Lead Example",
-      "bulkExample": "Bulk Example",
-      "fieldsReference": "Fields Reference",
-      "field": "Field",
-      "type": "Type",
-      "required": "Required",
-      "yes": "Yes",
+      "singleLead": "Lead Individual",
+      "upTo100": "Hasta 100",
+      "checkStatus": "Verificar Estado",
+      "singleExample": "Ejemplo Individual",
+      "bulkExample": "Ejemplo Masivo",
+      "fieldsReference": "Referencia de Campos",
+      "field": "Campo",
+      "type": "Tipo",
+      "required": "Requerido",
+      "yes": "Sí",
       "no": "No",
-      "revoking": "Revoking...",
-      "revokeThisKey": "Revoke This Key",
-      "close": "Close",
-      "quickGuide": "Quick Integration Guide",
-      "guideText": "Third parties send leads to your API using the",
-      "header": "header:",
-      "guideNote": "Leads will appear automatically in the CRM Leads page with status NEW."
+      "revoking": "Revocando...",
+      "revokeThisKey": "Revocar esta Clave",
+      "close": "Cerrar",
+      "quickGuide": "Guía Rápida",
+      "guideText": "Utilice esta API para enviar leads desde formularios externos o integraciones CRM.",
+      "header": "Encabezado",
+      "guideNote": "Nota: Cada clave API tiene acceso limitado solo a los endpoints de leads."
     }
   },
   "signIn": {

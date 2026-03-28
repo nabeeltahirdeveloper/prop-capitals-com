@@ -179,8 +179,16 @@ export class MarketDataService {
 
       const executionPrice = runtimeOrder.type === 'BUY' ? ask : bid;
 
-      await this.pendingOrdersService.executePendingOrder(orderId, executionPrice);
-      executed++;
+      const result = await this.pendingOrdersService.executePendingOrder(orderId, executionPrice);
+
+      // STOP_LIMIT activation returns { activated: true } — not a trade execution
+      if (result && (result as any).activated) {
+        this.logger.log(
+          `STOP_LIMIT order ${orderId} activated for ${normalizedSymbol}, now waiting as LIMIT`,
+        );
+      } else if (result) {
+        executed++;
+      }
     } catch (error) {
       this.logger.warn(
         `Failed to execute pending order ${orderId} for ${normalizedSymbol}: ${

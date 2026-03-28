@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { useQueryState, parseAsString, parseAsInteger } from "nuqs";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   adminGetAllAccounts,
@@ -46,33 +45,20 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-  PaginationEllipsis,
-} from "@/components/ui/pagination";
 
 export default function AdminAccounts() {
   const { t } = useTranslation();
   const { toast } = useToast();
-  const [searchQuery, setSearchQuery] = useQueryState("search", parseAsString.withDefault(""));
-  const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault("all"));
-  const [phaseFilter, setPhaseFilter] = useQueryState("phase", parseAsString.withDefault("all"));
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [phaseFilter, setPhaseFilter] = useState("all");
   const [selectedAccountId, setSelectedAccountId] = useState(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
-  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const queryClient = useQueryClient();
 
-  // Reset to page 1 when filters change
-  useEffect(() => { setPage(1); }, [searchQuery, statusFilter, phaseFilter]);
-
-  const { data: accountsData = { data: [], total: 0, totalPages: 1, summary: { active: 0, phase2: 0, funded: 0, failed: 0 } }, isLoading } = useQuery({
-    queryKey: ["admin-accounts", page, searchQuery, statusFilter, phaseFilter],
-    queryFn: () => adminGetAllAccounts({ page, limit: 20, search: searchQuery, status: statusFilter, phase: phaseFilter }),
+  const { data: accountsData = [], isLoading } = useQuery({
+    queryKey: ["admin-accounts"],
+    queryFn: adminGetAllAccounts,
   });
 
   const updateStatusMutation = useMutation({
@@ -83,16 +69,16 @@ export default function AdminAccounts() {
         queryKey: ["admin-account-details", variables.id],
       });
       toast({
-        title: "Status updated",
-        description: `Account status changed to ${variables.status}.`,
+        title: t("admin.accounts.toast.statusUpdated"),
+        description: t("admin.accounts.toast.statusUpdatedDesc", { status: variables.status }),
       });
     },
     onError: (error) => {
       toast({
-        title: "Failed to update status",
+        title: t("admin.accounts.toast.statusUpdateFailed"),
         description:
           error?.message ||
-          "An error occurred while updating the account status.",
+          t("admin.accounts.toast.statusUpdateFailedDesc"),
         variant: "destructive",
       });
     },
@@ -106,16 +92,16 @@ export default function AdminAccounts() {
         queryKey: ["admin-account-details", variables.id],
       });
       toast({
-        title: "Phase updated",
-        description: `Account phase changed to ${variables.phase}.`,
+        title: t("admin.accounts.toast.phaseUpdated"),
+        description: t("admin.accounts.toast.phaseUpdatedDesc", { phase: variables.phase }),
       });
     },
     onError: (error) => {
       toast({
-        title: "Failed to update phase",
+        title: t("admin.accounts.toast.phaseUpdateFailed"),
         description:
           error?.message ||
-          "An error occurred while updating the account phase.",
+          t("admin.accounts.toast.phaseUpdateFailedDesc"),
         variant: "destructive",
       });
     },
@@ -275,7 +261,7 @@ export default function AdminAccounts() {
   };
 
   // Map backend accounts to frontend format
-  const mappedAccounts = (accountsData.data || []).map((account) => {
+  const mappedAccounts = accountsData.map((account) => {
     const challenge = account.challenge || {};
     const user = account.user || {};
     // Map all backend TradingAccountStatus enum values
@@ -319,7 +305,18 @@ export default function AdminAccounts() {
     };
   });
 
-  const filteredAccounts = mappedAccounts;
+  const displayAccounts = mappedAccounts;
+
+  const filteredAccounts = displayAccounts.filter((account) => {
+    const matchesSearch =
+      account.account_number?.includes(searchQuery) ||
+      account.trader_id?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || account.status === statusFilter;
+    const matchesPhase =
+      phaseFilter === "all" || account.current_phase === phaseFilter;
+    return matchesSearch && matchesStatus && matchesPhase;
+  });
 
   const columns = [
     {
@@ -521,7 +518,7 @@ export default function AdminAccounts() {
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
             <p className="text-xl sm:text-2xl font-bold text-foreground">
-              {accountsData.total}
+              {displayAccounts.length}
             </p>
           )}
         </Card>
@@ -533,7 +530,7 @@ export default function AdminAccounts() {
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
             <p className="text-xl sm:text-2xl font-bold text-emerald-500">
-              {accountsData.summary?.active ?? 0}
+              {displayAccounts.filter((a) => a.status === "active").length}
             </p>
           )}
         </Card>
@@ -545,7 +542,10 @@ export default function AdminAccounts() {
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
             <p className="text-xl sm:text-2xl font-bold text-blue-500">
-              {accountsData.summary?.phase2 ?? 0}
+              {
+                displayAccounts.filter((a) => a.current_phase === "phase2")
+                  .length
+              }
             </p>
           )}
         </Card>
@@ -557,7 +557,10 @@ export default function AdminAccounts() {
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
             <p className="text-xl sm:text-2xl font-bold text-purple-500">
-              {accountsData.summary?.funded ?? 0}
+              {
+                displayAccounts.filter((a) => a.current_phase === "funded")
+                  .length
+              }
             </p>
           )}
         </Card>
@@ -569,7 +572,10 @@ export default function AdminAccounts() {
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
             <p className="text-xl sm:text-2xl font-bold text-red-500">
-              {accountsData.summary?.failed ?? 0}
+              {
+                displayAccounts.filter((a) => a.current_phase === "failed")
+                  .length
+              }
             </p>
           )}
         </Card>
@@ -649,51 +655,6 @@ export default function AdminAccounts() {
           isLoading={isLoading}
           emptyMessage={t("admin.accounts.emptyMessage")}
         />
-        <div className="mt-4 flex items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground whitespace-nowrap">
-              Page {page} of {accountsData.totalPages} ({accountsData.total} total)
-            </p>
-            <Pagination className="w-auto mx-0">
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                  />
-                </PaginationItem>
-                {Array.from({ length: accountsData.totalPages }, (_, i) => i + 1)
-                  .filter((p) => p === 1 || p === accountsData.totalPages || Math.abs(p - page) <= 1)
-                  .reduce((acc, p, idx, arr) => {
-                    if (idx > 0 && p - arr[idx - 1] > 1) acc.push("ellipsis");
-                    acc.push(p);
-                    return acc;
-                  }, [])
-                  .map((p, idx) =>
-                    p === "ellipsis" ? (
-                      <PaginationItem key={`ellipsis-${idx}`}>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    ) : (
-                      <PaginationItem key={p}>
-                        <PaginationLink
-                          isActive={p === page}
-                          onClick={() => setPage(p)}
-                          className="cursor-pointer"
-                        >
-                          {p}
-                        </PaginationLink>
-                      </PaginationItem>
-                    )
-                  )}
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() => setPage((p) => Math.min(accountsData.totalPages, p + 1))}
-                    className={page === accountsData.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-        </div>
       </Card>
 
       {/* Account Details Dialog */}

@@ -699,7 +699,7 @@ console.log("SDK VERSION:", sdkVersion.mt5SdkVersion);
 
               {/* SDK ModifyTradeModal (mobile) */}
               <div className="absolute top-0 left-0 w-80 z-[98] pointer-events-none h-full">
-                <div className="pointer-events-auto h-full">
+                <div className="h-full">
                   <ModifyTradeModal
                     onModify={async (tradeId, { stopLoss, takeProfit }) => {
                       await modifyTPSLMutation.mutateAsync({ tradeId, stopLoss, takeProfit });
@@ -932,7 +932,7 @@ console.log("SDK VERSION:", sdkVersion.mt5SdkVersion);
             <div
               className="absolute top-0 left-0 w-[400px] z-[98] pointer-events-none h-full"
             >
-              <div className="pointer-events-auto h-full">
+              <div className="h-full">
                 <ModifyTradeModal
                   onModify={async (tradeId, { stopLoss, takeProfit }) => {
                     await modifyTPSLMutation.mutateAsync({ tradeId, stopLoss, takeProfit });
