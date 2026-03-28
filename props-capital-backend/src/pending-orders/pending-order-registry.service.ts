@@ -10,6 +10,7 @@ type RuntimePendingOrder = {
     orderType: OrderType;
     volume: number;
     price: number;
+    limitPrice?: number | null;
     stopLoss?: number | null;
     takeProfit?: number | null;
     status: OrderStatus;
@@ -20,6 +21,8 @@ type SymbolBook = {
     sellLimit: Map<number, Set<string>>;
     buyStop: Map<number, Set<string>>;
     sellStop: Map<number, Set<string>>;
+    buyStopLimit: Map<number, Set<string>>;
+    sellStopLimit: Map<number, Set<string>>;
 };
 
 @Injectable()
@@ -44,6 +47,8 @@ export class PendingOrderRegistryService implements OnModuleInit {
                 sellLimit: new Map(),
                 buyStop: new Map(),
                 sellStop: new Map(),
+                buyStopLimit: new Map(),
+                sellStopLimit: new Map(),
             };
 
             this.booksBySymbol.set(symbol, book);
@@ -60,6 +65,8 @@ export class PendingOrderRegistryService implements OnModuleInit {
         if (order.type === 'SELL' && order.orderType === 'LIMIT') return book.sellLimit;
         if (order.type === 'BUY' && order.orderType === 'STOP') return book.buyStop;
         if (order.type === 'SELL' && order.orderType === 'STOP') return book.sellStop;
+        if (order.type === 'BUY' && order.orderType === 'STOP_LIMIT') return book.buyStopLimit;
+        if (order.type === 'SELL' && order.orderType === 'STOP_LIMIT') return book.sellStopLimit;
 
         throw new Error(`Unsupported order combination: ${order.type} ${order.orderType}`);
     }
@@ -75,10 +82,6 @@ export class PendingOrderRegistryService implements OnModuleInit {
         });
 
         for (const order of pendingOrders) {
-            if (order.orderType === 'STOP_LIMIT') {
-                continue;
-            }
-
             this.registerOrder({
                 id: order.id,
                 tradingAccountId: order.tradingAccountId,
@@ -87,6 +90,7 @@ export class PendingOrderRegistryService implements OnModuleInit {
                 orderType: order.orderType,
                 volume: order.volume,
                 price: order.price,
+                limitPrice: (order as any).limitPrice ?? null,
                 stopLoss: order.stopLoss,
                 takeProfit: order.takeProfit,
                 status: order.status,
@@ -172,6 +176,24 @@ export class PendingOrderRegistryService implements OnModuleInit {
         }
 
         for (const [price, ids] of book.sellStop.entries()) {
+            if (bid <= price) {
+                for (const id of ids) {
+                    triggered.add(id);
+                }
+            }
+        }
+
+        // BUY STOP_LIMIT: triggers when ask >= trigger price
+        for (const [price, ids] of book.buyStopLimit.entries()) {
+            if (ask >= price) {
+                for (const id of ids) {
+                    triggered.add(id);
+                }
+            }
+        }
+
+        // SELL STOP_LIMIT: triggers when bid <= trigger price
+        for (const [price, ids] of book.sellStopLimit.entries()) {
             if (bid <= price) {
                 for (const id of ids) {
                     triggered.add(id);
