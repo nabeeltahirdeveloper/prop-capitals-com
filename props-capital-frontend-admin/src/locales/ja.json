@@ -9,7 +9,12 @@
     "success": "成功",
     "cancel": "キャンセル",
     "delete": "削除",
-    "deleting": "削除中..."
+    "deleting": "削除中...",
+    "pagination": {
+      "previous": "前へ",
+      "next": "次へ",
+      "pageOf": "ページ {{current}} / {{total}}"
+    }
   },
   "home": {
     "hero": {
@@ -1211,7 +1216,7 @@
     "pipeline": "Pipeline",
     "ftdReport": "FTD Report",
     "calendar": "Calendar",
-    "fundedAccounts": "Funded Accounts",
+    "fundedAccounts": "資金提供アカウント",
     "propServer": "Prop Server",
     "crmApiKey": "CRM API Keys"
   },
@@ -1398,10 +1403,10 @@
         "suspended": "停止",
         "phase1": "フェーズ 1",
         "phase2": "フェーズ 2",
-        "closed": "Closed",
-        "dailyLocked": "Daily Locked",
-        "disqualified": "Disqualified",
-        "paused": "Paused"
+        "closed": "閉鎖",
+        "dailyLocked": "日次ロック",
+        "disqualified": "失格",
+        "paused": "一時停止"
       },
       "table": {
         "account": "アカウント",
@@ -1450,7 +1455,17 @@
         "forceFail": "このアカウントを強制的に失敗させてもよろしいですか？この操作は簡単に元に戻せません。",
         "reset": "このアカウントをフェーズ1にリセットしてもよろしいですか？"
       },
-      "emptyMessage": "アカウントが見つかりません"
+      "emptyMessage": "アカウントが見つかりません",
+      "toast": {
+        "statusUpdated": "ステータス更新完了",
+        "statusUpdatedDesc": "アカウントのステータスが{{status}}に変更されました。",
+        "statusUpdateFailed": "ステータス更新失敗",
+        "statusUpdateFailedDesc": "アカウントのステータス更新中にエラーが発生しました。",
+        "phaseUpdated": "フェーズ更新完了",
+        "phaseUpdatedDesc": "アカウントのフェーズが{{phase}}に変更されました。",
+        "phaseUpdateFailed": "フェーズ更新失敗",
+        "phaseUpdateFailedDesc": "アカウントのフェーズ更新中にエラーが発生しました。"
+      }
     },
     "payouts": {
       "title": "支払い管理",
@@ -1537,7 +1552,11 @@
       "refundReasonPlaceholder": "返金理由を入力...",
       "cancel": "キャンセル",
       "confirmRefund": "返金を確定",
-      "refunding": "処理中..."
+      "refunding": "処理中...",
+      "refundSuccess": "返金成功",
+      "refundSuccessDesc": "支払いが正常に返金されました。",
+      "refundError": "返金失敗",
+      "refundErrorDesc": "支払いの返金に失敗しました。もう一度お試しください。"
     },
     "violations": {
       "title": "ルール違反",
@@ -1655,19 +1674,19 @@
       "noExpiry": "有効期限なし",
       "emptyMessage": "クーポンが見つかりません",
       "messages": {
-        "copySuccess": "Coupon code copied",
-        "copyError": "Failed to copy coupon code",
-        "createSuccess": "Coupon created successfully",
-        "updateSuccess": "Coupon updated successfully",
-        "deleteSuccess": "Coupon deleted successfully",
-        "saveError": "Failed to save coupon",
-        "deleteError": "Failed to delete coupon"
+        "copySuccess": "コードがクリップボードにコピーされました",
+        "copyError": "コードのコピーに失敗しました",
+        "createSuccess": "クーポンが正常に作成されました",
+        "updateSuccess": "クーポンが正常に更新されました",
+        "deleteSuccess": "クーポンが正常に削除されました",
+        "saveError": "クーポンの保存に失敗しました",
+        "deleteError": "クーポンの削除に失敗しました"
       },
       "validation": {
-        "codeRequired": "Coupon code is required",
-        "discountRequired": "Discount value must be greater than 0",
-        "discountRangePercent": "Percentage discount cannot exceed 100",
-        "maxUsesInvalid": "Max uses must be at least 1"
+        "codeRequired": "クーポンコードは必須です",
+        "discountRequired": "割引値は必須です",
+        "discountRangePercent": "割引率は1から100の間で設定してください",
+        "maxUsesInvalid": "最大使用回数は正の数で入力してください"
       }
     },
     "support": {
@@ -1713,16 +1732,27 @@
       },
       "actions": {
         "take": "担当する",
-        "resolve": "解決"
+        "resolve": "解決",
+        "close": "閉じる"
       },
       "dialog": {
         "from": "送信元",
         "writeResponse": "返信を書いてください...",
         "close": "閉じる",
         "sending": "送信中...",
-        "sendAndResolve": "送信して解決"
+        "sendAndResolve": "送信して解決",
+        "submitted": "送信済み",
+        "userMessage": "ユーザーメッセージ",
+        "previousReply": "前回の返信",
+        "sendNewReply": "新しい返信を送信"
       },
       "emptyMessage": "チケットが見つかりません",
+      "toast": {
+        "successTitle": "成功",
+        "errorTitle": "エラー",
+        "replySent": "返信が正常に送信されました",
+        "statusUpdated": "チケットのステータスが更新されました"
+      },
       "subjects": {
         "unableToLoginMT5": "MT5にログインできません",
         "payoutRequestTakingTooLong": "出金申請に時間がかかりすぎています",
@@ -1845,8 +1875,8 @@
         "account": "アカウント"
       },
       "severity": {
-        "fatal": "Fatal",
-        "warning": "Warning"
+        "fatal": "致命的",
+        "warning": "警告"
       },
       "loading": "アカウントを読み込み中...",
       "noAccounts": "条件に一致するアカウントが見つかりません。"
@@ -2027,47 +2057,64 @@
       "noChallenges": "No challenges available"
     },
     "apiKeys": {
-      "title": "API Keys",
-      "subtitle": "Manage API keys for third-party lead ingestion",
-      "generate": "Generate API Key",
-      "keyGenerated": "API Key Generated",
-      "generateNew": "Generate New API Key",
-      "keyName": "Key Name",
-      "keyNamePlaceholder": "e.g. Partner Integration",
-      "keyNameHint": "A label to identify this key (e.g. the partner name)",
-      "generating": "Generating...",
-      "generateKey": "Generate Key",
-      "copyWarning": "Copy this key now. It will not be shown again.",
-      "yourKey": "Your API Key",
-      "copied": "Copied!",
-      "copyToClipboard": "Copy to Clipboard",
-      "done": "Done",
-      "totalKeys": "Total Keys",
-      "active": "Active",
-      "revoked": "Revoked",
-      "emptyMessage": "No API keys yet. Generate one to get started.",
-      "created": "Created",
-      "lastUsed": "Last Used",
-      "never": "Never",
-      "endpoints": "Endpoints",
-      "singleLead": "Single lead",
-      "upTo100": "Up to 100 leads",
-      "checkStatus": "Check status",
-      "singleExample": "Single Lead Example",
-      "bulkExample": "Bulk Example",
-      "fieldsReference": "Fields Reference",
-      "field": "Field",
-      "type": "Type",
-      "required": "Required",
-      "yes": "Yes",
-      "no": "No",
-      "revoking": "Revoking...",
-      "revokeThisKey": "Revoke This Key",
-      "close": "Close",
-      "quickGuide": "Quick Integration Guide",
-      "guideText": "Third parties send leads to your API using the",
-      "header": "header:",
-      "guideNote": "Leads will appear automatically in the CRM Leads page with status NEW."
+      "title": "APIキー",
+      "subtitle": "外部連携用APIキーの管理",
+      "generate": "生成",
+      "keyGenerated": "キー生成完了",
+      "generateNew": "新しいキーを生成",
+      "keyName": "キー名",
+      "keyNamePlaceholder": "例：CRM連携",
+      "keyNameHint": "このキーを識別するための名前を入力してください",
+      "generating": "生成中...",
+      "generateKey": "キーを生成",
+      "copyWarning": "このキーを今コピーしてください。再度表示することはできません。",
+      "yourKey": "あなたのAPIキー",
+      "copied": "コピー済み！",
+      "copyToClipboard": "クリップボードにコピー",
+      "done": "完了",
+      "totalKeys": "キー総数",
+      "active": "有効",
+      "revoked": "無効化済み",
+      "emptyMessage": "APIキーがまだありません。開始するにはキーを生成してください。",
+      "created": "作成日",
+      "lastUsed": "最終使用日",
+      "never": "未使用",
+      "endpoints": "エンドポイント",
+      "singleLead": "単一リード",
+      "upTo100": "最大100件",
+      "checkStatus": "ステータス確認",
+      "singleExample": "単一例",
+      "bulkExample": "一括例",
+      "fieldsReference": "フィールドリファレンス",
+      "field": "フィールド",
+      "type": "タイプ",
+      "required": "必須",
+      "yes": "はい",
+      "no": "いいえ",
+      "revoking": "無効化中...",
+      "revokeThisKey": "このキーを無効化",
+      "close": "閉じる",
+      "quickGuide": "クイックガイド",
+      "guideText": "このAPIを使用して、外部フォームやCRM連携からリードを送信します。",
+      "header": "ヘッダー",
+      "guideNote": "注：各APIキーはリードエンドポイントのみへのアクセスに制限されています。"
+    },
+    "fundedAccounts": {
+      "title": "資金提供アカウント",
+      "subtitle": "すべての資金提供トレーディングアカウントの概要",
+      "stats": {
+        "totalFunded": "資金提供アカウント総数",
+        "activeFunded": "アクティブな資金提供アカウント",
+        "totalCapital": "総割当資本",
+        "totalProfit": "現在の総利益",
+        "totalPayouts": "総支払額"
+      },
+      "details": {
+        "profitSplitLabel": "利益分配",
+        "totalPayoutsLabel": "総支払額",
+        "withdrawableProfitLabel": "引出可能利益",
+        "lastPayoutDateLabel": "最終支払日"
+      }
     }
   },
   "signIn": {
