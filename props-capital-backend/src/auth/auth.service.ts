@@ -160,6 +160,8 @@ export class AuthService {
 
     await this.prisma.signupOtp.delete({ where: { email } }).catch(() => undefined);
 
+    this.emailService.sendWelcomeEmail(email, data.firstName).catch(() => undefined);
+
     const token = await this.jwtService.signAsync<JwtPayload>({
       sub: user.id,
       email: user.email,

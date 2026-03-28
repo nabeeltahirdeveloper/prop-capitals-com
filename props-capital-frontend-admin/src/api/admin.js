@@ -3,8 +3,11 @@ import { apiGet, apiPost, apiPatch, apiDelete } from "@/lib/api";
 // ============================================================================
 // Admin Users
 // ============================================================================
-export const adminGetAllUsers = async () => {
-  return apiGet("/admin/users");
+export const adminGetAllUsers = async ({ page = 1, limit = 20, search = '', role = '' } = {}) => {
+  const params = { page, limit };
+  if (search) params.search = search;
+  if (role && role !== 'all') params.role = role;
+  return apiGet("/admin/users", { params });
 };
 
 export const adminGetUser = async (userId) => {
@@ -45,8 +48,12 @@ export const adminDeleteChallenge = async (id) => {
 // ============================================================================
 // Admin Accounts
 // ============================================================================
-export const adminGetAllAccounts = async () => {
-  return apiGet("/admin/accounts");
+export const adminGetAllAccounts = async ({ page = 1, limit = 20, search = '', status = '', phase = '' } = {}) => {
+  const params = { page, limit };
+  if (search) params.search = search;
+  if (status && status !== 'all') params.status = status;
+  if (phase && phase !== 'all') params.phase = phase;
+  return apiGet("/admin/accounts", { params });
 };
 
 export const adminGetAccount = async (id) => {
