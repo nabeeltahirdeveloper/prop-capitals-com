@@ -40,6 +40,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import StatusBadge from "@/components/shared/StatusBadge";
 
 export default function AdminRiskMonitor() {
@@ -54,6 +55,7 @@ export default function AdminRiskMonitor() {
   const {
     data: accounts = [],
     isLoading,
+    isFetching,
     refetch,
   } = useQuery({
     queryKey: ["risk-overview"],
@@ -82,11 +84,29 @@ export default function AdminRiskMonitor() {
     setSelectedAccountId(null);
   };
 
-  const { data: violations = {} } = useQuery({
+  const {
+    data: violations = {},
+    isFetching: isFetchingViolations,
+    refetch: refetchViolations,
+  } = useQuery({
     queryKey: ["risk-violations"],
     queryFn: adminGetAllViolations,
     refetchInterval: 60000, // Refresh every minute
   });
+
+  const isRefreshing = isFetching || isFetchingViolations;
+
+  const handleRefresh = async () => {
+    try {
+      await Promise.all([refetch(), refetchViolations()]);
+    } catch (error) {
+      toast({
+        title: t("common.error"),
+        description: "Failed to refresh data",
+        variant: "destructive",
+      });
+    }
+  };
 
   const lockAccountMutation = useMutation({
     mutationFn: (accountId) => adminUpdateAccountStatus(accountId, "PAUSED"),
@@ -213,11 +233,12 @@ export default function AdminRiskMonitor() {
           </p>
         </div>
         <Button
-          onClick={() => refetch()}
+          onClick={handleRefresh}
+          disabled={isRefreshing}
           variant="outline"
           className="border-border text-foreground hover:bg-accent hover:text-foreground w-full sm:w-auto"
         >
-          <RefreshCw className="w-4 h-4 mr-2" />
+          <RefreshCw className={cn("w-4 h-4 mr-2", isRefreshing && "animate-spin")} />
           <span className="sm:inline">{t("admin.riskMonitor.refresh")}</span>
         </Button>
       </div>

@@ -49,6 +49,7 @@ import {
   useLocation,
   Navigate,
 } from "react-router-dom";
+import { NuqsAdapter } from "nuqs/adapters/react-router";
 import ProtectedRoute, {
   DashboardRedirect,
   PublicOnlyRoute,
@@ -185,7 +186,9 @@ function PagesContent() {
 export default function Pages() {
   return (
     <Router>
-      <PagesContent />
+      <NuqsAdapter>
+        <PagesContent />
+      </NuqsAdapter>
     </Router>
   );
 }
