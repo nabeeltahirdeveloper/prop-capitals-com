@@ -5,6 +5,8 @@ import { BinanceWebSocketService } from '../prices/binance-websocket.service';
 import { Candlestick } from '../prices/twelve-data.service';
 import { ResilientHttpService } from 'src/common/resilient-http.service';
 import { MassiveWebSocketService } from '../prices/massive-websocket.service';
+import { PendingOrderRegistryService } from '../pending-orders/pending-order-registry.service';
+import { PendingOrdersService} from "../pending-orders/pending-orders.service"
 
 interface CandleCache {
   candles: Candlestick[];
@@ -62,15 +64,16 @@ export class MarketDataService {
   };
 
   constructor(
-    private readonly pricesService: PricesService,
-    private readonly binanceMarketService: BinanceMarketService,
-    private readonly binanceWebSocketService: BinanceWebSocketService,
-    private readonly massiveWebSocketService: MassiveWebSocketService,
-    private readonly httpService: ResilientHttpService,
-  ) {
-    // Start synthetic candle builder for forex
-    this.startSyntheticCandleBuilder();
-  }
+  private readonly pricesService: PricesService,
+  private readonly binanceMarketService: BinanceMarketService,
+  private readonly binanceWebSocketService: BinanceWebSocketService,
+  private readonly massiveWebSocketService: MassiveWebSocketService,
+  private readonly httpService: ResilientHttpService,
+  private readonly pendingOrderRegistryService: PendingOrderRegistryService,
+  private readonly pendingOrdersService: PendingOrdersService,
+) {
+  this.startSyntheticCandleBuilder();
+}
 
   private isForexSymbol(symbol: string): boolean {
     return this.FOREX_SYMBOLS.includes(symbol);
@@ -143,6 +146,58 @@ export class MarketDataService {
     }
   }
 
+
+  async processPendingOrdersForSymbol(symbol: string) {
+  const normalizedSymbol = this.normalizeSymbol(symbol);
+
+  const priceData = await this.getCurrentPrice(normalizedSymbol);
+
+  const bid = Number(priceData.bid);
+  const ask = Number(priceData.ask);
+
+  const triggeredOrderIds =
+    this.pendingOrderRegistryService.findTriggeredOrders(normalizedSymbol, bid, ask);
+
+  if (triggeredOrderIds.length === 0) {
+    return {
+      symbol: normalizedSymbol,
+      bid,
+      ask,
+      triggered: 0,
+      executed: 0,
+    };
+  }
+
+  let executed = 0;
+
+  for (const orderId of triggeredOrderIds) {
+    try {
+      const runtimeOrder = this.pendingOrderRegistryService.getOrderById(orderId);
+      if (!runtimeOrder) {
+        continue;
+      }
+
+      const executionPrice = runtimeOrder.type === 'BUY' ? ask : bid;
+
+      await this.pendingOrdersService.executePendingOrder(orderId, executionPrice);
+      executed++;
+    } catch (error) {
+      this.logger.warn(
+        `Failed to execute pending order ${orderId} for ${normalizedSymbol}: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
+      );
+    }
+  }
+
+  return {
+    symbol: normalizedSymbol,
+    bid,
+    ask,
+    triggered: triggeredOrderIds.length,
+    executed,
+  };
+}
   /**
    * Check if circuit breaker is open (API is failing too much)
    */

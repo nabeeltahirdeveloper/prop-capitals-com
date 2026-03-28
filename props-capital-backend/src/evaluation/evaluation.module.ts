@@ -9,9 +9,9 @@ import { ChallengeRulesService } from './challenge-rules.service';
 
 @Module({
   imports: [
-    PrismaModule, 
-    MarketDataModule, 
-    forwardRef(() => TradesModule), 
+    PrismaModule,
+    forwardRef(() => MarketDataModule),
+    forwardRef(() => TradesModule),
     NotificationsModule,
     WebsocketModule,
   ],

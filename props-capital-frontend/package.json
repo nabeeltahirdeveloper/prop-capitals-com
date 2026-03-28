@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node build.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -13,7 +13,7 @@
     "@base44/sdk": "^0.1.2",
     "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "^4.1.2",
-    "@nabeeltahirdeveloper/chart-sdk": "^2.3.8",
+    "@nabeeltahirdeveloper/chart-sdk": "2.4.5",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-alert-dialog": "^1.1.6",
     "@radix-ui/react-aspect-ratio": "^1.1.2",
@@ -60,6 +60,7 @@
     "react-globe.gl": "^2.37.0",
     "react-hook-form": "^7.54.2",
     "react-icons": "^5.5.0",
+    "react-markdown": "^10.1.0",
     "react-resizable-panels": "^2.1.7",
     "react-router-dom": "^7.2.0",
     "recharts": "^2.15.1",

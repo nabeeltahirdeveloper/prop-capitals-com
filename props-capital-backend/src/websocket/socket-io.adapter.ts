@@ -14,6 +14,8 @@ export class SocketIoAdapter extends IoAdapter {
         origin: '*',
         methods: ['GET', 'POST'],
         credentials: false,
+        // origin: true,
+        // credentials: true,
       },
       allowEIO3: true,
       transports: ['polling', 'websocket'],
