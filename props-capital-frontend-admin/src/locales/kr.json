@@ -1216,7 +1216,7 @@
     "pipeline": "Pipeline",
     "ftdReport": "FTD Report",
     "calendar": "Calendar",
-    "fundedAccounts": "Funded Accounts",
+    "fundedAccounts": "자금 지원 계정",
     "propServer": "Prop Server",
     "crmApiKey": "CRM API Keys"
   },

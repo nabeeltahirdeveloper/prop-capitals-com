@@ -1216,7 +1216,7 @@
     "pipeline": "ไปป์ไลน์",
     "ftdReport": "รายงาน FTD",
     "calendar": "ปฏิทิน",
-    "fundedAccounts": "Funded Accounts",
+    "fundedAccounts": "บัญชีที่ได้รับเงินทุน",
     "propServer": "Prop Server",
     "crmApiKey": "CRM API Keys"
   },

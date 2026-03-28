@@ -1216,7 +1216,7 @@
     "pipeline": "Pipeline",
     "ftdReport": "Rapport FTD",
     "calendar": "Calendrier",
-    "fundedAccounts": "Funded Accounts",
+    "fundedAccounts": "Comptes Financés",
     "propServer": "Prop Server",
     "crmApiKey": "CRM API Keys"
   },
@@ -1332,7 +1332,7 @@
       "subtitle": "Afficher et gérer tous les utilisateurs de la plateforme",
       "stats": {
         "totalUsers": "Nombre total d’utilisateurs",
-        "traders": "Traders",
+        "traders": "Opérateurs",
         "admins": "Administrateurs",
         "newThisWeek": "Nouveaux cette semaine"
       },
@@ -1340,7 +1340,7 @@
       "filter": {
         "role": "Rôle",
         "allRoles": "Tous les rôles",
-        "traders": "Traders",
+        "traders": "Opérateurs",
         "admins": "Administrateurs"
       },
       "table": {
