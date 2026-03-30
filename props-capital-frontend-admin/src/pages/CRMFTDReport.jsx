@@ -23,7 +23,7 @@ import {
 import { apiGet } from "@/lib/api";
 import { format } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../contexts/LanguageContext";
 
 export default function CRMFTDReport() {
   const { t } = useTranslation();

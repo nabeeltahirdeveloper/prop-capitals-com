@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import i18n from '../i18n';
 import enTranslations from '../locales/en.json';
 import thTranslations from '../locales/th.json';
 import frTranslations from '../locales/fr.json';
@@ -83,6 +84,7 @@ export const LanguageProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem('language', language);
+    i18n.changeLanguage(language);
   }, [language]);
 
   const translations = useMemo(() => {

@@ -102,7 +102,7 @@ export default function AdminRiskMonitor() {
     } catch (error) {
       toast({
         title: t("common.error"),
-        description: "Failed to refresh data",
+        description: t("admin.riskMonitor.toast.refreshFailed"),
         variant: "destructive",
       });
     }
@@ -117,15 +117,15 @@ export default function AdminRiskMonitor() {
         queryKey: ["admin-account-details", accountId],
       });
       toast({
-        title: "Account paused",
-        description: "The account has been paused successfully.",
+        title: t("admin.riskMonitor.toast.accountPaused"),
+        description: t("admin.riskMonitor.toast.accountPausedDesc"),
       });
     },
     onError: (error) => {
       toast({
-        title: "Failed to pause account",
+        title: t("admin.riskMonitor.toast.pauseFailed"),
         description:
-          error?.message || "An error occurred while pausing the account.",
+          error?.message || t("admin.riskMonitor.toast.pauseFailedDesc"),
         variant: "destructive",
       });
     },
@@ -554,7 +554,7 @@ export default function AdminRiskMonitor() {
                   />
                   <div className="min-w-0">
                     <p className="text-foreground text-xs sm:text-sm font-medium truncate">
-                      {violation.type?.replace(/_/g, " ")}
+                      {violation.type ? (t(`admin.riskMonitor.violationTypes.${violation.type.toLowerCase()}`) || violation.type.replace(/_/g, " ")) : ""}
                     </p>
                     <p className="text-xs text-muted-foreground truncate">
                       <span className="hidden sm:inline">

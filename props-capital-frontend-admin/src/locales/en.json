@@ -14,7 +14,8 @@
       "previous": "Previous",
       "next": "Next",
       "pageOf": "Page {{current}} of {{total}}"
-    }
+    },
+    "clear": "Clear"
   },
   "home": {
     "hero": {
@@ -1524,7 +1525,21 @@
         "warning": "Warning"
       },
       "loading": "Loading accounts...",
-      "noAccounts": "No accounts found matching your criteria."
+      "noAccounts": "No accounts found matching your criteria.",
+      "toast": {
+        "refreshFailed": "Failed to refresh data",
+        "accountPaused": "Account Paused",
+        "accountPausedDesc": "The account has been paused successfully.",
+        "pauseFailed": "Failed to Pause Account",
+        "pauseFailedDesc": "An error occurred while pausing the account."
+      },
+      "violationTypes": {
+        "overall_drawdown": "Overall Drawdown",
+        "daily_drawdown": "Daily Drawdown",
+        "consistency": "Consistency",
+        "max_daily_loss": "Max Daily Loss",
+        "profit_target": "Profit Target"
+      }
     },
     "payouts": {
       "title": "Payout Management",
@@ -1810,8 +1825,12 @@
         "successTitle": "Success",
         "errorTitle": "Error",
         "replySent": "Reply sent and ticket resolved.",
-        "statusUpdated": "Ticket status updated successfully."
+        "statusUpdated": "Ticket status updated successfully.",
+        "chatStatusUpdated": "Status Updated",
+        "sendFailed": "Send Failed",
+        "sendFailedDesc": "Could not send message. Please try again."
       },
+      "selectTicket": "Select a ticket to view the conversation",
       "pagination": {
         "page": "Page {{page}} of {{totalPages}} ({{total}} tickets)",
         "previous": "Previous",
@@ -2107,7 +2126,20 @@
       "quickGuide": "Quick Integration Guide",
       "guideText": "Third parties send leads to your API using the",
       "header": "header:",
-      "guideNote": "Leads will appear automatically in the CRM Leads page with status NEW."
+      "guideNote": "Leads will appear automatically in the CRM Leads page with status NEW.",
+      "name": "Name",
+      "status": "Status",
+      "actions": "Actions",
+      "view": "View",
+      "revoke": "Revoke",
+      "toast": {
+        "created": "API Key Created",
+        "createdDesc": "Store the key securely. It won't be shown again.",
+        "createError": "Failed to create API key",
+        "revoked": "API Key Revoked",
+        "revokedDesc": "The key has been deactivated.",
+        "revokeError": "Failed to revoke API key"
+      }
     }
   },
   "signIn": {
@@ -3134,6 +3166,7 @@
       "csvFormat": "CSV must follow the required format",
       "csvFormatDesc": "CSV must follow the required format with headers: personName, email, phoneNumber, country, source, leadStatus, ftdAmount, paymentMethod, paymentProvider, priority, age, salary, jobIndustry, workTitle",
       "requiredFields": "Required fields: personName, email",
+      "selectDateRange": "Select date range",
       "cancel": "Cancel",
       "importButton": "Import",
       "importing": "Importing...",

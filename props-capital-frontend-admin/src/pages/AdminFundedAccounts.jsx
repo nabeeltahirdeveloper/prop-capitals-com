@@ -74,7 +74,7 @@ export default function AdminFundedAccounts() {
       });
       toast({
         title: t("admin.accounts.toast.statusUpdated"),
-        description: t("admin.accounts.toast.statusUpdatedDesc", { status: variables.status }),
+        description: t("admin.accounts.toast.statusUpdatedDesc", { status: t(`admin.accounts.filter.${variables.status.toLowerCase()}`) || variables.status }),
       });
     },
     onError: (error) => {
@@ -97,7 +97,7 @@ export default function AdminFundedAccounts() {
       });
       toast({
         title: t("admin.accounts.toast.phaseUpdated"),
-        description: t("admin.accounts.toast.phaseUpdatedDesc", { phase: variables.phase }),
+        description: t("admin.accounts.toast.phaseUpdatedDesc", { phase: t(`admin.accounts.filter.${variables.phase.toLowerCase()}`) || variables.phase }),
       });
     },
     onError: (error) => {

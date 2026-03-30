@@ -9,6 +9,7 @@ import MessageBubble from './MessageBubble';
 import MessageInput from './MessageInput';
 import { ArrowLeft, Menu, X as XIcon } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { useTranslation } from '../../contexts/LanguageContext';
 import { useSupportSocket } from '@/hooks/useSupportSocket';
 
 const mapStatus = (s) => {
@@ -39,6 +40,7 @@ export default function TicketChatPanel({ ticket, onToggleSidebar, showSidebarTo
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const messagesEndRef = useRef(null);
   const ticketId = ticket?.id;
 
@@ -77,8 +79,8 @@ export default function TicketChatPanel({ ticket, onToggleSidebar, showSidebarTo
     onError: (_err, _msg, context) => {
       queryClient.setQueryData(['ticket-messages', ticketId], context?.previous);
       toast({
-        title: 'Send Failed',
-        description: 'Could not send message. Please try again.',
+        title: t("admin.support.toast.sendFailed"),
+        description: t("admin.support.toast.sendFailedDesc"),
         variant: 'destructive',
       });
     },
@@ -94,14 +96,14 @@ export default function TicketChatPanel({ ticket, onToggleSidebar, showSidebarTo
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-ticket', ticketId] });
       queryClient.invalidateQueries({ queryKey: ['admin-support-tickets'] });
-      toast({ title: 'Status Updated' });
+      toast({ title: t("admin.support.toast.chatStatusUpdated") });
     },
   });
 
   if (!ticket) {
     return (
       <div className="flex-1 flex items-center justify-center bg-background">
-        <p className="text-muted-foreground">Select a ticket to view the conversation</p>
+        <p className="text-muted-foreground">{t("admin.support.selectTicket")}</p>
       </div>
     );
   }
