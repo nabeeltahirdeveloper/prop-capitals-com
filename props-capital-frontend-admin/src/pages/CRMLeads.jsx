@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../contexts/LanguageContext";
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -667,7 +667,7 @@ export default function CRMLeads() {
                     format(dateRange.from, "MMM dd, yyyy")
                   )
                 ) : (
-                  <span>{t("crm.leads.selectDateRange", "Select date range")}</span>
+                  <span>{t("crm.leads.selectDateRange")}</span>
                 )}
               </Button>
             </PopoverTrigger>
@@ -686,7 +686,7 @@ export default function CRMLeads() {
                     size="sm"
                     onClick={handleClearDateRange}
                   >
-                    {t("common.clear", "Clear")}
+                    {t("common.clear")}
                   </Button>
                 </div>
               )}

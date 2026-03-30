@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '../../contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Phone, MessageCircle, Globe } from 'lucide-react';
 import { format } from 'date-fns';

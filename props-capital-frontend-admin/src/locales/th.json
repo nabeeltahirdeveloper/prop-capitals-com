@@ -14,7 +14,8 @@
       "previous": "ก่อนหน้า",
       "next": "ถัดไป",
       "pageOf": "หน้า {{current}} จาก {{total}}"
-    }
+    },
+    "clear": "ล้าง"
   },
   "home": {
     "hero": {
@@ -1752,8 +1753,12 @@
         "successTitle": "สำเร็จ",
         "errorTitle": "ข้อผิดพลาด",
         "replySent": "ส่งคำตอบและแก้ไขตั๋วแล้ว",
-        "statusUpdated": "อัปเดตสถานะตั๋วสำเร็จแล้ว"
+        "statusUpdated": "อัปเดตสถานะตั๋วสำเร็จแล้ว",
+        "chatStatusUpdated": "อัปเดตสถานะแล้ว",
+        "sendFailed": "ส่งล้มเหลว",
+        "sendFailedDesc": "ไม่สามารถส่งข้อความได้ กรุณาลองอีกครั้ง"
       },
+      "selectTicket": "เลือกตั๋วเพื่อดูการสนทนา",
       "emptyMessage": "ไม่พบตั๋ว",
       "subjects": {
         "unableToLoginMT5": "ไม่สามารถเข้าสู่ระบบ MT5 ได้",
@@ -1881,7 +1886,21 @@
         "warning": "คำเตือน"
       },
       "loading": "กำลังโหลดบัญชี...",
-      "noAccounts": "ไม่พบบัญชีที่ตรงกับเกณฑ์ของคุณ"
+      "noAccounts": "ไม่พบบัญชีที่ตรงกับเกณฑ์ของคุณ",
+      "toast": {
+        "refreshFailed": "ไม่สามารถรีเฟรชข้อมูลได้",
+        "accountPaused": "หยุดบัญชีแล้ว",
+        "accountPausedDesc": "บัญชีถูกหยุดเรียบร้อยแล้ว",
+        "pauseFailed": "ไม่สามารถหยุดบัญชีได้",
+        "pauseFailedDesc": "เกิดข้อผิดพลาดขณะหยุดบัญชี"
+      },
+      "violationTypes": {
+        "overall_drawdown": "ดรอว์ดาวน์รวม",
+        "daily_drawdown": "ดรอว์ดาวน์รายวัน",
+        "consistency": "ความสม่ำเสมอ",
+        "max_daily_loss": "ขาดทุนสูงสุดต่อวัน",
+        "profit_target": "เป้าหมายกำไร"
+      }
     },
     "brokerServers": {
       "title": "เซิร์ฟเวอร์โบรกเกอร์",
@@ -2116,7 +2135,20 @@
       "quickGuide": "คู่มือด่วน",
       "guideText": "ใช้ API นี้เพื่อส่งลีดจากฟอร์มภายนอกหรือการเชื่อมต่อ CRM",
       "header": "ส่วนหัว",
-      "guideNote": "หมายเหตุ: คีย์ API แต่ละตัวมีสิทธิ์เข้าถึงเฉพาะจุดเชื่อมต่อลีดเท่านั้น"
+      "guideNote": "หมายเหตุ: คีย์ API แต่ละตัวมีสิทธิ์เข้าถึงเฉพาะจุดเชื่อมต่อลีดเท่านั้น",
+      "name": "ชื่อ",
+      "status": "สถานะ",
+      "actions": "การกระทำ",
+      "view": "ดู",
+      "revoke": "เพิกถอน",
+      "toast": {
+        "created": "สร้างคีย์ API แล้ว",
+        "createdDesc": "เก็บคีย์ไว้อย่างปลอดภัย จะไม่สามารถดูได้อีก",
+        "createError": "ไม่สามารถสร้างคีย์ API ได้",
+        "revoked": "เพิกถอนคีย์ API แล้ว",
+        "revokedDesc": "คีย์ถูกปิดใช้งานแล้ว",
+        "revokeError": "ไม่สามารถเพิกถอนคีย์ API ได้"
+      }
     }
   },
   "signIn": {
@@ -3143,6 +3175,7 @@
       "csvFormat": "CSV ต้องเป็นไปตามรูปแบบที่กำหนด",
       "csvFormatDesc": "CSV ต้องเป็นไปตามรูปแบบที่กำหนดด้วยส่วนหัว: personName, email, phoneNumber, country, source, leadStatus, ftdAmount, paymentMethod, paymentProvider, priority, age, salary, jobIndustry, workTitle",
       "requiredFields": "ฟิลด์ที่จำเป็น: personName, email",
+      "selectDateRange": "เลือกช่วงวันที่",
       "cancel": "ยกเลิก",
       "importButton": "นำเข้า",
       "importing": "กำลังนำเข้า...",

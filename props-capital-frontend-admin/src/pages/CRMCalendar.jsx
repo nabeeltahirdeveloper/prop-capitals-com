@@ -13,7 +13,7 @@ import {
   Filter,
   CalendarDays,
 } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
