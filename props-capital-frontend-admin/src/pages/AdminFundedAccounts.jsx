@@ -221,7 +221,8 @@ export default function AdminFundedAccounts() {
     );
   };
 
-  const mappedAccounts = accountsData.map((account) => {
+  const accountsList = Array.isArray(accountsData) ? accountsData : (accountsData?.data || []);
+  const mappedAccounts = accountsList.map((account) => {
     const challenge = account.challenge || {};
     const user = account.user || {};
     const statusMap = {
@@ -291,7 +292,8 @@ export default function AdminFundedAccounts() {
     0,
   );
 
-  const totalPayoutsAmount = (payoutsData || [])
+  const payoutsList = Array.isArray(payoutsData) ? payoutsData : (payoutsData?.data || payoutsData || []);
+  const totalPayoutsAmount = (payoutsList || [])
     .filter(
       (payout) =>
         payout &&

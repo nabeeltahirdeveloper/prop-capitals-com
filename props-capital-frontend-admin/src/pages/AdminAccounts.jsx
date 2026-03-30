@@ -261,7 +261,8 @@ export default function AdminAccounts() {
   };
 
   // Map backend accounts to frontend format
-  const mappedAccounts = accountsData.map((account) => {
+  const accountsList = Array.isArray(accountsData) ? accountsData : (accountsData?.data || []);
+  const mappedAccounts = accountsList.map((account) => {
     const challenge = account.challenge || {};
     const user = account.user || {};
     // Map all backend TradingAccountStatus enum values
