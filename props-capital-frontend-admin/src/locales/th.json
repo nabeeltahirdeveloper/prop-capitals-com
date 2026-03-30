@@ -1217,7 +1217,7 @@
     "ftdReport": "รายงาน FTD",
     "calendar": "ปฏิทิน",
     "fundedAccounts": "บัญชีที่ได้รับเงินทุน",
-    "propServer": "Prop Server",
+    "propServer": "พร็อพเซิร์ฟเวอร์",
     "crmApiKey": "CRM API Keys"
   },
   "status": {
@@ -1425,8 +1425,8 @@
         "forceFail": "บังคับล้มเหลว",
         "resetAccount": "รีเซ็ตบัญชี",
         "moveToFunded": "ย้ายไปยังเงินทุน",
-        "pause": "Pause Account",
-        "resume": "Resume Account"
+        "pause": "หยุดบัญชีชั่วคราว",
+        "resume": "บัญชีต่อ"
       },
       "dialog": {
         "title": "รายละเอียดบัญชี",
@@ -1901,7 +1901,7 @@
         "apiKey": "API Key / Client ID",
         "apiSecret": "API Secret",
         "demoServer": "เซิร์ฟเวอร์เดโม",
-        "description": "Configure a new broker server connection for trading accounts."
+        "description": "ตั้งค่าการเชื่อมต่อเซิร์ฟเวอร์โบรกเกอร์ใหม่สำหรับบัญชีซื้อขาย."
       },
       "platforms": {
         "mt4": "MetaTrader 4",

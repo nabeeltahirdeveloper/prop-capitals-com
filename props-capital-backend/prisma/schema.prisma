@@ -16,6 +16,7 @@ model User {
   updatedAt              DateTime                @updatedAt
   resetPasswordExpiry    DateTime?
   resetPasswordOtp       String?
+  chatSessions           ChatSession[]
   notifications          Notification[]
   notificationPreference NotificationPreference?
   payments               Payment[]
@@ -24,7 +25,6 @@ model User {
   tradingAccounts        TradingAccount[]
   profile                UserProfile?
   verificationDocuments  VerificationDocument[]
-  chatSessions           ChatSession[]
 }
 
 model SignupOtp {
@@ -187,7 +187,6 @@ model PendingOrder {
   price            Float
   stopLoss         Float?
   takeProfit       Float?
-  limitPrice       Float?
   status           OrderStatus    @default(PENDING)
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
@@ -196,6 +195,7 @@ model PendingOrder {
   positionType     String         @default("CFD")
   leverage         Float          @default(100)
   triggeredAt      DateTime?
+  limitPrice       Float?
   tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
 
   @@index([symbol, status])
@@ -436,6 +436,29 @@ model ContactMessage {
   updatedAt DateTime        @updatedAt
 }
 
+model ChatSession {
+  id        String        @id @default(cuid())
+  userId    String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  messages  ChatMessage[]
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model ChatMessage {
+  id         String      @id @default(cuid())
+  sessionId  String
+  role       String
+  content    String
+  tokensUsed Int?
+  createdAt  DateTime    @default(now())
+  session    ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+}
+
 enum UserRole {
   TRADER
   ADMIN
@@ -611,29 +634,4 @@ enum ContactCategory {
 enum SenderType {
   ADMIN
   TRADER
-}
-
-model ChatSession {
-  id        String   @id @default(cuid())
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages ChatMessage[]
-
-  @@index([userId])
-}
-
-model ChatMessage {
-  id         String   @id @default(cuid())
-  sessionId  String
-  role       String
-  content    String
-  tokensUsed Int?
-  createdAt  DateTime @default(now())
-
-  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-
-  @@index([sessionId])
 }
