@@ -1,4 +1,4 @@
-import { apiPost } from '@/lib/api';
+import { apiPost, apiGet } from '@/lib/api';
 
 // API Functions
 export const purchaseChallenge = async (data) => {
@@ -7,5 +7,14 @@ export const purchaseChallenge = async (data) => {
 
 export const validateCoupon = async (code) => {
   return apiPost('/coupons/validate', { code });
+};
+
+// WorldCard
+export const createWorldCardSession = async (data) => {
+  return apiPost('/payments/worldcard/session', data);
+};
+
+export const getPaymentStatus = async (reference) => {
+  return apiGet(`/payments/status/${reference}`);
 };
 

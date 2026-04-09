@@ -13,11 +13,13 @@ import {
   Loader2,
   Lock
 } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { useTraderTheme } from './TraderPanelLayout';
-import { useChallenges } from '@/contexts/ChallengesContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { getChallenges } from '@/api/challenges';
-import { purchaseChallenge } from '@/api/payments';
+import { createWorldCardSession } from '@/api/payments';
+import { PaymentLogos } from '@/components/PaymentLogos';
 
 const accountSizes = [
   { label: '$5K', key: '5K', value: 5000 },
@@ -70,20 +72,31 @@ const platforms = [
 
 const TradeCheckoutPanelPage = () => {
   const { isDark } = useTraderTheme();
-  const { selectedChallenge: activeChallenge, updateChallengePlatform } = useChallenges();
   const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [selectedType, setSelectedType] = useState('1-step');
   const [selectedSizeIndex, setSelectedSizeIndex] = useState(3);
   const [selectedPlatform, setSelectedPlatform] = useState('mt5');
   const [selectedPayment, setSelectedPayment] = useState('card');
-  const [isLoading, setIsLoading] = useState(false);
-  const [purchaseError, setPurchaseError] = useState(null);
-  const [purchaseResult, setPurchaseResult] = useState(null);
   const [backendChallenges, setBackendChallenges] = useState([]);
   const [loadingChallenges, setLoadingChallenges] = useState(true);
   const [tradeLockerAlert, setTradeLockerAlert] = useState(false);
   const [couponCode, setCouponCode] = useState('');
+
+  const worldCardMutation = useMutation({
+    mutationFn: createWorldCardSession,
+    onSuccess: (data) => {
+      if (data?.redirectUrl) {
+        toast.success('Redirecting to payment...');
+        window.location.href = data.redirectUrl;
+      } else {
+        toast.error('No checkout URL received from payment gateway.');
+      }
+    },
+    onError: (err) => {
+      toast.error(err?.message || 'Failed to start checkout. Please try again.');
+    },
+  });
 
   useEffect(() => {
     const fetchChallenges = async () => {
@@ -131,38 +144,23 @@ const TradeCheckoutPanelPage = () => {
     setStep(2);
   };
 
-  const handlePurchase = async () => {
-    setIsLoading(true);
-    setPurchaseError(null);
-
-    try {
-      if (!user?.userId) {
-        throw new Error('You must be logged in to purchase a challenge.');
-      }
-
-      const payload = {
-        userId: user.userId,
-        challengeId: matchingBackendChallenge?.id || undefined,
-        accountSize: accountSizes[selectedSizeIndex].value,
-        challengeType: selectedType,
-        platform: selectedPlatform.toUpperCase(),
-        paymentMethod: selectedPayment,
-        couponCode: couponCode || undefined,
-      };
-
-      const result = await purchaseChallenge(payload);
-      setPurchaseResult(result);
-
-      if (activeChallenge) {
-        updateChallengePlatform(activeChallenge.id, selectedPlatform);
-      }
-
-      setStep(3);
-    } catch (err) {
-      setPurchaseError(err.message || 'Purchase failed. Please try again.');
-    } finally {
-      setIsLoading(false);
+  const handlePurchase = () => {
+    if (!user?.userId) {
+      toast.error('You must be logged in to purchase a challenge.');
+      return;
     }
+
+    const payload = {
+      userId: user.userId,
+      challengeId: matchingBackendChallenge?.id || undefined,
+      accountSize: accountSizes[selectedSizeIndex].value,
+      challengeType: selectedType,
+      platform: selectedPlatform.toUpperCase(),
+      paymentMethod: selectedPayment,
+      couponCode: couponCode || undefined,
+    };
+
+    worldCardMutation.mutate(payload);
   };
 
   const cardClass = `rounded-2xl border ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`;
@@ -399,12 +397,12 @@ const TradeCheckoutPanelPage = () => {
               </div>
             </div>
 
-            {purchaseError && (
+            {worldCardMutation.isError && (
               <div className={`mt-4 p-4 rounded-xl border flex items-start gap-3 ${isDark ? 'bg-red-500/10 border-red-500/30' : 'bg-red-50 border-red-200'}`}>
                 <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="font-semibold text-sm text-red-500">Purchase Failed</p>
-                  <p className={`text-sm mt-1 ${mutedClass}`}>{purchaseError}</p>
+                  <p className={`text-sm mt-1 ${mutedClass}`}>{worldCardMutation.error?.message || 'Something went wrong. Please try again.'}</p>
                 </div>
               </div>
             )}
@@ -447,10 +445,10 @@ const TradeCheckoutPanelPage = () => {
 
             <button
               onClick={handlePurchase}
-              disabled={isLoading}
-              className={`w-full mt-6 py-4 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-black font-bold rounded-xl flex items-center justify-center gap-2 transition-all ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={worldCardMutation.isPending}
+              className={`w-full mt-6 py-4 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-black font-bold rounded-xl flex items-center justify-center gap-2 transition-all ${worldCardMutation.isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {isLoading ? (
+              {worldCardMutation.isPending ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
                   Processing...
@@ -463,9 +461,15 @@ const TradeCheckoutPanelPage = () => {
               )}
             </button>
 
-            <p className={`text-xs text-center mt-4 ${mutedClass}`}>
-              Secure payment powered by Stripe
-            </p>
+            <div className="flex flex-col items-center gap-3 mt-4">
+              <p className={`text-xs ${mutedClass}`}>
+                Secure payment powered by WorldCard
+              </p>
+              <div>
+                <p className={`text-xs mb-1.5 ${mutedClass}`}>We accept</p>
+                <PaymentLogos />
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -511,7 +515,7 @@ const TradeCheckoutPanelPage = () => {
       {step < 3 && (
         <div className="flex justify-between">
           <button
-            onClick={() => { setStep(Math.max(1, step - 1)); setPurchaseError(null); }}
+            onClick={() => { setStep(Math.max(1, step - 1)); worldCardMutation.reset(); }}
             disabled={step === 1}
             className={`px-6 py-3 rounded-xl font-medium ${step === 1 ? 'opacity-50 cursor-not-allowed' : ''
               } ${isDark ? 'bg-white/5 text-white' : 'bg-slate-100 text-slate-900'}`}
@@ -520,10 +524,10 @@ const TradeCheckoutPanelPage = () => {
           </button>
           <button
             onClick={() => step === 1 ? handleProceedToPayment() : handlePurchase()}
-            disabled={isLoading}
-            className={`flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold rounded-xl ${isLoading ? 'opacity-50' : ''}`}
+            disabled={worldCardMutation.isPending}
+            className={`flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold rounded-xl ${worldCardMutation.isPending ? 'opacity-50' : ''}`}
           >
-            {isLoading ? (
+            {worldCardMutation.isPending ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
                 Processing...

@@ -16,6 +16,7 @@ model User {
   updatedAt              DateTime                @updatedAt
   resetPasswordExpiry    DateTime?
   resetPasswordOtp       String?
+  ChatSession            ChatSession[]
   notifications          Notification[]
   notificationPreference NotificationPreference?
   payments               Payment[]
@@ -24,7 +25,6 @@ model User {
   tradingAccounts        TradingAccount[]
   profile                UserProfile?
   verificationDocuments  VerificationDocument[]
-  chatSessions           ChatSession[]
 }
 
 model SignupOtp {
@@ -106,6 +106,7 @@ model Challenge {
   scalingEnabled         Boolean           @default(false)
   weekendHoldingAllowed  Boolean           @default(true)
   accounts               TradingAccount[]
+  payments               Payment[]
 }
 
 model TradingAccount {
@@ -187,7 +188,6 @@ model PendingOrder {
   price            Float
   stopLoss         Float?
   takeProfit       Float?
-  limitPrice       Float?
   status           OrderStatus    @default(PENDING)
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
@@ -196,6 +196,7 @@ model PendingOrder {
   positionType     String         @default("CFD")
   leverage         Float          @default(100)
   triggeredAt      DateTime?
+  limitPrice       Float?
   tradingAccount   TradingAccount @relation(fields: [tradingAccountId], references: [id])
 
   @@index([symbol, status])
@@ -230,18 +231,45 @@ model EquitySnapshot {
 }
 
 model Payment {
-  id           String    @id @default(cuid())
-  userId       String
-  amount       Int
-  currency     String    @default("USD")
-  provider     String
-  status       String
-  reference    String?
-  createdAt    DateTime  @default(now())
+  id               String  @id @default(cuid())
+  userId           String
+  challengeId      String?
+  tradingAccountId String?
+
+  amount         Int
+  originalAmount Int?
+  discountAmount Int?    @default(0)
+  couponCode     String?
+
+  currency String @default("USD")
+  provider String
+  status   String
+
+  reference         String? @unique
+  providerSessionId String? @unique
+  providerPaymentId String? @unique
+
+  orderStatus   String?
+  operationType String?
+  failureReason String?
+
+  metadata        Json?
+  sessionPayload  Json?
+  sessionResponse Json?
+  callbackPayload Json?
+
   refundReason String?
   refundedAt   DateTime?
+  createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
-  user         User      @relation(fields: [userId], references: [id])
+
+  user      User       @relation(fields: [userId], references: [id])
+  challenge Challenge? @relation(fields: [challengeId], references: [id])
+
+  @@index([userId])
+  @@index([challengeId])
+  @@index([tradingAccountId])
+  @@index([status])
 }
 
 model Payout {
@@ -436,6 +464,29 @@ model ContactMessage {
   updatedAt DateTime        @updatedAt
 }
 
+model ChatMessage {
+  id          String      @id
+  sessionId   String
+  role        String
+  content     String
+  tokensUsed  Int?
+  createdAt   DateTime    @default(now())
+  ChatSession ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+}
+
+model ChatSession {
+  id          String        @id
+  userId      String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime
+  ChatMessage ChatMessage[]
+  User        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
 enum UserRole {
   TRADER
   ADMIN
@@ -611,29 +662,4 @@ enum ContactCategory {
 enum SenderType {
   ADMIN
   TRADER
-}
-
-model ChatSession {
-  id        String   @id @default(cuid())
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages ChatMessage[]
-
-  @@index([userId])
-}
-
-model ChatMessage {
-  id         String   @id @default(cuid())
-  sessionId  String
-  role       String
-  content    String
-  tokensUsed Int?
-  createdAt  DateTime @default(now())
-
-  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-
-  @@index([sessionId])
 }

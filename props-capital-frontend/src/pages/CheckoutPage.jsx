@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, Check, Shield, Clock, Star, CreditCard, User, Mail, Phone, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
+import { PaymentLogos } from '@/components/PaymentLogos';
 
 // Platform options as separate constant
 const PLATFORMS = [
@@ -310,6 +311,11 @@ const CheckoutPage = () => {
                   <Star className="w-4 h-4 text-emerald-500" />
                   <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>24/7 Support</span>
                 </div>
+              </div>
+
+              <div className={`mt-6 pt-4 border-t ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+                <p className={`text-xs mb-2 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>We accept</p>
+                <PaymentLogos />
               </div>
             </div>
           </div>
