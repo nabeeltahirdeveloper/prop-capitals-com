@@ -20,7 +20,7 @@ export class WorldCardWebhookService {
     private readonly configService: ConfigService,
     @Inject(forwardRef(() => PaymentsService))
     private readonly paymentsService: PaymentsService,
-  ) {}
+  ) { }
 
   private requireString(value: any, field: string): string {
     if (typeof value !== 'string' || !value.trim()) {
@@ -45,15 +45,11 @@ export class WorldCardWebhookService {
       orderAmount +
       orderCurrency +
       orderDescription +
-      merchantPass;
+      merchantPass.trim();
 
-    const md5Upper = crypto
-      .createHash('md5')
-      .update(source)
-      .digest('hex')
-      .toUpperCase();
-
-    return crypto.createHash('sha1').update(md5Upper).digest('hex');
+    const upperSource = source.toUpperCase();
+    const md5 = crypto.createHash('md5').update(upperSource).digest('hex');
+    return crypto.createHash('sha1').update(md5).digest('hex');
   }
 
   private verifyHash(payload: any) {
@@ -92,10 +88,11 @@ export class WorldCardWebhookService {
 
   async handleCallback(payload: any) {
     this.logger.log(`WorldCard callback received: order_number=${payload?.order_number}, type=${payload?.type}, status=${payload?.status}, order_status=${payload?.order_status}`);
-
+    console.log("🔥 CALLBACK RECEIVED:", payload);
     this.verifyHash(payload);
 
     const orderNumber = this.requireString(payload.order_number, 'order_number');
+    console.log("order_number:", payload.order_number);
     const orderAmount = this.requireString(payload.order_amount, 'order_amount');
     const orderCurrency = this.requireString(payload.order_currency, 'order_currency');
     const providerPaymentId = this.requireString(payload.id, 'id');
@@ -143,7 +140,11 @@ export class WorldCardWebhookService {
           failureReason: payload.reason ? String(payload.reason) : null,
         },
       });
-
+      console.log("🔥 CALLBACK RECEIVED:", payload);
+      console.log("REFERENCE:", payload.order_number);
+      console.log("STATUS:", payload.status);
+      console.log("TYPE:", payload.type);
+      console.log("ORDER STATUS:", payload.order_status);
       return {
         ok: true,
         message: 'Payment already processed',

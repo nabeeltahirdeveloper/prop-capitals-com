@@ -49,23 +49,27 @@ export class PaymentsService {
 
   private generateSessionHash(
     orderNumber: string,
-    orderAmount: string,
-    orderCurrency: string,
-    orderDescription: string,
-    merchantPass: string,
+    amount: string,
+    currency: string,
+    description: string,
+    password: string,
   ): string {
-    const source = orderNumber + orderAmount + orderCurrency + orderDescription + merchantPass;
-    this.logger.debug(`Session hash source string: "${source}"`);
+    const crypto = require('crypto');
 
-    const md5Upper = crypto
-      .createHash('md5')
-      .update(source)
-      .digest('hex')
-      .toUpperCase();
+    const source =
+      orderNumber +
+      amount +
+      currency +
+      description +
+      password;
 
-    const hash = crypto.createHash('sha1').update(md5Upper).digest('hex');
-    this.logger.debug(`Session hash: MD5Upper=${md5Upper}, SHA1=${hash}`);
-    return hash;
+    // 🔥 FIX IS HERE
+    const upperSource = source.toUpperCase();
+
+    const md5 = crypto.createHash('md5').update(upperSource).digest('hex');
+    const sha1 = crypto.createHash('sha1').update(md5).digest('hex');
+
+    return sha1;
   }
 
   // ─── Challenge resolution (shared) ─────────────────────────────────
@@ -424,6 +428,11 @@ export class PaymentsService {
     const orderNumber = `WC-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
 
     // Read env vars early so we fail before creating the payment row
+    // const merchantKey = "9f23ffa8-333c-11f1-9a91-2aaa1a84d930"
+    // const merchantPass = "573d12e9ec6e71a20434afe3a058409e";
+    // const notificationUrl = "https://herbivorous-tuberculoid-marcelene.ngrok-free.dev/payments/worldcard/callback";
+    // const baseUrl = "https://pay.world-card.co";
+    // const frontendUrl = "https://props-capital.com";
     const merchantKey = this.configService.get<string>('WORLDCARD_MERCHANT_KEY');
     const merchantPass = this.configService.get<string>('WORLDCARD_MERCHANT_PASS');
     const notificationUrl = this.configService.get<string>('WORLDCARD_NOTIFICATION_URL');
@@ -444,8 +453,8 @@ export class PaymentsService {
     // Build order fields — these exact strings are used in both payload and hash
     const worldCardAmount = (amountCents / 100).toFixed(2);
     const orderCurrency = 'USD';
-    const orderDescription = `${challenge.name} - $${challenge.accountSize.toLocaleString()} Account`;
-
+    // const orderDescription = `${challenge.name} - $${challenge.accountSize.toLocaleString()} Account`;
+    const orderDescription = `${challenge.name} ${challenge.accountSize} Account`;
     // Generate session hash: SHA1( MD5( number + amount + currency + description + password ).toUpperCase() )
     const sessionHash = this.generateSessionHash(
       orderNumber,
