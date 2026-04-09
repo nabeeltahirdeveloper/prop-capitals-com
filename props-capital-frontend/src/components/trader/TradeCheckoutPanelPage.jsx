@@ -19,6 +19,7 @@ import { useTraderTheme } from './TraderPanelLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { getChallenges } from '@/api/challenges';
 import { createWorldCardSession } from '@/api/payments';
+import { PaymentLogos } from '@/components/PaymentLogos';
 
 const accountSizes = [
   { label: '$5K', key: '5K', value: 5000 },
@@ -460,9 +461,15 @@ const TradeCheckoutPanelPage = () => {
               )}
             </button>
 
-            <p className={`text-xs text-center mt-4 ${mutedClass}`}>
-              Secure payment powered by WorldCard
-            </p>
+            <div className="flex flex-col items-center gap-3 mt-4">
+              <p className={`text-xs ${mutedClass}`}>
+                Secure payment powered by WorldCard
+              </p>
+              <div>
+                <p className={`text-xs mb-1.5 ${mutedClass}`}>We accept</p>
+                <PaymentLogos />
+              </div>
+            </div>
           </div>
         </div>
       )}
