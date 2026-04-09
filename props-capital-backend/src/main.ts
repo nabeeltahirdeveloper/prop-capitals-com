@@ -114,16 +114,67 @@
 // }
 // bootstrap();
 
+// import { NestFactory } from '@nestjs/core';
+// import { ValidationPipe } from '@nestjs/common';
+// import { AppModule } from './app.module';
+// import { validateEnvironment } from './config/env.validation';
+// import { SocketIoAdapter } from './websocket/socket-io.adapter';
+
+// async function bootstrap() {
+//   validateEnvironment();
+
+//   const app = await NestFactory.create(AppModule);
+
+//   app.useGlobalPipes(
+//     new ValidationPipe({
+//       whitelist: true,
+//       transform: true,
+//     }),
+//   );
+
+//   app.enableCors({
+//     origin: true,
+//     credentials: true,
+//   });
+
+//   // Use the SocketIoAdapter so all @WebSocketGateway decorators share
+//   // a single Socket.IO server instance — prevents handleUpgrade() conflicts.
+//   app.useWebSocketAdapter(new SocketIoAdapter(app));
+
+//   const port = process.env.PORT || 5101;
+//   await app.listen(port);
+//   console.log(`Server is running on port ${port}`);
+// }
+// bootstrap();
+
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { validateEnvironment } from './config/env.validation';
 import { SocketIoAdapter } from './websocket/socket-io.adapter';
+import * as express from 'express';
 
 async function bootstrap() {
   validateEnvironment();
 
   const app = await NestFactory.create(AppModule);
+
+  app.use(
+    express.json({
+      verify: (req: any, _res, buf) => {
+        req.rawBody = buf;
+      },
+    }),
+  );
+
+  app.use(
+    express.urlencoded({
+      extended: true,
+      verify: (req: any, _res, buf) => {
+        req.rawBody = buf;
+      },
+    }),
+  );
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -137,8 +188,6 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // Use the SocketIoAdapter so all @WebSocketGateway decorators share
-  // a single Socket.IO server instance — prevents handleUpgrade() conflicts.
   app.useWebSocketAdapter(new SocketIoAdapter(app));
 
   const port = process.env.PORT || 5101;
