@@ -35,16 +35,46 @@ const SAFE_TRADING_ACCOUNT_SELECT = {
 export class AdminUsersService {
   constructor(private prisma: PrismaService) {}
 
-  // List all users
+  // List all users (paginated)
 
-  async getAllUsers() {
-    return this.prisma.user.findMany({
-      orderBy: { createdAt: 'desc' },
+  async getAllUsers({ page, limit, search, role }: { page: number; limit: number; search?: string; role?: string }) {
+    const skip = (page - 1) * limit;
 
-      include: {
-        profile: true,
-      },
-    });
+    const where: any = {};
+    if (search) {
+      where.OR = [
+        { email: { contains: search, mode: 'insensitive' } },
+        { profile: { firstName: { contains: search, mode: 'insensitive' } } },
+        { profile: { lastName: { contains: search, mode: 'insensitive' } } },
+      ];
+    }
+    if (role && role !== 'all') {
+      where.role = role.toUpperCase() as UserRole;
+    }
+
+    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+    const [data, total, traderCount, adminCount, newThisWeek] = await Promise.all([
+      this.prisma.user.findMany({
+        skip,
+        take: limit,
+        where,
+        orderBy: { createdAt: 'desc' },
+        include: { profile: true },
+      }),
+      this.prisma.user.count({ where }),
+      this.prisma.user.count({ where: { role: UserRole.TRADER } }),
+      this.prisma.user.count({ where: { role: UserRole.ADMIN } }),
+      this.prisma.user.count({ where: { createdAt: { gte: oneWeekAgo } } }),
+    ]);
+
+    return {
+      data,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+      summary: { traders: traderCount, admins: adminCount, newThisWeek },
+    };
   }
 
   // Get user with full details

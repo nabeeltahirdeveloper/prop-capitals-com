@@ -9,7 +9,12 @@
     "success": "Succès",
     "cancel": "Annuler",
     "delete": "Supprimer",
-    "deleting": "Suppression..."
+    "deleting": "Suppression...",
+    "pagination": {
+      "previous": "Précédent",
+      "next": "Suivant",
+      "pageOf": "Page {{current}} sur {{total}}"
+    }
   },
   "home": {
     "hero": {
@@ -1211,7 +1216,7 @@
     "pipeline": "Pipeline",
     "ftdReport": "Rapport FTD",
     "calendar": "Calendrier",
-    "fundedAccounts": "Funded Accounts",
+    "fundedAccounts": "Comptes Financés",
     "propServer": "Prop Server",
     "crmApiKey": "CRM API Keys"
   },
@@ -1327,7 +1332,7 @@
       "subtitle": "Afficher et gérer tous les utilisateurs de la plateforme",
       "stats": {
         "totalUsers": "Nombre total d’utilisateurs",
-        "traders": "Traders",
+        "traders": "Opérateurs",
         "admins": "Administrateurs",
         "newThisWeek": "Nouveaux cette semaine"
       },
@@ -1335,7 +1340,7 @@
       "filter": {
         "role": "Rôle",
         "allRoles": "Tous les rôles",
-        "traders": "Traders",
+        "traders": "Opérateurs",
         "admins": "Administrateurs"
       },
       "table": {
@@ -1398,10 +1403,10 @@
         "suspended": "Suspendu",
         "phase1": "Phase 1",
         "phase2": "Phase 2",
-        "closed": "Closed",
-        "dailyLocked": "Daily Locked",
-        "disqualified": "Disqualified",
-        "paused": "Paused"
+        "closed": "Fermé",
+        "dailyLocked": "Verrouillage Quotidien",
+        "disqualified": "Disqualifié",
+        "paused": "En Pause"
       },
       "table": {
         "account": "Compte",
@@ -1450,7 +1455,17 @@
         "forceFail": "Êtes-vous sûr de vouloir forcer l'échec de ce compte ? Cette action ne peut pas être facilement annulée.",
         "reset": "Êtes-vous sûr de vouloir réinitialiser ce compte à la Phase 1 ?"
       },
-      "emptyMessage": "Aucun compte trouvé"
+      "emptyMessage": "Aucun compte trouvé",
+      "toast": {
+        "statusUpdated": "Statut mis à jour",
+        "statusUpdatedDesc": "Le statut du compte a été changé en {{status}}.",
+        "statusUpdateFailed": "Échec de la mise à jour du statut",
+        "statusUpdateFailedDesc": "Une erreur est survenue lors de la mise à jour du statut du compte.",
+        "phaseUpdated": "Phase mise à jour",
+        "phaseUpdatedDesc": "La phase du compte a été changée en {{phase}}.",
+        "phaseUpdateFailed": "Échec de la mise à jour de la phase",
+        "phaseUpdateFailedDesc": "Une erreur est survenue lors de la mise à jour de la phase du compte."
+      }
     },
     "payouts": {
       "title": "Gestion des paiements",
@@ -1537,7 +1552,11 @@
       "refundReasonPlaceholder": "Saisir la raison du remboursement...",
       "cancel": "Annuler",
       "confirmRefund": "Confirmer le remboursement",
-      "refunding": "Traitement..."
+      "refunding": "Traitement...",
+      "refundSuccess": "Remboursement Réussi",
+      "refundSuccessDesc": "Le paiement a été remboursé avec succès.",
+      "refundError": "Échec du Remboursement",
+      "refundErrorDesc": "Impossible de rembourser le paiement. Veuillez réessayer."
     },
     "violations": {
       "title": "Infractions aux règles",
@@ -1655,19 +1674,19 @@
       "noExpiry": "Sans expiration",
       "emptyMessage": "Aucun coupon trouvé",
       "messages": {
-        "copySuccess": "Coupon code copied",
-        "copyError": "Failed to copy coupon code",
-        "createSuccess": "Coupon created successfully",
-        "updateSuccess": "Coupon updated successfully",
-        "deleteSuccess": "Coupon deleted successfully",
-        "saveError": "Failed to save coupon",
-        "deleteError": "Failed to delete coupon"
+        "copySuccess": "Code copié dans le presse-papiers",
+        "copyError": "Erreur lors de la copie du code",
+        "createSuccess": "Coupon créé avec succès",
+        "updateSuccess": "Coupon mis à jour avec succès",
+        "deleteSuccess": "Coupon supprimé avec succès",
+        "saveError": "Erreur lors de l'enregistrement du coupon",
+        "deleteError": "Erreur lors de la suppression du coupon"
       },
       "validation": {
-        "codeRequired": "Coupon code is required",
-        "discountRequired": "Discount value must be greater than 0",
-        "discountRangePercent": "Percentage discount cannot exceed 100",
-        "maxUsesInvalid": "Max uses must be at least 1"
+        "codeRequired": "Le code du coupon est obligatoire",
+        "discountRequired": "La valeur de la réduction est obligatoire",
+        "discountRangePercent": "Le pourcentage de réduction doit être entre 1 et 100",
+        "maxUsesInvalid": "Le nombre maximum d'utilisations doit être un nombre positif"
       }
     },
     "support": {
@@ -1713,16 +1732,27 @@
       },
       "actions": {
         "take": "Prendre en charge",
-        "resolve": "Résoudre"
+        "resolve": "Résoudre",
+        "close": "Fermer"
       },
       "dialog": {
         "from": "De",
         "writeResponse": "Écrivez votre réponse...",
         "close": "Fermer",
         "sending": "Envoi...",
-        "sendAndResolve": "Envoyer et résoudre"
+        "sendAndResolve": "Envoyer et résoudre",
+        "submitted": "Soumis",
+        "userMessage": "Message de l'Utilisateur",
+        "previousReply": "Réponse Précédente",
+        "sendNewReply": "Envoyer une Nouvelle Réponse"
       },
       "emptyMessage": "Aucun ticket trouvé",
+      "toast": {
+        "successTitle": "Succès",
+        "errorTitle": "Erreur",
+        "replySent": "Réponse envoyée avec succès",
+        "statusUpdated": "Statut du ticket mis à jour"
+      },
       "subjects": {
         "unableToLoginMT5": "Impossible de se connecter à MT5",
         "payoutRequestTakingTooLong": "La demande de retrait prend trop de temps",
@@ -1846,7 +1876,7 @@
       },
       "severity": {
         "fatal": "Fatal",
-        "warning": "Warning"
+        "warning": "Avertissement"
       },
       "loading": "Chargement des comptes...",
       "noAccounts": "Aucun compte ne correspond à vos critères."
@@ -2027,47 +2057,64 @@
       "noChallenges": "No challenges available"
     },
     "apiKeys": {
-      "title": "API Keys",
-      "subtitle": "Manage API keys for third-party lead ingestion",
-      "generate": "Generate API Key",
-      "keyGenerated": "API Key Generated",
-      "generateNew": "Generate New API Key",
-      "keyName": "Key Name",
-      "keyNamePlaceholder": "e.g. Partner Integration",
-      "keyNameHint": "A label to identify this key (e.g. the partner name)",
-      "generating": "Generating...",
-      "generateKey": "Generate Key",
-      "copyWarning": "Copy this key now. It will not be shown again.",
-      "yourKey": "Your API Key",
-      "copied": "Copied!",
-      "copyToClipboard": "Copy to Clipboard",
-      "done": "Done",
-      "totalKeys": "Total Keys",
+      "title": "Clés API",
+      "subtitle": "Gérer les clés API pour les intégrations externes",
+      "generate": "Générer",
+      "keyGenerated": "Clé Générée",
+      "generateNew": "Générer une Nouvelle Clé",
+      "keyName": "Nom de la Clé",
+      "keyNamePlaceholder": "Ex : Intégration CRM",
+      "keyNameHint": "Choisissez un nom descriptif pour identifier cette clé",
+      "generating": "Génération en cours...",
+      "generateKey": "Générer la Clé",
+      "copyWarning": "Assurez-vous de copier cette clé maintenant. Vous ne pourrez plus la voir.",
+      "yourKey": "Votre Clé API",
+      "copied": "Copié !",
+      "copyToClipboard": "Copier dans le presse-papiers",
+      "done": "Terminé",
+      "totalKeys": "Total des Clés",
       "active": "Active",
-      "revoked": "Revoked",
-      "emptyMessage": "No API keys yet. Generate one to get started.",
-      "created": "Created",
-      "lastUsed": "Last Used",
-      "never": "Never",
-      "endpoints": "Endpoints",
-      "singleLead": "Single lead",
-      "upTo100": "Up to 100 leads",
-      "checkStatus": "Check status",
-      "singleExample": "Single Lead Example",
-      "bulkExample": "Bulk Example",
-      "fieldsReference": "Fields Reference",
-      "field": "Field",
+      "revoked": "Révoquée",
+      "emptyMessage": "Aucune clé API pour le moment. Générez-en une pour commencer.",
+      "created": "Créée",
+      "lastUsed": "Dernière Utilisation",
+      "never": "Jamais",
+      "endpoints": "Points d'accès",
+      "singleLead": "Lead Individuel",
+      "upTo100": "Jusqu'à 100",
+      "checkStatus": "Vérifier le Statut",
+      "singleExample": "Exemple Individuel",
+      "bulkExample": "Exemple en Masse",
+      "fieldsReference": "Référence des Champs",
+      "field": "Champ",
       "type": "Type",
-      "required": "Required",
-      "yes": "Yes",
-      "no": "No",
-      "revoking": "Revoking...",
-      "revokeThisKey": "Revoke This Key",
-      "close": "Close",
-      "quickGuide": "Quick Integration Guide",
-      "guideText": "Third parties send leads to your API using the",
-      "header": "header:",
-      "guideNote": "Leads will appear automatically in the CRM Leads page with status NEW."
+      "required": "Requis",
+      "yes": "Oui",
+      "no": "Non",
+      "revoking": "Révocation en cours...",
+      "revokeThisKey": "Révoquer cette Clé",
+      "close": "Fermer",
+      "quickGuide": "Guide Rapide",
+      "guideText": "Utilisez cette API pour envoyer des leads depuis des formulaires externes ou des intégrations CRM.",
+      "header": "En-tête",
+      "guideNote": "Note : Chaque clé API a un accès limité aux endpoints de leads uniquement."
+    },
+    "fundedAccounts": {
+      "title": "Comptes Financés",
+      "subtitle": "Aperçu de tous les comptes de trading financés",
+      "stats": {
+        "totalFunded": "Total des Comptes Financés",
+        "activeFunded": "Comptes Financés Actifs",
+        "totalCapital": "Capital Total Alloué",
+        "totalProfit": "Bénéfice Total Actuel",
+        "totalPayouts": "Total des Paiements"
+      },
+      "details": {
+        "profitSplitLabel": "Partage des Bénéfices",
+        "totalPayoutsLabel": "Total des Paiements",
+        "withdrawableProfitLabel": "Bénéfice Retirable",
+        "lastPayoutDateLabel": "Date du Dernier Paiement"
+      }
     }
   },
   "signIn": {
