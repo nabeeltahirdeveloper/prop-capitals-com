@@ -96,7 +96,7 @@ const WorldCardSuccessPage = () => {
         </div>
 
         {/* What's next */}
-        <div className="text-left max-w-md mx-auto mb-8">
+        {/* <div className="text-left max-w-md mx-auto mb-8">
           <h3 className={`font-bold mb-4 ${textClass}`}>What happens next?</h3>
           <div className="space-y-4">
             {[
@@ -115,7 +115,7 @@ const WorldCardSuccessPage = () => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         <div className="flex justify-center gap-4">
           <Link to="/traderdashboard" className="px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold rounded-xl flex items-center gap-2">

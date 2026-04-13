@@ -25,6 +25,7 @@ import {
   Check,
   Pin,
   PinOff,
+  Receipt,
 } from "lucide-react";
 import {
   ChallengesProvider,
@@ -233,6 +234,7 @@ const TraderPanelLayoutInner = () => {
       label: "Economic Calendar",
     },
     { path: "/traderdashboard/payouts", icon: Wallet, label: "Payout History" },
+    { path: "/traderdashboard/transactions", icon: Receipt, label: "Transactions" },
   ];
 
   const settingsNavItems = [

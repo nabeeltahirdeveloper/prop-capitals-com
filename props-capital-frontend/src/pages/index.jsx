@@ -58,6 +58,7 @@ import FAQPage from "@/components/trader/FAQPage.jsx";
 import TradeCheckoutPanelPage from "@/components/trader/TradeCheckoutPanelPage.jsx";
 import WorldCardSuccessPage from "@/components/trader/WorldCardSuccessPage.jsx";
 import WorldCardFailPage from "@/components/trader/WorldCardFailPage.jsx";
+import TransactionsPage from "@/components/trader/TransactionsPage.jsx";
 
 import {
   BrowserRouter as Router,
@@ -230,6 +231,7 @@ function PagesContent() {
                   <Route path="checkout" element={<TradeCheckoutPanelPage />} />
                   <Route path="checkout/success" element={<WorldCardSuccessPage />} />
                   <Route path="checkout/fail" element={<WorldCardFailPage />} />
+                  <Route path="transactions" element={<TransactionsPage />} />
                 </Route>
               </Route>
 
