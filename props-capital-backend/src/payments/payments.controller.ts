@@ -34,4 +34,10 @@ export class PaymentsController {
     async paymentStatus(@Param('reference') reference: string) {
         return this.paymentsService.getPaymentStatus(reference);
     }
+
+    // User transactions list (for dashboard)
+    @Get('user/:userId')
+    async userPayments(@Param('userId') userId: string) {
+        return this.paymentsService.getUserPayments(userId);
+    }
 }

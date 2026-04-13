@@ -771,4 +771,43 @@ export class PaymentsService {
     return payment;
   }
 
+  // ─── User transactions list (for dashboard) ────────────────────────
+
+  async getUserPayments(userId: string) {
+    if (!userId) {
+      throw new BadRequestException('Missing userId');
+    }
+
+    const payments = await (this.prisma.payment as any).findMany({
+      where: { userId },
+      select: {
+        id: true,
+        reference: true,
+        amount: true,
+        originalAmount: true,
+        discountAmount: true,
+        couponCode: true,
+        currency: true,
+        provider: true,
+        status: true,
+        orderStatus: true,
+        tradingAccountId: true,
+        failureReason: true,
+        createdAt: true,
+        updatedAt: true,
+        challenge: {
+          select: {
+            id: true,
+            name: true,
+            accountSize: true,
+            challengeType: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return payments;
+  }
+
 }

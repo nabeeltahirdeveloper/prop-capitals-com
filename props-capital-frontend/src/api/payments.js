@@ -18,3 +18,7 @@ export const getPaymentStatus = async (reference) => {
   return apiGet(`/payments/status/${reference}`);
 };
 
+export const getUserPayments = async (userId) => {
+  return apiGet(`/payments/user/${userId}`);
+};
+

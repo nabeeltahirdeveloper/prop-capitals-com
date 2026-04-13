@@ -309,12 +309,11 @@ const TradeCheckoutPanelPage = () => {
                 <button
                   key={platform.id}
                   onClick={() => handlePlatformSelect(platform.id)}
-                  className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border transition-all ${
-                    platform.comingSoon
-                      ? isDark ? 'border-white/5 opacity-60' : 'border-slate-100 opacity-60'
-                      : selectedPlatform === platform.id
-                        ? 'border-amber-500 bg-amber-500/10'
-                        : isDark ? 'border-white/10 hover:border-white/20' : 'border-slate-200 hover:border-slate-300'
+                  className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border transition-all ${platform.comingSoon
+                    ? isDark ? 'border-white/5 opacity-60' : 'border-slate-100 opacity-60'
+                    : selectedPlatform === platform.id
+                      ? 'border-amber-500 bg-amber-500/10'
+                      : isDark ? 'border-white/10 hover:border-white/20' : 'border-slate-200 hover:border-slate-300'
                     }`}
                 >
                   {platform.comingSoon ? (
@@ -431,14 +430,16 @@ const TradeCheckoutPanelPage = () => {
               </button>
 
               <button
+                disabled
                 onClick={() => setSelectedPayment('crypto')}
-                className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${selectedPayment === 'crypto'
+                className={`w-full flex  items-center gap-3 p-4 rounded-xl border-2 transition-all ${selectedPayment === 'crypto'
                   ? 'border-amber-500 bg-amber-500/10'
                   : isDark ? 'border-white/10 hover:border-white/20' : 'border-slate-200 hover:border-slate-300'
                   }`}
               >
                 <span className="text-xl">₿</span>
                 <span className={`font-medium ${textClass}`}>Crypto</span>
+                <span className={"text-xs "}>(Comming Soon) </span>
                 {selectedPayment === 'crypto' && <Check className="w-4 h-4 text-amber-500 ml-auto" />}
               </button>
             </div>
