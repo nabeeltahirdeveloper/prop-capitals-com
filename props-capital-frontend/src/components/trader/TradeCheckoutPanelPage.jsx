@@ -70,6 +70,8 @@ const platforms = [
   { id: 'pt5', name: 'PT5', desc: 'Advanced trading' },
 ];
 
+const PURCHASES_DISABLED = true;
+
 const TradeCheckoutPanelPage = () => {
   const { isDark } = useTraderTheme();
   const { user } = useAuth();
@@ -137,6 +139,10 @@ const TradeCheckoutPanelPage = () => {
   };
 
   const handleProceedToPayment = () => {
+    if (PURCHASES_DISABLED) {
+      toast.info('Purchases are temporarily unavailable. Please check back soon.');
+      return;
+    }
     if (selectedPlatform === 'tradelocker') {
       setTradeLockerAlert(true);
       return;
@@ -145,6 +151,10 @@ const TradeCheckoutPanelPage = () => {
   };
 
   const handlePurchase = () => {
+    if (PURCHASES_DISABLED) {
+      toast.info('Purchases are temporarily unavailable. Please check back soon.');
+      return;
+    }
     if (!user?.userId) {
       toast.error('You must be logged in to purchase a challenge.');
       return;
@@ -446,13 +456,18 @@ const TradeCheckoutPanelPage = () => {
 
             <button
               onClick={handlePurchase}
-              disabled={worldCardMutation.isPending}
-              className={`w-full mt-6 py-4 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-black font-bold rounded-xl flex items-center justify-center gap-2 transition-all ${worldCardMutation.isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={worldCardMutation.isPending || PURCHASES_DISABLED}
+              className={`w-full mt-6 py-4 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-black font-bold rounded-xl flex items-center justify-center gap-2 transition-all ${worldCardMutation.isPending || PURCHASES_DISABLED ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {worldCardMutation.isPending ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
                   Processing...
+                </>
+              ) : PURCHASES_DISABLED ? (
+                <>
+                  <Lock className="w-5 h-5" />
+                  Temporarily Unavailable
                 </>
               ) : (
                 <>
@@ -525,13 +540,18 @@ const TradeCheckoutPanelPage = () => {
           </button>
           <button
             onClick={() => step === 1 ? handleProceedToPayment() : handlePurchase()}
-            disabled={worldCardMutation.isPending}
-            className={`flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold rounded-xl ${worldCardMutation.isPending ? 'opacity-50' : ''}`}
+            disabled={worldCardMutation.isPending || PURCHASES_DISABLED}
+            className={`flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold rounded-xl ${worldCardMutation.isPending || PURCHASES_DISABLED ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {worldCardMutation.isPending ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
                 Processing...
+              </>
+            ) : PURCHASES_DISABLED ? (
+              <>
+                <Lock className="w-4 h-4" />
+                Temporarily Unavailable
               </>
             ) : (
               <>
