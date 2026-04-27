@@ -17,6 +17,11 @@ export class ChallengesController {
     return this.challengesService.findAll();
   }
 
+  @Get('by-slug/:slug')
+  findBySlug(@Param('slug') slug: string) {
+    return this.challengesService.findBySlug(slug);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.challengesService.findOne(id);

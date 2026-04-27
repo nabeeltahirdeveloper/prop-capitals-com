@@ -114,4 +114,14 @@ export class AuthController {
     return this.authService.verifyOtpAndResetPassword(email, otp, newPassword);
   }
 
+  @Get('set-password/verify/:token')
+  verifySetPasswordToken(@Param('token') token: string) {
+    return this.authService.verifySetPasswordToken(token);
+  }
+
+  @Post('set-password')
+  async submitSetPassword(@Body() body: { token: string; password: string }) {
+    return this.authService.setPasswordWithToken(body?.token, body?.password);
+  }
+
 }
