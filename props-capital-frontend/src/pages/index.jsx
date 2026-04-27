@@ -42,6 +42,10 @@ import AmlPolicyPage from "./AmlPolicyPage.jsx"
 import ForgotPassword from "./ForgotPassword.jsx";
 import CheckoutPage from "./CheckoutPage.jsx";
 import CheckoutSuccessPage from "./CheckoutSuccessPage.jsx";
+import PayLink from "./PayLink.jsx";
+import PayLinkSuccess from "./PayLinkSuccess.jsx";
+import PayLinkFail from "./PayLinkFail.jsx";
+import SetPassword from "./SetPassword.jsx";
 // Dashboard
 import TraderPanelLayout from "@/components/trader/TraderPanelLayout.jsx";
 import AccountOverview from "@/components/trader/AccountOverview.jsx";
@@ -172,6 +176,10 @@ function PagesContent() {
               <Route path="/kyc-policy" element={<KycPolicyPage />} />
               <Route path="/aml-policy" element={<AmlPolicyPage />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/set-password" element={<SetPassword />} />
+              <Route path="/pay/success" element={<PayLinkSuccess />} />
+              <Route path="/pay/fail" element={<PayLinkFail />} />
+              <Route path="/pay/:slug" element={<PayLink />} />
               <Route
                 path="/SignIn"
                 element={
