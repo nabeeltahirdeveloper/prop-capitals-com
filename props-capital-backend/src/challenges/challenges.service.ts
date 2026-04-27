@@ -27,6 +27,31 @@ export class ChallengesService {
     return challenge;
   }
 
+  async findBySlug(slug: string) {
+    const challenge = await (this.prisma.challenge as any).findUnique({
+      where: { slug },
+    });
+    if (!challenge || !challenge.isActive) {
+      throw new NotFoundException('Challenge not found');
+    }
+    return {
+      id: challenge.id,
+      slug: challenge.slug,
+      name: challenge.name,
+      description: challenge.description,
+      accountSize: challenge.accountSize,
+      price: challenge.price,
+      currency: challenge.currency,
+      challengeType: challenge.challengeType,
+      phase1TargetPercent: challenge.phase1TargetPercent,
+      phase2TargetPercent: challenge.phase2TargetPercent,
+      dailyDrawdownPercent: challenge.dailyDrawdownPercent,
+      overallDrawdownPercent: challenge.overallDrawdownPercent,
+      profitSplit: challenge.profitSplit,
+      platform: challenge.platform,
+    };
+  }
+
   async update(id: string, data: Prisma.ChallengeUpdateInput) {
     await this.findOne(id); // check existence
     return this.prisma.challenge.update({

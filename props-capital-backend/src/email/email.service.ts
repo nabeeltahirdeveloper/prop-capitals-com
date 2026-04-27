@@ -418,6 +418,35 @@ export class EmailService {
   }
 
   /**
+   * Send "set your password" email to a guest-created user after their first
+   * successful payment. Link contains a one-time token (valid 7 days).
+   */
+  async sendSetPasswordEmail(to: string, setPasswordUrl: string, firstName?: string): Promise<EmailResult> {
+    const name = firstName || 'Trader';
+    return this.sendWithTimeout({
+      to,
+      from: this.fromEmail,
+      subject: 'Welcome to Props Capital — set your password',
+      text: `Hi ${name},\n\nYour Props Capital account has been created and your challenge is active. Set a password to log in and view your trading account, progress, and payouts:\n\n${setPasswordUrl}\n\nThis link expires in 7 days.`,
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.5; max-width: 560px;">
+          <h2 style="margin: 0 0 12px;">Welcome to Props Capital, ${name}!</h2>
+          <p style="margin: 0 0 12px;">Your account has been created and your challenge is active.</p>
+          <p style="margin: 0 0 12px;">Set a password to log in and access your dashboard, trading account, progress, and payouts:</p>
+          <a href="${setPasswordUrl}" style="display: inline-block; padding: 12px 24px; background-color: #F59E0B; color: #0a0d12; text-decoration: none; border-radius: 4px; font-weight: bold; margin: 12px 0;">
+            Set Your Password
+          </a>
+          <p style="margin: 12px 0 0; color: #555; font-size: 13px;">
+            Or copy this link into your browser:<br>
+            <span style="word-break: break-all;">${setPasswordUrl}</span>
+          </p>
+          <p style="margin: 12px 0 0; color: #555; font-size: 13px;">This link expires in 7 days.</p>
+        </div>
+      `,
+    });
+  }
+
+  /**
    * Send platform account credentials email
    */
   async sendPlatformAccountCredentials(

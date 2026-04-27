@@ -59,6 +59,8 @@ api.interceptors.response.use(
         "/signin",
         "/signup",
         "/login",
+        "/pay",
+        "/set-password",
         "/",
       ];
 
@@ -67,7 +69,8 @@ api.interceptors.response.use(
         (page) =>
           currentPath === page ||
           currentPath === page + "/" ||
-          currentPath.startsWith(page + "?")
+          currentPath.startsWith(page + "?") ||
+          currentPath.startsWith(page + "/")
       );
 
       // Only redirect if we're on a protected page

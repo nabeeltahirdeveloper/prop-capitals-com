@@ -14,6 +14,10 @@ export const createWorldCardSession = async (data) => {
   return apiPost('/payments/worldcard/session', data);
 };
 
+export const createGuestWorldCardSession = async (data) => {
+  return apiPost('/payments/worldcard/guest-session', data);
+};
+
 export const getPaymentStatus = async (reference) => {
   return apiGet(`/payments/status/${reference}`);
 };

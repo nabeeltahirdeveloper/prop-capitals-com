@@ -22,6 +22,12 @@ export class PaymentsController {
         return this.paymentsService.createWorldCardSession(body);
     }
 
+    // WorldCard: create hosted checkout session for guest (public payment link)
+    @Post('worldcard/guest-session')
+    async worldCardGuestSession(@Body() body: any) {
+        return this.paymentsService.createGuestWorldCardSession(body);
+    }
+
     // WorldCard: callback from payment gateway
     @Post('worldcard/callback')
     @HttpCode(200)
