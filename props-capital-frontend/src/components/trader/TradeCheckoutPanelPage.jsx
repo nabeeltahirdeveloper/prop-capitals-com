@@ -1288,7 +1288,7 @@ const TradeCheckoutPanelPage = () => {
     // Hand off to the public /pay/:slug page using the challenge id as the
     // slug param. The backend by-slug lookup accepts ids; the form on that
     // page is the single source of truth for billing details + WorldCard.
-    navigate(`/paycheckout/${matchingBackendChallenge.id}`);
+    navigate(`/pay/${matchingBackendChallenge.id}`);
   };
 
 
