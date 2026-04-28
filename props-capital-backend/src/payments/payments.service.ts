@@ -603,6 +603,7 @@ export class PaymentsService {
   async createGuestWorldCardSession(data: any) {
     const {
       slug,
+      challengeId,
       firstName,
       lastName,
       email,
@@ -613,8 +614,8 @@ export class PaymentsService {
       couponCode,
     } = data || {};
 
-    if (!slug || typeof slug !== 'string') {
-      throw new BadRequestException('Missing required field: slug');
+    if (!slug && !challengeId) {
+      throw new BadRequestException('Missing required field: slug or challengeId');
     }
     if (!email || typeof email !== 'string') {
       throw new BadRequestException('Missing required field: email');
@@ -625,7 +626,13 @@ export class PaymentsService {
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    const challenge: any = await (this.prisma.challenge as any).findUnique({ where: { slug } });
+    let challenge: any = null;
+    if (challengeId && typeof challengeId === 'string') {
+      challenge = await this.prisma.challenge.findUnique({ where: { id: challengeId } });
+    }
+    if (!challenge && slug && typeof slug === 'string') {
+      challenge = await (this.prisma.challenge as any).findUnique({ where: { slug } });
+    }
     if (!challenge || !challenge.isActive) {
       throw new NotFoundException('Challenge not found');
     }

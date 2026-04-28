@@ -28,9 +28,17 @@ export class ChallengesService {
   }
 
   async findBySlug(slug: string) {
-    const challenge = await (this.prisma.challenge as any).findUnique({
+    // Accept either a slug ("uk-25k") or a raw Challenge id (CUID) — the
+    // route param can be either now that the trader-side checkout reuses
+    // the public /pay/:slug page with an id.
+    let challenge: any = await (this.prisma.challenge as any).findUnique({
       where: { slug },
     });
+    if (!challenge) {
+      challenge = await this.prisma.challenge.findUnique({
+        where: { id: slug },
+      });
+    }
     if (!challenge || !challenge.isActive) {
       throw new NotFoundException('Challenge not found');
     }
