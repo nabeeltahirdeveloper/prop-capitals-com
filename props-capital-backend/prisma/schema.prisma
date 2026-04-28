@@ -16,9 +16,9 @@ model User {
   updatedAt              DateTime                @updatedAt
   resetPasswordExpiry    DateTime?
   resetPasswordOtp       String?
-  setPasswordTokenHash   String?
-  setPasswordTokenExpiry DateTime?
   passwordSet            Boolean                 @default(true)
+  setPasswordTokenExpiry DateTime?
+  setPasswordTokenHash   String?
   ChatSession            ChatSession[]
   notifications          Notification[]
   notificationPreference NotificationPreference?
@@ -92,8 +92,6 @@ model Challenge {
   description            String?
   accountSize            Int
   price                  Int
-  currency               String            @default("USD")
-  slug                   String?           @unique
   platform               ChallengePlatform
   phase1TargetPercent    Float             @default(8.0)
   phase2TargetPercent    Float             @default(5.0)
@@ -110,8 +108,10 @@ model Challenge {
   profitSplit            Float             @default(80.0)
   scalingEnabled         Boolean           @default(false)
   weekendHoldingAllowed  Boolean           @default(true)
-  accounts               TradingAccount[]
+  currency               String            @default("USD")
+  slug                   String?           @unique
   payments               Payment[]
+  accounts               TradingAccount[]
 }
 
 model TradingAccount {
@@ -236,40 +236,33 @@ model EquitySnapshot {
 }
 
 model Payment {
-  id               String  @id @default(cuid())
-  userId           String
-  challengeId      String?
-  tradingAccountId String?
-
-  amount         Int
-  originalAmount Int?
-  discountAmount Int?    @default(0)
-  couponCode     String?
-
-  currency String @default("USD")
-  provider String
-  status   String
-
-  reference         String? @unique
-  providerSessionId String? @unique
-  providerPaymentId String? @unique
-
-  orderStatus   String?
-  operationType String?
-  failureReason String?
-
-  metadata        Json?
-  sessionPayload  Json?
-  sessionResponse Json?
-  callbackPayload Json?
-
-  refundReason String?
-  refundedAt   DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  user      User       @relation(fields: [userId], references: [id])
-  challenge Challenge? @relation(fields: [challengeId], references: [id])
+  id                String     @id @default(cuid())
+  userId            String
+  amount            Int
+  currency          String     @default("USD")
+  provider          String
+  status            String
+  reference         String?    @unique
+  createdAt         DateTime   @default(now())
+  refundReason      String?
+  refundedAt        DateTime?
+  updatedAt         DateTime   @updatedAt
+  callbackPayload   Json?
+  challengeId       String?
+  couponCode        String?
+  discountAmount    Int?       @default(0)
+  failureReason     String?
+  metadata          Json?
+  operationType     String?
+  orderStatus       String?
+  originalAmount    Int?
+  providerPaymentId String?    @unique
+  providerSessionId String?    @unique
+  sessionPayload    Json?
+  sessionResponse   Json?
+  tradingAccountId  String?
+  challenge         Challenge? @relation(fields: [challengeId], references: [id])
+  user              User       @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([challengeId])
@@ -485,9 +478,9 @@ model ChatSession {
   id        String        @id @default(uuid())
   userId    String
   createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt // ChatMessage ChatMessage[]
-  User      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt DateTime      @updatedAt
   messages  ChatMessage[]
+  User      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }

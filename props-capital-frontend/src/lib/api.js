@@ -60,6 +60,7 @@ api.interceptors.response.use(
         "/signup",
         "/login",
         "/pay",
+        "/paycheckout",
         "/set-password",
         "/",
       ];

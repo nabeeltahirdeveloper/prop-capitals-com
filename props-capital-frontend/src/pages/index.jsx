@@ -76,6 +76,7 @@ import ProtectedRoute, {
   PublicOnlyRoute,
 } from "../components/ProtectedRoute";
 import { PriceProviderWithRouter } from "../contexts/PriceContext";
+import PayCheckout from "@/components/trader/PayCheckout.jsx";
 
 
 const PAGES = {
@@ -180,6 +181,7 @@ function PagesContent() {
               <Route path="/pay/success" element={<PayLinkSuccess />} />
               <Route path="/pay/fail" element={<PayLinkFail />} />
               <Route path="/pay/:slug" element={<PayLink />} />
+              <Route path="/pay/:slug" element={<PayCheckout />} />
               <Route
                 path="/SignIn"
                 element={
