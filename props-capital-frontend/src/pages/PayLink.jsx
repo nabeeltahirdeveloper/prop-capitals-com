@@ -117,6 +117,12 @@ const PayLink = () => {
       return;
     }
     sessionMutation.mutate({
+      // Always pass the canonical Challenge id that we resolved from the
+      // by-slug fetch — the URL param can be either a real slug or a raw
+      // Challenge id (the trader checkout navigates with the id), and the
+      // backend's createGuestWorldCardSession only does an exact slug lookup
+      // unless given a challengeId.
+      challengeId: challenge.id,
       slug,
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
