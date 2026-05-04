@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 const GBP_CHALLENGES = [
   {
-    slug: 'uk-25k',
+    slug: 'cmlhzynma251dtfp37tdbtmac',
     name: 'UK 25K Challenge',
     description: 'Two-phase evaluation for £25,000 funded account',
     accountSize: 25000,
@@ -18,7 +18,7 @@ const GBP_CHALLENGES = [
     profitSplit: 90.0,
   },
   {
-    slug: 'uk-50k',
+    slug: 'cmlhzynma001dtfp50tdbtos',
     name: 'UK 50K Challenge',
     description: 'Two-phase evaluation for £50,000 funded account',
     accountSize: 50000,
@@ -32,11 +32,25 @@ const GBP_CHALLENGES = [
     profitSplit: 90.0,
   },
   {
-    slug: 'uk-100k',
+    slug: 'cmlhzynma100dtfp37tdbtlin',
     name: 'UK 100K Challenge',
     description: 'Two-phase evaluation for £100,000 funded account',
     accountSize: 100000,
     price: 970,
+    currency: 'GBP',
+    challengeType: 'two_phase',
+    phase1TargetPercent: 8.0,
+    phase2TargetPercent: 5.0,
+    dailyDrawdownPercent: 5.0,
+    overallDrawdownPercent: 10.0,
+    profitSplit: 90.0,
+  },
+  {
+    slug: 'cmlhzynma244dbgptfp37tdbtlin',
+    name: 'UK 24K Challenge',
+    description: 'Two-phase evaluation for £24,000 funded account',
+    accountSize: 24000,
+    price: 244,
     currency: 'GBP',
     challengeType: 'two_phase',
     phase1TargetPercent: 8.0,
