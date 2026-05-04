@@ -42,9 +42,9 @@ const COUNTRIES = [
 
 const formatCurrency = (amount, currency) => {
   try {
-    return new Intl.NumberFormat('en-GB', {
+    return new Intl.NumberFormat('en-IE', {
       style: 'currency',
-      currency: currency || 'USD',
+      currency: currency || 'EUR',
       maximumFractionDigits: 0,
     }).format(amount);
   } catch {

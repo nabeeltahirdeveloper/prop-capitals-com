@@ -36,7 +36,7 @@ const ChallengesPage = () => {
     const sizeSet = new Set();
     rawChallenges.forEach(c => sizeSet.add(c.accountSize));
     const sizes = Array.from(sizeSet).sort((a, b) => a - b).map(value => ({
-      label: `$${formatAccountSize(value)}`,
+      label: `€${formatAccountSize(value)}`,
       key: formatAccountSize(value),
       value,
     }));
@@ -195,10 +195,10 @@ const ChallengesPage = () => {
                       {price != null && (
                         <div className={`text-center mb-6 py-5 rounded-2xl ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
                           <div className={`text-sm line-through mb-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                            ${(price * 3).toFixed(0)}
+                            €{(price * 3).toFixed(0)}
                           </div>
                           <div className="text-amber-500 text-4xl lg:text-5xl font-black">
-                            ${price}
+                            €{price}
                           </div>
                           <div className="text-emerald-400 text-sm font-semibold mt-1">70% OFF - Limited Time</div>
                         </div>
@@ -335,7 +335,7 @@ const ChallengesPage = () => {
             Ready to Get <span className="text-amber-500">Funded</span>?
           </h2>
           <p className={`text-base lg:text-lg mb-8 max-w-xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-            Join thousands of successful traders. Start your challenge today and trade with up to $200,000.
+            Join thousands of successful traders. Start your challenge today and trade with up to €200,000.
           </p>
           <Button
             onClick={User ? () => window.location.href = '/dashboard' : () => window.location.href = '/sign-up'}

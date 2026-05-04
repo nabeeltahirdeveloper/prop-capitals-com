@@ -1147,14 +1147,13 @@ import { getChallenges } from '@/api/challenges';
 import { useNavigate } from 'react-router-dom';
 
 // Format any amount + currency as a localized currency string.
-// Backend Challenge rows carry their own currency, so the trader-side
-// checkout adapts: USD challenge → "$245", GBP challenge → "£245", etc.
+// Backend Challenge rows carry their own currency; checkout defaults to EUR.
 const formatCurrency = (amount, currency) => {
   if (amount === undefined || amount === null) return '';
   try {
-    return new Intl.NumberFormat('en-GB', {
+    return new Intl.NumberFormat('en-IE', {
       style: 'currency',
-      currency: currency || 'GBP',
+      currency: currency || 'EUR',
       maximumFractionDigits: 0,
     }).format(amount);
   } catch {
@@ -1163,12 +1162,13 @@ const formatCurrency = (amount, currency) => {
 };
 
 const accountSizes = [
-  { label: '£5K', key: '5K', value: 5000 },
-  { label: '£10K', key: '10K', value: 10000 },
-  { label: '£25K', key: '25K', value: 25000 },
-  { label: '£50K', key: '50K', value: 50000 },
-  { label: '£100K', key: '100K', value: 100000 },
-  { label: '£200K', key: '200K', value: 200000 },
+  { label: '€2K', key: '2K', value: 2000 },
+  { label: '€5K', key: '5K', value: 5000 },
+  { label: '€10K', key: '10K', value: 10000 },
+  { label: '€25K', key: '25K', value: 25000 },
+  { label: '€50K', key: '50K', value: 50000 },
+  { label: '€100K', key: '100K', value: 100000 },
+  { label: '€200K', key: '200K', value: 200000 },
 ];
 
 const challengeTypes = [
@@ -1185,7 +1185,7 @@ const challengeTypes = [
     leverage: '1:30',
     minDays: 'None',
     popular: true,
-    prices: { '5K': 245, '10K': 99, '25K': 189, '50K': 299, '100K': 499, '200K': 949 },
+    prices: { '2K': 35, '5K': 65, '10K': 99, '25K': 189, '50K': 299, '100K': 599, '200K': 949 },
   },
   {
     id: '2-step',
@@ -1200,7 +1200,7 @@ const challengeTypes = [
     leverage: '1:50',
     minDays: 'None',
     popular: false,
-    prices: { '5K': 45, '10K': 79, '25K': 245, '50K': 490, '100K': 449, '200K': 849 },
+    prices: { '2K': 25, '5K': 45, '10K': 79, '25K': 245, '50K': 490, '100K': 449, '200K': 849 },
   },
 ];
 
@@ -1218,7 +1218,7 @@ const TradeCheckoutPanelPage = () => {
   const navigate = useNavigate();
 
   const [selectedType, setSelectedType] = useState('1-step');
-  const [selectedSizeIndex, setSelectedSizeIndex] = useState(3);
+  const [selectedSizeIndex, setSelectedSizeIndex] = useState(4);
   const [selectedPlatform, setSelectedPlatform] = useState('mt5');
   const [tradeLockerAlert, setTradeLockerAlert] = useState(false);
 
@@ -1248,7 +1248,7 @@ const TradeCheckoutPanelPage = () => {
 
   // Find the backend challenge that matches a given (typeId, sizeIndex) pair.
   // Lets each card render its real backend price + currency, so when the user
-  // updates challenges in the DB (e.g. swapping USD → GBP) the UI follows.
+  // updates challenges in the DB (e.g. swapping USD → EUR) the UI follows.
   const findBackendChallenge = (typeId, sizeIndex) =>
     backendChallenges.find((bc) => {
       const sizeMatch = bc.accountSize === accountSizes[sizeIndex].value;
@@ -1261,9 +1261,8 @@ const TradeCheckoutPanelPage = () => {
   const matchingBackendChallenge = findBackendChallenge(selectedType, selectedSizeIndex);
 
   // Currency-aware derived values for the selected challenge. Falls back to the
-  // hardcoded USD price (used by the visual cards) until backend data loads.
-  // GBP only — Pay button + Order Summary always show £ regardless of backend currency.
-  const matchedCurrency = 'GBP';
+  // hardcoded EUR price (used by the visual cards) until backend data loads.
+  const matchedCurrency = matchingBackendChallenge?.currency || 'EUR';
   const matchedPrice = matchingBackendChallenge?.price ?? finalPrice;
   const matchedFormatted = formatCurrency(matchedPrice, matchedCurrency);
 
@@ -1369,9 +1368,7 @@ const TradeCheckoutPanelPage = () => {
             {/* Price — pulled from backend so trader-card matches PayCheckout exactly */}
             {(() => {
               const cardMatch = findBackendChallenge(challenge.id, selectedSizeIndex);
-              // Always display in GBP regardless of what the backend row says — we
-              // do not deal in USD on this checkout.
-              const cardCurrency = 'GBP';
+              const cardCurrency = cardMatch?.currency || 'EUR';
               const cardPrice = cardMatch?.price ?? challenge.prices[selectedSizeKey];
               return (
                 <div className={`text-center mb-4 py-4 rounded-xl ${isDark ? 'bg-black/30' : 'bg-slate-50'}`}>
