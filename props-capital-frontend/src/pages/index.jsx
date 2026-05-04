@@ -181,7 +181,6 @@ function PagesContent() {
               <Route path="/pay/success" element={<PayLinkSuccess />} />
               <Route path="/pay/fail" element={<PayLinkFail />} />
               <Route path="/pay/:slug" element={<PayLink />} />
-              <Route path="/pay/:slug" element={<PayCheckout />} />
               <Route
                 path="/SignIn"
                 element={

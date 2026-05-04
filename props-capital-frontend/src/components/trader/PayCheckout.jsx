@@ -52,9 +52,9 @@ const COUNTRIES = [
 const formatCurrency = (amount, currency) => {
   if (amount === undefined || amount === null) return '';
   try {
-    return new Intl.NumberFormat('en-GB', {
+    return new Intl.NumberFormat('en-IE', {
       style: 'currency',
-      currency: currency || 'GBP',
+      currency: currency || 'EUR',
       maximumFractionDigits: 0,
     }).format(amount);
   } catch {
@@ -334,7 +334,7 @@ const PayCheckout = () => {
                 ) : (
                   <>
                     <CreditCard className="w-5 h-5 mr-2" />
-                    Pay {formatCurrency(challenge.price, 'GBP')}
+                    Pay {formatCurrency(challenge.price, challenge.currency || 'EUR')}
                   </>
                 )}
               </Button>
@@ -377,7 +377,7 @@ const PayCheckout = () => {
               <div className={`mt-4 pt-4 border-t flex justify-between items-center ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
                 <span className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Total</span>
                 <span className="text-3xl font-black text-amber-500">
-                  {formatCurrency(challenge.price, 'GBP')}
+                  {formatCurrency(challenge.price, challenge.currency || 'EUR')}
                 </span>
               </div>
 

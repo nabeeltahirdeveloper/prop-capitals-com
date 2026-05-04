@@ -15,6 +15,7 @@ export class ChallengesService {
 
   async findAll() {
     return this.prisma.challenge.findMany({
+      where: { isActive: true },
       orderBy: { createdAt: 'desc' },
     });
   }
