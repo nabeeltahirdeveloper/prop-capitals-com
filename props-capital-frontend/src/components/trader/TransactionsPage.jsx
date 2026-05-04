@@ -66,7 +66,7 @@ const TransactionsPage = () => {
 
   const formatAmount = (cents) => {
     if (!cents && cents !== 0) return '—';
-    return `$${(cents / 100).toFixed(2)}`;
+    return `€${(cents / 100).toFixed(2)}`;
   };
 
   const formatDate = (dateStr) => {
@@ -223,7 +223,7 @@ const TransactionsPage = () => {
                       <div>
                         <p className={`text-sm font-medium ${textClass}`}>{p.challenge?.name || '—'}</p>
                         <p className={`text-xs ${mutedClass}`}>
-                          {p.challenge?.accountSize ? `$${p.challenge.accountSize.toLocaleString()}` : ''}{' '}
+                          {p.challenge?.accountSize ? `€${p.challenge.accountSize.toLocaleString()}` : ''}{' '}
                           {p.challenge?.challengeType || ''}
                         </p>
                       </div>
