@@ -103,4 +103,19 @@ export class ChallengesService {
     });
   }
 
+
+  async trackBrandLinkClick(slug: string) {
+    if (!slug) return { success: true, tracked: false };
+    try {
+      await (this.prisma as any).directPurchaseLink.update({
+        where: { slug },
+        data: { clicks: { increment: 1 } },
+      });
+      return { success: true, tracked: true };
+    } catch (_e) {
+      // Slug not found, link inactive, or DB error — never block the caller
+      return { success: true, tracked: false };
+    }
+  }
+
 }

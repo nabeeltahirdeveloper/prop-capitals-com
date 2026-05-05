@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { PaymentLogos } from '@/components/PaymentLogos';
 import { createGuestWorldCardSession } from '@/api/payments';
+import { apiPost } from '@/lib/api';
 
 /**
  * Brand referral attribution.
@@ -101,6 +102,9 @@ const CheckoutPage = () => {
     const linkSlug = searchParams.get('link');
     if (brandSlug || linkSlug) {
       persistBrandAttribution(brandSlug, linkSlug);
+    }
+    if (linkSlug) {
+      apiPost(`/challenges/brand-link/${encodeURIComponent(linkSlug)}/track-click`).catch(() => {});
     }
   }, [searchParams]);
 

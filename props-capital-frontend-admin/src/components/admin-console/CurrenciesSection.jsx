@@ -270,12 +270,19 @@ export default function CurrenciesSection() {
                   <td className="py-4 px-4">
                     <button
                       onClick={() => handleToggleActive(currency.code, currency.active)}
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      title={currency.active ? 'Click to deactivate' : 'Click to activate'}
+                      className={`group inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
                         currency.active
-                          ? 'bg-green-900/30 text-green-400 border border-green-500'
-                          : 'bg-red-900/30 text-red-400 border border-red-500'
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300'
+                          : 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100 hover:border-rose-300'
                       }`}
                     >
+                      <span className={`relative flex h-2 w-2`}>
+                        {currency.active && (
+                          <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping"></span>
+                        )}
+                        <span className={`relative inline-flex rounded-full h-2 w-2 ${currency.active ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
+                      </span>
                       {currency.active ? 'Active' : 'Inactive'}
                     </button>
                   </td>
@@ -335,12 +342,19 @@ export default function CurrenciesSection() {
                   )}
                   <button
                     onClick={() => handleToggleActive(currency.code, currency.active)}
-                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                    title={currency.active ? 'Click to deactivate' : 'Click to activate'}
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
                       currency.active
-                        ? 'bg-green-900/30 text-green-400 border border-green-500'
-                        : 'bg-red-900/30 text-red-400 border border-red-500'
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300'
+                        : 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100 hover:border-rose-300'
                     }`}
                   >
+                    <span className="relative flex h-2 w-2">
+                      {currency.active && (
+                        <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping"></span>
+                      )}
+                      <span className={`relative inline-flex rounded-full h-2 w-2 ${currency.active ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
+                    </span>
                     {currency.active ? 'Active' : 'Inactive'}
                   </button>
                 </div>

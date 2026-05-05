@@ -44,6 +44,22 @@ export class AdminConsoleController {
     return this.svc.analyticsOverview();
   }
 
+  @Get('analytics/revenue-chart')
+  revenueChart(@Query('days') days?: string) {
+    return this.svc.revenueChart(days ? Number(days) : 30);
+  }
+
+  @Get('analytics/package-distribution')
+  packageDistribution(
+    @Query('days') days?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.svc.packageDistribution(
+      days ? Number(days) : 30,
+      limit ? Number(limit) : 10,
+    );
+  }
+
   /* ============================================================
    *  LIVE — Users
    * ============================================================ */

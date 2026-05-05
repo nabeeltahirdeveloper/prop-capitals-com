@@ -14,6 +14,10 @@ const qs = (params) => {
 export const adminConsoleApi = {
   analytics: {
     overview: () => apiGet(`${PREFIX}/analytics/overview`),
+    revenueChart: (days) =>
+      apiGet(`${PREFIX}/analytics/revenue-chart${qs({ days })}`),
+    packageDistribution: (days, limit) =>
+      apiGet(`${PREFIX}/analytics/package-distribution${qs({ days, limit })}`),
   },
   users: {
     list: (params) => apiGet(`${PREFIX}/users${qs(params)}`),

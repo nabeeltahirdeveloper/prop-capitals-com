@@ -17,6 +17,90 @@ export class AdminConsoleService {
 
   /* ---------- Dashboard / Analytics overview ---------- */
 
+
+  async revenueChart(days = 30) {
+    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    const [payments, payouts] = await Promise.all([
+      this.prisma.payment.findMany({
+        where: { status: 'succeeded', createdAt: { gte: since } },
+        select: { amount: true, createdAt: true },
+      }),
+      this.prisma.payout.findMany({
+        where: {
+          status: { in: ['PAID', 'APPROVED'] as any[] },
+          createdAt: { gte: since },
+        },
+        select: { amount: true, createdAt: true },
+      }),
+    ]);
+
+    const buckets = new Map<string, { revenue: number; payouts: number }>();
+    // Pre-fill all days so the chart shows a continuous line
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+      const key = d.toISOString().slice(0, 10);
+      buckets.set(key, { revenue: 0, payouts: 0 });
+    }
+    for (const p of payments) {
+      const key = (p.createdAt as Date).toISOString().slice(0, 10);
+      const cur = buckets.get(key) ?? { revenue: 0, payouts: 0 };
+      cur.revenue += (p.amount ?? 0) / 100;
+      buckets.set(key, cur);
+    }
+    for (const p of payouts) {
+      const key = (p.createdAt as Date).toISOString().slice(0, 10);
+      const cur = buckets.get(key) ?? { revenue: 0, payouts: 0 };
+      cur.payouts += (p.amount ?? 0) / 100;
+      buckets.set(key, cur);
+    }
+
+    return {
+      days,
+      series: Array.from(buckets.entries())
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([date, v]) => ({ date, revenue: v.revenue, payouts: v.payouts })),
+    };
+  }
+
+  /**
+   * Distribution of sales by package (Challenge) for the Advanced Analytics
+   * page. Returns top N packages by revenue + count.
+   */
+  async packageDistribution(days = 30, limit = 10) {
+    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    const grouped = await this.prisma.payment.groupBy({
+      by: ['challengeId'],
+      where: { status: 'succeeded', createdAt: { gte: since } },
+      _sum: { amount: true },
+      _count: true,
+      orderBy: { _sum: { amount: 'desc' } },
+      take: limit,
+    });
+
+    const challengeIds = grouped.map((g) => g.challengeId).filter(Boolean) as string[];
+    const challenges = challengeIds.length
+      ? await this.prisma.challenge.findMany({
+          where: { id: { in: challengeIds } },
+          select: { id: true, name: true, accountSize: true, price: true },
+        })
+      : [];
+    const cmap = new Map(challenges.map((c) => [c.id, c]));
+
+    return {
+      days,
+      buckets: grouped.map((g) => {
+        const c = g.challengeId ? cmap.get(g.challengeId) : null;
+        return {
+          challenge_id: g.challengeId,
+          name: c?.name ?? '—',
+          account_size: c?.accountSize ?? 0,
+          orders: g._count,
+          revenue: (g._sum.amount ?? 0) / 100,
+        };
+      }),
+    };
+  }
+
   async analyticsOverview() {
     const [revenueAgg, userCount, orderCount, recentPayments, recentChallenges] =
       await Promise.all([
