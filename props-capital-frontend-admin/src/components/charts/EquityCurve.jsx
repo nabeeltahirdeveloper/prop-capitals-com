@@ -42,7 +42,7 @@ export default function EquityCurve({ data, startingBalance = 100000 }) {
         <div className="flex items-center gap-4">
           <div className="text-right">
             <p className="text-lg  md:text-2xl font-bold text-white">
-              ${currentEquity.toLocaleString()}
+              €{currentEquity.toLocaleString()}
             </p>
             <div
               className={`flex items-center gap-1 justify-end ${isProfit ? "text-emerald-400" : "text-red-400"}`}
@@ -89,7 +89,7 @@ export default function EquityCurve({ data, startingBalance = 100000 }) {
               stroke="#64748b"
               tick={{ fill: "#64748b", fontSize: 11 }}
               tickLine={{ stroke: "#64748b" }}
-              tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+              tickFormatter={(value) => `€${(value / 1000).toFixed(0)}k`}
             />
             <Tooltip
               contentStyle={{
@@ -99,7 +99,7 @@ export default function EquityCurve({ data, startingBalance = 100000 }) {
               }}
               labelStyle={{ color: "#94a3b8" }}
               formatter={(value, name) => [
-                `$${value.toLocaleString()}`,
+                `€${value.toLocaleString()}`,
                 name === "equity"
                   ? t("analytics.equity")
                   : t("analytics.balance"),

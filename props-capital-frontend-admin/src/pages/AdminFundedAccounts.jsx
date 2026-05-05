@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   adminGetAllAccounts,
@@ -55,10 +55,27 @@ export default function AdminFundedAccounts() {
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const queryClient = useQueryClient();
 
-  const { data: accountsData = [], isLoading } = useQuery({
-    queryKey: ["admin-accounts"],
-    queryFn: adminGetAllAccounts,
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  useEffect(() => {
+    const handle = setTimeout(() => setDebouncedSearch(searchQuery), 300);
+    return () => clearTimeout(handle);
+  }, [searchQuery]);
+
+  // Pinning phase=funded so the backend returns only funded rows. Search and
+  // status are also pushed server-side — the local-only filter previously
+  // missed accounts past the first page (default limit was 20).
+  const { data: accountsResponse, isLoading } = useQuery({
+    queryKey: ["admin-accounts", "funded", debouncedSearch, statusFilter],
+    queryFn: () =>
+      adminGetAllAccounts({
+        page: 1,
+        limit: 50,
+        search: debouncedSearch,
+        status: statusFilter,
+        phase: "funded",
+      }),
   });
+  const accountsData = accountsResponse?.data ?? [];
 
   const { data: payoutsData = [] } = useQuery({
     queryKey: ["admin-payouts"],
@@ -269,14 +286,8 @@ export default function AdminFundedAccounts() {
 
   const fundedAccountIds = fundedAccounts.map((a) => a.id);
 
-  const filteredAccounts = fundedAccounts.filter((account) => {
-    const matchesSearch =
-      account.account_number?.includes(searchQuery) ||
-      account.trader_id?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" || account.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  // Search/status applied server-side via useQuery above.
+  const filteredAccounts = fundedAccounts;
 
   const totalFundedAccounts = fundedAccounts.length;
   const totalActiveFundedAccounts = fundedAccounts.filter(
@@ -319,7 +330,7 @@ export default function AdminFundedAccounts() {
       accessorKey: "initial_balance",
       cell: (row) => (
         <span className="text-foreground font-medium">
-          ${row.initial_balance?.toLocaleString()}
+          €{row.initial_balance?.toLocaleString()}
         </span>
       ),
     },
@@ -329,7 +340,7 @@ export default function AdminFundedAccounts() {
       cell: (row) => (
         <div>
           <p className="text-foreground font-medium">
-            ${row.current_balance?.toLocaleString()}
+            €{row.current_balance?.toLocaleString()}
           </p>
           <p
             className={`text-xs ${
@@ -518,7 +529,7 @@ export default function AdminFundedAccounts() {
             <Skeleton className="h-6 sm:h-8 w-20 sm:w-24 mt-2" />
           ) : (
             <p className="text-xl sm:text-2xl font-bold text-blue-500">
-              ${totalAllocatedCapital.toLocaleString()}
+              €{totalAllocatedCapital.toLocaleString()}
             </p>
           )}
         </Card>
@@ -532,7 +543,7 @@ export default function AdminFundedAccounts() {
             <Skeleton className="h-6 sm:h-8 w-20 sm:w-24 mt-2" />
           ) : (
             <p className="text-xl sm:text-2xl font-bold text-amber-500">
-              ${totalCurrentProfit.toLocaleString()}
+              €{totalCurrentProfit.toLocaleString()}
             </p>
           )}
         </Card>
@@ -546,7 +557,7 @@ export default function AdminFundedAccounts() {
             <Skeleton className="h-6 sm:h-8 w-20 sm:w-24 mt-2" />
           ) : (
             <p className="text-xl sm:text-2xl font-bold text-purple-500">
-              ${totalPayoutsAmount.toLocaleString()}
+              €{totalPayoutsAmount.toLocaleString()}
             </p>
           )}
         </Card>
@@ -758,7 +769,7 @@ export default function AdminFundedAccounts() {
                     })}
                   </p>
                   <p className="text-foreground font-bold text-sm sm:text-lg">
-                    ${accountDetails.initialBalance?.toLocaleString() || "0"}
+                    €{accountDetails.initialBalance?.toLocaleString() || "0"}
                   </p>
                 </div>
                 <div>
@@ -768,7 +779,7 @@ export default function AdminFundedAccounts() {
                     })}
                   </p>
                   <p className="text-foreground font-bold text-sm sm:text-lg">
-                    ${accountDetails.balance?.toLocaleString() || "0"}
+                    €{accountDetails.balance?.toLocaleString() || "0"}
                   </p>
                 </div>
                 <div>
@@ -778,7 +789,7 @@ export default function AdminFundedAccounts() {
                     })}
                   </p>
                   <p className="text-foreground font-bold text-sm sm:text-lg">
-                    ${accountDetails.equity?.toLocaleString() || "0"}
+                    €{accountDetails.equity?.toLocaleString() || "0"}
                   </p>
                 </div>
                 <div>
@@ -899,7 +910,7 @@ export default function AdminFundedAccounts() {
                             )}
                           </p>
                           <p className="text-foreground font-bold text-sm sm:text-base">
-                            ${totalPayouts.toLocaleString()}
+                            €{totalPayouts.toLocaleString()}
                           </p>
                         </div>
                         <div>
@@ -912,7 +923,7 @@ export default function AdminFundedAccounts() {
                             )}
                           </p>
                           <p className="text-foreground font-bold text-sm sm:text-base">
-                            ${withdrawableProfit.toLocaleString()}
+                            €{withdrawableProfit.toLocaleString()}
                           </p>
                         </div>
                         <div>

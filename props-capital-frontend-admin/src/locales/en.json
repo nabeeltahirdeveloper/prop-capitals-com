@@ -21,7 +21,7 @@
       "badge": "Trusted by 15,000+ traders worldwide",
       "title": "Trade With ",
       "titleHighlight": "Our Capital",
-      "subtitle": "Prove your skills, get funded up to $200,000, and keep up to 90% of your profits. No risk to your own capital.",
+      "subtitle": "Prove your skills, get funded up to €200,000, and keep up to 90% of your profits. No risk to your own capital.",
       "cta": "Start Your Challenge",
       "howItWorks": "How It Works",
       "verified": "Verified Company",
@@ -106,7 +106,7 @@
       "titleHighlight": "Trading Career?",
       "subtitle": "Join thousands of funded traders and start earning today. No risk to your personal capital.",
       "button": "Get Funded Now",
-      "footer": "Starting from just $99 • Instant account setup • 24/7 support"
+      "footer": "Starting from just €99 • Instant account setup • 24/7 support"
     },
     "footer": {
       "description": "The most trader-friendly prop firm. Get funded and trade with our capital.",
@@ -348,7 +348,7 @@
     "businessDaysOnly": "business days",
     "minimumAmount": "Minimum Amount",
     "payoutFee": "Payout Fee",
-    "free": "$0 (Free)",
+    "free": "€0 (Free)",
     "freeValue": "Free",
     "availablePaymentMethods": "Available Payment Methods",
     "bankTransfer": "Bank Transfer",
@@ -572,7 +572,7 @@
     "maxOverallDD": "Max Overall DD",
     "fundedDesc": "Trade with our capital",
     "profitSplit80": "80% profit split",
-    "scalingDesc": "Grow to $2,000,000",
+    "scalingDesc": "Grow to €2,000,000",
     "profitSplit90": "Up to 90% profit split",
     "currentPhaseRequirements": "Current Phase Requirements",
     "profitSplit": "Profit Split",
@@ -826,15 +826,15 @@
       "overallDrawdownWarning": "Your overall drawdown has reached {{overallPercent}}% on account #{{accountNumber}}. Maximum allowed is {{maxPercent}}%. Please manage your risk carefully.",
       "dailyDrawdownViolation": "Your daily drawdown has reached {{dailyPercent}}% on account #{{accountNumber}}. Maximum allowed is {{maxPercent}}%. Trading is locked until tomorrow.",
       "overallDrawdownViolation": "Your overall drawdown has reached {{overallPercent}}% on account #{{accountNumber}}. Maximum allowed is {{maxPercent}}%. Challenge disqualified.",
-      "payoutApproved": "Your payout request of ${{amount}} has been approved. Funds will be transferred within 24-48 hours.",
-      "payoutRejected": "Your payout request of ${{amount}} has been rejected. Please contact support for more information.",
-      "payoutProcessed": "Your payout of ${{amount}} has been processed and transferred to your account.",
-      "phase1Completed": "Congratulations! You have successfully completed Phase 1 of your ${{accountSize}} challenge. Proceed to Phase 2 to continue.",
-      "phase2Completed": "Congratulations! You have successfully completed Phase 2 of your ${{accountSize}} challenge. Your account is now funded!",
+      "payoutApproved": "Your payout request of €{{amount}} has been approved. Funds will be transferred within 24-48 hours.",
+      "payoutRejected": "Your payout request of €{{amount}} has been rejected. Please contact support for more information.",
+      "payoutProcessed": "Your payout of €{{amount}} has been processed and transferred to your account.",
+      "phase1Completed": "Congratulations! You have successfully completed Phase 1 of your €{{accountSize}} challenge. Proceed to Phase 2 to continue.",
+      "phase2Completed": "Congratulations! You have successfully completed Phase 2 of your €{{accountSize}} challenge. Your account is now funded!",
       "tradingDaysMilestoneMet": "You have completed {{tradingDays}} trading days on account #{{accountNumber}}. Minimum trading days requirement met!",
       "tradingDaysMilestone": "You have completed {{tradingDays}} trading days on account #{{accountNumber}}. Keep up the great work!",
-      "challengePurchased": "Your {{challengeName}} challenge has been purchased successfully. Your trading account #{{accountNumber}} is now active with a starting balance of ${{startingBalance}}.",
-      "accountScalingApproved": "Your scaling request for account #{{accountNumber}} has been approved. Account balance increased from ${{oldBalance}} to ${{newBalance}}.",
+      "challengePurchased": "Your {{challengeName}} challenge has been purchased successfully. Your trading account #{{accountNumber}} is now active with a starting balance of €{{startingBalance}}.",
+      "accountScalingApproved": "Your scaling request for account #{{accountNumber}} has been approved. Account balance increased from €{{oldBalance}} to €{{newBalance}}.",
       "accountScalingRejected": "Your scaling request for account #{{accountNumber}} has been rejected. Please contact support for more information.",
       "newChallengeAvailable": "Check out our new {{challengeName}} challenge - {{accountSize}} account size on {{platform}}! Get started now.",
       "accountViolationGeneric": "Account #{{accountNumber}} has violated trading rules{{violationPercent}}.",
@@ -887,7 +887,7 @@
     "total": "Total",
     "processing": "Processing...",
     "pay": "Pay",
-    "payAmount": "Pay ${{amount}}",
+    "payAmount": "Pay €{{amount}}",
     "secureEncryption": "Secure 256-bit SSL encryption",
     "noChallenges": "No Challenges",
     "minTradingDays": "Min Trading Days",
@@ -2026,8 +2026,8 @@
         "twoPhase": "Two Phase",
         "instantFunding": "Instant Funding",
         "platform": "Platform",
-        "accountSize": "Account Size ($)",
-        "price": "Price ($)",
+        "accountSize": "Account Size (€)",
+        "price": "Price (€)",
         "phase1ProfitTarget": "Phase 1 Profit Target (%)",
         "phase2ProfitTarget": "Phase 2 Profit Target (%)",
         "dailyDrawdown": "Daily Drawdown (%)",
@@ -2266,7 +2266,7 @@
           },
           "minimumPayout": {
             "q": "Is there a minimum payout amount?",
-            "a": "The minimum payout amount is $50. There is no maximum limit on withdrawals - you can withdraw all your profits if you wish."
+            "a": "The minimum payout amount is €50. There is no maximum limit on withdrawals - you can withdraw all your profits if you wish."
           },
           "payoutProcessing": {
             "q": "How long do payouts take to process?",
@@ -2279,7 +2279,7 @@
         "faqs": {
           "howScalingWorks": {
             "q": "How does the scaling plan work?",
-            "a": "Every time you achieve 10% profit on your funded account and complete 2 payout cycles, your account size increases by 25%. You can scale up to a maximum of $2,000,000 in trading capital."
+            "a": "Every time you achieve 10% profit on your funded account and complete 2 payout cycles, your account size increases by 25%. You can scale up to a maximum of €2,000,000 in trading capital."
           },
           "profitSplitScaling": {
             "q": "What happens to my profit split when I scale?",
@@ -2378,7 +2378,7 @@
         "title": "Purchase Your Challenge",
         "description": "Choose your preferred account size and evaluation type. Complete the secure payment and receive your trading credentials instantly.",
         "details": {
-          "selectAccountSize": "Select account size from $10K to $200K",
+          "selectAccountSize": "Select account size from €10K to €200K",
           "chooseType": "Choose 1-Phase, 2-Phase, or Instant Funding",
           "receiveCredentials": "Receive credentials within minutes",
           "startTrading": "Start trading immediately"
@@ -2401,7 +2401,7 @@
           "tradeWithCapital": "Trade with our capital",
           "keepProfits": "Keep up to 90% of profits",
           "biWeeklyPayout": "Bi-weekly payout schedule",
-          "scaleUp": "Scale up to $2,000,000"
+          "scaleUp": "Scale up to €2,000,000"
         }
       }
     },
@@ -2570,7 +2570,7 @@
         "desc": "Get your profits within 24-48 hours"
       },
       "scaleTo2M": {
-        "title": "Scale to $2M",
+        "title": "Scale to €2M",
         "desc": "Grow your account with our scaling plan"
       },
       "bestSupport": {
@@ -2632,8 +2632,8 @@
         "desc": "Consistent rules throughout your journey"
       },
       "scaleTo2M": {
-        "title": "Scale to $2M",
-        "desc": "Grow your trading capital up to $2 million"
+        "title": "Scale to €2M",
+        "desc": "Grow your trading capital up to €2 million"
       },
       "automaticUpgrades": {
         "title": "Automatic Upgrades",
@@ -2658,7 +2658,7 @@
     },
     "roadmap": {
       "badge": "Roadmap",
-      "title": "Your Path to $2 Million",
+      "title": "Your Path to €2 Million",
       "subtitle": "See exactly how your account grows at each level.",
       "start": "START",
       "max": "MAX",
@@ -2693,9 +2693,9 @@
     "ctaSection": {
       "title": "Ready to Scale Your",
       "tradingCareer": "Trading Career?",
-      "subtitle": "Start with any challenge size and scale your way to $2 million in trading capital.",
+      "subtitle": "Start with any challenge size and scale your way to €2 million in trading capital.",
       "getStartedNow": "Get Started Now",
-      "footer": "Starting from just $99 • Scale up to $2M • Up to 90% profit split"
+      "footer": "Starting from just €99 • Scale up to €2M • Up to 90% profit split"
     }
   },
   "payoutsPage": {
@@ -2716,9 +2716,9 @@
       "profitSplit": "Profit Split",
       "best": "BEST",
       "tiers": {
-        "tier1": "$10K - $25K",
-        "tier2": "$50K",
-        "tier3": "$100K+",
+        "tier1": "€10K - €25K",
+        "tier2": "€50K",
+        "tier3": "€100K+",
         "tier4": "Scaled"
       }
     },
@@ -2768,7 +2768,7 @@
     "payoutTerms": {
       "title": "Payout Terms",
       "biWeekly": "Bi-weekly payout schedule (every 14 days)",
-      "minimumAmount": "Minimum payout amount is $50",
+      "minimumAmount": "Minimum payout amount is €50",
       "noMaximum": "No maximum payout limit",
       "noFees": "No payout fees on any method",
       "firstPayout": "First payout after 14 days of funded trading",
@@ -2827,13 +2827,13 @@
         "title": "Daily Drawdown (5%)",
         "description": "The maximum you can lose in a single day, calculated from the day's starting balance. Resets at midnight server time.",
         "example": "Example:",
-        "exampleText": "With a $50,000 balance, your daily loss limit is $2,500."
+        "exampleText": "With a €50,000 balance, your daily loss limit is €2,500."
       },
       "maximumDrawdown": {
         "title": "Maximum Drawdown (10%)",
         "description": "The maximum total drawdown from your highest achieved balance. This is a trailing drawdown that follows your highest equity.",
         "example": "Example:",
-        "exampleText": "If your highest balance was $55,000, your max drawdown level is $49,500."
+        "exampleText": "If your highest balance was €55,000, your max drawdown level is €49,500."
       }
     },
     "allowedActions": {
@@ -2902,7 +2902,7 @@
     },
     "scalingPlan": {
       "title": "Scaling Plan",
-      "subtitle": "Grow your account up to $2,000,000",
+      "subtitle": "Grow your account up to €2,000,000",
       "accountSize": "Account Size",
       "profitSplit": "Profit Split",
       "howItWorks": {
@@ -2923,7 +2923,7 @@
       },
       "minimum": {
         "label": "Minimum Payout",
-        "value": "$50"
+        "value": "€50"
       },
       "maximum": {
         "label": "Maximum Payout",
@@ -2935,7 +2935,7 @@
       },
       "fee": {
         "label": "Payout Fee",
-        "value": "$0 (Free)"
+        "value": "€0 (Free)"
       },
       "firstPayout": {
         "label": "First Payout",
@@ -3232,7 +3232,7 @@
       "industry": "Job Industry",
       "workTitle": "Work Title",
       "ftdInfo": "FTD Information",
-      "deposit": "Deposit Amount ($)",
+      "deposit": "Deposit Amount (€)",
       "paymentMethod": "Payment Method",
       "paymentProvider": "Payment Provider",
       "convertedDate": "Converted Date",

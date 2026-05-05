@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { adminGetTicketMessages, adminSendTicketMessage, adminUpdateTicketStatus } from '@/api/admin';
@@ -10,6 +10,7 @@ import MessageInput from './MessageInput';
 import { ArrowLeft, Menu, X as XIcon } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { useSupportSocket } from '@/hooks/useSupportSocket';
+import { FAKE_TICKET_MESSAGES, isFakeTicketId } from './fakeTickets';
 
 const mapStatus = (s) => {
   const map = {
@@ -43,14 +44,23 @@ export default function TicketChatPanel({ ticket, onToggleSidebar, showSidebarTo
   const ticketId = ticket?.id;
 
   const isClosed = ticket?.status === 'CLOSED';
+  const isFake = isFakeTicketId(ticketId);
 
-  useSupportSocket({ ticketId });
+  // Local-only message log for the demo ticket so admins can also send a
+  // reply during a walkthrough without it hitting the API.
+  const [fakeExtraMessages, setFakeExtraMessages] = useState([]);
 
-  const { data: messages = [], isLoading: messagesLoading } = useQuery({
+  useSupportSocket({ ticketId: isFake ? null : ticketId });
+
+  const { data: realMessages = [], isLoading: messagesLoading } = useQuery({
     queryKey: ['ticket-messages', ticketId],
     queryFn: () => adminGetTicketMessages(ticketId),
-    enabled: !!ticketId,
+    enabled: !!ticketId && !isFake,
   });
+
+  const messages = isFake
+    ? [...FAKE_TICKET_MESSAGES, ...fakeExtraMessages]
+    : realMessages;
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -135,7 +145,7 @@ export default function TicketChatPanel({ ticket, onToggleSidebar, showSidebarTo
           </p>
         </div>
         <StatusBadge status={mapStatus(ticket.status)} />
-        {!isClosed && (
+        {!isClosed && !isFake && (
           <Button
             variant="outline"
             size="sm"
@@ -178,9 +188,25 @@ export default function TicketChatPanel({ ticket, onToggleSidebar, showSidebarTo
 
       {/* Input */}
       <MessageInput
-        onSend={(msg) => sendMutation.mutate(msg)}
+        onSend={(msg) => {
+          if (isFake) {
+            setFakeExtraMessages((prev) => [
+              ...prev,
+              {
+                id: `demo-extra-${Date.now()}`,
+                ticketId,
+                senderType: 'ADMIN',
+                senderId: null,
+                message: msg,
+                createdAt: new Date().toISOString(),
+              },
+            ]);
+            return;
+          }
+          sendMutation.mutate(msg);
+        }}
         disabled={isClosed}
-        isPending={sendMutation.isPending}
+        isPending={!isFake && sendMutation.isPending}
       />
     </div>
   );

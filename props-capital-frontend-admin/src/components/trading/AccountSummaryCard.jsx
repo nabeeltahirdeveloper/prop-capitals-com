@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import StatusBadge from "../shared/StatusBadge";
 import {
-  DollarSign,
+  Euro,
   TrendingUp,
   TrendingDown,
   Shield,
@@ -67,7 +67,7 @@ export default function AccountSummaryCard({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-slate-800/50 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
-            <DollarSign className="w-4 h-4 text-slate-400" />
+            <Euro className="w-4 h-4 text-slate-400" />
             <span className="text-xs text-slate-400">Balanceeee</span>
           </div>
           <p className="text-lg font-bold text-white">
@@ -77,11 +77,11 @@ export default function AccountSummaryCard({
 
         <div className="bg-slate-800/50 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
-            <DollarSign className="w-4 h-4 text-slate-400" />
+            <Euro className="w-4 h-4 text-slate-400" />
             <span className="text-xs text-slate-400">Equity</span>
           </div>
           <p className="text-lg font-bold text-white">
-            ${equityDisplay.toLocaleString() || "—"}
+            €{equityDisplay.toLocaleString() || "—"}
           </p>
         </div>
 

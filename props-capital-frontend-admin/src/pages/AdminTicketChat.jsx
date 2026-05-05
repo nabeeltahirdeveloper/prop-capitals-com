@@ -8,6 +8,11 @@ import {
 import TicketSidebar from "@/components/support/TicketSidebar";
 import TicketChatPanel from "@/components/support/TicketChatPanel";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import {
+  FAKE_TICKET,
+  FAKE_TICKET_ID,
+  isFakeTicketId,
+} from "@/components/support/fakeTickets";
 
 export default function AdminTicketChat() {
   const { id } = useParams();
@@ -16,11 +21,15 @@ export default function AdminTicketChat() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const { data: ticket, isLoading: ticketLoading } = useQuery({
+  const isFake = isFakeTicketId(id);
+
+  const { data: realTicket, isLoading: ticketLoading } = useQuery({
     queryKey: ["admin-ticket", id],
     queryFn: () => adminGetTicket(id),
-    enabled: !!id,
+    enabled: !!id && !isFake,
   });
+
+  const ticket = isFake ? FAKE_TICKET : realTicket;
 
   const { data: ticketsResponse, isLoading: listLoading } = useQuery({
     queryKey: ["admin-support-tickets"],
@@ -28,7 +37,10 @@ export default function AdminTicketChat() {
   });
 
   const rawTickets = ticketsResponse?.data ?? ticketsResponse;
-  const tickets = Array.isArray(rawTickets) ? rawTickets : [];
+  const realTickets = Array.isArray(rawTickets) ? rawTickets : [];
+  // Surface the demo conversation at the top of the sidebar so admins can
+  // walk through the credentials-resolution flow without seeding any DB rows.
+  const tickets = [FAKE_TICKET, ...realTickets.filter((t) => t.id !== FAKE_TICKET_ID)];
 
   const handleSelectTicket = (ticketId) => {
     navigate(`/AdminSupport/tickets/${ticketId}`);

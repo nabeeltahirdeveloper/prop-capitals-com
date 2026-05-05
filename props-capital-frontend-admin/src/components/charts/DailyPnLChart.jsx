@@ -78,9 +78,9 @@ export default function DailyPnLChart({ data }) {
           </p>
           <p
             className="font-bold text-xs sm:text-base md:text-lg text-emerald-400 truncate"
-            title={`+$${totalProfit.toLocaleString()}`}
+            title={`+€${totalProfit.toLocaleString()}`}
           >
-            +${formatCompactNumber(totalProfit)}
+            +€{formatCompactNumber(totalProfit)}
           </p>
         </div>
 
@@ -90,9 +90,9 @@ export default function DailyPnLChart({ data }) {
           </p>
           <p
             className="font-bold text-xs sm:text-base md:text-lg text-red-400 truncate"
-            title={`$${totalLoss.toLocaleString()}`}
+            title={`€${totalLoss.toLocaleString()}`}
           >
-            ${formatCompactNumber(totalLoss)}
+            €{formatCompactNumber(totalLoss)}
           </p>
         </div>
 
@@ -114,9 +114,9 @@ export default function DailyPnLChart({ data }) {
             className={`font-bold text-xs sm:text-base md:text-lg truncate ${
               netPnL >= 0 ? "text-emerald-400" : "text-red-400"
             }`}
-            title={`${netPnL >= 0 ? "+" : ""}$${netPnL.toLocaleString()}`}
+            title={`${netPnL >= 0 ? "+" : ""}€${netPnL.toLocaleString()}`}
           >
-            {netPnL >= 0 ? "+" : ""}${formatCompactNumber(netPnL)}
+            {netPnL >= 0 ? "+" : ""}€{formatCompactNumber(netPnL)}
           </p>
         </div>
       </div>
@@ -146,9 +146,9 @@ export default function DailyPnLChart({ data }) {
               tickFormatter={(value) => {
                 const absVal = Math.abs(value);
                 if (absVal >= 1000000)
-                  return `$${(value / 1000000).toFixed(0)}M`;
-                if (absVal >= 1000) return `$${(value / 1000).toFixed(0)}K`;
-                return `$${value}`;
+                  return `€${(value / 1000000).toFixed(0)}M`;
+                if (absVal >= 1000) return `€${(value / 1000).toFixed(0)}K`;
+                return `€${value}`;
               }}
             />
             <Tooltip
@@ -160,7 +160,7 @@ export default function DailyPnLChart({ data }) {
               itemStyle={{ color: "#fff" }}
               labelStyle={{ color: "#fff" }}
               formatter={(value) => [
-                `$${value.toLocaleString()}`,
+                `€${value.toLocaleString()}`,
                 t("analytics.pl"),
               ]}
             />

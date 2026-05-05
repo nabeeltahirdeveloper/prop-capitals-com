@@ -21,7 +21,7 @@
       "badge": "전 세계 15,000명 이상의 트레이더가 신뢰하고 있습니다",
       "title": "거래하세요",
       "titleHighlight": "저희 자금으로",
-      "subtitle": "당신의 실력을 증명하고 최대 $200,000의 자금을 확보하세요. 자기 자본의 위험 없이 최대 90%의 수익을 유지할 수 있습니다",
+      "subtitle": "당신의 실력을 증명하고 최대 €200,000의 자금을 확보하세요. 자기 자본의 위험 없이 최대 90%의 수익을 유지할 수 있습니다",
       "cta": "챌린지 시작하기",
       "howItWorks": "작동 방식",
       "verified": "인증된 기업",
@@ -106,7 +106,7 @@
       "titleHighlight": "당신의 트레이딩 커리어를",
       "subtitle": "자금 지원을 받는 수천 명의 트레이더와 함께하고 오늘부터 수익을 시작하세요. 자기 자본의 위험은 없습니다",
       "button": "지금 자금 확보",
-      "footer": "시작은 단 $99 • 즉시 계정 설정 • 연중무휴 24시간 지원"
+      "footer": "시작은 단 €99 • 즉시 계정 설정 • 연중무휴 24시간 지원"
     },
     "footer": {
       "description": "가장 트레이더 친화적인 프로프 트레이딩 회사. 저희 자금으로 거래하고 자금을 확보하세요",
@@ -348,7 +348,7 @@
     "businessDaysOnly": "영업일 기준",
     "minimumAmount": "최소 금액",
     "payoutFee": "출금 수수료",
-    "free": "$0 (무료)",
+    "free": "€0 (무료)",
     "freeValue": "무료",
     "availablePaymentMethods": "사용 가능한 지급 방식",
     "bankTransfer": "은행 송금",
@@ -572,7 +572,7 @@
     "maxOverallDD": "최대 전체 DD",
     "fundedDesc": "당사 자금으로 거래",
     "profitSplit80": "수익 분배 80%",
-    "scalingDesc": "$2,000,000까지 성장",
+    "scalingDesc": "€2,000,000까지 성장",
     "profitSplit90": "최대 90% 수익 분배",
     "currentPhaseRequirements": "현재 단계 요구사항",
     "profitSplit": "수익 분배",
@@ -826,15 +826,15 @@
       "overallDrawdownWarning": "계정 #{{accountNumber}}의 전체 드로우다운이 {{overallPercent}}%에 도달했습니다. 허용 한도는 {{maxPercent}}%입니다. 리스크 관리를 유의해 주세요",
       "dailyDrawdownViolation": "계정 #{{accountNumber}}의 일일 드로우다운이 {{dailyPercent}}%에 도달했습니다. 허용 한도는 {{maxPercent}}%입니다. 거래는 내일까지 잠금 처리됩니다",
       "overallDrawdownViolation": "계정 #{{accountNumber}}의 전체 드로우다운이 {{overallPercent}}%에 도달했습니다. 허용 한도는 {{maxPercent}}%입니다. 챌린지는 실격 처리되었습니다",
-      "payoutApproved": "출금 신청 ${{amount}}이(가) 승인되었습니다. 24~48시간 이내에 송금됩니다",
-      "payoutRejected": "출금 신청 ${{amount}}이(가) 거절되었습니다. 자세한 내용은 지원팀에 문의해 주세요",
-      "payoutProcessed": "출금 ${{amount}}이(가) 처리되어 송금이 완료되었습니다",
-      "phase1Completed": "축하합니다! ${{accountSize}} 챌린지 1단계를 통과했습니다. 계속해서 2단계로 진행하세요",
-      "phase2Completed": "축하합니다! ${{accountSize}} 챌린지 2단계를 통과했습니다. 계정이 자금 지원 상태가 되었습니다!",
+      "payoutApproved": "출금 신청 €{{amount}}이(가) 승인되었습니다. 24~48시간 이내에 송금됩니다",
+      "payoutRejected": "출금 신청 €{{amount}}이(가) 거절되었습니다. 자세한 내용은 지원팀에 문의해 주세요",
+      "payoutProcessed": "출금 €{{amount}}이(가) 처리되어 송금이 완료되었습니다",
+      "phase1Completed": "축하합니다! €{{accountSize}} 챌린지 1단계를 통과했습니다. 계속해서 2단계로 진행하세요",
+      "phase2Completed": "축하합니다! €{{accountSize}} 챌린지 2단계를 통과했습니다. 계정이 자금 지원 상태가 되었습니다!",
       "tradingDaysMilestoneMet": "계정 #{{accountNumber}}에서 {{tradingDays}}일 거래를 달성했습니다. 최소 거래일 요건을 충족했습니다!",
       "tradingDaysMilestone": "계정 #{{accountNumber}}에서 {{tradingDays}}일 거래를 달성했습니다. 훌륭합니다!",
-      "challengePurchased": "챌린지 {{challengeName}} 구매가 완료되었습니다. 거래 계정 #{{accountNumber}}은 시작 잔액 ${{startingBalance}}로 이용 가능합니다",
-      "accountScalingApproved": "계정 #{{accountNumber}}의 확장 신청이 승인되었습니다. 잔액이 ${{oldBalance}}에서 ${{newBalance}}로 증가했습니다",
+      "challengePurchased": "챌린지 {{challengeName}} 구매가 완료되었습니다. 거래 계정 #{{accountNumber}}은 시작 잔액 €{{startingBalance}}로 이용 가능합니다",
+      "accountScalingApproved": "계정 #{{accountNumber}}의 확장 신청이 승인되었습니다. 잔액이 €{{oldBalance}}에서 €{{newBalance}}로 증가했습니다",
       "accountScalingRejected": "계정 #{{accountNumber}}의 확장 신청이 거절되었습니다. 자세한 내용은 지원팀에 문의해 주세요",
       "newChallengeAvailable": "새 챌린지 {{challengeName}}를 확인하세요! {{platform}}에서 계정 규모 {{accountSize}}. 지금 시작해 보세요",
       "accountViolationGeneric": "계정 #{{accountNumber}}이(가) 거래 규칙을 위반했습니다{{violationPercent}}",
@@ -888,7 +888,7 @@
     "total": "합계",
     "processing": "처리 중...",
     "pay": "결제",
-    "payAmount": "${{amount}} 결제",
+    "payAmount": "€{{amount}} 결제",
     "secureEncryption": "안전한 256-bit SSL 암호화",
     "minTradingDays": "최소 거래일",
     "maxTradingDays": "최대 거래일",
@@ -2016,8 +2016,8 @@
         "twoPhase": "2단계",
         "instantFunding": "즉시 자금 지원",
         "platform": "플랫폼",
-        "accountSize": "계정 규모($)",
-        "price": "가격($)",
+        "accountSize": "계정 규모(€)",
+        "price": "가격(€)",
         "phase1ProfitTarget": "1단계 수익 목표(%)",
         "phase2ProfitTarget": "2단계 수익 목표(%)",
         "dailyDrawdown": "일일 손실(%)",
@@ -2273,7 +2273,7 @@
           },
           "minimumPayout": {
             "q": "최소 출금액이 있나요?",
-            "a": "최소 출금액은 $50입니다. 상한은 없으며, 원하면 수익 전액을 출금할 수 있습니다."
+            "a": "최소 출금액은 €50입니다. 상한은 없으며, 원하면 수익 전액을 출금할 수 있습니다."
           },
           "payoutProcessing": {
             "q": "출금 처리에는 얼마나 걸리나요?",
@@ -2286,7 +2286,7 @@
         "faqs": {
           "howScalingWorks": {
             "q": "스케일링 플랜은 어떻게 작동하나요?",
-            "a": "자금 지원 계정에서 10% 수익을 달성하고 2번의 출금 사이클을 완료할 때마다 계정 규모가 25% 증가합니다. 최대 $2,000,000까지 거래 자금을 확장할 수 있습니다."
+            "a": "자금 지원 계정에서 10% 수익을 달성하고 2번의 출금 사이클을 완료할 때마다 계정 규모가 25% 증가합니다. 최대 €2,000,000까지 거래 자금을 확장할 수 있습니다."
           },
           "profitSplitScaling": {
             "q": "스케일하면 수익 분배는 어떻게 되나요?",
@@ -2385,7 +2385,7 @@
         "title": "챌린지 구매",
         "description": "원하는 계정 규모와 평가 유형을 선택하고 안전하게 결제하여 거래 인증 정보를 즉시 받습니다.",
         "details": {
-          "selectAccountSize": "$10K~$200K 계정 규모 선택",
+          "selectAccountSize": "€10K~€200K 계정 규모 선택",
           "chooseType": "1단계 / 2단계 / 즉시 자금 지원 선택",
           "receiveCredentials": "몇 분 내 인증 정보 수신",
           "startTrading": "바로 거래 시작"
@@ -2408,7 +2408,7 @@
           "tradeWithCapital": "당사 자금으로 거래",
           "keepProfits": "수익 최대 90% 수령",
           "biWeeklyPayout": "격주 출금 스케줄",
-          "scaleUp": "최대 $2,000,000까지 스케일"
+          "scaleUp": "최대 €2,000,000까지 스케일"
         }
       }
     },
@@ -2577,7 +2577,7 @@
         "desc": "24~48시간 내 수익 수령"
       },
       "scaleTo2M": {
-        "title": "$2M까지 스케일",
+        "title": "€2M까지 스케일",
         "desc": "스케일링 플랜으로 계정 성장"
       },
       "bestSupport": {
@@ -2639,7 +2639,7 @@
         "desc": "여정 전 기간 동안 일관된 규칙이 적용됩니다."
       },
       "scaleTo2M": {
-        "title": "$2M까지 스케일",
+        "title": "€2M까지 스케일",
         "desc": "거래 자금을 최대 200만 달러까지 확장할 수 있습니다."
       },
       "automaticUpgrades": {
@@ -2702,7 +2702,7 @@
       "tradingCareer": "당신의 트레이딩 커리어를 다음 단계로.",
       "subtitle": "어떤 계정 규모에서든 시작해 거래 자금을 200만 달러까지 스케일해 보세요.",
       "getStartedNow": "지금 시작하기",
-      "footer": "$99부터 시작 • 최대 $2M까지 스케일 • 최대 90% 수익 분배"
+      "footer": "€99부터 시작 • 최대 €2M까지 스케일 • 최대 90% 수익 분배"
     }
   },
   "payoutsPage": {
@@ -2723,9 +2723,9 @@
       "profitSplit": "수익 분배",
       "best": "최고",
       "tiers": {
-        "tier1": "$10K - $25K",
-        "tier2": "$50K",
-        "tier3": "$100K+",
+        "tier1": "€10K - €25K",
+        "tier2": "€50K",
+        "tier3": "€100K+",
         "tier4": "스케일 이후"
       }
     },
@@ -2775,7 +2775,7 @@
     "payoutTerms": {
       "title": "출금 조건",
       "biWeekly": "격주 출금 스케줄(14일마다)",
-      "minimumAmount": "최소 출금액은 $50입니다",
+      "minimumAmount": "최소 출금액은 €50입니다",
       "noMaximum": "출금 상한은 없습니다",
       "noFees": "어떤 방법이든 출금 수수료는 무료입니다",
       "firstPayout": "첫 출금은 자금 지원 후 14일부터 가능합니다",
@@ -2834,13 +2834,13 @@
         "title": "일일 손실(5%)",
         "description": "하루에 허용되는 최대 손실입니다. 당일 시작 잔액을 기준으로 계산되며 서버 시간 자정에 리셋됩니다.",
         "example": "예:",
-        "exampleText": "잔액이 $50,000라면 일일 손실 한도는 $2,500입니다."
+        "exampleText": "잔액이 €50,000라면 일일 손실 한도는 €2,500입니다."
       },
       "maximumDrawdown": {
         "title": "최대 손실(10%)",
         "description": "도달한 최고 잔액 대비 최대 손실입니다. 에퀴티 피크를 추적하는 트레일링 방식입니다.",
         "example": "예:",
-        "exampleText": "최고 잔액이 $55,000이라면 최대 손실 라인은 $49,500입니다."
+        "exampleText": "최고 잔액이 €55,000이라면 최대 손실 라인은 €49,500입니다."
       }
     },
     "allowedActions": {
@@ -2909,7 +2909,7 @@
     },
     "scalingPlan": {
       "title": "스케일링 플랜",
-      "subtitle": "계정을 최대 $2,000,000까지 성장",
+      "subtitle": "계정을 최대 €2,000,000까지 성장",
       "accountSize": "계정 규모",
       "profitSplit": "수익 분배",
       "howItWorks": {
@@ -2930,7 +2930,7 @@
       },
       "minimum": {
         "label": "최소 출금액",
-        "value": "$50"
+        "value": "€50"
       },
       "maximum": {
         "label": "최대 출금액",
@@ -2942,7 +2942,7 @@
       },
       "fee": {
         "label": "출금 수수료",
-        "value": "$0(무료)"
+        "value": "€0(무료)"
       },
       "firstPayout": {
         "label": "첫 출금",
@@ -3239,7 +3239,7 @@
       "industry": "직종",
       "workTitle": "직함",
       "ftdInfo": "FTD 정보",
-      "deposit": "입금액 ($)",
+      "deposit": "입금액 (€)",
       "paymentMethod": "결제 방식",
       "paymentProvider": "결제 제공업체",
       "convertedDate": "전환일",

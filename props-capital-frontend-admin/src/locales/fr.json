@@ -21,7 +21,7 @@
       "badge": "Fait confiance par plus de 15 000 traders dans le monde entier",
       "title": "Tradez",
       "titleHighlight": "avec notre capital",
-      "subtitle": "Prouvez vos compétences et obtenez jusqu’à 200 000 $ de capital. Aucun risque sur vos fonds personnels et conservez jusqu’à 90 % des profits",
+      "subtitle": "Prouvez vos compétences et obtenez jusqu’à 200 000 € de capital. Aucun risque sur vos fonds personnels et conservez jusqu’à 90 % des profits",
       "cta": "Commencer le challenge",
       "howItWorks": "Comment ça marche",
       "verified": "Entreprise vérifiée",
@@ -106,7 +106,7 @@
       "titleHighlight": "Votre carrière de trading",
       "subtitle": "Rejoignez des milliers de traders financés et commencez à gagner dès aujourd’hui. Aucun risque sur vos fonds personnels",
       "button": "Obtenir un financement maintenant",
-      "footer": "Démarrage à seulement 99 $ • Configuration instantanée • Support 24h/24 et 7j/7"
+      "footer": "Démarrage à seulement 99 € • Configuration instantanée • Support 24h/24 et 7j/7"
     },
     "footer": {
       "description": "La société de prop trading la plus favorable aux traders. Tradez avec notre capital et obtenez un financement",
@@ -348,7 +348,7 @@
     "businessDaysOnly": "Jours ouvrables uniquement",
     "minimumAmount": "Montant minimum",
     "payoutFee": "Frais de retrait",
-    "free": "0 $ (gratuit)",
+    "free": "0 € (gratuit)",
     "freeValue": "Gratuit",
     "availablePaymentMethods": "Méthodes de paiement disponibles",
     "bankTransfer": "Virement bancaire",
@@ -572,7 +572,7 @@
     "maxOverallDD": "DD global max",
     "fundedDesc": "Trader avec notre capital",
     "profitSplit80": "Partage des profits 80 %",
-    "scalingDesc": "Croissance jusqu'à 2 000 000 $",
+    "scalingDesc": "Croissance jusqu'à 2 000 000 €",
     "profitSplit90": "Jusqu'à 90 % de partage des profits",
     "currentPhaseRequirements": "Exigences de la phase actuelle",
     "profitSplit": "Partage des profits",
@@ -826,15 +826,15 @@
       "overallDrawdownWarning": "Le drawdown global du compte #{{accountNumber}} a atteint {{overallPercent}}%. La limite autorisée est de {{maxPercent}}%. Veuillez gérer votre risque.",
       "dailyDrawdownViolation": "Le drawdown journalier du compte #{{accountNumber}} a atteint {{dailyPercent}}%. La limite autorisée est de {{maxPercent}}%. Le trading sera verrouillé jusqu’à demain.",
       "overallDrawdownViolation": "Le drawdown global du compte #{{accountNumber}} a atteint {{overallPercent}}%. La limite autorisée est de {{maxPercent}}%. Le challenge a été disqualifié.",
-      "payoutApproved": "Votre demande de retrait de ${{amount}} a été approuvée. Le virement sera effectué sous 24 à 48 heures.",
-      "payoutRejected": "Votre demande de retrait de ${{amount}} a été rejetée. Veuillez contacter le support pour plus de détails.",
-      "payoutProcessed": "Votre retrait de ${{amount}} a été traité et le virement a été effectué.",
-      "phase1Completed": "Félicitations ! Vous avez validé la phase 1 du challenge ${{accountSize}}. Continuons avec la phase 2.",
-      "phase2Completed": "Félicitations ! Vous avez validé la phase 2 du challenge ${{accountSize}}. Votre compte est désormais financé !",
+      "payoutApproved": "Votre demande de retrait de €{{amount}} a été approuvée. Le virement sera effectué sous 24 à 48 heures.",
+      "payoutRejected": "Votre demande de retrait de €{{amount}} a été rejetée. Veuillez contacter le support pour plus de détails.",
+      "payoutProcessed": "Votre retrait de €{{amount}} a été traité et le virement a été effectué.",
+      "phase1Completed": "Félicitations ! Vous avez validé la phase 1 du challenge €{{accountSize}}. Continuons avec la phase 2.",
+      "phase2Completed": "Félicitations ! Vous avez validé la phase 2 du challenge €{{accountSize}}. Votre compte est désormais financé !",
       "tradingDaysMilestoneMet": "Vous avez atteint {{tradingDays}} jours de trading sur le compte #{{accountNumber}}. Vous remplissez l’exigence minimale de jours de trading !",
       "tradingDaysMilestone": "Vous avez atteint {{tradingDays}} jours de trading sur le compte #{{accountNumber}}. Excellent travail !",
-      "challengePurchased": "L’achat du challenge {{challengeName}} est terminé. Le compte de trading #{{accountNumber}} est disponible avec un solde initial de ${{startingBalance}}.",
-      "accountScalingApproved": "Votre demande d’augmentation pour le compte #{{accountNumber}} a été approuvée. Le solde est passé de ${{oldBalance}} à ${{newBalance}}.",
+      "challengePurchased": "L’achat du challenge {{challengeName}} est terminé. Le compte de trading #{{accountNumber}} est disponible avec un solde initial de €{{startingBalance}}.",
+      "accountScalingApproved": "Votre demande d’augmentation pour le compte #{{accountNumber}} a été approuvée. Le solde est passé de €{{oldBalance}} à €{{newBalance}}.",
       "accountScalingRejected": "Votre demande d’augmentation pour le compte #{{accountNumber}} a été rejetée. Veuillez contacter le support pour plus de détails.",
       "newChallengeAvailable": "Découvrez le nouveau challenge {{challengeName}} ! Taille de compte {{accountSize}} sur {{platform}}. Commencez dès maintenant.",
       "accountViolationGeneric": "Le compte #{{accountNumber}} a enfreint les règles de trading{{violationPercent}}",
@@ -887,7 +887,7 @@
     "total": "Total",
     "processing": "Traitement...",
     "pay": "Payer",
-    "payAmount": "Payer ${{amount}}",
+    "payAmount": "Payer €{{amount}}",
     "secureEncryption": "Chiffrement SSL 256-bit sécurisé",
     "noChallenges": "Aucun défi",
     "minTradingDays": "Jours de trading minimum",
@@ -2016,8 +2016,8 @@
         "twoPhase": "2 phases",
         "instantFunding": "Financement instantané",
         "platform": "Plateforme",
-        "accountSize": "Taille du compte ($)",
-        "price": "Prix ($)",
+        "accountSize": "Taille du compte (€)",
+        "price": "Prix (€)",
         "phase1ProfitTarget": "Objectif de profit phase 1 (%)",
         "phase2ProfitTarget": "Objectif de profit phase 2 (%)",
         "dailyDrawdown": "Perte journalière (%)",
@@ -2273,7 +2273,7 @@
           },
           "minimumPayout": {
             "q": "Y a-t-il un montant minimum de retrait ?",
-            "a": "Le montant minimum de retrait est de 50 $. Il n’y a pas de plafond : vous pouvez retirer l’intégralité de vos profits si vous le souhaitez."
+            "a": "Le montant minimum de retrait est de 50 €. Il n’y a pas de plafond : vous pouvez retirer l’intégralité de vos profits si vous le souhaitez."
           },
           "payoutProcessing": {
             "q": "Combien de temps prend le traitement d’un retrait ?",
@@ -2286,7 +2286,7 @@
         "faqs": {
           "howScalingWorks": {
             "q": "Comment fonctionne le plan de scaling ?",
-            "a": "Chaque fois que vous réalisez 10 % de profit sur votre compte financé et que vous terminez deux cycles de retrait, la taille du compte augmente de 25 %. Vous pouvez développer votre capital jusqu’à 2 000 000 $."
+            "a": "Chaque fois que vous réalisez 10 % de profit sur votre compte financé et que vous terminez deux cycles de retrait, la taille du compte augmente de 25 %. Vous pouvez développer votre capital jusqu’à 2 000 000 €."
           },
           "profitSplitScaling": {
             "q": "Que devient le partage des profits avec le scaling ?",
@@ -2385,7 +2385,7 @@
         "title": "Acheter un challenge",
         "description": "Choisissez la taille de compte et le type d’évaluation, payez en toute sécurité et recevez instantanément vos identifiants de trading.",
         "details": {
-          "selectAccountSize": "Choisissez une taille de compte de 10K$ à 200K$",
+          "selectAccountSize": "Choisissez une taille de compte de 10K€ à 200K€",
           "chooseType": "Choisissez 1 phase / 2 phases / financement instantané",
           "receiveCredentials": "Recevez vos identifiants en quelques minutes",
           "startTrading": "Commencez à trader immédiatement"
@@ -2408,7 +2408,7 @@
           "tradeWithCapital": "Trader avec notre capital",
           "keepProfits": "Conserver jusqu’à 90 % des profits",
           "biWeeklyPayout": "Retraits toutes les deux semaines",
-          "scaleUp": "Scaler jusqu’à 2 000 000 $"
+          "scaleUp": "Scaler jusqu’à 2 000 000 €"
         }
       }
     },
@@ -2577,7 +2577,7 @@
         "desc": "Recevez vos profits en 24 à 48 heures"
       },
       "scaleTo2M": {
-        "title": "Scaler jusqu’à 2M$",
+        "title": "Scaler jusqu’à 2M€",
         "desc": "Faites grandir votre compte avec le plan de scaling"
       },
       "bestSupport": {
@@ -2639,8 +2639,8 @@
         "desc": "Des règles cohérentes s’appliquent tout au long de votre parcours."
       },
       "scaleTo2M": {
-        "title": "Jusqu’à 2M$",
-        "desc": "Développez votre capital de trading jusqu’à 2 000 000 $."
+        "title": "Jusqu’à 2M€",
+        "desc": "Développez votre capital de trading jusqu’à 2 000 000 €."
       },
       "automaticUpgrades": {
         "title": "Mises à niveau automatiques",
@@ -2665,7 +2665,7 @@
     },
     "roadmap": {
       "badge": "Feuille de route",
-      "title": "La route vers 2 000 000 $",
+      "title": "La route vers 2 000 000 €",
       "subtitle": "Visualisez comment votre compte évolue à chaque niveau.",
       "start": "Début",
       "max": "Maximum",
@@ -2700,9 +2700,9 @@
     "ctaSection": {
       "title": "Prêt à scaler ?",
       "tradingCareer": "Passez votre carrière de trading au niveau supérieur.",
-      "subtitle": "Commencez avec n’importe quelle taille de compte et scalez jusqu’à 2 000 000 $ de capital de trading.",
+      "subtitle": "Commencez avec n’importe quelle taille de compte et scalez jusqu’à 2 000 000 € de capital de trading.",
       "getStartedNow": "Commencer maintenant",
-      "footer": "Démarrez à partir de 99 $ • Scalez jusqu’à 2M$ • Jusqu’à 90 % de partage des profits"
+      "footer": "Démarrez à partir de 99 € • Scalez jusqu’à 2M€ • Jusqu’à 90 % de partage des profits"
     }
   },
   "payoutsPage": {
@@ -2723,9 +2723,9 @@
       "profitSplit": "Partage des profits",
       "best": "Meilleur",
       "tiers": {
-        "tier1": "10K$ - 25K$",
-        "tier2": "50K$",
-        "tier3": "100K$+",
+        "tier1": "10K€ - 25K€",
+        "tier2": "50K€",
+        "tier3": "100K€+",
         "tier4": "Après scaling"
       }
     },
@@ -2775,7 +2775,7 @@
     "payoutTerms": {
       "title": "Conditions de retrait",
       "biWeekly": "Calendrier de retrait bimensuel (tous les 14 jours)",
-      "minimumAmount": "Le retrait minimum est de 50 $",
+      "minimumAmount": "Le retrait minimum est de 50 €",
       "noMaximum": "Aucun plafond de retrait",
       "noFees": "Aucun frais de retrait, quelle que soit la méthode",
       "firstPayout": "Premier retrait disponible 14 jours après le financement",
@@ -2834,13 +2834,13 @@
         "title": "Perte journalière (5 %)",
         "description": "La perte maximale autorisée sur une journée. Elle est calculée sur le solde au début de la journée et est réinitialisée à minuit (heure serveur).",
         "example": "Exemple :",
-        "exampleText": "Si votre solde est de 50 000 $, la limite de perte journalière est de 2 500 $."
+        "exampleText": "Si votre solde est de 50 000 €, la limite de perte journalière est de 2 500 €."
       },
       "maximumDrawdown": {
         "title": "Perte maximale (10 %)",
         "description": "La perte maximale depuis le plus haut solde atteint. C’est une limite trailing qui suit le pic d’équité.",
         "example": "Exemple :",
-        "exampleText": "Si votre solde maximum atteint est de 55 000 $, la ligne de perte maximale est à 49 500 $."
+        "exampleText": "Si votre solde maximum atteint est de 55 000 €, la ligne de perte maximale est à 49 500 €."
       }
     },
     "allowedActions": {
@@ -2909,7 +2909,7 @@
     },
     "scalingPlan": {
       "title": "Plan de scaling",
-      "subtitle": "Faites grandir votre compte jusqu’à 2 000 000 $",
+      "subtitle": "Faites grandir votre compte jusqu’à 2 000 000 €",
       "accountSize": "Taille du compte",
       "profitSplit": "Partage des profits",
       "howItWorks": {
@@ -2930,7 +2930,7 @@
       },
       "minimum": {
         "label": "Retrait minimum",
-        "value": "50 $"
+        "value": "50 €"
       },
       "maximum": {
         "label": "Retrait maximum",
@@ -2942,7 +2942,7 @@
       },
       "fee": {
         "label": "Frais de retrait",
-        "value": "0 $ (gratuit)"
+        "value": "0 € (gratuit)"
       },
       "firstPayout": {
         "label": "Premier retrait",
@@ -3239,7 +3239,7 @@
       "industry": "Secteur d'Activité",
       "workTitle": "Poste",
       "ftdInfo": "Informations FTD",
-      "deposit": "Montant du Dépôt ($)",
+      "deposit": "Montant du Dépôt (€)",
       "paymentMethod": "Mode de Paiement",
       "paymentProvider": "Fournisseur de Paiement",
       "convertedDate": "Date de Conversion",

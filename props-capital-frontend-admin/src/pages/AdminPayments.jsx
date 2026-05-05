@@ -30,7 +30,7 @@ import StatusBadge from "@/components/shared/StatusBadge";
 import StatsCard from "@/components/shared/StatsCard";
 import {
   Search,
-  DollarSign,
+  Euro,
   CreditCard,
   RefreshCw,
   TrendingUp,
@@ -167,7 +167,7 @@ export default function AdminPayments() {
       accessorKey: "amount",
       cell: (row) => (
         <span className="text-emerald-500 font-bold">
-          ${row.amount?.toLocaleString()}
+          €{row.amount?.toLocaleString()}
         </span>
       ),
     },
@@ -278,7 +278,7 @@ export default function AdminPayments() {
                           {t("admin.payments.table.amount") || "Amount"}:
                         </span>{" "}
                         <span className="font-bold text-emerald-500">
-                          ${row.amount?.toLocaleString()}
+                          €{row.amount?.toLocaleString()}
                         </span>
                       </p>
                       <p className="text-sm text-foreground">
@@ -368,8 +368,8 @@ export default function AdminPayments() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatsCard
           title={t("admin.payments.stats.totalRevenue")}
-          value={`$${totalRevenue.toLocaleString()}`}
-          icon={DollarSign}
+          value={`€${totalRevenue.toLocaleString()}`}
+          icon={Euro}
           iconColor="text-emerald-400"
           change={
             statistics.revenueChangePercent !== undefined
@@ -390,13 +390,13 @@ export default function AdminPayments() {
         />
         <StatsCard
           title={t("admin.payments.stats.pending")}
-          value={`$${pendingAmount.toLocaleString()}`}
+          value={`€${pendingAmount.toLocaleString()}`}
           icon={CreditCard}
           iconColor="text-amber-400"
         />
         <StatsCard
           title={t("admin.payments.stats.refunded")}
-          value={`$${refundedAmount.toLocaleString()}`}
+          value={`€${refundedAmount.toLocaleString()}`}
           icon={RefreshCw}
           iconColor="text-red-400"
         />

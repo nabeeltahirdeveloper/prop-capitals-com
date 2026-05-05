@@ -21,7 +21,7 @@ export function translateNotification(title, body, t) {
   };
 
   const extractAmount = (text) => {
-    const match = text.match(/\$([\d,]+\.?\d*)/);
+    const match = text.match(/€([\d,]+\.?\d*)/);
     return match ? match[1] : null;
   };
 
