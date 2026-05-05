@@ -1,9 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, Check, Shield, Clock, Star, CreditCard, User, Mail, Phone, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { PaymentLogos } from '@/components/PaymentLogos';
+import { createGuestWorldCardSession } from '@/api/payments';
+
+/**
+ * Brand referral attribution.
+ * When a customer lands on /checkout with `?brand=<slug>&link=<slug>` query
+ * params (a brand's direct purchase link), we persist that attribution to
+ * localStorage so it survives the multi-step checkout flow and can be passed
+ * to the payment session creation. Backend then sets Payment.brandId so the
+ * brand earns commission on the order.
+ */
+const BRAND_ATTRIBUTION_KEY = 'pc_brand_attribution';
+const BRAND_ATTRIBUTION_TTL_MS = 24 * 60 * 60 * 1000; // 24h
 
 // Platform options as separate constant
 const PLATFORMS = [
@@ -35,16 +47,68 @@ const CHALLENGE_DATA = {
 
 const STEP_LABELS = ['Platform', 'Details', 'Confirm'];
 
+const persistBrandAttribution = (brandSlug, linkSlug) => {
+  if (!brandSlug && !linkSlug) return;
+  try {
+    localStorage.setItem(
+      BRAND_ATTRIBUTION_KEY,
+      JSON.stringify({
+        brandSlug: brandSlug || null,
+        linkSlug: linkSlug || null,
+        capturedAt: Date.now(),
+        expiresAt: Date.now() + BRAND_ATTRIBUTION_TTL_MS,
+      }),
+    );
+  } catch (_e) {}
+};
+
+export const readBrandAttribution = () => {
+  try {
+    const raw = localStorage.getItem(BRAND_ATTRIBUTION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed?.expiresAt && parsed.expiresAt < Date.now()) {
+      localStorage.removeItem(BRAND_ATTRIBUTION_KEY);
+      return null;
+    }
+    return parsed;
+  } catch (_e) {
+    return null;
+  }
+};
+
+// Map our schema's challengeType ("one_phase", "two_phase") to the CHALLENGE_DATA
+// keys ("one-step", "two-step") so brand links built with schema names still resolve.
+const normalizeChallengeType = (raw) => {
+  if (!raw) return 'one-step';
+  const v = String(raw).toLowerCase();
+  if (v === 'one_phase' || v === 'one-phase' || v === 'one_step' || v === 'one-step')
+    return 'one-step';
+  if (v === 'two_phase' || v === 'two-phase' || v === 'two_step' || v === 'two-step')
+    return 'two-step';
+  return v;
+};
+
 const CheckoutPage = () => {
   const { isDark } = useTheme();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  
-  const challengeType = searchParams.get('type') || 'one-step';
+
+  // Capture brand attribution from URL on mount and persist it for the rest
+  // of the checkout session (and any later navigation to /pay/<slug>).
+  useEffect(() => {
+    const brandSlug = searchParams.get('brand');
+    const linkSlug = searchParams.get('link');
+    if (brandSlug || linkSlug) {
+      persistBrandAttribution(brandSlug, linkSlug);
+    }
+  }, [searchParams]);
+
+  const challengeType = normalizeChallengeType(searchParams.get('type'));
   const accountSize = searchParams.get('size') || '50K';
-  
+
   const challenge = CHALLENGE_DATA[challengeType];
-  const price = challenge?.prices[accountSize] || 299;
+  const price = challenge?.prices?.[accountSize] || 299;
 
   const [step, setStep] = useState(1);
   const [selectedPlatform, setSelectedPlatform] = useState('');
@@ -78,12 +142,43 @@ const CheckoutPage = () => {
     else navigate('/challenges');
   };
 
-  const handleConfirmOrder = () => {
+  const handleConfirmOrder = async () => {
     setIsProcessing(true);
-    setTimeout(() => {
+    try {
+      // Brand attribution captured on mount (or earlier in this session)
+      const attribution = readBrandAttribution();
+      // Send the type/size from the URL — backend will resolve to a real
+      // Challenge and create a Payment with brandId set when attribution is
+      // present. The backend returns a redirect URL to the WorldCard hosted
+      // checkout for the actual card entry.
+      const res = await createGuestWorldCardSession({
+        // Backend resolves challenge from accountSize + challengeType when no
+        // slug/id is provided. Schema names ("two_phase") are accepted.
+        accountSize,
+        challengeType,
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        email: formData.email.trim().toLowerCase(),
+        phone: formData.phone?.trim() || undefined,
+        country: formData.country || undefined,
+        platform: selectedPlatform,
+        ...(attribution?.brandSlug ? { brandSlug: attribution.brandSlug } : {}),
+        ...(attribution?.linkSlug ? { linkSlug: attribution.linkSlug } : {}),
+      });
+      if (res?.redirectUrl) {
+        // Brand attribution is preserved server-side (Payment.brandId), so we
+        // can clear the local copy now that it has been captured on the order.
+        try { localStorage.removeItem('pc_brand_attribution'); } catch (_e) {}
+        window.location.href = res.redirectUrl;
+        return;
+      }
+      alert('Could not start checkout. Please try again.');
+    } catch (err) {
+      console.error('Checkout failed:', err);
+      alert(err?.message || 'Checkout failed. Please try again.');
+    } finally {
       setIsProcessing(false);
-      navigate('/checkout/success?orderId=' + Math.random().toString(36).substr(2, 9).toUpperCase());
-    }, 2000);
+    }
   };
 
   const inputClass = isDark 

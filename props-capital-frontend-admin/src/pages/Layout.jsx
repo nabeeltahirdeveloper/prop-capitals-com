@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { createPageUrl } from "../utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
@@ -33,6 +33,22 @@ import {
   DollarSign,
   Sun,
   Moon,
+  Terminal,
+  ShoppingCart,
+  List,
+  Link2,
+  Package,
+  AlertTriangle,
+  Building2,
+  Clock,
+  Eye,
+  Ban,
+  Globe,
+  Banknote,
+  FileText,
+  Bot,
+  BarChart3,
+  Wrench,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -61,6 +77,8 @@ export default function Layout({ children, currentPageName }) {
   const [openSubmenu, setOpenSubmenu] = useState(null);
 
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const currentSection = searchParams.get("section");
   const queryClient = useQueryClient();
 
   // Close mobile sidebar on route change (nice UX)
@@ -82,7 +100,7 @@ export default function Layout({ children, currentPageName }) {
     };
   }, [sidebarOpen]);
 
-  // Full-screen pages with no layout (only SignIn for admin panel)
+  // Full-screen pages with no layout (SignIn only — AdminConsole is now embedded inside the admin panel layout)
   const noLayoutPages = ["SignIn"];
   const isNoLayoutPage = noLayoutPages.includes(currentPageName);
 
@@ -166,6 +184,7 @@ export default function Layout({ children, currentPageName }) {
     "CRMCalendar",
     "CRMApiKeys",
     "Notifications",
+    "AdminConsole",
   ];
   const isAdminPage = adminPages.includes(currentPageName);
   const showAdminMenu = isAdmin && isAdminPage;
@@ -215,6 +234,84 @@ export default function Layout({ children, currentPageName }) {
       },
       { name: t("nav.notifications"), icon: Bell, page: "Notifications" },
       { name: t("nav.settings"), icon: Settings, page: "AdminSettings" },
+
+      // ===== Admin Console — merged from standalone admin console =====
+      // NOTE: Dashboard, Orders, Users, Packages, and Geolocation Payment Gateway
+      // are temporarily disabled — see commented entries below.
+      //{ type: "divider", label: "Admin Console" },
+      // {
+      //   name: "Dashboard",
+      //   icon: LayoutDashboard,
+      //   section: "dashboard",
+      // },
+      {
+        name: "Orders & Transactions",
+        icon: ShoppingCart,
+        children: [
+          // { name: "Orders", icon: ShoppingCart, section: "orders" },
+          { name: "All Transactions", icon: List, section: "transactions" },
+          { name: "Payouts", icon: DollarSign, section: "payouts" },
+          {
+            name: "Direct Purchase Links",
+            icon: Link2,
+            section: "direct-purchase-links",
+          },
+          // { name: "Packages", icon: Package, section: "packages" },
+          {
+            name: "Brands For Payouts",
+            icon: AlertTriangle,
+            section: "brands-unpaid-transactions",
+          },
+        ],
+      },
+      {
+        name: "Brands",
+        icon: Users,
+        children: [
+          // { name: "Users", icon: Users, section: "users" },
+          { name: "Brands Management", icon: Building2, section: "brands" },
+          { name: "Pending Brands", icon: Clock, section: "pending-brands" },
+          { name: "Brand Wallets", icon: Wallet, section: "brand-wallets" },
+        ],
+      },
+      {
+        name: "Traffic & Security",
+        icon: Shield,
+        children: [
+          { name: "Visits", icon: Eye, section: "visits" },
+          { name: "Blocked IPs", icon: Ban, section: "blocked-ips" },
+          { name: "Access Control", icon: Shield, section: "ip-whitelist" },
+        ],
+      },
+      {
+        name: "Currencies & Geo Settings",
+        icon: Globe,
+        children: [
+          { name: "Currencies", icon: Banknote, section: "currencies" },
+          {
+            name: "Currency Geo Mapping",
+            icon: Globe,
+            section: "currency-geo",
+          },
+          // {
+          //   name: "Geolocation Payment Gateway",
+          //   icon: CreditCard,
+          //   section: "payment-gateway-geo",
+          // },
+        ],
+      },
+      {
+        name: "Logs & System Monitoring",
+        icon: Activity,
+        children: [
+          { name: "System Logs", icon: FileText, section: "logs" },
+          { name: "Bot Logs", icon: Bot, section: "bot-logs" },
+          { name: "Analytics", icon: BarChart3, section: "analytics" },
+          { name: "System Tools", icon: Wrench, section: "system-tools" },
+          { name: "Settings", icon: Settings, section: "settings" },
+        ],
+      },
+
       { name: t("nav.profile"), icon: User, page: "AdminProfile" },
     ],
     [t],
@@ -228,13 +325,18 @@ export default function Layout({ children, currentPageName }) {
     navItems.forEach((item) => {
       if (
         item.children &&
-        item.children.some((child) => child.page === currentPageName)
+        item.children.some((child) =>
+          child.section
+            ? currentPageName === "AdminConsole" &&
+              currentSection === child.section
+            : child.page === currentPageName,
+        )
       ) {
         activeSubmenu = item.name;
       }
     });
     if (activeSubmenu) setOpenSubmenu(activeSubmenu);
-  }, [currentPageName, navItems]);
+  }, [currentPageName, currentSection, navItems]);
 
   // Early returns
   if (isNoLayoutPage) return <>{children}</>;
@@ -346,8 +448,11 @@ export default function Layout({ children, currentPageName }) {
 
               if (item.children) {
                 const isSubmenuOpen = openSubmenu === item.name;
-                const isAnyChildActive = item.children.some(
-                  (child) => child.page === currentPageName,
+                const isAnyChildActive = item.children.some((child) =>
+                  child.section
+                    ? currentPageName === "AdminConsole" &&
+                      currentSection === child.section
+                    : child.page === currentPageName,
                 );
 
                 return (
@@ -397,11 +502,17 @@ export default function Layout({ children, currentPageName }) {
                     {!sidebarCollapsed && isSubmenuOpen && (
                       <div className="pl-4 ml-2 space-y-1 mt-1">
                         {item.children.map((child) => {
-                          const isChildActive = currentPageName === child.page;
+                          const isChildActive = child.section
+                            ? currentPageName === "AdminConsole" &&
+                              currentSection === child.section
+                            : currentPageName === child.page;
+                          const childTo = child.section
+                            ? `${createPageUrl("AdminConsole")}?section=${child.section}`
+                            : createPageUrl(child.page);
                           return (
                             <Link
-                              key={child.page}
-                              to={createPageUrl(child.page)}
+                              key={child.section || child.page}
+                              to={childTo}
                               className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${
                                 isChildActive
                                   ? "bg-amber-500/10 text-foreground border border-amber-500/40"
@@ -425,9 +536,15 @@ export default function Layout({ children, currentPageName }) {
                 );
               }
 
-              const isActive =
-                currentPageName === item.page ||
-                (item.activeFor?.includes(currentPageName) ?? false);
+              const isActive = item.section
+                ? currentPageName === "AdminConsole" &&
+                  currentSection === item.section
+                : currentPageName === item.page ||
+                  (item.activeFor?.includes(currentPageName) ?? false);
+
+              const itemTo = item.section
+                ? `${createPageUrl("AdminConsole")}?section=${item.section}`
+                : createPageUrl(item.page);
 
               const handleClick = (e) => {
                 if (
@@ -436,7 +553,7 @@ export default function Layout({ children, currentPageName }) {
                 ) {
                   e.preventDefault();
                   e.stopPropagation();
-                  window.location.href = createPageUrl(item.page);
+                  window.location.href = itemTo;
                 } else {
                   setSidebarOpen(false);
                 }
@@ -444,9 +561,9 @@ export default function Layout({ children, currentPageName }) {
 
               return (
                 <Link
-                  key={item.page}
+                  key={item.section || item.page}
                   onClick={handleClick}
-                  to={createPageUrl(item.page)}
+                  to={itemTo}
                   title={sidebarCollapsed ? item.name : undefined}
                   className={`flex items-center transition-all ${
                     sidebarCollapsed ? "justify-center px-2" : "gap-3 px-3"
@@ -527,6 +644,20 @@ export default function Layout({ children, currentPageName }) {
                 <Moon className="w-5 h-5" />
               )}
             </button>
+            {/* Admin Console — visionscope-style admin
+            {isAdmin && (
+              <Link to={createPageUrl("AdminConsole")}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="hidden sm:flex items-center gap-2 border-amber-500/40 text-amber-600 hover:bg-amber-500/10 hover:text-amber-700"
+                >
+                  <Terminal className="w-4 h-4" />
+                  <span className="font-medium">{t("nav.adminConsole") || "Admin Console"}</span>
+                </Button>
+              </Link>
+            )} */}
+
             <LanguageSwitcher />
 
             {/* Notifications */}

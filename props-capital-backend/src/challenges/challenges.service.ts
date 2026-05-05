@@ -29,17 +29,43 @@ export class ChallengesService {
   }
 
   async findBySlug(slug: string) {
-    // Accept either a slug ("uk-25k") or a raw Challenge id (CUID) — the
-    // route param can be either now that the trader-side checkout reuses
-    // the public /pay/:slug page with an id.
     let challenge: any = await (this.prisma.challenge as any).findUnique({
       where: { slug },
     });
+    let brandAttribution: any = null;
+
     if (!challenge) {
       challenge = await this.prisma.challenge.findUnique({
         where: { id: slug },
       });
     }
+
+    if (!challenge) {
+      // Try brand direct purchase link
+      const link = await (this.prisma as any).directPurchaseLink.findUnique({
+        where: { slug },
+        include: { brand: true, challenge: true },
+      });
+      if (link?.active && link.challenge?.isActive) {
+        challenge = link.challenge;
+        brandAttribution = {
+          brand_id: link.brandId,
+          brand_name: link.brand?.name ?? null,
+          brand_slug: link.brand?.slug ?? null,
+          link_id: link.id,
+          link_slug: link.slug,
+          link_name: link.name,
+        };
+        // Fire-and-forget click tracking — never block resolution
+        (this.prisma as any).directPurchaseLink
+          .update({
+            where: { id: link.id },
+            data: { clicks: { increment: 1 } },
+          })
+          .catch(() => undefined);
+      }
+    }
+
     if (!challenge || !challenge.isActive) {
       throw new NotFoundException('Challenge not found');
     }
@@ -58,6 +84,7 @@ export class ChallengesService {
       overallDrawdownPercent: challenge.overallDrawdownPercent,
       profitSplit: challenge.profitSplit,
       platform: challenge.platform,
+      brand: brandAttribution,
     };
   }
 

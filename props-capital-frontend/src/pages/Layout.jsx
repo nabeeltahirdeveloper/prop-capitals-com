@@ -15,8 +15,22 @@ export default function Layout({ children, currentPageName }) {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // Full-screen pages with no layout (have their own full-page UI)
-  const noLayoutPages = ["SignIn", "SignUp"];
+  // Full-screen pages with no layout (have their own full-page UI).
+  // Both camelCase and hyphenated forms are listed because `_getCurrentPage`
+  // returns the literal PAGES key it matched, which depends on which alias
+  // was hit (see PAGES map in pages/index.jsx).
+  const noLayoutPages = [
+    "SignIn",
+    "SignUp",
+    "BrandLogin",
+    "BrandDashboard",
+    "ResellerLogin",
+    "ResellerDashboard",
+    "brand-login",
+    "brand-dashboard",
+    "reseller-login",
+    "reseller-dashboard",
+  ];
   const isNoLayoutPage = noLayoutPages.includes(currentPageName);
 
   // Public pages that render with Navbar + Footer
@@ -33,6 +47,15 @@ export default function Layout({ children, currentPageName }) {
     "BuyChallenge",
     "ScalingPlan",
     "Payouts",
+    // Guest-accessible checkout / payment-flow pages
+    "checkout",
+    "CheckoutPage",
+    "CheckoutSuccessPage",
+    "PayLink",
+    "PayLinkSuccess",
+    "PayLinkFail",
+    "ForgotPassword",
+    "SetPassword",
   ];
   const isPublicPage = publicPages.includes(currentPageName);
 

@@ -178,6 +178,20 @@ export class WorldCardWebhookService {
           err?.stack,
         );
       }
+
+      const linkId = (updatedPayment.metadata as any)?.brandLinkId;
+      if (linkId) {
+        try {
+          await (this.prisma as any).directPurchaseLink.update({
+            where: { id: linkId },
+            data: { conversions: { increment: 1 } },
+          });
+        } catch (err: any) {
+          this.logger.warn(
+            `Failed to increment conversions for link ${linkId}: ${err?.message}`,
+          );
+        }
+      }
     }
 
     return {
