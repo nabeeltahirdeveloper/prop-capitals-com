@@ -44,6 +44,24 @@ export class PaymentsService {
     return this.platformMap[raw] || raw;
   }
 
+  // Accepts "25K", "100K", "5M", "25000", or a number. Returns integer dollars.
+  private parseAccountSize(raw: any): number {
+    if (raw == null) return 0;
+    if (typeof raw === 'number') return Math.round(raw);
+    const s = String(raw).trim().toUpperCase();
+    const m = s.match(/^(\d+(?:\.\d+)?)([KMB])?$/);
+    if (m) {
+      const n = parseFloat(m[1]);
+      const unit = m[2];
+      if (unit === 'K') return Math.round(n * 1_000);
+      if (unit === 'M') return Math.round(n * 1_000_000);
+      if (unit === 'B') return Math.round(n * 1_000_000_000);
+      return Math.round(n);
+    }
+    const parsed = parseInt(s, 10);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
   // ─── WorldCard session hash ────────────────────────────────────────
   // SHA1( MD5( order_number + order_amount + order_currency + order_description + merchant_pass ).toUpperCase() )
 
@@ -604,6 +622,10 @@ export class PaymentsService {
     const {
       slug,
       challengeId,
+      // Alternative resolution from CheckoutPage's URL params:
+      // /checkout?type=two_phase&size=25K → resolve to a Challenge by these.
+      accountSize,
+      challengeType,
       firstName,
       lastName,
       email,
@@ -612,10 +634,14 @@ export class PaymentsService {
       address,
       city,
       couponCode,
+      brandSlug,
+      linkSlug,
     } = data || {};
 
-    if (!slug && !challengeId) {
-      throw new BadRequestException('Missing required field: slug or challengeId');
+    if (!slug && !challengeId && !accountSize) {
+      throw new BadRequestException(
+        'Missing required field: slug, challengeId, or accountSize',
+      );
     }
     if (!email || typeof email !== 'string') {
       throw new BadRequestException('Missing required field: email');
@@ -627,11 +653,70 @@ export class PaymentsService {
     const normalizedEmail = email.trim().toLowerCase();
 
     let challenge: any = null;
+    let brandLink: any = null;
     if (challengeId && typeof challengeId === 'string') {
       challenge = await this.prisma.challenge.findUnique({ where: { id: challengeId } });
     }
     if (!challenge && slug && typeof slug === 'string') {
       challenge = await (this.prisma.challenge as any).findUnique({ where: { slug } });
+
+      // Slug may be a DirectPurchaseLink slug — resolve through the link to
+      // capture brand attribution for this checkout.
+      if (!challenge) {
+        brandLink = await (this.prisma as any).directPurchaseLink.findUnique({
+          where: { slug },
+          include: { brand: true, challenge: true },
+        });
+        if (brandLink?.active) {
+          challenge = brandLink.challenge;
+        }
+      }
+    }
+
+    // Fallback: resolve from accountSize + challengeType (the /checkout URL case).
+    if (!challenge && accountSize) {
+      const sizeNumber = this.parseAccountSize(accountSize);
+      const typeMap: Record<string, string> = {
+        '1-step': 'one_phase',
+        'one-step': 'one_phase',
+        'one_step': 'one_phase',
+        'one-phase': 'one_phase',
+        'one_phase': 'one_phase',
+        '2-step': 'two_phase',
+        'two-step': 'two_phase',
+        'two_step': 'two_phase',
+        'two-phase': 'two_phase',
+        'two_phase': 'two_phase',
+      };
+      const mappedType =
+        typeMap[String(challengeType || '').toLowerCase()] ||
+        challengeType ||
+        'two_phase';
+      challenge = await this.prisma.challenge.findFirst({
+        where: {
+          accountSize: sizeNumber,
+          challengeType: mappedType,
+          isActive: true,
+        },
+      });
+    }
+
+    // Explicit brand attribution from /checkout?brand=...&link=... query params,
+    // forwarded by the public CheckoutPage so the brand earns commission even
+    // when the customer arrived via /checkout rather than /pay/<slug>.
+    if (!brandLink && linkSlug && typeof linkSlug === 'string') {
+      brandLink = await (this.prisma as any).directPurchaseLink.findUnique({
+        where: { slug: linkSlug },
+        include: { brand: true, challenge: true },
+      });
+    }
+    if (!brandLink && brandSlug && typeof brandSlug === 'string') {
+      const brand = await (this.prisma as any).brand.findUnique({
+        where: { slug: brandSlug },
+      });
+      if (brand) {
+        brandLink = { brandId: brand.id, brand, id: null, slug: null, active: true };
+      }
     }
     if (!challenge || !challenge.isActive) {
       throw new NotFoundException('Challenge not found');
@@ -766,10 +851,20 @@ export class PaymentsService {
 
     this.logger.log(`[WorldCard GuestSession] Building request for user=${user.id}, challenge=${challenge.id}, currency=${orderCurrency}`);
 
+    const brandIdAttribution: string | null = brandLink?.brandId ?? null;
+    const brandCommissionRate: number = brandLink?.brand?.commissionRate ?? 0;
+    const brandCommissionCents: number = brandIdAttribution
+      ? Math.round((amountCents * brandCommissionRate) / 100)
+      : 0;
+
     const payment = await (this.prisma.payment as any).create({
       data: {
         user: { connect: { id: user.id } },
         challenge: { connect: { id: challenge.id } },
+        ...(brandIdAttribution
+          ? { brand: { connect: { id: brandIdAttribution } } }
+          : {}),
+        brandCommission: brandCommissionCents,
         amount: amountCents,
         originalAmount: originalAmountCents,
         discountAmount: discountAmountCents,
@@ -787,6 +882,8 @@ export class PaymentsService {
           couponCode: appliedCoupon?.code || null,
           discountType: appliedCoupon?.discountType || null,
           discountPct: appliedCoupon?.discountPct || null,
+          brandLinkId: brandLink?.id || null,
+          brandLinkSlug: brandLink?.slug || null,
           isGuestCheckout: true,
           billingDetails: {
             firstName,

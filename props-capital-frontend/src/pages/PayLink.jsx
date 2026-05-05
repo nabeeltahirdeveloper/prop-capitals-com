@@ -20,6 +20,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { PaymentLogos } from '@/components/PaymentLogos';
 import { getChallengeBySlug } from '@/api/challenges';
 import { createGuestWorldCardSession } from '@/api/payments';
+import { readBrandAttribution } from '@/pages/CheckoutPage';
 
 const COUNTRIES = [
   { code: 'GB', name: 'United Kingdom' },
@@ -116,6 +117,11 @@ const PayLink = () => {
       toast.error(err);
       return;
     }
+    // Forward any brand attribution captured upstream (e.g. user landed
+    // on /checkout?brand=X&link=Y first). Backend will resolve and credit
+    // the brand on the resulting Payment.
+    const attribution = readBrandAttribution();
+
     sessionMutation.mutate({
       slug,
       firstName: form.firstName.trim(),
@@ -125,6 +131,8 @@ const PayLink = () => {
       country: form.country,
       address: form.address.trim(),
       city: form.city.trim(),
+      ...(attribution?.brandSlug ? { brandSlug: attribution.brandSlug } : {}),
+      ...(attribution?.linkSlug ? { linkSlug: attribution.linkSlug } : {}),
     });
   };
 

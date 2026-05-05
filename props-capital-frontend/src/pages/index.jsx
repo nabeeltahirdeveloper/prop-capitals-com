@@ -46,6 +46,12 @@ import PayLink from "./PayLink.jsx";
 import PayLinkSuccess from "./PayLinkSuccess.jsx";
 import PayLinkFail from "./PayLinkFail.jsx";
 import SetPassword from "./SetPassword.jsx";
+
+// Brand and Reseller portals
+import BrandLogin from "./BrandLogin.jsx";
+import BrandDashboard from "./BrandDashboard.jsx";
+import ResellerLogin from "./ResellerLogin.jsx";
+import ResellerDashboard from "./ResellerDashboard.jsx";
 // Dashboard
 import TraderPanelLayout from "@/components/trader/TraderPanelLayout.jsx";
 import AccountOverview from "@/components/trader/AccountOverview.jsx";
@@ -120,6 +126,18 @@ const PAGES = {
   FAQS: FAQPage,
   checkout: TradeCheckoutPanelPage,
 
+  // Brand and Reseller portals — register both camelCase and hyphenated keys
+  // so `_getCurrentPage` matches whichever URL form the user lands on
+  // ("/brand-login" vs "/BrandLogin"). Without the hyphenated keys the path
+  // resolver falls back to "Home" and Layout wraps the page in Navbar+Footer.
+  BrandLogin: BrandLogin,
+  BrandDashboard: BrandDashboard,
+  ResellerLogin: ResellerLogin,
+  ResellerDashboard: ResellerDashboard,
+  "brand-login": BrandLogin,
+  "brand-dashboard": BrandDashboard,
+  "reseller-login": ResellerLogin,
+  "reseller-dashboard": ResellerDashboard,
 };
 
 function _getCurrentPage(url) {
@@ -181,6 +199,19 @@ function PagesContent() {
               <Route path="/pay/success" element={<PayLinkSuccess />} />
               <Route path="/pay/fail" element={<PayLinkFail />} />
               <Route path="/pay/:slug" element={<PayLink />} />
+
+              {/* Brand portal */}
+              <Route path="/brand-login" element={<BrandLogin />} />
+              <Route path="/BrandLogin" element={<BrandLogin />} />
+              <Route path="/brand-dashboard" element={<BrandDashboard />} />
+              <Route path="/BrandDashboard" element={<BrandDashboard />} />
+
+              {/* Reseller portal */}
+              <Route path="/reseller-login" element={<ResellerLogin />} />
+              <Route path="/ResellerLogin" element={<ResellerLogin />} />
+              <Route path="/reseller-dashboard" element={<ResellerDashboard />} />
+              <Route path="/ResellerDashboard" element={<ResellerDashboard />} />
+
               <Route
                 path="/SignIn"
                 element={
