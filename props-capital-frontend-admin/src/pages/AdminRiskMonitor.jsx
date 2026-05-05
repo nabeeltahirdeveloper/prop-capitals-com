@@ -422,10 +422,10 @@ export default function AdminRiskMonitor() {
                       </div>
                     </TableCell>
                     <TableCell className="text-foreground text-xs sm:text-sm py-2 sm:py-4 px-2 sm:px-4 whitespace-nowrap">
-                      ${account.current_balance?.toLocaleString()}
+                      €{account.current_balance?.toLocaleString()}
                     </TableCell>
                     <TableCell className="text-foreground text-xs sm:text-sm py-2 sm:py-4 px-2 sm:px-4 whitespace-nowrap">
-                      ${account.current_equity?.toLocaleString()}
+                      €{account.current_equity?.toLocaleString()}
                     </TableCell>
                     <TableCell className="py-2 sm:py-4 px-2 sm:px-4">
                       <div className="w-16 sm:w-24">
@@ -754,7 +754,7 @@ export default function AdminRiskMonitor() {
                     })}
                   </p>
                   <p className="text-foreground font-bold text-sm sm:text-lg">
-                    ${accountDetails.initialBalance?.toLocaleString() || "0"}
+                    €{accountDetails.initialBalance?.toLocaleString() || "0"}
                   </p>
                 </div>
                 <div>
@@ -764,7 +764,7 @@ export default function AdminRiskMonitor() {
                     })}
                   </p>
                   <p className="text-foreground font-bold text-sm sm:text-lg">
-                    ${accountDetails.balance?.toLocaleString() || "0"}
+                    €{accountDetails.balance?.toLocaleString() || "0"}
                   </p>
                 </div>
                 <div>
@@ -774,7 +774,7 @@ export default function AdminRiskMonitor() {
                     })}
                   </p>
                   <p className="text-foreground font-bold text-sm sm:text-lg">
-                    ${accountDetails.equity?.toLocaleString() || "0"}
+                    €{accountDetails.equity?.toLocaleString() || "0"}
                   </p>
                 </div>
                 <div>

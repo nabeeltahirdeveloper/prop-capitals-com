@@ -254,11 +254,11 @@ export default function TradingPanel({
         <div className="bg-slate-800/50 rounded-xl p-4 space-y-2.5 border border-slate-700">
           <div className="flex justify-between items-center">
             <span className="text-slate-400 text-sm">{t('terminal.tradingPanel.orderValue')}</span>
-            <span className="text-white font-semibold">${calculateOrderValue()}</span>
+            <span className="text-white font-semibold">€{calculateOrderValue()}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-slate-400 text-sm">{t('terminal.tradingPanel.margin')}</span>
-            <span className="text-white font-semibold">${calculateMargin()}</span>
+            <span className="text-white font-semibold">€{calculateMargin()}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-slate-400 text-sm">{t('terminal.tradingPanel.leverage')}</span>

@@ -1234,7 +1234,7 @@ export default function CRMLeads() {
                         </span>
                       </div>
                       <Input
-                        placeholder="e.g. $50,000"
+                        placeholder="e.g. €50,000"
                         value={editableFields.salary}
                         onChange={(e) =>
                           setEditableFields({

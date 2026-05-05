@@ -770,14 +770,14 @@ export default function AccountMetrics({
               {/* {(realTimeMargin > 0 || positions?.length > 0) && (
       <div className="mt-1 pt-1 border-t border-slate-700">
         <p className="text-[9px] text-red-400">
-          -${realTimeMargin.toLocaleString(undefined, {
+          -€{realTimeMargin.toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}{" "}
           {t("terminal.accountMetrics.used")}
         </p>
         <p className="text-[9px] text-emerald-400">
-          ${realTimeFreeMargin.toLocaleString(undefined, {
+          €{realTimeFreeMargin.toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}{" "}

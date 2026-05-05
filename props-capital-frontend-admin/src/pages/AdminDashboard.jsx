@@ -17,7 +17,7 @@ import DataTable from "@/components/shared/DataTable";
 import {
   Users,
   TrendingUp,
-  DollarSign,
+  Euro,
   Wallet,
   AlertTriangle,
   Award,
@@ -438,8 +438,8 @@ export default function AdminDashboard() {
         />
         <StatsCard
           title={t("admin.dashboard.stats.revenue")}
-          value={`$${(overview.totalRevenue || 0).toLocaleString()}`}
-          icon={DollarSign}
+          value={`€${(overview.totalRevenue || 0).toLocaleString()}`}
+          icon={Euro}
           iconColor="text-emerald-400"
           change={formatChangePercentLabel(overview.revenueChangePercent)}
           changeType={
@@ -448,7 +448,7 @@ export default function AdminDashboard() {
         />
         <StatsCard
           title={t("admin.dashboard.stats.payouts")}
-          value={`$${(overview.pendingPayoutsAmount || 0).toLocaleString()}`}
+          value={`€${(overview.pendingPayoutsAmount || 0).toLocaleString()}`}
           icon={Wallet}
           iconColor="text-purple-400"
         />
@@ -568,7 +568,7 @@ export default function AdminDashboard() {
                       name === "revenue"
                         ? t("admin.dashboard.chart.tooltip.revenue")
                         : t("admin.dashboard.chart.tooltip.payout");
-                    return [`$${Number(value).toLocaleString()}`, label];
+                    return [`€${Number(value).toLocaleString()}`, label];
                   }}
                 />
                 <Area

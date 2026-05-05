@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import supportSocket, { connectSupportSocket } from "@/lib/supportSocket";
+import { FAKE_TICKET, FAKE_TICKET_ID } from "@/components/support/fakeTickets";
 
 export default function AdminSupport() {
   const { t } = useTranslation();
@@ -149,20 +150,58 @@ export default function AdminSupport() {
     priority ? priority.toLowerCase() : "medium";
 
   const displayTickets = useMemo(() => {
-    return (Array.isArray(rawTickets) ? rawTickets : []).map((ticket) => ({
-      id: ticket.id,
-      displayName: getUserDisplayName(ticket.user, ticket),
-      email: getUserEmail(ticket.user, ticket),
-      isGuest: !ticket.user,
-      subject: ticket.subject,
-      category: mapCategoryToFrontend(ticket.category),
-      priority: mapPriorityToFrontend(ticket.priority),
-      status: mapStatusToFrontend(ticket.status),
-      message: ticket.message,
-      created_date: ticket.createdAt,
-      updated_date: ticket.updatedAt,
-    }));
-  }, [rawTickets]);
+    const real = (Array.isArray(rawTickets) ? rawTickets : [])
+      .filter((t) => t.id !== FAKE_TICKET_ID)
+      .map((ticket) => ({
+        id: ticket.id,
+        displayName: getUserDisplayName(ticket.user, ticket),
+        email: getUserEmail(ticket.user, ticket),
+        isGuest: !ticket.user,
+        subject: ticket.subject,
+        category: mapCategoryToFrontend(ticket.category),
+        priority: mapPriorityToFrontend(ticket.priority),
+        status: mapStatusToFrontend(ticket.status),
+        message: ticket.message,
+        created_date: ticket.createdAt,
+        updated_date: ticket.updatedAt,
+      }));
+
+    // Inject the demo ticket at the top so the credentials-resolution flow
+    // is reachable from the main table without seeding any backend rows.
+    const demo = {
+      id: FAKE_TICKET.id,
+      displayName: "Peter White",
+      email: FAKE_TICKET.user.email,
+      isGuest: false,
+      subject: FAKE_TICKET.subject,
+      category: mapCategoryToFrontend(FAKE_TICKET.category),
+      priority: mapPriorityToFrontend(FAKE_TICKET.priority),
+      status: mapStatusToFrontend(FAKE_TICKET.status),
+      message: FAKE_TICKET.message,
+      created_date: FAKE_TICKET.createdAt,
+      updated_date: FAKE_TICKET.updatedAt,
+    };
+
+    // Apply the same search/status filters the backend already applied to
+    // real rows, so the demo ticket honors what the admin types.
+    const matchesSearch = !debouncedSearch
+      ? true
+      : (
+          demo.subject +
+          " " +
+          demo.email +
+          " " +
+          demo.displayName +
+          " " +
+          demo.message
+        )
+          .toLowerCase()
+          .includes(debouncedSearch.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || demo.status === statusFilter;
+
+    return matchesSearch && matchesStatus ? [demo, ...real] : real;
+  }, [rawTickets, debouncedSearch, statusFilter]);
 
   const handleUpdateStatus = (ticket, status) => {
     const statusMap = {
@@ -269,7 +308,8 @@ export default function AdminSupport() {
             <Eye className="w-4 h-4" />
           </Button>
           {/* Take: open or waiting_for_admin -> move to in_progress */}
-          {(row.status === "open" || row.status === "waiting_for_admin") && (
+          {row.id !== FAKE_TICKET_ID &&
+            (row.status === "open" || row.status === "waiting_for_admin") && (
             <Button
               size="sm"
               variant="ghost"
@@ -284,8 +324,9 @@ export default function AdminSupport() {
             </Button>
           )}
           {/* Resolve: in_progress or waiting_for_trader -> resolved */}
-          {(row.status === "in_progress" ||
-            row.status === "waiting_for_trader") && (
+          {row.id !== FAKE_TICKET_ID &&
+            (row.status === "in_progress" ||
+              row.status === "waiting_for_trader") && (
             <Button
               size="sm"
               variant="ghost"
@@ -300,7 +341,7 @@ export default function AdminSupport() {
             </Button>
           )}
           {/* Close: any status except already closed */}
-          {row.status !== "closed" && (
+          {row.id !== FAKE_TICKET_ID && row.status !== "closed" && (
             <Button
               size="sm"
               variant="ghost"

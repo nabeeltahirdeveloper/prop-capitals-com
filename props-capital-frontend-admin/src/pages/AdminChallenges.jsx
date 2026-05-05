@@ -378,7 +378,7 @@ export default function AdminChallenges() {
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    placeholder="$50K Standard"
+                    placeholder="€50K Standard"
                     className="bg-muted border-border text-foreground placeholder:text-muted-foreground text-sm"
                   />
                 </div>
@@ -754,7 +754,7 @@ export default function AdminChallenges() {
                     {t("admin.challenges.card.accountSize")}
                   </span>
                   <span className="text-foreground font-medium">
-                    ${challenge.account_size?.toLocaleString()}
+                    €{challenge.account_size?.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between text-xs sm:text-sm">
@@ -762,7 +762,7 @@ export default function AdminChallenges() {
                     {t("admin.challenges.card.price")}
                   </span>
                   <span className="text-emerald-500 font-medium">
-                    ${challenge.price}
+                    €{challenge.price}
                   </span>
                 </div>
                 <div className="flex justify-between text-xs sm:text-sm">
