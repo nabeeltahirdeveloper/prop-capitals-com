@@ -361,7 +361,7 @@ export default function Layout({ children, currentPageName }) {
       {/* Sidebar — group for hover-to-show toggle */}
       <aside
         className={`group fixed inset-y-0 left-0 z-50 bg-sidebar border-r border-sidebar-border transform transition-[width,transform] duration-300 ease-in-out
-        ${sidebarCollapsed ? "w-20" : "w-64"}
+        ${sidebarCollapsed ? "w-20" : "w-72"}
         lg:translate-x-0
         ${sidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"}
         `}
@@ -618,7 +618,7 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Main Content */}
       <div
-        className={`flex-1 min-w-0 transition-all duration-300 ${sidebarCollapsed ? "lg:pl-20" : "lg:pl-64"}`}
+        className={`flex-1 min-w-0 transition-all duration-300 ${sidebarCollapsed ? "lg:pl-20" : "lg:pl-72"}`}
       >
         {/* Top Bar */}
         <header className="sticky top-0 z-40 h-16 bg-card/90 backdrop-blur-xl border-b border-border flex items-center justify-between px-4 lg:px-8">
