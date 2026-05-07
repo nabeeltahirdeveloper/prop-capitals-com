@@ -7,6 +7,8 @@ package-lock.json
 ._*
 .claude*
 
+CLAUDE.md
+
 # Editor Configuration  Files
 .zed
 .vscode

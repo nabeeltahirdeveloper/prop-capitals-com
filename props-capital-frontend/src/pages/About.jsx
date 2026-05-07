@@ -246,11 +246,16 @@ const About = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className={`rounded-3xl p-8 lg:p-12 border text-center ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-slate-50 border-slate-200'}`}>
             <div className="flex items-center justify-center gap-2 mb-4">
-              <div className="bg-[#00b67a] px-3 py-1.5 rounded-lg flex items-center gap-2">
-                <svg viewBox="0 0 126 31" className="h-5 w-auto">
-                  <path fill="white" d="M15.5 0L19.1 9.8H29.4L21.1 15.9L24.7 25.7L15.5 19.2L6.3 25.7L9.9 15.9L1.6 9.8H11.9L15.5 0Z"/>
+              {/* Official Trustpilot wordmark — green star + "Trustpilot" text on dark plate */}
+              <div className="bg-[#191919] px-4 py-2 rounded-md inline-flex items-center gap-2">
+                <svg viewBox="0 0 34 34" className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path
+                    fill="#00B67A"
+                    d="M33.523 11.969H20.722L16.768 0 12.8 11.97 0 11.957l10.367 7.404-3.966 11.956 10.367-7.392 10.355 7.392-3.954-11.956 10.354-7.392z"
+                  />
+                  <path d="m24.058 22.069-.89-2.707-6.4 4.564 7.29-1.857z" fill="#126849" />
                 </svg>
-                <span className="text-white font-bold text-sm">Trustpilot</span>
+                <span className="text-white font-semibold text-base tracking-tight">Trustpilot</span>
               </div>
             </div>
             <div className="flex items-center justify-center gap-1 mb-4">
