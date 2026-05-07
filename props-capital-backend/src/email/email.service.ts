@@ -168,7 +168,7 @@ export class EmailService {
     return this.sendWithTimeout({
       to,
       from: this.fromEmail,
-      subject: 'Your Props Capital verification code',
+      subject: 'Your Prop Capitals verification code',
       text: `Your verification code is: ${otp}. It expires in 10 minutes.`,
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.5;">
@@ -190,7 +190,7 @@ export class EmailService {
     return this.sendWithTimeout({
       to,
       from: this.fromEmail,
-      subject: 'Reset your Props Capital password',
+      subject: 'Reset your Prop Capitals password',
       text: `Click this link to reset your password: ${resetUrl}. This link expires in 1 hour.`,
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.5;">
@@ -235,11 +235,11 @@ export class EmailService {
     return this.sendWithTimeout({
       to,
       from: this.fromEmail,
-      subject: 'Welcome to Props Capital!',
-      text: `Welcome to Props Capital, ${name}! Your account has been verified. Start your trading journey by choosing a challenge at propscapital.com.`,
+      subject: 'Welcome to Prop Capitals!',
+      text: `Welcome to Prop Capitals, ${name}! Your account has been verified. Start your trading journey by choosing a challenge at prop-capitals.com.`,
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.5;">
-          <h2 style="margin: 0 0 12px;">Welcome to Props Capital, ${name}!</h2>
+          <h2 style="margin: 0 0 12px;">Welcome to Prop Capitals, ${name}!</h2>
           <p style="margin: 0 0 12px;">Your email has been verified and your account is ready to go.</p>
           <p style="margin: 0 0 12px;">Start your trading journey by choosing a challenge that suits your style:</p>
           <ul style="margin: 0 0 12px; padding-left: 20px;">
@@ -247,7 +247,7 @@ export class EmailService {
             <li>2-Step Challenge — traditional evaluation, up to 90% profit split</li>
           </ul>
           <p style="margin: 0 0 12px; color: #555;">All programs include no time limit, all strategies allowed, and 100% fee refund on your first payout.</p>
-          <a href="https://propscapital.com/challenges" style="display: inline-block; padding: 12px 24px; background-color: #F59E0B; color: #0a0d12; text-decoration: none; border-radius: 4px; font-weight: bold; margin: 4px 0;">
+          <a href="https://prop-capitals.com/challenges" style="display: inline-block; padding: 12px 24px; background-color: #F59E0B; color: #0a0d12; text-decoration: none; border-radius: 4px; font-weight: bold; margin: 4px 0;">
             Start a Challenge
           </a>
         </div>
@@ -283,13 +283,13 @@ export class EmailService {
     return this.sendWithTimeout({
       to,
       from: this.fromEmail,
-      subject: 'We received your message - Props Capital',
-      text: `Hi ${name},\n\nThank you for contacting Props Capital. We have received your message regarding "${subject}" and will get back to you within 24 hours.\n\nBest regards,\nProps Capital Support Team`,
+      subject: 'We received your message - Prop Capitals',
+      text: `Hi ${name},\n\nThank you for contacting Prop Capitals. We have received your message regarding "${subject}" and will get back to you within 24 hours.\n\nBest regards,\nProp Capitals Support Team`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fa;">
           <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
             <div style="text-align: center; margin-bottom: 30px;">
-              <h1 style="color: #10b981; margin: 0; font-size: 28px;">Props Capital</h1>
+              <h1 style="color: #10b981; margin: 0; font-size: 28px;">Prop Capitals</h1>
             </div>
 
             <h2 style="color: #1f2937; margin: 0 0 16px;">Thank You for Contacting Us</h2>
@@ -318,13 +318,13 @@ export class EmailService {
             <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 30px;">
               <p style="color: #6b7280; font-size: 14px; margin: 0;">
                 Best regards,<br>
-                <strong>Props Capital Support Team</strong>
+                <strong>Prop Capitals Support Team</strong>
               </p>
             </div>
           </div>
 
           <div style="text-align: center; margin-top: 20px; color: #6b7280; font-size: 12px;">
-            <p style="margin: 0;">© ${new Date().getFullYear()} Props Capital. All rights reserved.</p>
+            <p style="margin: 0;">© ${new Date().getFullYear()} Prop Capitals. All rights reserved.</p>
           </div>
         </div>
       `,
@@ -426,11 +426,11 @@ export class EmailService {
     return this.sendWithTimeout({
       to,
       from: this.fromEmail,
-      subject: 'Welcome to Props Capital — set your password',
-      text: `Hi ${name},\n\nYour Props Capital account has been created and your challenge is active. Set a password to log in and view your trading account, progress, and payouts:\n\n${setPasswordUrl}\n\nThis link expires in 7 days.`,
+      subject: 'Welcome to Prop Capitals — set your password',
+      text: `Hi ${name},\n\nYour Prop Capitals account has been created and your challenge is active. Set a password to log in and view your trading account, progress, and payouts:\n\n${setPasswordUrl}\n\nThis link expires in 7 days.`,
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.5; max-width: 560px;">
-          <h2 style="margin: 0 0 12px;">Welcome to Props Capital, ${name}!</h2>
+          <h2 style="margin: 0 0 12px;">Welcome to Prop Capitals, ${name}!</h2>
           <p style="margin: 0 0 12px;">Your account has been created and your challenge is active.</p>
           <p style="margin: 0 0 12px;">Set a password to log in and access your dashboard, trading account, progress, and payouts:</p>
           <a href="${setPasswordUrl}" style="display: inline-block; padding: 12px 24px; background-color: #F59E0B; color: #0a0d12; text-decoration: none; border-radius: 4px; font-weight: bold; margin: 12px 0;">
@@ -459,12 +459,12 @@ export class EmailService {
     return this.sendWithTimeout({
       to,
       from: this.fromEmail,
-      subject: `Your Props Capital ${cardData.platform} Account Credentials`,
-      text: `Your Props Capital ${cardData.platform} account ${type === 'setup' ? 'has been created' : 'password has been reset'}.\n\nEmail: ${email}\nPassword: ${password}`,
+      subject: `Your Prop Capitals ${cardData.platform} Account Credentials`,
+      text: `Your Prop Capitals ${cardData.platform} account ${type === 'setup' ? 'has been created' : 'password has been reset'}.\n\nEmail: ${email}\nPassword: ${password}`,
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.5;">
           <h2 style="margin: 0 0 12px;">${type === 'setup' ? 'Your account is ready' : 'Your password has been reset'}</h2>
-          <p style="margin: 0 0 12px;">Following are the credentials for your Props Capital ${cardData.platform} account:</p>
+          <p style="margin: 0 0 12px;">Following are the credentials for your Prop Capitals ${cardData.platform} account:</p>
           <div style="margin: 12px 0; padding: 12px; background-color: #f9fafb; border-radius: 4px;">
             <p style="margin: 0 0 8px;"><strong>Email:</strong> ${email}</p>
             <p style="margin: 0;"><strong>Password:</strong> ${password}</p>
