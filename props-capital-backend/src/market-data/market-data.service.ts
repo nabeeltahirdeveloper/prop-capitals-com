@@ -97,6 +97,34 @@ export class MarketDataService {
   }
 
   /**
+   * Returns the canonical symbol catalog the platform supports.
+   * Used by the frontend in place of any hardcoded symbol lists.
+   * Currently MT5-only; the platform argument is reserved for future
+   * per-platform variations (Bybit/PT5/etc.) without changing the contract.
+   */
+  getSymbolCatalog(_platform: string = 'mt5') {
+    const metals = new Set(['XAU/USD', 'XAG/USD']);
+
+    const forex = this.FOREX_SYMBOLS.map((symbol) => ({
+      symbol,
+      category: metals.has(symbol) ? 'metal' : 'forex',
+      digits: metals.has(symbol) ? 2 : symbol.includes('JPY') ? 3 : 5,
+      contractSize: 100000,
+      enabled: true,
+    }));
+
+    const crypto = Object.keys(this.CRYPTO_SYMBOLS).map((symbol) => ({
+      symbol,
+      category: 'crypto',
+      digits: 2,
+      contractSize: 1,
+      enabled: true,
+    }));
+
+    return [...forex, ...crypto];
+  }
+
+  /**
    * Get Current Price (WebSocket Optimized)
    */
   async getCurrentPrice(symbol: string) {

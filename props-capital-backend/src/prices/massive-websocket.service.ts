@@ -5,6 +5,7 @@ import {
   OnModuleDestroy,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import WebSocket from 'ws';
 
 export interface Candlestick {
@@ -72,17 +73,18 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
   private readonly HISTORY_MAX_RETRIES = 2;
   private readonly HISTORY_RETRY_DELAY_MS = 1000;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private eventEmitter: EventEmitter2,
+  ) {
     this.apiKey = this.configService.get<string>('MASSIVE_API_KEY') || '';
   }
 
   onModuleInit() {
     if (!this.apiKey) {
       this.logger.error(
-        '❌ MASSIVE_API_KEY missing! Get your key from: https://massive.com/dashboard/keys',
+        '❌ MASSIVE_API_KEY missing! Forex prices will be unavailable. Get your key from: https://massive.com/dashboard/keys',
       );
-      // Start mock prices as fallback
-      this.startMockPrices();
       return;
     }
     this.logger.log('🚀 Starting Massive.com Forex WebSocket...');
@@ -132,18 +134,14 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
                 this.logger.log('🔑 Massive.com: Authenticated successfully');
                 this.authenticated = true;
                 this.subscribe();
-                // After a short delay, initialize mock prices for any symbols the stream doesn't cover (e.g. metals)
-                setTimeout(() => this.startMockPrices(), 3000);
                 return;
               }
 
               if (msg.status === 'auth_failed') {
                 this.logger.error(
-                  '❌ Massive.com: Authentication failed - Check your API key',
+                  '❌ Massive.com: Authentication failed - Check your API key. Forex prices will be unavailable.',
                 );
                 this.authenticated = false;
-                // Fall back to mock prices
-                this.startMockPrices();
                 return;
               }
 
@@ -184,9 +182,8 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
           this.reconnectTimeout = setTimeout(() => this.connect(), delay);
         } else {
           this.logger.error(
-            `❌ Max reconnect attempts reached. Switching to mock prices.`,
+            `❌ Max reconnect attempts reached. Forex prices will remain stale until process restart.`,
           );
-          this.startMockPrices();
         }
       });
 
@@ -201,7 +198,9 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
         this.reconnectAttempts++;
         this.reconnectTimeout = setTimeout(() => this.connect(), delay);
       } else {
-        this.startMockPrices();
+        this.logger.error(
+          `❌ Max reconnect attempts reached after connection failure. Forex prices unavailable.`,
+        );
       }
     }
   }
@@ -254,12 +253,9 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
     ask: number,
     timestamp: number,
   ) {
-    // Symbol comes as "EUR/USD" from API - use directly
-    this.priceCache.set(symbol, {
-      bid,
-      ask,
-      timestamp: timestamp || Date.now(),
-    });
+    const ts = timestamp || Date.now();
+    this.priceCache.set(symbol, { bid, ask, timestamp: ts });
+    this.eventEmitter.emit('price.tick', { symbol, bid, ask, ts });
   }
 
   private disconnect() {
@@ -276,75 +272,6 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
     this.authenticated = false;
   }
 
-  // Flag to prevent starting the mock update interval multiple times
-  private mockIntervalStarted = false;
-
-  /**
-   * Mock prices for fallback when API is unavailable or doesn't stream certain symbols
-   */
-  private startMockPrices() {
-    const basePrices: Record<string, number> = {
-      'EUR/USD': 1.16,
-      'GBP/USD': 1.338,
-      'USD/JPY': 158.06,
-      'AUD/USD': 0.6681,
-      'USD/CAD': 1.3912,
-      'USD/CHF': 0.8025,
-      'NZD/USD': 0.5748,
-      'EUR/GBP': 0.8666,
-      'EUR/JPY': 163.35,
-      'GBP/JPY': 191.2,
-      'CAD/JPY': 113.6,
-      'XAU/USD': 2870.0,
-      'XAG/USD': 32.5,
-    };
-
-    const getSpread = (symbol: string) =>
-      symbol.includes('JPY') ? 0.02 : symbol.includes('XAU') ? 0.5 : symbol.includes('XAG') ? 0.03 : 0.0002;
-
-    // Only initialize symbols not already streaming from real WS
-    let initCount = 0;
-    this.massivePairs.forEach((symbol) => {
-      if (!this.priceCache.has(symbol)) {
-        const basePrice = basePrices[symbol] || 1.0;
-        const spread = getSpread(symbol);
-        this.priceCache.set(symbol, {
-          bid: basePrice,
-          ask: basePrice + spread,
-          timestamp: Date.now(),
-        });
-        initCount++;
-      }
-    });
-
-    if (initCount > 0) {
-      this.logger.log(`Mock prices initialized for ${initCount} symbol(s) not covered by WS stream`);
-    }
-
-    // Start the mock update interval only once
-    if (!this.mockIntervalStarted) {
-      this.mockIntervalStarted = true;
-      setInterval(() => {
-        this.massivePairs.forEach((symbol) => {
-          const current = this.priceCache.get(symbol);
-          // Only apply mock random walk if not recently updated by real WS (>2s old)
-          if (current && Date.now() - current.timestamp > 2000) {
-            const changePercent = (Math.random() - 0.5) * 0.001;
-            const newBid = current.bid * (1 + changePercent);
-            const spread = getSpread(symbol);
-            this.priceCache.set(symbol, {
-              bid: newBid,
-              ask: newBid + spread,
-              timestamp: Date.now(),
-            });
-          }
-        });
-      }, 1000);
-    }
-
-    this.logger.log('📊 Mock price service ready');
-  }
-
   // ============ PUBLIC API ============
 
   getPrice(symbol: string) {
@@ -352,7 +279,7 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
   }
 
   isWSConnected(): boolean {
-    return (this.isConnected && this.authenticated) || this.priceCache.size > 0;
+    return this.isConnected && this.authenticated;
   }
 
   getAllPrices(): Map<string, { bid: number; ask: number; timestamp: number }> {
