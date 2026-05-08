@@ -42,7 +42,7 @@ export const FAKE_TICKET_MESSAGES = [
     senderType: 'TRADER',
     senderId: 'demo-peter-user',
     message:
-      "Hi, I purchased a €50K 2-Step Challenge two days ago and the payment went through (transaction ID WC-1777823456...), but I still haven't received my MT5 login credentials. Could you please check what's going on? I'd like to start trading as soon as possible.",
+      "Hi, I purchased a €50K 2-Step Challenge two days ago and the payment went through, but I still haven't received my MT5 login credentials. My email is peterwhite@uwclub.net. Could you please check what's going on? I'd like to start trading as soon as possible.",
     createdAt: '2026-05-04T10:15:00.000Z',
   },
   {
