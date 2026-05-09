@@ -4,7 +4,6 @@ import {
   OnModuleInit,
   OnModuleDestroy,
 } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import WebSocket from 'ws';
 
 @Injectable()
@@ -21,8 +20,6 @@ export class BinanceWebSocketService implements OnModuleInit, OnModuleDestroy {
     string,
     { bid: number; ask: number; timestamp: number }
   >();
-
-  constructor(private eventEmitter: EventEmitter2) {}
 
   // Streams to subscribe
   private readonly BINANCE_STREAMS = [
@@ -111,11 +108,11 @@ export class BinanceWebSocketService implements OnModuleInit, OnModuleDestroy {
 
     const symbol = symbolMap[data.s];
     if (symbol) {
-      const bid = parseFloat(data.b);
-      const ask = parseFloat(data.a);
-      const ts = Date.now();
-      this.priceCache.set(symbol, { bid, ask, timestamp: ts });
-      this.eventEmitter.emit('price.tick', { symbol, bid, ask, ts });
+      this.priceCache.set(symbol, {
+        bid: parseFloat(data.b),
+        ask: parseFloat(data.a),
+        timestamp: Date.now(),
+      });
     }
   }
 
