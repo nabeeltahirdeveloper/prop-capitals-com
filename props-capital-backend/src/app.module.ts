@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { EconomicCalendarModule } from './economic-calendar/economic-calendar.module';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
@@ -51,8 +50,6 @@ import { ChatbotModule } from './chatbot/chatbot.module';
     }),
 
     ScheduleModule.forRoot(),
-
-    EventEmitterModule.forRoot(),
 
     CommonModule,
 
