@@ -31,6 +31,15 @@ export class MarketDataController {
   }
 
   /**
+   * Canonical symbol catalog. Replaces hardcoded symbol lists on the frontend.
+   * GET /market-data/symbols?platform=mt5
+   */
+  @Get('symbols')
+  getSymbols(@Query('platform') platform: string = 'mt5') {
+    return this.marketDataService.getSymbolCatalog(platform);
+  }
+
+  /**
    * Get WebSocket connection status for both crypto and forex
    * GET /market-data/ws-status
    */
@@ -172,7 +181,7 @@ export class MarketDataController {
       prices,
       source: {
         crypto: this.binanceWebSocketService.isWSConnected() ? 'websocket' : 'rest',
-        forex: this.massiveWebSocketService.isWSConnected() ? 'websocket' : 'mock',
+        forex: this.massiveWebSocketService.isWSConnected() ? 'websocket' : 'unavailable',
       },
       timestamp: Date.now(),
     };

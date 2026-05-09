@@ -9,6 +9,16 @@ import {
 import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
+import { OnEvent } from '@nestjs/event-emitter';
+import { MassiveWebSocketService } from '../prices/massive-websocket.service';
+import { BinanceWebSocketService } from '../prices/binance-websocket.service';
+
+interface PriceTick {
+  symbol: string;
+  bid: number;
+  ask: number;
+  ts: number;
+}
 
 interface PositionClosedEvent {
   tradeId: string;
@@ -49,7 +59,27 @@ export class TradingEventsGateway
 
   private readonly logger = new Logger(TradingEventsGateway.name);
 
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private massiveWS: MassiveWebSocketService,
+    private binanceWS: BinanceWebSocketService,
+  ) {}
+
+  /**
+   * Look up a current price snapshot from whichever feed has it.
+   * Returns null if the symbol is unknown to both feeds.
+   */
+  private getPriceSnapshot(symbol: string): PriceTick | null {
+    const massive = this.massiveWS.getPrice(symbol);
+    if (massive) {
+      return { symbol, bid: massive.bid, ask: massive.ask, ts: massive.timestamp };
+    }
+    const binance = this.binanceWS.getPrice(symbol);
+    if (binance) {
+      return { symbol, bid: binance.bid, ask: binance.ask, ts: binance.timestamp };
+    }
+    return null;
+  }
 
   afterInit(server: Server) {
     this.logger.log('🔌 Trading WebSocket Gateway initialized');
@@ -198,5 +228,59 @@ export class TradingEventsGateway
       ...event,
       timestamp: event.timestamp || new Date().toISOString(),
     });
+  }
+
+  // ============================================================
+  // PRICE STREAMING — per-symbol rooms, server-authoritative ticks
+  // ============================================================
+
+  /**
+   * Client requests live ticks for a set of symbols.
+   * Joins the client to per-symbol rooms (one frame per tick fanned out by socket.io).
+   * Immediately replies with a snapshot for each symbol that has cached data.
+   */
+  @SubscribeMessage('subscribe:prices')
+  handleSubscribePrices(client: Socket, payload: { symbols: string[] }) {
+    const symbols = Array.isArray(payload?.symbols) ? payload.symbols : [];
+    if (symbols.length === 0) {
+      this.logger.warn(`⚠️ Client ${client.id} sent subscribe:prices with no symbols`);
+      return;
+    }
+
+    const snapshot: PriceTick[] = [];
+    for (const symbol of symbols) {
+      client.join(`price:${symbol}`);
+      const tick = this.getPriceSnapshot(symbol);
+      if (tick) snapshot.push(tick);
+    }
+
+    client.emit('price:snapshot', snapshot);
+    this.logger.log(
+      `📡 Client ${client.id} subscribed to prices: [${symbols.join(', ')}] (snapshot: ${snapshot.length})`,
+    );
+  }
+
+  @SubscribeMessage('unsubscribe:prices')
+  handleUnsubscribePrices(client: Socket, payload: { symbols: string[] }) {
+    const symbols = Array.isArray(payload?.symbols) ? payload.symbols : [];
+    for (const symbol of symbols) {
+      client.leave(`price:${symbol}`);
+    }
+    if (symbols.length > 0) {
+      this.logger.log(
+        `📡 Client ${client.id} unsubscribed from prices: [${symbols.join(', ')}]`,
+      );
+    }
+  }
+
+  /**
+   * Internal listener: a price feed (Massive/Binance) updated its cache.
+   * Fan out to every client subscribed to this symbol's room.
+   * Note: socket.io performs O(1) room broadcast — one frame is multiplexed
+   * to all subscribers, so cost scales with symbols, not users.
+   */
+  @OnEvent('price.tick')
+  handlePriceTick(tick: PriceTick) {
+    this.server.to(`price:${tick.symbol}`).emit('price:update', tick);
   }
 }

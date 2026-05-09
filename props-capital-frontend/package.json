@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@base44/sdk": "^0.1.2",
+    "@floating-ui/dom": "^1.7.6",
     "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "^4.1.2",
     "@nabeeltahirdeveloper/chart-sdk": "2.4.7",
