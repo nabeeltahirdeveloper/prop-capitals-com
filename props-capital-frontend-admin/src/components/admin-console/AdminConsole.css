@@ -737,3 +737,184 @@ body.blocked-ip-modal-open {
     padding: 0;
   }
 }
+
+/* ============================================================================
+ * Dark theme overrides — activated by `html.dark` (set in ThemeContext).
+ * Repaints the admin console palette without touching component JSX.
+ * ========================================================================== */
+
+html.dark .admin-console-wrapper {
+  --ac-bg: #0B0D11;
+  --ac-card: #161A22;
+  --ac-border: #2A2F3A;
+  --ac-text: #E5E7EB;
+  --ac-muted: #9CA3AF;
+  --ac-sidebar-bg: #11141B;
+  --ac-sidebar-border: #2A2F3A;
+  --ac-accent: #F59E0B;
+  --ac-accent-soft: rgba(245, 158, 11, 0.12);
+  --ac-accent-soft-2: rgba(245, 158, 11, 0.22);
+}
+
+/* Sidebar scrollbar — lighter thumb on dark */
+html.dark .admin-console-wrapper .sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+html.dark .admin-console-wrapper .sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Headings + paragraphs use the dark `--ac-text` automatically, but the
+   gradient title needs its endpoints lifted so it doesn't disappear on dark */
+html.dark .admin-console-wrapper .gradient-text {
+  background: linear-gradient(90deg, #FBBF24 0%, #F59E0B 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Buttons */
+html.dark .admin-console-wrapper .btn-secondary {
+  background: var(--ac-card);
+  color: var(--ac-text);
+  border-color: var(--ac-border);
+}
+html.dark .admin-console-wrapper .btn-secondary:hover:not(:disabled) {
+  background: #1F2530;
+  border-color: #3A4150;
+}
+
+/* Inputs / selects / textareas */
+html.dark .admin-console-wrapper .search-input,
+html.dark .admin-console-wrapper input[type="text"],
+html.dark .admin-console-wrapper input[type="email"],
+html.dark .admin-console-wrapper input[type="password"],
+html.dark .admin-console-wrapper input[type="number"],
+html.dark .admin-console-wrapper input[type="date"],
+html.dark .admin-console-wrapper input[type="search"],
+html.dark .admin-console-wrapper textarea,
+html.dark .admin-console-wrapper select {
+  background: #11141B;
+  border-color: var(--ac-border);
+  color: var(--ac-text);
+}
+
+html.dark .admin-console-wrapper input::placeholder,
+html.dark .admin-console-wrapper textarea::placeholder {
+  color: #6B7280;
+}
+
+/* Make native date-picker icon readable on dark */
+html.dark .admin-console-wrapper input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.7);
+}
+
+/* Tables — header strip, hover row, scrollbars */
+html.dark .admin-console-wrapper table thead,
+html.dark .admin-console-wrapper .users-table-scroll thead,
+html.dark .admin-console-wrapper .brands-table-scroll thead,
+html.dark .admin-console-wrapper .table-container thead {
+  background: #11141B;
+  border-bottom-color: var(--ac-border);
+}
+
+html.dark .admin-console-wrapper table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+html.dark .admin-console-wrapper .table-container::-webkit-scrollbar-thumb,
+html.dark .admin-console-wrapper .users-table-scroll::-webkit-scrollbar-thumb,
+html.dark .admin-console-wrapper .brands-table-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: var(--ac-card);
+}
+html.dark .admin-console-wrapper .table-container::-webkit-scrollbar-thumb:hover,
+html.dark .admin-console-wrapper .users-table-scroll::-webkit-scrollbar-thumb:hover,
+html.dark .admin-console-wrapper .brands-table-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Pagination */
+html.dark .admin-console-wrapper .pagination-controls {
+  background: #11141B;
+  border-top-color: var(--ac-border);
+}
+html.dark .admin-console-wrapper .pagination-controls button {
+  background: var(--ac-card);
+  border-color: var(--ac-border);
+  color: var(--ac-text);
+}
+
+/* Card-like surfaces should sit ABOVE the page bg, not be tinted to light */
+html.dark .admin-console-wrapper .glass-card,
+html.dark .admin-console-wrapper .glass-panel,
+html.dark .admin-console-wrapper .metric-card,
+html.dark .admin-console-wrapper .brand-stats-card,
+html.dark .admin-console-wrapper .brand-daily-section,
+html.dark .admin-console-wrapper .chart-container {
+  background: var(--ac-card);
+  border-color: var(--ac-border);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+html.dark .admin-console-wrapper .glass-card:hover,
+html.dark .admin-console-wrapper .metric-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Section JSX uses raw Tailwind dark utility classes like bg-gray-900/800 —
+   the existing light-mode override forces them back to white. Skip that on
+   dark so they render as intended. */
+html.dark .admin-console-wrapper .bg-gray-900,
+html.dark .admin-console-wrapper .bg-gray-800,
+html.dark .admin-console-wrapper .bg-slate-900,
+html.dark .admin-console-wrapper .bg-slate-800,
+html.dark .admin-console-wrapper .bg-black {
+  background: var(--ac-card) !important;
+  color: var(--ac-text) !important;
+}
+html.dark .admin-console-wrapper .bg-gray-700 {
+  background: #1F2530 !important;
+}
+
+/* Tailwind text-gray-* and text-white inside the wrapper get re-mapped to
+   our tokens by the light-mode block above. On dark we want the JSX colors
+   (text-white, text-gray-300/400/500) to read correctly. */
+html.dark .admin-console-wrapper .text-white {
+  color: #F9FAFB !important;
+}
+html.dark .admin-console-wrapper .text-gray-200,
+html.dark .admin-console-wrapper .text-gray-100 {
+  color: #E5E7EB !important;
+}
+html.dark .admin-console-wrapper .text-gray-300 {
+  color: #D1D5DB !important;
+}
+html.dark .admin-console-wrapper .text-gray-400 {
+  color: #9CA3AF !important;
+}
+html.dark .admin-console-wrapper .text-gray-500 {
+  color: #6B7280 !important;
+}
+
+/* Status badge contrast tweaks for dark */
+html.dark .admin-console-wrapper .status-active {
+  color: #34D399;
+}
+html.dark .admin-console-wrapper .status-pending {
+  color: #FBBF24;
+}
+html.dark .admin-console-wrapper .status-inactive {
+  color: #9CA3AF;
+}
+
+/* Border-gray utilities used in transaction rows / modal dividers */
+html.dark .admin-console-wrapper .border-gray-700,
+html.dark .admin-console-wrapper .border-gray-800,
+html.dark .admin-console-wrapper .border-gray-200 {
+  border-color: var(--ac-border) !important;
+}
+
+/* Hover-on-white-ish row used by transactions table */
+html.dark .admin-console-wrapper .hover\:bg-white\/5:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
