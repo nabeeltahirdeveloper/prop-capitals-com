@@ -9,13 +9,26 @@ export const validateCoupon = async (code) => {
   return apiPost('/coupons/validate', { code });
 };
 
-// WorldCard
-export const createWorldCardSession = async (data) => {
-  return apiPost('/payments/worldcard/session', data);
+// Xoala — single guest checkout session endpoint
+export const createXoalaCardSession = async (data) => {
+  return apiPost('/payments/xoala/session', data);
 };
 
-export const createGuestWorldCardSession = async (data) => {
-  return apiPost('/payments/worldcard/guest-session', data);
+// Xoala Standard Checkout is POST-only and the response is the hosted
+// payment page itself, so the browser must submit a form to it directly.
+export const submitXoalaCheckout = ({ checkoutUrl, fields, method = 'POST' }) => {
+  const form = document.createElement('form');
+  form.method = method;
+  form.action = checkoutUrl;
+  Object.entries(fields || {}).forEach(([name, value]) => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = name;
+    input.value = value == null ? '' : String(value);
+    form.appendChild(input);
+  });
+  document.body.appendChild(form);
+  form.submit();
 };
 
 export const getPaymentStatus = async (reference) => {

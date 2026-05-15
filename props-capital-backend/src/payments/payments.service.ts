@@ -62,100 +62,89 @@ export class PaymentsService {
     return Number.isFinite(parsed) ? parsed : 0;
   }
 
-  // ─── WorldCard session hash ────────────────────────────────────────
-  // SHA1( MD5( order_number + order_amount + order_currency + order_description + merchant_pass ).toUpperCase() )
+  // ─── Guest user resolution (shared by guest checkout flows) ────────
+  // Finds a user by email, or creates one with a random password and a
+  // profile. Existing profile fields are never overwritten.
 
-  private generateSessionHash(
-    orderNumber: string,
-    amount: string,
-    currency: string,
-    description: string,
-    password: string,
-  ): string {
-    const crypto = require('crypto');
+  private async resolveOrCreateGuestUser(input: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    phone?: string;
+    country?: string;
+    address?: string;
+    city?: string;
+  }) {
+    const { firstName, lastName, phone, country, address, city } = input;
 
-    const source =
-      orderNumber +
-      amount +
-      currency +
-      description +
-      password;
+    if (!input.email || typeof input.email !== 'string') {
+      throw new BadRequestException('Missing required field: email');
+    }
+    if (!firstName || !lastName) {
+      throw new BadRequestException('Missing required name fields');
+    }
 
-    // 🔥 FIX IS HERE
-    const upperSource = source.toUpperCase();
+    const normalizedEmail = input.email.trim().toLowerCase();
 
-    const md5 = crypto.createHash('md5').update(upperSource).digest('hex');
-    const sha1 = crypto.createHash('sha1').update(md5).digest('hex');
+    let user = await this.prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    });
 
-    return sha1;
-  }
-
-  // ─── Challenge resolution (shared) ─────────────────────────────────
-
-  private async resolveChallenge(challengeId?: string, accountSize?: any, challengeType?: string) {
-    let challenge: any = null;
-
-    if (challengeId) {
-      challenge = await this.prisma.challenge.findUnique({
-        where: { id: challengeId },
+    if (!user) {
+      const randomPassword = generatePassword(20);
+      const hashed = await bcrypt.hash(randomPassword, 10);
+      user = await this.prisma.user.create({
+        data: {
+          email: normalizedEmail,
+          password: hashed,
+          passwordSet: false,
+          profile: {
+            create: {
+              firstName,
+              lastName,
+              phone: phone || null,
+              country: country || null,
+              address: address || null,
+              city: city || null,
+            },
+          },
+        } as any,
       });
-    }
-
-    if (!challenge && accountSize) {
-      const typeMap: Record<string, string> = {
-        '1-step': 'one_phase',
-        '2-step': 'two_phase',
-        'one_phase': 'one_phase',
-        'two_phase': 'two_phase',
-      };
-      const mappedType = typeMap[challengeType || ''] || challengeType || 'two_phase';
-      challenge = await this.prisma.challenge.findFirst({
-        where: {
-          accountSize: typeof accountSize === 'string' ? parseInt(accountSize) : accountSize,
-          challengeType: mappedType,
-          isActive: true,
-        },
+      this.logger.log(`[GuestCheckout] Created user ${user.id} (${normalizedEmail})`);
+    } else {
+      const existingProfile = await this.prisma.userProfile.findUnique({
+        where: { userId: user.id },
       });
-    }
-
-    if (!challenge) {
-      throw new NotFoundException("No matching challenge found for the selected configuration");
-    }
-
-    return challenge;
-  }
-
-  // ─── Coupon calculation (shared) ───────────────────────────────────
-
-  private async calculatePriceWithCoupon(basePrice: number, couponCode?: string) {
-    let finalPrice = basePrice;
-    let appliedCoupon: { code: string; discountType: string; discountPct: number } | null = null;
-    let discountAmount = 0;
-
-    if (couponCode) {
-      const couponValidation = await this.couponsService.validateCoupon(couponCode);
-
-      if (!couponValidation.valid) {
-        throw new BadRequestException(couponValidation.message);
-      }
-
-      if (couponValidation.coupon) {
-        appliedCoupon = couponValidation.coupon;
-        if (appliedCoupon.discountType === 'fixed') {
-          discountAmount = Math.floor(appliedCoupon.discountPct);
-        } else {
-          discountAmount = Math.floor(
-            basePrice * (appliedCoupon.discountPct / 100),
-          );
-        }
-        if (discountAmount < 0) discountAmount = 0;
-        if (discountAmount > basePrice) discountAmount = basePrice;
-        finalPrice = basePrice - discountAmount;
+      if (!existingProfile) {
+        await this.prisma.userProfile.create({
+          data: {
+            userId: user.id,
+            firstName,
+            lastName,
+            phone: phone || null,
+            country: country || null,
+            address: address || null,
+            city: city || null,
+          } as any,
+        });
+      } else {
+        await this.prisma.userProfile.update({
+          where: { userId: user.id },
+          data: {
+            firstName: existingProfile.firstName ?? firstName,
+            lastName: existingProfile.lastName ?? lastName,
+            phone: existingProfile.phone ?? (phone || null),
+            country: existingProfile.country ?? (country || null),
+            address: existingProfile.address ?? (address || null),
+            city: existingProfile.city ?? (city || null),
+          } as any,
+        });
       }
     }
 
-    return { finalPrice, discountAmount, appliedCoupon };
+    return user;
   }
+
 
   // ─── Existing internal purchase flow (unchanged) ───────────────────
 
@@ -413,219 +402,18 @@ export class PaymentsService {
 
   }
 
-  // ─── WorldCard: Create checkout session ────────────────────────────
+  // ─── Xoala: Create checkout session ────────────────────────────
 
-  async createWorldCardSession(data: any) {
-    const { userId, challengeId, platform, tradingPlatform, trading_platform, brokerPlatform, couponCode, accountSize, challengeType } = data;
-
-    if (!userId) {
-      throw new BadRequestException("Missing required field: userId");
-    }
-
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-    });
-    if (!user) throw new BadRequestException('User not found');
-
-    // Resolve challenge (always uses challenge.id downstream, never raw challengeId)
-    const challenge = await this.resolveChallenge(challengeId, accountSize, challengeType);
-
-    // Calculate price with coupon — challenge.price is in whole dollars,
-    // we convert everything to integer cents for DB storage
-    const { finalPrice, discountAmount, appliedCoupon } = await this.calculatePriceWithCoupon(challenge.price, couponCode);
-
-    const amountCents = finalPrice * 100;
-    const originalAmountCents = challenge.price * 100;
-    const discountAmountCents = discountAmount * 100;
-
-    // Normalize platform
-    const selectedPlatform = platform || tradingPlatform || trading_platform || brokerPlatform || challenge.platform;
-    const normalizedPlatform = this.normalizePlatform(selectedPlatform);
-
-    // Generate unique order reference
-    const orderNumber = `WC-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-
-    // Read env vars early so we fail before creating the payment row
-    // const merchantKey = "9f23ffa8-333c-11f1-9a91-2aaa1a84d930"
-    // const merchantPass = "573d12e9ec6e71a20434afe3a058409e";
-    // const notificationUrl = "https://herbivorous-tuberculoid-marcelene.ngrok-free.dev/payments/worldcard/callback";
-    // const baseUrl = "https://pay.world-card.co";
-    // const frontendUrl = "https://props-capital.com";
-    const merchantKey = this.configService.get<string>('WORLDCARD_MERCHANT_KEY');
-    const merchantPass = this.configService.get<string>('WORLDCARD_MERCHANT_PASS');
-    const notificationUrl = this.configService.get<string>('WORLDCARD_NOTIFICATION_URL');
-    const baseUrl = this.configService.get<string>('WORLDCARD_BASE_URL');
-    const frontendUrl = this.configService.get<string>('APP_FRONTEND_URL');
-
-    if (!merchantKey || !merchantPass || !notificationUrl || !baseUrl || !frontendUrl) {
-      this.logger.error('Missing WorldCard env vars', {
-        merchantKey: !!merchantKey,
-        merchantPass: !!merchantPass,
-        notificationUrl: !!notificationUrl,
-        baseUrl: !!baseUrl,
-        frontendUrl: !!frontendUrl,
-      });
-      throw new BadRequestException('WorldCard environment variables not configured');
-    }
-
-    // Build order fields — these exact strings are used in both payload and hash
-    const worldCardAmount = (amountCents / 100).toFixed(2);
-    const orderCurrency = 'USD';
-    // const orderDescription = `${challenge.name} - $${challenge.accountSize.toLocaleString()} Account`;
-    const orderDescription = `${challenge.name} ${challenge.accountSize} Account`;
-    // Generate session hash: SHA1( MD5( number + amount + currency + description + password ).toUpperCase() )
-    const sessionHash = this.generateSessionHash(
-      orderNumber,
-      worldCardAmount,
-      orderCurrency,
-      orderDescription,
-      merchantPass,
-    );
-
-    // Build redirect URLs
-    const successUrl = `${frontendUrl}/traderdashboard/checkout/success?reference=${orderNumber}`;
-    const cancelUrl = `${frontendUrl}/traderdashboard/checkout/fail?reference=${orderNumber}`;
-    const errorUrl = `${frontendUrl}/traderdashboard/checkout/fail?reference=${orderNumber}`;
-
-    const sessionPayload = {
-      merchant_key: merchantKey,
-      operation: 'purchase',
-      methods: ['card'],
-      hash: sessionHash,
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      error_url: errorUrl,
-      notification_url: notificationUrl,
-      order: {
-        number: orderNumber,
-        amount: worldCardAmount,
-        currency: orderCurrency,
-        description: orderDescription,
-      },
-      customer: {
-        // name: user.email,
-        email: user.email,
-      },
-      custom_data: {
-        userId,
-        challengeId: challenge.id,
-        platform: normalizedPlatform,
-      },
-    };
-
-    this.logger.log(`[WorldCard Session] Building request for user=${userId}, challenge=${challenge.id}`);
-    this.logger.log(`[WorldCard Session] orderNumber=${orderNumber}, amount=${worldCardAmount}, currency=${orderCurrency}`);
-    this.logger.log(`[WorldCard Session] description="${orderDescription}"`);
-    this.logger.log(`[WorldCard Session] hash=${sessionHash}`);
-    this.logger.log(`[WorldCard Session] successUrl=${successUrl}`);
-    this.logger.log(`[WorldCard Session] cancelUrl=${cancelUrl}`);
-    this.logger.log(`[WorldCard Session] notificationUrl=${notificationUrl}`);
-    this.logger.debug(`[WorldCard Session] Full payload: ${JSON.stringify(sessionPayload, null, 2)}`);
-
-    // Create pending payment row — includes sessionPayload upfront
-    const payment = await (this.prisma.payment as any).create({
-      data: {
-        user: { connect: { id: userId } },
-        challenge: { connect: { id: challenge.id } },
-        amount: amountCents,
-        originalAmount: originalAmountCents,
-        discountAmount: discountAmountCents,
-        couponCode: appliedCoupon?.code || null,
-        currency: orderCurrency,
-        provider: 'worldcard',
-        status: 'pending',
-        reference: orderNumber,
-        metadata: {
-          platform: normalizedPlatform,
-          challengeId: challenge.id,
-          challengeName: challenge.name,
-          accountSize: challenge.accountSize,
-          challengeType: challenge.challengeType,
-          couponCode: appliedCoupon?.code || null,
-          discountType: appliedCoupon?.discountType || null,
-          discountPct: appliedCoupon?.discountPct || null,
-        },
-        sessionPayload: sessionPayload,
-      },
-    });
-
-    this.logger.log(`[WorldCard Session] Payment record created: id=${payment.id}, ref=${orderNumber}`);
-
-    // Call WorldCard API
-    const apiUrl = `${baseUrl}/api/v1/session`;
-    this.logger.log(`[WorldCard Session] POST ${apiUrl}`);
-
-    let sessionResponse: any;
-    try {
-      const res = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(sessionPayload),
-      });
-
-      this.logger.log(`[WorldCard Session] Response status: ${res.status} ${res.statusText}`);
-
-      const rawText = await res.text();
-      this.logger.log(`[WorldCard Session] Raw response: ${rawText}`);
-
-      try {
-        sessionResponse = JSON.parse(rawText);
-      } catch {
-        this.logger.warn(`[WorldCard Session] Response is not valid JSON, storing as string`);
-        sessionResponse = { raw: rawText };
-      }
-
-      if (!res.ok) {
-        this.logger.error(`[WorldCard Session] API error ${res.status}: ${JSON.stringify(sessionResponse)}`);
-        throw new BadRequestException(`WorldCard session failed (${res.status}): ${sessionResponse?.message || rawText}`);
-      }
-    } catch (err: any) {
-      if (err instanceof BadRequestException) throw err;
-      this.logger.error(`[WorldCard Session] Request threw: ${err?.message}`, err?.stack);
-      throw new BadRequestException('Failed to connect to WorldCard payment gateway');
-    }
-
-    this.logger.log(`[WorldCard Session] Parsed response: ${JSON.stringify(sessionResponse)}`);
-
-    // Save session response + provider session id
-    await (this.prisma.payment as any).update({
-      where: { id: payment.id },
-      data: {
-        sessionResponse: sessionResponse,
-        providerSessionId: sessionResponse?.id || sessionResponse?.session_id || null,
-      },
-    });
-
-    const redirectUrl = sessionResponse?.redirect_url || sessionResponse?.url || null;
-
-    if (!redirectUrl) {
-      this.logger.error(`[WorldCard Session] No redirect_url in response: ${JSON.stringify(sessionResponse)}`);
-      throw new BadRequestException('WorldCard did not return a checkout URL');
-    }
-
-    this.logger.log(`[WorldCard Session] Success: ref=${orderNumber}, redirectUrl=${redirectUrl}`);
-
-    return {
-      message: 'WorldCard checkout session created',
-      reference: orderNumber,
-      paymentId: payment.id,
-      redirectUrl,
-    };
-  }
-
-  // ─── WorldCard: Guest checkout session (public payment link flow) ──
-  // Standalone parallel implementation. Does NOT share code with the
-  // trader-side createWorldCardSession above — by design, so the existing
-  // WorldCard flow stays literally untouched.
-
-  async createGuestWorldCardSession(data: any) {
+  async createXoalaCheckoutSession(data: any) {
     const {
       slug,
       challengeId,
-      // Alternative resolution from CheckoutPage's URL params:
-      // /checkout?type=two_phase&size=25K → resolve to a Challenge by these.
       accountSize,
       challengeType,
+      platform,
+      tradingPlatform,
+      trading_platform,
+      brokerPlatform,
       firstName,
       lastName,
       email,
@@ -633,7 +421,6 @@ export class PaymentsService {
       country,
       address,
       city,
-      couponCode,
       brandSlug,
       linkSlug,
     } = data || {};
@@ -643,25 +430,17 @@ export class PaymentsService {
         'Missing required field: slug, challengeId, or accountSize',
       );
     }
-    if (!email || typeof email !== 'string') {
-      throw new BadRequestException('Missing required field: email');
-    }
-    if (!firstName || !lastName) {
-      throw new BadRequestException('Missing required name fields');
-    }
 
-    const normalizedEmail = email.trim().toLowerCase();
-
+    // Resolve the challenge from id → slug → DirectPurchaseLink slug →
+    // accountSize+challengeType, capturing brand attribution along the way.
     let challenge: any = null;
     let brandLink: any = null;
+
     if (challengeId && typeof challengeId === 'string') {
       challenge = await this.prisma.challenge.findUnique({ where: { id: challengeId } });
     }
     if (!challenge && slug && typeof slug === 'string') {
       challenge = await (this.prisma.challenge as any).findUnique({ where: { slug } });
-
-      // Slug may be a DirectPurchaseLink slug — resolve through the link to
-      // capture brand attribution for this checkout.
       if (!challenge) {
         brandLink = await (this.prisma as any).directPurchaseLink.findUnique({
           where: { slug },
@@ -672,8 +451,6 @@ export class PaymentsService {
         }
       }
     }
-
-    // Fallback: resolve from accountSize + challengeType (the /checkout URL case).
     if (!challenge && accountSize) {
       const sizeNumber = this.parseAccountSize(accountSize);
       const typeMap: Record<string, string> = {
@@ -693,17 +470,11 @@ export class PaymentsService {
         challengeType ||
         'two_phase';
       challenge = await this.prisma.challenge.findFirst({
-        where: {
-          accountSize: sizeNumber,
-          challengeType: mappedType,
-          isActive: true,
-        },
+        where: { accountSize: sizeNumber, challengeType: mappedType, isActive: true },
       });
     }
 
-    // Explicit brand attribution from /checkout?brand=...&link=... query params,
-    // forwarded by the public CheckoutPage so the brand earns commission even
-    // when the customer arrived via /checkout rather than /pay/<slug>.
+    // Explicit brand attribution from /checkout?brand=...&link=... params.
     if (!brandLink && linkSlug && typeof linkSlug === 'string') {
       brandLink = await (this.prisma as any).directPurchaseLink.findUnique({
         where: { slug: linkSlug },
@@ -722,134 +493,103 @@ export class PaymentsService {
       throw new NotFoundException('Challenge not found');
     }
 
-    let user = await this.prisma.user.findUnique({ where: { email: normalizedEmail } });
+    const user = await this.resolveOrCreateGuestUser({
+      email,
+      firstName,
+      lastName,
+      phone,
+      country,
+      address,
+      city,
+    });
 
-    if (!user) {
-      const randomPassword = generatePassword(20);
-      const hashed = await bcrypt.hash(randomPassword, 10);
-      user = await this.prisma.user.create({
-        data: {
-          email: normalizedEmail,
-          password: hashed,
-          passwordSet: false,
-          profile: {
-            create: {
-              firstName,
-              lastName,
-              phone: phone || null,
-              country: country || null,
-              address: address || null,
-              city: city || null,
-            },
-          },
-        } as any,
-      });
-      this.logger.log(`[GuestCheckout] Created user ${user.id} (${normalizedEmail})`);
-    } else {
-      // Fill in any missing profile fields, but never overwrite existing values.
-      const existingProfile = await this.prisma.userProfile.findUnique({ where: { userId: user.id } });
-      if (!existingProfile) {
-        await this.prisma.userProfile.create({
-          data: {
-            userId: user.id,
-            firstName,
-            lastName,
-            phone: phone || null,
-            country: country || null,
-            address: address || null,
-            city: city || null,
-          } as any,
-        });
-      } else {
-        await this.prisma.userProfile.update({
-          where: { userId: user.id },
-          data: {
-            firstName: existingProfile.firstName ?? firstName,
-            lastName: existingProfile.lastName ?? lastName,
-            phone: existingProfile.phone ?? (phone || null),
-            country: existingProfile.country ?? (country || null),
-            address: existingProfile.address ?? (address || null),
-            city: existingProfile.city ?? (city || null),
-          } as any,
-        });
-      }
-    }
+    const amountCents = challenge.price * 100;
 
-    const normalizedPlatform = this.normalizePlatform(challenge.platform);
+    const selectedPlatform =
+      platform ||
+      tradingPlatform ||
+      trading_platform ||
+      brokerPlatform ||
+      challenge.platform;
 
-    const { finalPrice, discountAmount, appliedCoupon } = await this.calculatePriceWithCoupon(challenge.price, couponCode);
+    const normalizedPlatform = this.normalizePlatform(selectedPlatform);
 
-    const amountCents = finalPrice * 100;
-    const originalAmountCents = challenge.price * 100;
-    const discountAmountCents = discountAmount * 100;
+    const orderNumber = `XOALA-${Date.now()}-${Math.random()
+      .toString(36)
+      .substring(2, 8)}`;
 
-    const orderNumber = `WC-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-
-    const merchantKey = this.configService.get<string>('WORLDCARD_MERCHANT_KEY');
-    const merchantPass = this.configService.get<string>('WORLDCARD_MERCHANT_PASS');
-    const notificationUrl = this.configService.get<string>('WORLDCARD_NOTIFICATION_URL');
-    const baseUrl = this.configService.get<string>('WORLDCARD_BASE_URL');
+    // Xoala "Standard Checkout" (POST {base}/transaction/Checkout).
+    // Account-specific values come from the Xoala merchant dashboard.
+    const baseUrl = this.configService.get<string>('XOALA_BASE_URL');
+    const memberId = this.configService.get<string>('XOALA_MEMBER_ID');
+    const secureKey = this.configService.get<string>('XOALA_SECURE_KEY');
+    const totype = this.configService.get<string>('XOALA_TOTYPE');
     const frontendUrl = this.configService.get<string>('APP_FRONTEND_URL');
+    const terminalId = this.configService.get<string>('XOALA_TERMINAL_ID');
+    const paymentMode = this.configService.get<string>('XOALA_PAYMENT_MODE');
+    const notificationUrl = this.configService.get<string>('XOALA_NOTIFICATION_URL');
 
-    if (!merchantKey || !merchantPass || !notificationUrl || !baseUrl || !frontendUrl) {
-      this.logger.error('Missing WorldCard env vars (guest)', {
-        merchantKey: !!merchantKey,
-        merchantPass: !!merchantPass,
-        notificationUrl: !!notificationUrl,
+    if (!baseUrl || !memberId || !secureKey || !totype || !frontendUrl) {
+      this.logger.error('Missing Xoala env vars', {
         baseUrl: !!baseUrl,
+        memberId: !!memberId,
+        secureKey: !!secureKey,
+        totype: !!totype,
         frontendUrl: !!frontendUrl,
       });
-      throw new BadRequestException('WorldCard environment variables not configured');
+
+      throw new BadRequestException('Xoala environment variables not configured');
     }
 
-    const worldCardAmount = (amountCents / 100).toFixed(2);
+    // Standard Checkout uses a SINGLE return URL; Xoala appends the status.
+    // The return page polls payment status (truth = the server-to-server
+    // notification webhook) and renders succeeded/failed/pending itself.
+    const merchantRedirectUrl = `${frontendUrl}/pay/success?reference=${orderNumber}`;
     const orderCurrency = (challenge.currency || 'USD').toUpperCase();
+    // amount format per spec: [0-9]{1,8}\.[0-9]{2}
+    const amount = (amountCents / 100).toFixed(2);
     const orderDescription = `${challenge.name} ${challenge.accountSize} Account`;
 
-    const sessionHash = this.generateSessionHash(
+    // Request checksum (per Standard Checkout spec):
+    //   MD5( memberId | totype | amount | merchantTransactionId | merchantRedirectUrl | secureKey )
+    // Values are joined raw with '|' (the browser url-encodes form fields in
+    // transit; Xoala validates the checksum against the decoded values).
+    const checksumSource = [
+      memberId,
+      totype,
+      amount,
       orderNumber,
-      worldCardAmount,
-      orderCurrency,
+      merchantRedirectUrl,
+      secureKey,
+    ].join('|');
+    const checksum = crypto
+      .createHash('md5')
+      .update(checksumSource)
+      .digest('hex');
+
+    // Form fields posted to {base}/transaction/Checkout by the browser.
+    const fields: Record<string, string> = {
+      memberId,
+      totype,
+      amount,
+      currency: orderCurrency,
+      merchantTransactionId: orderNumber,
+      merchantRedirectUrl,
       orderDescription,
-      merchantPass,
-    );
-
-    const successUrl = `${frontendUrl}/pay/success?reference=${orderNumber}`;
-    const cancelUrl = `${frontendUrl}/pay/fail?reference=${orderNumber}`;
-    const errorUrl = `${frontendUrl}/pay/fail?reference=${orderNumber}`;
-
-    const customer: Record<string, any> = { email: user.email };
-    if (firstName) customer.first_name = firstName;
-    if (lastName) customer.last_name = lastName;
-    if (phone) customer.phone = phone;
-    if (country) customer.country = country;
-    if (address) customer.address = address;
-    if (city) customer.city = city;
-
-    const sessionPayload = {
-      merchant_key: merchantKey,
-      operation: 'purchase',
-      methods: ['card'],
-      hash: sessionHash,
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      error_url: errorUrl,
-      notification_url: notificationUrl,
-      order: {
-        number: orderNumber,
-        amount: worldCardAmount,
-        currency: orderCurrency,
-        description: orderDescription,
-      },
-      customer,
-      custom_data: {
-        userId: user.id,
-        challengeId: challenge.id,
-        platform: normalizedPlatform,
-      },
+      checksum,
     };
+    if (notificationUrl) fields.notificationUrl = notificationUrl;
+    if (terminalId) fields.terminalid = terminalId;
+    if (paymentMode) fields.paymentMode = paymentMode;
+    if (user.email) fields.email = user.email;
+    if (firstName) fields.firstName = firstName;
+    if (lastName) fields.lastName = lastName;
+    if (country) fields.country = country;
+    if (city) fields.city = city;
 
-    this.logger.log(`[WorldCard GuestSession] Building request for user=${user.id}, challenge=${challenge.id}, currency=${orderCurrency}`);
+    this.logger.log(
+      `[Xoala Checkout] Building Standard Checkout for user=${user.id}, challenge=${challenge.id}, ref=${orderNumber}, amount=${amount} ${orderCurrency}`,
+    );
 
     const brandIdAttribution: string | null = brandLink?.brandId ?? null;
     const brandCommissionRate: number = brandLink?.brand?.commissionRate ?? 0;
@@ -866,11 +606,11 @@ export class PaymentsService {
           : {}),
         brandCommission: brandCommissionCents,
         amount: amountCents,
-        originalAmount: originalAmountCents,
-        discountAmount: discountAmountCents,
-        couponCode: appliedCoupon?.code || null,
+        originalAmount: amountCents,
+        discountAmount: 0,
+        couponCode: null,
         currency: orderCurrency,
-        provider: 'worldcard',
+        provider: 'xoala',
         status: 'pending',
         reference: orderNumber,
         metadata: {
@@ -879,9 +619,6 @@ export class PaymentsService {
           challengeName: challenge.name,
           accountSize: challenge.accountSize,
           challengeType: challenge.challengeType,
-          couponCode: appliedCoupon?.code || null,
-          discountType: appliedCoupon?.discountType || null,
-          discountPct: appliedCoupon?.discountPct || null,
           brandLinkId: brandLink?.id || null,
           brandLinkSlug: brandLink?.slug || null,
           isGuestCheckout: true,
@@ -894,63 +631,30 @@ export class PaymentsService {
             city: city || null,
           },
         },
-        sessionPayload: sessionPayload,
+        sessionPayload: fields,
       },
     });
 
-    this.logger.log(`[WorldCard GuestSession] Payment record created: id=${payment.id}, ref=${orderNumber}`);
+    this.logger.log(
+      `[Xoala Checkout] Payment record created: id=${payment.id}, ref=${orderNumber}`,
+    );
 
-    const apiUrl = `${baseUrl}/api/v1/session`;
+    // Standard Checkout is POST-only and the response IS the hosted payment
+    // page (HTML), so the customer's browser must POST the form directly.
+    // We return the action URL + fields; the frontend auto-submits a form.
+    const checkoutUrl = `${baseUrl}/transaction/Checkout`;
 
-    let sessionResponse: any;
-    try {
-      const res = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(sessionPayload),
-      });
-
-      const rawText = await res.text();
-      this.logger.log(`[WorldCard GuestSession] Response: ${res.status} ${rawText}`);
-
-      try {
-        sessionResponse = JSON.parse(rawText);
-      } catch {
-        sessionResponse = { raw: rawText };
-      }
-
-      if (!res.ok) {
-        this.logger.error(`[WorldCard GuestSession] API error ${res.status}: ${JSON.stringify(sessionResponse)}`);
-        throw new BadRequestException(`WorldCard session failed (${res.status}): ${sessionResponse?.message || rawText}`);
-      }
-    } catch (err: any) {
-      if (err instanceof BadRequestException) throw err;
-      this.logger.error(`[WorldCard GuestSession] Request threw: ${err?.message}`, err?.stack);
-      throw new BadRequestException('Failed to connect to WorldCard payment gateway');
-    }
-
-    await (this.prisma.payment as any).update({
-      where: { id: payment.id },
-      data: {
-        sessionResponse: sessionResponse,
-        providerSessionId: sessionResponse?.id || sessionResponse?.session_id || null,
-      },
-    });
-
-    const redirectUrl = sessionResponse?.redirect_url || sessionResponse?.url || null;
-
-    if (!redirectUrl) {
-      this.logger.error(`[WorldCard GuestSession] No redirect_url in response: ${JSON.stringify(sessionResponse)}`);
-      throw new BadRequestException('WorldCard did not return a checkout URL');
-    }
-
-    this.logger.log(`[WorldCard GuestSession] Success: ref=${orderNumber}, redirectUrl=${redirectUrl}`);
+    this.logger.log(
+      `[Xoala Checkout] Session ready: ref=${orderNumber}, checkoutUrl=${checkoutUrl}`,
+    );
 
     return {
-      message: 'WorldCard checkout session created',
+      message: 'Xoala checkout session created',
       reference: orderNumber,
       paymentId: payment.id,
-      redirectUrl,
+      checkoutUrl,
+      method: 'POST',
+      fields,
     };
   }
 

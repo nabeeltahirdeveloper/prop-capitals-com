@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { PaymentLogos } from '@/components/PaymentLogos';
 import { getChallengeBySlug } from '@/api/challenges';
-import { createGuestWorldCardSession } from '@/api/payments';
+import { createXoalaCardSession, submitXoalaCheckout } from '@/api/payments';
 
 // Trader-side checkout destination. Reached when the user clicks
 // "Continue to Payment" inside /traderdashboard/checkout. The route param
@@ -89,11 +89,11 @@ const PayCheckout = () => {
   });
 
   const sessionMutation = useMutation({
-    mutationFn: createGuestWorldCardSession,
+    mutationFn: createXoalaCardSession,
     onSuccess: (data) => {
-      if (data?.redirectUrl) {
+      if (data?.checkoutUrl && data?.fields) {
         toast.success('Redirecting to secure payment...');
-        window.location.href = data.redirectUrl;
+        submitXoalaCheckout(data);
       } else {
         toast.error('Could not start checkout. Please try again.');
       }
