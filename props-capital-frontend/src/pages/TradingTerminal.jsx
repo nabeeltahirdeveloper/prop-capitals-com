@@ -95,7 +95,6 @@ const devWarn = (...args) => {
     console.warn(...args);
   }
 };
-// const [tradeHistory, setTradeHistory] = useState([]);
 
 
 
@@ -168,21 +167,21 @@ export default function TradingTerminal() {
   //   spread: 1.5,
   //   change: 0.05,
   // });
-  
-const {
-        selectedSymbol,
-        setSelectedSymbol,
-        selectedTimeframe,
-        setSelectedTimeframe,
-        symbols,
-        symbolsLoading,
-        accountSummary,
-        orders,
-        currentSymbolData,
-        chartType,
-        setChartType,
-        theme
-    } = useTrading()
+
+  const {
+    selectedSymbol,
+    setSelectedSymbol,
+    selectedTimeframe,
+    setSelectedTimeframe,
+    symbols,
+    symbolsLoading,
+    accountSummary,
+    orders,
+    currentSymbolData,
+    chartType,
+    setChartType,
+    theme
+  } = useTrading()
 
 
 
@@ -1138,16 +1137,16 @@ const {
             // Backend tracks minEquityToday for daily drawdown (resets at midnight, monotonic during day)
             profitPercent:
               metrics.profitPercent !== null &&
-              metrics.profitPercent !== undefined &&
-              Number.isFinite(metrics.profitPercent)
+                metrics.profitPercent !== undefined &&
+                Number.isFinite(metrics.profitPercent)
                 ? metrics.profitPercent
                 : prev.profitPercent ?? 0,
             // ✅ profitForTarget MUST come from backend (monotonic, uses maxEquityToDate)
             // Frontend was calculating this incorrectly from current balance
             profitForTarget:
               metrics.profitPercent !== null &&
-              metrics.profitPercent !== undefined &&
-              Number.isFinite(metrics.profitPercent)
+                metrics.profitPercent !== undefined &&
+                Number.isFinite(metrics.profitPercent)
                 ? metrics.profitPercent
                 : prev.profitForTarget ?? 0,
             overallDrawdown:
@@ -2294,22 +2293,22 @@ const {
                   // Only update if values are provided and valid
                   ...(response.equity !== undefined &&
                     Number.isFinite(response.equity) && {
-                      equity: response.equity,
-                    }),
+                    equity: response.equity,
+                  }),
                   ...(response.dailyDrawdownPercent !== undefined &&
                     Number.isFinite(response.dailyDrawdownPercent) && {
-                      dailyDrawdown: response.dailyDrawdownPercent,
-                    }),
+                    dailyDrawdown: response.dailyDrawdownPercent,
+                  }),
                   ...(response.overallDrawdownPercent !== undefined &&
                     Number.isFinite(response.overallDrawdownPercent) && {
-                      overallDrawdown: response.overallDrawdownPercent,
-                    }),
+                    overallDrawdown: response.overallDrawdownPercent,
+                  }),
                   ...(response.profitPercent !== undefined &&
                     Number.isFinite(response.profitPercent) && {
-                      profitPercent: response.profitPercent,
-                      // ✅ profitForTarget = backend profitPercent (monotonic, from maxEquityToDate)
-                      profitForTarget: response.profitPercent,
-                    }),
+                    profitPercent: response.profitPercent,
+                    // ✅ profitForTarget = backend profitPercent (monotonic, from maxEquityToDate)
+                    profitForTarget: response.profitPercent,
+                  }),
                 }));
               }
 
@@ -4264,21 +4263,21 @@ const {
             </h4>
             <div className="h-[380px] min-w-0">
               <TopBar
-                    selectedSymbol={selectedSymbol}
-                    selectedTimeframe={selectedTimeframe}
-                    onTimeframeChange={setSelectedTimeframe}
-                    chartType={chartType}
-                    onChartTypeChange={setChartType}
-                    // onNewOrder={handleNewOrder}
-                    // onZoomIn={handleZoomIn}
-                    // onZoomOut={handleZoomOut}
-                    // onDownloadChartPNG={handleDownloadChartPNG}
-                    // onToggleFullscreen={handleToggleFullscreen}
-                    // marketWatchOpen={showMarketWatch}
-                    // onToggleMarketWatch={() => setShowMarketWatch(prev => !prev)}
-                    // onToggleBuySell={handleToggleBuySell}
-                    // buySellPanelOpen={showBuySellPanel}
-                />
+                selectedSymbol={selectedSymbol}
+                selectedTimeframe={selectedTimeframe}
+                onTimeframeChange={setSelectedTimeframe}
+                chartType={chartType}
+                onChartTypeChange={setChartType}
+              // onNewOrder={handleNewOrder}
+              // onZoomIn={handleZoomIn}
+              // onZoomOut={handleZoomOut}
+              // onDownloadChartPNG={handleDownloadChartPNG}
+              // onToggleFullscreen={handleToggleFullscreen}
+              // marketWatchOpen={showMarketWatch}
+              // onToggleMarketWatch={() => setShowMarketWatch(prev => !prev)}
+              // onToggleBuySell={handleToggleBuySell}
+              // buySellPanelOpen={showBuySellPanel}
+              />
               <TradingChart
                 key={`chart-mobile-${selectedSymbol?.symbol}`}
                 symbol={enrichedSelectedSymbol}
@@ -4554,21 +4553,21 @@ const {
               className={`${sidebarCollapsed ? "col-span-11" : "col-span-12 lg:col-span-7"} transition-all flex flex-col h-[450px] min-w-0`}
             >
               <TopBar
-                   selectedSymbol={selectedSymbol}
-                   selectedTimeframe={selectedTimeframe}
-                   onTimeframeChange={setSelectedTimeframe}
-                   chartType={chartType}
-                   onChartTypeChange={setChartType}
-                   // onNewOrder={handleNewOrder}
-                   // onZoomIn={handleZoomIn}
-                   // onZoomOut={handleZoomOut}
-                   // onDownloadChartPNG={handleDownloadChartPNG}
-                   // onToggleFullscreen={handleToggleFullscreen}
-                   // marketWatchOpen={showMarketWatch}
-                   // onToggleMarketWatch={() => setShowMarketWatch(prev => !prev)}
-                   // onToggleBuySell={handleToggleBuySell}
-                   // buySellPanelOpen={showBuySellPanel}
-               />
+                selectedSymbol={selectedSymbol}
+                selectedTimeframe={selectedTimeframe}
+                onTimeframeChange={setSelectedTimeframe}
+                chartType={chartType}
+                onChartTypeChange={setChartType}
+              // onNewOrder={handleNewOrder}
+              // onZoomIn={handleZoomIn}
+              // onZoomOut={handleZoomOut}
+              // onDownloadChartPNG={handleDownloadChartPNG}
+              // onToggleFullscreen={handleToggleFullscreen}
+              // marketWatchOpen={showMarketWatch}
+              // onToggleMarketWatch={() => setShowMarketWatch(prev => !prev)}
+              // onToggleBuySell={handleToggleBuySell}
+              // buySellPanelOpen={showBuySellPanel}
+              />
               <TradingChart
                 ref={chartAreaRef}
                 symbol={enrichedSelectedSymbol}
