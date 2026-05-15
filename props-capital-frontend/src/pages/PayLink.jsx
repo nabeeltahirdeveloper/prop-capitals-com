@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { PaymentLogos } from '@/components/PaymentLogos';
 import { getChallengeBySlug } from '@/api/challenges';
-import { createGuestWorldCardSession } from '@/api/payments';
+import { createXoalaCardSession, submitXoalaCheckout } from '@/api/payments';
 import { readBrandAttribution } from '@/pages/CheckoutPage';
 
 const COUNTRIES = [
@@ -81,11 +81,11 @@ const PayLink = () => {
   });
 
   const sessionMutation = useMutation({
-    mutationFn: createGuestWorldCardSession,
+    mutationFn: createXoalaCardSession,
     onSuccess: (data) => {
-      if (data?.redirectUrl) {
+      if (data?.checkoutUrl && data?.fields) {
         toast.success('Redirecting to secure payment...');
-        window.location.href = data.redirectUrl;
+        submitXoalaCheckout(data);
       } else {
         toast.error('Could not start checkout. Please try again.');
       }
@@ -126,8 +126,7 @@ const PayLink = () => {
       // Always pass the canonical Challenge id that we resolved from the
       // by-slug fetch — the URL param can be either a real slug or a raw
       // Challenge id (the trader checkout navigates with the id), and the
-      // backend's createGuestWorldCardSession only does an exact slug lookup
-      // unless given a challengeId.
+      // backend only does an exact slug lookup unless given a challengeId.
       challengeId: challenge.id,
       slug,
       firstName: form.firstName.trim(),

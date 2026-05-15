@@ -16,24 +16,19 @@ export class PaymentsController {
         return this.paymentsService.purchaseChallenge(body);
     }
 
-    // WorldCard: create hosted checkout session
-    @Post('worldcard/session')
-    async worldCardSession(@Body() body: any) {
-        return this.paymentsService.createWorldCardSession(body);
+    // Xoala: create hosted checkout session
+    @Post('xoala/session')
+    async xoalaSession(@Body() body: any) {
+        return this.paymentsService.createXoalaCheckoutSession(body);
     }
 
-    // WorldCard: create hosted checkout session for guest (public payment link)
-    @Post('worldcard/guest-session')
-    async worldCardGuestSession(@Body() body: any) {
-        return this.paymentsService.createGuestWorldCardSession(body);
-    }
-
-    // WorldCard: callback from payment gateway
-    @Post('worldcard/callback')
+    // Xoala: Standard Checkout notification/callback
+    @Post('xoala/callback')
     @HttpCode(200)
-    async worldCardCallback(@Body() body: any) {
+    async xoalaCallback(@Body() body: any) {
         return this.worldCardWebhookService.handleCallback(body);
     }
+
 
     // Payment status polling (for frontend)
     @Get('status/:reference')

@@ -4,7 +4,7 @@ import { ArrowRight, ArrowLeft, Check, Shield, Clock, Star, CreditCard, User, Ma
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { PaymentLogos } from '@/components/PaymentLogos';
-import { createGuestWorldCardSession } from '@/api/payments';
+import { createXoalaCardSession, submitXoalaCheckout } from '@/api/payments';
 import { apiPost } from '@/lib/api';
 
 /**
@@ -153,9 +153,9 @@ const CheckoutPage = () => {
       const attribution = readBrandAttribution();
       // Send the type/size from the URL — backend will resolve to a real
       // Challenge and create a Payment with brandId set when attribution is
-      // present. The backend returns a redirect URL to the WorldCard hosted
-      // checkout for the actual card entry.
-      const res = await createGuestWorldCardSession({
+      // present. The backend returns the Xoala checkout URL + form fields;
+      // the browser POSTs them to land on the hosted card-entry page.
+      const res = await createXoalaCardSession({
         // Backend resolves challenge from accountSize + challengeType when no
         // slug/id is provided. Schema names ("two_phase") are accepted.
         accountSize,
@@ -169,11 +169,11 @@ const CheckoutPage = () => {
         ...(attribution?.brandSlug ? { brandSlug: attribution.brandSlug } : {}),
         ...(attribution?.linkSlug ? { linkSlug: attribution.linkSlug } : {}),
       });
-      if (res?.redirectUrl) {
+      if (res?.checkoutUrl && res?.fields) {
         // Brand attribution is preserved server-side (Payment.brandId), so we
         // can clear the local copy now that it has been captured on the order.
         try { localStorage.removeItem('pc_brand_attribution'); } catch (_e) {}
-        window.location.href = res.redirectUrl;
+        submitXoalaCheckout(res);
         return;
       }
       alert('Could not start checkout. Please try again.');
