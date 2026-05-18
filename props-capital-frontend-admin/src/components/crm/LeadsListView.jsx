@@ -70,10 +70,10 @@ export default function LeadsListView({ leads, onLeadClick, getStatusColor, getP
                             </td>
                             <td className="py-3 px-4">
                                 <div className="flex items-center gap-2">
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-green-500 hover:text-green-600 hover:bg-green-500/10" onClick={(e) => { e.stopPropagation(); }}>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-green-500 hover:text-green-600 hover:bg-green-500/10" title={t('crm.leads.call', { defaultValue: 'Call' })} aria-label={t('crm.leads.call', { defaultValue: 'Call' })} onClick={(e) => { e.stopPropagation(); }}>
                                         <Phone className="w-4 h-4" />
                                     </Button>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:text-primary/80 hover:bg-primary/10" onClick={(e) => { e.stopPropagation(); }}>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:text-primary/80 hover:bg-primary/10" title={t('crm.leads.message', { defaultValue: 'Message' })} aria-label={t('crm.leads.message', { defaultValue: 'Message' })} onClick={(e) => { e.stopPropagation(); }}>
                                         <MessageCircle className="w-4 h-4" />
                                     </Button>
                                 </div>

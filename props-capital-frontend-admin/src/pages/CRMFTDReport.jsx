@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   DollarSign,
   TrendingUp,
@@ -8,7 +8,6 @@ import {
   ChevronUp,
   Globe,
   User,
-  ArrowRight,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,6 +23,7 @@ import { apiGet } from "@/lib/api";
 import { format } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslation } from "react-i18next";
+import DateRangeFilter from "@/components/shared/DateRangeFilter";
 
 export default function CRMFTDReport() {
   const { t } = useTranslation();
@@ -42,8 +42,6 @@ export default function CRMFTDReport() {
   const [toDate, setToDate] = useState("");
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [agents, setAgents] = useState([]);
-  const fromDateRef = useRef(null);
-  const toDateRef = useRef(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -78,8 +76,12 @@ export default function CRMFTDReport() {
     } catch (error) {
       console.error("Error fetching FTD data:", error);
       toast({
-        title: t("common.error"),
-        description: error?.message || t("crm.ftdReport.loadError"),
+        title: t("common.error", { defaultValue: "Error" }),
+        description:
+          error?.message ||
+          t("crm.ftdReport.loadError", {
+            defaultValue: "Failed to load FTD report data",
+          }),
         variant: "destructive",
       });
     } finally {
@@ -114,20 +116,20 @@ export default function CRMFTDReport() {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return t("crm.ftdReport.na");
+    if (!dateString) return t("crm.ftdReport.na", { defaultValue: "N/A" });
     try {
       return format(new Date(dateString), "MMM dd, yyyy");
     } catch {
-      return t("crm.ftdReport.na");
+      return t("crm.ftdReport.na", { defaultValue: "N/A" });
     }
   };
 
   const formatTime = (dateString) => {
-    if (!dateString) return t("crm.ftdReport.na");
+    if (!dateString) return t("crm.ftdReport.na", { defaultValue: "N/A" });
     try {
       return format(new Date(dateString), "MMM dd, yyyy HH:mm");
     } catch {
-      return t("crm.ftdReport.na");
+      return t("crm.ftdReport.na", { defaultValue: "N/A" });
     }
   };
 
@@ -137,10 +139,12 @@ export default function CRMFTDReport() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-foreground tracking-tight">
-            {t("crm.ftdReport.title")}
+            {t("crm.ftdReport.title", { defaultValue: "Orders Report" })}
           </h1>
           <p className="text-muted-foreground mt-1">
-            {t("crm.ftdReport.subtitle")}
+            {t("crm.ftdReport.subtitle", {
+              defaultValue: "Orders tracking from converted leads",
+            })}
           </p>
         </div>
       </div>
@@ -150,7 +154,9 @@ export default function CRMFTDReport() {
         <Card className="bg-card border-border p-6 flex items-center justify-between hover:border-amber-300 transition-all duration-300">
           <div>
             <p className="text-sm font-medium text-muted-foreground">
-              {t("crm.ftdReport.totalDeposits")}
+              {t("crm.ftdReport.totalDeposits", {
+                defaultValue: "Total Orders",
+              })}
             </p>
             <h3 className="text-2xl font-bold text-foreground mt-1">
               {formatCurrency(stats.totalDeposits)}
@@ -164,7 +170,9 @@ export default function CRMFTDReport() {
         <Card className="bg-card border-border p-6 flex items-center justify-between hover:border-amber-300 transition-all duration-300">
           <div>
             <p className="text-sm font-medium text-muted-foreground">
-              {t("crm.ftdReport.avgFtdAmount")}
+              {t("crm.ftdReport.avgFtdAmount", {
+                defaultValue: "Avg Order Amount",
+              })}
             </p>
             <h3 className="text-2xl font-bold text-foreground mt-1">
               {formatCurrency(stats.avgFtdAmount)}
@@ -178,7 +186,9 @@ export default function CRMFTDReport() {
         <Card className="bg-card border-border p-6 flex items-center justify-between hover:border-amber-300 transition-all duration-300">
           <div>
             <p className="text-sm font-medium text-muted-foreground">
-              {t("crm.ftdReport.activeAgents")}
+              {t("crm.ftdReport.activeAgents", {
+                defaultValue: "Active Agents",
+              })}
             </p>
             <h3 className="text-2xl font-bold text-foreground mt-1">
               {stats.activeAgents}
@@ -195,7 +205,9 @@ export default function CRMFTDReport() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder={t("crm.ftdReport.searchPlaceholder")}
+            placeholder={t("crm.ftdReport.searchPlaceholder", {
+              defaultValue: "Search by name, email, or country...",
+            })}
             className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -204,10 +216,16 @@ export default function CRMFTDReport() {
 
         <Select value={selectedAgent} onValueChange={setSelectedAgent}>
           <SelectTrigger className="w-full lg:w-[200px] bg-muted border-border text-foreground">
-            <SelectValue placeholder={t("crm.ftdReport.allAgents")} />
+            <SelectValue
+              placeholder={t("crm.ftdReport.allAgents", {
+                defaultValue: "All Agents",
+              })}
+            />
           </SelectTrigger>
           <SelectContent className="bg-card border-border text-foreground">
-            <SelectItem value="all">{t("crm.ftdReport.allAgents")}</SelectItem>
+            <SelectItem value="all">
+              {t("crm.ftdReport.allAgents", { defaultValue: "All Agents" })}
+            </SelectItem>
             {agents.map((agent) => (
               <SelectItem key={agent} value={agent}>
                 {agent}
@@ -216,42 +234,23 @@ export default function CRMFTDReport() {
           </SelectContent>
         </Select>
 
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Calendar
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground hover:text-foreground cursor-pointer z-10"
-              onClick={() => fromDateRef.current?.showPicker()}
-            />
-            <Input
-              ref={fromDateRef}
-              type="date"
-              className="pl-10 bg-muted border-border text-foreground text-xs h-9 w-40 no-calendar-icon"
-              value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-            />
-          </div>
-          <ArrowRight className="w-4 h-4 text-muted-foreground" />
-          <div className="relative">
-            <Calendar
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground hover:text-foreground cursor-pointer z-10"
-              onClick={() => toDateRef.current?.showPicker()}
-            />
-            <Input
-              ref={toDateRef}
-              type="date"
-              className="pl-10 bg-muted border-border text-foreground text-xs h-9 w-40 no-calendar-icon"
-              value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-            />
-          </div>
-        </div>
+        <DateRangeFilter
+          fromDate={fromDate}
+          toDate={toDate}
+          onChange={(f, to) => {
+            setFromDate(f);
+            setToDate(to);
+          }}
+        />
       </div>
 
       {/* Main Table Card */}
       <Card className="bg-card border-border overflow-hidden">
         <div className="p-6 border-b border-border">
           <h2 className="text-lg font-semibold text-foreground">
-            {t("crm.ftdReport.tableTitle")}
+            {t("crm.ftdReport.tableTitle", {
+              defaultValue: "First Time Deposits",
+            })}
           </h2>
         </div>
 
@@ -260,25 +259,29 @@ export default function CRMFTDReport() {
             <thead>
               <tr className="text-muted-foreground border-b border-border">
                 <th className="px-6 py-4 font-medium text-xs uppercase tracking-wider">
-                  {t("crm.ftdReport.leadName")}
+                  {t("crm.ftdReport.leadName", { defaultValue: "Lead Name" })}
                 </th>
                 <th className="px-6 py-4 font-medium text-xs uppercase tracking-wider">
-                  {t("crm.ftdReport.email")}
+                  {t("crm.ftdReport.email", { defaultValue: "Email" })}
                 </th>
                 <th className="px-6 py-4 font-medium text-xs uppercase tracking-wider">
-                  {t("crm.ftdReport.phone")}
+                  {t("crm.ftdReport.phone", { defaultValue: "Phone" })}
                 </th>
                 <th className="px-6 py-4 font-medium text-xs uppercase tracking-wider">
-                  {t("crm.ftdReport.country")}
+                  {t("crm.ftdReport.country", { defaultValue: "Country" })}
                 </th>
                 <th className="px-6 py-4 font-medium text-xs uppercase tracking-wider">
-                  {t("crm.ftdReport.depositAmount")}
+                  {t("crm.ftdReport.depositAmount", {
+                    defaultValue: "Deposit Amount",
+                  })}
                 </th>
                 <th className="px-6 py-4 font-medium text-xs uppercase tracking-wider">
-                  {t("crm.ftdReport.convertedDate")}
+                  {t("crm.ftdReport.convertedDate", {
+                    defaultValue: "Converted Date",
+                  })}
                 </th>
                 <th className="px-6 py-4 font-medium text-xs uppercase tracking-wider">
-                  {t("crm.ftdReport.status")}
+                  {t("crm.ftdReport.status", { defaultValue: "Status" })}
                 </th>
                 <th className="px-6 py-4 w-10"></th>
               </tr>
@@ -290,7 +293,9 @@ export default function CRMFTDReport() {
                     colSpan="8"
                     className="px-6 py-12 text-center text-muted-foreground"
                   >
-                    {t("crm.ftdReport.loading")}
+                    {t("crm.ftdReport.loading", {
+                      defaultValue: "Loading FTD data...",
+                    })}
                   </td>
                 </tr>
               ) : leads.length === 0 ? (
@@ -299,7 +304,9 @@ export default function CRMFTDReport() {
                     colSpan="8"
                     className="px-6 py-12 text-center text-muted-foreground"
                   >
-                    {t("crm.ftdReport.noData")}
+                    {t("crm.ftdReport.noData", {
+                      defaultValue: "No first time deposits found.",
+                    })}
                   </td>
                 </tr>
               ) : (
@@ -318,12 +325,12 @@ export default function CRMFTDReport() {
                         {lead.email}
                       </td>
                       <td className="px-6 py-4 text-muted-foreground">
-                        {lead.phoneNumber || t("crm.ftdReport.na")}
+                        {lead.phoneNumber || t("crm.ftdReport.na", { defaultValue: "N/A" })}
                       </td>
                       <td className="px-6 py-4 text-muted-foreground">
                         <div className="flex items-center gap-2">
                           <Globe className="w-4 h-4 text-muted-foreground" />
-                          {lead.country || t("crm.ftdReport.na")}
+                          {lead.country || t("crm.ftdReport.na", { defaultValue: "N/A" })}
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -336,7 +343,9 @@ export default function CRMFTDReport() {
                       </td>
                       <td className="px-6 py-4">
                         <Badge className="bg-emerald-50 text-emerald-600 border-emerald-200">
-                          {t("crm.ftdReport.converted")}
+                          {t("crm.ftdReport.converted", {
+                            defaultValue: "Converted",
+                          })}
                         </Badge>
                       </td>
                       <td className="px-6 py-4">
@@ -353,56 +362,72 @@ export default function CRMFTDReport() {
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                             <div className="space-y-1">
                               <p className="text-xs text-muted-foreground uppercase font-semibold">
-                                {t("crm.ftdReport.agent")}
+                                {t("crm.ftdReport.agent", {
+                                  defaultValue: "Agent",
+                                })}
                               </p>
                               <p className="text-foreground font-medium">
                                 {lead.assignedAgent ||
-                                  t("crm.ftdReport.unassigned")}
+                                  t("crm.ftdReport.unassigned", {
+                                    defaultValue: "Unassigned",
+                                  })}
                               </p>
                             </div>
                             <div className="space-y-1">
                               <p className="text-xs text-muted-foreground uppercase font-semibold">
-                                {t("crm.ftdReport.paymentMethod")}
+                                {t("crm.ftdReport.paymentMethod", {
+                                  defaultValue: "Payment Method",
+                                })}
                               </p>
                               <p className="text-foreground font-medium">
-                                {lead.paymentMethod || t("crm.ftdReport.na")}
+                                {lead.paymentMethod || t("crm.ftdReport.na", { defaultValue: "N/A" })}
                               </p>
                             </div>
                             <div className="space-y-1">
                               <p className="text-xs text-muted-foreground uppercase font-semibold">
-                                {t("crm.ftdReport.paymentProvider")}
+                                {t("crm.ftdReport.paymentProvider", {
+                                  defaultValue: "Payment Provider",
+                                })}
                               </p>
                               <p className="text-foreground font-medium">
-                                {lead.paymentProvider || t("crm.ftdReport.na")}
+                                {lead.paymentProvider || t("crm.ftdReport.na", { defaultValue: "N/A" })}
                               </p>
                             </div>
                             <div className="space-y-1">
                               <p className="text-xs text-muted-foreground uppercase font-semibold">
-                                {t("crm.ftdReport.source")}
+                                {t("crm.ftdReport.source", {
+                                  defaultValue: "Source",
+                                })}
                               </p>
                               <p className="text-foreground font-medium">
-                                {lead.source || t("crm.ftdReport.na")}
+                                {lead.source || t("crm.ftdReport.na", { defaultValue: "N/A" })}
                               </p>
                             </div>
                             <div className="space-y-1">
                               <p className="text-xs text-muted-foreground uppercase font-semibold">
-                                {t("crm.ftdReport.affiliateId")}
+                                {t("crm.ftdReport.affiliateId", {
+                                  defaultValue: "Affiliate ID",
+                                })}
                               </p>
                               <p className="text-foreground font-medium">
-                                {lead.affiliateId || t("crm.ftdReport.na")}
+                                {lead.affiliateId || t("crm.ftdReport.na", { defaultValue: "N/A" })}
                               </p>
                             </div>
                             <div className="space-y-1">
                               <p className="text-xs text-muted-foreground uppercase font-semibold">
-                                {t("crm.ftdReport.funnelName")}
+                                {t("crm.ftdReport.funnelName", {
+                                  defaultValue: "Funnel Name",
+                                })}
                               </p>
                               <p className="text-foreground font-medium">
-                                {lead.funnelName || t("crm.ftdReport.na")}
+                                {lead.funnelName || t("crm.ftdReport.na", { defaultValue: "N/A" })}
                               </p>
                             </div>
                             <div className="space-y-1">
                               <p className="text-xs text-muted-foreground uppercase font-semibold">
-                                {t("crm.ftdReport.ftdTime")}
+                                {t("crm.ftdReport.ftdTime", {
+                                  defaultValue: "FTD Time",
+                                })}
                               </p>
                               <div className="flex items-center gap-2 text-foreground font-medium">
                                 <Calendar className="w-4 h-4 text-muted-foreground" />
@@ -411,10 +436,12 @@ export default function CRMFTDReport() {
                             </div>
                             <div className="space-y-1">
                               <p className="text-xs text-muted-foreground uppercase font-semibold">
-                                {t("crm.ftdReport.subParameters")}
+                                {t("crm.ftdReport.subParameters", {
+                                  defaultValue: "Sub Parameters",
+                                })}
                               </p>
                               <p className="text-foreground font-medium">
-                                {lead.subParameters || t("crm.ftdReport.na")}
+                                {lead.subParameters || t("crm.ftdReport.na", { defaultValue: "N/A" })}
                               </p>
                             </div>
                           </div>
@@ -430,7 +457,12 @@ export default function CRMFTDReport() {
 
         {!loading && leads.length > 0 && (
           <div className="p-4 border-t border-border flex items-center justify-between text-muted-foreground text-sm">
-            <p>{t("crm.ftdReport.showing", { count: leads.length })}</p>
+            <p>
+              {t("crm.ftdReport.showing", {
+                count: leads.length,
+                defaultValue: "Showing {{count}} First Time Deposits",
+              })}
+            </p>
           </div>
         )}
       </Card>
