@@ -645,7 +645,9 @@ export default function AdminFundedAccounts() {
                   <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground truncate">
                     {accountDetails.brokerLogin ||
                       accountDetails.id ||
-                      "Account"}
+                      t("admin.fundedAccounts.accountFallback", {
+                        defaultValue: "Account",
+                      })}
                   </h3>
                   <p className="text-muted-foreground text-xs sm:text-sm break-all">
                     {accountDetails.user?.email || "N/A"}
@@ -1023,7 +1025,9 @@ export default function AdminFundedAccounts() {
               </p>
               <p className="text-muted-foreground text-xs sm:text-sm">
                 {accountDetailsError.message ||
-                  "Failed to load account details"}
+                  t("admin.fundedAccounts.errorDescription", {
+                    defaultValue: "Failed to load account details",
+                  })}
               </p>
             </div>
           ) : (

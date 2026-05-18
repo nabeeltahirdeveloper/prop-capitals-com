@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect, useCallback } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 const formatDateForAPI = (dateStr, isEndOfDay = false) => {
   if (!dateStr) return '';
@@ -16,6 +17,7 @@ const formatDateForAPI = (dateStr, isEndOfDay = false) => {
 };
 
 export default function BrandsUnpaidTransactionsSection() {
+  const { t } = useTranslation();
   // Load saved date filters from localStorage on mount
   const loadSavedDateFilters = () => {
     try {
@@ -99,9 +101,9 @@ export default function BrandsUnpaidTransactionsSection() {
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-6 gap-4">
         <div>
-          <h2 className="text-3xl font-bold gradient-text mb-2">Brands For Payouts</h2>
+          <h2 className="text-3xl font-bold gradient-text mb-2">{t("adminConsole.brandsUnpaid.title", { defaultValue: "Brands For Payouts" })}</h2>
           <p className="text-sm text-gray-400">
-            Monitor brands with unpaid transactions
+            {t("adminConsole.brandsUnpaid.subtitle", { defaultValue: "Monitor brands with unpaid transactions" })}
           </p>
         </div>
         <button 
@@ -110,7 +112,7 @@ export default function BrandsUnpaidTransactionsSection() {
           disabled={refreshing}
         >
           <i className={`fas fa-sync-alt mr-2 ${refreshing ? 'fa-spin' : ''}`}></i>
-          {refreshing ? 'Refreshing...' : 'Refresh'}
+          {refreshing ? t("adminConsole.brandsUnpaid.refreshing", { defaultValue: "Refreshing..." }) : t("adminConsole.brandsUnpaid.refresh", { defaultValue: "Refresh" })}
         </button>
       </div>
 
@@ -120,7 +122,7 @@ export default function BrandsUnpaidTransactionsSection() {
           {/* From Date */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              <i className="fas fa-calendar-alt mr-2 text-blue-400"></i>From Date
+              <i className="fas fa-calendar-alt mr-2 text-blue-400"></i>{t("adminConsole.brandsUnpaid.fromDate", { defaultValue: "From Date" })}
             </label>
             <input
               type="date"
@@ -135,7 +137,7 @@ export default function BrandsUnpaidTransactionsSection() {
           {/* To Date */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              <i className="fas fa-calendar-check mr-2 text-blue-400"></i>To Date
+              <i className="fas fa-calendar-check mr-2 text-blue-400"></i>{t("adminConsole.brandsUnpaid.toDate", { defaultValue: "To Date" })}
             </label>
             <input
               type="date"
@@ -155,7 +157,7 @@ export default function BrandsUnpaidTransactionsSection() {
             className="action-btn btn-secondary w-full md:w-auto"
             disabled={loading}
           >
-            <i className="fas fa-times mr-2"></i>Clear Filters
+            <i className="fas fa-times mr-2"></i>{t("adminConsole.brandsUnpaid.clearFilters", { defaultValue: "Clear Filters" })}
           </button>
         </div>
       </div>
@@ -165,40 +167,40 @@ export default function BrandsUnpaidTransactionsSection() {
           <div className="text-center py-12 flex items-center justify-center">
             <div>
               <i className="fas fa-spinner fa-spin text-4xl text-cyan-400 mb-4"></i>
-              <p className="text-gray-400">Loading brands...</p>
+              <p className="text-gray-400">{t("adminConsole.brandsUnpaid.loading", { defaultValue: "Loading brands..." })}</p>
             </div>
           </div>
         ) : brands.length === 0 ? (
           <div className="text-center py-12">
             <i className="fas fa-inbox text-6xl text-gray-600 mb-4"></i>
-            <p className="text-gray-400">No brands found</p>
+            <p className="text-gray-400">{t("adminConsole.brandsUnpaid.noBrands", { defaultValue: "No brands found" })}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-700">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">ID</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Name</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Unpaid Transactions Count</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Paid Transactions Count</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.brandsUnpaid.colId", { defaultValue: "ID" })}</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.brandsUnpaid.colName", { defaultValue: "Name" })}</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.brandsUnpaid.colUnpaidCount", { defaultValue: "Unpaid Transactions Count" })}</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.brandsUnpaid.colPaidCount", { defaultValue: "Paid Transactions Count" })}</th>
                 </tr>
               </thead>
               <tbody>
                 {brands.map((brand) => (
                   <tr key={brand.id} className="border-b border-gray-800 hover:bg-white/5 transition-colors">
-                    <td className="py-3 px-4" data-label="ID">
+                    <td className="py-3 px-4" data-label={t("adminConsole.brandsUnpaid.colId", { defaultValue: "ID" })}>
                       <span className="text-sm text-cyan-400 font-mono">{brand.id}</span>
                     </td>
-                    <td className="py-3 px-4" data-label="Name">
+                    <td className="py-3 px-4" data-label={t("adminConsole.brandsUnpaid.colName", { defaultValue: "Name" })}>
                       <span className="text-sm font-semibold text-white">{brand.name}</span>
                     </td>
-                    <td className="py-3 px-4" data-label="Unpaid Transactions Count">
+                    <td className="py-3 px-4" data-label={t("adminConsole.brandsUnpaid.colUnpaidCount", { defaultValue: "Unpaid Transactions Count" })}>
                       <span className={`text-sm font-bold ${brand.unpaid_transactions_count > 0 ? 'text-red-400' : 'text-gray-400'}`}>
                         {brand.unpaid_transactions_count}
                       </span>
                     </td>
-                    <td className="py-3 px-4" data-label="Paid Transactions Count">
+                    <td className="py-3 px-4" data-label={t("adminConsole.brandsUnpaid.colPaidCount", { defaultValue: "Paid Transactions Count" })}>
                       <span className={`text-sm font-bold ${brand.paid_transactions_count > 0 ? 'text-green-400' : 'text-gray-400'}`}>
                         {brand.paid_transactions_count}
                       </span>

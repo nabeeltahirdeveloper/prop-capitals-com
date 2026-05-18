@@ -1,13 +1,15 @@
 ﻿import React, { useState } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 export default function SystemToolsSection() {
+  const { t } = useTranslation();
   const [fixing, setFixing] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
   const handleFixUSDAmounts = async () => {
-    if (!confirm('This will recalculate USD amounts for all orders with non-USD currencies. Continue?')) {
+    if (!confirm(t("adminConsole.systemTools.fixUsdConfirm", { defaultValue: "This will recalculate USD amounts for all orders with non-USD currencies. Continue?" }))) {
       return;
     }
 
@@ -29,7 +31,7 @@ export default function SystemToolsSection() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold gradient-text">System Tools</h2>
+        <h2 className="text-3xl font-bold gradient-text">{t("adminConsole.systemTools.title", { defaultValue: "System Tools" })}</h2>
       </div>
 
       <div className="grid grid-cols-1 gap-6">
@@ -39,11 +41,10 @@ export default function SystemToolsSection() {
             <div className="flex-1">
               <h3 className="text-xl font-semibold mb-2 text-white flex items-center">
                 <i className="fas fa-dollar-sign text-green-400 mr-3"></i>
-                Fix USD Conversion
+                {t("adminConsole.systemTools.fixUsdTitle", { defaultValue: "Fix USD Conversion" })}
               </h3>
               <p className="text-gray-400 text-sm mb-4">
-                Recalculates USD amounts for all orders with non-USD currencies using current exchange rates.
-                This fixes orders where the amount_usd incorrectly equals the original currency amount.
+                {t("adminConsole.systemTools.fixUsdDescription", { defaultValue: "Recalculates USD amounts for all orders with non-USD currencies using current exchange rates. This fixes orders where the amount_usd incorrectly equals the original currency amount." })}
               </p>
             </div>
           </div>
@@ -56,12 +57,12 @@ export default function SystemToolsSection() {
             {fixing ? (
               <>
                 <i className="fas fa-spinner fa-spin"></i>
-                <span>Fixing...</span>
+                <span>{t("adminConsole.systemTools.fixing", { defaultValue: "Fixing..." })}</span>
               </>
             ) : (
               <>
                 <i className="fas fa-wrench"></i>
-                <span>Fix USD Amounts</span>
+                <span>{t("adminConsole.systemTools.fixUsdAmounts", { defaultValue: "Fix USD Amounts" })}</span>
               </>
             )}
           </button>
@@ -71,24 +72,24 @@ export default function SystemToolsSection() {
             <div className="mt-6 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
               <h4 className="text-lg font-semibold mb-3 text-green-400 flex items-center">
                 <i className="fas fa-check-circle mr-2"></i>
-                Fix Completed Successfully
+                {t("adminConsole.systemTools.fixCompleted", { defaultValue: "Fix Completed Successfully" })}
               </h4>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                 <div className="bg-gray-900/50 p-3 rounded-lg">
-                  <div className="text-gray-400 text-xs mb-1">Total Found</div>
+                  <div className="text-gray-400 text-xs mb-1">{t("adminConsole.systemTools.totalFound", { defaultValue: "Total Found" })}</div>
                   <div className="text-2xl font-bold text-cyan-400">{result.total_found}</div>
                 </div>
                 <div className="bg-gray-900/50 p-3 rounded-lg">
-                  <div className="text-gray-400 text-xs mb-1">Fixed</div>
+                  <div className="text-gray-400 text-xs mb-1">{t("adminConsole.systemTools.fixed", { defaultValue: "Fixed" })}</div>
                   <div className="text-2xl font-bold text-green-400">{result.fixed}</div>
                 </div>
                 <div className="bg-gray-900/50 p-3 rounded-lg">
-                  <div className="text-gray-400 text-xs mb-1">Skipped</div>
+                  <div className="text-gray-400 text-xs mb-1">{t("adminConsole.systemTools.skipped", { defaultValue: "Skipped" })}</div>
                   <div className="text-2xl font-bold text-yellow-400">{result.skipped}</div>
                 </div>
                 <div className="bg-gray-900/50 p-3 rounded-lg">
-                  <div className="text-gray-400 text-xs mb-1">Success Rate</div>
+                  <div className="text-gray-400 text-xs mb-1">{t("adminConsole.systemTools.successRate", { defaultValue: "Success Rate" })}</div>
                   <div className="text-2xl font-bold text-purple-400">
                     {result.total_found > 0 ? Math.round((result.fixed / result.total_found) * 100) : 0}%
                   </div>
@@ -97,7 +98,7 @@ export default function SystemToolsSection() {
 
               {result.results && result.results.length > 0 && (
                 <div className="mt-4">
-                  <h5 className="text-sm font-semibold text-gray-300 mb-2">Recent Fixes:</h5>
+                  <h5 className="text-sm font-semibold text-gray-300 mb-2">{t("adminConsole.systemTools.recentFixes", { defaultValue: "Recent Fixes:" })}</h5>
                   <div className="max-h-64 overflow-y-auto space-y-2">
                     {result.results.slice(0, 10).map((item, idx) => (
                       <div key={idx} className="bg-gray-900/50 p-3 rounded text-sm">
@@ -117,7 +118,7 @@ export default function SystemToolsSection() {
                   </div>
                   {result.results.length > 10 && (
                     <div className="text-xs text-gray-500 mt-2 text-center">
-                      Showing 10 of {result.results.length} fixed orders
+                      {t("adminConsole.systemTools.showingFixed", { defaultValue: "Showing 10 of {{count}} fixed orders", count: result.results.length })}
                     </div>
                   )}
                 </div>
@@ -130,7 +131,7 @@ export default function SystemToolsSection() {
             <div className="mt-6 p-4 bg-red-900/20 border border-red-500 rounded-lg">
               <h4 className="text-lg font-semibold mb-2 text-red-400 flex items-center">
                 <i className="fas fa-exclamation-triangle mr-2"></i>
-                Error
+                {t("adminConsole.systemTools.error", { defaultValue: "Error" })}
               </h4>
               <p className="text-red-300 text-sm">{error}</p>
             </div>
@@ -143,10 +144,10 @@ export default function SystemToolsSection() {
             <div className="flex-1">
               <h3 className="text-xl font-semibold mb-2 text-white flex items-center">
                 <i className="fas fa-tools text-blue-400 mr-3"></i>
-                More Tools Coming Soon
+                {t("adminConsole.systemTools.moreToolsTitle", { defaultValue: "More Tools Coming Soon" })}
               </h3>
               <p className="text-gray-400 text-sm">
-                Additional system maintenance and utility tools will be added here.
+                {t("adminConsole.systemTools.moreToolsDescription", { defaultValue: "Additional system maintenance and utility tools will be added here." })}
               </p>
             </div>
           </div>

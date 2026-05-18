@@ -1,10 +1,12 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { createPageUrl } from '@/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from '../../contexts/LanguageContext';
 
 export default function AdminSidebar({ activeSection, onSectionChange, isOpen, onClose }) {
   const [expandedCategories, setExpandedCategories] = useState({});
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     if (logout) {
@@ -28,57 +30,62 @@ export default function AdminSidebar({ activeSection, onSectionChange, isOpen, o
   };
 
   const menuCategories = [
-    { 
-      id: 'dashboard', 
-      icon: 'fa-tachometer-alt', 
-      label: 'Dashboard', 
-      color: 'text-purple-400' 
+    {
+      id: 'dashboard',
+      icon: 'fa-tachometer-alt',
+      label: 'Dashboard',
+      i18nKey: 'nav.dashboard',
+      color: 'text-purple-400'
     },
     {
       id: 'orders-transactions',
       icon: 'fa-shopping-cart',
       label: 'Orders & Transactions',
+      i18nKey: 'nav.ordersTransactions',
       color: 'text-cyan-400',
       items: [
-        { id: 'orders', icon: 'fa-shopping-cart', label: 'Orders', color: 'text-cyan-400' },
-        { id: 'transactions', icon: 'fa-list', label: 'All Transactions', color: 'text-green-400' },
-        { id: 'payouts', icon: 'fa-dollar-sign', label: 'Payouts', color: 'text-emerald-400' },
-        { id: 'direct-purchase-links', icon: 'fa-link', label: 'Direct Purchase Links', color: 'text-orange-400' },
-        { id: 'packages', icon: 'fa-box', label: 'Packages', color: 'text-pink-400' },
-        { id: 'brands-unpaid-transactions', icon: 'fa-exclamation-triangle', label: 'Brands For Payouts', color: 'text-red-400' },
+        { id: 'orders', icon: 'fa-shopping-cart', label: 'Orders', i18nKey: 'nav.orders', color: 'text-cyan-400' },
+        { id: 'transactions', icon: 'fa-list', label: 'All Transactions', i18nKey: 'nav.allTransactions', color: 'text-green-400' },
+        { id: 'payouts', icon: 'fa-dollar-sign', label: 'Payouts', i18nKey: 'nav.payouts', color: 'text-emerald-400' },
+        { id: 'direct-purchase-links', icon: 'fa-link', label: 'Direct Purchase Links', i18nKey: 'nav.directPurchaseLinks', color: 'text-orange-400' },
+        { id: 'packages', icon: 'fa-box', label: 'Packages', i18nKey: 'nav.packages', color: 'text-pink-400' },
+        { id: 'brands-unpaid-transactions', icon: 'fa-exclamation-triangle', label: 'Brands For Payouts', i18nKey: 'nav.brandsForPayouts', color: 'text-red-400' },
       ]
     },
     {
       id: 'users-brands',
       icon: 'fa-users',
       label: 'Users & Brands',
+      i18nKey: 'nav.usersBrands',
       color: 'text-orange-400',
       items: [
-        { id: 'users', icon: 'fa-users', label: 'Users', color: 'text-orange-400' },
-        { id: 'brands', icon: 'fa-building', label: 'Brands Management', color: 'text-yellow-400' },
-        { id: 'pending-brands', icon: 'fa-clock', label: 'Pending Brands', color: 'text-yellow-300' },
-        { id: 'brand-wallets', icon: 'fa-wallet', label: 'Brand Wallets', color: 'text-amber-400' },
+        { id: 'users', icon: 'fa-users', label: 'Users', i18nKey: 'nav.users', color: 'text-orange-400' },
+        { id: 'brands', icon: 'fa-building', label: 'Brands Management', i18nKey: 'nav.brandsManagement', color: 'text-yellow-400' },
+        { id: 'pending-brands', icon: 'fa-clock', label: 'Pending Brands', i18nKey: 'nav.pendingBrands', color: 'text-yellow-300' },
+        { id: 'brand-wallets', icon: 'fa-wallet', label: 'Brand Wallets', i18nKey: 'nav.brandWallets', color: 'text-amber-400' },
       ]
     },
     {
       id: 'traffic-security',
       icon: 'fa-shield-alt',
       label: 'Traffic & Security',
+      i18nKey: 'nav.trafficSecurity',
       color: 'text-red-400',
       items: [
-        { id: 'visits', icon: 'fa-eye', label: 'Visits', color: 'text-blue-400' },
-        { id: 'blocked-ips', icon: 'fa-ban', label: 'Blocked IPs', color: 'text-red-500' },
-        { id: 'ip-whitelist', icon: 'fa-shield-alt', label: 'Access Control', color: 'text-red-400' },
+        { id: 'visits', icon: 'fa-eye', label: 'Visits', i18nKey: 'nav.visits', color: 'text-blue-400' },
+        { id: 'blocked-ips', icon: 'fa-ban', label: 'Blocked IPs', i18nKey: 'nav.blockedIps', color: 'text-red-500' },
+        { id: 'ip-whitelist', icon: 'fa-shield-alt', label: 'Access Control', i18nKey: 'nav.accessControl', color: 'text-red-400' },
       ]
     },
     {
       id: 'currencies-geo',
       icon: 'fa-globe-americas',
       label: 'Currencies & Geo Settings',
+      i18nKey: 'nav.currenciesGeo',
       color: 'text-teal-400',
       items: [
-        { id: 'currencies', icon: 'fa-money-bill', label: 'Currencies', color: 'text-teal-400' },
-        { id: 'currency-geo', icon: 'fa-globe-americas', label: 'Currency Geo Mapping', color: 'text-lime-400' },
+        { id: 'currencies', icon: 'fa-money-bill', label: 'Currencies', i18nKey: 'nav.currencies', color: 'text-teal-400' },
+        { id: 'currency-geo', icon: 'fa-globe-americas', label: 'Currency Geo Mapping', i18nKey: 'nav.currencyGeoMapping', color: 'text-lime-400' },
        // { id: 'payment-gateway-geo', icon: 'fa-credit-card', label: 'Geolocation Payment Gateway', color: 'text-cyan-400' },
       ]
     },
@@ -86,13 +93,14 @@ export default function AdminSidebar({ activeSection, onSectionChange, isOpen, o
       id: 'logs-monitoring',
       icon: 'fa-chart-line',
       label: 'Logs & System Monitoring',
+      i18nKey: 'nav.logsMonitoring',
       color: 'text-violet-400',
       items: [
-        { id: 'logs', icon: 'fa-file-alt', label: 'System Logs', color: 'text-violet-400' },
-        { id: 'bot-logs', icon: 'fa-robot', label: 'Bot Logs', color: 'text-cyan-400' },
-        { id: 'analytics', icon: 'fa-chart-bar', label: 'Analytics', color: 'text-indigo-400' },
-        { id: 'system-tools', icon: 'fa-wrench', label: 'System Tools', color: 'text-rose-400' },
-        { id: 'settings', icon: 'fa-cog', label: 'Settings', color: 'text-gray-400' },
+        { id: 'logs', icon: 'fa-file-alt', label: 'System Logs', i18nKey: 'nav.systemLogs', color: 'text-violet-400' },
+        { id: 'bot-logs', icon: 'fa-robot', label: 'Bot Logs', i18nKey: 'nav.botLogs', color: 'text-cyan-400' },
+        { id: 'analytics', icon: 'fa-chart-bar', label: 'Analytics', i18nKey: 'nav.analytics', color: 'text-indigo-400' },
+        { id: 'system-tools', icon: 'fa-wrench', label: 'System Tools', i18nKey: 'nav.systemTools', color: 'text-rose-400' },
+        { id: 'settings', icon: 'fa-cog', label: 'Settings', i18nKey: 'nav.settings', color: 'text-gray-400' },
       ]
     },
   ];
@@ -135,7 +143,7 @@ export default function AdminSidebar({ activeSection, onSectionChange, isOpen, o
             </div>
             <div>
               <h1 className="text-xl font-bold gradient-text">Prop Capitals</h1>
-              <p className="text-xs text-gray-400 mono">Admin Console</p>
+              <p className="text-xs text-gray-400 mono">{t("nav.adminConsole", { defaultValue: "Admin Console" })}</p>
             </div>
           </div>
         </div>
@@ -152,7 +160,7 @@ export default function AdminSidebar({ activeSection, onSectionChange, isOpen, o
                     onClick={() => onSectionChange(category.id)}
                   >
                     <i className={`fas ${category.icon} mr-3 ${category.color}`}></i>
-                    <span>{category.label}</span>
+                    <span>{t(category.i18nKey, { defaultValue: category.label })}</span>
                   </div>
                 ) : (
                   /* Category with sub-items */
@@ -162,7 +170,7 @@ export default function AdminSidebar({ activeSection, onSectionChange, isOpen, o
                       onClick={() => toggleCategory(category.id)}
                     >
                       <i className={`fas ${category.icon} mr-3 ${category.color}`}></i>
-                      <span>{category.label}</span>
+                      <span>{t(category.i18nKey, { defaultValue: category.label })}</span>
                       <i className={`fas fa-chevron-right ml-auto chevron-icon ${expandedCategories[category.id] ? 'expanded' : ''}`}></i>
                     </div>
                     {/* Sub-items */}
@@ -175,7 +183,7 @@ export default function AdminSidebar({ activeSection, onSectionChange, isOpen, o
                             onClick={() => onSectionChange(item.id)}
                           >
                             <i className={`fas ${item.icon} mr-3 ${item.color}`}></i>
-                            <span>{item.label}</span>
+                            <span>{t(item.i18nKey, { defaultValue: item.label })}</span>
                           </div>
                         ))}
                       </div>
@@ -193,21 +201,21 @@ export default function AdminSidebar({ activeSection, onSectionChange, isOpen, o
             <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-blue-500 rounded-full mx-auto mb-2 flex items-center justify-center">
               <i className="fas fa-user text-white"></i>
             </div>
-            <p className="text-sm font-medium">{user?.profile?.firstName || user?.email?.split('@')[0] || 'Admin User'}</p>
+            <p className="text-sm font-medium">{user?.profile?.firstName || user?.email?.split('@')[0] || t("nav.adminUser", { defaultValue: "Admin User" })}</p>
             <p className="text-xs text-gray-400">{user?.email || ''}</p>
             <button
               onClick={handleBackToAdmin}
               className="mt-3 w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
             >
               <i className="fas fa-arrow-left"></i>
-              <span>Back to Admin Panel</span>
+              <span>{t("nav.backToAdminPanel", { defaultValue: "Back to Admin Panel" })}</span>
             </button>
             <button
               onClick={handleLogout}
               className="mt-2 w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
             >
               <i className="fas fa-sign-out-alt"></i>
-              <span>Logout</span>
+              <span>{t("nav.logout", { defaultValue: "Logout" })}</span>
             </button>
           </div>
         </div>

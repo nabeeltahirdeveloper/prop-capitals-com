@@ -1,7 +1,9 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 export default function BrandModal({ brand, mode, onClose, onSuccess }) {
+  const { t } = useTranslation();
   const isView = mode === 'view';
   const isEdit = mode === 'edit';
   const isCreate = mode === 'create';
@@ -251,7 +253,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
         onClose();
       }
     } catch (err) {
-      setError(err.message || 'An error occurred');
+      setError(err.message || t("adminConsole.brandModal.errorOccurred", { defaultValue: "An error occurred" }));
     } finally {
       setLoading(false);
     }
@@ -263,7 +265,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-2xl font-bold gradient-text">
-              {isView ? 'View Brand' : isEdit ? 'Edit Brand' : 'Create Brand'}
+              {isView ? t("adminConsole.brandModal.viewBrand", { defaultValue: "View Brand" }) : isEdit ? t("adminConsole.brandModal.editBrand", { defaultValue: "Edit Brand" }) : t("adminConsole.brandModal.createBrand", { defaultValue: "Create Brand" })}
             </h3>
             <button 
               onClick={onClose}
@@ -284,7 +286,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
               {/* Name */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-300">
-                  Brand Name <span className="text-red-400">*</span>
+                  {t("adminConsole.brandModal.brandNameLabel", { defaultValue: "Brand Name" })} <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
@@ -293,7 +295,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                   onChange={handleChange}
                   disabled={isView}
                   required
-                  placeholder="Enter brand name"
+                  placeholder={t("adminConsole.brandModal.brandNamePlaceholder", { defaultValue: "Enter brand name" })}
                   className="search-input p-3 rounded-lg w-full"
                 />
               </div>
@@ -301,7 +303,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
               {/* Email */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-300">
-                  Email <span className="text-red-400">*</span>
+                  {t("adminConsole.brandModal.emailLabel", { defaultValue: "Email" })} <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="email"
@@ -313,13 +315,13 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                   placeholder="brand@example.com"
                   className="search-input p-3 rounded-lg w-full"
                 />
-                <p className="text-xs text-gray-400 mt-1">Can be shared across multiple brands</p>
+                <p className="text-xs text-gray-400 mt-1">{t("adminConsole.brandModal.emailHint", { defaultValue: "Can be shared across multiple brands" })}</p>
               </div>
 
               {/* Username */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-300">
-                  Username <span className="text-red-400">*</span>
+                  {t("adminConsole.brandModal.usernameLabel", { defaultValue: "Username" })} <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
@@ -331,21 +333,21 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                   }}
                   disabled={isView || isEdit}
                   required
-                  placeholder="brandusername"
+                  placeholder={t("adminConsole.brandModal.usernamePlaceholder", { defaultValue: "brandusername" })}
                   className="search-input p-3 rounded-lg w-full font-mono"
                 />
                 {isEdit && (
-                  <p className="text-xs text-gray-400 mt-1">Username cannot be changed after creation</p>
+                  <p className="text-xs text-gray-400 mt-1">{t("adminConsole.brandModal.usernameCannotChange", { defaultValue: "Username cannot be changed after creation" })}</p>
                 )}
                 {!isView && !isEdit && (
-                  <p className="text-xs text-gray-400 mt-1">Only lowercase letters, numbers, underscores, and hyphens. Used for login.</p>
+                  <p className="text-xs text-gray-400 mt-1">{t("adminConsole.brandModal.usernameHint", { defaultValue: "Only lowercase letters, numbers, underscores, and hyphens. Used for login." })}</p>
                 )}
               </div>
 
               {/* Slug */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-300">
-                  Referral Slug <span className="text-red-400">*</span>
+                  {t("adminConsole.brandModal.referralSlugLabel", { defaultValue: "Referral Slug" })} <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
@@ -357,24 +359,24 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                   }}
                   disabled={isView}
                   required
-                  placeholder="brand-slug"
+                  placeholder={t("adminConsole.brandModal.slugPlaceholder", { defaultValue: "brand-slug" })}
                   className="search-input p-3 rounded-lg w-full font-mono"
                 />
                 {formData.slug && !isView && (
                   <div className="mt-2 p-2 bg-gray-800 rounded border border-gray-700">
-                    <p className="text-xs text-gray-400 mb-1">Referral URL:</p>
+                    <p className="text-xs text-gray-400 mb-1">{t("adminConsole.brandModal.referralUrlLabel", { defaultValue: "Referral URL:" })}</p>
                     <p className="text-xs text-cyan-400 font-mono break-all">
                       https://prop-capitals.com/pricing?ref={formData.slug}
                     </p>
                   </div>
                 )}
-                <p className="text-xs text-gray-400 mt-1">Only lowercase letters, numbers, and hyphens allowed</p>
+                <p className="text-xs text-gray-400 mt-1">{t("adminConsole.brandModal.slugHint", { defaultValue: "Only lowercase letters, numbers, and hyphens allowed" })}</p>
               </div>
 
               {/* Commission Rate */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-300">
-                  Commission Rate (%) <span className="text-red-400">*</span>
+                  {t("adminConsole.brandModal.commissionRateLabel", { defaultValue: "Commission Rate (%)" })} <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="number"
@@ -389,14 +391,14 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                   placeholder="10"
                   className="search-input p-3 rounded-lg w-full"
                 />
-                <p className="text-xs text-gray-400 mt-1">Percentage of order total paid as commission</p>
+                <p className="text-xs text-gray-400 mt-1">{t("adminConsole.brandModal.commissionRateHint", { defaultValue: "Percentage of order total paid as commission" })}</p>
               </div>
 
               {/* Reseller Commission - Only shown when parent_brand_id is selected */}
               {formData.parent_brand_id && (
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-300">
-                    Reseller Commission (%)
+                    {t("adminConsole.brandModal.resellerCommissionLabel", { defaultValue: "Reseller Commission (%)" })}
                   </label>
                   <input
                     type="number"
@@ -410,14 +412,14 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                     placeholder="0"
                     className="search-input p-3 rounded-lg w-full"
                   />
-                  <p className="text-xs text-gray-400 mt-1">Reseller's portion from the total order amount (e.g., 17.2 for 17.2%)</p>
+                  <p className="text-xs text-gray-400 mt-1">{t("adminConsole.brandModal.resellerCommissionHint", { defaultValue: "Reseller's portion from the total order amount (e.g., 17.2 for 17.2%)" })}</p>
                 </div>
               )}
 
               {/* Account Type */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-300">
-                  Account Type <span className="text-red-400">*</span>
+                  {t("adminConsole.brandModal.accountTypeLabel", { defaultValue: "Account Type" })} <span className="text-red-400">*</span>
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   <label className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${
@@ -435,8 +437,8 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                       className="mr-3"
                     />
                     <div>
-                      <div className="font-medium text-gray-200">Brand</div>
-                      <div className="text-xs text-gray-400">Regular brand partner</div>
+                      <div className="font-medium text-gray-200">{t("adminConsole.brandModal.accountTypeBrand", { defaultValue: "Brand" })}</div>
+                      <div className="text-xs text-gray-400">{t("adminConsole.brandModal.accountTypeBrandDesc", { defaultValue: "Regular brand partner" })}</div>
                     </div>
                   </label>
                   <label className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${
@@ -454,22 +456,22 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                       className="mr-3"
                     />
                     <div>
-                      <div className="font-medium text-gray-200">Reseller</div>
-                      <div className="text-xs text-gray-400">Can manage network</div>
+                      <div className="font-medium text-gray-200">{t("adminConsole.brandModal.accountTypeReseller", { defaultValue: "Reseller" })}</div>
+                      <div className="text-xs text-gray-400">{t("adminConsole.brandModal.accountTypeResellerDesc", { defaultValue: "Can manage network" })}</div>
                     </div>
                   </label>
                 </div>
                 <p className="text-xs text-gray-400 mt-2">
-                  {formData.account_type === 'reseller' 
-                    ? 'Resellers can view their network of child brands and network-wide transactions'
-                    : 'Brands can view their own transactions and performance data'}
+                  {formData.account_type === 'reseller'
+                    ? t("adminConsole.brandModal.accountTypeResellerInfo", { defaultValue: "Resellers can view their network of child brands and network-wide transactions" })
+                    : t("adminConsole.brandModal.accountTypeBrandInfo", { defaultValue: "Brands can view their own transactions and performance data" })}
                 </p>
               </div>
 
               {/* Parent Brand */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-300">
-                  Parent Brand
+                  {t("adminConsole.brandModal.parentBrandLabel", { defaultValue: "Parent Brand" })}
                 </label>
                 <select
                   name="parent_brand_id"
@@ -478,17 +480,17 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                   disabled={isView}
                   className="search-input p-3 rounded-lg w-full"
                 >
-                  <option value="">None (Independent Brand)</option>
+                  <option value="">{t("adminConsole.brandModal.parentBrandNone", { defaultValue: "None (Independent Brand)" })}</option>
                   {brands
                     .filter(b => !brand || b.id !== brand.id)
                     .map(b => (
                       <option key={b.id} value={b.id}>
-                        {b.name} (ID: {b.id})
+                        {t("adminConsole.brandModal.parentBrandOption", { name: b.name, id: b.id, defaultValue: "{{name}} (ID: {{id}})" })}
                       </option>
                     ))}
                 </select>
                 <p className="text-xs text-gray-400 mt-1">
-                  Select a parent brand if this is a child brand. Parent can view all child transactions.
+                  {t("adminConsole.brandModal.parentBrandHint", { defaultValue: "Select a parent brand if this is a child brand. Parent can view all child transactions." })}
                 </p>
               </div>
 
@@ -496,30 +498,30 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
               {!isView && (
                 <div className="pt-4 border-t border-gray-700">
                   <h4 className="text-lg font-semibold mb-4 text-gray-200">
-                    <i className="fas fa-link mr-2"></i>Brand Links
+                    <i className="fas fa-link mr-2"></i>{t("adminConsole.brandModal.brandLinksTitle", { defaultValue: "Brand Links" })}
                   </h4>
                   
                   {/* Main Link Customization */}
                   <div className="mb-4 p-4 bg-gray-800/50 rounded-lg">
                     <label className="block text-sm font-medium mb-2 text-gray-300">
-                      Main Link Custom URL (Optional)
+                      {t("adminConsole.brandModal.mainLinkUrlLabel", { defaultValue: "Main Link Custom URL (Optional)" })}
                     </label>
                     <input
                       type="text"
                       value={mainLinkCustomUrl}
                       onChange={(e) => setMainLinkCustomUrl(e.target.value)}
-                      placeholder="Leave empty for default: prop-capitals.com/?b=slug"
+                      placeholder={t("adminConsole.brandModal.mainLinkUrlPlaceholder", { defaultValue: "Leave empty for default: prop-capitals.com/?b=slug" })}
                       className="search-input p-3 rounded-lg w-full"
                     />
                     <p className="text-xs text-gray-400 mt-1">
-                      Main link will be auto-created. Customize destination URL if needed.
+                      {t("adminConsole.brandModal.mainLinkUrlHint", { defaultValue: "Main link will be auto-created. Customize destination URL if needed." })}
                     </p>
                   </div>
 
                   {/* Package Links */}
                   <div className="mb-4">
                     <label className="block text-sm font-medium mb-3 text-gray-300">
-                      Select Package Links
+                      {t("adminConsole.brandModal.selectPackageLinks", { defaultValue: "Select Package Links" })}
                     </label>
                     <div className="grid grid-cols-1 gap-3">
                       {packages.map(pkg => {
@@ -547,7 +549,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                                 <span className="font-medium text-gray-200">{pkg.name}</span>
                                 <span className="ml-2 text-cyan-400">${pkg.price}</span>
                                 {isRequired && (
-                                  <span className="ml-2 text-xs text-yellow-400">(Required)</span>
+                                  <span className="ml-2 text-xs text-yellow-400">{t("adminConsole.brandModal.requiredBadge", { defaultValue: "(Required)" })}</span>
                                 )}
                               </div>
                             </label>
@@ -555,17 +557,17 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                             {isSelected && (
                               <div className="mt-3 ml-7">
                                 <label className="block text-xs font-medium mb-1 text-gray-400">
-                                  Custom Destination URL (Optional)
+                                  {t("adminConsole.brandModal.customDestUrlLabel", { defaultValue: "Custom Destination URL (Optional)" })}
                                 </label>
                                 <input
                                   type="text"
                                   value={selectedLink.custom_url || ''}
                                   onChange={(e) => updatePackageLinkUrl(pkg.id, e.target.value)}
-                                  placeholder={`Leave empty for default: prop-capitals.com/package/${pkg.id}?b=slug`}
+                                  placeholder={t("adminConsole.brandModal.customDestUrlPlaceholder", { id: pkg.id, defaultValue: "Leave empty for default: prop-capitals.com/package/{{id}}?b=slug" })}
                                   className="search-input p-2 rounded-lg w-full text-sm"
                                 />
                                 <p className="text-xs text-gray-500 mt-1">
-                                  Example: https://finvest-academy.com/vision-plan/professional-package/
+                                  {t("adminConsole.brandModal.customDestUrlExample", { defaultValue: "Example: https://finvest-academy.com/vision-plan/professional-package/" })}
                                 </p>
                               </div>
                             )}
@@ -574,7 +576,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                       })}
                     </div>
                     <p className="text-xs text-gray-400 mt-2">
-                      The ?link parameter will be automatically added to track conversions
+                      {t("adminConsole.brandModal.linkParamHint", { defaultValue: "The ?link parameter will be automatically added to track conversions" })}
                     </p>
                   </div>
 
@@ -583,7 +585,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                     <div className="p-3 bg-gray-800/30 rounded-lg border border-gray-700">
                       <p className="text-xs font-medium text-gray-400 mb-2">
                         <i className="fas fa-check-circle text-green-400 mr-1"></i>
-                        {customLinks.length} package link(s) selected
+                        {t("adminConsole.brandModal.packageLinksSelected", { count: customLinks.length, defaultValue: "{{count}} package link(s) selected" })}
                       </p>
                     </div>
                   )}
@@ -593,7 +595,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
               {/* Logo URL */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-300">
-                  Logo URL
+                  {t("adminConsole.brandModal.logoUrlLabel", { defaultValue: "Logo URL" })}
                 </label>
                 <input
                   type="url"
@@ -606,9 +608,9 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                 />
                 {formData.logo_url && (
                   <div className="mt-2">
-                    <img 
-                      src={formData.logo_url} 
-                      alt="Brand logo preview" 
+                    <img
+                      src={formData.logo_url}
+                      alt={t("adminConsole.brandModal.logoPreviewAlt", { defaultValue: "Brand logo preview" })}
                       className="w-20 h-20 rounded object-cover border border-gray-700"
                       onError={(e) => { e.target.style.display = 'none'; }}
                     />
@@ -619,7 +621,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
               {/* Website */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-300">
-                  Website
+                  {t("adminConsole.brandModal.websiteLabel", { defaultValue: "Website" })}
                 </label>
                 <input
                   type="url"
@@ -636,7 +638,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-300">
-                    Primary Color
+                    {t("adminConsole.brandModal.primaryColorLabel", { defaultValue: "Primary Color" })}
                   </label>
                   <div className="flex items-center space-x-2">
                     <input
@@ -660,7 +662,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
 
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-300">
-                    Secondary Color
+                    {t("adminConsole.brandModal.secondaryColorLabel", { defaultValue: "Secondary Color" })}
                   </label>
                   <div className="flex items-center space-x-2">
                     <input
@@ -686,7 +688,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
               {/* Description */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-300">
-                  Description
+                  {t("adminConsole.brandModal.descriptionLabel", { defaultValue: "Description" })}
                 </label>
                 <textarea
                   name="description"
@@ -694,7 +696,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                   onChange={handleChange}
                   disabled={isView}
                   rows={4}
-                  placeholder="Enter brand description..."
+                  placeholder={t("adminConsole.brandModal.descriptionPlaceholder", { defaultValue: "Enter brand description..." })}
                   className="search-input p-3 rounded-lg w-full resize-none"
                 />
               </div>
@@ -702,7 +704,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
               {/* Status */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-300">
-                  Status
+                  {t("adminConsole.brandModal.statusLabel", { defaultValue: "Status" })}
                 </label>
                 <select
                   name="status"
@@ -711,8 +713,8 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                   disabled={isView}
                   className="search-input p-3 rounded-lg w-full"
                 >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
+                  <option value="active">{t("adminConsole.brandModal.statusActive", { defaultValue: "Active" })}</option>
+                  <option value="inactive">{t("adminConsole.brandModal.statusInactive", { defaultValue: "Inactive" })}</option>
                 </select>
               </div>
 
@@ -721,7 +723,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                 <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-700">
                   <div>
                     <label className="block text-xs font-medium mb-1 text-gray-400">
-                      Created
+                      {t("adminConsole.brandModal.createdLabel", { defaultValue: "Created" })}
                     </label>
                     <p className="text-sm text-gray-300">
                       {new Date(brand.created_at).toLocaleString()}
@@ -730,7 +732,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                   {brand.updated_at && (
                     <div>
                       <label className="block text-xs font-medium mb-1 text-gray-400">
-                        Last Updated
+                        {t("adminConsole.brandModal.lastUpdatedLabel", { defaultValue: "Last Updated" })}
                       </label>
                       <p className="text-sm text-gray-300">
                         {new Date(brand.updated_at).toLocaleString()}
@@ -748,7 +750,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                 onClick={onClose}
                 className="action-btn btn-secondary px-6"
               >
-                {isView ? 'Close' : 'Cancel'}
+                {isView ? t("adminConsole.brandModal.close", { defaultValue: "Close" }) : t("adminConsole.brandModal.cancel", { defaultValue: "Cancel" })}
               </button>
               {!isView && (
                 <button
@@ -759,12 +761,12 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                   {loading ? (
                     <>
                       <i className="fas fa-spinner fa-spin mr-2"></i>
-                      Saving...
+                      {t("adminConsole.brandModal.saving", { defaultValue: "Saving..." })}
                     </>
                   ) : (
                     <>
                       <i className="fas fa-save mr-2"></i>
-                      {isCreate ? 'Create Brand' : 'Update Brand'}
+                      {isCreate ? t("adminConsole.brandModal.createBrandButton", { defaultValue: "Create Brand" }) : t("adminConsole.brandModal.updateBrandButton", { defaultValue: "Update Brand" })}
                     </>
                   )}
                 </button>
@@ -786,17 +788,17 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
               </div>
               
               <h3 className="text-2xl font-bold text-center gradient-text mb-2">
-                Brand Created Successfully!
+                {t("adminConsole.brandModal.brandCreatedSuccess", { defaultValue: "Brand Created Successfully!" })}
               </h3>
-              
+
               <p className="text-center text-gray-400 mb-6">
-                Save these credentials - they won't be shown again
+                {t("adminConsole.brandModal.saveCredentials", { defaultValue: "Save these credentials - they won't be shown again" })}
               </p>
               
               <div className="space-y-4 mb-6">
                 <div className="bg-gray-800/50 p-4 rounded-lg border border-cyan-500/30">
                   <label className="block text-xs font-medium text-gray-400 mb-1">
-                    Username
+                    {t("adminConsole.brandModal.credUsername", { defaultValue: "Username" })}
                   </label>
                   <div className="flex items-center justify-between">
                     <code className="text-cyan-400 font-mono text-lg">
@@ -808,7 +810,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                         navigator.clipboard.writeText(generatedCredentials.username);
                       }}
                       className="text-gray-400 hover:text-cyan-400 transition-colors"
-                      title="Copy username"
+                      title={t("adminConsole.brandModal.copyUsername", { defaultValue: "Copy username" })}
                     >
                       <i className="fas fa-copy"></i>
                     </button>
@@ -817,7 +819,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                 
                 <div className="bg-gray-800/50 p-4 rounded-lg border border-purple-500/30">
                   <label className="block text-xs font-medium text-gray-400 mb-1">
-                    Password
+                    {t("adminConsole.brandModal.credPassword", { defaultValue: "Password" })}
                   </label>
                   <div className="flex items-center justify-between">
                     <code className="text-purple-400 font-mono text-lg">
@@ -829,7 +831,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                         navigator.clipboard.writeText(generatedCredentials.password);
                       }}
                       className="text-gray-400 hover:text-purple-400 transition-colors"
-                      title="Copy password"
+                      title={t("adminConsole.brandModal.copyPassword", { defaultValue: "Copy password" })}
                     >
                       <i className="fas fa-copy"></i>
                     </button>
@@ -840,7 +842,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
               <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-6">
                 <p className="text-xs text-yellow-300 flex items-start">
                   <i className="fas fa-exclamation-triangle mt-0.5 mr-2"></i>
-                  <span>These credentials have been sent to the brand's email. Make sure to save them before closing this dialog.</span>
+                  <span>{t("adminConsole.brandModal.credentialsEmailWarning", { defaultValue: "These credentials have been sent to the brand's email. Make sure to save them before closing this dialog." })}</span>
                 </p>
               </div>
               
@@ -854,7 +856,7 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
                 className="action-btn btn-primary w-full"
               >
                 <i className="fas fa-check mr-2"></i>
-                Done
+                {t("adminConsole.brandModal.done", { defaultValue: "Done" })}
               </button>
             </div>
           </div>

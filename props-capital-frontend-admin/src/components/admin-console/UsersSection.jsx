@@ -3,8 +3,10 @@ import UserManagement from './UserManagement';
 import AddUserModal from './AddUserModal';
 import { createPageUrl } from '@/utils';
 import { adminConsoleApi } from '@/api/adminConsole';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 export default function UsersSection() {
+  const { t } = useTranslation();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -41,13 +43,13 @@ export default function UsersSection() {
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-6 gap-4">
-        <h2 className="text-3xl font-bold gradient-text">User Management</h2>
+        <h2 className="text-3xl font-bold gradient-text">{t("adminConsole.users.title", { defaultValue: "User Management" })}</h2>
         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
           <button className="action-btn btn-primary w-full sm:w-auto" onClick={handleAddUser}>
-            <i className="fas fa-user-plus mr-2"></i>Add User
+            <i className="fas fa-user-plus mr-2"></i>{t("adminConsole.users.addUser", { defaultValue: "Add User" })}
           </button>
           <button className="action-btn btn-danger w-full sm:w-auto" onClick={() => window.location.href = createPageUrl('Dashboard')}>
-            <i className="fas fa-arrow-left mr-2"></i>Switch to User Dashboard
+            <i className="fas fa-arrow-left mr-2"></i>{t("adminConsole.users.switchToUserDashboard", { defaultValue: "Switch to User Dashboard" })}
           </button>
         </div>
       </div>
@@ -55,7 +57,7 @@ export default function UsersSection() {
       {loading ? (
         <div className="text-center py-12">
           <i className="fas fa-spinner fa-spin text-4xl text-cyan-400"></i>
-          <p className="mt-4 text-gray-400">Loading users...</p>
+          <p className="mt-4 text-gray-400">{t("adminConsole.users.loadingUsers", { defaultValue: "Loading users..." })}</p>
         </div>
       ) : (
         <UserManagement users={users} onUserUpdate={handleUserUpdate} />

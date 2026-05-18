@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect, useMemo } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 // Get the public site base URL where /pay/<slug> resolves brand links.
 // In dev the admin runs on :5175 and the public site on :5173. In prod we
@@ -17,6 +18,7 @@ const getCheckoutBaseUrl = () => {
 };
 
 export default function DirectPurchaseLinksSection() {
+  const { t } = useTranslation();
   const [links, setLinks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState('');
@@ -57,7 +59,7 @@ export default function DirectPurchaseLinksSection() {
       setLinks(data.links || []);
     } catch (err) {
       console.error('Failed to load direct purchase links:', err);
-      setError('Failed to load direct purchase links');
+      setError(t("adminConsole.directLinks.loadError", { defaultValue: "Failed to load direct purchase links" }));
     } finally {
       setLoading(false);
     }
@@ -65,7 +67,7 @@ export default function DirectPurchaseLinksSection() {
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    setSuccess('Link copied to clipboard!');
+    setSuccess(t("adminConsole.directLinks.linkCopied", { defaultValue: "Link copied to clipboard!" }));
     setTimeout(() => setSuccess(''), 2000);
   };
 
@@ -80,9 +82,9 @@ export default function DirectPurchaseLinksSection() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-3xl font-bold gradient-text mb-2">Direct Purchase Links</h2>
+          <h2 className="text-3xl font-bold gradient-text mb-2">{t("adminConsole.directLinks.title", { defaultValue: "Direct Purchase Links" })}</h2>
           <p className="text-gray-400">
-            Monitor every direct purchase link created by brands and share them instantly.
+            {t("adminConsole.directLinks.subtitle", { defaultValue: "Monitor every direct purchase link created by brands and share them instantly." })}
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -94,12 +96,15 @@ export default function DirectPurchaseLinksSection() {
               try {
                 const res = await adminConsoleApi.directPurchaseLinks.backfill();
                 setSuccess(
-                  `Generated links for ${res?.brands_processed ?? 0} brands ` +
-                    `(${res?.total_links_created ?? 0} new links).`,
+                  t("adminConsole.directLinks.generateSuccess", {
+                    brands: res?.brands_processed ?? 0,
+                    links: res?.total_links_created ?? 0,
+                    defaultValue: "Generated links for {{brands}} brands ({{links}} new links).",
+                  }),
                 );
                 await loadLinks();
               } catch (err) {
-                setError(err?.message || 'Failed to generate links');
+                setError(err?.message || t("adminConsole.directLinks.generateError", { defaultValue: "Failed to generate links" }));
               } finally {
                 setLoading(false);
                 setTimeout(() => setSuccess(''), 4000);
@@ -107,10 +112,10 @@ export default function DirectPurchaseLinksSection() {
             }}
             disabled={loading}
             className="action-btn btn-secondary flex items-center gap-2"
-            title="Provision Main link + one link per challenge for every brand. Idempotent — won't duplicate."
+            title={t("adminConsole.directLinks.generateTooltip", { defaultValue: "Provision Main link + one link per challenge for every brand. Idempotent — won't duplicate." })}
           >
             <i className={`fas fa-magic`}></i>
-            Generate Links for All Brands
+            {t("adminConsole.directLinks.generateForAll", { defaultValue: "Generate Links for All Brands" })}
           </button>
           <button
             onClick={loadLinks}
@@ -118,7 +123,7 @@ export default function DirectPurchaseLinksSection() {
             className="action-btn btn-primary flex items-center gap-2"
           >
             <i className={`fas fa-sync-alt ${loading ? 'fa-spin' : ''}`}></i>
-            Refresh
+            {t("adminConsole.directLinks.refresh", { defaultValue: "Refresh" })}
           </button>
         </div>
       </div>
@@ -143,14 +148,14 @@ export default function DirectPurchaseLinksSection() {
         <div className="grid gap-4 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <label className="block text-sm font-medium text-gray-400 mb-2">
-              Filter by Brand
+              {t("adminConsole.directLinks.filterByBrand", { defaultValue: "Filter by Brand" })}
             </label>
             <select
               value={selectedBrandId}
               onChange={(e) => setSelectedBrandId(e.target.value)}
               className="search-input p-3 rounded-lg w-full"
             >
-              <option value="">All Brands</option>
+              <option value="">{t("adminConsole.directLinks.allBrands", { defaultValue: "All Brands" })}</option>
               {brands.map((brand) => (
                 <option key={brand.id} value={brand.id}>
                   {brand.name}
@@ -161,15 +166,15 @@ export default function DirectPurchaseLinksSection() {
 
           <div className="grid grid-cols-3 gap-3">
             <div className="glass-card p-4 rounded-lg text-center">
-              <p className="text-xs uppercase tracking-wide text-gray-400">Total Links</p>
+              <p className="text-xs uppercase tracking-wide text-gray-400">{t("adminConsole.directLinks.totalLinks", { defaultValue: "Total Links" })}</p>
               <p className="text-2xl font-bold text-cyan-300">{stats.total}</p>
             </div>
             <div className="glass-card p-4 rounded-lg text-center">
-              <p className="text-xs uppercase tracking-wide text-gray-400">Active</p>
+              <p className="text-xs uppercase tracking-wide text-gray-400">{t("adminConsole.directLinks.active", { defaultValue: "Active" })}</p>
               <p className="text-2xl font-bold text-green-300">{stats.active}</p>
             </div>
             <div className="glass-card p-4 rounded-lg text-center">
-              <p className="text-xs uppercase tracking-wide text-gray-400">Visits</p>
+              <p className="text-xs uppercase tracking-wide text-gray-400">{t("adminConsole.directLinks.visits", { defaultValue: "Visits" })}</p>
               <p className="text-2xl font-bold text-purple-300">{stats.visits}</p>
             </div>
           </div>
@@ -180,7 +185,7 @@ export default function DirectPurchaseLinksSection() {
       {loading && links.length === 0 && (
         <div className="glass-panel p-8 text-center">
           <i className="fas fa-spinner fa-spin text-4xl text-cyan-400 mb-4"></i>
-          <p className="text-gray-400">Loading direct purchase links...</p>
+          <p className="text-gray-400">{t("adminConsole.directLinks.loading", { defaultValue: "Loading direct purchase links..." })}</p>
         </div>
       )}
 
@@ -196,14 +201,14 @@ export default function DirectPurchaseLinksSection() {
                     <span className={`text-xs px-3 py-1 rounded-full ${
                       link.is_active ? 'bg-green-500/20 text-green-300' : 'bg-gray-500/20 text-gray-300'
                     }`}>
-                      {link.is_active ? 'Active' : 'Inactive'}
+                      {link.is_active ? t("adminConsole.directLinks.statusActive", { defaultValue: "Active" }) : t("adminConsole.directLinks.statusInactive", { defaultValue: "Inactive" })}
                     </span>
                   </div>
                   <p className="text-sm text-gray-400 mb-1">
-                    <span className="text-gray-300 font-medium">Brand:</span> {link.brand_name || 'N/A'}
+                    <span className="text-gray-300 font-medium">{t("adminConsole.directLinks.brandLabel", { defaultValue: "Brand:" })}</span> {link.brand_name || t("adminConsole.directLinks.notAvailable", { defaultValue: "N/A" })}
                   </p>
                   <p className="text-sm text-gray-400">
-                    ${Number(link.total_amount).toFixed(2)} • Package: ${Number(link.package_price).toFixed(2)} • Credits: ${Number(link.credits_price).toFixed(2)} ({link.credits_amount === 'unlimited' ? 'Unlimited' : link.credits_amount} credits)
+                    ${Number(link.total_amount).toFixed(2)} • {t("adminConsole.directLinks.packageLabel", { defaultValue: "Package:" })} ${Number(link.package_price).toFixed(2)} • {t("adminConsole.directLinks.creditsLabel", { defaultValue: "Credits:" })} ${Number(link.credits_price).toFixed(2)} ({link.credits_amount === 'unlimited' ? t("adminConsole.directLinks.unlimited", { defaultValue: "Unlimited" }) : link.credits_amount} {t("adminConsole.directLinks.creditsWord", { defaultValue: "credits" })})
                   </p>
                 </div>
                 <button
@@ -211,7 +216,7 @@ export default function DirectPurchaseLinksSection() {
                   className="action-btn btn-secondary whitespace-nowrap"
                 >
                   <i className="fas fa-copy mr-2"></i>
-                  Copy Link
+                  {t("adminConsole.directLinks.copyLink", { defaultValue: "Copy Link" })}
                 </button>
               </div>
 
@@ -226,7 +231,7 @@ export default function DirectPurchaseLinksSection() {
                   onClick={() => copyToClipboard(getPurchaseUrl(link))}
                   className="action-btn btn-primary w-full md:w-auto"
                 >
-                  Copy
+                  {t("adminConsole.directLinks.copy", { defaultValue: "Copy" })}
                 </button>
               </div>
 
@@ -234,7 +239,7 @@ export default function DirectPurchaseLinksSection() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="glass-card p-4 rounded-lg text-center">
                   <div className="text-gray-400 text-sm flex items-center justify-center gap-2 mb-2">
-                    <i className="fas fa-eye"></i> Visits
+                    <i className="fas fa-eye"></i> {t("adminConsole.directLinks.visits", { defaultValue: "Visits" })}
                   </div>
                   <div className="text-3xl font-bold text-cyan-300">
                     {link.visits_count || 0}
@@ -243,7 +248,7 @@ export default function DirectPurchaseLinksSection() {
 
                 <div className="glass-card p-4 rounded-lg text-center">
                   <div className="text-gray-400 text-sm flex items-center justify-center gap-2 mb-2">
-                    <i className="fas fa-receipt"></i> Transactions
+                    <i className="fas fa-receipt"></i> {t("adminConsole.directLinks.transactions", { defaultValue: "Transactions" })}
                   </div>
                   <div className="text-3xl font-bold text-purple-300">
                     {link.transactions_count || 0}
@@ -252,7 +257,7 @@ export default function DirectPurchaseLinksSection() {
 
                 <div className="glass-card p-4 rounded-lg text-center">
                   <div className="text-gray-400 text-sm flex items-center justify-center gap-2 mb-2">
-                    <i className="fas fa-percentage"></i> Conv. Rate
+                    <i className="fas fa-percentage"></i> {t("adminConsole.directLinks.convRate", { defaultValue: "Conv. Rate" })}
                   </div>
                   <div className="text-3xl font-bold text-green-300">
                     {Number(link.conversion_rate || 0).toFixed(2)}%
@@ -268,9 +273,9 @@ export default function DirectPurchaseLinksSection() {
       {links.length === 0 && !loading && (
         <div className="glass-panel p-12 text-center">
           <i className="fas fa-link text-5xl text-gray-500 mb-4"></i>
-          <h3 className="text-xl font-semibold text-gray-200 mb-2">No Direct Purchase Links</h3>
+          <h3 className="text-xl font-semibold text-gray-200 mb-2">{t("adminConsole.directLinks.noLinksTitle", { defaultValue: "No Direct Purchase Links" })}</h3>
           <p className="text-gray-400">
-            {selectedBrandId ? 'This brand has no direct purchase links yet.' : 'No direct purchase links found.'}
+            {selectedBrandId ? t("adminConsole.directLinks.noLinksForBrand", { defaultValue: "This brand has no direct purchase links yet." }) : t("adminConsole.directLinks.noLinksFound", { defaultValue: "No direct purchase links found." })}
           </p>
         </div>
       )}

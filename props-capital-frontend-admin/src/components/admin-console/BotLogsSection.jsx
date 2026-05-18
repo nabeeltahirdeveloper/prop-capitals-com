@@ -5,6 +5,7 @@ import {
   AlertTriangle, Info, AlertCircle, XCircle, Bug,
   Wifi, WifiOff, ChevronDown, ChevronRight
 } from 'lucide-react'
+import { useTranslation } from "../../contexts/LanguageContext";
 
 // Use the same API URL pattern as the rest of the app
 const API_BASE = `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}`
@@ -26,6 +27,13 @@ const LOG_LEVEL_ICONS = {
 }
 
 export default function BotLogsSection() {
+  const { t } = useTranslation();
+  const LOG_LEVEL_LABELS = {
+    DEBUG: t("adminConsole.botLogs.levelDebug", { defaultValue: "DEBUG" }),
+    INFO: t("adminConsole.botLogs.levelInfo", { defaultValue: "INFO" }),
+    WARNING: t("adminConsole.botLogs.levelWarning", { defaultValue: "WARNING" }),
+    ERROR: t("adminConsole.botLogs.levelError", { defaultValue: "ERROR" })
+  }
   const [logs, setLogs] = useState([])
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({
@@ -198,16 +206,16 @@ export default function BotLogsSection() {
   }
 
   const handleClearOldLogs = async () => {
-    const daysAgo = prompt('Delete logs older than how many days?', '30')
+    const daysAgo = prompt(t("adminConsole.botLogs.promptDeleteDays", { defaultValue: "Delete logs older than how many days?" }), '30')
     if (!daysAgo) return
-    
+
     const days = parseInt(daysAgo, 10)
     if (isNaN(days) || days < 1) {
-      alert('Please enter a valid number of days')
+      alert(t("adminConsole.botLogs.invalidDays", { defaultValue: "Please enter a valid number of days" }))
       return
     }
 
-    if (!confirm(`Are you sure you want to delete all bot logs older than ${days} days? This cannot be undone.`)) {
+    if (!confirm(t("adminConsole.botLogs.confirmDeleteOld", { defaultValue: "Are you sure you want to delete all bot logs older than {{days}} days? This cannot be undone.", days }))) {
       return
     }
 
@@ -226,19 +234,19 @@ export default function BotLogsSection() {
 
       if (response.ok) {
         const data = await response.json()
-        alert(`Successfully deleted ${data.deleted_count} old log entries`)
+        alert(t("adminConsole.botLogs.deleteOldSuccess", { defaultValue: "Successfully deleted {{count}} old log entries", count: data.deleted_count }))
         fetchLogs()
       } else {
-        alert('Failed to delete old logs')
+        alert(t("adminConsole.botLogs.deleteOldFailed", { defaultValue: "Failed to delete old logs" }))
       }
     } catch (error) {
       console.error('[BotLogs] Error clearing old logs:', error)
-      alert('Failed to clear old logs')
+      alert(t("adminConsole.botLogs.clearOldFailed", { defaultValue: "Failed to clear old logs" }))
     }
   }
 
   const handleDeleteLog = async (id) => {
-    if (!confirm('Are you sure you want to delete this log entry?')) return
+    if (!confirm(t("adminConsole.botLogs.confirmDeleteLog", { defaultValue: "Are you sure you want to delete this log entry?" }))) return
 
     try {
       const response = await fetch(`${API_BASE}/admin-console/bot-logs/${id}`, {
@@ -252,7 +260,7 @@ export default function BotLogsSection() {
           setSelectedLog(null)
         }
       } else {
-        alert('Failed to delete log')
+        alert(t("adminConsole.botLogs.deleteLogFailed", { defaultValue: "Failed to delete log" }))
       }
     } catch (error) {
       console.error('[BotLogs] Error deleting log:', error)
@@ -291,12 +299,12 @@ export default function BotLogsSection() {
       {isConnected ? (
         <>
           <Wifi className="w-4 h-4" />
-          <span>Live</span>
+          <span>{t("adminConsole.botLogs.live", { defaultValue: "Live" })}</span>
         </>
       ) : (
         <>
           <WifiOff className="w-4 h-4" />
-          <span>Disconnected</span>
+          <span>{t("adminConsole.botLogs.disconnected", { defaultValue: "Disconnected" })}</span>
         </>
       )}
     </div>
@@ -308,10 +316,10 @@ export default function BotLogsSection() {
       <div className="bg-white rounded-lg border-2 border-gray-200 shadow-sm p-6 mb-6">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900">Bot Logs</h2>
+            <h2 className="text-3xl font-bold text-gray-900">{t("adminConsole.botLogs.title", { defaultValue: "Bot Logs" })}</h2>
             <p className="text-sm text-gray-600 mt-2 flex items-center gap-3">
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                {pagination.totalCount || 0} total logs
+                {t("adminConsole.botLogs.totalLogs", { defaultValue: "{{count}} total logs", count: pagination.totalCount || 0 })}
               </span>
               <ConnectionStatus />
             </p>
@@ -324,7 +332,7 @@ export default function BotLogsSection() {
                 onChange={(e) => setAutoScroll(e.target.checked)}
                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              Auto-scroll
+              {t("adminConsole.botLogs.autoScroll", { defaultValue: "Auto-scroll" })}
             </label>
             <button
               onClick={() => setShowFilters(!showFilters)}
@@ -335,28 +343,28 @@ export default function BotLogsSection() {
               }`}
             >
               <Filter className="w-4 h-4" />
-              Filters
+              {t("adminConsole.botLogs.filters", { defaultValue: "Filters" })}
             </button>
             <button
               onClick={handleExport}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
             >
               <Download className="w-4 h-4" />
-              Export
+              {t("adminConsole.botLogs.export", { defaultValue: "Export" })}
             </button>
             <button
               onClick={handleClearOldLogs}
               className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors"
             >
               <Trash2 className="w-4 h-4" />
-              Clear Old
+              {t("adminConsole.botLogs.clearOld", { defaultValue: "Clear Old" })}
             </button>
             <button
               onClick={fetchLogs}
               className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors"
             >
               <RefreshCw className="w-4 h-4" />
-              Refresh
+              {t("adminConsole.botLogs.refresh", { defaultValue: "Refresh" })}
             </button>
           </div>
         </div>
@@ -375,7 +383,7 @@ export default function BotLogsSection() {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-2xl font-bold">{count}</div>
-                  <div className="text-sm font-medium">{level}</div>
+                  <div className="text-sm font-medium">{LOG_LEVEL_LABELS[level] || level}</div>
                 </div>
                 <LogLevelIcon level={level} />
               </div>
@@ -387,18 +395,18 @@ export default function BotLogsSection() {
       {/* Filters Panel */}
       {showFilters && (
         <div className="mb-6 bg-white border-2 border-gray-200 rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Filter Logs</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">{t("adminConsole.botLogs.filterLogs", { defaultValue: "Filter Logs" })}</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Search */}
             <div className="md:col-span-3">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("adminConsole.botLogs.search", { defaultValue: "Search" })}</label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
                   value={filters.search}
                   onChange={(e) => handleFilterChange('search', e.target.value)}
-                  placeholder="Search messages and actions..."
+                  placeholder={t("adminConsole.botLogs.searchPlaceholder", { defaultValue: "Search messages and actions..." })}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
@@ -406,28 +414,28 @@ export default function BotLogsSection() {
 
             {/* Level */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("adminConsole.botLogs.level", { defaultValue: "Level" })}</label>
               <select
                 value={filters.level}
                 onChange={(e) => handleFilterChange('level', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">All Levels</option>
+                <option value="">{t("adminConsole.botLogs.allLevels", { defaultValue: "All Levels" })}</option>
                 {filterOptions.levels.map(level => (
-                  <option key={level} value={level}>{level}</option>
+                  <option key={level} value={level}>{LOG_LEVEL_LABELS[level] || level}</option>
                 ))}
               </select>
             </div>
 
             {/* Category */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("adminConsole.botLogs.category", { defaultValue: "Category" })}</label>
               <select
                 value={filters.category}
                 onChange={(e) => handleFilterChange('category', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">All Categories</option>
+                <option value="">{t("adminConsole.botLogs.allCategories", { defaultValue: "All Categories" })}</option>
                 {filterOptions.categories.map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
@@ -436,13 +444,13 @@ export default function BotLogsSection() {
 
             {/* Bot Identifier */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Bot</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("adminConsole.botLogs.bot", { defaultValue: "Bot" })}</label>
               <select
                 value={filters.bot_identifier}
                 onChange={(e) => handleFilterChange('bot_identifier', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">All Bots</option>
+                <option value="">{t("adminConsole.botLogs.allBots", { defaultValue: "All Bots" })}</option>
                 {filterOptions.bot_identifiers.map(bot => (
                   <option key={bot} value={bot}>{bot}</option>
                 ))}
@@ -451,7 +459,7 @@ export default function BotLogsSection() {
 
             {/* Start Date */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("adminConsole.botLogs.startDate", { defaultValue: "Start Date" })}</label>
               <input
                 type="datetime-local"
                 value={filters.start_date}
@@ -462,7 +470,7 @@ export default function BotLogsSection() {
 
             {/* End Date */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("adminConsole.botLogs.endDate", { defaultValue: "End Date" })}</label>
               <input
                 type="datetime-local"
                 value={filters.end_date}
@@ -477,7 +485,7 @@ export default function BotLogsSection() {
               onClick={handleClearFilters}
               className="px-6 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors"
             >
-              Clear All Filters
+              {t("adminConsole.botLogs.clearAllFilters", { defaultValue: "Clear All Filters" })}
             </button>
           </div>
         </div>
@@ -491,13 +499,13 @@ export default function BotLogsSection() {
         {loading ? (
           <div className="p-12 text-center">
             <RefreshCw className="w-10 h-10 animate-spin mx-auto text-blue-500 mb-3" />
-            <p className="text-gray-600 text-lg">Loading bot logs...</p>
+            <p className="text-gray-600 text-lg">{t("adminConsole.botLogs.loadingLogs", { defaultValue: "Loading bot logs..." })}</p>
           </div>
         ) : logs.length === 0 ? (
           <div className="p-8 text-center">
             <Bug className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600 mb-2">No bot logs found</p>
-            <p className="text-sm text-gray-500">Logs will appear here in real-time when your bot sends them</p>
+            <p className="text-gray-600 mb-2">{t("adminConsole.botLogs.noLogsFound", { defaultValue: "No bot logs found" })}</p>
+            <p className="text-sm text-gray-500">{t("adminConsole.botLogs.noLogsHint", { defaultValue: "Logs will appear here in real-time when your bot sends them" })}</p>
           </div>
         ) : (
           <div className="divide-y divide-gray-200">
@@ -528,7 +536,7 @@ export default function BotLogsSection() {
                   {/* Level Badge */}
                   <span className={`flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold ${LOG_LEVEL_COLORS[log.log_level]}`}>
                     <LogLevelIcon level={log.log_level} />
-                    {log.log_level}
+                    {LOG_LEVEL_LABELS[log.log_level] || log.log_level}
                   </span>
 
                   {/* Timestamp */}
@@ -556,7 +564,7 @@ export default function BotLogsSection() {
 
                   {/* Screenshot indicator */}
                   {log.screenshot_url && (
-                    <span className="flex-shrink-0 px-2 py-0.5 bg-green-100 text-green-800 rounded text-xs font-medium" title="Has screenshot">
+                    <span className="flex-shrink-0 px-2 py-0.5 bg-green-100 text-green-800 rounded text-xs font-medium" title={t("adminConsole.botLogs.hasScreenshot", { defaultValue: "Has screenshot" })}>
                       📷
                     </span>
                   )}
@@ -578,11 +586,11 @@ export default function BotLogsSection() {
                   <div className="px-4 pb-4 pl-14 space-y-3">
                     {log.screenshot_url && (
                       <div>
-                        <label className="text-xs font-medium text-gray-500 mb-1 block">Screenshot</label>
+                        <label className="text-xs font-medium text-gray-500 mb-1 block">{t("adminConsole.botLogs.screenshot", { defaultValue: "Screenshot" })}</label>
                         <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                          <img 
-                            src={log.screenshot_url} 
-                            alt="Payment screenshot" 
+                          <img
+                            src={log.screenshot_url}
+                            alt={t("adminConsole.botLogs.paymentScreenshotAlt", { defaultValue: "Payment screenshot" })}
                             className="max-w-full h-auto rounded shadow-sm"
                             onError={(e) => {
                               e.target.style.display = 'none'
@@ -592,22 +600,22 @@ export default function BotLogsSection() {
                             }}
                           />
                           <div style={{ display: 'none' }} className="text-xs text-gray-500 mt-1">
-                            Failed to load screenshot
+                            {t("adminConsole.botLogs.failedToLoadScreenshot", { defaultValue: "Failed to load screenshot" })}
                           </div>
-                          <a 
-                            href={log.screenshot_url} 
-                            target="_blank" 
+                          <a
+                            href={log.screenshot_url}
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="mt-1 inline-block text-xs text-blue-600 hover:text-blue-800 underline"
                           >
-                            Open in new tab
+                            {t("adminConsole.botLogs.openInNewTab", { defaultValue: "Open in new tab" })}
                           </a>
                         </div>
                       </div>
                     )}
                     {log.details && (
                       <div>
-                        <label className="text-xs font-medium text-gray-500 mb-1 block">Details</label>
+                        <label className="text-xs font-medium text-gray-500 mb-1 block">{t("adminConsole.botLogs.details", { defaultValue: "Details" })}</label>
                         <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-auto max-h-64">
                           {JSON.stringify(log.details, null, 2)}
                         </pre>
@@ -625,8 +633,8 @@ export default function BotLogsSection() {
       {pagination.totalPages > 1 && (
         <div className="mt-6 bg-white rounded-lg border-2 border-gray-200 shadow-sm p-4 flex justify-between items-center">
           <div className="text-sm font-medium text-gray-700">
-            Page <span className="text-blue-600">{pagination.page}</span> of <span className="text-blue-600">{pagination.totalPages}</span> 
-            <span className="text-gray-500 ml-2">({pagination.totalCount} total logs)</span>
+            {t("adminConsole.botLogs.pageOf", { defaultValue: "Page" })} <span className="text-blue-600">{pagination.page}</span> {t("adminConsole.botLogs.of", { defaultValue: "of" })} <span className="text-blue-600">{pagination.totalPages}</span>
+            <span className="text-gray-500 ml-2">({t("adminConsole.botLogs.totalLogsParen", { defaultValue: "{{count}} total logs", count: pagination.totalCount })})</span>
           </div>
           <div className="flex gap-3">
             <button
@@ -634,14 +642,14 @@ export default function BotLogsSection() {
               disabled={filters.page <= 1}
               className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
-              ← Previous
+              ← {t("adminConsole.botLogs.previous", { defaultValue: "Previous" })}
             </button>
             <button
               onClick={() => handlePageChange(filters.page + 1)}
               disabled={filters.page >= pagination.totalPages}
               className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
-              Next →
+              {t("adminConsole.botLogs.next", { defaultValue: "Next" })} →
             </button>
           </div>
         </div>
@@ -653,7 +661,7 @@ export default function BotLogsSection() {
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
             <div className="p-6">
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-bold text-gray-900">Log Details</h3>
+                <h3 className="text-xl font-bold text-gray-900">{t("adminConsole.botLogs.logDetails", { defaultValue: "Log Details" })}</h3>
                 <button
                   onClick={() => setSelectedLog(null)}
                   className="text-gray-400 hover:text-gray-600 text-2xl"
@@ -665,33 +673,33 @@ export default function BotLogsSection() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Timestamp</label>
+                    <label className="text-sm font-medium text-gray-500">{t("adminConsole.botLogs.timestamp", { defaultValue: "Timestamp" })}</label>
                     <div className="text-gray-900">{formatDate(selectedLog.timestamp)}</div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Level</label>
+                    <label className="text-sm font-medium text-gray-500">{t("adminConsole.botLogs.level", { defaultValue: "Level" })}</label>
                     <div>
                       <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${LOG_LEVEL_COLORS[selectedLog.log_level]}`}>
                         <LogLevelIcon level={selectedLog.log_level} />
-                        {selectedLog.log_level}
+                        {LOG_LEVEL_LABELS[selectedLog.log_level] || selectedLog.log_level}
                       </span>
                     </div>
                   </div>
                   {selectedLog.category && (
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Category</label>
+                      <label className="text-sm font-medium text-gray-500">{t("adminConsole.botLogs.category", { defaultValue: "Category" })}</label>
                       <div className="text-gray-900">{selectedLog.category}</div>
                     </div>
                   )}
                   {selectedLog.action && (
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Action</label>
+                      <label className="text-sm font-medium text-gray-500">{t("adminConsole.botLogs.action", { defaultValue: "Action" })}</label>
                       <div className="text-gray-900">{selectedLog.action}</div>
                     </div>
                   )}
                   {selectedLog.bot_identifier && (
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Bot Identifier</label>
+                      <label className="text-sm font-medium text-gray-500">{t("adminConsole.botLogs.botIdentifier", { defaultValue: "Bot Identifier" })}</label>
                       <div className="text-gray-900">{selectedLog.bot_identifier}</div>
                     </div>
                   )}
@@ -699,18 +707,18 @@ export default function BotLogsSection() {
 
                 {selectedLog.message && (
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Message</label>
+                    <label className="text-sm font-medium text-gray-500">{t("adminConsole.botLogs.message", { defaultValue: "Message" })}</label>
                     <div className="text-gray-900 bg-gray-50 p-3 rounded mt-1">{selectedLog.message}</div>
                   </div>
                 )}
 
                 {selectedLog.screenshot_url && (
                   <div>
-                    <label className="text-sm font-medium text-gray-500 mb-2 block">Screenshot</label>
+                    <label className="text-sm font-medium text-gray-500 mb-2 block">{t("adminConsole.botLogs.screenshot", { defaultValue: "Screenshot" })}</label>
                     <div className="bg-gray-50 p-4 rounded-lg border-2 border-gray-200">
-                      <img 
-                        src={selectedLog.screenshot_url} 
-                        alt="Payment screenshot" 
+                      <img
+                        src={selectedLog.screenshot_url}
+                        alt={t("adminConsole.botLogs.paymentScreenshotAlt", { defaultValue: "Payment screenshot" })}
                         className="max-w-full h-auto rounded-lg shadow-md"
                         onError={(e) => {
                           e.target.style.display = 'none'
@@ -718,15 +726,15 @@ export default function BotLogsSection() {
                         }}
                       />
                       <div style={{ display: 'none' }} className="text-sm text-gray-500 mt-2">
-                        Failed to load screenshot image
+                        {t("adminConsole.botLogs.failedToLoadScreenshotImage", { defaultValue: "Failed to load screenshot image" })}
                       </div>
-                      <a 
-                        href={selectedLog.screenshot_url} 
-                        target="_blank" 
+                      <a
+                        href={selectedLog.screenshot_url}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="mt-2 inline-block text-sm text-blue-600 hover:text-blue-800 underline"
                       >
-                        Open in new tab
+                        {t("adminConsole.botLogs.openInNewTab", { defaultValue: "Open in new tab" })}
                       </a>
                     </div>
                   </div>
@@ -734,7 +742,7 @@ export default function BotLogsSection() {
 
                 {selectedLog.details && (
                   <div>
-                    <label className="text-sm font-medium text-gray-500 mb-2 block">Details</label>
+                    <label className="text-sm font-medium text-gray-500 mb-2 block">{t("adminConsole.botLogs.details", { defaultValue: "Details" })}</label>
                     <pre className="bg-gray-900 text-gray-100 p-4 rounded text-xs overflow-auto max-h-96">
                       {JSON.stringify(selectedLog.details, null, 2)}
                     </pre>
@@ -747,13 +755,13 @@ export default function BotLogsSection() {
                   onClick={() => handleDeleteLog(selectedLog.id)}
                   className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors"
                 >
-                  Delete Log
+                  {t("adminConsole.botLogs.deleteLog", { defaultValue: "Delete Log" })}
                 </button>
                 <button
                   onClick={() => setSelectedLog(null)}
                   className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium transition-colors"
                 >
-                  Close
+                  {t("adminConsole.botLogs.close", { defaultValue: "Close" })}
                 </button>
               </div>
             </div>

@@ -138,14 +138,14 @@ export default function CRMApiKeys() {
 
   const columns = [
     {
-      header: "Name",
+      header: t("admin.apiKeys.name", { defaultValue: "Name" }),
       accessorKey: "name",
       cell: (row) => (
         <span className="text-foreground font-medium">{row.name}</span>
       ),
     },
     {
-      header: "Status",
+      header: t("admin.apiKeys.status", { defaultValue: "Status" }),
       accessorKey: "isActive",
       cell: (row) => (
         <span
@@ -155,12 +155,14 @@ export default function CRMApiKeys() {
               : "bg-red-500/20 text-red-400"
           }`}
         >
-          {row.isActive ? "Active" : "Revoked"}
+          {row.isActive
+            ? t("admin.apiKeys.active", { defaultValue: "Active" })
+            : t("admin.apiKeys.revoked", { defaultValue: "Revoked" })}
         </span>
       ),
     },
     {
-      header: "Created",
+      header: t("admin.apiKeys.created", { defaultValue: "Created" }),
       accessorKey: "createdAt",
       cell: (row) =>
         row.createdAt
@@ -168,15 +170,15 @@ export default function CRMApiKeys() {
           : "—",
     },
     {
-      header: "Last Used",
+      header: t("admin.apiKeys.lastUsed", { defaultValue: "Last Used" }),
       accessorKey: "lastUsedAt",
       cell: (row) =>
         row.lastUsedAt
           ? format(new Date(row.lastUsedAt), "MMM d, yyyy HH:mm")
-          : "Never",
+          : t("admin.apiKeys.never", { defaultValue: "Never" }),
     },
     {
-      header: "Actions",
+      header: t("admin.apiKeys.actions", { defaultValue: "Actions" }),
       accessorKey: "id",
       cell: (row) => (
         <div
@@ -190,7 +192,7 @@ export default function CRMApiKeys() {
             onClick={() => setSelectedKey(row)}
           >
             <Eye className="w-4 h-4 mr-1" />
-            View
+            {t("admin.apiKeys.view", { defaultValue: "View" })}
           </Button>
           {row.isActive && (
             <Button
@@ -201,7 +203,7 @@ export default function CRMApiKeys() {
               disabled={revokeMutation.isPending}
             >
               <Trash2 className="w-4 h-4 mr-1" />
-              Revoke
+              {t("admin.apiKeys.revoke", { defaultValue: "Revoke" })}
             </Button>
           )}
         </div>

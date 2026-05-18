@@ -1,7 +1,9 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 export default function CurrenciesSection() {
+  const { t } = useTranslation();
   const [currencies, setCurrencies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
@@ -33,10 +35,10 @@ export default function CurrenciesSection() {
       const data = await adminConsoleApi.currencies.syncRates();
       setLastSyncInfo(data);
       await loadCurrencies();
-      alert(`Successfully synced ${data.updated} currency rates from ${data.base_currency}`);
+      alert(t("adminConsole.currencies.syncSuccess", { defaultValue: "Successfully synced {{updated}} currency rates from {{baseCurrency}}", updated: data.updated, baseCurrency: data.base_currency }));
     } catch (error) {
       console.error('Failed to sync rates:', error);
-      alert('Failed to sync exchange rates. Please try again.');
+      alert(t("adminConsole.currencies.syncFailed", { defaultValue: "Failed to sync exchange rates. Please try again." }));
     } finally {
       setSyncing(false);
     }
@@ -75,17 +77,17 @@ export default function CurrenciesSection() {
       await adminConsoleApi.currencies.updateConversionFee(parseFloat(newFee));
       setConversionFee(parseFloat(newFee));
       setEditingFee(false);
-      alert('Conversion fee updated successfully!');
+      alert(t("adminConsole.currencies.feeUpdateSuccess", { defaultValue: "Conversion fee updated successfully!" }));
     } catch (error) {
       console.error('Failed to update conversion fee:', error);
-      alert('Failed to update conversion fee. Please try again.');
+      alert(t("adminConsole.currencies.feeUpdateFailed", { defaultValue: "Failed to update conversion fee. Please try again." }));
     }
   };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-xl text-gray-400">Loading currencies...</div>
+        <div className="text-xl text-gray-400">{t("adminConsole.currencies.loading", { defaultValue: "Loading currencies..." })}</div>
       </div>
     );
   }
@@ -96,10 +98,10 @@ export default function CurrenciesSection() {
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-bold gradient-text">Currency Management</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold gradient-text">{t("adminConsole.currencies.title", { defaultValue: "Currency Management" })}</h2>
           {baseCurrency && (
             <p className="text-gray-400 mt-2 text-sm sm:text-base">
-              Base Currency: <span className="text-white font-semibold">{baseCurrency.code} ({baseCurrency.name})</span>
+              {t("adminConsole.currencies.baseCurrencyLabel", { defaultValue: "Base Currency:" })} <span className="text-white font-semibold">{baseCurrency.code} ({baseCurrency.name})</span>
             </p>
           )}
         </div>
@@ -111,12 +113,12 @@ export default function CurrenciesSection() {
           {syncing ? (
             <>
               <i className="fas fa-spinner fa-spin mr-2"></i>
-              Syncing...
+              {t("adminConsole.currencies.syncing", { defaultValue: "Syncing..." })}
             </>
           ) : (
             <>
               <i className="fas fa-sync-alt mr-2"></i>
-              Sync Rates from API
+              {t("adminConsole.currencies.syncRates", { defaultValue: "Sync Rates from API" })}
             </>
           )}
         </button>
@@ -127,9 +129,9 @@ export default function CurrenciesSection() {
           <div className="flex items-center">
             <i className="fas fa-check-circle text-green-400 mr-3"></i>
             <div>
-              <p className="text-green-300 font-semibold">Last Sync Successful</p>
+              <p className="text-green-300 font-semibold">{t("adminConsole.currencies.lastSyncSuccessful", { defaultValue: "Last Sync Successful" })}</p>
               <p className="text-sm text-gray-400">
-                Updated {lastSyncInfo.updated} rates from {lastSyncInfo.base_currency} at {new Date(lastSyncInfo.synced_at).toLocaleString()}
+                {t("adminConsole.currencies.lastSyncDetail", { defaultValue: "Updated {{updated}} rates from {{baseCurrency}} at {{syncedAt}}", updated: lastSyncInfo.updated, baseCurrency: lastSyncInfo.base_currency, syncedAt: new Date(lastSyncInfo.synced_at).toLocaleString() })}
               </p>
             </div>
           </div>
@@ -142,11 +144,10 @@ export default function CurrenciesSection() {
           <div className="flex-1">
             <h3 className="text-lg font-bold text-white mb-2 flex items-center">
               <i className="fas fa-dollar-sign text-cyan-400 mr-2"></i>
-              Currency Conversion Fee
+              {t("adminConsole.currencies.conversionFeeTitle", { defaultValue: "Currency Conversion Fee" })}
             </h3>
             <p className="text-sm text-gray-400">
-              This fee (in USD) will be deducted from all order amounts when displayed to brands/resellers. 
-              This affects commission calculations and payout amounts shown in brand dashboards.
+              {t("adminConsole.currencies.conversionFeeDescription", { defaultValue: "This fee (in USD) will be deducted from all order amounts when displayed to brands/resellers. This affects commission calculations and payout amounts shown in brand dashboards." })}
             </p>
           </div>
           
@@ -170,19 +171,19 @@ export default function CurrenciesSection() {
                   className="action-btn btn-primary px-3 py-2"
                 >
                   <i className="fas fa-save mr-1"></i>
-                  Save
+                  {t("adminConsole.currencies.save", { defaultValue: "Save" })}
                 </button>
                 <button
                   onClick={() => setEditingFee(false)}
                   className="action-btn btn-secondary px-3 py-2"
                 >
-                  Cancel
+                  {t("adminConsole.currencies.cancel", { defaultValue: "Cancel" })}
                 </button>
               </div>
             ) : (
               <div className="flex items-center gap-3">
                 <div className="text-right">
-                  <div className="text-sm text-gray-400">Current Fee</div>
+                  <div className="text-sm text-gray-400">{t("adminConsole.currencies.currentFee", { defaultValue: "Current Fee" })}</div>
                   <div className="text-2xl font-bold text-white">
                     ${Number(conversionFee).toFixed(2)} USD
                   </div>
@@ -192,7 +193,7 @@ export default function CurrenciesSection() {
                   className="action-btn btn-primary px-3 py-2"
                 >
                   <i className="fas fa-edit mr-1"></i>
-                  Edit
+                  {t("adminConsole.currencies.edit", { defaultValue: "Edit" })}
                 </button>
               </div>
             )}
@@ -206,13 +207,13 @@ export default function CurrenciesSection() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-700">
-                <th className="text-left py-3 px-4 text-gray-400 font-semibold">Currency</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-semibold">Symbol</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-semibold">Exchange Rate</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-semibold">Status</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-semibold">Base</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-semibold">Last Synced</th>
-                <th className="text-right py-3 px-4 text-gray-400 font-semibold">Actions</th>
+                <th className="text-left py-3 px-4 text-gray-400 font-semibold">{t("adminConsole.currencies.colCurrency", { defaultValue: "Currency" })}</th>
+                <th className="text-left py-3 px-4 text-gray-400 font-semibold">{t("adminConsole.currencies.colSymbol", { defaultValue: "Symbol" })}</th>
+                <th className="text-left py-3 px-4 text-gray-400 font-semibold">{t("adminConsole.currencies.colExchangeRate", { defaultValue: "Exchange Rate" })}</th>
+                <th className="text-left py-3 px-4 text-gray-400 font-semibold">{t("adminConsole.currencies.colStatus", { defaultValue: "Status" })}</th>
+                <th className="text-left py-3 px-4 text-gray-400 font-semibold">{t("adminConsole.currencies.colBase", { defaultValue: "Base" })}</th>
+                <th className="text-left py-3 px-4 text-gray-400 font-semibold">{t("adminConsole.currencies.colLastSynced", { defaultValue: "Last Synced" })}</th>
+                <th className="text-right py-3 px-4 text-gray-400 font-semibold">{t("adminConsole.currencies.colActions", { defaultValue: "Actions" })}</th>
               </tr>
             </thead>
             <tbody>
@@ -244,13 +245,13 @@ export default function CurrenciesSection() {
                           }}
                           className="action-btn btn-primary px-3 py-1 text-sm"
                         >
-                          Save
+                          {t("adminConsole.currencies.save", { defaultValue: "Save" })}
                         </button>
                         <button
                           onClick={() => setEditingCurrency(null)}
                           className="action-btn btn-secondary px-3 py-1 text-sm"
                         >
-                          Cancel
+                          {t("adminConsole.currencies.cancel", { defaultValue: "Cancel" })}
                         </button>
                       </div>
                     ) : (
@@ -270,7 +271,7 @@ export default function CurrenciesSection() {
                   <td className="py-4 px-4">
                     <button
                       onClick={() => handleToggleActive(currency.code, currency.active)}
-                      title={currency.active ? 'Click to deactivate' : 'Click to activate'}
+                      title={currency.active ? t("adminConsole.currencies.clickToDeactivate", { defaultValue: "Click to deactivate" }) : t("adminConsole.currencies.clickToActivate", { defaultValue: "Click to activate" })}
                       className={`group inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
                         currency.active
                           ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300'
@@ -283,25 +284,25 @@ export default function CurrenciesSection() {
                         )}
                         <span className={`relative inline-flex rounded-full h-2 w-2 ${currency.active ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
                       </span>
-                      {currency.active ? 'Active' : 'Inactive'}
+                      {currency.active ? t("adminConsole.currencies.active", { defaultValue: "Active" }) : t("adminConsole.currencies.inactive", { defaultValue: "Inactive" })}
                     </button>
                   </td>
                   <td className="py-4 px-4">
                     {currency.is_base ? (
                       <span className="bg-gradient-to-r from-purple-600 to-cyan-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-                        BASE
+                        {t("adminConsole.currencies.baseBadge", { defaultValue: "BASE" })}
                       </span>
                     ) : (
                       <button
                         onClick={() => handleSetBaseCurrency(currency.code)}
                         className="text-gray-400 hover:text-cyan-400 text-sm"
                       >
-                        Set as Base
+                        {t("adminConsole.currencies.setAsBase", { defaultValue: "Set as Base" })}
                       </button>
                     )}
                   </td>
                   <td className="py-4 px-4 text-sm text-gray-400">
-                    {currency.last_synced ? new Date(currency.last_synced).toLocaleDateString() : 'Never'}
+                    {currency.last_synced ? new Date(currency.last_synced).toLocaleDateString() : t("adminConsole.currencies.never", { defaultValue: "Never" })}
                   </td>
                   <td className="py-4 px-4 text-right">
                     <div className="flex justify-end gap-2">
@@ -337,12 +338,12 @@ export default function CurrenciesSection() {
                 <div className="flex items-center gap-2">
                   {currency.is_base && (
                     <span className="bg-gradient-to-r from-purple-600 to-cyan-500 text-white px-2 py-1 rounded-full text-xs font-bold">
-                      BASE
+                      {t("adminConsole.currencies.baseBadge", { defaultValue: "BASE" })}
                     </span>
                   )}
                   <button
                     onClick={() => handleToggleActive(currency.code, currency.active)}
-                    title={currency.active ? 'Click to deactivate' : 'Click to activate'}
+                    title={currency.active ? t("adminConsole.currencies.clickToDeactivate", { defaultValue: "Click to deactivate" }) : t("adminConsole.currencies.clickToActivate", { defaultValue: "Click to activate" })}
                     className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
                       currency.active
                         ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300'
@@ -355,14 +356,14 @@ export default function CurrenciesSection() {
                       )}
                       <span className={`relative inline-flex rounded-full h-2 w-2 ${currency.active ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
                     </span>
-                    {currency.active ? 'Active' : 'Inactive'}
+                    {currency.active ? t("adminConsole.currencies.active", { defaultValue: "Active" }) : t("adminConsole.currencies.inactive", { defaultValue: "Inactive" })}
                   </button>
                 </div>
               </div>
 
               {/* Exchange Rate */}
               <div className="mb-3 pb-3 border-b border-gray-700">
-                <div className="text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide">Exchange Rate</div>
+                <div className="text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide">{t("adminConsole.currencies.colExchangeRate", { defaultValue: "Exchange Rate" })}</div>
                 {editingCurrency === currency.code ? (
                   <div className="flex flex-col gap-2">
                     <input
@@ -381,13 +382,13 @@ export default function CurrenciesSection() {
                         className="action-btn btn-primary flex-1 py-2"
                       >
                         <i className="fas fa-save mr-2"></i>
-                        Save
+                        {t("adminConsole.currencies.save", { defaultValue: "Save" })}
                       </button>
                       <button
                         onClick={() => setEditingCurrency(null)}
                         className="action-btn btn-secondary flex-1 py-2"
                       >
-                        Cancel
+                        {t("adminConsole.currencies.cancel", { defaultValue: "Cancel" })}
                       </button>
                     </div>
                   </div>
@@ -400,7 +401,7 @@ export default function CurrenciesSection() {
                         className="text-cyan-400 hover:text-cyan-300"
                       >
                         <i className="fas fa-edit mr-1"></i>
-                        Edit
+                        {t("adminConsole.currencies.edit", { defaultValue: "Edit" })}
                       </button>
                     )}
                   </div>
@@ -409,9 +410,9 @@ export default function CurrenciesSection() {
 
               {/* Last Synced */}
               <div className="mb-3">
-                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide">Last Synced</div>
+                <div className="text-xs font-medium text-gray-400 uppercase tracking-wide">{t("adminConsole.currencies.colLastSynced", { defaultValue: "Last Synced" })}</div>
                 <div className="text-sm text-gray-300 mt-1">
-                  {currency.last_synced ? new Date(currency.last_synced).toLocaleDateString() : 'Never'}
+                  {currency.last_synced ? new Date(currency.last_synced).toLocaleDateString() : t("adminConsole.currencies.never", { defaultValue: "Never" })}
                 </div>
               </div>
 
@@ -423,7 +424,7 @@ export default function CurrenciesSection() {
                     className="w-full text-cyan-400 hover:text-cyan-300 text-sm py-2"
                   >
                     <i className="fas fa-star mr-2"></i>
-                    Set as Base Currency
+                    {t("adminConsole.currencies.setAsBaseCurrency", { defaultValue: "Set as Base Currency" })}
                   </button>
                 </div>
               )}
@@ -435,20 +436,20 @@ export default function CurrenciesSection() {
       <div className="mt-6 glass-card p-4 md:p-6 rounded-xl">
         <h3 className="text-lg md:text-xl font-bold text-white mb-4">
           <i className="fas fa-info-circle text-cyan-400 mr-2"></i>
-          About Currency Management
+          {t("adminConsole.currencies.aboutTitle", { defaultValue: "About Currency Management" })}
         </h3>
         <div className="space-y-3 text-gray-300 text-sm md:text-base">
           <p>
-            <strong className="text-white block mb-1">Base Currency:</strong> The currency used for storing prices in the database. All other currencies are calculated relative to this.
+            <strong className="text-white block mb-1">{t("adminConsole.currencies.aboutBaseLabel", { defaultValue: "Base Currency:" })}</strong> {t("adminConsole.currencies.aboutBaseText", { defaultValue: "The currency used for storing prices in the database. All other currencies are calculated relative to this." })}
           </p>
           <p>
-            <strong className="text-white block mb-1">Exchange Rates:</strong> Click "Sync Rates from API" to fetch the latest rates from exchangerate-api.com. You can also manually edit rates by clicking the edit icon.
+            <strong className="text-white block mb-1">{t("adminConsole.currencies.aboutRatesLabel", { defaultValue: "Exchange Rates:" })}</strong> {t("adminConsole.currencies.aboutRatesText", { defaultValue: "Click \"Sync Rates from API\" to fetch the latest rates from exchangerate-api.com. You can also manually edit rates by clicking the edit icon." })}
           </p>
           <p>
-            <strong className="text-white block mb-1">Active/Inactive:</strong> Only active currencies will be available for users to select. Inactive currencies are hidden from the frontend.
+            <strong className="text-white block mb-1">{t("adminConsole.currencies.aboutActiveLabel", { defaultValue: "Active/Inactive:" })}</strong> {t("adminConsole.currencies.aboutActiveText", { defaultValue: "Only active currencies will be available for users to select. Inactive currencies are hidden from the frontend." })}
           </p>
           <p className="text-xs md:text-sm text-gray-400">
-            Note: Changing the base currency will require you to sync rates again to update all exchange rates accordingly.
+            {t("adminConsole.currencies.aboutNote", { defaultValue: "Note: Changing the base currency will require you to sync rates again to update all exchange rates accordingly." })}
           </p>
         </div>
       </div>

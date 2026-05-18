@@ -245,51 +245,99 @@ export default function Layout({ children, currentPageName }) {
       //   section: "dashboard",
       // },
       {
-        name: "Orders & Transactions",
+        name: t("nav.ordersTransactions", {
+          defaultValue: "Orders & Transactions",
+        }),
         icon: ShoppingCart,
         children: [
           // { name: "Orders", icon: ShoppingCart, section: "orders" },
-          { name: "All Transactions", icon: List, section: "transactions" },
-          { name: "Payouts", icon: DollarSign, section: "payouts" },
           {
-            name: "Direct Purchase Links",
+            name: t("nav.allTransactions", { defaultValue: "All Transactions" }),
+            icon: List,
+            section: "transactions",
+          },
+          {
+            name: t("nav.payouts", { defaultValue: "Payouts" }),
+            icon: DollarSign,
+            section: "payouts",
+          },
+          {
+            name: t("nav.directPurchaseLinks", {
+              defaultValue: "Direct Purchase Links",
+            }),
             icon: Link2,
             section: "direct-purchase-links",
           },
           // { name: "Packages", icon: Package, section: "packages" },
           {
-            name: "Brands For Payouts",
+            name: t("nav.brandsForPayouts", {
+              defaultValue: "Brands For Payouts",
+            }),
             icon: AlertTriangle,
             section: "brands-unpaid-transactions",
           },
         ],
       },
       {
-        name: "Brands",
+        name: t("nav.brands", { defaultValue: "Brands" }),
         icon: Users,
         children: [
           // { name: "Users", icon: Users, section: "users" },
-          { name: "Brands Management", icon: Building2, section: "brands" },
-          { name: "Pending Brands", icon: Clock, section: "pending-brands" },
-          { name: "Brand Wallets", icon: Wallet, section: "brand-wallets" },
+          {
+            name: t("nav.brandsManagement", {
+              defaultValue: "Brands Management",
+            }),
+            icon: Building2,
+            section: "brands",
+          },
+          {
+            name: t("nav.pendingBrands", { defaultValue: "Pending Brands" }),
+            icon: Clock,
+            section: "pending-brands",
+          },
+          {
+            name: t("nav.brandWallets", { defaultValue: "Brand Wallets" }),
+            icon: Wallet,
+            section: "brand-wallets",
+          },
         ],
       },
       {
-        name: "Traffic & Security",
+        name: t("nav.trafficSecurity", { defaultValue: "Traffic & Security" }),
         icon: Shield,
         children: [
-          { name: "Visits", icon: Eye, section: "visits" },
-          { name: "Blocked IPs", icon: Ban, section: "blocked-ips" },
-          { name: "Access Control", icon: Shield, section: "ip-whitelist" },
+          {
+            name: t("nav.visits", { defaultValue: "Visits" }),
+            icon: Eye,
+            section: "visits",
+          },
+          {
+            name: t("nav.blockedIps", { defaultValue: "Blocked IPs" }),
+            icon: Ban,
+            section: "blocked-ips",
+          },
+          {
+            name: t("nav.accessControl", { defaultValue: "Access Control" }),
+            icon: Shield,
+            section: "ip-whitelist",
+          },
         ],
       },
       {
-        name: "Currencies & Geo Settings",
+        name: t("nav.currenciesGeo", {
+          defaultValue: "Currencies & Geo Settings",
+        }),
         icon: Globe,
         children: [
-          { name: "Currencies", icon: Banknote, section: "currencies" },
           {
-            name: "Currency Geo Mapping",
+            name: t("nav.currencies", { defaultValue: "Currencies" }),
+            icon: Banknote,
+            section: "currencies",
+          },
+          {
+            name: t("nav.currencyGeoMapping", {
+              defaultValue: "Currency Geo Mapping",
+            }),
             icon: Globe,
             section: "currency-geo",
           },
@@ -301,14 +349,36 @@ export default function Layout({ children, currentPageName }) {
         ],
       },
       {
-        name: "Logs & System Monitoring",
+        name: t("nav.logsMonitoring", {
+          defaultValue: "Logs & System Monitoring",
+        }),
         icon: Activity,
         children: [
-          { name: "System Logs", icon: FileText, section: "logs" },
-          { name: "Bot Logs", icon: Bot, section: "bot-logs" },
-          { name: "Analytics", icon: BarChart3, section: "analytics" },
-          { name: "System Tools", icon: Wrench, section: "system-tools" },
-          { name: "Settings", icon: Settings, section: "settings" },
+          {
+            name: t("nav.systemLogs", { defaultValue: "System Logs" }),
+            icon: FileText,
+            section: "logs",
+          },
+          {
+            name: t("nav.botLogs", { defaultValue: "Bot Logs" }),
+            icon: Bot,
+            section: "bot-logs",
+          },
+          {
+            name: t("nav.analytics", { defaultValue: "Analytics" }),
+            icon: BarChart3,
+            section: "analytics",
+          },
+          {
+            name: t("nav.systemTools", { defaultValue: "System Tools" }),
+            icon: Wrench,
+            section: "system-tools",
+          },
+          {
+            name: t("nav.settings", { defaultValue: "Settings" }),
+            icon: Settings,
+            section: "settings",
+          },
         ],
       },
 
@@ -373,9 +443,15 @@ export default function Layout({ children, currentPageName }) {
             onClick={() => setSidebarCollapsed((v) => !v)}
             className="hidden lg:flex absolute -right-4 top-1/2 -translate-y-1/2 z-[60] h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:bg-amber-50 hover:text-[#d97706] hover:border-[#d97706] shadow-sm transition-all duration-200 focus:outline-none"
             aria-label={
-              sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
+              sidebarCollapsed
+                ? t("nav.expandSidebar", { defaultValue: "Expand sidebar" })
+                : t("nav.collapseSidebar", { defaultValue: "Collapse sidebar" })
             }
-            title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            title={
+              sidebarCollapsed
+                ? t("nav.expandSidebar", { defaultValue: "Expand sidebar" })
+                : t("nav.collapseSidebar", { defaultValue: "Collapse sidebar" })
+            }
           >
             {sidebarCollapsed ? (
               <ChevronRight className="w-5 h-5 font-bold" />
@@ -392,7 +468,7 @@ export default function Layout({ children, currentPageName }) {
               to={createPageUrl("AdminDashboard")}
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center min-w-0 transition-all ${sidebarCollapsed ? "justify-center" : "gap-2 flex-1 min-w-0 lg:flex-none"}`}
-              title="Admin Dashboard"
+              title={t("nav.adminDashboard", { defaultValue: "Admin Dashboard" })}
             >
               <div className="w-10 h-10 shrink-0 mx-auto rounded-xl overflow-hidden flex items-center justify-center">
                 <img
@@ -401,7 +477,7 @@ export default function Layout({ children, currentPageName }) {
                       ? "/assets/images/logo-dark.png"
                       : "/assets/images/logo-light.png"
                   }
-                  alt="Logo"
+                  alt={t("nav.logo", { defaultValue: "Logo" })}
                   className="w-full h-full object-contain"
                 />
               </div>
@@ -416,7 +492,7 @@ export default function Layout({ children, currentPageName }) {
             <button
               onClick={() => setSidebarOpen(false)}
               className="lg:hidden ml-2 shrink-0 flex items-center justify-center w-9 h-9 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500/50"
-              aria-label="Close menu"
+              aria-label={t("nav.closeMenu", { defaultValue: "Close menu" })}
             >
               <X className="w-5 h-5" />
             </button>
@@ -625,7 +701,7 @@ export default function Layout({ children, currentPageName }) {
           <button
             onClick={() => setSidebarOpen(true)}
             className="lg:hidden flex items-center justify-center w-10 h-10 -ml-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500/50"
-            aria-label="Open menu"
+            aria-label={t("nav.openMenu", { defaultValue: "Open menu" })}
           >
             <Menu className="w-6 h-6" />
           </button>
@@ -636,7 +712,7 @@ export default function Layout({ children, currentPageName }) {
             <button
               onClick={toggleTheme}
               className="flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-              aria-label="Toggle theme"
+              aria-label={t("nav.toggleTheme", { defaultValue: "Toggle theme" })}
             >
               {isDark ? (
                 <Sun className="w-5 h-5" />
