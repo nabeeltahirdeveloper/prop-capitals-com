@@ -1,8 +1,10 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
 import BlockedIPDetailModal from './BlockedIPDetailModal';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 export default function BlockedIPsSection() {
+  const { t } = useTranslation();
   const [ips, setIps] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -57,7 +59,7 @@ export default function BlockedIPsSection() {
 
     } catch (error) {
       console.error('Failed to load blocked IPs:', error);
-      alert('⚠️ Failed to load blocked IPs. Please check the console for details.');
+      alert(t("adminConsole.blockedIps.loadFailed", { defaultValue: "⚠️ Failed to load blocked IPs. Please check the console for details." }));
     } finally {
       setLoading(false);
     }
@@ -65,22 +67,22 @@ export default function BlockedIPsSection() {
 
   const getStatus = (ip) => {
     if (ip.is_whitelisted) {
-      return { label: 'Whitelisted', badge: 'status-active' };
+      return { label: t("adminConsole.blockedIps.statusWhitelisted", { defaultValue: "Whitelisted" }), badge: 'status-active' };
     }
     const now = new Date();
     const blockedUntil = ip.blocked_until ? new Date(ip.blocked_until) : null;
     if (blockedUntil && blockedUntil > now) {
-      return { label: 'Blocked', badge: 'status-inactive' };
+      return { label: t("adminConsole.blockedIps.statusBlocked", { defaultValue: "Blocked" }), badge: 'status-inactive' };
     }
-    return { label: 'Active', badge: 'status-pending' };
+    return { label: t("adminConsole.blockedIps.statusActive", { defaultValue: "Active" }), badge: 'status-pending' };
   };
 
   const formatDate = (dateStr) => {
-    if (!dateStr) return 'N/A';
+    if (!dateStr) return t("adminConsole.blockedIps.notAvailable", { defaultValue: "N/A" });
     try {
       return new Date(dateStr).toLocaleString();
     } catch (e) {
-      return 'N/A';
+      return t("adminConsole.blockedIps.notAvailable", { defaultValue: "N/A" });
     }
   };
 
@@ -93,7 +95,7 @@ export default function BlockedIPsSection() {
     } catch (error) {
       console.error('Failed to load IP details:', error);
       setModalState({ show: false, ip: null, loading: false });
-      alert('❌ Failed to load IP details');
+      alert(t("adminConsole.blockedIps.detailsLoadFailed", { defaultValue: "❌ Failed to load IP details" }));
     }
   };
 
@@ -117,7 +119,7 @@ export default function BlockedIPsSection() {
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-4">
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold gradient-text">Blocked IPs Management</h2>
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold gradient-text">{t("adminConsole.blockedIps.title", { defaultValue: "Blocked IPs Management" })}</h2>
       </div>
 
       {/* Search and Filters */}
@@ -126,7 +128,7 @@ export default function BlockedIPsSection() {
           <div className="relative">
             <input
               type="text"
-              placeholder="Search by IP address..."
+              placeholder={t("adminConsole.blockedIps.searchPlaceholder", { defaultValue: "Search by IP address..." })}
               className="search-input p-2.5 sm:p-3 pr-10 sm:pr-12 rounded-lg w-full text-sm sm:text-base min-h-[44px]"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -136,8 +138,8 @@ export default function BlockedIPsSection() {
               type="button"
               onClick={handleSearch}
               className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 text-gray-400 hover:text-cyan-400 active:text-cyan-300 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
-              title="Search"
-              aria-label="Search"
+              title={t("adminConsole.blockedIps.search", { defaultValue: "Search" })}
+              aria-label={t("adminConsole.blockedIps.search", { defaultValue: "Search" })}
             >
               <i className="fas fa-search text-sm sm:text-base"></i>
             </button>
@@ -147,9 +149,9 @@ export default function BlockedIPsSection() {
             value={state.status}
             onChange={(e) => setState(prev => ({ ...prev, status: e.target.value, page: 1 }))}
           >
-            <option value="all">All Status</option>
-            <option value="blocked">Blocked</option>
-            <option value="whitelisted">Whitelisted</option>
+            <option value="all">{t("adminConsole.blockedIps.filterAllStatus", { defaultValue: "All Status" })}</option>
+            <option value="blocked">{t("adminConsole.blockedIps.filterBlocked", { defaultValue: "Blocked" })}</option>
+            <option value="whitelisted">{t("adminConsole.blockedIps.filterWhitelisted", { defaultValue: "Whitelisted" })}</option>
           </select>
         </div>
       </div>
@@ -160,7 +162,7 @@ export default function BlockedIPsSection() {
           <div className="text-center py-12 flex-1 flex items-center justify-center">
             <div>
               <i className="fas fa-spinner fa-spin text-3xl sm:text-4xl text-cyan-400 mb-4"></i>
-              <p className="text-gray-400 text-sm sm:text-base">Loading blocked IPs...</p>
+              <p className="text-gray-400 text-sm sm:text-base">{t("adminConsole.blockedIps.loading", { defaultValue: "Loading blocked IPs..." })}</p>
             </div>
           </div>
         ) : (
@@ -169,7 +171,7 @@ export default function BlockedIPsSection() {
               <div className="text-center py-12">
                 <i className="fas fa-ban text-4xl sm:text-6xl text-gray-600 mb-4"></i>
                 <p className="text-gray-400 text-sm sm:text-base">
-                  {state.q ? `No IPs match "${state.q}".` : 'No blocked IPs found'}
+                  {state.q ? t("adminConsole.blockedIps.noMatch", { query: state.q, defaultValue: 'No IPs match "{{query}}".' }) : t("adminConsole.blockedIps.noneFound", { defaultValue: "No blocked IPs found" })}
                 </p>
               </div>
             ) : (
@@ -177,11 +179,11 @@ export default function BlockedIPsSection() {
                 <thead className="border-b border-gray-700 sticky top-0 bg-gray-900 z-10">
                   <tr>
                     <th className="text-left p-2 lg:p-4 text-xs lg:text-sm">#</th>
-                    <th className="text-left p-2 lg:p-4 text-xs lg:text-sm">IP Address</th>
-                    <th className="text-left p-2 lg:p-4 text-xs lg:text-sm">Total Attempts</th>
-                    <th className="text-left p-2 lg:p-4 text-xs lg:text-sm hidden lg:table-cell">Last Attempt Time</th>
-                    <th className="text-left p-2 lg:p-4 text-xs lg:text-sm">Status</th>
-                    <th className="text-left p-2 lg:p-4 text-xs lg:text-sm">Actions</th>
+                    <th className="text-left p-2 lg:p-4 text-xs lg:text-sm">{t("adminConsole.blockedIps.colIpAddress", { defaultValue: "IP Address" })}</th>
+                    <th className="text-left p-2 lg:p-4 text-xs lg:text-sm">{t("adminConsole.blockedIps.colTotalAttempts", { defaultValue: "Total Attempts" })}</th>
+                    <th className="text-left p-2 lg:p-4 text-xs lg:text-sm hidden lg:table-cell">{t("adminConsole.blockedIps.colLastAttemptTime", { defaultValue: "Last Attempt Time" })}</th>
+                    <th className="text-left p-2 lg:p-4 text-xs lg:text-sm">{t("adminConsole.blockedIps.colStatus", { defaultValue: "Status" })}</th>
+                    <th className="text-left p-2 lg:p-4 text-xs lg:text-sm">{t("adminConsole.blockedIps.colActions", { defaultValue: "Actions" })}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -191,22 +193,22 @@ export default function BlockedIPsSection() {
                     return (
                       <tr key={ip.ip_address} className="border-b border-gray-800 hover:bg-gray-800/30">
                         <td className="p-2 lg:p-4 text-xs lg:text-sm" data-label="#">{serialNumber}</td>
-                        <td className="p-2 lg:p-4 text-xs lg:text-sm" data-label="IP Address">
+                        <td className="p-2 lg:p-4 text-xs lg:text-sm" data-label={t("adminConsole.blockedIps.colIpAddress", { defaultValue: "IP Address" })}>
                           <span className="font-mono break-all">{ip.ip_address}</span>
                         </td>
-                        <td className="p-2 lg:p-4 text-xs lg:text-sm" data-label="Total Attempts">{ip.attempt_count || 0}</td>
-                        <td className="p-2 lg:p-4 text-xs lg:text-sm hidden lg:table-cell" data-label="Last Attempt Time">{formatDate(ip.last_attempt_time)}</td>
-                        <td className="p-2 lg:p-4 text-xs lg:text-sm" data-label="Status">
+                        <td className="p-2 lg:p-4 text-xs lg:text-sm" data-label={t("adminConsole.blockedIps.colTotalAttempts", { defaultValue: "Total Attempts" })}>{ip.attempt_count || 0}</td>
+                        <td className="p-2 lg:p-4 text-xs lg:text-sm hidden lg:table-cell" data-label={t("adminConsole.blockedIps.colLastAttemptTime", { defaultValue: "Last Attempt Time" })}>{formatDate(ip.last_attempt_time)}</td>
+                        <td className="p-2 lg:p-4 text-xs lg:text-sm" data-label={t("adminConsole.blockedIps.colStatus", { defaultValue: "Status" })}>
                           <span className={`status-badge ${status.badge}`}>
                             {status.label}
                           </span>
                         </td>
-                        <td className="p-2 lg:p-4 text-xs lg:text-sm" data-label="Actions">
+                        <td className="p-2 lg:p-4 text-xs lg:text-sm" data-label={t("adminConsole.blockedIps.colActions", { defaultValue: "Actions" })}>
                           <button
                             className="action-btn btn-secondary min-w-[44px] min-h-[44px] flex items-center justify-center"
                             onClick={() => viewIP(ip.ip_address)}
-                            title="View IP details"
-                            aria-label="View IP details"
+                            title={t("adminConsole.blockedIps.viewIpDetails", { defaultValue: "View IP details" })}
+                            aria-label={t("adminConsole.blockedIps.viewIpDetails", { defaultValue: "View IP details" })}
                             type="button"
                           >
                             <i className="fas fa-arrow-right"></i>
@@ -230,23 +232,23 @@ export default function BlockedIPsSection() {
               className="action-btn btn-secondary w-full sm:w-auto min-h-[44px] px-4 sm:px-6 text-xs sm:text-sm md:text-base"
               onClick={() => state.page > 1 && setState(prev => ({ ...prev, page: prev.page - 1 }))}
               disabled={state.page <= 1}
-              aria-label="Previous page"
+              aria-label={t("adminConsole.blockedIps.previousPage", { defaultValue: "Previous page" })}
               type="button"
             >
               <i className="fas fa-chevron-left mr-1.5 sm:mr-2"></i>
-              Prev
+              {t("common.pagination.previous", { defaultValue: "Previous" })}
             </button>
             <div className="text-[10px] sm:text-xs md:text-sm text-gray-400 text-center order-first sm:order-none px-2 py-1">
-              Page {meta.page} of {meta.pages} — {meta.total} total
+              {t("common.pagination.pageOf", { current: meta.page, total: meta.pages, defaultValue: "Page {{current}} of {{total}}" })} — {meta.total} {t("common.pagination.records", { defaultValue: "total" })}
             </div>
             <button
               className="action-btn btn-secondary w-full sm:w-auto min-h-[44px] px-4 sm:px-6 text-xs sm:text-sm md:text-base"
               onClick={() => state.page < meta.pages && setState(prev => ({ ...prev, page: prev.page + 1 }))}
               disabled={state.page >= meta.pages}
-              aria-label="Next page"
+              aria-label={t("adminConsole.blockedIps.nextPage", { defaultValue: "Next page" })}
               type="button"
             >
-              Next
+              {t("common.pagination.next", { defaultValue: "Next" })}
               <i className="fas fa-chevron-right ml-1.5 sm:ml-2"></i>
             </button>
           </div>

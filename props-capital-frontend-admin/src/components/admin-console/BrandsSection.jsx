@@ -2,8 +2,10 @@
 import BrandModal from './BrandModal';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import { adminConsoleApi } from '@/api/adminConsole';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 export default function BrandsSection() {
+  const { t } = useTranslation();
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [state, setState] = useState({
@@ -68,7 +70,7 @@ export default function BrandsSection() {
       loadBrands();
     } catch (error) {
       console.error('Failed to delete brand:', error);
-      alert('Failed to delete brand: ' + error.message);
+      alert(t("adminConsole.brands.deleteFailed", { defaultValue: "Failed to delete brand: " }) + error.message);
       setDeleteModal({ show: false, brandId: null });
     }
   };
@@ -79,7 +81,7 @@ export default function BrandsSection() {
       setModalState({ show: true, mode: 'view', brand: data.brand });
     } catch (error) {
       console.error('Failed to view brand:', error);
-      alert('Failed to load brand details');
+      alert(t("adminConsole.brands.loadDetailsFailed", { defaultValue: "Failed to load brand details" }));
     }
   };
 
@@ -89,7 +91,7 @@ export default function BrandsSection() {
       setModalState({ show: true, mode: 'edit', brand: data.brand });
     } catch (error) {
       console.error('Failed to load brand:', error);
-      alert('Failed to load brand details');
+      alert(t("adminConsole.brands.loadDetailsFailed", { defaultValue: "Failed to load brand details" }));
     }
   };
 
@@ -137,7 +139,7 @@ export default function BrandsSection() {
       loadBrands();
     } catch (error) {
       console.error('Failed to bulk delete:', error);
-      alert('Failed to delete selected brands: ' + error.message);
+      alert(t("adminConsole.brands.bulkDeleteFailed", { defaultValue: "Failed to delete selected brands: " }) + error.message);
     } finally {
       setBulkDeleting(false);
     }
@@ -154,11 +156,11 @@ export default function BrandsSection() {
     <div>
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold gradient-text">Brands Management</h2>
+        <h2 className="text-3xl font-bold gradient-text">{t("adminConsole.brands.title", { defaultValue: "Brands Management" })}</h2>
         <div className="flex gap-2">
           {!selectMode && (
             <button className="action-btn btn-primary" onClick={createBrand}>
-              <i className="fas fa-plus mr-2"></i>Add Brand Partner
+              <i className="fas fa-plus mr-2"></i>{t("adminConsole.brands.addBrandPartner", { defaultValue: "Add Brand Partner" })}
             </button>
           )}
           <button
@@ -169,7 +171,7 @@ export default function BrandsSection() {
             }
           >
             <i className={`fas ${selectMode ? 'fa-times' : 'fa-check-double'} mr-2`}></i>
-            {selectMode ? 'Cancel Selection' : 'Select'}
+            {selectMode ? t("adminConsole.brands.cancelSelection", { defaultValue: "Cancel Selection" }) : t("adminConsole.brands.select", { defaultValue: "Select" })}
           </button>
         </div>
       </div>
@@ -178,7 +180,7 @@ export default function BrandsSection() {
       {selectMode && selectedIds.size > 0 && (
         <div className="flex items-center justify-between bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6">
           <span className="text-sm text-red-400 font-semibold">
-            {selectedIds.size} brand{selectedIds.size > 1 ? 's' : ''} selected
+            {t("adminConsole.brands.brandsSelected", { count: selectedIds.size, defaultValue: "{{count}} brand(s) selected" })}
           </span>
           <button
             className="action-btn bg-red-600 hover:bg-red-700 text-white text-sm"
@@ -186,7 +188,7 @@ export default function BrandsSection() {
             onClick={() => setDeleteModal({ show: true, brandId: 'bulk' })}
           >
             <i className={`fas ${bulkDeleting ? 'fa-spinner fa-spin' : 'fa-trash'} mr-2`}></i>
-            {bulkDeleting ? 'Deleting...' : `Delete Selected (${selectedIds.size})`}
+            {bulkDeleting ? t("adminConsole.brands.deleting", { defaultValue: "Deleting..." }) : t("adminConsole.brands.deleteSelected", { count: selectedIds.size, defaultValue: "Delete Selected ({{count}})" })}
           </button>
         </div>
       )}
@@ -194,15 +196,15 @@ export default function BrandsSection() {
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-6">
         <div className="glass-card p-6 rounded-xl">
-          <h3 className="text-lg font-semibold mb-2 text-gray-300">Total Brands</h3>
+          <h3 className="text-lg font-semibold mb-2 text-gray-300">{t("adminConsole.brands.totalBrands", { defaultValue: "Total Brands" })}</h3>
           <p className="text-3xl font-bold text-cyan-400">{stats.total}</p>
         </div>
         <div className="glass-card p-6 rounded-xl">
-          <h3 className="text-lg font-semibold mb-2 text-gray-300">Active Brands</h3>
+          <h3 className="text-lg font-semibold mb-2 text-gray-300">{t("adminConsole.brands.activeBrands", { defaultValue: "Active Brands" })}</h3>
           <p className="text-3xl font-bold text-green-400">{stats.active}</p>
         </div>
         <div className="glass-card p-6 rounded-xl">
-          <h3 className="text-lg font-semibold mb-2 text-gray-300">Inactive Brands</h3>
+          <h3 className="text-lg font-semibold mb-2 text-gray-300">{t("adminConsole.brands.inactiveBrands", { defaultValue: "Inactive Brands" })}</h3>
           <p className="text-3xl font-bold text-yellow-400">{stats.inactive}</p>
         </div>
       </div>
@@ -212,7 +214,7 @@ export default function BrandsSection() {
         <div className="grid grid-cols-1 gap-4">
           <input
             type="text"
-            placeholder="Search brands by name, website, or description..."
+            placeholder={t("adminConsole.brands.searchPlaceholder", { defaultValue: "Search brands by name, website, or description..." })}
             className="search-input p-3 rounded-lg"
             value={state.q}
             onChange={(e) => setState(prev => ({ ...prev, q: e.target.value, page: 1 }))}
@@ -225,7 +227,7 @@ export default function BrandsSection() {
         {loading ? (
           <div className="text-center py-12">
             <i className="fas fa-spinner fa-spin text-4xl text-cyan-400 mb-4"></i>
-            <p className="text-gray-400">Loading brands...</p>
+            <p className="text-gray-400">{t("adminConsole.brands.loading", { defaultValue: "Loading brands..." })}</p>
           </div>
         ) : (
           <div className="table-container brands-table-scroll overflow-x-auto">
@@ -242,14 +244,14 @@ export default function BrandsSection() {
                       />
                     </th>
                   )}
-                  <th className="text-left p-4">ID</th>
-                  <th className="text-left p-4">Username</th>
-                  <th className="text-left p-4">Logo</th>
-                  <th className="text-left p-4">Name</th>
-                  <th className="text-left p-4">Website</th>
-                  <th className="text-left p-4">Status</th>
-                  <th className="text-left p-4">Created</th>
-                  <th className="text-left p-4">Actions</th>
+                  <th className="text-left p-4">{t("adminConsole.brands.colId", { defaultValue: "ID" })}</th>
+                  <th className="text-left p-4">{t("adminConsole.brands.colUsername", { defaultValue: "Username" })}</th>
+                  <th className="text-left p-4">{t("adminConsole.brands.colLogo", { defaultValue: "Logo" })}</th>
+                  <th className="text-left p-4">{t("adminConsole.brands.colName", { defaultValue: "Name" })}</th>
+                  <th className="text-left p-4">{t("adminConsole.brands.colWebsite", { defaultValue: "Website" })}</th>
+                  <th className="text-left p-4">{t("adminConsole.brands.colStatus", { defaultValue: "Status" })}</th>
+                  <th className="text-left p-4">{t("adminConsole.brands.colCreated", { defaultValue: "Created" })}</th>
+                  <th className="text-left p-4">{t("adminConsole.brands.colActions", { defaultValue: "Actions" })}</th>
                 </tr>
               </thead>
               <tbody>
@@ -270,11 +272,11 @@ export default function BrandsSection() {
                         />
                       </td>
                     )}
-                    <td className="p-4 mono" data-label="ID">#{brand.id}</td>
-                    <td className="p-4 mono font-semibold text-cyan-400" data-label="Username">
+                    <td className="p-4 mono" data-label={t("adminConsole.brands.colId", { defaultValue: "ID" })}>#{brand.id}</td>
+                    <td className="p-4 mono font-semibold text-cyan-400" data-label={t("adminConsole.brands.colUsername", { defaultValue: "Username" })}>
                       {brand.username || '-'}
                     </td>
-                    <td className="p-4" data-label="Logo">
+                    <td className="p-4" data-label={t("adminConsole.brands.colLogo", { defaultValue: "Logo" })}>
                       {brand.logo_url ? (
                         <img
                           src={brand.logo_url}
@@ -288,8 +290,8 @@ export default function BrandsSection() {
                         </div>
                       )}
                     </td>
-                    <td className="p-4 font-semibold" data-label="Name">{brand.name || 'N/A'}</td>
-                    <td className="p-4" data-label="Website">
+                    <td className="p-4 font-semibold" data-label={t("adminConsole.brands.colName", { defaultValue: "Name" })}>{brand.name || t("adminConsole.brands.notAvailable", { defaultValue: "N/A" })}</td>
+                    <td className="p-4" data-label={t("adminConsole.brands.colWebsite", { defaultValue: "Website" })}>
                       {brand.website ? (
                         <a
                           href={brand.website}
@@ -303,36 +305,36 @@ export default function BrandsSection() {
                         <span className="text-gray-500">-</span>
                       )}
                     </td>
-                    <td className="p-4" data-label="Status">
+                    <td className="p-4" data-label={t("adminConsole.brands.colStatus", { defaultValue: "Status" })}>
                       <span className={`status-badge ${getStatusBadge(brand.status)}`}>
                         {brand.status || 'active'}
                       </span>
                     </td>
-                    <td className="p-4 text-sm text-gray-400" data-label="Created">
+                    <td className="p-4 text-sm text-gray-400" data-label={t("adminConsole.brands.colCreated", { defaultValue: "Created" })}>
                       {new Date(brand.created_at).toLocaleDateString()}
                     </td>
-                    <td className="p-4" data-label="Actions">
+                    <td className="p-4" data-label={t("adminConsole.brands.colActions", { defaultValue: "Actions" })}>
                       <div className="flex space-x-2">
                         <button
                           className="action-btn btn-secondary"
                           onClick={() => viewBrand(brand.id)}
-                          title="View brand details"
+                          title={t("adminConsole.brands.viewBrandTitle", { defaultValue: "View brand details" })}
                         >
-                          View
+                          {t("adminConsole.brands.view", { defaultValue: "View" })}
                         </button>
                         <button
                           className="action-btn btn-primary"
                           onClick={() => editBrand(brand.id)}
-                          title="Edit brand"
+                          title={t("adminConsole.brands.editBrandTitle", { defaultValue: "Edit brand" })}
                         >
-                          Edit
+                          {t("adminConsole.brands.edit", { defaultValue: "Edit" })}
                         </button>
                         <button
                           className="action-btn btn-danger"
                           onClick={() => openDeleteModal(brand.id)}
-                          title="Delete brand"
+                          title={t("adminConsole.brands.deleteBrandTitle", { defaultValue: "Delete brand" })}
                         >
-                          Delete
+                          {t("adminConsole.brands.delete", { defaultValue: "Delete" })}
                         </button>
                       </div>
                     </td>
@@ -341,7 +343,7 @@ export default function BrandsSection() {
                 {brands.length === 0 && (
                   <tr>
                     <td colSpan={selectMode ? "9" : "8"} className="p-8 text-center text-gray-400">
-                      No brands found. Click "Add Brand Partner" to create your first brand.
+                      {t("adminConsole.brands.noBrandsFound", { defaultValue: "No brands found. Click \"Add Brand Partner\" to create your first brand." })}
                     </td>
                   </tr>
                 )}
@@ -356,17 +358,17 @@ export default function BrandsSection() {
               onClick={() => state.page > 1 && setState(prev => ({ ...prev, page: prev.page - 1 }))}
               disabled={state.page <= 1}
             >
-              <i className="fas fa-chevron-left mr-2"></i>Previous
+              <i className="fas fa-chevron-left mr-2"></i>{t("common.pagination.previous", { defaultValue: "Previous" })}
             </button>
             <div className="text-sm text-gray-400">
-              Page {meta.page} of {meta.pages} — {meta.total} total
+              {t("common.pagination.pageOf", { current: meta.page, total: meta.pages, defaultValue: "Page {{current}} of {{total}}" })} — {meta.total} {t("common.pagination.records", { defaultValue: "total" })}
             </div>
             <button
               className="action-btn btn-secondary"
               onClick={() => state.page < meta.pages && setState(prev => ({ ...prev, page: prev.page + 1 }))}
               disabled={state.page >= meta.pages}
             >
-              Next<i className="fas fa-chevron-right ml-2"></i>
+              {t("common.pagination.next", { defaultValue: "Next" })}<i className="fas fa-chevron-right ml-2"></i>
             </button>
           </div>
         )}
@@ -385,10 +387,10 @@ export default function BrandsSection() {
       {/* Delete Confirmation Modal */}
       {deleteModal.show && (
         <DeleteConfirmModal
-          title={deleteModal.brandId === 'bulk' ? 'Delete Selected Brands' : 'Delete Brand'}
+          title={deleteModal.brandId === 'bulk' ? t("adminConsole.brands.deleteSelectedBrandsTitle", { defaultValue: "Delete Selected Brands" }) : t("adminConsole.brands.deleteBrandModalTitle", { defaultValue: "Delete Brand" })}
           message={deleteModal.brandId === 'bulk'
-            ? `Are you sure you want to delete ${selectedIds.size} selected brand${selectedIds.size > 1 ? 's' : ''}? This action cannot be undone.`
-            : `Are you sure you want to delete this brand? This action cannot be undone.`}
+            ? t("adminConsole.brands.bulkDeleteConfirm", { count: selectedIds.size, defaultValue: "Are you sure you want to delete {{count}} selected brand(s)? This action cannot be undone." })
+            : t("adminConsole.brands.deleteConfirm", { defaultValue: "Are you sure you want to delete this brand? This action cannot be undone." })}
           onConfirm={deleteModal.brandId === 'bulk' ? confirmBulkDelete : confirmDelete}
           onCancel={() => setDeleteModal({ show: false, brandId: null })}
           loading={bulkDeleting}
