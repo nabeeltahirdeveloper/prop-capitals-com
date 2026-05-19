@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ThemeProvider } from "@/contexts/ThemeContext"
 import { TradingProvider } from './contexts/TradingContext'
+import { CurrencyProvider } from '@/contexts/CurrencyContext'
+import { LanguageProvider } from '@/contexts/LanguageContext'
 import SocialProofNotification from "@/components/SocialProofNotification.jsx"
 import ChatSupport from './components/ChatSupport.jsx'
 
@@ -22,6 +24,8 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
+        <LanguageProvider>
+        <CurrencyProvider>
         <TradingProvider>
         <AuthProvider>
           <Pages />
@@ -30,6 +34,8 @@ function App() {
           {/* <SocialProofNotification /> */}
         </AuthProvider>
         </TradingProvider>
+        </CurrencyProvider>
+        </LanguageProvider>
       </ThemeProvider>
     </QueryClientProvider>
     // <div className="min-h-screen w-full bg-slate-950 text-slate-100 flex items-center justify-center px-6">
