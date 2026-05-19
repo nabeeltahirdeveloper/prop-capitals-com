@@ -103,6 +103,7 @@ const PrivacyPage = () => {
               <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Contact Us</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
                 If you have any questions about this Privacy Policy, please contact us at:<br />
+                <strong className={isDark ? 'text-white' : 'text-slate-900'}>BLUEHAVEN MANAGEMENT LTD</strong><br />
                 Email: privacy@prop-capitals.com<br />
                 Address: 60 TOTTENHAM COURT ROAD, OFFICE 469, LONDON, ENGLAND
               </p>
