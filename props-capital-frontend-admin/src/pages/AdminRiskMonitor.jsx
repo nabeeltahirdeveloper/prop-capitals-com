@@ -102,7 +102,9 @@ export default function AdminRiskMonitor() {
     } catch (error) {
       toast({
         title: t("common.error"),
-        description: t("admin.riskMonitor.toast.refreshFailed"),
+        description: t("admin.riskMonitor.toasts.refreshFailed", {
+          defaultValue: "Failed to refresh data",
+        }),
         variant: "destructive",
       });
     }
@@ -117,15 +119,24 @@ export default function AdminRiskMonitor() {
         queryKey: ["admin-account-details", accountId],
       });
       toast({
-        title: t("admin.riskMonitor.toast.accountPaused"),
-        description: t("admin.riskMonitor.toast.accountPausedDesc"),
+        title: t("admin.riskMonitor.toasts.accountPausedTitle", {
+          defaultValue: "Account paused",
+        }),
+        description: t("admin.riskMonitor.toasts.accountPausedDescription", {
+          defaultValue: "The account has been paused successfully.",
+        }),
       });
     },
     onError: (error) => {
       toast({
-        title: t("admin.riskMonitor.toast.pauseFailed"),
+        title: t("admin.riskMonitor.toasts.pauseFailedTitle", {
+          defaultValue: "Failed to pause account",
+        }),
         description:
-          error?.message || t("admin.riskMonitor.toast.pauseFailedDesc"),
+          error?.message ||
+          t("admin.riskMonitor.toasts.pauseFailedDescription", {
+            defaultValue: "An error occurred while pausing the account.",
+          }),
         variant: "destructive",
       });
     },
@@ -214,6 +225,25 @@ export default function AdminRiskMonitor() {
       await lockAccountMutation.mutateAsync(accountId);
     } catch {
       // Error handled by mutation onError
+    }
+  };
+
+  const getViolationTypeLabel = (type) => {
+    switch (type) {
+      case "OVERALL_DRAWDOWN":
+        return t("admin.riskMonitor.violationTypes.overallDrawdown", {
+          defaultValue: "OVERALL DRAWDOWN",
+        });
+      case "DAILY_DRAWDOWN":
+        return t("admin.riskMonitor.violationTypes.dailyDrawdown", {
+          defaultValue: "DAILY DRAWDOWN",
+        });
+      case "CONSISTENCY":
+        return t("admin.riskMonitor.violationTypes.consistency", {
+          defaultValue: "CONSISTENCY",
+        });
+      default:
+        return type?.replace(/_/g, " ");
     }
   };
 
@@ -422,10 +452,10 @@ export default function AdminRiskMonitor() {
                       </div>
                     </TableCell>
                     <TableCell className="text-foreground text-xs sm:text-sm py-2 sm:py-4 px-2 sm:px-4 whitespace-nowrap">
-                      ${account.current_balance?.toLocaleString()}
+                      €{account.current_balance?.toLocaleString()}
                     </TableCell>
                     <TableCell className="text-foreground text-xs sm:text-sm py-2 sm:py-4 px-2 sm:px-4 whitespace-nowrap">
-                      ${account.current_equity?.toLocaleString()}
+                      €{account.current_equity?.toLocaleString()}
                     </TableCell>
                     <TableCell className="py-2 sm:py-4 px-2 sm:px-4">
                       <div className="w-16 sm:w-24">
@@ -554,7 +584,7 @@ export default function AdminRiskMonitor() {
                   />
                   <div className="min-w-0">
                     <p className="text-foreground text-xs sm:text-sm font-medium truncate">
-                      {violation.type ? (t(`admin.riskMonitor.violationTypes.${violation.type.toLowerCase()}`) || violation.type.replace(/_/g, " ")) : ""}
+                      {getViolationTypeLabel(violation.type)}
                     </p>
                     <p className="text-xs text-muted-foreground truncate">
                       <span className="hidden sm:inline">
@@ -628,7 +658,9 @@ export default function AdminRiskMonitor() {
                   <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground truncate">
                     {accountDetails.brokerLogin ||
                       accountDetails.id ||
-                      "Account"}
+                      t("admin.accounts.dialog.accountFallback", {
+                        defaultValue: "Account",
+                      })}
                   </h3>
                   <p className="text-muted-foreground text-xs sm:text-sm break-all">
                     {accountDetails.user?.email || "N/A"}
@@ -754,7 +786,7 @@ export default function AdminRiskMonitor() {
                     })}
                   </p>
                   <p className="text-foreground font-bold text-sm sm:text-lg">
-                    ${accountDetails.initialBalance?.toLocaleString() || "0"}
+                    €{accountDetails.initialBalance?.toLocaleString() || "0"}
                   </p>
                 </div>
                 <div>
@@ -764,7 +796,7 @@ export default function AdminRiskMonitor() {
                     })}
                   </p>
                   <p className="text-foreground font-bold text-sm sm:text-lg">
-                    ${accountDetails.balance?.toLocaleString() || "0"}
+                    €{accountDetails.balance?.toLocaleString() || "0"}
                   </p>
                 </div>
                 <div>
@@ -774,7 +806,7 @@ export default function AdminRiskMonitor() {
                     })}
                   </p>
                   <p className="text-foreground font-bold text-sm sm:text-lg">
-                    ${accountDetails.equity?.toLocaleString() || "0"}
+                    €{accountDetails.equity?.toLocaleString() || "0"}
                   </p>
                 </div>
                 <div>
@@ -919,7 +951,9 @@ export default function AdminRiskMonitor() {
               </p>
               <p className="text-muted-foreground text-xs sm:text-sm">
                 {accountDetailsError.message ||
-                  "Failed to load account details"}
+                  t("admin.accounts.dialog.errorDetail", {
+                    defaultValue: "Failed to load account details",
+                  })}
               </p>
             </div>
           ) : (

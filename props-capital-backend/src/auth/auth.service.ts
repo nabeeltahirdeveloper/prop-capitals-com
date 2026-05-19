@@ -410,6 +410,70 @@ export class AuthService {
     return { message: 'If this email exists, an OTP has been sent.' };
   }
 
+  // ─── Set-password (one-time token from set-password email) ─────────
+
+  private hashSetPasswordToken(plainToken: string): string {
+    return crypto.createHash('sha256').update(plainToken).digest('hex');
+  }
+
+  private async findUserBySetPasswordToken(plainToken: string) {
+    if (!plainToken || typeof plainToken !== 'string') {
+      throw new BadRequestException('Invalid token');
+    }
+    const tokenHash = this.hashSetPasswordToken(plainToken.trim());
+    const user: any = await (this.prisma.user as any).findFirst({
+      where: { setPasswordTokenHash: tokenHash },
+    });
+    if (!user) throw new BadRequestException('Invalid or expired link');
+    if (!user.setPasswordTokenExpiry || user.setPasswordTokenExpiry < new Date()) {
+      throw new BadRequestException('Link has expired. Please contact support for a new one.');
+    }
+    return user;
+  }
+
+  async verifySetPasswordToken(plainToken: string) {
+    const user = await this.findUserBySetPasswordToken(plainToken);
+    return {
+      valid: true,
+      email: user.email,
+    };
+  }
+
+  async setPasswordWithToken(plainToken: string, newPassword: string) {
+    if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 8) {
+      throw new BadRequestException('Password must be at least 8 characters');
+    }
+    const user = await this.findUserBySetPasswordToken(plainToken);
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+
+    await (this.prisma.user as any).update({
+      where: { id: user.id },
+      data: {
+        password: hashed,
+        passwordSet: true,
+        setPasswordTokenHash: null,
+        setPasswordTokenExpiry: null,
+      },
+    });
+
+    const token = await this.jwtService.signAsync<JwtPayload>({
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    return {
+      message: 'Password set successfully',
+      accessToken: token,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      },
+    };
+  }
+
   async verifyOtpAndResetPassword(email: string, otp: string, newPassword: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) {

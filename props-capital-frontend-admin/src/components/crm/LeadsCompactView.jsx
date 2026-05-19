@@ -1,4 +1,4 @@
-import { useTranslation } from '../../contexts/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Phone, MessageCircle, Globe } from 'lucide-react';
@@ -36,10 +36,10 @@ export default function LeadsCompactView({ leads, onLeadClick, getStatusColor, g
                             </div>
                         </div>
                         <div className="flex items-center gap-2 ml-4">
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-green-500 hover:text-green-600 hover:bg-green-500/10" onClick={(e) => { e.stopPropagation(); }}>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-green-500 hover:text-green-600 hover:bg-green-500/10" title={t('crm.leads.call', { defaultValue: 'Call' })} aria-label={t('crm.leads.call', { defaultValue: 'Call' })} onClick={(e) => { e.stopPropagation(); }}>
                                 <Phone className="w-3 h-3" />
                             </Button>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:text-primary/80 hover:bg-primary/10" onClick={(e) => { e.stopPropagation(); }}>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:text-primary/80 hover:bg-primary/10" title={t('crm.leads.message', { defaultValue: 'Message' })} aria-label={t('crm.leads.message', { defaultValue: 'Message' })} onClick={(e) => { e.stopPropagation(); }}>
                                 <MessageCircle className="w-3 h-3" />
                             </Button>
                         </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   adminGetAllAccounts,
@@ -56,10 +56,30 @@ export default function AdminAccounts() {
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const queryClient = useQueryClient();
 
-  const { data: accountsData = [], isLoading } = useQuery({
-    queryKey: ["admin-accounts"],
-    queryFn: adminGetAllAccounts,
+  // Debounce the search input so we don't refetch on every keystroke. The
+  // backend search (admin-accounts.service.ts) does insensitive `contains`
+  // against user.email and brokerLogin, so we must hand it the query rather
+  // than filter the local 20-row page.
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  useEffect(() => {
+    const handle = setTimeout(() => setDebouncedSearch(searchQuery), 300);
+    return () => clearTimeout(handle);
+  }, [searchQuery]);
+
+  const { data: accountsResponse, isLoading } = useQuery({
+    queryKey: ["admin-accounts", debouncedSearch, statusFilter, phaseFilter],
+    queryFn: () =>
+      adminGetAllAccounts({
+        page: 1,
+        limit: 50,
+        search: debouncedSearch,
+        status: statusFilter,
+        phase: phaseFilter,
+      }),
   });
+  const accountsData = accountsResponse?.data ?? [];
+  const accountsTotal = accountsResponse?.total ?? 0;
+  const accountsSummary = accountsResponse?.summary ?? {};
 
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, status }) => adminUpdateAccountStatus(id, status),
@@ -70,7 +90,7 @@ export default function AdminAccounts() {
       });
       toast({
         title: t("admin.accounts.toast.statusUpdated"),
-        description: t("admin.accounts.toast.statusUpdatedDesc", { status: t(`admin.accounts.filter.${variables.status.toLowerCase()}`) || variables.status }),
+        description: t("admin.accounts.toast.statusUpdatedDesc", { status: variables.status }),
       });
     },
     onError: (error) => {
@@ -93,7 +113,7 @@ export default function AdminAccounts() {
       });
       toast({
         title: t("admin.accounts.toast.phaseUpdated"),
-        description: t("admin.accounts.toast.phaseUpdatedDesc", { phase: t(`admin.accounts.filter.${variables.phase.toLowerCase()}`) || variables.phase }),
+        description: t("admin.accounts.toast.phaseUpdatedDesc", { phase: variables.phase }),
       });
     },
     onError: (error) => {
@@ -261,8 +281,7 @@ export default function AdminAccounts() {
   };
 
   // Map backend accounts to frontend format
-  const accountsList = Array.isArray(accountsData) ? accountsData : (accountsData?.data || []);
-  const mappedAccounts = accountsList.map((account) => {
+  const mappedAccounts = accountsData?.map((account) => {
     const challenge = account.challenge || {};
     const user = account.user || {};
     // Map all backend TradingAccountStatus enum values
@@ -306,18 +325,9 @@ export default function AdminAccounts() {
     };
   });
 
-  const displayAccounts = mappedAccounts;
-
-  const filteredAccounts = displayAccounts.filter((account) => {
-    const matchesSearch =
-      account.account_number?.includes(searchQuery) ||
-      account.trader_id?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" || account.status === statusFilter;
-    const matchesPhase =
-      phaseFilter === "all" || account.current_phase === phaseFilter;
-    return matchesSearch && matchesStatus && matchesPhase;
-  });
+  // Search/status/phase are applied server-side (see useQuery above), so the
+  // mapped page from the backend is what we render directly.
+  const filteredAccounts = mappedAccounts;
 
   const columns = [
     {
@@ -337,7 +347,7 @@ export default function AdminAccounts() {
       cell: (row) => (
         <div>
           <p className="text-foreground font-medium">
-            ${row.current_balance?.toLocaleString()}
+            €{row.current_balance?.toLocaleString()}
           </p>
           <p
             className={`text-xs ${
@@ -519,7 +529,7 @@ export default function AdminAccounts() {
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
             <p className="text-xl sm:text-2xl font-bold text-foreground">
-              {displayAccounts.length}
+              {accountsTotal}
             </p>
           )}
         </Card>
@@ -531,7 +541,7 @@ export default function AdminAccounts() {
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
             <p className="text-xl sm:text-2xl font-bold text-emerald-500">
-              {displayAccounts.filter((a) => a.status === "active").length}
+              {accountsSummary.active ?? 0}
             </p>
           )}
         </Card>
@@ -543,10 +553,7 @@ export default function AdminAccounts() {
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
             <p className="text-xl sm:text-2xl font-bold text-blue-500">
-              {
-                displayAccounts.filter((a) => a.current_phase === "phase2")
-                  .length
-              }
+              {accountsSummary.phase2 ?? 0}
             </p>
           )}
         </Card>
@@ -558,10 +565,7 @@ export default function AdminAccounts() {
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
             <p className="text-xl sm:text-2xl font-bold text-purple-500">
-              {
-                displayAccounts.filter((a) => a.current_phase === "funded")
-                  .length
-              }
+              {accountsSummary.funded ?? 0}
             </p>
           )}
         </Card>
@@ -573,10 +577,7 @@ export default function AdminAccounts() {
             <Skeleton className="h-6 sm:h-8 w-12 sm:w-16 mt-2" />
           ) : (
             <p className="text-xl sm:text-2xl font-bold text-red-500">
-              {
-                displayAccounts.filter((a) => a.current_phase === "failed")
-                  .length
-              }
+              {accountsSummary.failed ?? 0}
             </p>
           )}
         </Card>
@@ -810,63 +811,112 @@ export default function AdminAccounts() {
               </div>
 
               {/* Balance Information */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 p-3 sm:p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl">
-                <div>
-                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
-                    {t("admin.accounts.dialog.initialBalance", {
-                      defaultValue: "Initial Balance",
-                    })}
-                  </p>
-                  <p className="text-foreground font-bold text-sm sm:text-lg">
-                    ${accountDetails.initialBalance?.toLocaleString() || "0"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
-                    {t("admin.accounts.dialog.currentBalance", {
-                      defaultValue: "Current Balance",
-                    })}
-                  </p>
-                  <p className="text-foreground font-bold text-sm sm:text-lg">
-                    ${accountDetails.balance?.toLocaleString() || "0"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
-                    {t("admin.accounts.dialog.equity", {
-                      defaultValue: "Equity",
-                    })}
-                  </p>
-                  <p className="text-foreground font-bold text-sm sm:text-lg">
-                    ${accountDetails.equity?.toLocaleString() || "0"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
-                    {t("admin.accounts.dialog.profit", {
-                      defaultValue: "Profit/Loss",
-                    })}
-                  </p>
-                  {(() => {
-                    const profit =
-                      (accountDetails.equity || 0) -
-                      (accountDetails.initialBalance || 0);
-                    const profitPercent =
-                      accountDetails.initialBalance > 0
-                        ? (profit / accountDetails.initialBalance) * 100
-                        : 0;
-                    return (
+              {(() => {
+                // Compute balance/equity from the trades array, falling back
+                // to the stored columns when trades aren't included. Each
+                // Trade carries a `profit` (realised once `closedAt` is set)
+                // and a `commission`; net per-trade = profit - commission.
+                const initialBalance = accountDetails.initialBalance || 0;
+                const trades = Array.isArray(accountDetails.trades)
+                  ? accountDetails.trades
+                  : [];
+                const tradeNet = (tr) =>
+                  (tr.profit || 0) - (tr.commission || 0);
+                const realisedPnl = trades
+                  .filter((tr) => tr.closedAt)
+                  .reduce((sum, tr) => sum + tradeNet(tr), 0);
+                const unrealisedPnl = trades
+                  .filter((tr) => !tr.closedAt)
+                  .reduce((sum, tr) => sum + tradeNet(tr), 0);
+                // Prefer the live-updated stored columns when present (e.g.
+                // when a backend equity-monitor service has been touching
+                // them), so admins see the same number as the trader UI.
+                const storedBalance =
+                  typeof accountDetails.balance === "number"
+                    ? accountDetails.balance
+                    : null;
+                const storedEquity =
+                  typeof accountDetails.equity === "number"
+                    ? accountDetails.equity
+                    : null;
+                const computedBalance =
+                  storedBalance !== null && storedBalance !== initialBalance
+                    ? storedBalance
+                    : initialBalance + realisedPnl;
+                const computedEquity =
+                  storedEquity !== null && storedEquity !== initialBalance
+                    ? storedEquity
+                    : computedBalance + unrealisedPnl;
+                const totalPnl = computedEquity - initialBalance;
+                const profitPercent =
+                  initialBalance > 0 ? (totalPnl / initialBalance) * 100 : 0;
+                const fmtEur = (n) =>
+                  `${n < 0 ? "-" : ""}€${Math.abs(n).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}`;
+                return (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 p-3 sm:p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl">
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                        {t("admin.accounts.dialog.initialBalance", {
+                          defaultValue: "Initial Balance",
+                        })}
+                      </p>
+                      <p className="text-foreground font-bold text-sm sm:text-lg">
+                        €{initialBalance.toLocaleString()}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                        {t("admin.accounts.dialog.currentBalance", {
+                          defaultValue: "Current Balance",
+                        })}
+                      </p>
+                      <p className="text-foreground font-bold text-sm sm:text-lg">
+                        €{computedBalance.toLocaleString(undefined, {
+                          maximumFractionDigits: 2,
+                        })}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                        {t("admin.accounts.dialog.equity", {
+                          defaultValue: "Equity",
+                        })}
+                      </p>
+                      <p className="text-foreground font-bold text-sm sm:text-lg">
+                        €{computedEquity.toLocaleString(undefined, {
+                          maximumFractionDigits: 2,
+                        })}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
+                        {t("admin.accounts.dialog.profit", {
+                          defaultValue: "Profit/Loss",
+                        })}
+                      </p>
                       <p
                         className={`font-bold text-sm sm:text-lg ${
-                          profit >= 0 ? "text-emerald-500" : "text-red-500"
+                          totalPnl >= 0 ? "text-emerald-500" : "text-red-500"
                         }`}
                       >
-                        {profit >= 0 ? "+" : ""}
-                        {profitPercent.toFixed(2)}%
+                        {totalPnl >= 0 ? "+" : ""}
+                        {fmtEur(totalPnl)}
                       </p>
-                    );
-                  })()}
-                </div>
+                      <p
+                        className={`text-xs ${
+                          totalPnl >= 0 ? "text-emerald-500" : "text-red-500"
+                        }`}
+                      >
+                        {totalPnl >= 0 ? "+" : ""}
+                        {Math.abs(profitPercent) >= 0.01
+                          ? profitPercent.toFixed(2)
+                          : profitPercent.toFixed(4)}
+                        %
+                      </p>
+                    </div>
                 <div>
                   <p className="text-xs text-muted-foreground mb-0.5 sm:mb-1">
                     {t("admin.accounts.dialog.dailyDrawdown", {
@@ -903,7 +953,9 @@ export default function AdminAccounts() {
                     );
                   })()}
                 </div>
-              </div>
+                  </div>
+                );
+              })()}
 
               {/* Statistics */}
               <div className="grid grid-cols-3 gap-2 sm:gap-3">

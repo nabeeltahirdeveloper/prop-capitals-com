@@ -33,7 +33,7 @@ import {
   Search,
   CheckCircle,
   XCircle,
-  DollarSign,
+  Euro,
   Clock,
   Wallet,
 } from "lucide-react";
@@ -112,7 +112,7 @@ export default function AdminPayouts() {
   const handleApprove = (payout) => {
     if (
       !window.confirm(
-        `Approve payout of $${payout.amount?.toLocaleString()} for ${payout.trader_id}?`,
+        `Approve payout of €${payout.amount?.toLocaleString()} for ${payout.trader_id}?`,
       )
     )
       return;
@@ -128,7 +128,7 @@ export default function AdminPayouts() {
   const handleMarkPaid = (payout) => {
     if (
       !window.confirm(
-        `Mark payout of $${payout.amount?.toLocaleString()} as paid? This action cannot be undone.`,
+        `Mark payout of €${payout.amount?.toLocaleString()} as paid? This action cannot be undone.`,
       )
     )
       return;
@@ -209,7 +209,7 @@ export default function AdminPayouts() {
       accessorKey: "amount",
       cell: (row) => (
         <span className="text-emerald-500 font-bold">
-          {row.currency === "USD" || !row.currency ? "$" : row.currency}
+          {row.currency === "USD" || !row.currency ? "€" : row.currency}
           {row.amount?.toLocaleString()}
         </span>
       ),
@@ -336,20 +336,20 @@ export default function AdminPayouts() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 overflow-hidden">
         <StatsCard
           title={t("admin.payouts.stats.pending")}
-          value={`$${pendingAmount.toLocaleString()}`}
+          value={`€${pendingAmount.toLocaleString()}`}
           icon={Clock}
           iconColor="text-amber-400"
         />
         <StatsCard
           title={t("admin.payouts.stats.approved")}
-          value={`$${approvedAmount.toLocaleString()}`}
+          value={`€${approvedAmount.toLocaleString()}`}
           icon={CheckCircle}
           iconColor="text-blue-400"
         />
         <StatsCard
           title={t("admin.payouts.stats.totalPaid")}
-          value={`$${paidAmount.toLocaleString()}`}
-          icon={DollarSign}
+          value={`€${paidAmount.toLocaleString()}`}
+          icon={Euro}
           iconColor="text-emerald-400"
         />
         <StatsCard
@@ -421,7 +421,7 @@ export default function AdminPayouts() {
           <div className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
             <p className="text-muted-foreground text-xs sm:text-sm">
               {t("admin.payouts.dialog.rejectMessage", {
-                amount: `$${selectedPayout?.amount?.toLocaleString()}`,
+                amount: `€${selectedPayout?.amount?.toLocaleString()}`,
                 trader: selectedPayout?.trader_id,
               })}
             </p>

@@ -2,56 +2,78 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+const accountSizes = [2000, 5000, 10000, 25000, 50000, 100000, 200000];
+const challengeTypes = ['one_phase', 'two_phase'] as const;
+
+const priceMap = {
+  one_phase: {
+    2000: 35,
+    5000: 65,
+    10000: 99,
+    25000: 189,
+    50000: 299,
+    100000: 599,
+    200000: 949,
+  },
+  two_phase: {
+    2000: 25,
+    5000: 45,
+    10000: 79,
+    25000: 159,
+    50000: 249,
+    100000: 449,
+    200000: 849,
+  },
+} as const;
+
 async function seedChallenges() {
-  console.log('🌱 Seeding challenges...');
+  console.log('🌱 Seeding challenges (authoritative)...');
 
-  const accountSizes = [5000, 10000, 25000, 50000, 100000, 200000];
-  const challengeTypes = ['one_phase', 'two_phase'];
+  // Step 1: deactivate every challenge so stragglers (24K, £-named dupes,
+  // wrong-priced rows from old seeds) disappear from the listing without
+  // breaking Payment foreign keys.
+  const deactivated = await prisma.challenge.updateMany({
+    data: { isActive: false },
+  });
+  console.log(`Deactivated ${deactivated.count} existing rows.`);
 
-  const priceMap = {
-    one_phase: {
-      5000: 55,
-      10000: 99,
-      25000: 189,
-      50000: 299,
-      100000: 499,
-      200000: 949,
-    },
-    two_phase: {
-      5000: 45,
-      10000: 79,
-      25000: 159,
-      50000: 249,
-      100000: 449,
-      200000: 849,
-    },
-  };
-
+  // Step 2: for each canonical (size, type), activate ONE row — preferring
+  // the most-recent existing match — and update price/name/currency. Any
+  // remaining duplicates stay deactivated and hidden from the frontend.
   for (const type of challengeTypes) {
     for (const size of accountSizes) {
-      const name = `${type === 'one_phase' ? '1-Step' : '2-Step'} Challenge - $${(size / 1000).toFixed(0)}K`;
+      const name = `${type === 'one_phase' ? '1-Step' : '2-Step'} Challenge - €${(size / 1000).toFixed(0)}K`;
+      const description = `${type === 'one_phase' ? 'Single-phase evaluation' : 'Two-phase evaluation'} for €${(size / 1000).toFixed(0)}K account`;
       const price = priceMap[type][size];
 
-      // Check if challenge already exists
       const existing = await prisma.challenge.findFirst({
-        where: {
-          accountSize: size,
-          challengeType: type,
-        },
+        where: { accountSize: size, challengeType: type },
+        orderBy: { createdAt: 'desc' },
       });
 
       if (existing) {
-        console.log(`✓ Challenge already exists: ${name}`);
+        const updated = await prisma.challenge.update({
+          where: { id: existing.id },
+          data: {
+            name,
+            description,
+            price,
+            currency: 'EUR',
+            isActive: true,
+          },
+        });
+        console.log(`✓ Activated: ${updated.name} (€${updated.price}) [id=${updated.id}]`);
         continue;
       }
 
-      const challenge = await prisma.challenge.create({
+      const created = await prisma.challenge.create({
         data: {
           name,
-          description: `${type === 'one_phase' ? 'Single-phase evaluation' : 'Two-phase evaluation'} for $${(size / 1000).toFixed(0)}K account`,
+          description,
           accountSize: size,
           price,
-          platform: 'MT5', // Default platform
+          currency: 'EUR',
+          platform: 'MT5',
           challengeType: type,
           phase1TargetPercent: type === 'one_phase' ? 10.0 : 8.0,
           phase2TargetPercent: type === 'one_phase' ? 0 : 5.0,
@@ -67,8 +89,7 @@ async function seedChallenges() {
           scalingEnabled: false,
         },
       });
-
-      console.log(`✓ Created: ${challenge.name} ($${challenge.price})`);
+      console.log(`✓ Created: ${created.name} (€${created.price})`);
     }
   }
 

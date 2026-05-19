@@ -546,11 +546,11 @@ export default function PropTradingExplainer() {
                   <p className="text-sm">Funded Traders</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-cyan-400">$50M+</p>
+                  <p className="text-2xl font-bold text-cyan-400">€50M+</p>
                   <p className="text-sm">Capital Deployed</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-amber-400">$8M+</p>
+                  <p className="text-2xl font-bold text-amber-400">€8M+</p>
                   <p className="text-sm">Paid Out</p>
                 </div>
               </motion.div>

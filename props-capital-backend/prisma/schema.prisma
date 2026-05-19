@@ -16,7 +16,10 @@ model User {
   updatedAt              DateTime                @updatedAt
   resetPasswordExpiry    DateTime?
   resetPasswordOtp       String?
-  chatSessions           ChatSession[]
+  passwordSet            Boolean                 @default(true)
+  setPasswordTokenExpiry DateTime?
+  setPasswordTokenHash   String?
+  ChatSession            ChatSession[]
   notifications          Notification[]
   notificationPreference NotificationPreference?
   payments               Payment[]
@@ -105,7 +108,11 @@ model Challenge {
   profitSplit            Float             @default(80.0)
   scalingEnabled         Boolean           @default(false)
   weekendHoldingAllowed  Boolean           @default(true)
+  currency               String            @default("USD")
+  slug                   String?           @unique
+  payments               Payment[]
   accounts               TradingAccount[]
+  directPurchaseLinks    DirectPurchaseLink[]
 }
 
 model TradingAccount {
@@ -230,18 +237,43 @@ model EquitySnapshot {
 }
 
 model Payment {
-  id           String    @id @default(cuid())
-  userId       String
-  amount       Int
-  currency     String    @default("USD")
-  provider     String
-  status       String
-  reference    String?
-  createdAt    DateTime  @default(now())
-  refundReason String?
-  refundedAt   DateTime?
-  updatedAt    DateTime  @updatedAt
-  user         User      @relation(fields: [userId], references: [id])
+  id                String     @id @default(cuid())
+  userId            String
+  amount            Int
+  currency          String     @default("USD")
+  provider          String
+  status            String
+  reference         String?    @unique
+  createdAt         DateTime   @default(now())
+  refundReason      String?
+  refundedAt        DateTime?
+  updatedAt         DateTime   @updatedAt
+  callbackPayload   Json?
+  challengeId       String?
+  couponCode        String?
+  discountAmount    Int?       @default(0)
+  failureReason     String?
+  metadata          Json?
+  operationType     String?
+  orderStatus       String?
+  originalAmount    Int?
+  providerPaymentId String?    @unique
+  providerSessionId String?    @unique
+  sessionPayload    Json?
+  sessionResponse   Json?
+  tradingAccountId  String?
+  brandId           String?
+  brandPaidOut      Boolean    @default(false)
+  brandCommission   Int?       @default(0)
+  challenge         Challenge? @relation(fields: [challengeId], references: [id])
+  user              User       @relation(fields: [userId], references: [id])
+  brand             Brand?     @relation(fields: [brandId], references: [id])
+
+  @@index([userId])
+  @@index([challengeId])
+  @@index([tradingAccountId])
+  @@index([status])
+  @@index([brandId])
 }
 
 model Payout {
@@ -436,27 +468,247 @@ model ContactMessage {
   updatedAt DateTime        @updatedAt
 }
 
+model ChatMessage {
+  id          String      @id @default(uuid())
+  sessionId   String
+  role        String
+  content     String
+  tokensUsed  Int?
+  createdAt   DateTime    @default(now())
+  ChatSession ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+}
+
 model ChatSession {
-  id        String        @id @default(cuid())
+  id        String        @id @default(uuid())
   userId    String
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
   messages  ChatMessage[]
-  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
 
-model ChatMessage {
-  id         String      @id @default(cuid())
-  sessionId  String
-  role       String
-  content    String
-  tokensUsed Int?
-  createdAt  DateTime    @default(now())
-  session    ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
-  @@index([sessionId])
+model Brand {
+  id                     String               @id @default(cuid())
+  name                   String
+  slug                   String?              @unique
+  logoUrl                String?
+  website                String?
+  primaryColor           String?
+  secondaryColor         String?
+  description            String?
+  status                 String               @default("active")
+  approvalStatus         String               @default("active")
+  commissionRate         Float                @default(10.0)
+  resellerCommission     Float                @default(0)
+  email                  String?
+  username               String?              @unique
+  passwordHash           String?
+  accountType            String               @default("brand")
+  parentBrandId          String?
+  parentBrand            Brand?               @relation("BrandHierarchy", fields: [parentBrandId], references: [id], onDelete: SetNull)
+  childBrands            Brand[]              @relation("BrandHierarchy")
+  settlementMethod       String?
+  settlementCryptoWallet String?
+  settlementBankHolder   String?
+  settlementBankIban     String?
+  settlementBankSwift    String?
+  settlementBankName     String?
+  settlementBankAddress  String?
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  brandPayouts           BrandPayout[]
+  directPurchaseLinks    DirectPurchaseLink[]
+  payments               Payment[]
+
+  @@index([approvalStatus])
+}
+
+model BrandPayout {
+  id          String    @id @default(cuid())
+  brandId     String
+  brand       Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  amount      Float
+  periodStart DateTime  @db.Date
+  periodEnd   DateTime  @db.Date
+  status      String    @default("pending")
+  method      String    @default("Bank Transfer")
+  referenceId String?
+  createdAt   DateTime  @default(now())
+  paidAt      DateTime?
+
+  @@index([brandId])
+}
+
+model AdminCurrency {
+  code         String               @id
+  symbol       String
+  name         String
+  isBase       Boolean              @default(false)
+  active       Boolean              @default(true)
+  exchangeRate Float                @default(1.0)
+  lastSynced   DateTime?
+  createdAt    DateTime             @default(now())
+  geoMappings  CurrencyGeoMapping[]
+}
+
+model CurrencyGeoMapping {
+  countryCode  String        @id @db.VarChar(2)
+  currencyCode String
+  currency     AdminCurrency @relation(fields: [currencyCode], references: [code], onDelete: Cascade)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model PaymentGatewayMapping {
+  countryCode String   @id @db.VarChar(2)
+  gateway     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Visit {
+  id                BigInt    @id @default(autoincrement())
+  ip                String    @unique
+  visitsCount       Int       @default(0)
+  demoTries         Int       @default(0)
+  firstVisitAt      DateTime  @default(now())
+  lastVisitAt       DateTime  @default(now())
+  lastDemoAt        DateTime?
+  country           String?
+  countryCode       String?
+  region            String?
+  regionName        String?
+  city              String?
+  zip               String?
+  lat               Float?
+  lon               Float?
+  timezone          String?
+  isp               String?
+  org               String?
+  asn               String?
+  userAgent         String?
+  isVpn             Boolean   @default(false)
+  isProxy           Boolean   @default(false)
+  vpnCheckAttempted Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+
+  @@index([countryCode])
+  @@index([lastVisitAt])
+}
+
+model BlockedIp {
+  id             BigInt             @id @default(autoincrement())
+  ip             String             @unique
+  reason         String?
+  attemptsCount  Int                @default(0)
+  firstAttemptAt DateTime           @default(now())
+  lastAttemptAt  DateTime           @default(now())
+  blockedAt      DateTime           @default(now())
+  unblockedAt    DateTime?
+  status         String             @default("blocked")
+  createdAt      DateTime           @default(now())
+  attempts       BlockedIpAttempt[]
+
+  @@index([status])
+  @@index([blockedAt])
+}
+
+model BlockedIpAttempt {
+  id          BigInt    @id @default(autoincrement())
+  blockedIpId BigInt
+  blockedIp   BlockedIp @relation(fields: [blockedIpId], references: [id], onDelete: Cascade)
+  ip          String
+  endpoint    String?
+  userAgent   String?
+  attemptedAt DateTime  @default(now())
+
+  @@index([blockedIpId])
+  @@index([ip])
+}
+
+model IpWhitelist {
+  id               BigInt   @id @default(autoincrement())
+  ipAddress        String   @unique
+  label            String?
+  createdAt        DateTime @default(now())
+  createdByAdminId String?
+}
+
+model IpWhitelistSettings {
+  id                    Int      @id @default(1)
+  enabled               Boolean  @default(false)
+  vpnBlockEnabled       Boolean  @default(true)
+  vpnWhitelistExemption Boolean  @default(false)
+  updatedAt             DateTime @updatedAt
+}
+
+model AdminLog {
+  id             BigInt   @id @default(autoincrement())
+  timestamp      DateTime @default(now())
+  logLevel       String
+  category       String
+  action         String
+  message        String?
+  details        Json?
+  userId         String?
+  userEmail      String?
+  requestId      String?
+  httpMethod     String?
+  route          String?
+  requestBody    Json?
+  responseBody   Json?
+  responseStatus Int?
+  responseTimeMs Int?
+  queryParams    Json?
+  headers        Json?
+  createdAt      DateTime @default(now())
+
+  @@index([timestamp(sort: Desc)])
+  @@index([category])
+  @@index([logLevel])
+  @@index([userEmail])
+  @@index([route])
+  @@index([responseStatus])
+}
+
+model BotLog {
+  id        BigInt   @id @default(autoincrement())
+  timestamp DateTime @default(now())
+  level     String
+  category  String?
+  source    String?
+  message   String
+  details   Json?
+  createdAt DateTime @default(now())
+
+  @@index([timestamp(sort: Desc)])
+  @@index([level])
+  @@index([category])
+}
+
+model DirectPurchaseLink {
+  id          String     @id @default(cuid())
+  slug        String     @unique
+  name        String?
+  brandId     String?
+  brand       Brand?     @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  challengeId String?
+  challenge   Challenge? @relation(fields: [challengeId], references: [id], onDelete: SetNull)
+  amount      Float?
+  currency    String     @default("USD")
+  metadata    Json?
+  active      Boolean    @default(true)
+  clicks      Int        @default(0)
+  conversions Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([brandId])
 }
 
 enum UserRole {

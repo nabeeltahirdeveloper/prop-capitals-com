@@ -1,8 +1,14 @@
 import axios from "axios";
 
-// Create axios instance with base URL from environment variable
+// Create axios instance with base URL from environment variable.
+// Falls back to localhost so local `npm run dev` works without a .env.
+// Production deploys must set VITE_API_URL — Vercel does this via env vars.
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "https://api.prop-capitals.com",
+  baseURL:
+    import.meta.env.VITE_API_URL ||
+    (import.meta.env.PROD
+      ? "https://api.prop-capitals.com"
+      : "http://localhost:5002"),
 });
 
 // Request interceptor: automatically attach JWT token from localStorage or sessionStorage
@@ -59,6 +65,9 @@ api.interceptors.response.use(
         "/signin",
         "/signup",
         "/login",
+        "/pay",
+        "/paycheckout",
+        "/set-password",
         "/",
       ];
 
@@ -67,7 +76,8 @@ api.interceptors.response.use(
         (page) =>
           currentPath === page ||
           currentPath === page + "/" ||
-          currentPath.startsWith(page + "?")
+          currentPath.startsWith(page + "?") ||
+          currentPath.startsWith(page + "/")
       );
 
       // Only redirect if we're on a protected page
@@ -99,6 +109,11 @@ export const apiPost = async (url, data, config) => {
 
 export const apiPatch = async (url, data, config) => {
   const response = await api.patch(url, data, config);
+  return response.data;
+};
+
+export const apiPut = async (url, data, config) => {
+  const response = await api.put(url, data, config);
   return response.data;
 };
 

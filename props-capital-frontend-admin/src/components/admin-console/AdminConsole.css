@@ -1,0 +1,920 @@
+/* ============================================================================
+ * Admin Console — Prop Capitals light theme
+ * Every rule is scoped under .admin-console-wrapper to prevent the styles
+ * from bleeding into the rest of the prop-capitals admin app.
+ *
+ * Palette (matches src/index.css :root tokens):
+ *   bg          #F5F5F7   (page)
+ *   card        #FFFFFF
+ *   border      #E5E7EB
+ *   text        #0A0A0A
+ *   muted       #6B7280
+ *   sidebar     #FAFAFA
+ *   accent      amber-500 #F59E0B / amber-600 #D97706
+ *   success     #10B981
+ *   warning     #F59E0B
+ *   error       #EF4444
+ * ========================================================================== */
+
+.admin-console-wrapper {
+  --ac-bg: #F5F5F7;
+  --ac-card: #FFFFFF;
+  --ac-border: #E5E7EB;
+  --ac-text: #0A0A0A;
+  --ac-muted: #6B7280;
+  --ac-sidebar-bg: #FAFAFA;
+  --ac-sidebar-border: #E5E7EB;
+  --ac-accent: #D97706;
+  --ac-accent-soft: rgba(217, 119, 6, 0.08);
+  --ac-accent-soft-2: rgba(217, 119, 6, 0.16);
+  --ac-success: #10B981;
+  --ac-warning: #F59E0B;
+  --ac-error: #EF4444;
+  --ac-info: #3B82F6;
+
+  background: var(--ac-bg);
+  min-height: 100vh;
+  color: var(--ac-text);
+  display: flex;
+  position: relative;
+  overflow-x: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ---------- Mobile menu button ---------- */
+
+.admin-console-wrapper .mobile-menu-btn {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 60;
+  background: var(--ac-accent);
+  border: 1px solid var(--ac-accent);
+  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.admin-console-wrapper .mobile-menu-btn:hover {
+  background: #B45309;
+  transform: scale(1.05);
+}
+
+@media (max-width: 1023px) {
+  .admin-console-wrapper .mobile-menu-btn {
+    display: flex;
+  }
+}
+
+/* ---------- Sidebar ---------- */
+
+.admin-console-wrapper .sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  align-self: flex-start; /* prevent flex stretch so 100vh + sticky actually pins */
+  background: var(--ac-sidebar-bg);
+  border-right: 1px solid var(--ac-sidebar-border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+@media (max-width: 1023px) {
+  .admin-console-wrapper .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    transform: translateX(-100%);
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.08);
+  }
+  .admin-console-wrapper .sidebar.sidebar-open {
+    transform: translateX(0);
+  }
+}
+
+.admin-console-wrapper .sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 40;
+}
+
+.admin-console-wrapper .sidebar-header {
+  flex-shrink: 0;
+  padding: 1.25rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--ac-sidebar-border);
+}
+
+.admin-console-wrapper .sidebar-header h1 {
+  color: var(--ac-text);
+}
+
+.admin-console-wrapper .sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1rem;
+}
+
+.admin-console-wrapper .sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+.admin-console-wrapper .sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.admin-console-wrapper .sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+.admin-console-wrapper .sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.admin-console-wrapper .sidebar-footer {
+  flex-shrink: 0;
+  padding: 1rem;
+  border-top: 1px solid var(--ac-sidebar-border);
+  background: var(--ac-sidebar-bg);
+}
+
+.admin-console-wrapper .sidebar-footer .glass-card {
+  background: var(--ac-card);
+  border: 1px solid var(--ac-border);
+  border-radius: 12px;
+  color: var(--ac-text);
+}
+
+.admin-console-wrapper .sidebar-footer p {
+  color: var(--ac-text);
+}
+.admin-console-wrapper .sidebar-footer .text-gray-400 {
+  color: var(--ac-muted) !important;
+}
+
+/* ---------- Nav items ---------- */
+
+.admin-console-wrapper .nav-item {
+  transition: background 0.15s ease, color 0.15s ease,
+    border-color 0.15s ease;
+  border-radius: 8px;
+  margin: 2px 0;
+  display: flex;
+  align-items: center;
+  border-left: 3px solid transparent;
+  color: var(--ac-text);
+  cursor: pointer;
+}
+
+.admin-console-wrapper .nav-item:hover {
+  background: var(--ac-accent-soft);
+  border-left-color: var(--ac-accent);
+}
+
+.admin-console-wrapper .nav-item.active {
+  background: var(--ac-accent-soft-2);
+  border-left-color: var(--ac-accent);
+  color: var(--ac-accent);
+  font-weight: 600;
+}
+
+.admin-console-wrapper .nav-item.active i {
+  color: var(--ac-accent) !important;
+}
+
+.admin-console-wrapper .nav-category {
+  font-weight: 600;
+}
+
+.admin-console-wrapper .nav-category.category-active {
+  background: var(--ac-accent-soft);
+  border-left-color: var(--ac-accent);
+}
+
+.admin-console-wrapper .chevron-icon {
+  font-size: 11px;
+  transition: transform 0.25s ease;
+  color: var(--ac-muted);
+  margin-left: auto;
+}
+.admin-console-wrapper .chevron-icon.expanded {
+  transform: rotate(90deg);
+  color: var(--ac-text);
+}
+
+.admin-console-wrapper .sub-items {
+  margin: 4px 0;
+  overflow: hidden;
+  animation: ac-slideDown 0.25s ease;
+  border-radius: 8px;
+}
+
+@keyframes ac-slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 600px;
+  }
+}
+
+.admin-console-wrapper .nav-sub-item {
+  padding: 0.6rem 1rem 0.6rem 2.5rem !important;
+  font-size: 0.875rem;
+  background: transparent;
+  border-left: 3px solid transparent;
+}
+
+.admin-console-wrapper .nav-sub-item:hover {
+  background: var(--ac-accent-soft);
+  border-left-color: var(--ac-accent);
+}
+
+.admin-console-wrapper .nav-sub-item.active {
+  background: var(--ac-accent-soft-2);
+  border-left-color: var(--ac-accent);
+  color: var(--ac-accent);
+  font-weight: 500;
+}
+
+/* ---------- Main content ---------- */
+
+.admin-console-wrapper .main-content {
+  flex: 1;
+  min-width: 0;
+  padding: 2rem;
+  overflow-x: hidden;
+}
+
+@media (max-width: 1023px) {
+  .admin-console-wrapper .main-content {
+    padding: 4rem 1rem 1rem;
+  }
+}
+
+/* ---------- Headings & gradient text ---------- */
+
+.admin-console-wrapper .gradient-text {
+  background: linear-gradient(90deg, #D97706 0%, #B45309 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--ac-accent);
+  font-weight: 700;
+}
+
+.admin-console-wrapper h1,
+.admin-console-wrapper h2,
+.admin-console-wrapper h3,
+.admin-console-wrapper h4 {
+  color: var(--ac-text);
+}
+
+.admin-console-wrapper p {
+  color: var(--ac-text);
+}
+
+.admin-console-wrapper .text-gray-300,
+.admin-console-wrapper .text-gray-400,
+.admin-console-wrapper .text-gray-500 {
+  color: var(--ac-muted) !important;
+}
+
+.admin-console-wrapper .text-gray-200,
+.admin-console-wrapper .text-gray-100,
+.admin-console-wrapper .text-white {
+  color: var(--ac-text) !important;
+}
+
+/* ---------- Cards / panels ---------- */
+
+.admin-console-wrapper .glass-card,
+.admin-console-wrapper .glass-panel,
+.admin-console-wrapper .metric-card {
+  background: var(--ac-card);
+  border: 1px solid var(--ac-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  color: var(--ac-text);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.admin-console-wrapper .metric-card:hover,
+.admin-console-wrapper .glass-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.admin-console-wrapper .neon-border {
+  border: 1px solid var(--ac-accent) !important;
+  box-shadow: 0 0 0 3px var(--ac-accent-soft);
+}
+
+/* ---------- Buttons ---------- */
+
+.admin-console-wrapper .action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease,
+    color 0.15s ease, opacity 0.15s ease;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.admin-console-wrapper .action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-console-wrapper .btn-primary {
+  background: var(--ac-accent);
+  color: white;
+  border-color: var(--ac-accent);
+}
+.admin-console-wrapper .btn-primary:hover:not(:disabled) {
+  background: #B45309;
+  border-color: #B45309;
+}
+
+.admin-console-wrapper .btn-secondary {
+  background: white;
+  color: var(--ac-text);
+  border-color: var(--ac-border);
+}
+.admin-console-wrapper .btn-secondary:hover:not(:disabled) {
+  background: #F3F4F6;
+  border-color: #D1D5DB;
+}
+
+.admin-console-wrapper .btn-danger {
+  background: var(--ac-error);
+  color: white;
+  border-color: var(--ac-error);
+}
+.admin-console-wrapper .btn-danger:hover:not(:disabled) {
+  background: #DC2626;
+  border-color: #DC2626;
+}
+
+/* ---------- Search / inputs ---------- */
+
+.admin-console-wrapper .search-input,
+.admin-console-wrapper input[type="text"],
+.admin-console-wrapper input[type="email"],
+.admin-console-wrapper input[type="password"],
+.admin-console-wrapper input[type="number"],
+.admin-console-wrapper input[type="date"],
+.admin-console-wrapper input[type="search"],
+.admin-console-wrapper textarea,
+.admin-console-wrapper select {
+  background: white;
+  border: 1px solid var(--ac-border);
+  border-radius: 8px;
+  color: var(--ac-text);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-console-wrapper .search-input:focus,
+.admin-console-wrapper input:focus,
+.admin-console-wrapper textarea:focus,
+.admin-console-wrapper select:focus {
+  border-color: var(--ac-accent);
+  box-shadow: 0 0 0 3px var(--ac-accent-soft);
+}
+
+.admin-console-wrapper input::placeholder,
+.admin-console-wrapper textarea::placeholder {
+  color: #9CA3AF;
+}
+
+/* ---------- Status badges ---------- */
+
+.admin-console-wrapper .status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+}
+
+.admin-console-wrapper .status-active {
+  background: rgba(16, 185, 129, 0.1);
+  color: #047857;
+  border-color: rgba(16, 185, 129, 0.25);
+}
+.admin-console-wrapper .status-pending {
+  background: rgba(245, 158, 11, 0.1);
+  color: #B45309;
+  border-color: rgba(245, 158, 11, 0.25);
+}
+.admin-console-wrapper .status-inactive {
+  background: rgba(107, 114, 128, 0.1);
+  color: #4B5563;
+  border-color: rgba(107, 114, 128, 0.25);
+}
+
+/* ---------- Tables ---------- */
+
+.admin-console-wrapper .table-container,
+.admin-console-wrapper .users-table-scroll,
+.admin-console-wrapper .brands-table-scroll {
+  background: var(--ac-card);
+  border: 1px solid var(--ac-border);
+  border-radius: 12px;
+  /* `auto` (not `hidden`) so the inline `maxHeight: 600px` + Tailwind
+     `overflow-y-auto` actually scrolls instead of being clipped */
+  overflow: auto;
+  max-height: 600px;
+}
+
+.admin-console-wrapper .table-container::-webkit-scrollbar,
+.admin-console-wrapper .users-table-scroll::-webkit-scrollbar,
+.admin-console-wrapper .brands-table-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.admin-console-wrapper .table-container::-webkit-scrollbar-thumb,
+.admin-console-wrapper .users-table-scroll::-webkit-scrollbar-thumb,
+.admin-console-wrapper .brands-table-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  border: 2px solid var(--ac-card);
+}
+.admin-console-wrapper .table-container::-webkit-scrollbar-thumb:hover,
+.admin-console-wrapper .users-table-scroll::-webkit-scrollbar-thumb:hover,
+.admin-console-wrapper .brands-table-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+/* Sticky table headers need an opaque background so rows don't show through */
+.admin-console-wrapper .users-table-scroll thead,
+.admin-console-wrapper .brands-table-scroll thead,
+.admin-console-wrapper .table-container thead {
+  position: sticky;
+  top: 0;
+  background: #F9FAFB;
+  z-index: 2;
+}
+
+.admin-console-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-console-wrapper table thead {
+  background: #F9FAFB;
+  border-bottom: 1px solid var(--ac-border);
+}
+
+.admin-console-wrapper table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ac-muted);
+}
+
+.admin-console-wrapper table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--ac-border);
+  color: var(--ac-text);
+  font-size: 0.875rem;
+}
+
+.admin-console-wrapper table tbody tr:hover {
+  background: #F9FAFB;
+}
+
+.admin-console-wrapper table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ---------- Charts ---------- */
+
+.admin-console-wrapper .chart-container {
+  background: var(--ac-card);
+  border: 1px solid var(--ac-border);
+  border-radius: 12px;
+  padding: 1rem;
+  position: relative;
+  height: 300px;
+}
+
+.admin-console-wrapper .chart-container canvas {
+  max-height: 100%;
+}
+
+/* ---------- Pagination ---------- */
+
+.admin-console-wrapper .pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--ac-border);
+  background: #F9FAFB;
+}
+
+.admin-console-wrapper .pagination-controls button {
+  background: white;
+  border: 1px solid var(--ac-border);
+  border-radius: 6px;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.admin-console-wrapper .pagination-controls button:hover:not(:disabled) {
+  background: var(--ac-accent-soft);
+  border-color: var(--ac-accent);
+  color: var(--ac-accent);
+}
+.admin-console-wrapper .pagination-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Brand stats / dashboards ---------- */
+
+.admin-console-wrapper .brand-stats-card {
+  background: var(--ac-card);
+  border: 1px solid var(--ac-border);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.admin-console-wrapper .brand-stats-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--ac-accent-soft);
+  color: var(--ac-accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-console-wrapper .brand-trend-positive {
+  color: var(--ac-success);
+}
+.admin-console-wrapper .brand-trend-negative {
+  color: var(--ac-error);
+}
+
+.admin-console-wrapper .brand-tab-button {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ac-muted);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.admin-console-wrapper .brand-tab-button:hover {
+  background: var(--ac-accent-soft);
+  color: var(--ac-accent);
+}
+.admin-console-wrapper .brand-tab-button.active {
+  background: var(--ac-accent);
+  color: white;
+}
+
+.admin-console-wrapper .brand-link-text {
+  word-break: break-all;
+  color: var(--ac-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8125rem;
+}
+
+.admin-console-wrapper .brand-program-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--ac-accent-soft);
+  color: var(--ac-accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-console-wrapper .brand-program-detail {
+  color: var(--ac-muted);
+  font-size: 0.875rem;
+}
+
+.admin-console-wrapper .brand-daily-section {
+  background: var(--ac-card);
+  border: 1px solid var(--ac-border);
+  border-radius: 12px;
+}
+
+.admin-console-wrapper .stats-grid-7 {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 1rem;
+}
+@media (max-width: 1280px) {
+  .admin-console-wrapper .stats-grid-7 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (max-width: 768px) {
+  .admin-console-wrapper .stats-grid-7 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.admin-console-wrapper .grid-5-items-mobile-2col {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1rem;
+}
+@media (max-width: 1024px) {
+  .admin-console-wrapper .grid-5-items-mobile-2col {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .admin-console-wrapper .grid-5-items-mobile-2col {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.admin-console-wrapper .mobile-2-col {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+@media (max-width: 640px) {
+  .admin-console-wrapper .mobile-2-col {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.admin-console-wrapper .tabs-wrap-mobile {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* ---------- Modals ---------- */
+
+.admin-console-wrapper .blocked-ip-modal,
+.blocked-ip-modal {
+  background: rgba(0, 0, 0, 0.5);
+}
+body.blocked-ip-modal-open {
+  overflow: hidden;
+}
+
+/* ---------- Dark utility class overrides for copied JSX ---------- */
+
+.admin-console-wrapper .bg-gray-900,
+.admin-console-wrapper .bg-gray-800,
+.admin-console-wrapper .bg-slate-900,
+.admin-console-wrapper .bg-slate-800,
+.admin-console-wrapper .bg-black {
+  background: var(--ac-card) !important;
+  color: var(--ac-text) !important;
+}
+
+.admin-console-wrapper .bg-gray-700 {
+  background: #F3F4F6 !important;
+}
+
+/* FontAwesome icon default color */
+.admin-console-wrapper i[class*="fa-"] {
+  color: inherit;
+}
+
+/* Ensure links inherit theme */
+.admin-console-wrapper a {
+  color: var(--ac-accent);
+}
+.admin-console-wrapper a:hover {
+  color: #B45309;
+}
+
+.admin-console-wrapper.admin-console-embedded {
+  display: block;
+  min-height: 0;
+  background: transparent;
+}
+
+.admin-console-wrapper.admin-console-embedded .main-content {
+  padding: 0;
+}
+
+@media (max-width: 1023px) {
+  .admin-console-wrapper.admin-console-embedded .main-content {
+    padding: 0;
+  }
+}
+
+/* ============================================================================
+ * Dark theme overrides — activated by `html.dark` (set in ThemeContext).
+ * Repaints the admin console palette without touching component JSX.
+ * ========================================================================== */
+
+html.dark .admin-console-wrapper {
+  --ac-bg: #0B0D11;
+  --ac-card: #161A22;
+  --ac-border: #2A2F3A;
+  --ac-text: #E5E7EB;
+  --ac-muted: #9CA3AF;
+  --ac-sidebar-bg: #11141B;
+  --ac-sidebar-border: #2A2F3A;
+  --ac-accent: #F59E0B;
+  --ac-accent-soft: rgba(245, 158, 11, 0.12);
+  --ac-accent-soft-2: rgba(245, 158, 11, 0.22);
+}
+
+/* Sidebar scrollbar — lighter thumb on dark */
+html.dark .admin-console-wrapper .sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+html.dark .admin-console-wrapper .sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Headings + paragraphs use the dark `--ac-text` automatically, but the
+   gradient title needs its endpoints lifted so it doesn't disappear on dark */
+html.dark .admin-console-wrapper .gradient-text {
+  background: linear-gradient(90deg, #FBBF24 0%, #F59E0B 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Buttons */
+html.dark .admin-console-wrapper .btn-secondary {
+  background: var(--ac-card);
+  color: var(--ac-text);
+  border-color: var(--ac-border);
+}
+html.dark .admin-console-wrapper .btn-secondary:hover:not(:disabled) {
+  background: #1F2530;
+  border-color: #3A4150;
+}
+
+/* Inputs / selects / textareas */
+html.dark .admin-console-wrapper .search-input,
+html.dark .admin-console-wrapper input[type="text"],
+html.dark .admin-console-wrapper input[type="email"],
+html.dark .admin-console-wrapper input[type="password"],
+html.dark .admin-console-wrapper input[type="number"],
+html.dark .admin-console-wrapper input[type="date"],
+html.dark .admin-console-wrapper input[type="search"],
+html.dark .admin-console-wrapper textarea,
+html.dark .admin-console-wrapper select {
+  background: #11141B;
+  border-color: var(--ac-border);
+  color: var(--ac-text);
+}
+
+html.dark .admin-console-wrapper input::placeholder,
+html.dark .admin-console-wrapper textarea::placeholder {
+  color: #6B7280;
+}
+
+/* Make native date-picker icon readable on dark */
+html.dark .admin-console-wrapper input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.7);
+}
+
+/* Tables — header strip, hover row, scrollbars */
+html.dark .admin-console-wrapper table thead,
+html.dark .admin-console-wrapper .users-table-scroll thead,
+html.dark .admin-console-wrapper .brands-table-scroll thead,
+html.dark .admin-console-wrapper .table-container thead {
+  background: #11141B;
+  border-bottom-color: var(--ac-border);
+}
+
+html.dark .admin-console-wrapper table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+html.dark .admin-console-wrapper .table-container::-webkit-scrollbar-thumb,
+html.dark .admin-console-wrapper .users-table-scroll::-webkit-scrollbar-thumb,
+html.dark .admin-console-wrapper .brands-table-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: var(--ac-card);
+}
+html.dark .admin-console-wrapper .table-container::-webkit-scrollbar-thumb:hover,
+html.dark .admin-console-wrapper .users-table-scroll::-webkit-scrollbar-thumb:hover,
+html.dark .admin-console-wrapper .brands-table-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Pagination */
+html.dark .admin-console-wrapper .pagination-controls {
+  background: #11141B;
+  border-top-color: var(--ac-border);
+}
+html.dark .admin-console-wrapper .pagination-controls button {
+  background: var(--ac-card);
+  border-color: var(--ac-border);
+  color: var(--ac-text);
+}
+
+/* Card-like surfaces should sit ABOVE the page bg, not be tinted to light */
+html.dark .admin-console-wrapper .glass-card,
+html.dark .admin-console-wrapper .glass-panel,
+html.dark .admin-console-wrapper .metric-card,
+html.dark .admin-console-wrapper .brand-stats-card,
+html.dark .admin-console-wrapper .brand-daily-section,
+html.dark .admin-console-wrapper .chart-container {
+  background: var(--ac-card);
+  border-color: var(--ac-border);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+html.dark .admin-console-wrapper .glass-card:hover,
+html.dark .admin-console-wrapper .metric-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Section JSX uses raw Tailwind dark utility classes like bg-gray-900/800 —
+   the existing light-mode override forces them back to white. Skip that on
+   dark so they render as intended. */
+html.dark .admin-console-wrapper .bg-gray-900,
+html.dark .admin-console-wrapper .bg-gray-800,
+html.dark .admin-console-wrapper .bg-slate-900,
+html.dark .admin-console-wrapper .bg-slate-800,
+html.dark .admin-console-wrapper .bg-black {
+  background: var(--ac-card) !important;
+  color: var(--ac-text) !important;
+}
+html.dark .admin-console-wrapper .bg-gray-700 {
+  background: #1F2530 !important;
+}
+
+/* Tailwind text-gray-* and text-white inside the wrapper get re-mapped to
+   our tokens by the light-mode block above. On dark we want the JSX colors
+   (text-white, text-gray-300/400/500) to read correctly. */
+html.dark .admin-console-wrapper .text-white {
+  color: #F9FAFB !important;
+}
+html.dark .admin-console-wrapper .text-gray-200,
+html.dark .admin-console-wrapper .text-gray-100 {
+  color: #E5E7EB !important;
+}
+html.dark .admin-console-wrapper .text-gray-300 {
+  color: #D1D5DB !important;
+}
+html.dark .admin-console-wrapper .text-gray-400 {
+  color: #9CA3AF !important;
+}
+html.dark .admin-console-wrapper .text-gray-500 {
+  color: #6B7280 !important;
+}
+
+/* Status badge contrast tweaks for dark */
+html.dark .admin-console-wrapper .status-active {
+  color: #34D399;
+}
+html.dark .admin-console-wrapper .status-pending {
+  color: #FBBF24;
+}
+html.dark .admin-console-wrapper .status-inactive {
+  color: #9CA3AF;
+}
+
+/* Border-gray utilities used in transaction rows / modal dividers */
+html.dark .admin-console-wrapper .border-gray-700,
+html.dark .admin-console-wrapper .border-gray-800,
+html.dark .admin-console-wrapper .border-gray-200 {
+  border-color: var(--ac-border) !important;
+}
+
+/* Hover-on-white-ish row used by transactions table */
+html.dark .admin-console-wrapper .hover\:bg-white\/5:hover {
+  background: rgba(255, 255, 255, 0.05);
+}

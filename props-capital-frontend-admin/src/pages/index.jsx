@@ -42,6 +42,8 @@ import CRMFTDReport from "./CRMFTDReport";
 import CRMCalendar from "./CRMCalendar";
 import CRMApiKeys from "./CRMApiKeys";
 
+import AdminConsole from "./AdminConsole";
+
 import {
   BrowserRouter as Router,
   Route,
@@ -94,6 +96,8 @@ const PAGES = {
   CRMFTDReport: CRMFTDReport,
   CRMCalendar: CRMCalendar,
   CRMApiKeys: CRMApiKeys,
+
+  AdminConsole: AdminConsole,
 };
 
 function _getCurrentPage(url) {
@@ -175,6 +179,7 @@ function PagesContent() {
               <Route path="/CRMCalendar" element={<CRMCalendar />} />
               <Route path="/Notifications" element={<Notifications />} />
               <Route path="/CRMApiKeys" element={<CRMApiKeys />} />
+              <Route path="/AdminConsole" element={<AdminConsole />} />
             </Route>
           </Routes>
         </Layout>

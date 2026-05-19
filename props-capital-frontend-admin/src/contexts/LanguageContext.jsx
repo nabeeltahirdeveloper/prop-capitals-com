@@ -47,6 +47,7 @@ const createDefaultT = () => {
     try {
       let text = getNestedValue(defaultTranslations, key);
       if (text === undefined) {
+        if (typeof params.defaultValue === 'string') return params.defaultValue;
         console.warn(`Translation missing for key: ${key}`);
         return key;
       }
@@ -84,7 +85,11 @@ export const LanguageProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem('language', language);
-    i18n.changeLanguage(language);
+    // Keep react-i18next in sync with the custom language context so that
+    // components using `useTranslation` from "react-i18next" translate too.
+    if (i18n.language !== language) {
+      i18n.changeLanguage(language);
+    }
   }, [language]);
 
   const translations = useMemo(() => {
@@ -104,9 +109,18 @@ export const LanguageProvider = ({ children }) => {
       if (text === undefined) {
         text = getNestedValue(translationsMap.en, key)
       }
-      
-      // If translation not found, return the key
+
+      // If translation not found, fall back to an explicit defaultValue, then the key
       if (text === undefined) {
+        if (typeof params.defaultValue === 'string') {
+          let fallback = params.defaultValue;
+          Object.keys(params).forEach(param => {
+            if (param !== 'returnObjects' && param !== 'defaultValue') {
+              fallback = fallback.replace(`{{${param}}}`, params[param]);
+            }
+          });
+          return fallback;
+        }
         console.warn(`Translation missing for key: ${key}`);
         return key;
       }

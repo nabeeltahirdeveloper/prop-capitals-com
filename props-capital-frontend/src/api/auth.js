@@ -36,3 +36,11 @@ export const validatePlatformAccess = async (accountId, platformToken) => {
 export const resetPlatformPassword = async (accountId) => {
   return apiPost(`/auth/account/${accountId}/reset-password`);
 };
+
+export const verifySetPasswordToken = async (token) => {
+  return apiGet(`/auth/set-password/verify/${token}`);
+};
+
+export const submitSetPassword = async (data) => {
+  return apiPost('/auth/set-password', data);
+};

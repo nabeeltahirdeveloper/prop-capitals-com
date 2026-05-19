@@ -9,6 +9,10 @@ export const getChallenge = async (id) => {
   return apiGet(`/challenges/${id}`);
 };
 
+export const getChallengeBySlug = async (slug) => {
+  return apiGet(`/challenges/by-slug/${slug}`);
+};
+
 export const createChallenge = async (data) => {
   return apiPost("/challenges", data);
 };

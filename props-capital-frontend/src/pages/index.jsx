@@ -42,6 +42,16 @@ import AmlPolicyPage from "./AmlPolicyPage.jsx"
 import ForgotPassword from "./ForgotPassword.jsx";
 import CheckoutPage from "./CheckoutPage.jsx";
 import CheckoutSuccessPage from "./CheckoutSuccessPage.jsx";
+import PayLink from "./PayLink.jsx";
+import PayLinkSuccess from "./PayLinkSuccess.jsx";
+import PayLinkFail from "./PayLinkFail.jsx";
+import SetPassword from "./SetPassword.jsx";
+
+// Brand and Reseller portals
+import BrandLogin from "./BrandLogin.jsx";
+import BrandDashboard from "./BrandDashboard.jsx";
+import ResellerLogin from "./ResellerLogin.jsx";
+import ResellerDashboard from "./ResellerDashboard.jsx";
 // Dashboard
 import TraderPanelLayout from "@/components/trader/TraderPanelLayout.jsx";
 import AccountOverview from "@/components/trader/AccountOverview.jsx";
@@ -56,6 +66,9 @@ import SupportPage from "@/components/trader/SupportPage.jsx";
 import TraderTicketChat from "@/components/trader/TraderTicketChat.jsx";
 import FAQPage from "@/components/trader/FAQPage.jsx";
 import TradeCheckoutPanelPage from "@/components/trader/TradeCheckoutPanelPage.jsx";
+import WorldCardSuccessPage from "@/components/trader/WorldCardSuccessPage.jsx";
+import WorldCardFailPage from "@/components/trader/WorldCardFailPage.jsx";
+import TransactionsPage from "@/components/trader/TransactionsPage.jsx";
 
 import {
   BrowserRouter as Router,
@@ -69,6 +82,7 @@ import ProtectedRoute, {
   PublicOnlyRoute,
 } from "../components/ProtectedRoute";
 import { PriceProviderWithRouter } from "../contexts/PriceContext";
+import PayCheckout from "@/components/trader/PayCheckout.jsx";
 
 
 const PAGES = {
@@ -112,6 +126,18 @@ const PAGES = {
   FAQS: FAQPage,
   checkout: TradeCheckoutPanelPage,
 
+  // Brand and Reseller portals — register both camelCase and hyphenated keys
+  // so `_getCurrentPage` matches whichever URL form the user lands on
+  // ("/brand-login" vs "/BrandLogin"). Without the hyphenated keys the path
+  // resolver falls back to "Home" and Layout wraps the page in Navbar+Footer.
+  BrandLogin: BrandLogin,
+  BrandDashboard: BrandDashboard,
+  ResellerLogin: ResellerLogin,
+  ResellerDashboard: ResellerDashboard,
+  "brand-login": BrandLogin,
+  "brand-dashboard": BrandDashboard,
+  "reseller-login": ResellerLogin,
+  "reseller-dashboard": ResellerDashboard,
 };
 
 function _getCurrentPage(url) {
@@ -169,6 +195,23 @@ function PagesContent() {
               <Route path="/kyc-policy" element={<KycPolicyPage />} />
               <Route path="/aml-policy" element={<AmlPolicyPage />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/set-password" element={<SetPassword />} />
+              <Route path="/pay/success" element={<PayLinkSuccess />} />
+              <Route path="/pay/fail" element={<PayLinkFail />} />
+              <Route path="/pay/:slug" element={<PayLink />} />
+
+              {/* Brand portal */}
+              <Route path="/brand-login" element={<BrandLogin />} />
+              <Route path="/BrandLogin" element={<BrandLogin />} />
+              <Route path="/brand-dashboard" element={<BrandDashboard />} />
+              <Route path="/BrandDashboard" element={<BrandDashboard />} />
+
+              {/* Reseller portal */}
+              <Route path="/reseller-login" element={<ResellerLogin />} />
+              <Route path="/ResellerLogin" element={<ResellerLogin />} />
+              <Route path="/reseller-dashboard" element={<ResellerDashboard />} />
+              <Route path="/ResellerDashboard" element={<ResellerDashboard />} />
+
               <Route
                 path="/SignIn"
                 element={
@@ -226,6 +269,9 @@ function PagesContent() {
                   <Route path="support" element={<SupportPage />} />
                   <Route path="faqs" element={<FAQPage />} />
                   <Route path="checkout" element={<TradeCheckoutPanelPage />} />
+                  <Route path="checkout/success" element={<WorldCardSuccessPage />} />
+                  <Route path="checkout/fail" element={<WorldCardFailPage />} />
+                  <Route path="transactions" element={<TransactionsPage />} />
                 </Route>
               </Route>
 

@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { SiX, SiInstagram, SiYoutube, SiDiscord } from 'react-icons/si';
 import { Mail } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext';
+import CompanyInfo from '@/components/CompanyInfo';
+import { PaymentLogos } from '@/components/PaymentLogos';
 
 const socialLinks = [
   { Icon: <SiX className="w-4 h-4" />, url: 'https://x.com/propcapitals0' },
@@ -37,9 +39,12 @@ const Footer = () => {
                 <span className={`text-[10px] ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>prop-capitals.com</span>
               </div>
             </Link>
-            <p className={`text-sm mb-6 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
+            <p className={`text-sm mb-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
               Empowering traders worldwide with funded accounts and industry-leading conditions.
             </p>
+            <div className="mb-4">
+              <CompanyInfo isDark={isDark} />
+            </div>
             <div className="flex items-center gap-[6px]">
               {socialLinks.map(({Icon, url}, i) => (
                 <a
@@ -168,9 +173,12 @@ const Footer = () => {
 
           {/* Bottom Bar */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-              © 2026 Prop-Capitals.com. All rights reserved.
-            </p>
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
+                © 2026 Prop-Capitals.com. All rights reserved.
+              </p>
+              <PaymentLogos />
+            </div>
             <div className="flex items-center gap-4 flex-wrap justify-center">
               {[
                 { name: 'Terms', path: '/terms' },

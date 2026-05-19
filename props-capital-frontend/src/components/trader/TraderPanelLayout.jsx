@@ -25,6 +25,7 @@ import {
   Check,
   Pin,
   PinOff,
+  Receipt,
 } from "lucide-react";
 import {
   ChallengesProvider,
@@ -46,6 +47,7 @@ import { useTranslation } from "@/contexts/LanguageContext";
 import { Button } from "../ui/button";
 import { dayjs } from "@/lib/utils";
 import { usePlatformTokensStore } from "@/lib/stores/platform-tokens.store";
+import CompanyInfo from "@/components/CompanyInfo";
 
 export const TraderThemeContext = React.createContext();
 export const useTraderTheme = () => React.useContext(TraderThemeContext);
@@ -232,6 +234,7 @@ const TraderPanelLayoutInner = () => {
       label: "Economic Calendar",
     },
     { path: "/traderdashboard/payouts", icon: Wallet, label: "Payout History" },
+    { path: "/traderdashboard/transactions", icon: Receipt, label: "Transactions" },
   ];
 
   const settingsNavItems = [
@@ -433,18 +436,12 @@ const TraderPanelLayoutInner = () => {
             </div>
           </nav>
 
-          {/* Bottom Section - Language Only */}
-          {/* <div className={`absolute bottom-0 left-0 right-0 p-4 border-t ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
-            <div className={`flex items-center gap-3 px-3 py-2.5 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-              <Globe className="w-5 h-5" />
-              {!sidebarCollapsed && (
-                <div className="flex items-center gap-2 text-sm">
-                  <span>English</span>
-                  <ChevronDown className="w-4 h-4" />
-                </div>
-              )}
+          {/* Company Info */}
+          {!sidebarCollapsed && (
+            <div className={`p-4 border-t ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
+              <CompanyInfo isDark={isDark} compact />
             </div>
-          </div>*/}
+          )}
         </aside>
 
         {/* Main Content */}

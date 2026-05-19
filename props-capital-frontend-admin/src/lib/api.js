@@ -88,6 +88,11 @@ export const apiPatch = async (url, data, config) => {
   return response.data;
 };
 
+export const apiPut = async (url, data, config) => {
+  const response = await api.put(url, data, config);
+  return response.data;
+};
+
 export const apiDelete = async (url, config) => {
   const response = await api.delete(url, config);
   return response.data;

@@ -64,21 +64,21 @@ const PayoutHistory = () => {
             <p className={`text-xs sm:text-sm ${mutedClass}`}>Total Paid Out</p>
             <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
           </div>
-          <p className={`text-xl sm:text-2xl font-bold ${textClass}`}>${totalPaid.toLocaleString()}</p>
+          <p className={`text-xl sm:text-2xl font-bold ${textClass}`}>€{totalPaid.toLocaleString()}</p>
         </div>
         <div className={cardClass + ' p-4 sm:p-5'}>
           <div className="flex items-center justify-between mb-2 sm:mb-3">
             <p className={`text-xs sm:text-sm ${mutedClass}`}>Pending</p>
             <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
           </div>
-          <p className="text-amber-500 text-xl sm:text-2xl font-bold">${pendingAmount.toLocaleString()}</p>
+          <p className="text-amber-500 text-xl sm:text-2xl font-bold">€{pendingAmount.toLocaleString()}</p>
         </div>
         <div className={cardClass + ' p-4 sm:p-5'}>
           <div className="flex items-center justify-between mb-2 sm:mb-3">
             <p className={`text-xs sm:text-sm ${mutedClass}`}>Available Balance</p>
             <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
           </div>
-          <p className="text-emerald-500 text-xl sm:text-2xl font-bold">${availableBalance.toLocaleString()}</p>
+          <p className="text-emerald-500 text-xl sm:text-2xl font-bold">€{availableBalance.toLocaleString()}</p>
         </div>
       </div>
 

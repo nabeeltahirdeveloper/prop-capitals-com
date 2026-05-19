@@ -54,14 +54,14 @@ export default function CRMApiKeys() {
       setKeyName("");
       queryClient.invalidateQueries({ queryKey: ["crm-api-keys"] });
       toast({
-        title: t("admin.apiKeys.toast.created"),
-        description: t("admin.apiKeys.toast.createdDesc"),
+        title: "API key created",
+        description: "Store the key securely. It won't be shown again.",
       });
     },
     onError: (error) => {
       toast({
-        title: t("common.error"),
-        description: error.message || t("admin.apiKeys.toast.createError"),
+        title: "Error",
+        description: error.message || "Failed to create API key",
         variant: "destructive",
       });
     },
@@ -73,14 +73,14 @@ export default function CRMApiKeys() {
       queryClient.invalidateQueries({ queryKey: ["crm-api-keys"] });
       setSelectedKey((prev) => (prev ? { ...prev, isActive: false } : null));
       toast({
-        title: t("admin.apiKeys.toast.revoked"),
-        description: t("admin.apiKeys.toast.revokedDesc"),
+        title: "API key revoked",
+        description: "The key has been deactivated.",
       });
     },
     onError: (error) => {
       toast({
-        title: t("common.error"),
-        description: error.message || t("admin.apiKeys.toast.revokeError"),
+        title: "Error",
+        description: error.message || "Failed to revoke API key",
         variant: "destructive",
       });
     },
@@ -138,14 +138,14 @@ export default function CRMApiKeys() {
 
   const columns = [
     {
-      header: t("admin.apiKeys.name"),
+      header: t("admin.apiKeys.name", { defaultValue: "Name" }),
       accessorKey: "name",
       cell: (row) => (
         <span className="text-foreground font-medium">{row.name}</span>
       ),
     },
     {
-      header: t("admin.apiKeys.status"),
+      header: t("admin.apiKeys.status", { defaultValue: "Status" }),
       accessorKey: "isActive",
       cell: (row) => (
         <span
@@ -155,12 +155,14 @@ export default function CRMApiKeys() {
               : "bg-red-500/20 text-red-400"
           }`}
         >
-          {row.isActive ? t("admin.apiKeys.active") : t("admin.apiKeys.revoked")}
+          {row.isActive
+            ? t("admin.apiKeys.active", { defaultValue: "Active" })
+            : t("admin.apiKeys.revoked", { defaultValue: "Revoked" })}
         </span>
       ),
     },
     {
-      header: t("admin.apiKeys.created"),
+      header: t("admin.apiKeys.created", { defaultValue: "Created" }),
       accessorKey: "createdAt",
       cell: (row) =>
         row.createdAt
@@ -168,15 +170,15 @@ export default function CRMApiKeys() {
           : "—",
     },
     {
-      header: t("admin.apiKeys.lastUsed"),
+      header: t("admin.apiKeys.lastUsed", { defaultValue: "Last Used" }),
       accessorKey: "lastUsedAt",
       cell: (row) =>
         row.lastUsedAt
           ? format(new Date(row.lastUsedAt), "MMM d, yyyy HH:mm")
-          : t("admin.apiKeys.never"),
+          : t("admin.apiKeys.never", { defaultValue: "Never" }),
     },
     {
-      header: t("admin.apiKeys.actions"),
+      header: t("admin.apiKeys.actions", { defaultValue: "Actions" }),
       accessorKey: "id",
       cell: (row) => (
         <div
@@ -190,7 +192,7 @@ export default function CRMApiKeys() {
             onClick={() => setSelectedKey(row)}
           >
             <Eye className="w-4 h-4 mr-1" />
-            {t("admin.apiKeys.view")}
+            {t("admin.apiKeys.view", { defaultValue: "View" })}
           </Button>
           {row.isActive && (
             <Button
@@ -201,7 +203,7 @@ export default function CRMApiKeys() {
               disabled={revokeMutation.isPending}
             >
               <Trash2 className="w-4 h-4 mr-1" />
-              {t("admin.apiKeys.revoke")}
+              {t("admin.apiKeys.revoke", { defaultValue: "Revoke" })}
             </Button>
           )}
         </div>

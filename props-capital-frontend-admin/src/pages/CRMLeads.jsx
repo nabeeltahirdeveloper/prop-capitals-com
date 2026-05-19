@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useTranslation } from "../contexts/LanguageContext";
+import { useTranslation } from "react-i18next";
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,9 +41,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { format } from "date-fns";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import DateRangeFilter from "@/components/shared/DateRangeFilter";
 import LeadsCardsView from "@/components/crm/LeadsCardsView";
 import LeadsListView from "@/components/crm/LeadsListView";
 import LeadsCompactView from "@/components/crm/LeadsCompactView";
@@ -130,8 +128,6 @@ export default function CRMLeads() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [importing, setImporting] = useState(false);
   const fileInputRef = useRef(null);
-  const [dateRange, setDateRange] = useState({ from: undefined, to: undefined });
-  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   // Fetch leads from backend
   const fetchLeads = useCallback(async () => {
@@ -157,8 +153,12 @@ export default function CRMLeads() {
     } catch (error) {
       console.error("Error fetching leads:", error);
       toast({
-        title: t("common.error"),
-        description: error?.message || t("crm.leads.toast.fetchError"),
+        title: t("common.error", { defaultValue: "Error" }),
+        description:
+          error?.message ||
+          t("crm.leads.toast.fetchError", {
+            defaultValue: "Failed to fetch leads",
+          }),
         variant: "destructive",
       });
     } finally {
@@ -188,27 +188,6 @@ export default function CRMLeads() {
     fetchLeads();
     fetchStats();
   }, [fetchLeads, fetchStats]);
-
-  const handleDateRangeSelect = (range) => {
-    setDateRange(range || { from: undefined, to: undefined });
-    if (range?.from) {
-      setFromDate(format(range.from, "yyyy-MM-dd"));
-    } else {
-      setFromDate("");
-    }
-    if (range?.to) {
-      setToDate(format(range.to, "yyyy-MM-dd"));
-      setIsDatePickerOpen(false);
-    } else {
-      setToDate("");
-    }
-  };
-
-  const handleClearDateRange = () => {
-    setDateRange({ from: undefined, to: undefined });
-    setFromDate("");
-    setToDate("");
-  };
 
   // Handle search with debounce
   useEffect(() => {
@@ -277,8 +256,12 @@ export default function CRMLeads() {
     } catch (error) {
       console.error("Error fetching lead details:", error);
       toast({
-        title: t("common.error"),
-        description: error?.message || t("crm.leads.toast.loadError"),
+        title: t("common.error", { defaultValue: "Error" }),
+        description:
+          error?.message ||
+          t("crm.leads.toast.loadError", {
+            defaultValue: "Failed to load lead details",
+          }),
         variant: "destructive",
       });
     }
@@ -328,8 +311,10 @@ export default function CRMLeads() {
       await apiPatch(`/crm/leads/${selectedLead.id}`, updateData);
 
       toast({
-        title: t("common.success"),
-        description: t("crm.leads.toast.updateSuccess"),
+        title: t("common.success", { defaultValue: "Success" }),
+        description: t("crm.leads.toast.updateSuccess", {
+          defaultValue: "Lead updated successfully",
+        }),
       });
 
       // Refresh leads and close modal
@@ -339,8 +324,12 @@ export default function CRMLeads() {
     } catch (error) {
       console.error("Error updating lead:", error);
       toast({
-        title: t("common.error"),
-        description: error?.message || t("crm.leads.toast.updateError"),
+        title: t("common.error", { defaultValue: "Error" }),
+        description:
+          error?.message ||
+          t("crm.leads.toast.updateError", {
+            defaultValue: "Failed to update lead",
+          }),
         variant: "destructive",
       });
     } finally {
@@ -368,8 +357,11 @@ export default function CRMLeads() {
       });
 
       toast({
-        title: t("common.success"),
-        description: t("crm.leads.toast.activityLogged", { type: actionType }),
+        title: t("common.success", { defaultValue: "Success" }),
+        description: t("crm.leads.toast.activityLogged", {
+          type: actionType,
+          defaultValue: "Activity logged: {{type}}",
+        }),
       });
 
       // Refresh lead details
@@ -380,8 +372,12 @@ export default function CRMLeads() {
     } catch (error) {
       console.error("Error logging activity:", error);
       toast({
-        title: t("common.error"),
-        description: error?.message || t("crm.leads.toast.activityError"),
+        title: t("common.error", { defaultValue: "Error" }),
+        description:
+          error?.message ||
+          t("crm.leads.toast.activityError", {
+            defaultValue: "Failed to log activity",
+          }),
         variant: "destructive",
       });
     }
@@ -404,10 +400,11 @@ export default function CRMLeads() {
       });
 
       toast({
-        title: t("common.success"),
+        title: t("common.success", { defaultValue: "Success" }),
         description: t("crm.leads.toast.importSuccess", {
           created: response.data.created,
           total: response.data.total,
+          defaultValue: "Imported {{created}} of {{total}} leads",
         }),
       });
 
@@ -418,8 +415,12 @@ export default function CRMLeads() {
     } catch (error) {
       console.error("Error importing CSV:", error);
       toast({
-        title: t("common.error"),
-        description: error?.message || t("crm.leads.toast.importError"),
+        title: t("common.error", { defaultValue: "Error" }),
+        description:
+          error?.message ||
+          t("crm.leads.toast.importError", {
+            defaultValue: "Failed to import CSV",
+          }),
         variant: "destructive",
       });
     } finally {
@@ -438,8 +439,10 @@ export default function CRMLeads() {
       });
 
       toast({
-        title: t("common.success"),
-        description: t("crm.leads.toast.noteAdded"),
+        title: t("common.success", { defaultValue: "Success" }),
+        description: t("crm.leads.toast.noteAdded", {
+          defaultValue: "Note added successfully",
+        }),
       });
 
       setNewNote("");
@@ -450,8 +453,12 @@ export default function CRMLeads() {
     } catch (error) {
       console.error("Error adding note:", error);
       toast({
-        title: t("common.error"),
-        description: error?.message || t("crm.leads.toast.noteError"),
+        title: t("common.error", { defaultValue: "Error" }),
+        description:
+          error?.message ||
+          t("crm.leads.toast.noteError", {
+            defaultValue: "Failed to add note",
+          }),
         variant: "destructive",
       });
     }
@@ -497,10 +504,12 @@ export default function CRMLeads() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-foreground">
-            {t("crm.leads.title")}
+            {t("crm.leads.title", { defaultValue: "Lead Management" })}
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground mt-1">
-            {t("crm.leads.subtitle")}
+            {t("crm.leads.subtitle", {
+              defaultValue: "Manage and convert your leads",
+            })}
           </p>
         </div>
 
@@ -519,7 +528,7 @@ export default function CRMLeads() {
             >
               <Grid3x3 className="w-4 h-4 mr-2" />
               <span className="text-xs font-medium">
-                {t("crm.leads.cards")}
+                {t("crm.leads.cards", { defaultValue: "Cards" })}
               </span>
             </Button>
 
@@ -534,7 +543,9 @@ export default function CRMLeads() {
               onClick={() => setViewMode("list")}
             >
               <List className="w-4 h-4 mr-2" />
-              <span className="text-xs font-medium">{t("crm.leads.list")}</span>
+              <span className="text-xs font-medium">
+                {t("crm.leads.list", { defaultValue: "List" })}
+              </span>
             </Button>
 
             <Button
@@ -549,7 +560,7 @@ export default function CRMLeads() {
             >
               <GripVertical className="w-4 h-4 mr-2" />
               <span className="text-xs font-medium">
-                {t("crm.leads.compact")}
+                {t("crm.leads.compact", { defaultValue: "Compact" })}
               </span>
             </Button>
           </div>
@@ -558,7 +569,7 @@ export default function CRMLeads() {
             onClick={() => setIsImportModalOpen(true)}
           >
             <Plus className="w-4 h-4 mr-2" />
-            {t("crm.leads.import")}
+            {t("crm.leads.import", { defaultValue: "Import Leads" })}
           </Button>
         </div>
       </div>
@@ -584,8 +595,19 @@ export default function CRMLeads() {
             </p>
             <p className="text-xs sm:text-sm text-muted-foreground capitalize">
               {status === "followup"
-                ? t("crm.status.followup")
-                : t(`crm.status.${status}`)}
+                ? t("crm.status.followup", { defaultValue: "Follow Up" })
+                : t(`crm.status.${status}`, {
+                    defaultValue:
+                      {
+                        all: "All",
+                        new: "New",
+                        contacted: "Contacted",
+                        qualified: "Qualified",
+                        callback: "Callback",
+                        converted: "Converted",
+                        lost: "Lost",
+                      }[status] || status,
+                  })}
             </p>
           </Card>
         ))}
@@ -597,7 +619,9 @@ export default function CRMLeads() {
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder={t("crm.leads.search")}
+              placeholder={t("crm.leads.search", {
+                defaultValue: "Search leads...",
+              })}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground"
@@ -612,86 +636,69 @@ export default function CRMLeads() {
             }}
           >
             <SelectTrigger className="w-full sm:w-[150px] bg-muted border-border text-foreground">
-              <SelectValue placeholder={t("crm.leads.allStatus")} />
+              <SelectValue
+                placeholder={t("crm.leads.allStatus", {
+                  defaultValue: "All Status",
+                })}
+              />
             </SelectTrigger>
             <SelectContent className="bg-card border-border text-foreground">
-              <SelectItem value="all">{t("crm.leads.allStatus")}</SelectItem>
-              <SelectItem value="new">{t("crm.status.new")}</SelectItem>
+              <SelectItem value="all">
+                {t("crm.leads.allStatus", { defaultValue: "All Status" })}
+              </SelectItem>
+              <SelectItem value="new">
+                {t("crm.status.new", { defaultValue: "New" })}
+              </SelectItem>
               <SelectItem value="contacted">
-                {t("crm.status.contacted")}
+                {t("crm.status.contacted", { defaultValue: "Contacted" })}
               </SelectItem>
               <SelectItem value="qualified">
-                {t("crm.status.qualified")}
+                {t("crm.status.qualified", { defaultValue: "Qualified" })}
               </SelectItem>
               <SelectItem value="callback">
-                {t("crm.status.callback")}
+                {t("crm.status.callback", { defaultValue: "Callback" })}
               </SelectItem>
               <SelectItem value="followup">
-                {t("crm.status.followup")}
+                {t("crm.status.followup", { defaultValue: "Follow Up" })}
               </SelectItem>
               <SelectItem value="converted">
-                {t("crm.status.converted")}
+                {t("crm.status.converted", { defaultValue: "Converted" })}
               </SelectItem>
-              <SelectItem value="lost">{t("crm.status.lost")}</SelectItem>
+              <SelectItem value="lost">
+                {t("crm.status.lost", { defaultValue: "Lost" })}
+              </SelectItem>
             </SelectContent>
           </Select>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
             <SelectTrigger className="w-full sm:w-[150px] bg-muted border-border text-foreground">
-              <SelectValue placeholder={t("crm.leads.allCategory")} />
+              <SelectValue
+                placeholder={t("crm.leads.allCategory", {
+                  defaultValue: "All",
+                })}
+              />
             </SelectTrigger>
             <SelectContent className="bg-card border-border text-foreground">
-              <SelectItem value="all">{t("crm.leads.allCategory")}</SelectItem>
-              <SelectItem value="source">{t("crm.leads.bySource")}</SelectItem>
-              <SelectItem value="agent">{t("crm.leads.byAgent")}</SelectItem>
+              <SelectItem value="all">
+                {t("crm.leads.allCategory", { defaultValue: "All" })}
+              </SelectItem>
+              <SelectItem value="source">
+                {t("crm.leads.bySource", { defaultValue: "By Source" })}
+              </SelectItem>
+              <SelectItem value="agent">
+                {t("crm.leads.byAgent", { defaultValue: "By Agent" })}
+              </SelectItem>
             </SelectContent>
           </Select>
 
           {/* Date Range Filter */}
-          <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full sm:w-auto justify-start text-left font-normal bg-muted border-border text-xs h-9",
-                  !dateRange.from && "text-muted-foreground"
-                )}
-              >
-                <Calendar className="mr-2 h-4 w-4" />
-                {dateRange.from ? (
-                  dateRange.to ? (
-                    <>
-                      {format(dateRange.from, "MMM dd, yyyy")} -{" "}
-                      {format(dateRange.to, "MMM dd, yyyy")}
-                    </>
-                  ) : (
-                    format(dateRange.from, "MMM dd, yyyy")
-                  )
-                ) : (
-                  <span>{t("crm.leads.selectDateRange")}</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <CalendarComponent
-                mode="range"
-                selected={dateRange}
-                onSelect={handleDateRangeSelect}
-                numberOfMonths={2}
-                initialFocus
-              />
-              {dateRange.from && (
-                <div className="p-3 border-t border-border flex justify-end">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleClearDateRange}
-                  >
-                    {t("common.clear")}
-                  </Button>
-                </div>
-              )}
-            </PopoverContent>
-          </Popover>
+          <DateRangeFilter
+            fromDate={fromDate}
+            toDate={toDate}
+            onChange={(f, to) => {
+              setFromDate(f);
+              setToDate(to);
+            }}
+          />
         </div>
       </Card>
 
@@ -700,11 +707,15 @@ export default function CRMLeads() {
         {loading ? (
           <div className="text-center py-12">
             <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary mb-4" />
-            <p className="text-muted-foreground">{t("crm.leads.loading")}</p>
+            <p className="text-muted-foreground">
+              {t("crm.leads.loading", { defaultValue: "Loading leads..." })}
+            </p>
           </div>
         ) : filteredLeads.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">{t("crm.leads.noLeads")}</p>
+            <p className="text-muted-foreground">
+              {t("crm.leads.noLeads", { defaultValue: "No leads found" })}
+            </p>
           </div>
         ) : (
           <>
@@ -760,6 +771,14 @@ export default function CRMLeads() {
                         >
                           {t(
                             `crm.status.${(selectedLead.onlineStatus || "offline").toLowerCase()}`,
+                            {
+                              defaultValue:
+                                (
+                                  selectedLead.onlineStatus || "offline"
+                                ).toLowerCase() === "online"
+                                  ? "Online"
+                                  : "Offline",
+                            },
                           )}
                         </span>
                       </DialogTitle>
@@ -778,7 +797,9 @@ export default function CRMLeads() {
                     <Calendar className="w-5 h-5 text-muted-foreground" />
                     <div>
                       <p className="text-sm text-muted-foreground">
-                        {t("crm.leads.leadReceived")}
+                        {t("crm.leads.leadReceived", {
+                          defaultValue: "Lead Received",
+                        })}
                       </p>
                       <p className="text-foreground font-medium">
                         {format(
@@ -793,14 +814,28 @@ export default function CRMLeads() {
                       selectedLead.status,
                     )}`}
                   >
-                    {t(`crm.status.${selectedLead.status.toLowerCase()}`)}
+                    {t(`crm.status.${selectedLead.status.toLowerCase()}`, {
+                      defaultValue:
+                        {
+                          new: "New",
+                          contacted: "Contacted",
+                          qualified: "Qualified",
+                          callback: "Callback",
+                          followup: "Follow Up",
+                          converted: "Converted",
+                          lost: "Lost",
+                        }[selectedLead.status.toLowerCase()] ||
+                        selectedLead.status,
+                    })}
                   </span>
                 </div>
 
                 {/* Contact Information - All Editable */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-foreground">
-                    {t("crm.leads.contactInfo")}
+                    {t("crm.leads.contactInfo", {
+                      defaultValue: "Contact Information",
+                    })}
                   </h3>
 
                   {/* Person Name */}
@@ -808,7 +843,9 @@ export default function CRMLeads() {
                     <div className="flex items-center gap-2 mb-2">
                       <User className="w-4 h-4 text-muted-foreground" />
                       <label className="text-sm text-muted-foreground">
-                        {t("crm.leads.personName")}
+                        {t("crm.leads.personName", {
+                          defaultValue: "Person Name",
+                        })}
                       </label>
                     </div>
                     <Input
@@ -820,7 +857,9 @@ export default function CRMLeads() {
                         })
                       }
                       className="bg-card border-border text-foreground"
-                      placeholder={t("crm.leads.personName")}
+                      placeholder={t("crm.leads.personName", {
+                        defaultValue: "Person Name",
+                      })}
                     />
                   </div>
 
@@ -830,7 +869,9 @@ export default function CRMLeads() {
                       <div className="flex items-center gap-2">
                         <Mail className="w-4 h-4 text-muted-foreground" />
                         <label className="text-sm text-muted-foreground">
-                          {t("crm.leads.emailAddress")}
+                          {t("crm.leads.emailAddress", {
+                            defaultValue: "Email Address",
+                          })}
                         </label>
                       </div>
                     </div>
@@ -845,7 +886,9 @@ export default function CRMLeads() {
                           })
                         }
                         className="bg-card border-border text-foreground"
-                        placeholder={t("crm.leads.emailAddress")}
+                        placeholder={t("crm.leads.emailAddress", {
+                          defaultValue: "Email Address",
+                        })}
                       />
 
                       <Button
@@ -874,7 +917,9 @@ export default function CRMLeads() {
                       <div className="flex items-center gap-2">
                         <Phone className="w-4 h-4 text-muted-foreground" />
                         <label className="text-sm text-muted-foreground">
-                          {t("crm.leads.phoneNumber")}
+                          {t("crm.leads.phoneNumber", {
+                            defaultValue: "Phone Number",
+                          })}
                         </label>
                       </div>
                     </div>
@@ -889,7 +934,9 @@ export default function CRMLeads() {
                           })
                         }
                         className="bg-card border-border text-foreground"
-                        placeholder={t("crm.leads.phoneNumber")}
+                        placeholder={t("crm.leads.phoneNumber", {
+                          defaultValue: "Phone Number",
+                        })}
                       />
 
                       <Button
@@ -917,7 +964,7 @@ export default function CRMLeads() {
                     <div className="flex items-center gap-2 mb-2">
                       <Globe className="w-4 h-4 text-muted-foreground" />
                       <label className="text-sm text-muted-foreground">
-                        {t("crm.leads.country")}
+                        {t("crm.leads.country", { defaultValue: "Country" })}
                       </label>
                     </div>
                     <Input
@@ -929,7 +976,9 @@ export default function CRMLeads() {
                         })
                       }
                       className="bg-card border-border text-foreground"
-                      placeholder={t("crm.leads.country")}
+                      placeholder={t("crm.leads.country", {
+                        defaultValue: "Country",
+                      })}
                     />
                   </div>
 
@@ -938,7 +987,7 @@ export default function CRMLeads() {
                     <div className="flex items-center gap-2 mb-2">
                       <TrendingUp className="w-4 h-4 text-muted-foreground" />
                       <label className="text-sm text-muted-foreground">
-                        {t("crm.leads.source")}
+                        {t("crm.leads.source", { defaultValue: "Source" })}
                       </label>
                     </div>
                     <Input
@@ -950,7 +999,9 @@ export default function CRMLeads() {
                         })
                       }
                       className="bg-card border-border text-foreground"
-                      placeholder={t("crm.leads.source")}
+                      placeholder={t("crm.leads.source", {
+                        defaultValue: "Source",
+                      })}
                     />
                   </div>
                 </div>
@@ -959,7 +1010,9 @@ export default function CRMLeads() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm text-muted-foreground mb-2 block">
-                      {t("crm.leads.leadStatus")}
+                      {t("crm.leads.leadStatus", {
+                        defaultValue: "Lead Status",
+                      })}
                     </label>
                     <Select
                       value={editableFields.leadStatus}
@@ -975,32 +1028,44 @@ export default function CRMLeads() {
                       </SelectTrigger>
                       <SelectContent className="bg-card border-border text-foreground">
                         <SelectItem value="NEW">
-                          {t("crm.status.new")}
+                          {t("crm.status.new", { defaultValue: "New" })}
                         </SelectItem>
                         <SelectItem value="CONTACTED">
-                          {t("crm.status.contacted")}
+                          {t("crm.status.contacted", {
+                            defaultValue: "Contacted",
+                          })}
                         </SelectItem>
                         <SelectItem value="QUALIFIED">
-                          {t("crm.status.qualified")}
+                          {t("crm.status.qualified", {
+                            defaultValue: "Qualified",
+                          })}
                         </SelectItem>
                         <SelectItem value="CALLBACK">
-                          {t("crm.status.callback")}
+                          {t("crm.status.callback", {
+                            defaultValue: "Callback",
+                          })}
                         </SelectItem>
                         <SelectItem value="FOLLOW_UP">
-                          {t("crm.status.followup")}
+                          {t("crm.status.followup", {
+                            defaultValue: "Follow Up",
+                          })}
                         </SelectItem>
                         <SelectItem value="CONVERTED">
-                          {t("crm.status.converted")}
+                          {t("crm.status.converted", {
+                            defaultValue: "Converted",
+                          })}
                         </SelectItem>
                         <SelectItem value="LOST">
-                          {t("crm.status.lost")}
+                          {t("crm.status.lost", { defaultValue: "Lost" })}
                         </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
                     <label className="text-sm text-muted-foreground mb-2 block">
-                      {t("crm.leads.onlineStatus")}
+                      {t("crm.leads.onlineStatus", {
+                        defaultValue: "Online Status",
+                      })}
                     </label>
                     <Select
                       value={editableFields.onlineStatus}
@@ -1016,10 +1081,10 @@ export default function CRMLeads() {
                       </SelectTrigger>
                       <SelectContent className="bg-card border-border text-foreground">
                         <SelectItem value="ONLINE">
-                          {t("crm.status.online")}
+                          {t("crm.status.online", { defaultValue: "Online" })}
                         </SelectItem>
                         <SelectItem value="OFFLINE">
-                          {t("crm.status.offline")}
+                          {t("crm.status.offline", { defaultValue: "Offline" })}
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -1030,7 +1095,7 @@ export default function CRMLeads() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm text-muted-foreground mb-2 block">
-                      {t("crm.leads.priority")}
+                      {t("crm.leads.priority", { defaultValue: "Priority" })}
                     </label>
                     <Select
                       value={editableFields.priority}
@@ -1046,23 +1111,25 @@ export default function CRMLeads() {
                       </SelectTrigger>
                       <SelectContent className="bg-card border-border text-foreground">
                         <SelectItem value="LOW">
-                          {t("crm.priority.low")}
+                          {t("crm.priority.low", { defaultValue: "Low" })}
                         </SelectItem>
                         <SelectItem value="MEDIUM">
-                          {t("crm.priority.medium")}
+                          {t("crm.priority.medium", { defaultValue: "Medium" })}
                         </SelectItem>
                         <SelectItem value="HIGH">
-                          {t("crm.priority.high")}
+                          {t("crm.priority.high", { defaultValue: "High" })}
                         </SelectItem>
                         <SelectItem value="URGENT">
-                          {t("crm.priority.urgent")}
+                          {t("crm.priority.urgent", { defaultValue: "Urgent" })}
                         </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
                     <label className="text-sm text-muted-foreground mb-2 block">
-                      {t("crm.leads.assignedAgent")}
+                      {t("crm.leads.assignedAgent", {
+                        defaultValue: "Assigned Agent",
+                      })}
                     </label>
                     <Input
                       value={editableFields.assignedAgent}
@@ -1073,7 +1140,9 @@ export default function CRMLeads() {
                         })
                       }
                       className="bg-card border-border text-foreground"
-                      placeholder={t("crm.leads.assignedAgent")}
+                      placeholder={t("crm.leads.assignedAgent", {
+                        defaultValue: "Assigned Agent",
+                      })}
                     />
                   </div>
                 </div>
@@ -1081,16 +1150,22 @@ export default function CRMLeads() {
                 {/* FTD Info Section - Editable */}
                 <div className="p-4 bg-muted/60 rounded-lg border-2 border-primary/50 relative">
                   <span className="absolute top-2 right-2 px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full border border-primary/20">
-                    {t("crm.leads.ftdInfo")}
+                    {t("crm.leads.ftdInfo", {
+                      defaultValue: "FTD Information",
+                    })}
                   </span>
                   <h3 className="text-lg font-semibold text-foreground mb-4">
-                    {t("crm.leads.ftdInfo")}
+                    {t("crm.leads.ftdInfo", {
+                      defaultValue: "FTD Information",
+                    })}
                   </h3>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                       <label className="text-sm text-muted-foreground mb-2 block">
-                        {t("crm.leads.ftdAmount")}
+                        {t("crm.leads.ftdAmount", {
+                          defaultValue: "FTD Amount",
+                        })}
                       </label>
                       <Input
                         type="number"
@@ -1102,13 +1177,17 @@ export default function CRMLeads() {
                           })
                         }
                         className="bg-card border-border text-foreground"
-                        placeholder={t("crm.leads.ftdAmount")}
+                        placeholder={t("crm.leads.ftdAmount", {
+                          defaultValue: "FTD Amount",
+                        })}
                       />
                     </div>
 
                     <div>
                       <label className="text-sm text-muted-foreground mb-2 block">
-                        {t("crm.leads.paymentMethod")}
+                        {t("crm.leads.paymentMethod", {
+                          defaultValue: "Payment Method",
+                        })}
                       </label>
                       <Select
                         value={editableFields.paymentMethod}
@@ -1121,18 +1200,24 @@ export default function CRMLeads() {
                       >
                         <SelectTrigger className="w-full bg-card border-border text-foreground">
                           <SelectValue
-                            placeholder={t("crm.leads.paymentMethod")}
+                            placeholder={t("crm.leads.paymentMethod", {
+                              defaultValue: "Payment Method",
+                            })}
                           />
                         </SelectTrigger>
                         <SelectContent className="bg-card border-border text-foreground">
                           <SelectItem value="CARD">
-                            {t("crm.payment.card")}
+                            {t("crm.payment.card", { defaultValue: "Card" })}
                           </SelectItem>
                           <SelectItem value="BANK_TRANSFER">
-                            {t("crm.payment.bankTransfer")}
+                            {t("crm.payment.bankTransfer", {
+                              defaultValue: "Bank Transfer",
+                            })}
                           </SelectItem>
                           <SelectItem value="CRYPTO">
-                            {t("crm.payment.crypto")}
+                            {t("crm.payment.crypto", {
+                              defaultValue: "Crypto",
+                            })}
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -1140,7 +1225,9 @@ export default function CRMLeads() {
 
                     <div>
                       <label className="text-sm text-muted-foreground mb-2 block">
-                        {t("crm.leads.paymentProvider")}
+                        {t("crm.leads.paymentProvider", {
+                          defaultValue: "Payment Provider",
+                        })}
                       </label>
                       <Select
                         value={editableFields.paymentProvider}
@@ -1153,33 +1240,49 @@ export default function CRMLeads() {
                       >
                         <SelectTrigger className="w-full bg-card border-border text-foreground">
                           <SelectValue
-                            placeholder={t("crm.leads.paymentProvider")}
+                            placeholder={t("crm.leads.paymentProvider", {
+                              defaultValue: "Payment Provider",
+                            })}
                           />
                         </SelectTrigger>
                         <SelectContent className="bg-card border-border text-foreground">
                           <SelectItem value="STRIPE">
-                            {t("crm.payment.stripe")}
+                            {t("crm.payment.stripe", {
+                              defaultValue: "Stripe",
+                            })}
                           </SelectItem>
                           <SelectItem value="PAYPAL">
-                            {t("crm.payment.paypal")}
+                            {t("crm.payment.paypal", {
+                              defaultValue: "PayPal",
+                            })}
                           </SelectItem>
                           <SelectItem value="SKRILL">
-                            {t("crm.payment.skrill")}
+                            {t("crm.payment.skrill", {
+                              defaultValue: "Skrill",
+                            })}
                           </SelectItem>
                           <SelectItem value="NETELLER">
-                            {t("crm.payment.neteller")}
+                            {t("crm.payment.neteller", {
+                              defaultValue: "Neteller",
+                            })}
                           </SelectItem>
                           <SelectItem value="BINANCE_PAY">
-                            {t("crm.payment.binancePay")}
+                            {t("crm.payment.binancePay", {
+                              defaultValue: "Binance Pay",
+                            })}
                           </SelectItem>
                           <SelectItem value="COINBASE">
-                            {t("crm.payment.coinbase")}
+                            {t("crm.payment.coinbase", {
+                              defaultValue: "Coinbase",
+                            })}
                           </SelectItem>
                           <SelectItem value="WIRE_TRANSFER">
-                            {t("crm.payment.wireTransfer")}
+                            {t("crm.payment.wireTransfer", {
+                              defaultValue: "Wire Transfer",
+                            })}
                           </SelectItem>
                           <SelectItem value="OTHER">
-                            {t("crm.payment.other")}
+                            {t("crm.payment.other", { defaultValue: "Other" })}
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -1190,7 +1293,9 @@ export default function CRMLeads() {
                 {/* Editable Fields Section */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-foreground">
-                    {t("crm.leads.editableFields")}
+                    {t("crm.leads.editableFields", {
+                      defaultValue: "Editable Fields",
+                    })}
                   </h3>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1200,15 +1305,19 @@ export default function CRMLeads() {
                         <div className="flex items-center gap-2">
                           <User className="w-4 h-4 text-muted-foreground" />
                           <label className="text-sm text-muted-foreground">
-                            {t("crm.leads.age")}
+                            {t("crm.leads.age", { defaultValue: "Age" })}
                           </label>
                         </div>
                         <span className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full border border-primary/20">
-                          {t("crm.leads.editableFields")}
+                          {t("crm.leads.editableFields", {
+                            defaultValue: "Editable Fields",
+                          })}
                         </span>
                       </div>
                       <Input
-                        placeholder={t("crm.leads.age")}
+                        placeholder={t("crm.leads.age", {
+                          defaultValue: "Age",
+                        })}
                         value={editableFields.age}
                         onChange={(e) =>
                           setEditableFields({
@@ -1226,15 +1335,19 @@ export default function CRMLeads() {
                         <div className="flex items-center gap-2">
                           <DollarSign className="w-4 h-4 text-muted-foreground" />
                           <label className="text-sm text-muted-foreground">
-                            {t("crm.leads.salary")}
+                            {t("crm.leads.salary", { defaultValue: "Salary" })}
                           </label>
                         </div>
                         <span className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full border border-primary/20">
-                          {t("crm.leads.editableFields")}
+                          {t("crm.leads.editableFields", {
+                            defaultValue: "Editable Fields",
+                          })}
                         </span>
                       </div>
                       <Input
-                        placeholder="e.g. $50,000"
+                        placeholder={t("crm.leads.salaryPlaceholder", {
+                          defaultValue: "e.g. €50,000",
+                        })}
                         value={editableFields.salary}
                         onChange={(e) =>
                           setEditableFields({
@@ -1252,15 +1365,21 @@ export default function CRMLeads() {
                         <div className="flex items-center gap-2">
                           <Building className="w-4 h-4 text-muted-foreground" />
                           <label className="text-sm text-muted-foreground">
-                            {t("crm.leads.jobIndustry")}
+                            {t("crm.leads.jobIndustry", {
+                              defaultValue: "Job Industry",
+                            })}
                           </label>
                         </div>
                         <span className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full border border-primary/20">
-                          {t("crm.leads.editableFields")}
+                          {t("crm.leads.editableFields", {
+                            defaultValue: "Editable Fields",
+                          })}
                         </span>
                       </div>
                       <Input
-                        placeholder="e.g. Technology"
+                        placeholder={t("crm.leads.jobIndustryPlaceholder", {
+                          defaultValue: "e.g. Technology",
+                        })}
                         value={editableFields.jobIndustry}
                         onChange={(e) =>
                           setEditableFields({
@@ -1278,15 +1397,21 @@ export default function CRMLeads() {
                         <div className="flex items-center gap-2">
                           <Briefcase className="w-4 h-4 text-muted-foreground" />
                           <label className="text-sm text-muted-foreground">
-                            {t("crm.leads.workTitle")}
+                            {t("crm.leads.workTitle", {
+                              defaultValue: "Work Title",
+                            })}
                           </label>
                         </div>
                         <span className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full border border-primary/20">
-                          {t("crm.leads.editableFields")}
+                          {t("crm.leads.editableFields", {
+                            defaultValue: "Editable Fields",
+                          })}
                         </span>
                       </div>
                       <Input
-                        placeholder="e.g. Software Engineer"
+                        placeholder={t("crm.leads.workTitlePlaceholder", {
+                          defaultValue: "e.g. Software Engineer",
+                        })}
                         value={editableFields.workTitle}
                         onChange={(e) =>
                           setEditableFields({
@@ -1307,12 +1432,16 @@ export default function CRMLeads() {
                     {updating ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        {t("crm.leads.updating")}
+                        {t("crm.leads.updating", {
+                          defaultValue: "Updating...",
+                        })}
                       </>
                     ) : (
                       <>
                         <Check className="w-4 h-4 mr-2" />
-                        {t("crm.leads.updateLead")}
+                        {t("crm.leads.updateLead", {
+                          defaultValue: "Update Lead",
+                        })}
                       </>
                     )}
                   </Button>
@@ -1321,7 +1450,9 @@ export default function CRMLeads() {
                 {/* Quick Actions */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-foreground">
-                    {t("crm.leads.quickActions")}
+                    {t("crm.leads.quickActions", {
+                      defaultValue: "Quick Actions",
+                    })}
                   </h3>
 
                   <div className="grid grid-cols-2 gap-4">
@@ -1330,7 +1461,7 @@ export default function CRMLeads() {
                       onClick={() => handleQuickAction("CALL")}
                     >
                       <Phone className="w-4 h-4 mr-2" />
-                      {t("crm.leads.callLead")} (
+                      {t("crm.leads.callLead", { defaultValue: "Call Lead" })} (
                       {selectedLead.callAttempts || 0})
                     </Button>
                     <Button
@@ -1338,21 +1469,21 @@ export default function CRMLeads() {
                       onClick={() => handleQuickAction("EMAIL")}
                     >
                       <Mail className="w-4 h-4 mr-2" />
-                      {t("crm.leads.sendEmail")}
+                      {t("crm.leads.sendEmail", { defaultValue: "Send Email" })}
                     </Button>
                     <Button
                       className="bg-amber-500 hover:bg-amber-600 text-white h-12"
                       onClick={() => handleQuickAction("WHATSAPP")}
                     >
                       <Send className="w-4 h-4 mr-2" />
-                      {t("crm.leads.whatsApp")}
+                      {t("crm.leads.whatsApp", { defaultValue: "WhatsApp" })}
                     </Button>
                     <Button
                       className="bg-sky-500 hover:bg-sky-600 text-white h-12"
                       onClick={() => handleQuickAction("TELEGRAM")}
                     >
                       <Send className="w-4 h-4 mr-2" />
-                      {t("crm.leads.telegram")}
+                      {t("crm.leads.telegram", { defaultValue: "Telegram" })}
                     </Button>
                   </div>
                 </div>
@@ -1361,11 +1492,15 @@ export default function CRMLeads() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold text-foreground">
-                      {t("crm.leads.activityHistory")}
+                      {t("crm.leads.activityHistory", {
+                        defaultValue: "Activity History",
+                      })}
                     </h3>
                     <span className="text-sm text-muted-foreground">
                       {selectedLead.activities?.length || 0}{" "}
-                      {t("crm.leads.activities")}
+                      {t("crm.leads.activities", {
+                        defaultValue: "Activities",
+                      })}
                     </span>
                   </div>
 
@@ -1401,13 +1536,17 @@ export default function CRMLeads() {
                       ))
                     ) : (
                       <p className="text-sm text-muted-foreground text-center py-4">
-                        {t("crm.leads.noActivities")}
+                        {t("crm.leads.noActivities", {
+                          defaultValue: "No activities yet",
+                        })}
                       </p>
                     )}
                   </div>
                   <div className="flex gap-2">
                     <Input
-                      placeholder={t("crm.leads.addNote")}
+                      placeholder={t("crm.leads.addNote", {
+                        defaultValue: "Add Note",
+                      })}
                       value={newNote}
                       onChange={(e) => setNewNote(e.target.value)}
                       onKeyDown={(e) => {
@@ -1423,7 +1562,7 @@ export default function CRMLeads() {
                       disabled={!newNote.trim()}
                     >
                       <Plus className="w-4 h-4 mr-2" />
-                      {t("crm.leads.add")}
+                      {t("crm.leads.add", { defaultValue: "Add" })}
                     </Button>
                   </div>
                 </div>
@@ -1438,7 +1577,7 @@ export default function CRMLeads() {
         <DialogContent className="bg-card border-border w-[95vw] sm:w-full sm:max-w-lg p-6">
           <DialogHeader>
             <DialogTitle className="text-foreground text-xl font-bold">
-              {t("crm.leads.importLeads")}
+              {t("crm.leads.importLeads", { defaultValue: "Import Leads" })}
             </DialogTitle>
           </DialogHeader>
 
@@ -1467,50 +1606,58 @@ export default function CRMLeads() {
                     {selectedFile.name}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {t("crm.leads.changeFile")}
+                    {t("crm.leads.changeFile", {
+                      defaultValue: "Change File",
+                    })}
                   </p>
                 </div>
               ) : (
                 <div className="space-y-2">
                   <Upload className="w-12 h-12 mx-auto text-muted-foreground" />
                   <p className="text-foreground font-medium">
-                    {t("crm.leads.uploadCSV")}
+                    {t("crm.leads.uploadCSV", {
+                      defaultValue: "Click to upload CSV",
+                    })}
                   </p>
                 </div>
               )}
             </div>
 
             <p className="text-sm text-muted-foreground text-center">
-              {t("crm.leads.csvFormat")}
+              {t("crm.leads.csvFormat", {
+                defaultValue: "CSV must follow the required format",
+              })}
             </p>
 
             {/* CSV Format Requirements */}
             <div className="bg-muted rounded-lg p-4 border border-border/60">
               <h4 className="text-sm font-semibold text-foreground mb-3">
-                {t("crm.leads.requiredFields")}
+                {t("crm.leads.requiredFields", {
+                  defaultValue: "Required fields: personName, email",
+                })}
               </h4>
 
               <div className="flex flex-wrap gap-2">
                 <span className="px-2 py-1 bg-card border border-border rounded text-xs text-muted-foreground">
-                  Name
+                  {t("crm.leads.csvFieldName", { defaultValue: "Name" })}
                 </span>
                 <span className="px-2 py-1 bg-card border border-border rounded text-xs text-muted-foreground">
-                  Email
+                  {t("crm.leads.csvFieldEmail", { defaultValue: "Email" })}
                 </span>
                 <span className="px-2 py-1 bg-card border border-border rounded text-xs text-muted-foreground">
-                  Phone
+                  {t("crm.leads.csvFieldPhone", { defaultValue: "Phone" })}
                 </span>
                 <span className="px-2 py-1 bg-card border border-border rounded text-xs text-muted-foreground">
-                  Country
+                  {t("crm.leads.csvFieldCountry", { defaultValue: "Country" })}
                 </span>
                 <span className="px-2 py-1 bg-card border border-border rounded text-xs text-muted-foreground">
-                  Status
+                  {t("crm.leads.csvFieldStatus", { defaultValue: "Status" })}
                 </span>
                 <span className="px-2 py-1 bg-card border border-border rounded text-xs text-muted-foreground">
-                  Priority
+                  {t("crm.leads.csvFieldPriority", { defaultValue: "Priority" })}
                 </span>
                 <span className="px-2 py-1 bg-card border border-border rounded text-xs text-muted-foreground">
-                  Source
+                  {t("crm.leads.csvFieldSource", { defaultValue: "Source" })}
                 </span>
               </div>
             </div>
@@ -1525,7 +1672,7 @@ export default function CRMLeads() {
                 }}
                 className="border-border text-foreground hover:bg-accent"
               >
-                {t("crm.leads.cancel")}
+                {t("crm.leads.cancel", { defaultValue: "Cancel" })}
               </Button>
               <Button
                 onClick={handleCSVImport}
@@ -1535,12 +1682,14 @@ export default function CRMLeads() {
                 {importing ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {t("crm.leads.importing")}
+                    {t("crm.leads.importing", {
+                      defaultValue: "Importing...",
+                    })}
                   </>
                 ) : (
                   <>
                     <Upload className="w-4 h-4 mr-2" />
-                    {t("crm.leads.importButton")}
+                    {t("crm.leads.importButton", { defaultValue: "Import" })}
                   </>
                 )}
               </Button>
