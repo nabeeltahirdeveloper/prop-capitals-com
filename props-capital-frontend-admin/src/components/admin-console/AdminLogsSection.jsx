@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect, useCallback } from 'react'
 import { RefreshCw, Search, Filter, Download, Trash2, AlertTriangle, Info, AlertCircle, XCircle } from 'lucide-react'
+import { useTranslation } from "../../contexts/LanguageContext";
 
 // Use the same API URL pattern as the rest of the app
 const API_BASE = `${import.meta.env.VITE_API_URL || 'http://localhost:5002'}`
@@ -20,6 +21,13 @@ const LOG_LEVEL_ICONS = {
 }
 
 export default function AdminLogsSection() {
+  const { t } = useTranslation();
+  const LOG_LEVEL_LABELS = {
+    INFO: t("adminConsole.systemLogs.levelInfo", { defaultValue: "INFO" }),
+    WARN: t("adminConsole.systemLogs.levelWarn", { defaultValue: "WARN" }),
+    ERROR: t("adminConsole.systemLogs.levelError", { defaultValue: "ERROR" }),
+    CRITICAL: t("adminConsole.systemLogs.levelCritical", { defaultValue: "CRITICAL" })
+  }
   const [logs, setLogs] = useState([])
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({
@@ -160,7 +168,7 @@ export default function AdminLogsSection() {
   }
 
   const handleCleanup = async () => {
-    if (!confirm('Are you sure you want to delete logs older than 90 days?')) return
+    if (!confirm(t("adminConsole.systemLogs.confirmCleanup", { defaultValue: "Are you sure you want to delete logs older than 90 days?" }))) return
 
     try {
       const response = await fetch(`${API_BASE}/admin-console/logs/cleanup`, {
@@ -174,12 +182,12 @@ export default function AdminLogsSection() {
 
       if (response.ok) {
         const data = await response.json()
-        alert(`Successfully deleted ${data.deletedCount} old log entries`)
+        alert(t("adminConsole.systemLogs.cleanupSuccess", { defaultValue: "Successfully deleted {{count}} old log entries", count: data.deletedCount }))
         fetchLogs()
       }
     } catch (error) {
       console.error('Failed to cleanup logs:', error)
-      alert('Failed to cleanup logs')
+      alert(t("adminConsole.systemLogs.cleanupFailed", { defaultValue: "Failed to cleanup logs" }))
     }
   }
 
@@ -219,7 +227,7 @@ export default function AdminLogsSection() {
           <div className="flex items-start gap-3">
             <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <h3 className="font-bold text-red-900 mb-2">⚠️ {criticalLogs.length} Critical Issues Detected</h3>
+              <h3 className="font-bold text-red-900 mb-2">⚠️ {t("adminConsole.systemLogs.criticalIssuesDetected", { defaultValue: "{{count}} Critical Issues Detected", count: criticalLogs.length })}</h3>
               <div className="space-y-2">
                 {criticalLogs.slice(0, 3).map(log => (
                   <div key={log.id} className="text-sm text-red-800 bg-white rounded p-2">
@@ -252,7 +260,7 @@ export default function AdminLogsSection() {
                   }}
                   className="mt-2 text-sm text-red-700 underline hover:text-red-900"
                 >
-                  View all {criticalLogs.length} critical/error logs below
+                  {t("adminConsole.systemLogs.viewAllCriticalLogs", { defaultValue: "View all {{count}} critical/error logs below", count: criticalLogs.length })}
                 </button>
               )}
             </div>
@@ -264,10 +272,10 @@ export default function AdminLogsSection() {
       <div className="bg-white rounded-lg border-2 border-gray-200 shadow-sm p-6 mb-6">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900">System Logs</h2>
+            <h2 className="text-3xl font-bold text-gray-900">{t("adminConsole.systemLogs.title", { defaultValue: "System Logs" })}</h2>
             <p className="text-sm text-gray-600 mt-2 flex items-center gap-2">
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                {pagination.totalCount || 0} total logs
+                {t("adminConsole.systemLogs.totalLogs", { defaultValue: "{{count}} total logs", count: pagination.totalCount || 0 })}
               </span>
             </p>
           </div>
@@ -281,28 +289,28 @@ export default function AdminLogsSection() {
               }`}
             >
               <Filter className="w-4 h-4" />
-              Filters
+              {t("adminConsole.systemLogs.filters", { defaultValue: "Filters" })}
             </button>
             <button
               onClick={handleExport}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
             >
               <Download className="w-4 h-4" />
-              Export
+              {t("adminConsole.systemLogs.export", { defaultValue: "Export" })}
             </button>
             <button
               onClick={handleCleanup}
               className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors"
             >
               <Trash2 className="w-4 h-4" />
-              Cleanup
+              {t("adminConsole.systemLogs.cleanup", { defaultValue: "Cleanup" })}
             </button>
             <button
               onClick={fetchLogs}
               className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors"
             >
               <RefreshCw className="w-4 h-4" />
-              Refresh
+              {t("adminConsole.systemLogs.refresh", { defaultValue: "Refresh" })}
             </button>
           </div>
         </div>
@@ -322,7 +330,7 @@ export default function AdminLogsSection() {
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-2xl font-bold">{count}</div>
-                    <div className="text-sm font-medium">{level}</div>
+                    <div className="text-sm font-medium">{LOG_LEVEL_LABELS[level] || level}</div>
                   </div>
                   <LogLevelIcon level={level} />
                 </div>
@@ -335,18 +343,18 @@ export default function AdminLogsSection() {
       {/* Filters Panel */}
       {showFilters && (
         <div className="mb-6 bg-white border-2 border-gray-200 rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Filter Logs</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">{t("adminConsole.systemLogs.filterLogs", { defaultValue: "Filter Logs" })}</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Search */}
             <div className="md:col-span-3">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("adminConsole.systemLogs.search", { defaultValue: "Search" })}</label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
                   value={filters.search}
                   onChange={(e) => handleFilterChange('search', e.target.value)}
-                  placeholder="Search messages and actions..."
+                  placeholder={t("adminConsole.systemLogs.searchPlaceholder", { defaultValue: "Search messages and actions..." })}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
@@ -354,28 +362,28 @@ export default function AdminLogsSection() {
 
             {/* Level */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("adminConsole.systemLogs.level", { defaultValue: "Level" })}</label>
               <select
                 value={filters.level}
                 onChange={(e) => handleFilterChange('level', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">All Levels</option>
+                <option value="">{t("adminConsole.systemLogs.allLevels", { defaultValue: "All Levels" })}</option>
                 {metadata.levels.map(level => (
-                  <option key={level} value={level}>{level}</option>
+                  <option key={level} value={level}>{LOG_LEVEL_LABELS[level] || level}</option>
                 ))}
               </select>
             </div>
 
             {/* Category */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("adminConsole.systemLogs.category", { defaultValue: "Category" })}</label>
               <select
                 value={filters.category}
                 onChange={(e) => handleFilterChange('category', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">All Categories</option>
+                <option value="">{t("adminConsole.systemLogs.allCategories", { defaultValue: "All Categories" })}</option>
                 {metadata.categories.map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
@@ -384,13 +392,13 @@ export default function AdminLogsSection() {
 
             {/* Action */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Action</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("adminConsole.systemLogs.action", { defaultValue: "Action" })}</label>
               <select
                 value={filters.action}
                 onChange={(e) => handleFilterChange('action', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">All Actions</option>
+                <option value="">{t("adminConsole.systemLogs.allActions", { defaultValue: "All Actions" })}</option>
                 {metadata.actions.map(action => (
                   <option key={action} value={action}>{action}</option>
                 ))}
@@ -399,19 +407,19 @@ export default function AdminLogsSection() {
 
             {/* User Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">User Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("adminConsole.systemLogs.userEmail", { defaultValue: "User Email" })}</label>
               <input
                 type="email"
                 value={filters.userEmail}
                 onChange={(e) => handleFilterChange('userEmail', e.target.value)}
-                placeholder="user@example.com"
+                placeholder={t("adminConsole.systemLogs.userEmailPlaceholder", { defaultValue: "user@example.com" })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
 
             {/* Start Date */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("adminConsole.systemLogs.startDate", { defaultValue: "Start Date" })}</label>
               <input
                 type="datetime-local"
                 value={filters.startDate}
@@ -422,7 +430,7 @@ export default function AdminLogsSection() {
 
             {/* End Date */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("adminConsole.systemLogs.endDate", { defaultValue: "End Date" })}</label>
               <input
                 type="datetime-local"
                 value={filters.endDate}
@@ -437,7 +445,7 @@ export default function AdminLogsSection() {
               onClick={handleClearFilters}
               className="px-6 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors"
             >
-              Clear All Filters
+              {t("adminConsole.systemLogs.clearAllFilters", { defaultValue: "Clear All Filters" })}
             </button>
           </div>
         </div>
@@ -448,17 +456,17 @@ export default function AdminLogsSection() {
         {loading ? (
           <div className="p-12 text-center">
             <RefreshCw className="w-10 h-10 animate-spin mx-auto text-blue-500 mb-3" />
-            <p className="text-gray-600 text-lg">Loading logs...</p>
+            <p className="text-gray-600 text-lg">{t("adminConsole.systemLogs.loadingLogs", { defaultValue: "Loading logs..." })}</p>
           </div>
         ) : logs.length === 0 ? (
           <div className="p-8 text-center">
-            <p className="text-gray-600 mb-2">No logs found matching your filters</p>
+            <p className="text-gray-600 mb-2">{t("adminConsole.systemLogs.noLogsFound", { defaultValue: "No logs found matching your filters" })}</p>
             {(filters.level || filters.category || filters.action || filters.userEmail || filters.search || filters.startDate || filters.endDate) && (
               <button
                 onClick={handleClearFilters}
                 className="text-sm text-blue-600 hover:text-blue-800 underline"
               >
-                Clear all filters
+                {t("adminConsole.systemLogs.clearAllFiltersShort", { defaultValue: "Clear all filters" })}
               </button>
             )}
           </div>
@@ -467,12 +475,12 @@ export default function AdminLogsSection() {
             <table className="w-full">
               <thead className="bg-gray-100 border-b-2 border-gray-200">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Timestamp</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Level</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Category</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Action</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Message</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">User</th>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">{t("adminConsole.systemLogs.colTimestamp", { defaultValue: "Timestamp" })}</th>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">{t("adminConsole.systemLogs.colLevel", { defaultValue: "Level" })}</th>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">{t("adminConsole.systemLogs.colCategory", { defaultValue: "Category" })}</th>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">{t("adminConsole.systemLogs.colAction", { defaultValue: "Action" })}</th>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">{t("adminConsole.systemLogs.colMessage", { defaultValue: "Message" })}</th>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">{t("adminConsole.systemLogs.colUser", { defaultValue: "User" })}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
@@ -488,7 +496,7 @@ export default function AdminLogsSection() {
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold ${LOG_LEVEL_COLORS[log.log_level]}`}>
                         <LogLevelIcon level={log.log_level} />
-                        {log.log_level}
+                        {LOG_LEVEL_LABELS[log.log_level] || log.log_level}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm font-semibold text-gray-900">{log.category}</td>
@@ -507,8 +515,8 @@ export default function AdminLogsSection() {
       {pagination.totalPages > 1 && (
         <div className="mt-6 bg-white rounded-lg border-2 border-gray-200 shadow-sm p-4 flex justify-between items-center">
           <div className="text-sm font-medium text-gray-700">
-            Page <span className="text-blue-600">{pagination.page}</span> of <span className="text-blue-600">{pagination.totalPages}</span> 
-            <span className="text-gray-500 ml-2">({pagination.totalCount} total logs)</span>
+            {t("adminConsole.systemLogs.pageOf", { defaultValue: "Page" })} <span className="text-blue-600">{pagination.page}</span> {t("adminConsole.systemLogs.of", { defaultValue: "of" })} <span className="text-blue-600">{pagination.totalPages}</span>
+            <span className="text-gray-500 ml-2">({t("adminConsole.systemLogs.totalLogsParen", { defaultValue: "{{count}} total logs", count: pagination.totalCount })})</span>
           </div>
           <div className="flex gap-3">
             <button
@@ -516,14 +524,14 @@ export default function AdminLogsSection() {
               disabled={parseInt(filters.page) <= 1}
               className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-blue-600 transition-colors"
             >
-              ← Previous
+              ← {t("adminConsole.systemLogs.previous", { defaultValue: "Previous" })}
             </button>
             <button
               onClick={() => handlePageChange(parseInt(filters.page) + 1)}
               disabled={parseInt(filters.page) >= pagination.totalPages}
               className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-blue-600 transition-colors"
             >
-              Next →
+              {t("adminConsole.systemLogs.next", { defaultValue: "Next" })} →
             </button>
           </div>
         </div>
@@ -535,7 +543,7 @@ export default function AdminLogsSection() {
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
             <div className="p-6">
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-bold text-gray-900">Log Details</h3>
+                <h3 className="text-xl font-bold text-gray-900">{t("adminConsole.systemLogs.logDetails", { defaultValue: "Log Details" })}</h3>
                 <button
                   onClick={() => setSelectedLog(null)}
                   className="text-gray-400 hover:text-gray-600"
@@ -547,48 +555,48 @@ export default function AdminLogsSection() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Timestamp</label>
+                    <label className="text-sm font-medium text-gray-500">{t("adminConsole.systemLogs.colTimestamp", { defaultValue: "Timestamp" })}</label>
                     <div className="text-gray-900">{formatDate(selectedLog.timestamp)}</div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Level</label>
+                    <label className="text-sm font-medium text-gray-500">{t("adminConsole.systemLogs.colLevel", { defaultValue: "Level" })}</label>
                     <div>
                       <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${LOG_LEVEL_COLORS[selectedLog.log_level]}`}>
                         <LogLevelIcon level={selectedLog.log_level} />
-                        {selectedLog.log_level}
+                        {LOG_LEVEL_LABELS[selectedLog.log_level] || selectedLog.log_level}
                       </span>
                     </div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Category</label>
+                    <label className="text-sm font-medium text-gray-500">{t("adminConsole.systemLogs.colCategory", { defaultValue: "Category" })}</label>
                     <div className="text-gray-900">{selectedLog.category}</div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Action</label>
+                    <label className="text-sm font-medium text-gray-500">{t("adminConsole.systemLogs.colAction", { defaultValue: "Action" })}</label>
                     <div className="text-gray-900">{selectedLog.action}</div>
                   </div>
                   {selectedLog.user_email && (
                     <div>
-                      <label className="text-sm font-medium text-gray-500">User Email</label>
+                      <label className="text-sm font-medium text-gray-500">{t("adminConsole.systemLogs.userEmail", { defaultValue: "User Email" })}</label>
                       <div className="text-gray-900">{selectedLog.user_email}</div>
                     </div>
                   )}
                   {selectedLog.request_id && (
                     <div className="col-span-2">
-                      <label className="text-sm font-medium text-gray-500">Request ID</label>
+                      <label className="text-sm font-medium text-gray-500">{t("adminConsole.systemLogs.requestId", { defaultValue: "Request ID" })}</label>
                       <div className="text-gray-900 font-mono text-sm">{selectedLog.request_id}</div>
                     </div>
                   )}
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Message</label>
+                  <label className="text-sm font-medium text-gray-500">{t("adminConsole.systemLogs.colMessage", { defaultValue: "Message" })}</label>
                   <div className="text-gray-900 bg-gray-50 p-3 rounded">{selectedLog.message}</div>
                 </div>
 
                 {selectedLog.details && (
                   <div>
-                    <label className="text-sm font-medium text-gray-500 mb-2 block">Details</label>
+                    <label className="text-sm font-medium text-gray-500 mb-2 block">{t("adminConsole.systemLogs.details", { defaultValue: "Details" })}</label>
                     <pre className="bg-gray-900 text-gray-100 p-4 rounded text-xs overflow-auto max-h-96">
                       {JSON.stringify(safeJsonParse(selectedLog.details), null, 2)}
                     </pre>
@@ -598,20 +606,20 @@ export default function AdminLogsSection() {
                 {/* Display HTTP request/response details if available */}
                 {selectedLog.http_method && (
                   <div className="mt-4 border-t pt-4">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-3">HTTP Request/Response Details</h4>
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3">{t("adminConsole.systemLogs.httpDetails", { defaultValue: "HTTP Request/Response Details" })}</h4>
                     
                     <div className="grid grid-cols-2 gap-4 mb-4">
                       <div>
-                        <label className="text-sm font-medium text-gray-500">Method</label>
+                        <label className="text-sm font-medium text-gray-500">{t("adminConsole.systemLogs.method", { defaultValue: "Method" })}</label>
                         <div className="text-gray-900 font-mono">{selectedLog.http_method}</div>
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-500">Route</label>
+                        <label className="text-sm font-medium text-gray-500">{t("adminConsole.systemLogs.route", { defaultValue: "Route" })}</label>
                         <div className="text-gray-900 font-mono text-sm">{selectedLog.route}</div>
                       </div>
                       {selectedLog.response_status && (
                         <div>
-                          <label className="text-sm font-medium text-gray-500">Status Code</label>
+                          <label className="text-sm font-medium text-gray-500">{t("adminConsole.systemLogs.statusCode", { defaultValue: "Status Code" })}</label>
                           <div className={`font-mono ${selectedLog.response_status >= 400 ? 'text-red-600' : 'text-green-600'}`}>
                             {selectedLog.response_status}
                           </div>
@@ -619,15 +627,15 @@ export default function AdminLogsSection() {
                       )}
                       {selectedLog.response_time_ms && (
                         <div>
-                          <label className="text-sm font-medium text-gray-500">Response Time</label>
-                          <div className="text-gray-900">{selectedLog.response_time_ms}ms</div>
+                          <label className="text-sm font-medium text-gray-500">{t("adminConsole.systemLogs.responseTime", { defaultValue: "Response Time" })}</label>
+                          <div className="text-gray-900">{t("adminConsole.systemLogs.responseTimeMs", { defaultValue: "{{ms}}ms", ms: selectedLog.response_time_ms })}</div>
                         </div>
                       )}
                     </div>
 
                     {selectedLog.query_params && Object.keys(safeJsonParse(selectedLog.query_params) || {}).length > 0 && (
                       <div className="mb-3">
-                        <label className="text-sm font-medium text-gray-500 mb-2 block">Query Parameters</label>
+                        <label className="text-sm font-medium text-gray-500 mb-2 block">{t("adminConsole.systemLogs.queryParameters", { defaultValue: "Query Parameters" })}</label>
                         <pre className="bg-gray-100 p-3 rounded text-xs overflow-auto max-h-48">
                           {JSON.stringify(safeJsonParse(selectedLog.query_params), null, 2)}
                         </pre>
@@ -636,7 +644,7 @@ export default function AdminLogsSection() {
 
                     {selectedLog.headers && (
                       <div className="mb-3">
-                        <label className="text-sm font-medium text-gray-500 mb-2 block">Headers</label>
+                        <label className="text-sm font-medium text-gray-500 mb-2 block">{t("adminConsole.systemLogs.headers", { defaultValue: "Headers" })}</label>
                         <pre className="bg-gray-100 p-3 rounded text-xs overflow-auto max-h-48">
                           {JSON.stringify(safeJsonParse(selectedLog.headers), null, 2)}
                         </pre>
@@ -645,7 +653,7 @@ export default function AdminLogsSection() {
 
                     {selectedLog.request_body && (
                       <div className="mb-3">
-                        <label className="text-sm font-medium text-gray-500 mb-2 block">Request Body</label>
+                        <label className="text-sm font-medium text-gray-500 mb-2 block">{t("adminConsole.systemLogs.requestBody", { defaultValue: "Request Body" })}</label>
                         <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-auto max-h-64">
                           {JSON.stringify(safeJsonParse(selectedLog.request_body), null, 2)}
                         </pre>
@@ -654,7 +662,7 @@ export default function AdminLogsSection() {
 
                     {selectedLog.response_body && (
                       <div className="mb-3">
-                        <label className="text-sm font-medium text-gray-500 mb-2 block">Response Body</label>
+                        <label className="text-sm font-medium text-gray-500 mb-2 block">{t("adminConsole.systemLogs.responseBody", { defaultValue: "Response Body" })}</label>
                         <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-auto max-h-64">
                           {JSON.stringify(safeJsonParse(selectedLog.response_body), null, 2)}
                         </pre>

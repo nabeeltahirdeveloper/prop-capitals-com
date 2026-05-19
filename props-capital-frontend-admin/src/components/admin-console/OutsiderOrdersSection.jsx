@@ -1,7 +1,9 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 export default function OutsiderOrdersSection() {
+  const { t } = useTranslation();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [meta, setMeta] = useState({ page: 1, pages: 1, total: 0 });
@@ -64,14 +66,14 @@ export default function OutsiderOrdersSection() {
   };
 
   const getStatusLabel = (status) => {
-    if (!status) return 'Unknown';
+    if (!status) return t("adminConsole.outsiderOrders.statusUnknown", { defaultValue: "Unknown" });
     const s = status.toLowerCase();
-    if (s === 'paid') return 'Paid';
-    if (s === 'approved') return 'Approved';
-    if (s === 'failed') return 'Failed';
-    if (s === 'declined' || s === 'decline') return 'Declined';
-    if (s === 'pending') return 'Pending';
-    if (s === 'processing') return 'Processing';
+    if (s === 'paid') return t("adminConsole.outsiderOrders.statusPaid", { defaultValue: "Paid" });
+    if (s === 'approved') return t("adminConsole.outsiderOrders.statusApproved", { defaultValue: "Approved" });
+    if (s === 'failed') return t("adminConsole.outsiderOrders.statusFailed", { defaultValue: "Failed" });
+    if (s === 'declined' || s === 'decline') return t("adminConsole.outsiderOrders.statusDeclined", { defaultValue: "Declined" });
+    if (s === 'pending') return t("adminConsole.outsiderOrders.statusPending", { defaultValue: "Pending" });
+    if (s === 'processing') return t("adminConsole.outsiderOrders.statusProcessing", { defaultValue: "Processing" });
     return status;
   };
 
@@ -87,8 +89,8 @@ export default function OutsiderOrdersSection() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-3xl font-bold gradient-text">Outsider Orders</h2>
-          <p className="text-gray-400 mt-1">Transactions from external projects using the Checkout API</p>
+          <h2 className="text-3xl font-bold gradient-text">{t("adminConsole.outsiderOrders.title", { defaultValue: "Outsider Orders" })}</h2>
+          <p className="text-gray-400 mt-1">{t("adminConsole.outsiderOrders.subtitle", { defaultValue: "Transactions from external projects using the Checkout API" })}</p>
         </div>
       </div>
 
@@ -96,19 +98,19 @@ export default function OutsiderOrdersSection() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="glass-card p-4 rounded-xl">
           <div className="text-2xl font-bold text-cyan-400">{meta.total}</div>
-          <div className="text-xs text-gray-500">Total Orders</div>
+          <div className="text-xs text-gray-500">{t("adminConsole.outsiderOrders.totalOrders", { defaultValue: "Total Orders" })}</div>
         </div>
         <div className="glass-card p-4 rounded-xl">
           <div className="text-2xl font-bold text-green-400">{statusCounts.paid}</div>
-          <div className="text-xs text-gray-500">Paid</div>
+          <div className="text-xs text-gray-500">{t("adminConsole.outsiderOrders.statusPaid", { defaultValue: "Paid" })}</div>
         </div>
         <div className="glass-card p-4 rounded-xl">
           <div className="text-2xl font-bold text-red-400">{statusCounts.failed}</div>
-          <div className="text-xs text-gray-500">Failed</div>
+          <div className="text-xs text-gray-500">{t("adminConsole.outsiderOrders.statusFailed", { defaultValue: "Failed" })}</div>
         </div>
         <div className="glass-card p-4 rounded-xl">
           <div className="text-2xl font-bold text-yellow-400">{statusCounts.pending}</div>
-          <div className="text-xs text-gray-500">Pending</div>
+          <div className="text-xs text-gray-500">{t("adminConsole.outsiderOrders.statusPending", { defaultValue: "Pending" })}</div>
         </div>
       </div>
 
@@ -121,7 +123,7 @@ export default function OutsiderOrdersSection() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleSearchKeyPress}
-              placeholder="Search by session ID, order ID, or email..."
+              placeholder={t("adminConsole.outsiderOrders.searchPlaceholder", { defaultValue: "Search by session ID, order ID, or email..." })}
               className="search-input p-3 rounded-lg flex-1"
             />
             <button onClick={handleSearch} className="action-btn btn-primary px-4">
@@ -133,10 +135,10 @@ export default function OutsiderOrdersSection() {
             onChange={(e) => setState(prev => ({ ...prev, status: e.target.value, page: 1 }))}
             className="search-input p-3 rounded-lg min-w-[160px]"
           >
-            <option value="">All Statuses</option>
-            <option value="paid">Paid</option>
-            <option value="failed">Failed</option>
-            <option value="pending">Pending</option>
+            <option value="">{t("adminConsole.outsiderOrders.allStatuses", { defaultValue: "All Statuses" })}</option>
+            <option value="paid">{t("adminConsole.outsiderOrders.statusPaid", { defaultValue: "Paid" })}</option>
+            <option value="failed">{t("adminConsole.outsiderOrders.statusFailed", { defaultValue: "Failed" })}</option>
+            <option value="pending">{t("adminConsole.outsiderOrders.statusPending", { defaultValue: "Pending" })}</option>
           </select>
         </div>
       </div>
@@ -147,7 +149,7 @@ export default function OutsiderOrdersSection() {
           <div className="text-center py-12">
             <div>
               <i className="fas fa-spinner fa-spin text-4xl text-cyan-400 mb-4"></i>
-              <p className="text-gray-400">Loading orders...</p>
+              <p className="text-gray-400">{t("adminConsole.outsiderOrders.loading", { defaultValue: "Loading orders..." })}</p>
             </div>
           </div>
         ) : (
@@ -156,16 +158,16 @@ export default function OutsiderOrdersSection() {
               <table className="w-full min-w-[900px]">
                 <thead className="border-b border-gray-700">
                   <tr>
-                    <th className="text-left p-4">Project</th>
-                    <th className="text-left p-4">Customer Email</th>
-                    <th className="text-left p-4">Customer Name</th>
-                    <th className="text-left p-4">Session / Order ID</th>
-                    <th className="text-left p-4">Amount</th>
-                    <th className="text-left p-4">Currency</th>
-                    <th className="text-left p-4">Gateway</th>
-                    <th className="text-left p-4">Country</th>
-                    <th className="text-left p-4">Status</th>
-                    <th className="text-left p-4">Date</th>
+                    <th className="text-left p-4">{t("adminConsole.outsiderOrders.colProject", { defaultValue: "Project" })}</th>
+                    <th className="text-left p-4">{t("adminConsole.outsiderOrders.colCustomerEmail", { defaultValue: "Customer Email" })}</th>
+                    <th className="text-left p-4">{t("adminConsole.outsiderOrders.colCustomerName", { defaultValue: "Customer Name" })}</th>
+                    <th className="text-left p-4">{t("adminConsole.outsiderOrders.colSessionOrderId", { defaultValue: "Session / Order ID" })}</th>
+                    <th className="text-left p-4">{t("adminConsole.outsiderOrders.colAmount", { defaultValue: "Amount" })}</th>
+                    <th className="text-left p-4">{t("adminConsole.outsiderOrders.colCurrency", { defaultValue: "Currency" })}</th>
+                    <th className="text-left p-4">{t("adminConsole.outsiderOrders.colGateway", { defaultValue: "Gateway" })}</th>
+                    <th className="text-left p-4">{t("adminConsole.outsiderOrders.colCountry", { defaultValue: "Country" })}</th>
+                    <th className="text-left p-4">{t("adminConsole.outsiderOrders.colStatus", { defaultValue: "Status" })}</th>
+                    <th className="text-left p-4">{t("adminConsole.outsiderOrders.colDate", { defaultValue: "Date" })}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -212,8 +214,8 @@ export default function OutsiderOrdersSection() {
                     <tr>
                       <td colSpan="10" className="p-8 text-center text-gray-400">
                         {state.q
-                          ? `No orders match "${state.q}".`
-                          : 'No outsider orders found. Orders will appear here when external projects make payments through the Checkout API.'}
+                          ? t("adminConsole.outsiderOrders.noOrdersMatch", { query: state.q, defaultValue: 'No orders match "{{query}}".' })
+                          : t("adminConsole.outsiderOrders.noOrdersFound", { defaultValue: "No outsider orders found. Orders will appear here when external projects make payments through the Checkout API." })}
                       </td>
                     </tr>
                   )}
@@ -229,17 +231,17 @@ export default function OutsiderOrdersSection() {
                   onClick={() => state.page > 1 && setState(prev => ({ ...prev, page: prev.page - 1 }))}
                   disabled={state.page <= 1}
                 >
-                  Prev
+                  {t("common.pagination.previous", { defaultValue: "Previous" })}
                 </button>
                 <div className="text-sm text-gray-400 text-center order-first sm:order-none">
-                  Page {meta.page} of {meta.pages} — {meta.total} total
+                  {t("common.pagination.pageOf", { current: meta.page, total: meta.pages, defaultValue: "Page {{current}} of {{total}}" })} — {meta.total} {t("common.pagination.records", { defaultValue: "total" })}
                 </div>
                 <button
                   className="action-btn btn-secondary w-full sm:w-auto"
                   onClick={() => state.page < meta.pages && setState(prev => ({ ...prev, page: prev.page + 1 }))}
                   disabled={state.page >= meta.pages}
                 >
-                  Next
+                  {t("common.pagination.next", { defaultValue: "Next" })}
                 </button>
               </div>
             )}

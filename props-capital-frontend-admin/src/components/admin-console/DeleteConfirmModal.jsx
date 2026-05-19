@@ -1,6 +1,8 @@
 import React from 'react';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 export default function DeleteConfirmModal({ title, message, onConfirm, onCancel, loading }) {
+  const { t } = useTranslation();
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onCancel}></div>
@@ -10,9 +12,9 @@ export default function DeleteConfirmModal({ title, message, onConfirm, onCancel
             <i className="fas fa-exclamation-triangle text-red-400 text-xl"></i>
           </div>
           <div className="flex-1">
-            <h3 className="text-xl font-semibold mb-2">{title || 'Confirm Delete'}</h3>
+            <h3 className="text-xl font-semibold mb-2">{title || t("adminConsole.deleteModal.title", { defaultValue: "Confirm Delete" })}</h3>
             <p className="text-gray-300 text-sm">
-              {message || 'Are you sure you want to delete this item? This action cannot be undone.'}
+              {message || t("adminConsole.deleteModal.message", { defaultValue: "Are you sure you want to delete this item? This action cannot be undone." })}
             </p>
           </div>
         </div>

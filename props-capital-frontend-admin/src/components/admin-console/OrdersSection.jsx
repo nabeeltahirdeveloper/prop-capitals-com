@@ -2,8 +2,10 @@
 import { adminConsoleApi } from '@/api/adminConsole';
 import OrderModal from './OrderModal';
 import DeleteConfirmModal from './DeleteConfirmModal';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 export default function OrdersSection() {
+  const { t } = useTranslation();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -134,7 +136,7 @@ export default function OrdersSection() {
 
     } catch (error) {
       console.error('Failed to load orders:', error);
-      alert('⚠️ Failed to load orders. Please check the console for details.');
+      alert(t("adminConsole.orders.loadErrorAlert", { defaultValue: "⚠️ Failed to load orders. Please check the console for details." }));
     } finally {
       setLoading(false);
     }
@@ -145,8 +147,8 @@ export default function OrdersSection() {
       const arr = Array.isArray(items) ? items : [];
       const p = arr.find(it => (it?.type || '').toLowerCase() === 'package');
       const c = arr.find(it => (it?.type || '').toLowerCase() === 'credits');
-      const pkgName = p ? (p.name || p.id || 'Package') : '';
-      const credits = c ? (c.unlimited ? 'Unlimited' : (c.credits ? `${c.credits} Credits` : '')) : '';
+      const pkgName = p ? (p.name || p.id || t("adminConsole.orders.packageDefault", { defaultValue: "Package" })) : '';
+      const credits = c ? (c.unlimited ? t("adminConsole.orders.unlimited", { defaultValue: "Unlimited" }) : (c.credits ? t("adminConsole.orders.creditsCount", { count: c.credits, defaultValue: "{{count}} Credits" }) : '')) : '';
       return [pkgName, credits].filter(Boolean).join(' - ');
     } catch (e) {
       return '';
@@ -163,14 +165,14 @@ export default function OrdersSection() {
   const getStatusLabel = (order) => {
     // Check payment_message for success
     if (order.payment_message === 'Transaction succeeded') {
-      return 'Approved';
+      return t("adminConsole.orders.statusApproved", { defaultValue: "Approved" });
     }
 
     const s = (order.payment_status || '').toLowerCase();
-    if (s === 'unpaid') return 'Unpaid';
-    if (s === 'pending') return 'Pending';
-    if (s === 'cancelled' || s === 'failed' || s === 'rejected') return 'Declined';
-    return order.payment_status || 'Unknown';
+    if (s === 'unpaid') return t("adminConsole.orders.statusUnpaid", { defaultValue: "Unpaid" });
+    if (s === 'pending') return t("adminConsole.orders.statusPending", { defaultValue: "Pending" });
+    if (s === 'cancelled' || s === 'failed' || s === 'rejected') return t("adminConsole.orders.statusDeclined", { defaultValue: "Declined" });
+    return order.payment_status || t("adminConsole.orders.statusUnknown", { defaultValue: "Unknown" });
   };
 
   const formatOrderDate = (dateString) => {
@@ -204,7 +206,7 @@ export default function OrdersSection() {
       loadOrders();
     } catch (error) {
       console.error('Failed to delete order:', error);
-      alert('❌ Failed to delete order: ' + error.message);
+      alert(t("adminConsole.orders.deleteErrorAlert", { message: error.message, defaultValue: "❌ Failed to delete order: {{message}}" }));
       setDeleteModal({ show: false, orderId: null });
     }
   };
@@ -219,7 +221,7 @@ export default function OrdersSection() {
     } catch (error) {
       console.error('Failed to view order:', error);
       setModalState({ show: false, mode: null, order: null, loading: false });
-      alert('❌ Failed to load order details');
+      alert(t("adminConsole.orders.loadDetailsErrorAlert", { defaultValue: "❌ Failed to load order details" }));
     }
   };
 
@@ -233,7 +235,7 @@ export default function OrdersSection() {
     } catch (error) {
       console.error('Failed to load order:', error);
       setModalState({ show: false, mode: null, order: null, loading: false });
-      alert('❌ Failed to load order details');
+      alert(t("adminConsole.orders.loadDetailsErrorAlert", { defaultValue: "❌ Failed to load order details" }));
     }
   };
 
@@ -256,13 +258,13 @@ export default function OrdersSection() {
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-6 gap-4">
-        <h2 className="text-3xl font-bold gradient-text">Order Management</h2>
+        <h2 className="text-3xl font-bold gradient-text">{t("adminConsole.orders.title", { defaultValue: "Order Management" })}</h2>
         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
           <button className="action-btn btn-primary w-full sm:w-auto" onClick={createOrder}>
-            <i className="fas fa-plus mr-2"></i>Add Order
+            <i className="fas fa-plus mr-2"></i>{t("adminConsole.orders.addOrder", { defaultValue: "Add Order" })}
           </button>
           <button className="action-btn btn-danger w-full sm:w-auto" onClick={() => window.location.href = '/dashboard'}>
-            <i className="fas fa-arrow-left mr-2"></i>Switch to User Dashboard
+            <i className="fas fa-arrow-left mr-2"></i>{t("adminConsole.orders.switchToUserDashboard", { defaultValue: "Switch to User Dashboard" })}
           </button>
         </div>
       </div>
@@ -272,7 +274,7 @@ export default function OrdersSection() {
         <div className="glass-panel p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-400 mb-1">Approved Transactions</p>
+              <p className="text-sm text-gray-400 mb-1">{t("adminConsole.orders.approvedTransactions", { defaultValue: "Approved Transactions" })}</p>
               <p className="text-3xl font-bold text-green-400">{approvedCount}</p>
             </div>
             <div className="w-12 h-12 rounded-lg bg-green-500/20 flex items-center justify-center">
@@ -284,7 +286,7 @@ export default function OrdersSection() {
         <div className="glass-panel p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-400 mb-1">Unpaid Transactions</p>
+              <p className="text-sm text-gray-400 mb-1">{t("adminConsole.orders.unpaidTransactions", { defaultValue: "Unpaid Transactions" })}</p>
               <p className="text-3xl font-bold text-blue-400">{unpaidCount}</p>
             </div>
             <div className="w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center">
@@ -296,7 +298,7 @@ export default function OrdersSection() {
         <div className="glass-panel p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-400 mb-1">Declined Transactions</p>
+              <p className="text-sm text-gray-400 mb-1">{t("adminConsole.orders.declinedTransactions", { defaultValue: "Declined Transactions" })}</p>
               <p className="text-3xl font-bold text-red-400">{declineCount}</p>
             </div>
             <div className="w-12 h-12 rounded-lg bg-red-500/20 flex items-center justify-center">
@@ -313,7 +315,7 @@ export default function OrdersSection() {
           <div className="relative md:col-span-3">
             <input
               type="text"
-              placeholder="Search by customer email, full name, or order ID..."
+              placeholder={t("adminConsole.orders.searchPlaceholder", { defaultValue: "Search by customer email, full name, or order ID..." })}
               className="search-input p-3 pr-12 rounded-lg w-full"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -327,11 +329,11 @@ export default function OrdersSection() {
             value={state.status}
             onChange={(e) => setState(prev => ({ ...prev, status: e.target.value, page: 1 }))}
           >
-            <option value="all">All Status</option>
-            <option value="paid">Approved</option>
-            <option value="unpaid">Unpaid</option>
-            <option value="pending">Pending</option>
-            <option value="cancelled">Cancelled</option>
+            <option value="all">{t("adminConsole.orders.filterAllStatus", { defaultValue: "All Status" })}</option>
+            <option value="paid">{t("adminConsole.orders.statusApproved", { defaultValue: "Approved" })}</option>
+            <option value="unpaid">{t("adminConsole.orders.statusUnpaid", { defaultValue: "Unpaid" })}</option>
+            <option value="pending">{t("adminConsole.orders.statusPending", { defaultValue: "Pending" })}</option>
+            <option value="cancelled">{t("adminConsole.orders.statusCancelled", { defaultValue: "Cancelled" })}</option>
           </select>
         </div>
 
@@ -342,14 +344,14 @@ export default function OrdersSection() {
             value={state.pkg}
             onChange={(e) => setState(prev => ({ ...prev, pkg: e.target.value, page: 1 }))}
           >
-            <option value="">All Packages</option>
-            <option value="starter">Starter</option>
-            <option value="professional">Professional</option>
-            <option value="expert">Expert</option>
+            <option value="">{t("adminConsole.orders.allPackages", { defaultValue: "All Packages" })}</option>
+            <option value="starter">{t("adminConsole.orders.packageStarter", { defaultValue: "Starter" })}</option>
+            <option value="professional">{t("adminConsole.orders.packageProfessional", { defaultValue: "Professional" })}</option>
+            <option value="expert">{t("adminConsole.orders.packageExpert", { defaultValue: "Expert" })}</option>
           </select>
           <input
             type="date"
-            placeholder="From Date"
+            placeholder={t("adminConsole.orders.fromDate", { defaultValue: "From Date" })}
             className="search-input p-3 rounded-lg"
             value={state.fromDate}
             onChange={(e) => setState(prev => ({ ...prev, fromDate: e.target.value, page: 1 }))}
@@ -358,7 +360,7 @@ export default function OrdersSection() {
           />
           <input
             type="date"
-            placeholder="To Date"
+            placeholder={t("adminConsole.orders.toDate", { defaultValue: "To Date" })}
             className="search-input p-3 rounded-lg"
             value={state.toDate}
             onChange={(e) => setState(prev => ({ ...prev, toDate: e.target.value, page: 1 }))}
@@ -374,7 +376,7 @@ export default function OrdersSection() {
           <div className="text-center py-12">
             <div>
               <i className="fas fa-spinner fa-spin text-4xl text-cyan-400 mb-4"></i>
-              <p className="text-gray-400">Loading orders...</p>
+              <p className="text-gray-400">{t("adminConsole.orders.loading", { defaultValue: "Loading orders..." })}</p>
             </div>
           </div>
         ) : (
@@ -383,15 +385,15 @@ export default function OrdersSection() {
               <table className="w-full min-w-[900px]">
                 <thead className="border-b border-gray-700">
                   <tr>
-                    <th className="text-left p-4">Customer Email</th>
-                    <th className="text-left p-4">Full Name</th>
-                    <th className="text-left p-4">Brand Name</th>
-                    <th className="text-left p-4">Reseller Name</th>
-                    <th className="text-left p-4">Package</th>
-                    <th className="text-left p-4">Amount</th>
-                    <th className="text-left p-4">Status</th>
-                    <th className="text-left p-4">Date</th>
-                    <th className="text-left p-4">Actions</th>
+                    <th className="text-left p-4">{t("adminConsole.orders.colCustomerEmail", { defaultValue: "Customer Email" })}</th>
+                    <th className="text-left p-4">{t("adminConsole.orders.colFullName", { defaultValue: "Full Name" })}</th>
+                    <th className="text-left p-4">{t("adminConsole.orders.colBrandName", { defaultValue: "Brand Name" })}</th>
+                    <th className="text-left p-4">{t("adminConsole.orders.colResellerName", { defaultValue: "Reseller Name" })}</th>
+                    <th className="text-left p-4">{t("adminConsole.orders.colPackage", { defaultValue: "Package" })}</th>
+                    <th className="text-left p-4">{t("adminConsole.orders.colAmount", { defaultValue: "Amount" })}</th>
+                    <th className="text-left p-4">{t("adminConsole.orders.colStatus", { defaultValue: "Status" })}</th>
+                    <th className="text-left p-4">{t("adminConsole.orders.colDate", { defaultValue: "Date" })}</th>
+                    <th className="text-left p-4">{t("adminConsole.orders.colActions", { defaultValue: "Actions" })}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -414,23 +416,23 @@ export default function OrdersSection() {
                           <button
                             className="action-btn btn-secondary"
                             onClick={() => viewOrder(order.order_id)}
-                            title="View order details"
+                            title={t("adminConsole.orders.viewTooltip", { defaultValue: "View order details" })}
                           >
-                            View
+                            {t("adminConsole.orders.view", { defaultValue: "View" })}
                           </button>
                           <button
                             className="action-btn btn-primary"
                             onClick={() => editOrder(order.order_id)}
-                            title="Edit order"
+                            title={t("adminConsole.orders.editTooltip", { defaultValue: "Edit order" })}
                           >
-                            Edit
+                            {t("adminConsole.orders.edit", { defaultValue: "Edit" })}
                           </button>
                           <button
                             className="action-btn btn-danger"
                             onClick={() => openDeleteModal(order.order_id)}
-                            title="Delete order"
+                            title={t("adminConsole.orders.deleteTooltip", { defaultValue: "Delete order" })}
                           >
-                            Delete
+                            {t("adminConsole.orders.delete", { defaultValue: "Delete" })}
                           </button>
                         </div>
                       </td>
@@ -440,8 +442,8 @@ export default function OrdersSection() {
                     <tr>
                       <td colSpan="9" className="p-8 text-center text-gray-400">
                         {state.q
-                          ? `No orders match "${state.q}".`
-                          : 'No orders found'}
+                          ? t("adminConsole.orders.noOrdersMatch", { query: state.q, defaultValue: 'No orders match "{{query}}".' })
+                          : t("adminConsole.orders.noOrdersFound", { defaultValue: "No orders found" })}
                       </td>
                     </tr>
                   )}
@@ -455,17 +457,17 @@ export default function OrdersSection() {
                   onClick={() => state.page > 1 && setState(prev => ({ ...prev, page: prev.page - 1 }))}
                   disabled={state.page <= 1}
                 >
-                  Prev
+                  {t("common.pagination.previous", { defaultValue: "Previous" })}
                 </button>
                 <div className="text-sm text-gray-400 text-center order-first sm:order-none">
-                  Page {meta.page} of {meta.pages} — {meta.total} total
+                  {t("common.pagination.pageOf", { current: meta.page, total: meta.pages, defaultValue: "Page {{current}} of {{total}}" })} — {meta.total} {t("common.pagination.records", { defaultValue: "total" })}
                 </div>
                 <button
                   className="action-btn btn-secondary w-full sm:w-auto"
                   onClick={() => state.page < meta.pages && setState(prev => ({ ...prev, page: prev.page + 1 }))}
                   disabled={state.page >= meta.pages}
                 >
-                  Next
+                  {t("common.pagination.next", { defaultValue: "Next" })}
                 </button>
               </div>
             )}
@@ -487,8 +489,8 @@ export default function OrdersSection() {
       {/* Delete Confirmation Modal */}
       {deleteModal.show && (
         <DeleteConfirmModal
-          title="Delete Order"
-          message={`Are you sure you want to delete order ${deleteModal.orderId}? This action cannot be undone.`}
+          title={t("adminConsole.orders.deleteOrderTitle", { defaultValue: "Delete Order" })}
+          message={t("adminConsole.orders.deleteOrderMessage", { orderId: deleteModal.orderId, defaultValue: "Are you sure you want to delete order {{orderId}}? This action cannot be undone." })}
           onConfirm={confirmDelete}
           onCancel={() => setDeleteModal({ show: false, orderId: null })}
         />

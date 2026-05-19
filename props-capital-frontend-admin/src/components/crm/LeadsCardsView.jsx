@@ -46,10 +46,10 @@ export default function LeadsCardsView({ leads, onLeadClick, getStatusColor, mas
                         </div>
                     </div>
                     <div className="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-border">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-green-500 hover:text-green-600 hover:bg-green-500/10">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-green-500 hover:text-green-600 hover:bg-green-500/10" title={t('crm.leads.call', { defaultValue: 'Call' })} aria-label={t('crm.leads.call', { defaultValue: 'Call' })}>
                             <Phone className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:text-primary/80 hover:bg-primary/10">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:text-primary/80 hover:bg-primary/10" title={t('crm.leads.message', { defaultValue: 'Message' })} aria-label={t('crm.leads.message', { defaultValue: 'Message' })}>
                             <MessageCircle className="w-4 h-4" />
                         </Button>
                     </div>

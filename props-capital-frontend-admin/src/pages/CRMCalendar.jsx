@@ -13,7 +13,7 @@ import {
   Filter,
   CalendarDays,
 } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -170,7 +170,9 @@ export default function CRMCalendar() {
     if (!newMeeting.title || !newMeeting.clientName) {
       toast({
         title: t("common.error"),
-        description: t("crm.crmCalendar.errorRequiredFields"),
+        description: t("crm.crmCalendar.errorRequiredFields", {
+          defaultValue: "Please fill in all required fields",
+        }),
         variant: "destructive",
       });
       return;
@@ -217,7 +219,9 @@ export default function CRMCalendar() {
 
       toast({
         title: t("common.success"),
-        description: t("crm.crmCalendar.successScheduled"),
+        description: t("crm.crmCalendar.successScheduled", {
+          defaultValue: "Meeting scheduled successfully",
+        }),
       });
 
       setIsModalOpen(false);
@@ -234,7 +238,11 @@ export default function CRMCalendar() {
     } catch (error) {
       toast({
         title: t("common.error"),
-        description: error.message || t("crm.crmCalendar.loadError"),
+        description:
+          error.message ||
+          t("crm.crmCalendar.loadError", {
+            defaultValue: "Failed to load calendar data",
+          }),
         variant: "destructive",
       });
     } finally {
@@ -247,10 +255,12 @@ export default function CRMCalendar() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
-            {t("crm.crmCalendar.title")}
+            {t("crm.crmCalendar.title", { defaultValue: "Sales Calendar" })}
           </h1>
           <p className="text-muted-foreground mt-1">
-            {t("crm.crmCalendar.subtitle")}
+            {t("crm.crmCalendar.subtitle", {
+              defaultValue: "Your scheduled meetings",
+            })}
           </p>
         </div>
         <Button
@@ -258,7 +268,9 @@ export default function CRMCalendar() {
           onClick={() => setIsModalOpen(true)}
         >
           <Plus className="w-4 h-4 mr-2" />
-          {t("crm.crmCalendar.scheduleMeeting")}
+          {t("crm.crmCalendar.scheduleMeeting", {
+            defaultValue: "Schedule Meeting",
+          })}
         </Button>
       </div>
     );
@@ -271,7 +283,9 @@ export default function CRMCalendar() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder={t("crm.crmCalendar.searchPlaceholder")}
+              placeholder={t("crm.crmCalendar.searchPlaceholder", {
+                defaultValue: "Search meetings, clients, or agents...",
+              })}
               className="pl-10 bg-muted border-border text-foreground placeholder:text-muted-foreground"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -281,36 +295,52 @@ export default function CRMCalendar() {
             <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger className="w-[140px] bg-muted border-border text-foreground">
                 <Filter className="w-3.5 h-3.5 mr-2 text-muted-foreground" />
-                <SelectValue placeholder={t("crm.crmCalendar.allTypes")} />
+                <SelectValue
+                  placeholder={t("crm.crmCalendar.allTypes", {
+                    defaultValue: "All Types",
+                  })}
+                />
               </SelectTrigger>
               <SelectContent className="bg-card border-border text-foreground">
                 <SelectItem value="all">
-                  {t("crm.crmCalendar.allTypes")}
+                  {t("crm.crmCalendar.allTypes", { defaultValue: "All Types" })}
                 </SelectItem>
                 <SelectItem value="Call">
-                  {t("crm.crmCalendar.call")}
+                  {t("crm.crmCalendar.call", { defaultValue: "Call" })}
                 </SelectItem>
                 <SelectItem value="Meeting">
-                  {t("crm.crmCalendar.meeting")}
+                  {t("crm.crmCalendar.meeting", { defaultValue: "Meeting" })}
                 </SelectItem>
               </SelectContent>
             </Select>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[140px] bg-muted border-border text-foreground">
-                <SelectValue placeholder={t("crm.crmCalendar.allStatus")} />
+                <SelectValue
+                  placeholder={t("crm.crmCalendar.allStatus", {
+                    defaultValue: "All Status",
+                  })}
+                />
               </SelectTrigger>
               <SelectContent className="bg-card border-border text-foreground">
                 <SelectItem value="all">
-                  {t("crm.crmCalendar.allStatus")}
+                  {t("crm.crmCalendar.allStatus", {
+                    defaultValue: "All Status",
+                  })}
                 </SelectItem>
                 <SelectItem value="SCHEDULED">
-                  {t("crm.crmCalendar.scheduled")}
+                  {t("crm.crmCalendar.scheduled", {
+                    defaultValue: "Scheduled",
+                  })}
                 </SelectItem>
                 <SelectItem value="COMPLETED">
-                  {t("crm.crmCalendar.completed")}
+                  {t("crm.crmCalendar.completed", {
+                    defaultValue: "Completed",
+                  })}
                 </SelectItem>
                 <SelectItem value="CANCELLED">
-                  {t("crm.crmCalendar.cancelled")}
+                  {t("crm.crmCalendar.cancelled", {
+                    defaultValue: "Cancelled",
+                  })}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -324,7 +354,9 @@ export default function CRMCalendar() {
               {stats.totalMeetings}
             </p>
             <p className="text-xs text-muted-foreground font-medium mt-2 uppercase tracking-wider">
-              {t("crm.crmCalendar.totalMeetings")}
+              {t("crm.crmCalendar.totalMeetings", {
+                defaultValue: "Total Meetings",
+              })}
             </p>
           </Card>
           <Card className="bg-card border-border p-4 hover:border-amber-300 transition-colors">
@@ -332,7 +364,7 @@ export default function CRMCalendar() {
               {stats.today}
             </p>
             <p className="text-xs text-muted-foreground font-medium mt-2 uppercase tracking-wider">
-              {t("crm.crmCalendar.today")}
+              {t("crm.crmCalendar.today", { defaultValue: "Today" })}
             </p>
           </Card>
           <Card className="bg-card border-border p-4 hover:border-amber-300 transition-colors">
@@ -340,7 +372,7 @@ export default function CRMCalendar() {
               {stats.calls}
             </p>
             <p className="text-xs text-muted-foreground font-medium mt-2 uppercase tracking-wider">
-              {t("crm.crmCalendar.calls")}
+              {t("crm.crmCalendar.calls", { defaultValue: "Calls" })}
             </p>
           </Card>
           <Card className="bg-card border-border p-4 hover:border-amber-300 transition-colors">
@@ -348,7 +380,7 @@ export default function CRMCalendar() {
               {stats.meetings}
             </p>
             <p className="text-xs text-muted-foreground font-medium mt-2 uppercase tracking-wider">
-              {t("crm.crmCalendar.meetings")}
+              {t("crm.crmCalendar.meetings", { defaultValue: "Meetings" })}
             </p>
           </Card>
         </div>
@@ -370,7 +402,9 @@ export default function CRMCalendar() {
           onClick={() => setViewMode("calendar")}
         >
           <CalendarDays className="w-4 h-4 mr-2" />
-          {t("crm.crmCalendar.calendarView")}
+          {t("crm.crmCalendar.calendarView", {
+            defaultValue: "Calendar View",
+          })}
         </Button>
         <Button
           variant={viewMode === "list" ? "secondary" : "ghost"}
@@ -383,7 +417,7 @@ export default function CRMCalendar() {
           onClick={() => setViewMode("list")}
         >
           <List className="w-4 h-4 mr-2" />
-          {t("crm.crmCalendar.listView")}
+          {t("crm.crmCalendar.listView", { defaultValue: "List View" })}
         </Button>
       </div>
     );
@@ -441,6 +475,7 @@ export default function CRMCalendar() {
                 <div className="text-[10px] text-muted-foreground font-bold ml-1">
                   {t("crm.crmCalendar.moreCount", {
                     count: dailyMeetings.length - 3,
+                    defaultValue: "+ {{count}} more",
                   })}
                 </div>
               )}
@@ -504,7 +539,9 @@ export default function CRMCalendar() {
               {format(selectedDate, "MMMM d, yyyy")}
             </h3>
             <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider font-semibold">
-              {t("crm.crmCalendar.todaysSchedule")}
+              {t("crm.crmCalendar.todaysSchedule", {
+                defaultValue: "Today's Schedule",
+              })}
             </p>
           </div>
           <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
@@ -516,14 +553,18 @@ export default function CRMCalendar() {
                   <CalendarIcon className="w-8 h-8 text-muted-foreground" />
                 </div>
                 <p className="text-muted-foreground font-medium">
-                  {t("crm.crmCalendar.noMeetings")}
+                  {t("crm.crmCalendar.noMeetings", {
+                    defaultValue: "No meetings scheduled",
+                  })}
                 </p>
                 <Button
                   variant="link"
                   className="text-amber-600 mt-2 text-sm"
                   onClick={() => setIsModalOpen(true)}
                 >
-                  {t("crm.crmCalendar.scheduleOneNow")}
+                  {t("crm.crmCalendar.scheduleOneNow", {
+                    defaultValue: "Schedule one now",
+                  })}
                 </Button>
               </div>
             ) : (
@@ -556,7 +597,10 @@ export default function CRMCalendar() {
                             {format(parseISO(meeting.startTime), "HH:mm")}
                           </p>
                           <p className="text-[10px] text-muted-foreground font-medium mt-1">
-                            {meeting.duration} {t("crm.crmCalendar.minShort")}
+                            {meeting.duration}{" "}
+                            {t("crm.crmCalendar.minShort", {
+                              defaultValue: "min",
+                            })}
                           </p>
                         </div>
                       </div>
@@ -575,19 +619,37 @@ export default function CRMCalendar() {
       <Card className="bg-card border-border overflow-hidden shadow-xl">
         <div className="p-6 border-b border-border bg-muted/60">
           <h2 className="text-xl font-bold text-foreground">
-            {t("crm.crmCalendar.listView")}
+            {t("crm.crmCalendar.listView", { defaultValue: "List View" })}
           </h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-border text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
-                <th className="px-6 py-4">{t("crm.crmCalendar.dateTime")}</th>
-                <th className="px-6 py-4">{t("crm.crmCalendar.meeting")}</th>
-                <th className="px-6 py-4">{t("crm.crmCalendar.clientName")}</th>
-                <th className="px-6 py-4">{t("crm.crmCalendar.type")}</th>
-                <th className="px-6 py-4">{t("crm.crmCalendar.duration")}</th>
-                <th className="px-6 py-4">{t("crm.crmCalendar.status")}</th>
+                <th className="px-6 py-4">
+                  {t("crm.crmCalendar.dateTime", {
+                    defaultValue: "Date & Time",
+                  })}
+                </th>
+                <th className="px-6 py-4">
+                  {t("crm.crmCalendar.meeting", { defaultValue: "Meeting" })}
+                </th>
+                <th className="px-6 py-4">
+                  {t("crm.crmCalendar.clientName", {
+                    defaultValue: "Client Name",
+                  })}
+                </th>
+                <th className="px-6 py-4">
+                  {t("crm.crmCalendar.type", { defaultValue: "Type" })}
+                </th>
+                <th className="px-6 py-4">
+                  {t("crm.crmCalendar.duration", {
+                    defaultValue: "Duration (minutes)",
+                  })}
+                </th>
+                <th className="px-6 py-4">
+                  {t("crm.crmCalendar.status", { defaultValue: "Status" })}
+                </th>
                 <th className="px-6 py-4"></th>
               </tr>
             </thead>
@@ -598,7 +660,9 @@ export default function CRMCalendar() {
                     colSpan="7"
                     className="px-6 py-12 text-center text-muted-foreground"
                   >
-                    {t("crm.crmCalendar.noMeetings")}
+                    {t("crm.crmCalendar.noMeetings", {
+                      defaultValue: "No meetings scheduled",
+                    })}
                   </td>
                 </tr>
               ) : (
@@ -651,14 +715,23 @@ export default function CRMCalendar() {
                                             `}
                         >
                           {meeting.type === "Call"
-                            ? t("crm.crmCalendar.call")
+                            ? t("crm.crmCalendar.call", {
+                                defaultValue: "Call",
+                              })
                             : meeting.type === "Meeting"
-                              ? t("crm.crmCalendar.meeting")
-                              : t("crm.crmCalendar.other")}
+                              ? t("crm.crmCalendar.meeting", {
+                                  defaultValue: "Meeting",
+                                })
+                              : t("crm.crmCalendar.other", {
+                                  defaultValue: "Other",
+                                })}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-muted-foreground font-medium">
-                        {meeting.duration} {t("crm.crmCalendar.minShort")}
+                        {meeting.duration}{" "}
+                        {t("crm.crmCalendar.minShort", {
+                          defaultValue: "min",
+                        })}
                       </td>
                       <td className="px-6 py-4">
                         <span
@@ -674,10 +747,16 @@ export default function CRMCalendar() {
                                             `}
                         >
                           {meeting.status === "SCHEDULED"
-                            ? t("crm.crmCalendar.scheduled")
+                            ? t("crm.crmCalendar.scheduled", {
+                                defaultValue: "Scheduled",
+                              })
                             : meeting.status === "COMPLETED"
-                              ? t("crm.crmCalendar.completed")
-                              : t("crm.crmCalendar.cancelled")}
+                              ? t("crm.crmCalendar.completed", {
+                                  defaultValue: "Completed",
+                                })
+                              : t("crm.crmCalendar.cancelled", {
+                                  defaultValue: "Cancelled",
+                                })}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
@@ -709,7 +788,9 @@ export default function CRMCalendar() {
         <div className="flex flex-col items-center justify-center h-64">
           <Loader2 className="w-10 h-10 animate-spin text-amber-600 mb-4" />
           <p className="text-muted-foreground font-medium">
-            {t("crm.crmCalendar.loading")}
+            {t("crm.crmCalendar.loading", {
+              defaultValue: "Loading your schedule...",
+            })}
           </p>
         </div>
       ) : viewMode === "calendar" ? (
@@ -726,17 +807,23 @@ export default function CRMCalendar() {
               <div className="p-2 rounded-lg bg-amber-50 text-amber-600">
                 <CalendarDays className="w-5 h-5" />
               </div>
-              {t("crm.crmCalendar.scheduleNewMeeting")}
+              {t("crm.crmCalendar.scheduleNewMeeting", {
+                defaultValue: "Schedule New Meeting",
+              })}
             </DialogTitle>
           </DialogHeader>
 
           <div className="p-6 space-y-5">
             <div className="space-y-2">
               <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                {t("crm.crmCalendar.meetingTitle")}
+                {t("crm.crmCalendar.meetingTitle", {
+                  defaultValue: "Meeting Title",
+                })}
               </label>
               <Input
-                placeholder={t("crm.crmCalendar.placeholderTitle")}
+                placeholder={t("crm.crmCalendar.placeholderTitle", {
+                  defaultValue: "e.g., Follow-up Call",
+                })}
                 className="bg-muted border-border text-foreground h-11"
                 value={newMeeting.title}
                 onChange={(e) =>
@@ -747,10 +834,14 @@ export default function CRMCalendar() {
 
             <div className="space-y-2">
               <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                {t("crm.crmCalendar.clientName")}
+                {t("crm.crmCalendar.clientName", {
+                  defaultValue: "Client Name",
+                })}
               </label>
               <Input
-                placeholder={t("crm.crmCalendar.placeholderClient")}
+                placeholder={t("crm.crmCalendar.placeholderClient", {
+                  defaultValue: "Enter client name",
+                })}
                 className="bg-muted border-border text-foreground h-11"
                 value={newMeeting.clientName}
                 onChange={(e) =>
@@ -762,7 +853,7 @@ export default function CRMCalendar() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                  {t("crm.crmCalendar.date")}
+                  {t("crm.crmCalendar.date", { defaultValue: "Date" })}
                 </label>
                 <div className="relative">
                   <CalendarIcon
@@ -782,7 +873,7 @@ export default function CRMCalendar() {
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                  {t("crm.crmCalendar.time")}
+                  {t("crm.crmCalendar.time", { defaultValue: "Time" })}
                 </label>
                 <div className="relative">
                   <Clock
@@ -805,7 +896,9 @@ export default function CRMCalendar() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                  {t("crm.crmCalendar.duration")}
+                  {t("crm.crmCalendar.duration", {
+                    defaultValue: "Duration (minutes)",
+                  })}
                 </label>
                 <Input
                   type="number"
@@ -818,7 +911,7 @@ export default function CRMCalendar() {
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                  {t("crm.crmCalendar.type")}
+                  {t("crm.crmCalendar.type", { defaultValue: "Type" })}
                 </label>
                 <Select
                   value={newMeeting.type}
@@ -831,13 +924,15 @@ export default function CRMCalendar() {
                   </SelectTrigger>
                   <SelectContent className="bg-card border-border text-foreground">
                     <SelectItem value="Call">
-                      {t("crm.crmCalendar.call")}
+                      {t("crm.crmCalendar.call", { defaultValue: "Call" })}
                     </SelectItem>
                     <SelectItem value="Meeting">
-                      {t("crm.crmCalendar.meeting")}
+                      {t("crm.crmCalendar.meeting", {
+                        defaultValue: "Meeting",
+                      })}
                     </SelectItem>
                     <SelectItem value="Other">
-                      {t("crm.crmCalendar.other")}
+                      {t("crm.crmCalendar.other", { defaultValue: "Other" })}
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -851,7 +946,7 @@ export default function CRMCalendar() {
               className="text-muted-foreground hover:text-foreground"
               onClick={() => setIsModalOpen(false)}
             >
-              {t("crm.crmCalendar.cancel")}
+              {t("crm.crmCalendar.cancel", { defaultValue: "Cancel" })}
             </Button>
             <Button
               className="bg-amber-600 hover:bg-amber-600 text-white font-bold h-11 px-8 rounded-lg shadow-lg shadow-amber-500/20"
@@ -861,7 +956,9 @@ export default function CRMCalendar() {
               {isSaving ? (
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
               ) : null}
-              {t("crm.crmCalendar.scheduleMeeting")}
+              {t("crm.crmCalendar.scheduleMeeting", {
+                defaultValue: "Schedule Meeting",
+              })}
             </Button>
           </DialogFooter>
         </DialogContent>

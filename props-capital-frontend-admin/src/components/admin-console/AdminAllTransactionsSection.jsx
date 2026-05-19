@@ -2,6 +2,7 @@
 import { adminConsoleApi } from '@/api/adminConsole';
 import { exportToCSV, formatDateForCSV, formatCurrencyForCSV } from '@/utils/csvExport';
 import { getCurrencySymbol } from '@/utils/currency';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 const formatDateForAPI = (dateStr, isEndOfDay = false) => {
   if (!dateStr) return '';
@@ -38,6 +39,7 @@ const formatTransactionDate = (dateString) => {
 };
 
 export default function AdminAllTransactionsSection() {
+  const { t } = useTranslation();
   // Load saved date filters from localStorage on mount
   const loadSavedDateFilters = () => {
     try {
@@ -106,20 +108,20 @@ export default function AdminAllTransactionsSection() {
     }));
 
     const columns = [
-      { key: 'order_id', header: 'Order ID' },
-      { key: 'date', header: 'Date' },
-      { key: 'brand_name', header: 'Brand' },
-      { key: 'customer_name', header: 'Customer Name' },
-      { key: 'email', header: 'Email' },
-      { key: 'country', header: 'Country' },
-      { key: 'amount_original', header: 'Amount (Original)' },
-      { key: 'amount_usd', header: 'Amount (USD)' },
-      { key: 'commission', header: 'Commission' },
-      { key: 'commission_rate', header: 'Commission Rate' },
-      { key: 'payment_method', header: 'Payment Method' },
-      { key: 'payment_status', header: 'Payment Status' },
-      { key: 'payment_message', header: 'Payment Message' },
-      { key: 'items', header: 'Items' }
+      { key: 'order_id', header: t("adminConsole.transactions.csvOrderId", { defaultValue: "Order ID" }) },
+      { key: 'date', header: t("adminConsole.transactions.csvDate", { defaultValue: "Date" }) },
+      { key: 'brand_name', header: t("adminConsole.transactions.csvBrand", { defaultValue: "Brand" }) },
+      { key: 'customer_name', header: t("adminConsole.transactions.csvCustomerName", { defaultValue: "Customer Name" }) },
+      { key: 'email', header: t("adminConsole.transactions.csvEmail", { defaultValue: "Email" }) },
+      { key: 'country', header: t("adminConsole.transactions.csvCountry", { defaultValue: "Country" }) },
+      { key: 'amount_original', header: t("adminConsole.transactions.csvAmountOriginal", { defaultValue: "Amount (Original)" }) },
+      { key: 'amount_usd', header: t("adminConsole.transactions.csvAmountUsd", { defaultValue: "Amount (USD)" }) },
+      { key: 'commission', header: t("adminConsole.transactions.csvCommission", { defaultValue: "Commission" }) },
+      { key: 'commission_rate', header: t("adminConsole.transactions.csvCommissionRate", { defaultValue: "Commission Rate" }) },
+      { key: 'payment_method', header: t("adminConsole.transactions.csvPaymentMethod", { defaultValue: "Payment Method" }) },
+      { key: 'payment_status', header: t("adminConsole.transactions.csvPaymentStatus", { defaultValue: "Payment Status" }) },
+      { key: 'payment_message', header: t("adminConsole.transactions.csvPaymentMessage", { defaultValue: "Payment Message" }) },
+      { key: 'items', header: t("adminConsole.transactions.csvItems", { defaultValue: "Items" }) }
     ];
 
     const dateStr = new Date().toISOString().split('T')[0];
@@ -199,7 +201,7 @@ export default function AdminAllTransactionsSection() {
 
   const getBrandName = (brandId) => {
     if (brandId === undefined || brandId === null || brandId === '') {
-      return 'Unknown Brand';
+      return t("adminConsole.transactions.unknownBrand", { defaultValue: "Unknown Brand" });
     }
 
     const idString = String(brandId);
@@ -309,14 +311,14 @@ export default function AdminAllTransactionsSection() {
       return `${tx.first_name || ''} ${tx.last_name || ''}`.trim();
     }
     // Fallback to N/A
-    return 'N/A';
+    return t("adminConsole.transactions.notAvailable", { defaultValue: "N/A" });
   };
 
   const getPaymentMethodName = (method) => {
     const normalized = (method || 'card').toLowerCase();
-    if (normalized === 'applepay') return 'Apple Pay';
-    if (normalized === 'googlepay') return 'Google Pay';
-    return 'Card';
+    if (normalized === 'applepay') return t("adminConsole.transactions.applePay", { defaultValue: "Apple Pay" });
+    if (normalized === 'googlepay') return t("adminConsole.transactions.googlePay", { defaultValue: "Google Pay" });
+    return t("adminConsole.transactions.card", { defaultValue: "Card" });
   };
 
   const getPaymentMethodIcon = (method) => {
@@ -346,7 +348,7 @@ export default function AdminAllTransactionsSection() {
       }
     } catch (error) {
       console.error('Failed to update payment method:', error);
-      alert('Failed to update payment method. Please try again.');
+      alert(t("adminConsole.transactions.alertFailedUpdatePaymentMethod", { defaultValue: "Failed to update payment method. Please try again." }));
     }
   };
 
@@ -386,7 +388,7 @@ export default function AdminAllTransactionsSection() {
     return (
       <div className="text-center py-12">
         <i className="fas fa-spinner fa-spin text-4xl text-cyan-400 mb-4"></i>
-        <p className="text-gray-400">Loading transactions...</p>
+        <p className="text-gray-400">{t("adminConsole.transactions.loading", { defaultValue: "Loading transactions..." })}</p>
       </div>
     );
   }
@@ -396,9 +398,9 @@ export default function AdminAllTransactionsSection() {
       {/* Header */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold gradient-text mb-2">All Transactions</h2>
+          <h2 className="text-3xl font-bold gradient-text mb-2">{t("adminConsole.transactions.title", { defaultValue: "All Transactions" })}</h2>
           <p className="text-sm text-gray-400">
-            Monitor all transactions across all brands and partners
+            {t("adminConsole.transactions.subtitle", { defaultValue: "Monitor all transactions across all brands and partners" })}
           </p>
         </div>
         <div className="flex gap-3">
@@ -408,7 +410,7 @@ export default function AdminAllTransactionsSection() {
             disabled={refreshing}
           >
             <i className={`fas fa-sync-alt ${refreshing ? 'fa-spin' : ''}`}></i>
-            <span>{refreshing ? 'Refreshing...' : 'Refresh'}</span>
+            <span>{refreshing ? t("adminConsole.transactions.refreshing", { defaultValue: "Refreshing..." }) : t("adminConsole.transactions.refresh", { defaultValue: "Refresh" })}</span>
           </button>
           <button
             onClick={handleExportCSV}
@@ -416,7 +418,7 @@ export default function AdminAllTransactionsSection() {
             disabled={!filteredTransactions || filteredTransactions.length === 0}
           >
             <i className="fas fa-download"></i>
-            <span>Export CSV</span>
+            <span>{t("adminConsole.transactions.exportCsv", { defaultValue: "Export CSV" })}</span>
           </button>
         </div>
       </div>
@@ -428,7 +430,7 @@ export default function AdminAllTransactionsSection() {
             <div className="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center">
               <i className="fas fa-list text-cyan-400 text-sm"></i>
             </div>
-            <span className="text-xs text-gray-400 sm:text-right">Total Transactions</span>
+            <span className="text-xs text-gray-400 sm:text-right">{t("adminConsole.transactions.statTotalTransactions", { defaultValue: "Total Transactions" })}</span>
           </div>
           <p className="text-xl sm:text-2xl font-bold text-white">{stats.total}</p>
         </div>
@@ -438,7 +440,7 @@ export default function AdminAllTransactionsSection() {
             <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
               <i className="fas fa-dollar-sign text-green-400 text-sm"></i>
             </div>
-            <span className="text-xs text-gray-400 sm:text-right">Total Revenue</span>
+            <span className="text-xs text-gray-400 sm:text-right">{t("adminConsole.transactions.statTotalRevenue", { defaultValue: "Total Revenue" })}</span>
           </div>
           <p className="text-xl sm:text-2xl font-bold text-green-400">{formatCurrency(stats.totalRevenue)}</p>
         </div>
@@ -448,7 +450,7 @@ export default function AdminAllTransactionsSection() {
             <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
               <i className="fas fa-percent text-purple-400 text-sm"></i>
             </div>
-            <span className="text-xs text-gray-400 sm:text-right">Total Commission</span>
+            <span className="text-xs text-gray-400 sm:text-right">{t("adminConsole.transactions.statTotalCommission", { defaultValue: "Total Commission" })}</span>
           </div>
           <p className="text-xl sm:text-2xl font-bold text-purple-400">{formatCurrency(stats.totalCommission)}</p>
         </div>
@@ -458,7 +460,7 @@ export default function AdminAllTransactionsSection() {
             <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
               <i className="fas fa-exclamation-circle text-blue-400 text-sm"></i>
             </div>
-            <span className="text-xs text-gray-400 sm:text-right">Unpaid to Brand</span>
+            <span className="text-xs text-gray-400 sm:text-right">{t("adminConsole.transactions.statUnpaidToBrand", { defaultValue: "Unpaid to Brand" })}</span>
           </div>
           <p className="text-xl sm:text-2xl font-bold text-blue-400">{stats.unpaid}</p>
         </div>
@@ -468,7 +470,7 @@ export default function AdminAllTransactionsSection() {
             <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
               <i className="fas fa-check-circle text-emerald-400 text-sm"></i>
             </div>
-            <span className="text-xs text-gray-400 sm:text-right">Paid to Brand</span>
+            <span className="text-xs text-gray-400 sm:text-right">{t("adminConsole.transactions.statPaidToBrand", { defaultValue: "Paid to Brand" })}</span>
           </div>
           <p className="text-xl sm:text-2xl font-bold text-emerald-400">{stats.paid}</p>
         </div>
@@ -478,7 +480,7 @@ export default function AdminAllTransactionsSection() {
             <div className="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center">
               <i className="fas fa-clock text-orange-400 text-sm"></i>
             </div>
-            <span className="text-xs text-gray-400 sm:text-right">Pending</span>
+            <span className="text-xs text-gray-400 sm:text-right">{t("adminConsole.transactions.statPending", { defaultValue: "Pending" })}</span>
           </div>
           <p className="text-xl sm:text-2xl font-bold text-orange-400">{stats.pending}</p>
         </div>
@@ -490,13 +492,13 @@ export default function AdminAllTransactionsSection() {
           {/* Search */}
           <div className="lg:col-span-2">
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              <i className="fas fa-search mr-2 text-cyan-400"></i>Search
+              <i className="fas fa-search mr-2 text-cyan-400"></i>{t("adminConsole.transactions.search", { defaultValue: "Search" })}
             </label>
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Order ID, email, client name, brand..."
+              placeholder={t("adminConsole.transactions.searchPlaceholder", { defaultValue: "Order ID, email, client name, brand..." })}
               className="search-input p-3 rounded-lg w-full"
             />
           </div>
@@ -504,7 +506,7 @@ export default function AdminAllTransactionsSection() {
           {/* Date Range */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              <i className="fas fa-calendar-alt mr-2 text-blue-400"></i>From Date
+              <i className="fas fa-calendar-alt mr-2 text-blue-400"></i>{t("adminConsole.transactions.fromDate", { defaultValue: "From Date" })}
             </label>
             <input
               type="date"
@@ -516,7 +518,7 @@ export default function AdminAllTransactionsSection() {
 
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              <i className="fas fa-calendar-check mr-2 text-blue-400"></i>To Date
+              <i className="fas fa-calendar-check mr-2 text-blue-400"></i>{t("adminConsole.transactions.toDate", { defaultValue: "To Date" })}
             </label>
             <input
               type="date"
@@ -529,37 +531,37 @@ export default function AdminAllTransactionsSection() {
           {/* Status Filter */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              <i className="fas fa-filter mr-2 text-purple-400"></i>Status
+              <i className="fas fa-filter mr-2 text-purple-400"></i>{t("adminConsole.transactions.status", { defaultValue: "Status" })}
             </label>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="search-input p-3 rounded-lg w-full"
             >
-              <option value="all">All Status</option>
-              <option value="paid">Paid</option>
-              <option value="unpaid">Unpaid</option>
-              <option value="pending">Pending</option>
-              <option value="failed">Failed</option>
-              <option value="chargeback">Chargeback</option>
-              <option value="refund">Refund</option>
+              <option value="all">{t("adminConsole.transactions.statusAll", { defaultValue: "All Status" })}</option>
+              <option value="paid">{t("adminConsole.transactions.statusPaid", { defaultValue: "Paid" })}</option>
+              <option value="unpaid">{t("adminConsole.transactions.statusUnpaid", { defaultValue: "Unpaid" })}</option>
+              <option value="pending">{t("adminConsole.transactions.statusPending", { defaultValue: "Pending" })}</option>
+              <option value="failed">{t("adminConsole.transactions.statusFailed", { defaultValue: "Failed" })}</option>
+              <option value="chargeback">{t("adminConsole.transactions.statusChargeback", { defaultValue: "Chargeback" })}</option>
+              <option value="refund">{t("adminConsole.transactions.statusRefund", { defaultValue: "Refund" })}</option>
             </select>
           </div>
 
           {/* Payment Method Filter */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              <i className="fas fa-credit-card mr-2 text-green-400"></i>Payment Method
+              <i className="fas fa-credit-card mr-2 text-green-400"></i>{t("adminConsole.transactions.paymentMethod", { defaultValue: "Payment Method" })}
             </label>
             <select
               value={paymentMethodFilter}
               onChange={(e) => setPaymentMethodFilter(e.target.value)}
               className="search-input p-3 rounded-lg w-full"
             >
-              <option value="all">All Methods</option>
-              <option value="card">💳 Card</option>
-              <option value="applepay">🍎 Apple Pay</option>
-              <option value="googlepay">🔵 Google Pay</option>
+              <option value="all">{t("adminConsole.transactions.allMethods", { defaultValue: "All Methods" })}</option>
+              <option value="card">💳 {t("adminConsole.transactions.card", { defaultValue: "Card" })}</option>
+              <option value="applepay">🍎 {t("adminConsole.transactions.applePay", { defaultValue: "Apple Pay" })}</option>
+              <option value="googlepay">🔵 {t("adminConsole.transactions.googlePay", { defaultValue: "Google Pay" })}</option>
             </select>
           </div>
           </div>
@@ -567,17 +569,17 @@ export default function AdminAllTransactionsSection() {
         {/* Brand Filter - Full Width */}
         <div className="mt-4">
           <label className="block text-sm font-medium text-gray-300 mb-2">
-            <i className="fas fa-building mr-2 text-orange-400"></i>Filter by Brand
+            <i className="fas fa-building mr-2 text-orange-400"></i>{t("adminConsole.transactions.filterByBrand", { defaultValue: "Filter by Brand" })}
           </label>
             <select
               value={brandFilter}
               onChange={(e) => setBrandFilter(e.target.value)}
             className="search-input p-3 rounded-lg w-full"
             >
-              <option value="all">All Brands</option>
+              <option value="all">{t("adminConsole.transactions.allBrands", { defaultValue: "All Brands" })}</option>
             {brands.map(brand => (
               <option key={brand.id} value={brand.id}>
-                {brand.name} {brand.account_type === 'reseller' ? '(Reseller)' : ''}
+                {brand.name} {brand.account_type === 'reseller' ? t("adminConsole.transactions.resellerSuffix", { defaultValue: "(Reseller)" }) : ''}
               </option>
               ))}
             </select>
@@ -602,7 +604,7 @@ export default function AdminAllTransactionsSection() {
             }}
             className="action-btn btn-secondary w-full md:w-auto"
           >
-            <i className="fas fa-times mr-2"></i>Clear Filters
+            <i className="fas fa-times mr-2"></i>{t("adminConsole.transactions.clearFilters", { defaultValue: "Clear Filters" })}
           </button>
         </div>
       </div>
@@ -611,35 +613,35 @@ export default function AdminAllTransactionsSection() {
       <div className="glass-panel p-4 md:p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
           <h3 className="text-lg md:text-xl font-semibold text-white">
-            <i className="fas fa-receipt mr-2 text-cyan-400"></i>Transactions ({filteredTransactions.length})
+            <i className="fas fa-receipt mr-2 text-cyan-400"></i>{t("adminConsole.transactions.transactionsCount", { count: filteredTransactions.length, defaultValue: "Transactions ({{count}})" })}
           </h3>
         </div>
 
         {filteredTransactions.length === 0 ? (
           <div className="text-center py-12">
             <i className="fas fa-inbox text-6xl text-gray-600 mb-4"></i>
-            <p className="text-gray-400">No transactions found</p>
-            <p className="text-sm text-gray-500 mt-2">Try adjusting your filters</p>
+            <p className="text-gray-400">{t("adminConsole.transactions.noTransactionsFound", { defaultValue: "No transactions found" })}</p>
+            <p className="text-sm text-gray-500 mt-2">{t("adminConsole.transactions.tryAdjustingFilters", { defaultValue: "Try adjusting your filters" })}</p>
           </div>
         ) : (
         <div className="overflow-x-auto">
           <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-700">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Order ID</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Brand</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Cardholder Name </th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Email</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Country</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">IP</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Error Message</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-400">Order Amount</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-400">USD Amount</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-400">Commission</th>
-                  <th className="text-center py-3 px-4 text-sm font-medium text-gray-400">Payment Method</th>
-                  <th className="text-center py-3 px-4 text-sm font-medium text-gray-400">Status</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Date</th>
-                  <th className="text-center py-3 px-4 text-sm font-medium text-gray-400">Actions</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.transactions.colOrderId", { defaultValue: "Order ID" })}</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.transactions.colBrand", { defaultValue: "Brand" })}</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.transactions.colCardholderName", { defaultValue: "Cardholder Name " })}</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.transactions.colEmail", { defaultValue: "Email" })}</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.transactions.colCountry", { defaultValue: "Country" })}</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.transactions.colIp", { defaultValue: "IP" })}</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.transactions.colErrorMessage", { defaultValue: "Error Message" })}</th>
+                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.transactions.colOrderAmount", { defaultValue: "Order Amount" })}</th>
+                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.transactions.colUsdAmount", { defaultValue: "USD Amount" })}</th>
+                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.transactions.colCommission", { defaultValue: "Commission" })}</th>
+                  <th className="text-center py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.transactions.colPaymentMethod", { defaultValue: "Payment Method" })}</th>
+                  <th className="text-center py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.transactions.colStatus", { defaultValue: "Status" })}</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.transactions.colDate", { defaultValue: "Date" })}</th>
+                  <th className="text-center py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.transactions.colActions", { defaultValue: "Actions" })}</th>
               </tr>
             </thead>
             <tbody>
@@ -658,13 +660,13 @@ export default function AdminAllTransactionsSection() {
                       <span className="text-sm text-gray-300">{getClientName(tx)}</span>
                     </td>
                     <td className="py-3 px-4" data-label="Email">
-                      <span className="text-sm text-gray-300">{tx.email || 'N/A'}</span>
+                      <span className="text-sm text-gray-300">{tx.email || t("adminConsole.transactions.notAvailable", { defaultValue: "N/A" })}</span>
                     </td>
                     <td className="py-3 px-4" data-label="Country">
-                      <span className="text-sm text-gray-300">{tx.billing_country || tx.vpn_geo || 'N/A'}</span>
+                      <span className="text-sm text-gray-300">{tx.billing_country || tx.vpn_geo || t("adminConsole.transactions.notAvailable", { defaultValue: "N/A" })}</span>
                     </td>
                     <td className="py-3 px-4" data-label="IP">
-                      <span className="text-sm text-gray-300 font-mono">{tx.user_ip || 'N/A'}</span>
+                      <span className="text-sm text-gray-300 font-mono">{tx.user_ip || t("adminConsole.transactions.notAvailable", { defaultValue: "N/A" })}</span>
                     </td>
                     <td className="py-3 px-4" data-label="Error Message">
                       <span 
@@ -708,7 +710,7 @@ export default function AdminAllTransactionsSection() {
                           ? 'bg-pink-500/20 text-pink-400'
                           : 'bg-red-500/20 text-red-400'
                       }`}>
-                        {tx.payment_status?.toUpperCase() || 'UNKNOWN'}
+                        {tx.payment_status?.toUpperCase() || t("adminConsole.transactions.statusUnknown", { defaultValue: "UNKNOWN" })}
                       </span>
                     </td>
                     <td className="py-3 px-4" data-label="Date">
@@ -718,7 +720,7 @@ export default function AdminAllTransactionsSection() {
                         <button
                         onClick={() => setSelectedTx(selectedTx?.id === tx.id ? null : tx)}
                         className="text-cyan-400 hover:text-cyan-300 transition-colors"
-                        title="View Details"
+                        title={t("adminConsole.transactions.viewDetails", { defaultValue: "View Details" })}
                         >
                         <i className={`fas fa-${selectedTx?.id === tx.id ? 'eye-slash' : 'eye'}`}></i>
                         </button>
@@ -746,7 +748,7 @@ export default function AdminAllTransactionsSection() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-bold gradient-text">Transaction Details</h3>
+              <h3 className="text-2xl font-bold gradient-text">{t("adminConsole.transactions.detailsTitle", { defaultValue: "Transaction Details" })}</h3>
               <button
                 onClick={() => {
                   setSelectedTx(null);
@@ -763,31 +765,31 @@ export default function AdminAllTransactionsSection() {
               {/* Order Info */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-gray-400">Order ID</label>
+                  <label className="text-sm text-gray-400">{t("adminConsole.transactions.detailOrderId", { defaultValue: "Order ID" })}</label>
                   <p className="text-white font-mono">{selectedTx.order_id}</p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-400">Brand</label>
+                  <label className="text-sm text-gray-400">{t("adminConsole.transactions.detailBrand", { defaultValue: "Brand" })}</label>
                   <p className="text-white">{getBrandName(selectedTx.brand_id)}</p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-400">Customer Name</label>
+                  <label className="text-sm text-gray-400">{t("adminConsole.transactions.detailCustomerName", { defaultValue: "Customer Name" })}</label>
                   <p className="text-white">
-                    {selectedTx.first_name || selectedTx.last_name 
+                    {selectedTx.first_name || selectedTx.last_name
                       ? `${selectedTx.first_name || ''} ${selectedTx.last_name || ''}`.trim()
-                      : 'N/A'}
+                      : t("adminConsole.transactions.notAvailable", { defaultValue: "N/A" })}
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-400">Customer Email</label>
+                  <label className="text-sm text-gray-400">{t("adminConsole.transactions.detailCustomerEmail", { defaultValue: "Customer Email" })}</label>
                   <p className="text-white">{selectedTx.email}</p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-400">Phone</label>
-                  <p className="text-white">{selectedTx.phone || 'N/A'}</p>
+                  <label className="text-sm text-gray-400">{t("adminConsole.transactions.detailPhone", { defaultValue: "Phone" })}</label>
+                  <p className="text-white">{selectedTx.phone || t("adminConsole.transactions.notAvailable", { defaultValue: "N/A" })}</p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-400">Date</label>
+                  <label className="text-sm text-gray-400">{t("adminConsole.transactions.detailDate", { defaultValue: "Date" })}</label>
                   <p className="text-white">{formatTransactionDate(selectedTx.created_at)}</p>
                 </div>
               </div>
@@ -795,29 +797,29 @@ export default function AdminAllTransactionsSection() {
               {/* Financial Info */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-gray-700">
                 <div>
-                  <label className="text-sm text-gray-400">Order Amount</label>
+                  <label className="text-sm text-gray-400">{t("adminConsole.transactions.detailOrderAmount", { defaultValue: "Order Amount" })}</label>
                   <p className="text-xl font-bold text-green-400">
                     {formatCurrency(selectedTx.total_amount, selectedTx.currency || 'USD')}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">Original currency</p>
+                  <p className="text-xs text-gray-500 mt-1">{t("adminConsole.transactions.originalCurrency", { defaultValue: "Original currency" })}</p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-400">USD Amount</label>
+                  <label className="text-sm text-gray-400">{t("adminConsole.transactions.detailUsdAmount", { defaultValue: "USD Amount" })}</label>
                   <p className="text-xl font-bold text-blue-400">
                     {formatCurrency(getCorrectUSDAmount(selectedTx), 'USD')}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">Converted to USD</p>
+                  <p className="text-xs text-gray-500 mt-1">{t("adminConsole.transactions.convertedToUsd", { defaultValue: "Converted to USD" })}</p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-400">Commission</label>
+                  <label className="text-sm text-gray-400">{t("adminConsole.transactions.detailCommission", { defaultValue: "Commission" })}</label>
                   <p className="text-xl font-bold text-purple-400">{formatCurrency(getCommissionAmount(selectedTx))}</p>
-                  <p className="text-xs text-gray-500 mt-1">Brand commission</p>
+                  <p className="text-xs text-gray-500 mt-1">{t("adminConsole.transactions.brandCommission", { defaultValue: "Brand commission" })}</p>
                 </div>
               </div>
                               
               {/* Status */}
               <div className="pt-4 border-t border-gray-700">
-                <label className="text-sm text-gray-400">Payment Status</label>
+                <label className="text-sm text-gray-400">{t("adminConsole.transactions.paymentStatus", { defaultValue: "Payment Status" })}</label>
                 <p>
                   <span className={`inline-block px-4 py-2 rounded-lg text-sm font-medium mt-2 ${
                     selectedTx.payment_status === 'paid'
@@ -832,7 +834,7 @@ export default function AdminAllTransactionsSection() {
                       ? 'bg-pink-500/20 text-pink-400'
                       : 'bg-red-500/20 text-red-400'
                   }`}>
-                    {selectedTx.payment_status?.toUpperCase() || 'UNKNOWN'}
+                    {selectedTx.payment_status?.toUpperCase() || t("adminConsole.transactions.statusUnknown", { defaultValue: "UNKNOWN" })}
                                   </span>
                                 </p>
                               </div>
@@ -840,7 +842,7 @@ export default function AdminAllTransactionsSection() {
               {/* Payment Method */}
               <div className="pt-4 border-t border-gray-700">
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm text-gray-400">Payment Method</label>
+                  <label className="text-sm text-gray-400">{t("adminConsole.transactions.paymentMethod", { defaultValue: "Payment Method" })}</label>
                   {!editingPaymentMethod && (
                     <button
                       onClick={() => {
@@ -849,7 +851,7 @@ export default function AdminAllTransactionsSection() {
                       }}
                       className="text-cyan-400 hover:text-cyan-300 transition-colors text-sm"
                     >
-                      <i className="fas fa-edit mr-1"></i>Edit
+                      <i className="fas fa-edit mr-1"></i>{t("adminConsole.transactions.edit", { defaultValue: "Edit" })}
                     </button>
                   )}
                 </div>
@@ -861,16 +863,16 @@ export default function AdminAllTransactionsSection() {
                       onChange={(e) => setNewPaymentMethod(e.target.value)}
                       className="w-full px-4 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
                     >
-                      <option value="card">💳 Card</option>
-                      <option value="applepay">🍎 Apple Pay</option>
-                      <option value="googlepay">🔵 Google Pay</option>
+                      <option value="card">💳 {t("adminConsole.transactions.card", { defaultValue: "Card" })}</option>
+                      <option value="applepay">🍎 {t("adminConsole.transactions.applePay", { defaultValue: "Apple Pay" })}</option>
+                      <option value="googlepay">🔵 {t("adminConsole.transactions.googlePay", { defaultValue: "Google Pay" })}</option>
                     </select>
                     <div className="flex gap-2">
                       <button
                         onClick={handleUpdatePaymentMethod}
                         className="flex-1 px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg transition-colors"
                       >
-                        <i className="fas fa-check mr-2"></i>Save
+                        <i className="fas fa-check mr-2"></i>{t("adminConsole.transactions.save", { defaultValue: "Save" })}
                       </button>
                       <button
                         onClick={() => {
@@ -879,7 +881,7 @@ export default function AdminAllTransactionsSection() {
                         }}
                         className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
                       >
-                        <i className="fas fa-times mr-2"></i>Cancel
+                        <i className="fas fa-times mr-2"></i>{t("adminConsole.transactions.cancel", { defaultValue: "Cancel" })}
                       </button>
                     </div>
                   </div>
@@ -893,13 +895,13 @@ export default function AdminAllTransactionsSection() {
               {/* Items */}
               {selectedTx.items && (
                 <div className="pt-4 border-t border-gray-700">
-                  <label className="text-sm text-gray-400 mb-3 block">Order Items</label>
+                  <label className="text-sm text-gray-400 mb-3 block">{t("adminConsole.transactions.orderItems", { defaultValue: "Order Items" })}</label>
                   <div className="space-y-2">
                     {(typeof selectedTx.items === 'string' ? JSON.parse(selectedTx.items) : selectedTx.items).map((item, idx) => (
                       <div key={idx} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                               <div>
-                          <p className="text-white font-medium">{item.name || item.title || 'Item'}</p>
-                          <p className="text-sm text-gray-400">Qty: {item.quantity || 1}</p>
+                          <p className="text-white font-medium">{item.name || item.title || t("adminConsole.transactions.item", { defaultValue: "Item" })}</p>
+                          <p className="text-sm text-gray-400">{t("adminConsole.transactions.qty", { qty: item.quantity || 1, defaultValue: "Qty: {{qty}}" })}</p>
                               </div>
                         <p className="text-green-400 font-semibold">{formatCurrency(item.price)}</p>
                             </div>
@@ -911,7 +913,7 @@ export default function AdminAllTransactionsSection() {
               {/* Geo Info */}
               {selectedTx.vpn_geo && (
                 <div className="pt-4 border-t border-gray-700">
-                  <label className="text-sm text-gray-400">Location</label>
+                  <label className="text-sm text-gray-400">{t("adminConsole.transactions.location", { defaultValue: "Location" })}</label>
                   <p className="text-white">
                     <i className="fas fa-map-marker-alt mr-2 text-cyan-400"></i>
                     {selectedTx.vpn_geo}
