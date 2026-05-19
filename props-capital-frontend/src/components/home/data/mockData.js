@@ -173,12 +173,13 @@ export const challengeTypes = [
     leverage: "1:30",
     popular: true,
     prices: {
-      "5K": 55,
+      "5K": 69,
       "10K": 99,
-      "25K": 189,
-      "50K": 299,
-      "100K": 499,
-      "200K": 949,
+      "20K": 159,
+      "30K": 219,
+      "50K": 349,
+      "100K": 599,
+      "200K": 999,
     },
   },
   {
@@ -195,23 +196,25 @@ export const challengeTypes = [
     leverage: "1:50",
     popular: false,
     prices: {
-      "5K": 45,
+      "5K": 59,
       "10K": 79,
-      "25K": 159,
-      "50K": 249,
-      "100K": 449,
-      "200K": 849,
+      "20K": 129,
+      "30K": 179,
+      "50K": 299,
+      "100K": 499,
+      "200K": 799,
     },
   },
 ];
 
 export const accountSizes = [
-  { value: 5000, label: "$5K", key: "5K" },
-  { value: 10000, label: "$10K", key: "10K" },
-  { value: 25000, label: "$25K", key: "25K" },
-  { value: 50000, label: "$50K", key: "50K" },
-  { value: 100000, label: "$100K", key: "100K" },
-  { value: 200000, label: "$200K", key: "200K" },
+  { value: 5000, key: "5K" },
+  { value: 10000, key: "10K" },
+  { value: 20000, key: "20K" },
+  { value: 30000, key: "30K" },
+  { value: 50000, key: "50K" },
+  { value: 100000, key: "100K" },
+  { value: 200000, key: "200K" },
 ];
 
 export const tradingPlatforms = [

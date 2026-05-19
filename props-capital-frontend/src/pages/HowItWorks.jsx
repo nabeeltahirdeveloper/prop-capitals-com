@@ -13,12 +13,13 @@ const HowItWorksPage = () => {
   const [tradeProfit, setTradeProfit] = useState(0);
 
   const accountSizes = [
-    { label: '$5K', value: 5000 },
-    { label: '$10K', value: 10000 },
-    { label: '$25K', value: 25000 },
-    { label: '$50K', value: 50000 },
-    { label: '$100K', value: 100000 },
-    { label: '$200K', value: 200000 }
+    { label: '€5K', value: 5000 },
+    { label: '€10K', value: 10000 },
+    { label: '€20K', value: 20000 },
+    { label: '€30K', value: 30000 },
+    { label: '€50K', value: 50000 },
+    { label: '€100K', value: 100000 },
+    { label: '€200K', value: 200000 }
   ];
 
   // Simulate live price animation
@@ -47,7 +48,7 @@ const HowItWorksPage = () => {
     {
       number: "01",
       title: "Choose Your Challenge",
-      description: "Select between our 1-Step or 2-Step evaluation. Pick your account size from $5K to $200K.",
+      description: "Select between our 1-Step or 2-Step evaluation. Pick your account size from €5K to €200K.",
       icon: Target,
       color: "amber"
     },
