@@ -10,7 +10,7 @@
       "badge": "Dünya çapında 15.000’den fazla trader tarafından güveniliyor",
       "title": "İşlem yap",
       "titleHighlight": "bizim sermayemizle",
-      "subtitle": "Becerilerini kanıtla ve $200.000’a kadar sermaye kazan. Kendi paranı riske atmadan kârın %90’ına kadarını koru",
+      "subtitle": "Becerilerini kanıtla ve â¬200.000’a kadar sermaye kazan. Kendi paranı riske atmadan kârın %90’ına kadarını koru",
       "cta": "Meydan okumayı başlat",
       "howItWorks": "Nasıl çalışır",
       "verified": "Doğrulanmış şirket",
@@ -95,7 +95,7 @@
       "titleHighlight": "Trading kariyerinizi",
       "subtitle": "Fonlanan binlerce tradere katılın ve bugün kazanmaya başlayın. Kendi paranız risk altında değil",
       "button": "Hemen sermaye kazan",
-      "footer": "Başlangıç sadece $99 • Anında hesap kurulumu • 7/24 destek"
+      "footer": "Başlangıç sadece â¬99 • Anında hesap kurulumu • 7/24 destek"
     },
     "footer": {
       "description": "En trader dostu prop trading şirketi. Bizim sermayemizle işlem yapın ve kazanın",
@@ -337,7 +337,7 @@
     "businessDaysOnly": "Sadece iş günleri",
     "minimumAmount": "Minimum tutar",
     "payoutFee": "Çekim ücreti",
-    "free": "$0 (Ücretsiz)",
+    "free": "â¬0 (Ücretsiz)",
     "freeValue": "Ücretsiz",
     "availablePaymentMethods": "Mevcut ödeme yöntemleri",
     "bankTransfer": "Banka havalesi",
@@ -550,7 +550,7 @@
     "maxOverallDD": "Maksimum toplam DD",
     "fundedDesc": "Şirket sermayesiyle işlem",
     "profitSplit80": "%80 kâr paylaşımı",
-    "scalingDesc": "$2.000.000’a kadar büyüme",
+    "scalingDesc": "â¬2.000.000’a kadar büyüme",
     "profitSplit90": "%90’a kadar kâr paylaşımı",
     "currentPhaseRequirements": "Mevcut aşama gereksinimleri",
     "profitSplit": "Kâr paylaşımı",
@@ -801,15 +801,15 @@
       "overallDrawdownWarning": "Hesap #{{accountNumber}} için toplam drawdown {{overallPercent}}% seviyesine ulaştı. İzin verilen üst limit {{maxPercent}}%. Lütfen risk yönetimine dikkat edin",
       "dailyDrawdownViolation": "Hesap #{{accountNumber}} için günlük drawdown {{dailyPercent}}% seviyesine ulaştı. İzin verilen üst limit {{maxPercent}}%. İşlemler yarına kadar kilitlenecek",
       "overallDrawdownViolation": "Hesap #{{accountNumber}} için toplam drawdown {{overallPercent}}% seviyesine ulaştı. İzin verilen üst limit {{maxPercent}}%. Meydan okuma diskalifiye edildi",
-      "payoutApproved": "${{amount}} tutarındaki çekim talebiniz onaylandı. 24–48 saat içinde gönderilecektir",
-      "payoutRejected": "${{amount}} tutarındaki çekim talebiniz reddedildi. Detaylar için destekle iletişime geçin",
-      "payoutProcessed": "${{amount}} tutarındaki çekiminiz işlendi ve transfer tamamlandı",
-      "phase1Completed": "Tebrikler! ${{accountSize}} meydan okumasında Aşama 1’i tamamladınız. Şimdi Aşama 2’ye devam edelim",
-      "phase2Completed": "Tebrikler! ${{accountSize}} meydan okumasında Aşama 2’yi tamamladınız. Hesabınız fonlandı!",
+      "payoutApproved": "â¬{{amount}} tutarındaki çekim talebiniz onaylandı. 24–48 saat içinde gönderilecektir",
+      "payoutRejected": "â¬{{amount}} tutarındaki çekim talebiniz reddedildi. Detaylar için destekle iletişime geçin",
+      "payoutProcessed": "â¬{{amount}} tutarındaki çekiminiz işlendi ve transfer tamamlandı",
+      "phase1Completed": "Tebrikler! â¬{{accountSize}} meydan okumasında Aşama 1’i tamamladınız. Şimdi Aşama 2’ye devam edelim",
+      "phase2Completed": "Tebrikler! â¬{{accountSize}} meydan okumasında Aşama 2’yi tamamladınız. Hesabınız fonlandı!",
       "tradingDaysMilestoneMet": "Hesap #{{accountNumber}} üzerinde {{tradingDays}} işlem günü tamamlandı. Minimum işlem günü şartını karşıladınız!",
       "tradingDaysMilestone": "Hesap #{{accountNumber}} üzerinde {{tradingDays}} işlem günü tamamlandı. Harika iş!",
-      "challengePurchased": "{{challengeName}} meydan okuması satın alımı tamamlandı. İşlem hesabınız #{{accountNumber}} başlangıç bakiyesi ${{startingBalance}} ile hazır",
-      "accountScalingApproved": "Hesap #{{accountNumber}} için ölçekleme talebi onaylandı. Bakiye ${{oldBalance}}’dan ${{newBalance}}’a yükseldi",
+      "challengePurchased": "{{challengeName}} meydan okuması satın alımı tamamlandı. İşlem hesabınız #{{accountNumber}} başlangıç bakiyesi â¬{{startingBalance}} ile hazır",
+      "accountScalingApproved": "Hesap #{{accountNumber}} için ölçekleme talebi onaylandı. Bakiye â¬{{oldBalance}}’dan â¬{{newBalance}}’a yükseldi",
       "accountScalingRejected": "Hesap #{{accountNumber}} için ölçekleme talebi reddedildi. Detaylar için destekle iletişime geçin",
       "newChallengeAvailable": "Yeni meydan okumaya göz atın: {{challengeName}}! {{platform}} üzerinde {{accountSize}} hesap boyutu. Hemen başlayın",
       "accountViolationGeneric": "Hesap #{{accountNumber}} işlem kurallarını ihlal etti{{violationPercent}}",
@@ -864,7 +864,7 @@
     "total": "Toplam",
     "processing": "İşleniyor...",
     "pay": "Öde",
-    "payAmount": "${{amount}} öde",
+    "payAmount": "â¬{{amount}} öde",
     "secureEncryption": "Güvenli 256-bit SSL şifreleme",
     "minTradingDays": "Min işlem günü",
     "maxTradingDays": "Maks işlem günü",
@@ -1848,8 +1848,8 @@
         "twoPhase": "İki aşama",
         "instantFunding": "Anında fonlama",
         "platform": "Platform",
-        "accountSize": "Hesap boyutu ($)",
-        "price": "Fiyat ($)",
+        "accountSize": "Hesap boyutu (â¬)",
+        "price": "Fiyat (â¬)",
         "phase1ProfitTarget": "Aşama 1 kâr hedefi (%)",
         "phase2ProfitTarget": "Aşama 2 kâr hedefi (%)",
         "dailyDrawdown": "Günlük zarar (%)",
@@ -2040,7 +2040,7 @@
           },
           "minimumPayout": {
             "q": "Minimum çekim tutarı var mı?",
-            "a": "Minimum çekim $50’dir. Üst limit yoktur; isterseniz tüm kârınızı çekebilirsiniz."
+            "a": "Minimum çekim â¬50’dir. Üst limit yoktur; isterseniz tüm kârınızı çekebilirsiniz."
           },
           "payoutProcessing": {
             "q": "Çekimler ne kadar sürede işlenir?",
@@ -2053,7 +2053,7 @@
         "faqs": {
           "howScalingWorks": {
             "q": "Ölçekleme planı nasıl çalışır?",
-            "a": "Fonlanan hesapta %10 kâr elde edip 2 çekim döngüsünü tamamladığınız her seferinde hesap boyutu %25 artar. İşlem sermayenizi $2.000.000’a kadar büyütebilirsiniz."
+            "a": "Fonlanan hesapta %10 kâr elde edip 2 çekim döngüsünü tamamladığınız her seferinde hesap boyutu %25 artar. İşlem sermayenizi â¬2.000.000’a kadar büyütebilirsiniz."
           },
           "profitSplitScaling": {
             "q": "Ölçekleme ile kâr paylaşımı nasıl değişir?",
@@ -2152,7 +2152,7 @@
         "title": "Meydan okuma satın al",
         "description": "İstediğiniz hesap boyutunu ve değerlendirme türünü seçin, güvenle ödeme yapın ve işlem giriş bilgilerinizi anında alın.",
         "details": {
-          "selectAccountSize": "$10K–$200K hesap boyutu seçin",
+          "selectAccountSize": "â¬10K–â¬200K hesap boyutu seçin",
           "chooseType": "Tek aşama / iki aşama / anında fonlama seçin",
           "receiveCredentials": "Dakikalar içinde giriş bilgilerini alın",
           "startTrading": "Hemen işlem yapmaya başlayın"
@@ -2175,7 +2175,7 @@
           "tradeWithCapital": "Şirket sermayesiyle işlem yapın",
           "keepProfits": "Kârın %90’ına kadarını alın",
           "biWeeklyPayout": "İki haftada bir çekim takvimi",
-          "scaleUp": "$2.000.000’a kadar ölçekleyin"
+          "scaleUp": "â¬2.000.000’a kadar ölçekleyin"
         }
       }
     },
@@ -2344,7 +2344,7 @@
         "desc": "Kârınızı 24–48 saatte alın"
       },
       "scaleTo2M": {
-        "title": "$2M’a kadar ölçekleyin",
+        "title": "â¬2M’a kadar ölçekleyin",
         "desc": "Ölçekleme planıyla hesabınızı büyütün"
       },
       "bestSupport": {
@@ -2406,7 +2406,7 @@
         "desc": "Yolculuğunuz boyunca tutarlı kurallar uygulanır."
       },
       "scaleTo2M": {
-        "title": "$2M’a kadar ölçekle",
+        "title": "â¬2M’a kadar ölçekle",
         "desc": "İşlem sermayenizi 2 milyon dolara kadar büyütebilirsiniz."
       },
       "automaticUpgrades": {
@@ -2467,9 +2467,9 @@
     "ctaSection": {
       "title": "Ölçeklemeye hazır mısınız?",
       "tradingCareer": "Trading kariyerinizi bir üst seviyeye taşıyın.",
-      "subtitle": "Herhangi bir hesap büyüklüğünden başlayın ve işlem sermayenizi $2.000.000’a kadar ölçekleyin.",
+      "subtitle": "Herhangi bir hesap büyüklüğünden başlayın ve işlem sermayenizi â¬2.000.000’a kadar ölçekleyin.",
       "getStartedNow": "Hemen başla",
-      "footer": "$99’dan başla • $2M’a kadar ölçekle • %90’a kadar kâr paylaşımı"
+      "footer": "â¬99’dan başla • â¬2M’a kadar ölçekle • %90’a kadar kâr paylaşımı"
     }
   },
   "payoutsPage": {
@@ -2490,9 +2490,9 @@
       "profitSplit": "Kâr paylaşımı",
       "best": "En iyi",
       "tiers": {
-        "tier1": "$10K - $25K",
-        "tier2": "$50K",
-        "tier3": "$100K+",
+        "tier1": "â¬10K - â¬25K",
+        "tier2": "â¬50K",
+        "tier3": "â¬100K+",
         "tier4": "Ölçekleme sonrası"
       }
     },
@@ -2542,7 +2542,7 @@
     "payoutTerms": {
       "title": "Çekim şartları",
       "biWeekly": "İki haftada bir çekim takvimi (14 günde bir)",
-      "minimumAmount": "Minimum çekim tutarı $50’dir",
+      "minimumAmount": "Minimum çekim tutarı â¬50’dir",
       "noMaximum": "Maksimum çekim limiti yoktur",
       "noFees": "Her yöntemde çekim ücreti ücretsizdir",
       "firstPayout": "İlk çekim fonlandıktan 14 gün sonra mümkündür",
@@ -2601,13 +2601,13 @@
         "title": "Günlük zarar (%5)",
         "description": "Bir günde izin verilen maksimum kayıp. Gün başlangıç bakiyesine göre hesaplanır ve sunucu saatine göre gece yarısı sıfırlanır.",
         "example": "Örnek:",
-        "exampleText": "Bakiye $50.000 ise günlük zarar limiti $2.500’dır."
+        "exampleText": "Bakiye â¬50.000 ise günlük zarar limiti â¬2.500’dır."
       },
       "maximumDrawdown": {
         "title": "Maksimum zarar (%10)",
         "description": "Ulaşılan en yüksek bakiyeden izin verilen maksimum kayıp. Özkaynak zirvesini izleyen trailing sistemdir.",
         "example": "Örnek:",
-        "exampleText": "En yüksek bakiye $55.000 ise maksimum zarar çizgisi $49.500’dür."
+        "exampleText": "En yüksek bakiye â¬55.000 ise maksimum zarar çizgisi â¬49.500’dür."
       }
     },
     "allowedActions": {
@@ -2676,7 +2676,7 @@
     },
     "scalingPlan": {
       "title": "Ölçekleme planı",
-      "subtitle": "Hesabınızı $2.000.000’a kadar büyütün",
+      "subtitle": "Hesabınızı â¬2.000.000’a kadar büyütün",
       "accountSize": "Hesap büyüklüğü",
       "profitSplit": "Kâr paylaşımı",
       "howItWorks": {
@@ -2697,7 +2697,7 @@
       },
       "minimum": {
         "label": "Minimum çekim tutarı",
-        "value": "$50"
+        "value": "â¬50"
       },
       "maximum": {
         "label": "Maksimum çekim tutarı",
@@ -2709,7 +2709,7 @@
       },
       "fee": {
         "label": "Çekim ücreti",
-        "value": "$0 (Ücretsiz)"
+        "value": "â¬0 (Ücretsiz)"
       },
       "firstPayout": {
         "label": "İlk çekim",

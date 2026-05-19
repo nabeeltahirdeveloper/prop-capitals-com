@@ -11,7 +11,7 @@
       "badge": "世界中の15,000人以上のトレーダーから信頼されています",
       "title": "取引する",
       "titleHighlight": "私たちの資金で",
-      "subtitle": "あなたのスキルを証明し、最大$200,000の資金を獲得。自己資金のリスクなしで、最大90%の利益を保持できます",
+      "subtitle": "あなたのスキルを証明し、最大â¬200,000の資金を獲得。自己資金のリスクなしで、最大90%の利益を保持できます",
       "cta": "チャレンジを開始",
       "howItWorks": "仕組み",
       "verified": "認証済み企業",
@@ -96,7 +96,7 @@
       "titleHighlight": "あなたのトレーディングキャリアを",
       "subtitle": "資金提供を受けた何千人ものトレーダーに参加し、今日から収益を開始しましょう。自己資金のリスクはありません",
       "button": "今すぐ資金を獲得",
-      "footer": "開始はわずか$99 • 即時アカウント設定 • 24時間365日サポート"
+      "footer": "開始はわずかâ¬99 • 即時アカウント設定 • 24時間365日サポート"
     },
     "footer": {
       "description": "最もトレーダーフレンドリーなプロップトレーディング会社。私たちの資金で取引し、資金を獲得しましょう",
@@ -338,7 +338,7 @@
     "businessDaysOnly": "営業日のみ",
     "minimumAmount": "最低金額",
     "payoutFee": "出金手数料",
-    "free": "$0（無料）",
+    "free": "â¬0（無料）",
     "freeValue": "無料",
     "availablePaymentMethods": "利用可能な支払い方法",
     "bankTransfer": "銀行振込",
@@ -552,7 +552,7 @@
     "maxOverallDD": "最大全体DD",
     "fundedDesc": "当社資金で取引",
     "profitSplit80": "利益分配 80%",
-    "scalingDesc": "$2,000,000 まで成長",
+    "scalingDesc": "â¬2,000,000 まで成長",
     "profitSplit90": "最大 90% の利益分配",
     "currentPhaseRequirements": "現在フェーズの要件",
     "profitSplit": "利益分配",
@@ -803,15 +803,15 @@
       "overallDrawdownWarning": "アカウント #{{accountNumber}} の全体ドローダウンが {{overallPercent}}% に達しました。許容上限は {{maxPercent}}% です。リスク管理にご注意ください",
       "dailyDrawdownViolation": "アカウント #{{accountNumber}} の日次ドローダウンが {{dailyPercent}}% に達しました。許容上限は {{maxPercent}}% です。取引は明日までロックされます",
       "overallDrawdownViolation": "アカウント #{{accountNumber}} の全体ドローダウンが {{overallPercent}}% に達しました。許容上限は {{maxPercent}}% です。チャレンジは失格となりました",
-      "payoutApproved": "出金申請 ${{amount}} は承認されました。24〜48時間以内に送金されます",
-      "payoutRejected": "出金申請 ${{amount}} は却下されました。詳細はサポートまでお問い合わせください",
-      "payoutProcessed": "出金 ${{amount}} は処理され、送金が完了しました",
-      "phase1Completed": "おめでとうございます！${{accountSize}} チャレンジのフェーズ1をクリアしました。続けてフェーズ2へ進みましょう",
-      "phase2Completed": "おめでとうございます！${{accountSize}} チャレンジのフェーズ2をクリアしました。あなたのアカウントは資金提供済みです！",
+      "payoutApproved": "出金申請 â¬{{amount}} は承認されました。24〜48時間以内に送金されます",
+      "payoutRejected": "出金申請 â¬{{amount}} は却下されました。詳細はサポートまでお問い合わせください",
+      "payoutProcessed": "出金 â¬{{amount}} は処理され、送金が完了しました",
+      "phase1Completed": "おめでとうございます！â¬{{accountSize}} チャレンジのフェーズ1をクリアしました。続けてフェーズ2へ進みましょう",
+      "phase2Completed": "おめでとうございます！â¬{{accountSize}} チャレンジのフェーズ2をクリアしました。あなたのアカウントは資金提供済みです！",
       "tradingDaysMilestoneMet": "アカウント #{{accountNumber}} で {{tradingDays}} 日の取引を達成しました。最小取引日数の要件を満たしました！",
       "tradingDaysMilestone": "アカウント #{{accountNumber}} で {{tradingDays}} 日の取引を達成しました。素晴らしいです！",
-      "challengePurchased": "チャレンジ {{challengeName}} の購入が完了しました。取引アカウント #{{accountNumber}} は開始残高 ${{startingBalance}} で利用可能です",
-      "accountScalingApproved": "アカウント #{{accountNumber}} の拡大申請が承認されました。残高が ${{oldBalance}} から ${{newBalance}} に増加しました",
+      "challengePurchased": "チャレンジ {{challengeName}} の購入が完了しました。取引アカウント #{{accountNumber}} は開始残高 â¬{{startingBalance}} で利用可能です",
+      "accountScalingApproved": "アカウント #{{accountNumber}} の拡大申請が承認されました。残高が â¬{{oldBalance}} から â¬{{newBalance}} に増加しました",
       "accountScalingRejected": "アカウント #{{accountNumber}} の拡大申請が却下されました。詳細はサポートまでお問い合わせください",
       "newChallengeAvailable": "新しいチャレンジ {{challengeName}} をチェック！{{platform}} のアカウントサイズ {{accountSize}}。今すぐ始めましょう",
       "accountViolationGeneric": "アカウント #{{accountNumber}} が取引ルールに違反しました{{violationPercent}}",
@@ -865,7 +865,7 @@
     "total": "合計",
     "processing": "処理中...",
     "pay": "支払う",
-    "payAmount": "${{amount}} を支払う",
+    "payAmount": "â¬{{amount}} を支払う",
     "secureEncryption": "安全な256-bit SSL暗号化",
     "minTradingDays": "最低取引日数",
     "maxTradingDays": "最大取引日数",
@@ -1849,8 +1849,8 @@
         "twoPhase": "2フェーズ",
         "instantFunding": "即時資金提供",
         "platform": "プラットフォーム",
-        "accountSize": "アカウントサイズ（$）",
-        "price": "価格（$）",
+        "accountSize": "アカウントサイズ（â¬）",
+        "price": "価格（â¬）",
         "phase1ProfitTarget": "フェーズ1利益目標（%）",
         "phase2ProfitTarget": "フェーズ2利益目標（%）",
         "dailyDrawdown": "日次損失（%）",
@@ -2041,7 +2041,7 @@
           },
           "minimumPayout": {
             "q": "最低出金額はありますか？",
-            "a": "最低出金額は$50です。上限はなく、希望すれば利益の全額を出金できます。"
+            "a": "最低出金額はâ¬50です。上限はなく、希望すれば利益の全額を出金できます。"
           },
           "payoutProcessing": {
             "q": "出金処理にはどれくらい時間がかかりますか？",
@@ -2054,7 +2054,7 @@
         "faqs": {
           "howScalingWorks": {
             "q": "スケーリングプランはどう機能しますか？",
-            "a": "資金提供アカウントで10%の利益を達成し、2回の出金サイクルを完了するたびに、口座サイズが25%増加します。最大$2,000,000まで取引資金を拡大できます。"
+            "a": "資金提供アカウントで10%の利益を達成し、2回の出金サイクルを完了するたびに、口座サイズが25%増加します。最大â¬2,000,000まで取引資金を拡大できます。"
           },
           "profitSplitScaling": {
             "q": "スケールすると利益分配はどうなりますか？",
@@ -2153,7 +2153,7 @@
         "title": "チャレンジを購入",
         "description": "希望の口座サイズと評価タイプを選択し、安全に決済して取引認証情報を即時受け取ります。",
         "details": {
-          "selectAccountSize": "$10K〜$200Kの口座サイズを選択",
+          "selectAccountSize": "â¬10K〜â¬200Kの口座サイズを選択",
           "chooseType": "1フェーズ / 2フェーズ / 即時資金提供を選択",
           "receiveCredentials": "数分以内に認証情報を受け取る",
           "startTrading": "すぐに取引開始"
@@ -2176,7 +2176,7 @@
           "tradeWithCapital": "当社資金で取引",
           "keepProfits": "利益は最大90%受け取り",
           "biWeeklyPayout": "2週間ごとの出金スケジュール",
-          "scaleUp": "最大$2,000,000までスケール"
+          "scaleUp": "最大â¬2,000,000までスケール"
         }
       }
     },
@@ -2345,7 +2345,7 @@
         "desc": "24〜48時間で利益を受け取る"
       },
       "scaleTo2M": {
-        "title": "$2Mまでスケール",
+        "title": "â¬2Mまでスケール",
         "desc": "スケーリングプランで口座を成長"
       },
       "bestSupport": {
@@ -2407,7 +2407,7 @@
         "desc": "旅の全期間で一貫したルールが適用されます。"
       },
       "scaleTo2M": {
-        "title": "$2Mまでスケール",
+        "title": "â¬2Mまでスケール",
         "desc": "取引資金を最大200万ドルまで拡大できます。"
       },
       "automaticUpgrades": {
@@ -2470,7 +2470,7 @@
       "tradingCareer": "あなたのトレードキャリアを次の段階へ。",
       "subtitle": "どの口座サイズからでも開始し、取引資金200万ドルへとスケールしていきましょう。",
       "getStartedNow": "今すぐ始める",
-      "footer": "$99から開始 • 最大$2Mまでスケール • 最大90%の利益分配"
+      "footer": "â¬99から開始 • 最大â¬2Mまでスケール • 最大90%の利益分配"
     }
   },
   "payoutsPage": {
@@ -2491,9 +2491,9 @@
       "profitSplit": "利益分配",
       "best": "ベスト",
       "tiers": {
-        "tier1": "$10K - $25K",
-        "tier2": "$50K",
-        "tier3": "$100K+",
+        "tier1": "â¬10K - â¬25K",
+        "tier2": "â¬50K",
+        "tier3": "â¬100K+",
         "tier4": "スケール後"
       }
     },
@@ -2543,7 +2543,7 @@
     "payoutTerms": {
       "title": "出金条件",
       "biWeekly": "2週間ごとの出金スケジュール（14日ごと）",
-      "minimumAmount": "最低出金額は$50です",
+      "minimumAmount": "最低出金額はâ¬50です",
       "noMaximum": "出金上限はありません",
       "noFees": "どの方法でも出金手数料は無料です",
       "firstPayout": "初回出金は資金提供後14日から可能",
@@ -2602,13 +2602,13 @@
         "title": "日次損失（5%）",
         "description": "1日で許容される最大損失。日初の残高を基準に計算され、サーバー時間の深夜にリセットされます。",
         "example": "例:",
-        "exampleText": "残高が$50,000の場合、日次損失上限は$2,500です。"
+        "exampleText": "残高がâ¬50,000の場合、日次損失上限はâ¬2,500です。"
       },
       "maximumDrawdown": {
         "title": "最大損失（10%）",
         "description": "到達した最高残高からの最大損失。エクイティのピークを追跡するトレーリング方式です。",
         "example": "例:",
-        "exampleText": "最高残高が$55,000の場合、最大損失ラインは$49,500です。"
+        "exampleText": "最高残高がâ¬55,000の場合、最大損失ラインはâ¬49,500です。"
       }
     },
     "allowedActions": {
@@ -2677,7 +2677,7 @@
     },
     "scalingPlan": {
       "title": "スケーリングプラン",
-      "subtitle": "最大$2,000,000まで口座を成長",
+      "subtitle": "最大â¬2,000,000まで口座を成長",
       "accountSize": "口座サイズ",
       "profitSplit": "利益分配",
       "howItWorks": {
@@ -2698,7 +2698,7 @@
       },
       "minimum": {
         "label": "最低出金額",
-        "value": "$50"
+        "value": "â¬50"
       },
       "maximum": {
         "label": "最大出金額",
@@ -2710,7 +2710,7 @@
       },
       "fee": {
         "label": "出金手数料",
-        "value": "$0（無料）"
+        "value": "â¬0（無料）"
       },
       "firstPayout": {
         "label": "初回出金",
