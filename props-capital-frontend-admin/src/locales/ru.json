@@ -393,7 +393,7 @@
     "firstNamePlaceholder": "Джон",
     "lastName": "Фамилия",
     "lastNamePlaceholder": "Доу",
-    "email": "Email",
+    "email": "Эл. почта",
     "phoneNumber": "Номер телефона",
     "phonePlaceholder": "+66 123 456 789",
     "country": "Страна",
@@ -462,9 +462,9 @@
     "notificationUpdateError": "Ошибка обновления настроек уведомлений.",
     "notificationsUpdated": "Уведомления обновлены",
     "notificationsUpdatedDesc": "Настройки уведомлений сохранены.",
-    "personal": "Personal",
-    "sec": "Security",
-    "verify": "Verify"
+    "personal": "Личное",
+    "sec": "Безопасность",
+    "verify": "Подтвердить"
   },
   "support": {
     "title": "Поддержка",
@@ -797,9 +797,9 @@
     "account": "Аккаунт",
     "noNotifications": "Уведомлений нет",
     "noNewNotifications": "Новых уведомлений нет",
-    "delete": "Delete notification",
-    "loadError": "Failed to load notifications",
-    "loadErrorHint": "Please refresh the page and try again.",
+    "delete": "Удалить уведомление",
+    "loadError": "Не удалось загрузить уведомления",
+    "loadErrorHint": "Обновите страницу и повторите попытку.",
     "allCaughtUp": "Всё просмотрено!",
     "challenge": "Челлендж",
     "payout": "Вывод",
@@ -1102,7 +1102,7 @@
       "chg": "Chg%",
       "updated": "Обновлено",
       "retry": "Повторить",
-      "reconnecting": "Reconnecting"
+      "reconnecting": "Переподключение"
     },
     "positions": {
       "title": "Открытые позиции",
@@ -1136,8 +1136,8 @@
       "autoClosed": "Автозакрытие",
       "breach": "Нарушение правил",
       "breachPnL": "PnL при нарушении (на лимите)",
-      "finalFill": "Final Fill",
-      "finalFillPnL": "Final Fill P/L"
+      "finalFill": "Последнее исполнение",
+      "finalFillPnL": "Прибыль/убыток последнего исполнения"
     },
     "accountMetrics": {
       "balance": "Баланс",
@@ -1216,12 +1216,12 @@
     "coupons": "Купоны",
     "crm": "CRM",
     "crmLeads": "CRM Лиды",
-    "pipeline": "Pipeline",
+    "pipeline": "Воронка",
     "ftdReport": "FTD Report",
-    "calendar": "Calendar",
+    "calendar": "Календарь",
     "fundedAccounts": "Финансируемые аккаунты",
-    "propServer": "Prop Server",
-    "crmApiKey": "CRM API Keys",
+    "propServer": "Prop-сервер",
+    "crmApiKey": "Ключи API CRM",
     "ordersTransactions": "Заказы и транзакции",
     "orders": "Заказы",
     "allTransactions": "Все транзакции",
@@ -1352,14 +1352,14 @@
       },
       "messages": {
         "loading": "Загрузка панели администратора...",
-        "loadFailedTitle": "Failed to Load Dashboard",
-        "unexpectedError": "An unexpected error occurred",
-        "reload": "Reload Dashboard",
+        "loadFailedTitle": "Не удалось загрузить панель управления",
+        "unexpectedError": "Произошла непредвиденная ошибка",
+        "reload": "Перезагрузить панель управления",
         "liveUpdates": "Обновление каждые 10 сек. Последнее обновление: {{time}}",
-        "chartLoadFailed": "Failed to load chart data",
-        "noRevenueData": "No revenue data available",
-        "accountsLoadFailed": "Failed to load accounts",
-        "violationsLoadFailed": "Failed to load violations"
+        "chartLoadFailed": "Не удалось загрузить данные диаграммы",
+        "noRevenueData": "Нет данных о доходах",
+        "accountsLoadFailed": "Не удалось загрузить аккаунты",
+        "violationsLoadFailed": "Не удалось загрузить нарушения"
       }
     },
     "users": {
@@ -1423,7 +1423,7 @@
         "passed": "Пройдено",
         "funded": "Профинансировано",
         "failed": "Не пройдено",
-        "phase2": "Phase 2"
+        "phase2": "Этап 2"
       },
       "searchPlaceholder": "Поиск по номеру аккаунта или email...",
       "filter": {
@@ -1458,8 +1458,8 @@
         "forceFail": "Принудительно провалить",
         "resetAccount": "Сбросить аккаунт",
         "moveToFunded": "Перевести в финансируемый",
-        "pause": "Pause Account",
-        "resume": "Resume Account"
+        "pause": "Приостановить аккаунт",
+        "resume": "Возобновить аккаунт"
       },
       "dialog": {
         "title": "Детали аккаунта",
@@ -1818,7 +1818,7 @@
         "branding": "Брендинг",
         "payments": "Платежи",
         "integrations": "Интеграции",
-        "email": "Email"
+        "email": "Эл. почта"
       },
       "general": {
         "title": "Общие настройки",
@@ -1838,7 +1838,7 @@
         "title": "Настройки платежей",
         "stripe": "Stripe",
         "stripeDesc": "Принимать оплату банковскими картами",
-        "stripeApiKey": "Stripe API Key",
+        "stripeApiKey": "Ключ API Stripe",
         "stripeApiKeyPlaceholder": "sk_live_...",
         "paypal": "PayPal",
         "paypalDesc": "Принимать оплату через PayPal",
@@ -1874,7 +1874,7 @@
         "payoutApprovedDesc": "Отправляется при одобрении вывода",
         "editTemplate": "Редактировать шаблон"
       },
-      "saveError": "Failed to save settings"
+      "saveError": "Не удалось сохранить настройки"
     },
     "riskMonitor": {
       "title": "Мониторинг рисков",
@@ -1945,10 +1945,10 @@
         "port": "Порт",
         "managerLogin": "Логин менеджера",
         "managerPassword": "Пароль менеджера",
-        "apiKey": "API Key / Client ID",
-        "apiSecret": "API Secret",
+        "apiKey": "Ключ API / ID клиента",
+        "apiSecret": "Секрет API",
         "demoServer": "Демо-сервер",
-        "description": "Configure a new broker server connection for trading accounts."
+        "description": "Настройте новое подключение к серверу брокера для торговых аккаунтов."
       },
       "platforms": {
         "mt4": "MetaTrader 4",
@@ -1968,7 +1968,7 @@
         "platform": "Платформа",
         "timezone": "Часовой пояс",
         "lastSync": "Последняя синхронизация",
-        "accounts": "Linked Accounts"
+        "accounts": "Связанные аккаунты"
       },
       "actions": {
         "test": "Тест"
@@ -1977,20 +1977,20 @@
         "title": "Серверы брокера отсутствуют",
         "description": "Добавьте первый сервер брокера, чтобы начать создавать торговые аккаунты"
       },
-      "confirmDelete": "Are you sure you want to delete this broker server?",
+      "confirmDelete": "Вы уверены, что хотите удалить этот сервер брокера?",
       "error": {
-        "description": "An error occurred while loading broker servers",
-        "retry": "Retry",
-        "title": "Failed to Load Broker Servers"
+        "description": "При загрузке серверов брокеров произошла ошибка",
+        "retry": "Повторить",
+        "title": "Не удалось загрузить серверы брокеров"
       },
       "toast": {
-        "connectionError": "Failed to test connection",
-        "connectionFailed": "Connection test failed",
-        "connectionSuccess": "Connection test successful",
-        "createError": "Failed to add broker server",
-        "createSuccess": "Broker server added successfully",
-        "deleteError": "Failed to delete broker server",
-        "deleteSuccess": "Broker server deleted successfully"
+        "connectionError": "Не удалось проверить подключение",
+        "connectionFailed": "Проверка подключения не удалась",
+        "connectionSuccess": "Проверка подключения прошла успешно",
+        "createError": "Не удалось добавить сервер брокера",
+        "createSuccess": "Сервер брокера успешно добавлен",
+        "deleteError": "Не удалось удалить сервер брокера",
+        "deleteSuccess": "Сервер брокера успешно удалён"
       }
     },
     "scaling": {
@@ -2103,7 +2103,7 @@
       "deleteErrorMessage": "Этот челлендж нельзя удалить",
       "deleteErrorDesc": "Невозможно удалить, так как он связан с существующими торговыми аккаунтами",
       "understand": "Понятно",
-      "noChallenges": "No challenges available"
+      "noChallenges": "Нет доступных челленджей"
     },
     "apiKeys": {
       "title": "API Ключи",
@@ -2176,7 +2176,7 @@
   "signIn": {
     "title": "С возвращением",
     "subtitle": "Войдите в торговый аккаунт",
-    "email": "Email",
+    "email": "Эл. почта",
     "emailPlaceholder": "Введите email",
     "password": "Пароль",
     "passwordPlaceholder": "Введите пароль",
@@ -2191,11 +2191,11 @@
     "securityDescription": "Торгуйте с уверенностью. Наша платформа использует безопасность банковского уровня для защиты вашего аккаунта и торговых данных.",
     "errors": {
       "invalidCredentials": "Неверный email или пароль",
-      "adminPortalOnly": "This is the Admin portal. Please use the Trader portal to sign in.",
-      "adminCredentialsRequired": "Access denied. Admin credentials required."
+      "adminPortalOnly": "Это портал администратора. Для входа используйте портал трейдера.",
+      "adminCredentialsRequired": "Доступ запрещён. Требуются учётные данные администратора."
     },
-    "adminSubtitle": "Sign in to access the admin dashboard",
-    "adminAccessOnly": "Admin access only. Contact your system administrator for credentials."
+    "adminSubtitle": "Войдите, чтобы получить доступ к панели администратора",
+    "adminAccessOnly": "Только для администраторов. Обратитесь к системному администратору за учётными данными."
   },
   "signUp": {
     "title": "Создать аккаунт",
@@ -2206,7 +2206,7 @@
     "firstNamePlaceholder": "Джон",
     "lastName": "Фамилия",
     "lastNamePlaceholder": "Доу",
-    "email": "Email",
+    "email": "Эл. почта",
     "emailPlaceholder": "Введите email",
     "password": "Пароль",
     "passwordPlaceholder": "Создайте пароль",
@@ -2399,7 +2399,7 @@
       }
     },
     "contactInformation": "Контактная информация",
-    "email": "Email",
+    "email": "Эл. почта",
     "address": "Адрес",
     "website": "Сайт",
     "workingHours": "Часы работы",
@@ -3123,7 +3123,7 @@
       ]
     },
     "cookies": {
-      "title": "6. Cookies",
+      "title": "6. Файлы cookie",
       "content": "Мы используем cookies и похожие технологии для улучшения опыта, аналитики использования и оптимизации контента. Вы можете управлять cookies в настройках браузера."
     },
     "dataRetention": {
@@ -3202,7 +3202,7 @@
       "importing": "Импорт...",
       "note": "Заметка",
       "call": "Звонок",
-      "email": "Email",
+      "email": "Эл. почта",
       "whatsapp": "WhatsApp",
       "telegram_activity": "Telegram",
       "toast": {
@@ -3328,7 +3328,7 @@
       "allAgents": "Все агенты",
       "tableTitle": "Первые депозиты",
       "leadName": "Имя лида",
-      "email": "Email",
+      "email": "Эл. почта",
       "phone": "Телефон",
       "country": "Страна",
       "depositAmount": "Сумма депозита",

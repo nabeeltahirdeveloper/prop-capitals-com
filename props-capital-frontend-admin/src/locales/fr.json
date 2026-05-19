@@ -116,7 +116,7 @@
       "propFirm": "Société de prop trading",
       "verified": "Vérifié et fiable",
       "company": "Entreprise",
-      "support": "Support",
+      "support": "Assistance",
       "legal": "Informations légales",
       "copyright": "© 2024 BLUEHAVEN MANAGEMENT LTD Tous droits réservés",
       "secure": "Sécurisé et chiffré",
@@ -263,7 +263,7 @@
     "overallDD": "Perte globale",
     "openDashboard": "Ouvrir le tableau de bord de trading",
     "progress": "Progression",
-    "trades": "Trades",
+    "trades": "Transactions",
     "needChallenge": "Besoin d’un nouveau challenge ?",
     "needChallengeDesc": "Redémarrez avec un nouveau challenge de trading et prouvez vos compétences",
     "buyChallenge": "Acheter un challenge"
@@ -462,12 +462,12 @@
     "notificationsUpdated": "Notifications mises à jour",
     "notificationsUpdatedDesc": "Vos préférences de notification ont été enregistrées.",
     "notif": "Notifications",
-    "personal": "Personal",
-    "sec": "Security",
-    "verify": "Verify"
+    "personal": "Personnel",
+    "sec": "Sécurité",
+    "verify": "Vérifier"
   },
   "support": {
-    "title": "Support",
+    "title": "Assistance",
     "subtitle": "Obtenir de l’aide pour votre compte et votre trading",
     "newTicket": "Nouveau ticket",
     "createTicket": "Créer un ticket de support",
@@ -567,7 +567,7 @@
     "phase1": "Phase 1",
     "phase2": "Phase 2",
     "funded": "Financé",
-    "scaling": "Scaling",
+    "scaling": "Mise à l'échelle",
     "reachTarget": "Atteindre l'objectif de profit {{target}}",
     "profitTarget": "Objectif de profit",
     "minTradingDays": "Jours de trading minimum",
@@ -601,7 +601,7 @@
     "phase1": "Phase 1",
     "phase2": "Phase 2",
     "funded": "Financé",
-    "scaling": "Scaling",
+    "scaling": "Mise à l'échelle",
     "evaluation": "Évaluation",
     "verification": "Vérification",
     "liveAccount": "Compte réel",
@@ -797,9 +797,9 @@
     "account": "Compte",
     "noNotifications": "Aucune notification",
     "noNewNotifications": "Aucune nouvelle notification",
-    "delete": "Delete notification",
-    "loadError": "Failed to load notifications",
-    "loadErrorHint": "Please refresh the page and try again.",
+    "delete": "Supprimer la notification",
+    "loadError": "Échec du chargement des notifications",
+    "loadErrorHint": "Veuillez actualiser la page et réessayer.",
     "allCaughtUp": "Vous êtes à jour !",
     "challenge": "Challenge",
     "payout": "Retrait",
@@ -1058,7 +1058,7 @@
       "buyLong": "Acheter",
       "sellShort": "Vendre",
       "long": "Long",
-      "short": "Short",
+      "short": "Vente",
       "price": "Prix",
       "market": "Marché",
       "leaveEmpty": "Laissez vide pour un ordre au marché",
@@ -1102,7 +1102,7 @@
       "chg": "Var%",
       "updated": "Mis à jour",
       "retry": "Réessayer",
-      "reconnecting": "Reconnecting"
+      "reconnecting": "Reconnexion"
     },
     "positions": {
       "title": "Positions ouvertes",
@@ -1136,8 +1136,8 @@
       "autoClosed": "Clôture automatique",
       "breach": "Infraction",
       "breachPnL": "PnL au moment de l’infraction (au plafond)",
-      "finalFill": "Final Fill",
-      "finalFillPnL": "Final Fill P/L"
+      "finalFill": "Dernier remplissage",
+      "finalFillPnL": "P/P du dernier remplissage"
     },
     "accountMetrics": {
       "balance": "Solde",
@@ -1200,7 +1200,7 @@
     "payouts": "Paiements",
     "notifications": "Notifications",
     "profile": "Profil",
-    "support": "Support",
+    "support": "Assistance",
     "overview": "Aperçu",
     "users": "Utilisateurs",
     "accounts": "Comptes",
@@ -1220,8 +1220,8 @@
     "ftdReport": "Rapport FTD",
     "calendar": "Calendrier",
     "fundedAccounts": "Comptes Financés",
-    "propServer": "Prop Server",
-    "crmApiKey": "CRM API Keys",
+    "propServer": "Serveur Prop",
+    "crmApiKey": "Clés API CRM",
     "ordersTransactions": "Commandes et transactions",
     "orders": "Commandes",
     "allTransactions": "Toutes les transactions",
@@ -1458,8 +1458,8 @@
         "forceFail": "Forcer l’échec",
         "resetAccount": "Réinitialiser le compte",
         "moveToFunded": "Passer en financé",
-        "pause": "Pause Account",
-        "resume": "Resume Account"
+        "pause": "Suspendre le compte",
+        "resume": "Reprendre le compte"
       },
       "dialog": {
         "title": "Détails du compte",
@@ -1815,7 +1815,7 @@
       "settingsSaveDescription": "Les paramètres ont été enregistrés avec succès.",
       "tabs": {
         "general": "Général",
-        "branding": "Branding",
+        "branding": "Image de marque",
         "payments": "Paiements",
         "integrations": "Intégrations",
         "email": "E-mail"
@@ -1874,7 +1874,7 @@
         "payoutApprovedDesc": "Envoyé lorsqu’un retrait est approuvé",
         "editTemplate": "Modifier le modèle"
       },
-      "saveError": "Failed to save settings"
+      "saveError": "Échec de l'enregistrement des paramètres"
     },
     "riskMonitor": {
       "title": "Surveillance des risques",
@@ -1948,7 +1948,7 @@
         "apiKey": "Clé API / Client ID",
         "apiSecret": "Secret API",
         "demoServer": "Serveur démo",
-        "description": "Configure a new broker server connection for trading accounts."
+        "description": "Configurez une nouvelle connexion au serveur de courtier pour les comptes de trading."
       },
       "platforms": {
         "mt4": "MetaTrader 4",
@@ -1968,7 +1968,7 @@
         "platform": "Plateforme",
         "timezone": "Fuseau horaire",
         "lastSync": "Dernière synchronisation",
-        "accounts": "Linked Accounts"
+        "accounts": "Comptes liés"
       },
       "actions": {
         "test": "Tester"
@@ -1977,20 +1977,20 @@
         "title": "Aucun serveur broker",
         "description": "Ajoutez votre premier serveur broker pour commencer à créer des comptes de trading"
       },
-      "confirmDelete": "Are you sure you want to delete this broker server?",
+      "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce serveur de courtier ?",
       "error": {
-        "description": "An error occurred while loading broker servers",
-        "retry": "Retry",
-        "title": "Failed to Load Broker Servers"
+        "description": "Une erreur s'est produite lors du chargement des serveurs de courtiers",
+        "retry": "Réessayer",
+        "title": "Échec du chargement des serveurs de courtiers"
       },
       "toast": {
-        "connectionError": "Failed to test connection",
-        "connectionFailed": "Connection test failed",
-        "connectionSuccess": "Connection test successful",
-        "createError": "Failed to add broker server",
-        "createSuccess": "Broker server added successfully",
-        "deleteError": "Failed to delete broker server",
-        "deleteSuccess": "Broker server deleted successfully"
+        "connectionError": "Échec du test de connexion",
+        "connectionFailed": "Échec du test de connexion",
+        "connectionSuccess": "Test de connexion réussi",
+        "createError": "Échec de l'ajout du serveur de courtier",
+        "createSuccess": "Serveur de courtier ajouté avec succès",
+        "deleteError": "Échec de la suppression du serveur de courtier",
+        "deleteSuccess": "Serveur de courtier supprimé avec succès"
       }
     },
     "scaling": {
@@ -2103,7 +2103,7 @@
       "deleteErrorMessage": "Ce challenge ne peut pas être supprimé",
       "deleteErrorDesc": "Il est lié à des comptes de trading existants",
       "understand": "Compris",
-      "noChallenges": "No challenges available"
+      "noChallenges": "Aucun challenge disponible"
     },
     "apiKeys": {
       "title": "Clés API",
@@ -2122,7 +2122,7 @@
       "copyToClipboard": "Copier dans le presse-papiers",
       "done": "Terminé",
       "totalKeys": "Total des Clés",
-      "active": "Active",
+      "active": "Actif",
       "revoked": "Révoquée",
       "emptyMessage": "Aucune clé API pour le moment. Générez-en une pour commencer.",
       "created": "Créée",
@@ -2191,11 +2191,11 @@
     "securityDescription": "Tradez en toute confiance. Notre plateforme utilise une sécurité de niveau bancaire pour protéger votre compte et vos données de trading.",
     "errors": {
       "invalidCredentials": "Adresse e-mail ou mot de passe incorrect",
-      "adminPortalOnly": "This is the Admin portal. Please use the Trader portal to sign in.",
-      "adminCredentialsRequired": "Access denied. Admin credentials required."
+      "adminPortalOnly": "Il s'agit du portail Admin. Veuillez utiliser le portail Trader pour vous connecter.",
+      "adminCredentialsRequired": "Accès refusé. Identifiants administrateur requis."
     },
-    "adminSubtitle": "Sign in to access the admin dashboard",
-    "adminAccessOnly": "Admin access only. Contact your system administrator for credentials."
+    "adminSubtitle": "Connectez-vous pour accéder au tableau de bord administrateur",
+    "adminAccessOnly": "Accès administrateur uniquement. Contactez votre administrateur système pour les identifiants."
   },
   "signUp": {
     "title": "Créer un compte",
@@ -3202,7 +3202,7 @@
       "importing": "Importation...",
       "note": "Note",
       "call": "Appel",
-      "email": "Email",
+      "email": "E-mail",
       "whatsapp": "WhatsApp",
       "telegram_activity": "Telegram",
       "toast": {
@@ -3328,7 +3328,7 @@
       "allAgents": "Tous les Agents",
       "tableTitle": "Premiers Dépôts",
       "leadName": "Nom du Lead",
-      "email": "Email",
+      "email": "E-mail",
       "phone": "Téléphone",
       "country": "Pays",
       "depositAmount": "Montant du Dépôt",
