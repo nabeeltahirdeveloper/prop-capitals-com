@@ -22,7 +22,7 @@ function formatAccountSize(size) {
 
 const ChallengesPage = () => {
   const { isDark } = useTheme();
-  const { formatFee, formatSize } = useCurrency();
+  const { formatFee, formatSize, cur } = useCurrency();
   const [selectedSize, setSelectedSize] = useState(3);
 
   const { data: rawChallenges = [], isLoading } = useQuery({
@@ -337,7 +337,7 @@ const ChallengesPage = () => {
             Ready to Get <span className="text-amber-500">Funded</span>?
           </h2>
           <p className={`text-base lg:text-lg mb-8 max-w-xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-            Join thousands of successful traders. Start your challenge today and trade with up to €200,000.
+            Join thousands of successful traders. Start your challenge today and trade with up to {cur('€200,000')}.
           </p>
           <Button
             onClick={User ? () => window.location.href = '/dashboard' : () => window.location.href = '/sign-up'}

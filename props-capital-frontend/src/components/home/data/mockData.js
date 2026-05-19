@@ -52,7 +52,7 @@ export const testimonials = [
     avatar: "/assets/images/img2.png",
     promoVideo: "/assets/videos/video1.mp4",
     rating: "4.9/5.0 Rating",
-    payout: "$1,450.00",
+    payout: "€1,450.00",
   },
   {
     id: 2,
@@ -67,7 +67,7 @@ export const testimonials = [
     avatar: "/assets/images/img4.png",
     promoVideo: "/assets/videos/video2.mp4",
     rating: "5.0/5.0 Rating",
-    payout: "$3,500.00",
+    payout: "€3,500.00",
   },
   {
     id: 3,
@@ -82,14 +82,14 @@ export const testimonials = [
     avatarVideo: "/assets/videos/video3.mp4",
     promoVideo: "/assets/videos/video3.mp4",
     rating: "4.8/5.0 Rating",
-    payout: "$1,944.00",
+    payout: "€1,944.00",
   },
   {
     id: 4,
     name: "Nova",
     country: "SG",
     quote:
-      "From $25K to $200K funded account. Prop Capitals changed my trading career completely!",
+      "From €25K to €200K funded account. Prop Capitals changed my trading career completely!",
     highlight: "changed my trading career",
     tag: "Career Changer",
     avatar: "/assets/images/img1.png",
@@ -97,7 +97,7 @@ export const testimonials = [
     avatarVideo: "/assets/videos/video4.mp4",
     promoVideo: "/assets/videos/video4.mp4",
     rating: "4.9/5.0 Rating",
-    payout: "$933.00",
+    payout: "€933.00",
   },
 ];
 
@@ -363,14 +363,14 @@ export const faqData = [
   {
     question: "Is there a scaling plan?",
     answer:
-      "Yes! Our scaling plan allows you to grow your account up to $5,000,000. Every time you reach a 10% profit milestone, your account size increases by 25%. Top traders can access our Elite program with even better conditions.",
+      "Yes! Our scaling plan allows you to grow your account up to €5,000,000. Every time you reach a 10% profit milestone, your account size increases by 25%. Top traders can access our Elite program with even better conditions.",
   },
 ];
 
 export const stats = {
   tradersCount: "18,500+",
-  totalPaid: "$15.2M+",
-  avgPayout: "$3,850",
+  totalPaid: "€15.2M+",
+  avgPayout: "€3,850",
   trustpilotRating: "4.8",
   payoutTime: "<90 min",
   successRate: "23%",
@@ -379,7 +379,7 @@ export const stats = {
 export const tradingConditions = [
   { label: "Forex Leverage", value: "Up to 1:100" },
   { label: "Spreads From", value: "0.0 pips" },
-  { label: "Commission", value: "$2/lot" },
+  { label: "Commission", value: "€2/lot" },
   { label: "Instruments", value: "100+" },
 ];
 

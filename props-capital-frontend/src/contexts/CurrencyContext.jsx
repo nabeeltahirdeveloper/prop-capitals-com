@@ -39,7 +39,16 @@ export const CurrencyProvider = ({ children }) => {
     // Account-size label, e.g. "€5K" / "£5K".
     const formatSize = (key) => `${symbol}${key}`;
 
-    return { currency, setCurrency, symbol, formatFee, formatAmount, formatSize };
+    // Marketing/notional display: swap any hardcoded currency symbol ($, €, £)
+    // in a string to the active one; numbers get the active symbol prefixed.
+    // No FX conversion — these are notional figures, matching InstantPropFunding.
+    const cur = (val) => {
+      if (val === null || val === undefined) return val;
+      if (typeof val === 'number') return `${symbol}${Math.round(val).toLocaleString('en-US')}`;
+      return String(val).replace(/[$€£]/g, symbol);
+    };
+
+    return { currency, setCurrency, symbol, formatFee, formatAmount, formatSize, cur };
   }, [currency]);
 
   return <CurrencyContext.Provider value={value}>{children}</CurrencyContext.Provider>;

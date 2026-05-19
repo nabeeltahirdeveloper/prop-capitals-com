@@ -3,6 +3,7 @@ import { ChevronDown, Search, MessageCircle, Mail, Send } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { useChatSupportStore } from '@/lib/stores/chat-support.store';
 
 const faqCategories = [
@@ -148,6 +149,7 @@ const faqData = {
 
 const FAQ = () => {
   const { isDark } = useTheme();
+  const { cur } = useCurrency();
   const openChat = useChatSupportStore((state) => state.openChat);
   const [activeCategory, setActiveCategory] = useState('general');
   const [openQuestion, setOpenQuestion] = useState(null);
@@ -251,14 +253,14 @@ const FAQ = () => {
                   onClick={() => setOpenQuestion(openQuestion === index ? null : index)}
                   className="w-full px-6 py-5 flex items-center justify-between text-left"
                 >
-                  <span className={`font-semibold pr-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{faq.question}</span>
+                  <span className={`font-semibold pr-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{cur(faq.question)}</span>
                   <ChevronDown className={`w-5 h-5 text-amber-500 flex-shrink-0 transition-transform ${
                     openQuestion === index ? 'rotate-180' : ''
                   }`} />
                 </button>
                 {openQuestion === index && (
                   <div className="px-6 pb-5">
-                    <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{faq.answer}</p>
+                    <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{cur(faq.answer)}</p>
                   </div>
                 )}
               </div>

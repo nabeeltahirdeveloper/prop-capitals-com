@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { testimonials } from "./data/mockData.js";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const VideoPlayer = ({ src, className, isDark }) => {
   const [isMuted, setIsMuted] = useState(true);
@@ -88,6 +89,7 @@ const VideoPlayer = ({ src, className, isDark }) => {
 
 const TestimonialsSection = () => {
   const { isDark } = useTheme();
+  const { cur } = useCurrency();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextSlide = () => {
@@ -151,10 +153,10 @@ const TestimonialsSection = () => {
                     <React.Fragment key={i}>
                       {i > 0 && (
                         <span className="text-amber-500">
-                          {currentTestimonial.highlight}
+                          {cur(currentTestimonial.highlight)}
                         </span>
                       )}
-                      {part}
+                      {cur(part)}
                     </React.Fragment>
                   ))}
                 "
@@ -190,7 +192,7 @@ const TestimonialsSection = () => {
                     Payout
                   </span>
                   <span className="text-emerald-500 font-bold text-xl">
-                    {currentTestimonial.payout}
+                    {cur(currentTestimonial.payout)}
                   </span>
                 </div>
 
