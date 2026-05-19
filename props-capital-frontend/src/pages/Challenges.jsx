@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Check, ArrowRight, Star, Shield, Zap, Clock, TrendingUp, Award, User } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { useQuery } from '@tanstack/react-query';
 import { getChallenges } from '@/api/challenges';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -21,6 +22,7 @@ function formatAccountSize(size) {
 
 const ChallengesPage = () => {
   const { isDark } = useTheme();
+  const { formatFee, formatSize } = useCurrency();
   const [selectedSize, setSelectedSize] = useState(3);
 
   const { data: rawChallenges = [], isLoading } = useQuery({
@@ -36,7 +38,7 @@ const ChallengesPage = () => {
     const sizeSet = new Set();
     rawChallenges.forEach(c => sizeSet.add(c.accountSize));
     const sizes = Array.from(sizeSet).sort((a, b) => a - b).map(value => ({
-      label: `€${formatAccountSize(value)}`,
+      label: formatSize(formatAccountSize(value)),
       key: formatAccountSize(value),
       value,
     }));
@@ -83,7 +85,7 @@ const ChallengesPage = () => {
     });
 
     return { accountSizes: sizes, challengeTypes: types };
-  }, [rawChallenges]);
+  }, [rawChallenges, formatSize]);
 
   // Build comparison rows from fetched data
   const comparisonRows = useMemo(() => {
@@ -195,10 +197,10 @@ const ChallengesPage = () => {
                       {price != null && (
                         <div className={`text-center mb-6 py-5 rounded-2xl ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
                           <div className={`text-sm line-through mb-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                            €{(price * 3).toFixed(0)}
+                            {formatFee(price * 3)}
                           </div>
                           <div className="text-amber-500 text-4xl lg:text-5xl font-black">
-                            €{price}
+                            {formatFee(price)}
                           </div>
                           <div className="text-emerald-400 text-sm font-semibold mt-1">70% OFF - Limited Time</div>
                         </div>
