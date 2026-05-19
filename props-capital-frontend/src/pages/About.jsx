@@ -247,19 +247,15 @@ const About = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className={`rounded-3xl p-8 lg:p-12 border text-center ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-slate-50 border-slate-200'}`}>
             <div className="flex items-center justify-center gap-2 mb-4">
-              {/* Official Trustpilot wordmark — theme-aware, no mismatched dark plate */}
-              <div className={`px-4 py-2 rounded-md inline-flex items-center gap-2 ${
-                isDark ? 'bg-white/5' : 'bg-white border border-slate-200'
-              }`}>
-                <svg viewBox="0 0 34 34" className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path
-                    fill="#00B67A"
-                    d="M33.523 11.969H20.722L16.768 0 12.8 11.97 0 11.957l10.367 7.404-3.966 11.956 10.367-7.392 10.355 7.392-3.954-11.956 10.354-7.392z"
-                  />
-                  <path d="m24.058 22.069-.89-2.707-6.4 4.564 7.29-1.857z" fill="#126849" />
-                </svg>
-                <span className={`font-semibold text-base tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>Trustpilot</span>
-              </div>
+              {/* Official Trustpilot wordmark — no background plate, sits directly on the card */}
+              <svg viewBox="0 0 34 34" className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path
+                  fill="#00B67A"
+                  d="M33.523 11.969H20.722L16.768 0 12.8 11.97 0 11.957l10.367 7.404-3.966 11.956 10.367-7.392 10.355 7.392-3.954-11.956 10.354-7.392z"
+                />
+                <path d="m24.058 22.069-.89-2.707-6.4 4.564 7.29-1.857z" fill="#126849" />
+              </svg>
+              <span className={`font-semibold text-lg tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>Trustpilot</span>
             </div>
             <div className="flex items-center justify-center mb-4">
               <PartialStarRating rating={4.8} size={32} />
