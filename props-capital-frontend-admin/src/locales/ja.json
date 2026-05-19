@@ -462,9 +462,9 @@
     "notificationUpdateError": "通知設定の更新に失敗しました。",
     "notificationsUpdated": "通知が更新されました",
     "notificationsUpdatedDesc": "通知設定が保存されました。",
-    "personal": "Personal",
-    "sec": "Security",
-    "verify": "Verify"
+    "personal": "個人",
+    "sec": "セキュリティ",
+    "verify": "認証"
   },
   "support": {
     "title": "サポート",
@@ -797,9 +797,9 @@
     "account": "アカウント",
     "noNotifications": "通知はありません",
     "noNewNotifications": "新しい通知はありません",
-    "delete": "Delete notification",
-    "loadError": "Failed to load notifications",
-    "loadErrorHint": "Please refresh the page and try again.",
+    "delete": "通知を削除",
+    "loadError": "通知の読み込みに失敗しました",
+    "loadErrorHint": "ページを更新してもう一度お試しください。",
     "allCaughtUp": "すべて確認済みです！",
     "challenge": "チャレンジ",
     "payout": "出金",
@@ -1094,15 +1094,15 @@
       "search": "検索...",
       "all": "すべて",
       "favorites": "★",
-      "forex": "Forex",
-      "crypto": "Crypto",
+      "forex": "外国為替",
+      "crypto": "暗号資産",
       "symbol": "シンボル",
       "bid": "Bid",
       "ask": "Ask",
       "chg": "Chg%",
       "updated": "更新",
       "retry": "再試行",
-      "reconnecting": "Reconnecting"
+      "reconnecting": "再接続中"
     },
     "positions": {
       "title": "未決済ポジション",
@@ -1136,8 +1136,8 @@
       "autoClosed": "自動クローズ",
       "breach": "ルール違反",
       "breachPnL": "違反時のPnL（上限時）",
-      "finalFill": "Final Fill",
-      "finalFillPnL": "Final Fill P/L"
+      "finalFill": "最終約定",
+      "finalFillPnL": "最終約定損益"
     },
     "accountMetrics": {
       "balance": "残高",
@@ -1216,12 +1216,12 @@
     "coupons": "クーポン",
     "crm": "CRM",
     "crmLeads": "CRMリード",
-    "pipeline": "Pipeline",
+    "pipeline": "パイプライン",
     "ftdReport": "FTD Report",
-    "calendar": "Calendar",
+    "calendar": "カレンダー",
     "fundedAccounts": "資金提供アカウント",
-    "propServer": "Prop Server",
-    "crmApiKey": "CRM API Keys",
+    "propServer": "プロップサーバー",
+    "crmApiKey": "CRM APIキー",
     "ordersTransactions": "注文と取引",
     "orders": "注文",
     "allTransactions": "すべての取引",
@@ -1352,14 +1352,14 @@
       },
       "messages": {
         "loading": "ダッシュボードを読み込み中...",
-        "loadFailedTitle": "Failed to Load Dashboard",
-        "unexpectedError": "An unexpected error occurred",
-        "reload": "Reload Dashboard",
+        "loadFailedTitle": "ダッシュボードの読み込みに失敗しました",
+        "unexpectedError": "予期しないエラーが発生しました",
+        "reload": "ダッシュボードを再読み込み",
         "liveUpdates": "10秒ごとにライブ更新。最終更新: {{time}}",
-        "chartLoadFailed": "Failed to load chart data",
-        "noRevenueData": "No revenue data available",
-        "accountsLoadFailed": "Failed to load accounts",
-        "violationsLoadFailed": "Failed to load violations"
+        "chartLoadFailed": "チャートデータの読み込みに失敗しました",
+        "noRevenueData": "収益データがありません",
+        "accountsLoadFailed": "アカウントの読み込みに失敗しました",
+        "violationsLoadFailed": "違反の読み込みに失敗しました"
       }
     },
     "users": {
@@ -1423,7 +1423,7 @@
         "passed": "合格",
         "funded": "資金提供済み",
         "failed": "失敗",
-        "phase2": "Phase 2"
+        "phase2": "フェーズ2"
       },
       "searchPlaceholder": "口座番号またはメールで検索...",
       "filter": {
@@ -1458,8 +1458,8 @@
         "forceFail": "強制失敗",
         "resetAccount": "アカウントをリセット",
         "moveToFunded": "資金提供へ移行",
-        "pause": "Pause Account",
-        "resume": "Resume Account"
+        "pause": "アカウントを一時停止",
+        "resume": "アカウントを再開"
       },
       "dialog": {
         "title": "アカウント詳細",
@@ -1838,7 +1838,7 @@
         "title": "決済設定",
         "stripe": "Stripe",
         "stripeDesc": "クレジットカード決済を受け付ける",
-        "stripeApiKey": "Stripe API Key",
+        "stripeApiKey": "Stripe APIキー",
         "stripeApiKeyPlaceholder": "sk_live_...",
         "paypal": "PayPal",
         "paypalDesc": "PayPal決済を受け付ける",
@@ -1874,7 +1874,7 @@
         "payoutApprovedDesc": "出金が承認された際に送信",
         "editTemplate": "テンプレートを編集"
       },
-      "saveError": "Failed to save settings"
+      "saveError": "設定の保存に失敗しました"
     },
     "riskMonitor": {
       "title": "リスク監視",
@@ -1945,10 +1945,10 @@
         "port": "ポート",
         "managerLogin": "マネージャーログイン",
         "managerPassword": "マネージャーパスワード",
-        "apiKey": "API Key / Client ID",
-        "apiSecret": "API Secret",
+        "apiKey": "APIキー / クライアントID",
+        "apiSecret": "APIシークレット",
         "demoServer": "デモサーバー",
-        "description": "Configure a new broker server connection for trading accounts."
+        "description": "取引アカウント用の新しいブローカーサーバー接続を構成します。"
       },
       "platforms": {
         "mt4": "MetaTrader 4",
@@ -1968,7 +1968,7 @@
         "platform": "プラットフォーム",
         "timezone": "タイムゾーン",
         "lastSync": "最終同期",
-        "accounts": "Linked Accounts"
+        "accounts": "連携アカウント"
       },
       "actions": {
         "test": "テスト"
@@ -1977,20 +1977,20 @@
         "title": "ブローカーサーバーがありません",
         "description": "最初のブローカーサーバーを追加して取引アカウント作成を開始しましょう"
       },
-      "confirmDelete": "Are you sure you want to delete this broker server?",
+      "confirmDelete": "このブローカーサーバーを削除してもよろしいですか？",
       "error": {
-        "description": "An error occurred while loading broker servers",
-        "retry": "Retry",
-        "title": "Failed to Load Broker Servers"
+        "description": "ブローカーサーバーの読み込み中にエラーが発生しました",
+        "retry": "再試行",
+        "title": "ブローカーサーバーの読み込みに失敗しました"
       },
       "toast": {
-        "connectionError": "Failed to test connection",
-        "connectionFailed": "Connection test failed",
-        "connectionSuccess": "Connection test successful",
-        "createError": "Failed to add broker server",
-        "createSuccess": "Broker server added successfully",
-        "deleteError": "Failed to delete broker server",
-        "deleteSuccess": "Broker server deleted successfully"
+        "connectionError": "接続のテストに失敗しました",
+        "connectionFailed": "接続テストに失敗しました",
+        "connectionSuccess": "接続テストに成功しました",
+        "createError": "ブローカーサーバーの追加に失敗しました",
+        "createSuccess": "ブローカーサーバーが正常に追加されました",
+        "deleteError": "ブローカーサーバーの削除に失敗しました",
+        "deleteSuccess": "ブローカーサーバーが正常に削除されました"
       }
     },
     "scaling": {
@@ -2103,7 +2103,7 @@
       "deleteErrorMessage": "このチャレンジは削除できません",
       "deleteErrorDesc": "既存の取引アカウントに紐づいているため削除できません",
       "understand": "了解",
-      "noChallenges": "No challenges available"
+      "noChallenges": "利用可能なチャレンジがありません"
     },
     "apiKeys": {
       "title": "APIキー",
@@ -2191,11 +2191,11 @@
     "securityDescription": "安心して取引できます。当社のプラットフォームは銀行レベルのセキュリティで、アカウントと取引データを保護します。",
     "errors": {
       "invalidCredentials": "メールアドレスまたはパスワードが正しくありません",
-      "adminPortalOnly": "This is the Admin portal. Please use the Trader portal to sign in.",
-      "adminCredentialsRequired": "Access denied. Admin credentials required."
+      "adminPortalOnly": "これは管理者ポータルです。サインインするにはトレーダーポータルをご利用ください。",
+      "adminCredentialsRequired": "アクセスが拒否されました。管理者の認証情報が必要です。"
     },
-    "adminSubtitle": "Sign in to access the admin dashboard",
-    "adminAccessOnly": "Admin access only. Contact your system administrator for credentials."
+    "adminSubtitle": "管理ダッシュボードにアクセスするにはサインインしてください",
+    "adminAccessOnly": "管理者専用アクセスです。認証情報についてはシステム管理者にお問い合わせください。"
   },
   "signUp": {
     "title": "アカウントを作成",

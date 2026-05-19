@@ -314,7 +314,7 @@
     "winningDays": "Kazançlı günler",
     "losingDays": "Kayıplı günler",
     "totalLoss": "Toplam zarar",
-    "netPL": "Net P/L",
+    "netPL": "Net K/Z",
     "pl": "P/L",
     "bestDay": "En iyi gün",
     "worstDay": "En kötü gün",
@@ -383,7 +383,7 @@
     "loadError": "Profil yüklenemedi. Lütfen tekrar deneyin",
     "user": "Kullanıcı",
     "admin": "Yönetici",
-    "trader": "Trader",
+    "trader": "Yatırımcı",
     "personalInfo": "Kişisel bilgiler",
     "security": "Güvenlik",
     "verification": "Kimlik doğrulama",
@@ -462,9 +462,9 @@
     "notificationUpdateError": "Bildirim tercihleri güncellenemedi.",
     "notificationsUpdated": "Bildirimler Güncellendi",
     "notificationsUpdatedDesc": "Bildirim tercihleriniz kaydedildi.",
-    "personal": "Personal",
-    "sec": "Security",
-    "verify": "Verify"
+    "personal": "Kişisel",
+    "sec": "Güvenlik",
+    "verify": "Doğrula"
   },
   "support": {
     "title": "Destek",
@@ -537,7 +537,7 @@
     "showing": "Gösterilen",
     "trades": "İşlemler",
     "noTradesFound": "Filtrelere uygun işlem bulunamadı",
-    "ticket": "Ticket",
+    "ticket": "Talep",
     "time": "Zaman",
     "symbol": "Sembol",
     "type": "Tür",
@@ -797,9 +797,9 @@
     "account": "Hesap",
     "noNotifications": "Bildirim yok",
     "noNewNotifications": "Yeni bildirim yok",
-    "delete": "Delete notification",
-    "loadError": "Failed to load notifications",
-    "loadErrorHint": "Please refresh the page and try again.",
+    "delete": "Bildirimi sil",
+    "loadError": "Bildirimler yüklenemedi",
+    "loadErrorHint": "Lütfen sayfayı yenileyip tekrar deneyin.",
     "allCaughtUp": "Hepsi bu kadar!",
     "challenge": "Meydan okuma",
     "payout": "Çekim",
@@ -865,7 +865,7 @@
     "popular": "Popüler",
     "accountSize": "Hesap boyutu",
     "profitTarget": "Kâr hedefi",
-    "drawdown": "Drawdown",
+    "drawdown": "Düşüş",
     "profitSplit": "Kâr paylaşımı",
     "continue": "Devam et",
     "selectTradingPlatform": "İşlem platformunu seçin",
@@ -1058,7 +1058,7 @@
       "buyLong": "Al",
       "sellShort": "Sat",
       "long": "Long",
-      "short": "Short",
+      "short": "Sat",
       "price": "Fiyat",
       "market": "Piyasa",
       "leaveEmpty": "Piyasa emri için boş bırakın",
@@ -1102,7 +1102,7 @@
       "chg": "Chg%",
       "updated": "Güncellendi",
       "retry": "Tekrar dene",
-      "reconnecting": "Reconnecting"
+      "reconnecting": "Yeniden bağlanıyor"
     },
     "positions": {
       "title": "Açık pozisyonlar",
@@ -1136,8 +1136,8 @@
       "autoClosed": "Otomatik kapandı",
       "breach": "Kural ihlali",
       "breachPnL": "İhlal anı PnL (limit)",
-      "finalFill": "Final Fill",
-      "finalFillPnL": "Final Fill P/L"
+      "finalFill": "Son gerçekleşme",
+      "finalFillPnL": "Son Gerçekleşme K/Z"
     },
     "accountMetrics": {
       "balance": "Bakiye",
@@ -1216,12 +1216,12 @@
     "coupons": "Kuponlar",
     "crm": "CRM",
     "crmLeads": "CRM Leadleri",
-    "pipeline": "Pipeline",
+    "pipeline": "Akış",
     "ftdReport": "FTD Raporu",
     "calendar": "Takvim",
     "fundedAccounts": "Fonlanan Hesaplar",
-    "propServer": "Prop Server",
-    "crmApiKey": "CRM API Keys",
+    "propServer": "Prop Sunucusu",
+    "crmApiKey": "CRM API Anahtarları",
     "ordersTransactions": "Siparişler ve İşlemler",
     "orders": "Siparişler",
     "allTransactions": "Tüm İşlemler",
@@ -1385,7 +1385,7 @@
         "actions": "İşlemler"
       },
       "roles": {
-        "user": "Trader",
+        "user": "Yatırımcı",
         "admin": "Yönetici"
       },
       "actions": {
@@ -1423,7 +1423,7 @@
         "passed": "Geçti",
         "funded": "Fonlandı",
         "failed": "Başarısız",
-        "phase2": "Phase 2"
+        "phase2": "Aşama 2"
       },
       "searchPlaceholder": "Hesap numarası veya e-posta ile ara...",
       "filter": {
@@ -1458,14 +1458,14 @@
         "forceFail": "Zorla başarısız yap",
         "resetAccount": "Hesabı sıfırla",
         "moveToFunded": "Fonlanana taşı",
-        "pause": "Pause Account",
-        "resume": "Resume Account"
+        "pause": "Hesabı duraklat",
+        "resume": "Hesabı sürdür"
       },
       "dialog": {
         "title": "Hesap detayları",
         "accountId": "Hesap ID",
         "brokerLogin": "Broker girişi",
-        "trader": "Trader",
+        "trader": "Yatırımcı",
         "platform": "Platform",
         "challenge": "Meydan okuma",
         "phase": "Aşama",
@@ -1523,7 +1523,7 @@
         "rejected": "Reddedildi"
       },
       "table": {
-        "trader": "Trader",
+        "trader": "Yatırımcı",
         "amount": "Tutar",
         "method": "Yöntem",
         "status": "Durum",
@@ -1565,7 +1565,7 @@
         "refunded": "İade edildi"
       },
       "table": {
-        "trader": "Trader",
+        "trader": "Yatırımcı",
         "amount": "Tutar",
         "method": "Yöntem",
         "transactionId": "İşlem ID",
@@ -1838,7 +1838,7 @@
         "title": "Ödeme ayarları",
         "stripe": "Stripe",
         "stripeDesc": "Kredi kartı ödemelerini kabul et",
-        "stripeApiKey": "Stripe API Key",
+        "stripeApiKey": "Stripe API Anahtarı",
         "stripeApiKeyPlaceholder": "sk_live_...",
         "paypal": "PayPal",
         "paypalDesc": "PayPal ödemelerini kabul et",
@@ -1874,7 +1874,7 @@
         "payoutApprovedDesc": "Çekim onaylandığında gönderilir",
         "editTemplate": "Şablonu düzenle"
       },
-      "saveError": "Failed to save settings"
+      "saveError": "Ayarlar kaydedilemedi"
     },
     "riskMonitor": {
       "title": "Risk izleme",
@@ -1945,10 +1945,10 @@
         "port": "Port",
         "managerLogin": "Yönetici girişi",
         "managerPassword": "Yönetici şifresi",
-        "apiKey": "API Key / Client ID",
-        "apiSecret": "API Secret",
+        "apiKey": "API Anahtarı / İstemci Kimliği",
+        "apiSecret": "API Gizli Anahtarı",
         "demoServer": "Demo sunucu",
-        "description": "Configure a new broker server connection for trading accounts."
+        "description": "İşlem hesapları için yeni bir broker sunucusu bağlantısı yapılandırın."
       },
       "platforms": {
         "mt4": "MetaTrader 4",
@@ -1968,7 +1968,7 @@
         "platform": "Platform",
         "timezone": "Saat dilimi",
         "lastSync": "Son senkronizasyon",
-        "accounts": "Linked Accounts"
+        "accounts": "Bağlı hesaplar"
       },
       "actions": {
         "test": "Test"
@@ -1977,20 +1977,20 @@
         "title": "Broker sunucusu yok",
         "description": "İlk broker sunucunuzu ekleyerek işlem hesabı oluşturmayı başlatın"
       },
-      "confirmDelete": "Are you sure you want to delete this broker server?",
+      "confirmDelete": "Bu broker sunucusunu silmek istediğinizden emin misiniz?",
       "error": {
-        "description": "An error occurred while loading broker servers",
-        "retry": "Retry",
-        "title": "Failed to Load Broker Servers"
+        "description": "Broker sunucuları yüklenirken bir hata oluştu",
+        "retry": "Yeniden dene",
+        "title": "Broker sunucuları yüklenemedi"
       },
       "toast": {
-        "connectionError": "Failed to test connection",
-        "connectionFailed": "Connection test failed",
-        "connectionSuccess": "Connection test successful",
-        "createError": "Failed to add broker server",
-        "createSuccess": "Broker server added successfully",
-        "deleteError": "Failed to delete broker server",
-        "deleteSuccess": "Broker server deleted successfully"
+        "connectionError": "Bağlantı test edilemedi",
+        "connectionFailed": "Bağlantı testi başarısız",
+        "connectionSuccess": "Bağlantı testi başarılı",
+        "createError": "Broker sunucusu eklenemedi",
+        "createSuccess": "Broker sunucusu başarıyla eklendi",
+        "deleteError": "Broker sunucusu silinemedi",
+        "deleteSuccess": "Broker sunucusu başarıyla silindi"
       }
     },
     "scaling": {
@@ -2008,7 +2008,7 @@
         "all": "Tümü"
       },
       "table": {
-        "trader": "Trader",
+        "trader": "Yatırımcı",
         "currentToNew": "Mevcut → Yeni",
         "profitSplit": "Kâr paylaşımı",
         "profitAchieved": "Ulaşılan kâr",
@@ -2103,7 +2103,7 @@
       "deleteErrorMessage": "Bu meydan okuma silinemez",
       "deleteErrorDesc": "Mevcut işlem hesaplarına bağlı olduğu için silinemez",
       "understand": "Anladım",
-      "noChallenges": "No challenges available"
+      "noChallenges": "Kullanılabilir meydan okuma yok"
     },
     "apiKeys": {
       "title": "API Anahtarları",
@@ -2191,11 +2191,11 @@
     "securityDescription": "Güvenle işlem yapın. Platformumuz, hesabınızı ve işlem verilerinizi korumak için banka seviyesinde güvenlik kullanır.",
     "errors": {
       "invalidCredentials": "E-posta adresi veya şifre hatalı",
-      "adminPortalOnly": "This is the Admin portal. Please use the Trader portal to sign in.",
-      "adminCredentialsRequired": "Access denied. Admin credentials required."
+      "adminPortalOnly": "Bu, Yönetici portalıdır. Giriş yapmak için lütfen Trader portalını kullanın.",
+      "adminCredentialsRequired": "Erişim reddedildi. Yönetici kimlik bilgileri gerekli."
     },
-    "adminSubtitle": "Sign in to access the admin dashboard",
-    "adminAccessOnly": "Admin access only. Contact your system administrator for credentials."
+    "adminSubtitle": "Yönetici panosuna erişmek için giriş yapın",
+    "adminAccessOnly": "Yalnızca yönetici erişimi. Kimlik bilgileri için sistem yöneticinizle iletişime geçin."
   },
   "signUp": {
     "title": "Hesap oluştur",

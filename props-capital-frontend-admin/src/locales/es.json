@@ -307,7 +307,7 @@
     "lots": "Lotes",
     "equityCurve": "Curva de equity",
     "accountPerformance": "Rendimiento de la cuenta por período",
-    "equity": "Equity",
+    "equity": "Patrimonio",
     "balance": "Saldo",
     "startingBalance": "Saldo inicial",
     "dailyPL": "P/L diario",
@@ -451,7 +451,7 @@
     "challengeUpdatesDesc": "Actualizaciones de progreso y cambios de fase",
     "marketingEmails": "Correos de marketing",
     "marketingEmailsDesc": "Noticias, promociones y ofertas especiales",
-    "notif": "Notifications",
+    "notif": "Notificaciones",
     "passwordChangedDesc": "Su contraseña ha sido actualizada exitosamente.",
     "passwordChangeFailed": "Error al cambiar la contraseña",
     "passwordChangeError": "Ocurrió un error al cambiar su contraseña.",
@@ -463,8 +463,8 @@
     "notificationsUpdated": "Notificaciones actualizadas",
     "notificationsUpdatedDesc": "Sus preferencias de notificación han sido guardadas.",
     "personal": "Personal",
-    "sec": "Security",
-    "verify": "Verify"
+    "sec": "Seguridad",
+    "verify": "Verificar"
   },
   "support": {
     "title": "Soporte",
@@ -699,7 +699,7 @@
     "proceedToPhase2": "Avanzar a la Fase 2",
     "accountSummary": "Resumen de la cuenta",
     "balance": "Saldo",
-    "equity": "Equity",
+    "equity": "Patrimonio",
     "floatingPL": "P/L flotante",
     "totalProfit": "Ganancia total",
     "profitTarget": "Objetivo de ganancias",
@@ -797,9 +797,9 @@
     "account": "Cuenta",
     "noNotifications": "No hay notificaciones",
     "noNewNotifications": "No hay nuevas notificaciones",
-    "delete": "Delete notification",
-    "loadError": "Failed to load notifications",
-    "loadErrorHint": "Please refresh the page and try again.",
+    "delete": "Eliminar notificación",
+    "loadError": "Error al cargar las notificaciones",
+    "loadErrorHint": "Actualice la página e inténtelo de nuevo.",
     "allCaughtUp": "¡Estás al día!",
     "challenge": "Desafío",
     "payout": "Retiro",
@@ -1095,14 +1095,14 @@
       "all": "Todas",
       "favorites": "★",
       "forex": "Forex",
-      "crypto": "Crypto",
+      "crypto": "Cripto",
       "symbol": "Símbolo",
       "bid": "Bid",
       "ask": "Ask",
       "chg": "Chg%",
       "updated": "Actualizado",
       "retry": "Reintentar",
-      "reconnecting": "Reconnecting"
+      "reconnecting": "Reconectando"
     },
     "positions": {
       "title": "Posiciones abiertas",
@@ -1136,12 +1136,12 @@
       "autoClosed": "Cerrado automáticamente",
       "breach": "Infracción",
       "breachPnL": "PnL al infringir (al límite)",
-      "finalFill": "Final Fill",
-      "finalFillPnL": "Final Fill P/L"
+      "finalFill": "Llenado final",
+      "finalFillPnL": "P/G del llenado final"
     },
     "accountMetrics": {
       "balance": "Saldo",
-      "equity": "Equity",
+      "equity": "Patrimonio",
       "margin": "Margen",
       "freeMargin": "Margen libre",
       "marginLevel": "Nivel de margen",
@@ -1220,8 +1220,8 @@
     "ftdReport": "Informe FTD",
     "calendar": "Calendario",
     "fundedAccounts": "Cuentas Financiadas",
-    "propServer": "Prop Server",
-    "crmApiKey": "CRM API Keys",
+    "propServer": "Servidor Prop",
+    "crmApiKey": "Claves API de CRM",
     "ordersTransactions": "Pedidos y transacciones",
     "orders": "Pedidos",
     "allTransactions": "Todas las transacciones",
@@ -1423,7 +1423,7 @@
         "passed": "Aprobadas",
         "funded": "Financiadas",
         "failed": "Fallidas",
-        "phase2": "Phase 2"
+        "phase2": "Fase 2"
       },
       "searchPlaceholder": "Buscar por número de cuenta o correo...",
       "filter": {
@@ -1458,8 +1458,8 @@
         "forceFail": "Forzar fallo",
         "resetAccount": "Restablecer cuenta",
         "moveToFunded": "Mover a financiada",
-        "pause": "Pause Account",
-        "resume": "Resume Account"
+        "pause": "Pausar cuenta",
+        "resume": "Reanudar cuenta"
       },
       "dialog": {
         "title": "Detalles de la cuenta",
@@ -1473,7 +1473,7 @@
         "created": "Creado",
         "initialBalance": "Saldo inicial",
         "currentBalance": "Saldo actual",
-        "equity": "Equity",
+        "equity": "Patrimonio",
         "profit": "P/L",
         "totalTrades": "Total de operaciones",
         "violations": "Infracciones",
@@ -1834,7 +1834,7 @@
       "settingsSaveDescription": "La configuración se ha guardado correctamente",
       "tabs": {
         "general": "General",
-        "branding": "Branding",
+        "branding": "Marca",
         "payments": "Pagos",
         "integrations": "Integraciones",
         "email": "Correo"
@@ -1915,7 +1915,7 @@
       "table": {
         "account": "Cuenta",
         "balance": "Saldo",
-        "equity": "Equity",
+        "equity": "Patrimonio",
         "dailyDD": "DD diario",
         "maxDD": "DD máximo",
         "riskLevel": "Nivel de riesgo",
@@ -1964,10 +1964,10 @@
         "port": "Puerto",
         "managerLogin": "Login del manager",
         "managerPassword": "Contraseña del manager",
-        "apiKey": "API Key / Client ID",
-        "apiSecret": "API Secret",
+        "apiKey": "Clave API / ID de cliente",
+        "apiSecret": "Secreto de API",
         "demoServer": "Servidor demo",
-        "description": "Configure a new broker server connection for trading accounts."
+        "description": "Configure una nueva conexión de servidor de bróker para las cuentas de trading."
       },
       "platforms": {
         "mt4": "MetaTrader 4",
@@ -1987,7 +1987,7 @@
         "platform": "Plataforma",
         "timezone": "Zona horaria",
         "lastSync": "Última sincronización",
-        "accounts": "Linked Accounts"
+        "accounts": "Cuentas vinculadas"
       },
       "actions": {
         "test": "Probar"
@@ -1996,20 +1996,20 @@
         "title": "No hay servidores de bróker",
         "description": "Añade tu primer servidor de bróker para comenzar a crear cuentas de trading"
       },
-      "confirmDelete": "Are you sure you want to delete this broker server?",
+      "confirmDelete": "¿Está seguro de que desea eliminar este servidor de bróker?",
       "error": {
-        "description": "An error occurred while loading broker servers",
-        "retry": "Retry",
-        "title": "Failed to Load Broker Servers"
+        "description": "Se produjo un error al cargar los servidores de bróker",
+        "retry": "Reintentar",
+        "title": "Error al cargar los servidores de bróker"
       },
       "toast": {
-        "connectionError": "Failed to test connection",
-        "connectionFailed": "Connection test failed",
-        "connectionSuccess": "Connection test successful",
-        "createError": "Failed to add broker server",
-        "createSuccess": "Broker server added successfully",
-        "deleteError": "Failed to delete broker server",
-        "deleteSuccess": "Broker server deleted successfully"
+        "connectionError": "Error al probar la conexión",
+        "connectionFailed": "La prueba de conexión falló",
+        "connectionSuccess": "Prueba de conexión exitosa",
+        "createError": "Error al añadir el servidor de bróker",
+        "createSuccess": "Servidor de bróker añadido correctamente",
+        "deleteError": "Error al eliminar el servidor de bróker",
+        "deleteSuccess": "Servidor de bróker eliminado correctamente"
       }
     },
     "scaling": {
@@ -2122,7 +2122,7 @@
       "deleteErrorMessage": "Este desafío no se puede eliminar",
       "deleteErrorDesc": "No se puede eliminar porque está vinculado a cuentas de trading existentes",
       "understand": "Entendido",
-      "noChallenges": "No challenges available"
+      "noChallenges": "No hay desafíos disponibles"
     },
     "apiKeys": {
       "title": "Claves API",
@@ -2191,11 +2191,11 @@
     "securityDescription": "Opera con tranquilidad. Nuestra plataforma utiliza seguridad de nivel bancario para proteger tu cuenta y tus datos de trading.",
     "errors": {
       "invalidCredentials": "El correo electrónico o la contraseña no son correctos",
-      "adminPortalOnly": "This is the Admin portal. Please use the Trader portal to sign in.",
-      "adminCredentialsRequired": "Access denied. Admin credentials required."
+      "adminPortalOnly": "Este es el portal de administración. Use el portal de trader para iniciar sesión.",
+      "adminCredentialsRequired": "Acceso denegado. Se requieren credenciales de administrador."
     },
-    "adminSubtitle": "Sign in to access the admin dashboard",
-    "adminAccessOnly": "Admin access only. Contact your system administrator for credentials."
+    "adminSubtitle": "Inicie sesión para acceder al panel de administración",
+    "adminAccessOnly": "Solo acceso de administrador. Contacte con su administrador del sistema para obtener las credenciales."
   },
   "signUp": {
     "title": "Crear cuenta",
@@ -3248,7 +3248,7 @@
       "urgent": "Urgente"
     },
     "payment": {
-      "crypto": "Crypto",
+      "crypto": "Cripto",
       "card": "Tarjeta",
       "wire": "Transferencia",
       "other": "Otro",
@@ -3328,7 +3328,7 @@
       "allAgents": "Todos los Agentes",
       "tableTitle": "Primeros Depósitos",
       "leadName": "Nombre del Lead",
-      "email": "Email",
+      "email": "Correo electrónico",
       "phone": "Teléfono",
       "country": "País",
       "depositAmount": "Monto del Depósito",
@@ -3813,7 +3813,7 @@
       "currencySpecificPrices": "Precios por moneda",
       "currencyPricesHint": "Establezca precios personalizados para monedas específicas. Déjelo en blanco para usar precios convertidos automáticamente según los tipos de cambio.",
       "base": "BASE",
-      "autoPrice": "Auto: {{price}}",
+      "autoPrice": "Automático: {{price}}",
       "cancel": "Cancelar",
       "updatePackageBtn": "Actualizar paquete",
       "createPackageBtn": "Crear paquete"
