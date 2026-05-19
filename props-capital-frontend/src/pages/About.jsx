@@ -1,8 +1,9 @@
 import React from 'react';
-import { ArrowRight, Users, DollarSign, Globe, Award, Shield, TrendingUp, Clock, Star, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Users, DollarSign, Globe, Award, Shield, TrendingUp, Clock, CheckCircle2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
+import PartialStarRating from '@/components/PartialStarRating';
 
 const stats = [
   { icon: Users, value: '18,500+', label: 'Active Traders', color: 'text-blue-400', bg: 'bg-blue-500/10' },
@@ -246,22 +247,18 @@ const About = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className={`rounded-3xl p-8 lg:p-12 border text-center ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-slate-50 border-slate-200'}`}>
             <div className="flex items-center justify-center gap-2 mb-4">
-              {/* Official Trustpilot wordmark — green star + "Trustpilot" text on dark plate */}
-              <div className="bg-[#191919] px-4 py-2 rounded-md inline-flex items-center gap-2">
-                <svg viewBox="0 0 34 34" className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path
-                    fill="#00B67A"
-                    d="M33.523 11.969H20.722L16.768 0 12.8 11.97 0 11.957l10.367 7.404-3.966 11.956 10.367-7.392 10.355 7.392-3.954-11.956 10.354-7.392z"
-                  />
-                  <path d="m24.058 22.069-.89-2.707-6.4 4.564 7.29-1.857z" fill="#126849" />
-                </svg>
-                <span className="text-white font-semibold text-base tracking-tight">Trustpilot</span>
-              </div>
+              {/* Official Trustpilot wordmark — no background plate, sits directly on the card */}
+              <svg viewBox="0 0 34 34" className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path
+                  fill="#00B67A"
+                  d="M33.523 11.969H20.722L16.768 0 12.8 11.97 0 11.957l10.367 7.404-3.966 11.956 10.367-7.392 10.355 7.392-3.954-11.956 10.354-7.392z"
+                />
+                <path d="m24.058 22.069-.89-2.707-6.4 4.564 7.29-1.857z" fill="#126849" />
+              </svg>
+              <span className={`font-semibold text-lg tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>Trustpilot</span>
             </div>
-            <div className="flex items-center justify-center gap-1 mb-4">
-              {[1,2,3,4,5].map((i) => (
-                <Star key={i} className="w-8 h-8 text-[#00b67a] fill-[#00b67a]" />
-              ))}
+            <div className="flex items-center justify-center mb-4">
+              <PartialStarRating rating={4.8} size={32} />
             </div>
             <p className={`text-3xl lg:text-4xl font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>4.8 out of 5</p>
             <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>Based on 2,340+ reviews</p>
