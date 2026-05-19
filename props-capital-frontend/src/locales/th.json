@@ -448,9 +448,8 @@
     "newTicket": "ตั๋วใหม่",
     "createTicket": "สร้างตั๋วสนับสนุน",
     "subject": "หัวข้อ",
-            "ticketCreated":"สร้างตั๋วแล้ว",
-            "ticketCreatedDesc":"ตั๋วที่สร้างแล้ว",
-
+    "ticketCreated": "สร้างตั๋วแล้ว",
+    "ticketCreatedDesc": "ตั๋วที่สร้างแล้ว",
     "subjectPlaceholder": "คำอธิบายสั้นๆ เกี่ยวกับปัญหาของคุณ",
     "category": "หมวดหมู่",
     "select": "เลือก",
@@ -1742,7 +1741,7 @@
       "dialog": {
         "title": "เพิ่มเซิร์ฟเวอร์โบรกเกอร์",
         "serverName": "ชื่อเซิร์ฟเวอร์",
-        "serverNamePlaceholder": "เช่น Prop Capitals MT5 Demo",
+        "serverNamePlaceholder": "เช่น Prop Capitals MT5 เดโม",
         "platform": "แพลตฟอร์ม",
         "serverAddress": "ที่อยู่เซิร์ฟเวอร์",
         "serverAddressPlaceholder": "broker.server.com",
