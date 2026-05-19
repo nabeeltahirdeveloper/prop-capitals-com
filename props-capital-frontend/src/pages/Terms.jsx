@@ -92,6 +92,8 @@ const TermsPage = () => {
               <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>10. Contact Us</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
                 If you have any questions about these Terms, please contact us at:<br />
+                Company Name : BLUEHAVEN MANAGEMENT LTD.<br />
+
                 Email: legal@prop-capitals.com<br />
                 Address: 60 TOTTENHAM COURT ROAD, OFFICE 469, LONDON, ENGLAND
               </p>
