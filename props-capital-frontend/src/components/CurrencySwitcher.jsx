@@ -10,7 +10,7 @@ export default function CurrencySwitcher() {
   return (
     <Select value={currency} onValueChange={setCurrency}>
       <SelectTrigger
-        className={`w-[104px] rounded-full h-10 ${
+        className={`w-[92px] rounded-full h-10 ${
           isDark
             ? 'bg-white/10 border-white/10 text-gray-200'
             : 'bg-slate-100 border-slate-200 text-slate-700'
