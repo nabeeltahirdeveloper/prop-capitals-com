@@ -5,6 +5,7 @@ import { useTranslation } from '../contexts/LanguageContext';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import {
   Shield,
   Target,
@@ -27,6 +28,7 @@ import {
 
 export default function Rules() {
   const { t } = useTranslation();
+  const { cur } = useCurrency();
 
   const mainRules = [
     {
@@ -343,7 +345,7 @@ export default function Rules() {
                     {level.level}
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-white">{level.size}</p>
+                    <p className="text-2xl font-bold text-white">{cur(level.size)}</p>
                     <p className="text-sm text-slate-400">{t('rules.scalingPlan.accountSize')}</p>
                   </div>
                 </div>

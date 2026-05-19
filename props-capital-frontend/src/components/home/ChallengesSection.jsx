@@ -5,11 +5,13 @@ import { Button } from '@/components/ui/button';
 import { challengeTypes, accountSizes } from './data/mockData';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 
 const ChallengesSection = () => {
   const { isDark } = useTheme();
   const { user } = useAuth();
+  const { formatFee, formatSize } = useCurrency();
   const [selectedSize, setSelectedSize] = useState(3);
 
   return (
@@ -40,7 +42,7 @@ const ChallengesSection = () => {
                     : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                 }`}
               >
-                {size.label}
+                {formatSize(size.key)}
               </button>
             ))}
           </div>
@@ -82,10 +84,10 @@ const ChallengesSection = () => {
               {/* Price */}
               <div className={`text-center mb-5 py-4 rounded-2xl ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
                 <div className={`text-xs sm:text-sm line-through mb-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                  ${(challenge.prices[accountSizes[selectedSize].key] * 3).toFixed(0)}
+                  {formatFee(challenge.prices[accountSizes[selectedSize].key] * 3)}
                 </div>
                 <div className="text-amber-500 text-3xl sm:text-4xl font-black">
-                  ${challenge.prices[accountSizes[selectedSize].key]}
+                  {formatFee(challenge.prices[accountSizes[selectedSize].key])}
                 </div>
                 <div className="text-emerald-500 text-xs sm:text-sm font-semibold mt-1">70% OFF</div>
               </div>

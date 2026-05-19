@@ -4,6 +4,8 @@ import { Menu, X, ChevronDown, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
+import CurrencySwitcher from '@/components/CurrencySwitcher';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -60,7 +62,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-1">
+          <div className="hidden xl:flex items-center gap-1">
             {navLinks.map((link) => (
               <Link key={link.path} to={link.path}>
                 <Button
@@ -79,7 +81,7 @@ const Navbar = () => {
           </div>
 
           {/* Right Side */}
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden xl:flex items-center gap-2">
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
@@ -92,7 +94,10 @@ const Navbar = () => {
               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
 
-            <div className={`w-px h-6 ${isDark ? 'bg-white/10' : 'bg-slate-200'} mx-2`}></div>
+            <LanguageSwitcher />
+            <CurrencySwitcher />
+
+            <div className={`w-px h-6 ${isDark ? 'bg-white/10' : 'bg-slate-200'} mx-1`}></div>
 
             {!user && (
               <Link to="/login">
@@ -113,7 +118,7 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex items-center gap-2 lg:hidden">
+          <div className="flex items-center gap-2 xl:hidden">
             {/* Theme Toggle Mobile */}
             <button
               onClick={toggleTheme}
@@ -143,7 +148,7 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className={`lg:hidden border-t ${isDark
+        <div className={`xl:hidden border-t ${isDark
           ? 'bg-[#0a0d12]/98 backdrop-blur-xl border-white/10'
           : 'bg-white/98 backdrop-blur-xl border-slate-200'
           }`}>
@@ -163,6 +168,12 @@ const Navbar = () => {
                 </Button>
               </Link>
             ))}
+
+            <div className="flex items-center gap-2 px-2 py-3">
+              <LanguageSwitcher />
+              <CurrencySwitcher />
+            </div>
+
             {!user && (
               <Link to="/signin" onClick={() => setIsMobileMenuOpen(false)}>
                 <Button

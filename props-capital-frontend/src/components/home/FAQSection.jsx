@@ -9,10 +9,12 @@ import { faqData } from './data/mockData';
 import { HelpCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 
 const FAQSection = () => {
   const { isDark } = useTheme();
+  const { cur } = useCurrency();
 
   return (
     <section className={`py-20 lg:py-32 transition-colors duration-300 ${
@@ -47,11 +49,11 @@ const FAQSection = () => {
               }`}>
                 <div className="flex items-center gap-3">
                   <HelpCircle className="w-5 h-5 text-amber-500 flex-shrink-0" />
-                  {faq.question}
+                  {cur(faq.question)}
                 </div>
               </AccordionTrigger>
               <AccordionContent className={`pb-5 pl-8 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                {faq.answer}
+                {cur(faq.answer)}
               </AccordionContent>
             </AccordionItem>
           ))}

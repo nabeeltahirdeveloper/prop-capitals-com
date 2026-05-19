@@ -3,10 +3,12 @@ import { TrendingUp, Users, DollarSign, Star, Clock, Award, ArrowRight } from 'l
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { stats } from './data/mockData';
 
 const StatsSection = () => {
   const { isDark } = useTheme();
+  const { cur } = useCurrency();
 
   const statItems = [
     { icon: Users, label: 'Active Traders', value: stats.tradersCount, color: 'text-blue-500', bg: isDark ? 'bg-blue-500/10' : 'bg-blue-100' },
@@ -34,7 +36,7 @@ const StatsSection = () => {
               <div className={`w-12 h-12 ${stat.bg} rounded-xl flex items-center justify-center mx-auto mb-3`}>
                 <stat.icon className={`w-6 h-6 ${stat.color}`} />
               </div>
-              <div className={`text-2xl font-black mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{stat.value}</div>
+              <div className={`text-2xl font-black mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{cur(stat.value)}</div>
               <div className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{stat.label}</div>
             </div>
           ))}

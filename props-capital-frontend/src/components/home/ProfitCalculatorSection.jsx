@@ -3,9 +3,11 @@ import { Calculator, TrendingUp, DollarSign } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { accountSizes } from './data/mockData';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 const ProfitCalculatorSection = () => {
   const { isDark } = useTheme();
+  const { formatAmount, formatSize } = useCurrency();
   const [accountSizeIndex, setAccountSizeIndex] = useState(3); // Default to $50K
   const [profitRate, setProfitRate] = useState(5.7);
   
@@ -15,10 +17,10 @@ const ProfitCalculatorSection = () => {
     const monthlyProfit = selectedAccount.value * (profitRate / 100);
     const yearlyProfit = monthlyProfit * 12;
     return {
-      monthly: monthlyProfit.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }),
-      yearly: yearlyProfit.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
+      monthly: formatAmount(monthlyProfit),
+      yearly: formatAmount(yearlyProfit)
     };
-  }, [selectedAccount, profitRate]);
+  }, [selectedAccount, profitRate, formatAmount]);
 
   return (
     <section className={`py-20 transition-colors duration-300 ${
@@ -65,7 +67,7 @@ const ProfitCalculatorSection = () => {
                     </span>
                   </div>
                   <div className={`text-4xl font-black mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    {selectedAccount.label}
+                    {formatSize(selectedAccount.key)}
                   </div>
                   <Slider
                     value={[accountSizeIndex]}
@@ -85,7 +87,7 @@ const ProfitCalculatorSection = () => {
                         }`}
                         onClick={() => setAccountSizeIndex(index)}
                       >
-                        {size.label}
+                        {formatSize(size.key)}
                       </span>
                     ))}
                   </div>

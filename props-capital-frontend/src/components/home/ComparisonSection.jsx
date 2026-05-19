@@ -2,10 +2,12 @@ import React from 'react';
 import { Check, X } from 'lucide-react';
 import { comparisonData } from './data/mockData.js';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 
 const ComparisonSection = () => {
   const { isDark } = useTheme();
+  const { cur } = useCurrency();
 
   return (
     <section className={`py-20 lg:py-32 transition-colors duration-300 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
@@ -37,7 +39,7 @@ const ComparisonSection = () => {
                     <X className="w-4 h-4 text-red-400" />
                     <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>Others</span>
                   </div>
-                  <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{row.others}</p>
+                  <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{cur(row.others)}</p>
                 </div>
                 <div className={`rounded-xl p-3 ${
                   row.highlight 
@@ -49,7 +51,7 @@ const ComparisonSection = () => {
                     <span className="text-amber-500 text-xs font-semibold">Prop Capitals</span>
                   </div>
                   <p className={`text-sm ${row.highlight ? 'text-amber-500 font-semibold' : isDark ? 'text-white' : 'text-slate-900'}`}>
-                    {row.propCapitals}
+                    {cur(row.propCapitals)}
                   </p>
                 </div>
               </div>
@@ -90,13 +92,13 @@ const ComparisonSection = () => {
                 <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{row.feature}</span>
               </div>
               <div className={`p-5 border-l flex items-center justify-center ${isDark ? 'border-white/5' : 'border-slate-100'}`}>
-                <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>{row.others}</span>
+                <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>{cur(row.others)}</span>
               </div>
               <div className={`p-5 border-l flex items-center justify-center ${
                 isDark ? 'bg-amber-500/5 border-white/5' : 'bg-amber-50/50 border-slate-100'
               }`}>
                 <span className={`font-semibold ${row.highlight ? 'text-amber-500' : isDark ? 'text-white' : 'text-slate-900'}`}>
-                  {row.propCapitals}
+                  {cur(row.propCapitals)}
                 </span>
               </div>
             </div>

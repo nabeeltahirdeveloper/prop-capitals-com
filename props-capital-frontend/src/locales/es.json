@@ -11,7 +11,7 @@
       "badge": "Con la confianza de más de 15,000 traders en todo el mundo",
       "title": "Opera",
       "titleHighlight": "con nuestro capital",
-      "subtitle": "Demuestra tus habilidades y obtén hasta $200,000 en capital. Mantén hasta el 90% de las ganancias sin arriesgar tu propio dinero",
+      "subtitle": "Demuestra tus habilidades y obtén hasta â¬200,000 en capital. Mantén hasta el 90% de las ganancias sin arriesgar tu propio dinero",
       "cta": "Comenzar el desafío",
       "howItWorks": "Cómo funciona",
       "verified": "Empresa verificada",
@@ -96,7 +96,7 @@
       "titleHighlight": "tu carrera de trading",
       "subtitle": "Únete a miles de traders financiados y comienza a generar ingresos hoy. Sin riesgo de capital propio",
       "button": "Obtén capital ahora",
-      "footer": "Empieza desde solo $99 • Configuración instantánea • Soporte 24/7"
+      "footer": "Empieza desde solo â¬99 • Configuración instantánea • Soporte 24/7"
     },
     "footer": {
       "description": "La empresa de prop trading más amigable para traders. Opera con nuestro capital y obtén financiación",
@@ -339,7 +339,7 @@
     "businessDaysOnly": "Solo días hábiles",
     "minimumAmount": "Monto mínimo",
     "payoutFee": "Comisión de retiro",
-    "free": "$0 (Gratis)",
+    "free": "â¬0 (Gratis)",
     "freeValue": "Gratis",
     "availablePaymentMethods": "Métodos de pago disponibles",
     "bankTransfer": "Transferencia bancaria",
@@ -552,7 +552,7 @@
     "maxOverallDD": "DD total máximo",
     "fundedDesc": "Opera con nuestro capital",
     "profitSplit80": "Reparto de ganancias 80%",
-    "scalingDesc": "Crece hasta $2,000,000",
+    "scalingDesc": "Crece hasta â¬2,000,000",
     "profitSplit90": "Hasta 90% de reparto de ganancias",
     "currentPhaseRequirements": "Requisitos de la fase actual",
     "profitSplit": "Reparto de ganancias",
@@ -803,15 +803,15 @@
       "overallDrawdownWarning": "El drawdown total de la cuenta #{{accountNumber}} ha alcanzado {{overallPercent}}%. El límite permitido es {{maxPercent}}%. Por favor, presta atención a la gestión de riesgo",
       "dailyDrawdownViolation": "El drawdown diario de la cuenta #{{accountNumber}} ha alcanzado {{dailyPercent}}%. El límite permitido es {{maxPercent}}%. El trading quedará bloqueado hasta mañana",
       "overallDrawdownViolation": "El drawdown total de la cuenta #{{accountNumber}} ha alcanzado {{overallPercent}}%. El límite permitido es {{maxPercent}}%. El desafío ha sido descalificado",
-      "payoutApproved": "La solicitud de retiro por ${{amount}} ha sido aprobada. Se enviará en un plazo de 24–48 horas",
-      "payoutRejected": "La solicitud de retiro por ${{amount}} ha sido rechazada. Para más detalles, contacta con soporte",
-      "payoutProcessed": "El retiro por ${{amount}} ha sido procesado y la transferencia se ha completado",
-      "phase1Completed": "¡Felicidades! Has superado la Fase 1 del desafío de ${{accountSize}}. Continuemos con la Fase 2",
-      "phase2Completed": "¡Felicidades! Has superado la Fase 2 del desafío de ${{accountSize}}. ¡Tu cuenta está financiada!",
+      "payoutApproved": "La solicitud de retiro por â¬{{amount}} ha sido aprobada. Se enviará en un plazo de 24–48 horas",
+      "payoutRejected": "La solicitud de retiro por â¬{{amount}} ha sido rechazada. Para más detalles, contacta con soporte",
+      "payoutProcessed": "El retiro por â¬{{amount}} ha sido procesado y la transferencia se ha completado",
+      "phase1Completed": "¡Felicidades! Has superado la Fase 1 del desafío de â¬{{accountSize}}. Continuemos con la Fase 2",
+      "phase2Completed": "¡Felicidades! Has superado la Fase 2 del desafío de â¬{{accountSize}}. ¡Tu cuenta está financiada!",
       "tradingDaysMilestoneMet": "Has alcanzado {{tradingDays}} días de trading en la cuenta #{{accountNumber}}. ¡Has cumplido el requisito mínimo de días de trading!",
       "tradingDaysMilestone": "Has alcanzado {{tradingDays}} días de trading en la cuenta #{{accountNumber}}. ¡Excelente trabajo!",
-      "challengePurchased": "La compra del desafío {{challengeName}} se ha completado. La cuenta de trading #{{accountNumber}} está disponible con un saldo inicial de ${{startingBalance}}",
-      "accountScalingApproved": "La solicitud de escalado de la cuenta #{{accountNumber}} ha sido aprobada. El saldo aumentó de ${{oldBalance}} a ${{newBalance}}",
+      "challengePurchased": "La compra del desafío {{challengeName}} se ha completado. La cuenta de trading #{{accountNumber}} está disponible con un saldo inicial de â¬{{startingBalance}}",
+      "accountScalingApproved": "La solicitud de escalado de la cuenta #{{accountNumber}} ha sido aprobada. El saldo aumentó de â¬{{oldBalance}} a â¬{{newBalance}}",
       "accountScalingRejected": "La solicitud de escalado de la cuenta #{{accountNumber}} ha sido rechazada. Para más detalles, contacta con soporte",
       "newChallengeAvailable": "¡Echa un vistazo al nuevo desafío {{challengeName}}! Tamaño de cuenta {{accountSize}} en {{platform}}. Empecemos ahora",
       "accountViolationGeneric": "La cuenta #{{accountNumber}} ha infringido las reglas de trading{{violationPercent}}",
@@ -865,7 +865,7 @@
     "total": "Total",
     "processing": "Procesando...",
     "pay": "Pagar",
-    "payAmount": "Pagar ${{amount}}",
+    "payAmount": "Pagar â¬{{amount}}",
     "secureEncryption": "Cifrado SSL seguro de 256 bits",
     "minTradingDays": "Días mínimos de trading",
     "maxTradingDays": "Días máximos de trading",
@@ -1849,8 +1849,8 @@
         "twoPhase": "2 fases",
         "instantFunding": "Financiación instantánea",
         "platform": "Plataforma",
-        "accountSize": "Tamaño de cuenta ($)",
-        "price": "Precio ($)",
+        "accountSize": "Tamaño de cuenta (â¬)",
+        "price": "Precio (â¬)",
         "phase1ProfitTarget": "Objetivo de ganancias Fase 1 (%)",
         "phase2ProfitTarget": "Objetivo de ganancias Fase 2 (%)",
         "dailyDrawdown": "Pérdida diaria (%)",
@@ -2041,7 +2041,7 @@
           },
           "minimumPayout": {
             "q": "¿Hay un monto mínimo de retiro?",
-            "a": "El retiro mínimo es de $50. No hay un máximo, y puedes retirar el total de tus ganancias si lo deseas."
+            "a": "El retiro mínimo es de â¬50. No hay un máximo, y puedes retirar el total de tus ganancias si lo deseas."
           },
           "payoutProcessing": {
             "q": "¿Cuánto tarda el procesamiento del retiro?",
@@ -2054,7 +2054,7 @@
         "faqs": {
           "howScalingWorks": {
             "q": "¿Cómo funciona el plan de escalado?",
-            "a": "Cada vez que logras un 10% de ganancia en una cuenta financiada y completas 2 ciclos de retiro, el tamaño de la cuenta aumenta un 25%. Puedes escalar el capital de trading hasta $2,000,000."
+            "a": "Cada vez que logras un 10% de ganancia en una cuenta financiada y completas 2 ciclos de retiro, el tamaño de la cuenta aumenta un 25%. Puedes escalar el capital de trading hasta â¬2,000,000."
           },
           "profitSplitScaling": {
             "q": "¿Qué pasa con el reparto de ganancias al escalar?",
@@ -2153,7 +2153,7 @@
         "title": "Comprar el desafío",
         "description": "Elige el tamaño de cuenta y el tipo de evaluación, paga de forma segura y recibe tus credenciales al instante.",
         "details": {
-          "selectAccountSize": "Elige un tamaño de cuenta de $10K a $200K",
+          "selectAccountSize": "Elige un tamaño de cuenta de â¬10K a â¬200K",
           "chooseType": "Elige 1 fase / 2 fases / financiación instantánea",
           "receiveCredentials": "Recibe las credenciales en pocos minutos",
           "startTrading": "Empieza a operar de inmediato"
@@ -2176,7 +2176,7 @@
           "tradeWithCapital": "Opera con nuestro capital",
           "keepProfits": "Quédate con hasta el 90% de las ganancias",
           "biWeeklyPayout": "Retiros cada dos semanas",
-          "scaleUp": "Escala hasta $2,000,000"
+          "scaleUp": "Escala hasta â¬2,000,000"
         }
       }
     },
@@ -2345,7 +2345,7 @@
         "desc": "Recibe tus ganancias en 24–48 horas"
       },
       "scaleTo2M": {
-        "title": "Escala hasta $2M",
+        "title": "Escala hasta â¬2M",
         "desc": "Haz crecer tu cuenta con el plan de escalado"
       },
       "bestSupport": {
@@ -2407,8 +2407,8 @@
         "desc": "Se aplican reglas consistentes durante todo el proceso."
       },
       "scaleTo2M": {
-        "title": "Escala hasta $2M",
-        "desc": "Puedes aumentar tu capital de trading hasta $2,000,000."
+        "title": "Escala hasta â¬2M",
+        "desc": "Puedes aumentar tu capital de trading hasta â¬2,000,000."
       },
       "automaticUpgrades": {
         "title": "Mejoras automáticas",
@@ -2468,9 +2468,9 @@
     "ctaSection": {
       "title": "¿Listo para escalar?",
       "tradingCareer": "Lleva tu carrera de trading al siguiente nivel.",
-      "subtitle": "Empieza con cualquier tamaño de cuenta y escala tu capital de trading hasta $2,000,000.",
+      "subtitle": "Empieza con cualquier tamaño de cuenta y escala tu capital de trading hasta â¬2,000,000.",
       "getStartedNow": "Empezar ahora",
-      "footer": "Empieza desde $99 • Escala hasta $2M • Hasta 90% de reparto de ganancias"
+      "footer": "Empieza desde â¬99 • Escala hasta â¬2M • Hasta 90% de reparto de ganancias"
     }
   },
   "payoutsPage": {
@@ -2491,9 +2491,9 @@
       "profitSplit": "Reparto de ganancias",
       "best": "Mejor",
       "tiers": {
-        "tier1": "$10K - $25K",
-        "tier2": "$50K",
-        "tier3": "$100K+",
+        "tier1": "â¬10K - â¬25K",
+        "tier2": "â¬50K",
+        "tier3": "â¬100K+",
         "tier4": "Después de escalar"
       }
     },
@@ -2543,7 +2543,7 @@
     "payoutTerms": {
       "title": "Condiciones de retiro",
       "biWeekly": "Calendario de retiros quincenal (cada 14 días)",
-      "minimumAmount": "El retiro mínimo es de $50",
+      "minimumAmount": "El retiro mínimo es de â¬50",
       "noMaximum": "No hay límite máximo de retiro",
       "noFees": "Retiros sin comisiones por cualquier método",
       "firstPayout": "El primer retiro está disponible 14 días después de la financiación",
@@ -2602,13 +2602,13 @@
         "title": "Pérdida diaria (5%)",
         "description": "La pérdida máxima permitida en un día. Se calcula según el saldo al inicio del día y se reinicia a medianoche (hora del servidor).",
         "example": "Ejemplo:",
-        "exampleText": "Si tu saldo es de $50,000, tu límite de pérdida diaria es de $2,500."
+        "exampleText": "Si tu saldo es de â¬50,000, tu límite de pérdida diaria es de â¬2,500."
       },
       "maximumDrawdown": {
         "title": "Pérdida máxima (10%)",
         "description": "La pérdida máxima desde el saldo más alto alcanzado. Es un límite trailing que sigue el pico de la equity.",
         "example": "Ejemplo:",
-        "exampleText": "Si tu saldo máximo fue de $55,000, tu línea de pérdida máxima es de $49,500."
+        "exampleText": "Si tu saldo máximo fue de â¬55,000, tu línea de pérdida máxima es de â¬49,500."
       }
     },
     "allowedActions": {
@@ -2677,7 +2677,7 @@
     },
     "scalingPlan": {
       "title": "Plan de escalado",
-      "subtitle": "Haz crecer tu cuenta hasta $2,000,000",
+      "subtitle": "Haz crecer tu cuenta hasta â¬2,000,000",
       "accountSize": "Tamaño de cuenta",
       "profitSplit": "Reparto de ganancias",
       "howItWorks": {
@@ -2698,7 +2698,7 @@
       },
       "minimum": {
         "label": "Retiro mínimo",
-        "value": "$50"
+        "value": "â¬50"
       },
       "maximum": {
         "label": "Retiro máximo",
@@ -2710,7 +2710,7 @@
       },
       "fee": {
         "label": "Comisión de retiro",
-        "value": "$0 (gratis)"
+        "value": "â¬0 (gratis)"
       },
       "firstPayout": {
         "label": "Primer retiro",

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { useTranslation } from '../contexts/LanguageContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -24,6 +25,7 @@ import {
 
 export default function ScalingPlan() {
   const { t } = useTranslation();
+  const { cur } = useCurrency();
 
   const scalingLevels = [
     { level: 1, accountSize: 50000, profitSplit: 80, requirement: t('scalingPlan.requirements.passEvaluation') },
@@ -90,7 +92,7 @@ export default function ScalingPlan() {
             >
               {t('scalingPlan.title')}
               <span className="block bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                $2,000,000
+                {cur('$2,000,000')}
               </span>
             </motion.h1>
 
@@ -133,7 +135,7 @@ export default function ScalingPlan() {
             ].map((stat, i) => (
               <div key={i} className="text-center">
                 <p className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  {stat.value}
+                  {cur(stat.value)}
                 </p>
                 <p className="text-slate-400 mt-2">{stat.label}</p>
               </div>
@@ -250,7 +252,7 @@ export default function ScalingPlan() {
                     <span className="text-slate-400 text-sm">{t('scalingPlan.roadmap.level')} {level.level}</span>
                   </div>
                   <p className="text-lg md:text-xl font-bold text-white mb-1">
-                    ${level.accountSize.toLocaleString()}
+                    {cur(`$${level.accountSize.toLocaleString()}`)}
                   </p>
                   <p className="text-emerald-400 font-semibold text-sm">
                     {level.profitSplit}% {t('scalingPlan.roadmap.split')}
@@ -276,7 +278,7 @@ export default function ScalingPlan() {
                   <div>
                     <p className="text-slate-400 text-sm">{t('scalingPlan.roadmap.ultimateGoal')}</p>
                     <p className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                      $2,000,000
+                      {cur('$2,000,000')}
                     </p>
                     <p className="text-slate-400 text-sm">{t('scalingPlan.roadmap.withProfitSplit')}</p>
                   </div>

@@ -3,22 +3,25 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Check, TrendingUp, Shield, Zap, Target, Award, DollarSign, BarChart3 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 
 const HowItWorksPage = () => {
   const { isDark } = useTheme();
+  const { cur } = useCurrency();
   const [activeStep, setActiveStep] = useState(0);
   const [selectedAccountSize, setSelectedAccountSize] = useState(3);
   const [animatedPrice, setAnimatedPrice] = useState(1.0856);
   const [tradeProfit, setTradeProfit] = useState(0);
 
   const accountSizes = [
-    { label: '$5K', value: 5000 },
-    { label: '$10K', value: 10000 },
-    { label: '$25K', value: 25000 },
-    { label: '$50K', value: 50000 },
-    { label: '$100K', value: 100000 },
-    { label: '$200K', value: 200000 }
+    { label: '€5K', value: 5000 },
+    { label: '€10K', value: 10000 },
+    { label: '€20K', value: 20000 },
+    { label: '€30K', value: 30000 },
+    { label: '€50K', value: 50000 },
+    { label: '€100K', value: 100000 },
+    { label: '€200K', value: 200000 }
   ];
 
   // Simulate live price animation
@@ -47,7 +50,7 @@ const HowItWorksPage = () => {
     {
       number: "01",
       title: "Choose Your Challenge",
-      description: "Select between our 1-Step or 2-Step evaluation. Pick your account size from $5K to $200K.",
+      description: "Select between our 1-Step or 2-Step evaluation. Pick your account size from €5K to €200K.",
       icon: Target,
       color: "amber"
     },
@@ -90,7 +93,7 @@ const HowItWorksPage = () => {
               Your Path to <span className="bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">Funded Trading</span>
             </h1>
             <p className={`text-base lg:text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-              Prop Capitals provides talented traders with the capital they need. Here's how you can start trading with up to $200,000.
+              Prop Capitals provides talented traders with the capital they need. Here's how you can start trading with up to {cur('$200,000')}.
             </p>
           </div>
 
@@ -101,7 +104,7 @@ const HowItWorksPage = () => {
               <div className="hidden sm:block absolute -top-4 lg:-top-8 -left-2 lg:-left-8 bg-emerald-500 text-white px-3 lg:px-4 py-1.5 lg:py-2 rounded-lg shadow-xl z-20 animate-bounce">
                 <div className="flex items-center gap-1 lg:gap-2">
                   <TrendingUp className="w-4 h-4 lg:w-5 lg:h-5" />
-                  <span className="font-bold text-sm lg:text-base">+$2,450</span>
+                  <span className="font-bold text-sm lg:text-base">+{cur('$2,450')}</span>
                 </div>
               </div>
               
@@ -202,7 +205,7 @@ const HowItWorksPage = () => {
                         {/* Trade Indicator */}
                         <div className="absolute top-2 lg:top-4 right-2 lg:right-4 bg-emerald-500/20 border border-emerald-500/50 rounded-lg px-2 lg:px-3 py-1 lg:py-2">
                           <div className="text-emerald-400 text-[10px] lg:text-xs">BUY @ 1.0842</div>
-                          <div className="text-emerald-400 font-bold text-sm lg:text-base">+${tradeProfit.toFixed(0)}</div>
+                          <div className="text-emerald-400 font-bold text-sm lg:text-base">+{cur('$')}{tradeProfit.toFixed(0)}</div>
                         </div>
                       </div>
                     </div>
@@ -214,8 +217,8 @@ const HowItWorksPage = () => {
                         isDark ? 'bg-[#0a0d12] border-white/5' : 'bg-slate-50 border-slate-200'
                       }`}>
                         <div className={`text-[10px] lg:text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Account Balance</div>
-                        <div className={`text-lg lg:text-2xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>$52,450</div>
-                        <div className="text-emerald-400 text-xs lg:text-sm">+$2,450 (4.9%)</div>
+                        <div className={`text-lg lg:text-2xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{cur('$52,450')}</div>
+                        <div className="text-emerald-400 text-xs lg:text-sm">+{cur('$2,450')} (4.9%)</div>
                       </div>
 
                       {/* Quick Trade */}
@@ -248,14 +251,14 @@ const HowItWorksPage = () => {
                               <div className={`text-xs lg:text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>EUR/USD</div>
                               <div className={`text-[10px] lg:text-xs ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>BUY 1.00</div>
                             </div>
-                            <div className="text-emerald-400 font-semibold text-xs lg:text-sm">+$2,450</div>
+                            <div className="text-emerald-400 font-semibold text-xs lg:text-sm">+{cur('$2,450')}</div>
                           </div>
                           <div className="flex items-center justify-between py-1.5 lg:py-2">
                             <div>
                               <div className={`text-xs lg:text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>GBP/USD</div>
                               <div className={`text-[10px] lg:text-xs ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>BUY 0.50</div>
                             </div>
-                            <div className="text-emerald-400 font-semibold text-xs lg:text-sm">+$890</div>
+                            <div className="text-emerald-400 font-semibold text-xs lg:text-sm">+{cur('$890')}</div>
                           </div>
                         </div>
                       </div>
@@ -314,7 +317,7 @@ const HowItWorksPage = () => {
 
                 {/* Content */}
                 <h3 className={`text-lg lg:text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{step.title}</h3>
-                <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{step.description}</p>
+                <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{cur(step.description)}</p>
 
                 {/* Connector Line (desktop only) */}
                 {index < 3 && (

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Star, ChevronLeft, ChevronRight, ExternalLink, Quote } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import PartialStarRating from '@/components/PartialStarRating';
 
 const trustpilotReviews = [
@@ -171,7 +172,9 @@ const StarRating = ({ rating }) => (
   </div>
 );
 
-const ReviewCard = ({ review }) => (
+const ReviewCard = ({ review }) => {
+  const { cur } = useCurrency();
+  return (
   <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 h-full flex flex-col">
     {/* Header */}
     <div className="flex items-start justify-between mb-4">
@@ -198,8 +201,8 @@ const ReviewCard = ({ review }) => (
     <StarRating rating={review.rating} />
 
     {/* Review Content */}
-    <h4 className="font-bold text-gray-900 mt-3 mb-2">{review.title}</h4>
-    <p className="text-gray-600 text-sm leading-relaxed flex-1">{review.review}</p>
+    <h4 className="font-bold text-gray-900 mt-3 mb-2">{cur(review.title)}</h4>
+    <p className="text-gray-600 text-sm leading-relaxed flex-1">{cur(review.review)}</p>
 
     {/* Footer */}
     <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100">
@@ -213,7 +216,8 @@ const ReviewCard = ({ review }) => (
       <span className="text-gray-500 text-xs">Posted on Trustpilot</span>
     </div>
   </div>
-);
+  );
+};
 
 const TrustpilotSection = () => {
   const { isDark } = useTheme();

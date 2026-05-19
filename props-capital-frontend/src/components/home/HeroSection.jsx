@@ -3,10 +3,12 @@ import { ArrowRight, Star, Play, TrendingUp, Users, DollarSign, Clock } from 'lu
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import Globe from 'react-globe.gl';
 
 const HeroSection = () => {
   const { isDark } = useTheme();
+  const { cur } = useCurrency();
   const globeRef = useRef();
   const [globeReady, setGlobeReady] = useState(false);
   const [globeDimensions, setGlobeDimensions] = useState({ width: 520, height: 520 });
@@ -183,7 +185,7 @@ const HeroSection = () => {
 
             <p className={`text-base lg:text-lg mb-8 max-w-xl mx-auto lg:mx-0 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
               Join 18,500+ traders worldwide who are already trading with Prop Capitals funding. 
-              Get funded up to $200K and keep up to 90% of your profits.
+              Get funded up to {cur('$200K')} and keep up to 90% of your profits.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10">
@@ -213,7 +215,7 @@ const HeroSection = () => {
                     <stat.icon className="w-5 h-5 lg:w-6 lg:h-6 text-amber-500" />
                   </div>
                   <div>
-                    <div className={`text-lg lg:text-xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{stat.value}</div>
+                    <div className={`text-lg lg:text-xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{cur(stat.value)}</div>
                     <div className={`text-xs lg:text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{stat.label}</div>
                   </div>
                 </div>
@@ -320,7 +322,7 @@ const HeroSection = () => {
                     <TrendingUp className="w-5 h-5 text-emerald-500" />
                   </div>
                   <div>
-                    <div className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>$200K</div>
+                    <div className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{cur('$200K')}</div>
                     <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Max Funding</div>
                   </div>
                 </div>

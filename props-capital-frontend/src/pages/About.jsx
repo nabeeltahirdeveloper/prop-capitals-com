@@ -3,6 +3,7 @@ import { ArrowRight, Users, DollarSign, Globe, Award, Shield, TrendingUp, Clock,
 import { Button } from '../components/ui/button';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import PartialStarRating from '@/components/PartialStarRating';
 
 const stats = [
@@ -51,6 +52,7 @@ const team = [
 
 const About = () => {
   const { isDark } = useTheme();
+  const { cur } = useCurrency();
 
   return (
     <div className={`min-h-screen pt-20 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
@@ -86,7 +88,7 @@ const About = () => {
                 <div className={`w-12 h-12 ${stat.bg} rounded-xl flex items-center justify-center mx-auto mb-3`}>
                   <stat.icon className={`w-6 h-6 ${stat.color}`} />
                 </div>
-                <div className={`text-2xl lg:text-3xl font-black mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{stat.value}</div>
+                <div className={`text-2xl lg:text-3xl font-black mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{cur(stat.value)}</div>
                 <div className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{stat.label}</div>
               </div>
             ))}
@@ -115,7 +117,7 @@ const About = () => {
                 {['Funded accounts up to $200,000', 'Keep up to 90% of your profits', 'No risk to your personal capital'].map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
-                    <span className={isDark ? 'text-gray-300' : 'text-slate-700'}>{item}</span>
+                    <span className={isDark ? 'text-gray-300' : 'text-slate-700'}>{cur(item)}</span>
                   </div>
                 ))}
               </div>
@@ -198,7 +200,7 @@ const About = () => {
                     <div className={`rounded-2xl p-5 border inline-block ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-slate-50 border-slate-200'}`}>
                       <span className="text-amber-500 font-bold text-xl">{item.year}</span>
                       <h3 className={`font-bold text-lg mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{item.title}</h3>
-                      <p className={`text-sm mt-2 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{item.description}</p>
+                      <p className={`text-sm mt-2 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{cur(item.description)}</p>
                     </div>
                   </div>
                 </div>
