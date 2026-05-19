@@ -4,6 +4,8 @@ import { Menu, X, ChevronDown, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
+import CurrencySwitcher from '@/components/CurrencySwitcher';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -92,6 +94,9 @@ const Navbar = () => {
               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
 
+            <LanguageSwitcher />
+            <CurrencySwitcher />
+
             <div className={`w-px h-6 ${isDark ? 'bg-white/10' : 'bg-slate-200'} mx-2`}></div>
 
             {!user && (
@@ -163,6 +168,12 @@ const Navbar = () => {
                 </Button>
               </Link>
             ))}
+
+            <div className="flex items-center gap-2 px-2 py-3">
+              <LanguageSwitcher />
+              <CurrencySwitcher />
+            </div>
+
             {!user && (
               <Link to="/signin" onClick={() => setIsMobileMenuOpen(false)}>
                 <Button
