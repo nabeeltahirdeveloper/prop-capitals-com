@@ -203,12 +203,24 @@ export default function CRMCalendar() {
       return;
     }
 
+    // Create a date object using the local timezone to ensure correct UTC conversion
+    const [year, month, day] = newMeeting.date.split("-").map(Number);
+    const [hours, minutes] = newMeeting.time.split(":").map(Number);
+    const localDate = new Date(year, month - 1, day, hours, minutes);
+
+    if (localDate < new Date()) {
+      toast({
+        title: t("common.error"),
+        description: t("crm.crmCalendar.errorPastDateTime", {
+          defaultValue: "Cannot schedule a meeting in the past",
+        }),
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSaving(true);
     try {
-      // Create a date object using the local timezone to ensure correct UTC conversion
-      const [year, month, day] = newMeeting.date.split("-").map(Number);
-      const [hours, minutes] = newMeeting.time.split(":").map(Number);
-      const localDate = new Date(year, month - 1, day, hours, minutes);
       const startTime = localDate.toISOString();
 
       await apiPost("/crm/meetings", {
@@ -394,11 +406,10 @@ export default function CRMCalendar() {
         <Button
           variant={viewMode === "calendar" ? "secondary" : "ghost"}
           size="sm"
-          className={`h-8 px-4 rounded-md transition-all ${
-            viewMode === "calendar"
+          className={`h-8 px-4 rounded-md transition-all ${viewMode === "calendar"
               ? "bg-card text-foreground"
               : "text-muted-foreground"
-          }`}
+            }`}
           onClick={() => setViewMode("calendar")}
         >
           <CalendarDays className="w-4 h-4 mr-2" />
@@ -409,11 +420,10 @@ export default function CRMCalendar() {
         <Button
           variant={viewMode === "list" ? "secondary" : "ghost"}
           size="sm"
-          className={`h-8 px-4 rounded-md transition-all ${
-            viewMode === "list"
+          className={`h-8 px-4 rounded-md transition-all ${viewMode === "list"
               ? "bg-card text-foreground"
               : "text-muted-foreground"
-          }`}
+            }`}
           onClick={() => setViewMode("list")}
         >
           <List className="w-4 h-4 mr-2" />
@@ -453,9 +463,8 @@ export default function CRMCalendar() {
             onClick={() => setSelectedDate(cloneDay)}
           >
             <span
-              className={`text-sm font-semibold ${
-                isSelected ? "text-amber-600" : "text-foreground"
-              }`}
+              className={`text-sm font-semibold ${isSelected ? "text-amber-600" : "text-foreground"
+                }`}
             >
               {formattedDate}
             </span>
@@ -716,15 +725,15 @@ export default function CRMCalendar() {
                         >
                           {meeting.type === "Call"
                             ? t("crm.crmCalendar.call", {
-                                defaultValue: "Call",
-                              })
+                              defaultValue: "Call",
+                            })
                             : meeting.type === "Meeting"
                               ? t("crm.crmCalendar.meeting", {
-                                  defaultValue: "Meeting",
-                                })
+                                defaultValue: "Meeting",
+                              })
                               : t("crm.crmCalendar.other", {
-                                  defaultValue: "Other",
-                                })}
+                                defaultValue: "Other",
+                              })}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-muted-foreground font-medium">
@@ -736,27 +745,26 @@ export default function CRMCalendar() {
                       <td className="px-6 py-4">
                         <span
                           className={`px-2.5 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wider
-                                                ${
-                                                  meeting.status === "SCHEDULED"
-                                                    ? "bg-blue-50 border-blue-200 text-blue-600"
-                                                    : meeting.status ===
-                                                        "COMPLETED"
-                                                      ? "bg-emerald-50 border-emerald-200 text-emerald-600"
-                                                      : "bg-red-50 border-red-200 text-red-600"
-                                                }
+                                                ${meeting.status === "SCHEDULED"
+                              ? "bg-blue-50 border-blue-200 text-blue-600"
+                              : meeting.status ===
+                                "COMPLETED"
+                                ? "bg-emerald-50 border-emerald-200 text-emerald-600"
+                                : "bg-red-50 border-red-200 text-red-600"
+                            }
                                             `}
                         >
                           {meeting.status === "SCHEDULED"
                             ? t("crm.crmCalendar.scheduled", {
-                                defaultValue: "Scheduled",
-                              })
+                              defaultValue: "Scheduled",
+                            })
                             : meeting.status === "COMPLETED"
                               ? t("crm.crmCalendar.completed", {
-                                  defaultValue: "Completed",
-                                })
+                                defaultValue: "Completed",
+                              })
                               : t("crm.crmCalendar.cancelled", {
-                                  defaultValue: "Cancelled",
-                                })}
+                                defaultValue: "Cancelled",
+                              })}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
@@ -865,6 +873,7 @@ export default function CRMCalendar() {
                     type="date"
                     className="pl-10 bg-muted border-border text-foreground h-11 no-calendar-icon"
                     value={newMeeting.date}
+                    min={format(new Date(), "yyyy-MM-dd")}
                     onChange={(e) =>
                       setNewMeeting({ ...newMeeting, date: e.target.value })
                     }
@@ -885,6 +894,7 @@ export default function CRMCalendar() {
                     type="time"
                     className="pl-10 bg-muted border-border text-foreground h-11 no-calendar-icon"
                     value={newMeeting.time}
+                    min={newMeeting.date === format(new Date(), "yyyy-MM-dd") ? format(new Date(), "HH:mm") : undefined}
                     onChange={(e) =>
                       setNewMeeting({ ...newMeeting, time: e.target.value })
                     }
