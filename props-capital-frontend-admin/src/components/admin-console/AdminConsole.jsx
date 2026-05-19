@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { adminConsoleApi } from '@/api/adminConsole';
+import { useTranslation } from "../../contexts/LanguageContext";
 // Imports kept for the temporarily-disabled sections so they can be re-enabled easily.
 // import DashboardSection from './DashboardSection';
 // import OrdersSection from './OrdersSection';
@@ -108,11 +109,12 @@ export default function AdminConsole() {
 }
 
 function DisabledSectionNotice({ section }) {
+  const { t } = useTranslation();
   return (
     <div className="glass-panel p-6">
-      <h2 className="text-2xl font-bold gradient-text mb-2">Section unavailable</h2>
+      <h2 className="text-2xl font-bold gradient-text mb-2">{t("adminConsole.settings.sectionUnavailable", { defaultValue: "Section unavailable" })}</h2>
       <p>
-        The <strong>{section}</strong> section is temporarily disabled.
+        {t("adminConsole.settings.sectionDisabledPrefix", { defaultValue: "The" })} <strong>{section}</strong> {t("adminConsole.settings.sectionDisabledSuffix", { defaultValue: "section is temporarily disabled." })}
       </p>
     </div>
   );
@@ -120,6 +122,7 @@ function DisabledSectionNotice({ section }) {
 
 // Placeholder components for sections not yet fully implemented
 function AnalyticsSection() {
+  const { t } = useTranslation();
   const [days, setDays] = React.useState(30);
   const [revenueData, setRevenueData] = React.useState(null);
   const [packageData, setPackageData] = React.useState(null);
@@ -169,7 +172,7 @@ function AnalyticsSection() {
         labels,
         datasets: [
           {
-            label: 'Revenue (USD)',
+            label: t("adminConsole.analytics.revenueUsd", { defaultValue: "Revenue (USD)" }),
             data: revenue,
             borderColor: '#D97706',
             backgroundColor: 'rgba(217, 119, 6, 0.1)',
@@ -177,7 +180,7 @@ function AnalyticsSection() {
             tension: 0.3,
           },
           {
-            label: 'Payouts (USD)',
+            label: t("adminConsole.analytics.payoutsUsd", { defaultValue: "Payouts (USD)" }),
             data: payouts,
             borderColor: '#7c3aed',
             backgroundColor: 'rgba(124, 58, 237, 0.08)',
@@ -250,41 +253,41 @@ function AnalyticsSection() {
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-3">
-        <h2 className="text-3xl font-bold gradient-text">Advanced Analytics</h2>
+        <h2 className="text-3xl font-bold gradient-text">{t("adminConsole.analytics.title", { defaultValue: "Advanced Analytics" })}</h2>
         <select
           className="search-input p-2 rounded-lg"
           value={days}
           onChange={(e) => setDays(Number(e.target.value))}
         >
-          <option value={7}>Last 7 days</option>
-          <option value={30}>Last 30 days</option>
-          <option value={90}>Last 90 days</option>
-          <option value={365}>Last year</option>
+          <option value={7}>{t("adminConsole.analytics.last7Days", { defaultValue: "Last 7 days" })}</option>
+          <option value={30}>{t("adminConsole.analytics.last30Days", { defaultValue: "Last 30 days" })}</option>
+          <option value={90}>{t("adminConsole.analytics.last90Days", { defaultValue: "Last 90 days" })}</option>
+          <option value={365}>{t("adminConsole.analytics.lastYear", { defaultValue: "Last year" })}</option>
         </select>
       </div>
 
       {/* Top-line totals for the selected window */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="glass-card p-4 rounded-xl">
-          <p className="text-sm text-gray-500 mb-1">Revenue ({days}d)</p>
+          <p className="text-sm text-gray-500 mb-1">{t("adminConsole.analytics.revenueWindow", { defaultValue: "Revenue ({{days}}d)", days })}</p>
           <p className="text-2xl font-bold">${totalRevenue.toLocaleString('en-US', { maximumFractionDigits: 0 })}</p>
         </div>
         <div className="glass-card p-4 rounded-xl">
-          <p className="text-sm text-gray-500 mb-1">Payouts ({days}d)</p>
+          <p className="text-sm text-gray-500 mb-1">{t("adminConsole.analytics.payoutsWindow", { defaultValue: "Payouts ({{days}}d)", days })}</p>
           <p className="text-2xl font-bold">${totalPayouts.toLocaleString('en-US', { maximumFractionDigits: 0 })}</p>
         </div>
         <div className="glass-card p-4 rounded-xl">
-          <p className="text-sm text-gray-500 mb-1">Orders ({days}d)</p>
+          <p className="text-sm text-gray-500 mb-1">{t("adminConsole.analytics.ordersWindow", { defaultValue: "Orders ({{days}}d)", days })}</p>
           <p className="text-2xl font-bold">{totalOrders.toLocaleString()}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="glass-panel p-6">
-          <h3 className="text-xl font-semibold mb-4">Revenue & Payouts</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("adminConsole.analytics.revenueAndPayouts", { defaultValue: "Revenue & Payouts" })}</h3>
           <div className="chart-container" style={{ height: 320 }}>
             {loading && !revenueData ? (
-              <p className="text-sm text-gray-500">Loading chart…</p>
+              <p className="text-sm text-gray-500">{t("adminConsole.analytics.loadingChart", { defaultValue: "Loading chart…" })}</p>
             ) : (
               <canvas ref={revenueCanvasRef}></canvas>
             )}
@@ -292,14 +295,14 @@ function AnalyticsSection() {
         </div>
 
         <div className="glass-panel p-6">
-          <h3 className="text-xl font-semibold mb-4">Package Distribution</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("adminConsole.analytics.packageDistribution", { defaultValue: "Package Distribution" })}</h3>
           <div className="chart-container" style={{ height: 320 }}>
             {loading && !packageData ? (
-              <p className="text-sm text-gray-500">Loading chart…</p>
+              <p className="text-sm text-gray-500">{t("adminConsole.analytics.loadingChart", { defaultValue: "Loading chart…" })}</p>
             ) : packageData?.buckets?.length ? (
               <canvas ref={packageCanvasRef}></canvas>
             ) : (
-              <p className="text-sm text-gray-500">No package sales in this window yet.</p>
+              <p className="text-sm text-gray-500">{t("adminConsole.analytics.noPackageSales", { defaultValue: "No package sales in this window yet." })}</p>
             )}
           </div>
         </div>
@@ -308,14 +311,14 @@ function AnalyticsSection() {
       {/* Top packages table */}
       {packageData?.buckets?.length > 0 && (
         <div className="glass-panel p-6 mt-6">
-          <h3 className="text-xl font-semibold mb-4">Top Packages</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("adminConsole.analytics.topPackages", { defaultValue: "Top Packages" })}</h3>
           <table className="w-full text-sm">
             <thead>
               <tr>
-                <th className="text-left py-2">Package</th>
-                <th className="text-right py-2">Account Size</th>
-                <th className="text-right py-2">Orders</th>
-                <th className="text-right py-2">Revenue</th>
+                <th className="text-left py-2">{t("adminConsole.analytics.package", { defaultValue: "Package" })}</th>
+                <th className="text-right py-2">{t("adminConsole.analytics.accountSize", { defaultValue: "Account Size" })}</th>
+                <th className="text-right py-2">{t("adminConsole.analytics.orders", { defaultValue: "Orders" })}</th>
+                <th className="text-right py-2">{t("adminConsole.analytics.revenue", { defaultValue: "Revenue" })}</th>
               </tr>
             </thead>
             <tbody>
@@ -336,44 +339,45 @@ function AnalyticsSection() {
 }
 
 function SettingsSection() {
+  const { t } = useTranslation();
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold gradient-text">System Settings</h2>
+        <h2 className="text-3xl font-bold gradient-text">{t("adminConsole.settings.title", { defaultValue: "System Settings" })}</h2>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="glass-panel p-6">
-          <h3 className="text-xl font-semibold mb-4">General Settings</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("adminConsole.settings.generalSettings", { defaultValue: "General Settings" })}</h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Platform Name</label>
+              <label className="block text-sm font-medium mb-2">{t("adminConsole.settings.platformName", { defaultValue: "Platform Name" })}</label>
               <input type="text" defaultValue="Prop Capitals" className="search-input p-3 rounded-lg w-full" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Admin Email</label>
+              <label className="block text-sm font-medium mb-2">{t("adminConsole.settings.adminEmail", { defaultValue: "Admin Email" })}</label>
               <input type="email" defaultValue="admin@prop-capitals.com" className="search-input p-3 rounded-lg w-full" />
             </div>
-            <button className="action-btn btn-primary">Save Changes</button>
+            <button className="action-btn btn-primary">{t("adminConsole.settings.saveChanges", { defaultValue: "Save Changes" })}</button>
           </div>
         </div>
 
         <div className="glass-panel p-6">
-          <h3 className="text-xl font-semibold mb-4">Security Settings</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("adminConsole.settings.securitySettings", { defaultValue: "Security Settings" })}</h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span>Two-Factor Authentication</span>
-              <button className="action-btn btn-primary">Enable</button>
+              <span>{t("adminConsole.settings.twoFactorAuth", { defaultValue: "Two-Factor Authentication" })}</span>
+              <button className="action-btn btn-primary">{t("adminConsole.settings.enable", { defaultValue: "Enable" })}</button>
             </div>
             <div className="flex items-center justify-between">
-              <span>Session Timeout</span>
+              <span>{t("adminConsole.settings.sessionTimeout", { defaultValue: "Session Timeout" })}</span>
               <select className="search-input p-2 rounded-lg">
-                <option>30 minutes</option>
-                <option>1 hour</option>
-                <option>4 hours</option>
+                <option>{t("adminConsole.settings.timeout30min", { defaultValue: "30 minutes" })}</option>
+                <option>{t("adminConsole.settings.timeout1hour", { defaultValue: "1 hour" })}</option>
+                <option>{t("adminConsole.settings.timeout4hours", { defaultValue: "4 hours" })}</option>
               </select>
             </div>
-            <button className="action-btn btn-primary">Update Security</button>
+            <button className="action-btn btn-primary">{t("adminConsole.settings.updateSecurity", { defaultValue: "Update Security" })}</button>
           </div>
         </div>
       </div>

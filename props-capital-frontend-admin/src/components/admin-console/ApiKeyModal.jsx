@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 export default function ApiKeyModal({ onClose, onCreate }) {
+  const { t } = useTranslation();
   const [projectName, setProjectName] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
@@ -13,7 +15,7 @@ export default function ApiKeyModal({ onClose, onCreate }) {
     setError('');
 
     if (!projectName.trim()) {
-      setError('Project name is required');
+      setError(t("adminConsole.apiKeyModal.projectNameRequired", { defaultValue: "Project name is required" }));
       return;
     }
 
@@ -25,7 +27,7 @@ export default function ApiKeyModal({ onClose, onCreate }) {
       });
       setCreatedKey(key);
     } catch (err) {
-      setError(err.message || 'Failed to create API key');
+      setError(err.message || t("adminConsole.apiKeyModal.createFailed", { defaultValue: "Failed to create API key" }));
     } finally {
       setLoading(false);
     }
@@ -45,7 +47,7 @@ export default function ApiKeyModal({ onClose, onCreate }) {
 
         {!createdKey ? (
           <>
-            <h3 className="text-2xl font-bold mb-6 gradient-text">Generate API Key</h3>
+            <h3 className="text-2xl font-bold mb-6 gradient-text">{t("adminConsole.apiKeyModal.title", { defaultValue: "Generate API Key" })}</h3>
 
             {error && (
               <div className="bg-red-500/20 border border-red-500/30 p-3 mb-4 rounded-lg text-red-300 text-sm">
@@ -57,13 +59,13 @@ export default function ApiKeyModal({ onClose, onCreate }) {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Project Name <span className="text-red-400">*</span>
+                    {t("adminConsole.apiKeyModal.projectName", { defaultValue: "Project Name" })} <span className="text-red-400">*</span>
                   </label>
                   <input
                     type="text"
                     value={projectName}
                     onChange={(e) => setProjectName(e.target.value)}
-                    placeholder="e.g. My E-Commerce App"
+                    placeholder={t("adminConsole.apiKeyModal.projectNamePlaceholder", { defaultValue: "e.g. My E-Commerce App" })}
                     className="search-input p-3 rounded-lg w-full"
                     autoFocus
                   />
@@ -71,12 +73,12 @@ export default function ApiKeyModal({ onClose, onCreate }) {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Description <span className="text-gray-500">(optional)</span>
+                    {t("adminConsole.apiKeyModal.description", { defaultValue: "Description" })} <span className="text-gray-500">{t("adminConsole.apiKeyModal.optional", { defaultValue: "(optional)" })}</span>
                   </label>
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="What is this key used for?"
+                    placeholder={t("adminConsole.apiKeyModal.descriptionPlaceholder", { defaultValue: "What is this key used for?" })}
                     className="search-input p-3 rounded-lg w-full"
                     rows="2"
                   />
@@ -89,9 +91,9 @@ export default function ApiKeyModal({ onClose, onCreate }) {
                     className="flex-1 action-btn btn-primary"
                   >
                     {loading ? (
-                      <><i className="fas fa-spinner fa-spin mr-2"></i>Generating...</>
+                      <><i className="fas fa-spinner fa-spin mr-2"></i>{t("adminConsole.apiKeyModal.generating", { defaultValue: "Generating..." })}</>
                     ) : (
-                      <><i className="fas fa-key mr-2"></i>Generate Key</>
+                      <><i className="fas fa-key mr-2"></i>{t("adminConsole.apiKeyModal.generateKey", { defaultValue: "Generate Key" })}</>
                     )}
                   </button>
                   <button
@@ -99,7 +101,7 @@ export default function ApiKeyModal({ onClose, onCreate }) {
                     onClick={onClose}
                     className="flex-1 action-btn btn-secondary"
                   >
-                    Cancel
+                    {t("adminConsole.apiKeyModal.cancel", { defaultValue: "Cancel" })}
                   </button>
                 </div>
               </div>
@@ -111,9 +113,9 @@ export default function ApiKeyModal({ onClose, onCreate }) {
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
                 <i className="fas fa-check text-green-400 text-2xl"></i>
               </div>
-              <h3 className="text-2xl font-bold gradient-text">API Key Created</h3>
+              <h3 className="text-2xl font-bold gradient-text">{t("adminConsole.apiKeyModal.createdTitle", { defaultValue: "API Key Created" })}</h3>
               <p className="text-gray-400 mt-2">
-                For <strong className="text-white">{createdKey.project_name}</strong>
+                {t("adminConsole.apiKeyModal.forLabel", { defaultValue: "For" })} <strong className="text-white">{createdKey.project_name}</strong>
               </p>
             </div>
 
@@ -121,7 +123,7 @@ export default function ApiKeyModal({ onClose, onCreate }) {
               <div className="flex items-center justify-between mb-2">
                 <span className="text-yellow-400 text-xs font-medium">
                   <i className="fas fa-exclamation-triangle mr-1"></i>
-                  Copy this key now — it won't be shown in full again
+                  {t("adminConsole.apiKeyModal.copyNowWarning", { defaultValue: "Copy this key now — it won't be shown in full again" })}
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -133,20 +135,20 @@ export default function ApiKeyModal({ onClose, onCreate }) {
                   className="px-3 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition-colors whitespace-nowrap"
                 >
                   <i className={`fas ${copied ? 'fa-check' : 'fa-copy'} mr-1`}></i>
-                  {copied ? 'Copied' : 'Copy'}
+                  {copied ? t("adminConsole.apiKeyModal.copied", { defaultValue: "Copied" }) : t("adminConsole.apiKeyModal.copy", { defaultValue: "Copy" })}
                 </button>
               </div>
             </div>
 
             <div className="bg-black/20 rounded-lg p-3 mb-6 text-sm text-gray-400">
-              <p className="mb-1"><strong>Usage:</strong> Send this key in the <code className="text-cyan-300">X-API-Key</code> header:</p>
+              <p className="mb-1"><strong>{t("adminConsole.apiKeyModal.usageLabel", { defaultValue: "Usage:" })}</strong> {t("adminConsole.apiKeyModal.usageSendPrefix", { defaultValue: "Send this key in the" })} <code className="text-cyan-300">X-API-Key</code> {t("adminConsole.apiKeyModal.usageHeaderSuffix", { defaultValue: "header:" })}</p>
               <code className="text-xs text-gray-500 block mt-1">
                 curl -H "X-API-Key: {createdKey.api_key.substring(0, 20)}..." ...
               </code>
             </div>
 
             <button onClick={onClose} className="w-full action-btn btn-primary">
-              Done
+              {t("adminConsole.apiKeyModal.done", { defaultValue: "Done" })}
             </button>
           </>
         )}

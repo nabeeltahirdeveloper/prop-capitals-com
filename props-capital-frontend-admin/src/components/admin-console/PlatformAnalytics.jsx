@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, BarChart3, Activity } from "lucide-react";
+import { useTranslation } from "../../contexts/LanguageContext";
 
 const StatCard = ({ icon: Icon, title, value, color }) => (
   <Card className="shadow-md">
@@ -17,11 +18,12 @@ const StatCard = ({ icon: Icon, title, value, color }) => (
 );
 
 export default function PlatformAnalytics({ analytics }) {
+  const { t } = useTranslation();
   return (
     <>
-      <StatCard icon={Users} title="Total Users" value={analytics.totalUsers} color="blue" />
-      <StatCard icon={BarChart3} title="Total Analyses" value={analytics.totalAnalyses} color="purple" />
-      <StatCard icon={Activity} title="Pro Users" value={analytics.usersByTier.pro || 0} color="green" />
+      <StatCard icon={Users} title={t("adminConsole.platformAnalytics.totalUsers", { defaultValue: "Total Users" })} value={analytics.totalUsers} color="blue" />
+      <StatCard icon={BarChart3} title={t("adminConsole.platformAnalytics.totalAnalyses", { defaultValue: "Total Analyses" })} value={analytics.totalAnalyses} color="purple" />
+      <StatCard icon={Activity} title={t("adminConsole.platformAnalytics.proUsers", { defaultValue: "Pro Users" })} value={analytics.usersByTier.pro || 0} color="green" />
     </>
   );
 }

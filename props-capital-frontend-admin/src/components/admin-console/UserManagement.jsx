@@ -1,9 +1,11 @@
 ﻿import React, { useState } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 const Tiers = ["none", "starter", "pro", "expert"];
 
 export default function UserManagement({ users, onUserUpdate }) {
+  const { t } = useTranslation();
   const [updatingId, setUpdatingId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -16,7 +18,7 @@ export default function UserManagement({ users, onUserUpdate }) {
       onUserUpdate(); // Refresh data in parent
     } catch (error) {
       console.error("Failed to update user tier:", error);
-      alert('Failed to update user tier');
+      alert(t("adminConsole.users.failedUpdateTier", { defaultValue: "Failed to update user tier" }));
     } finally {
       setUpdatingId(null);
     }
@@ -56,19 +58,19 @@ export default function UserManagement({ users, onUserUpdate }) {
       {/* User Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
         <div className="glass-card p-6 rounded-xl">
-          <h3 className="text-lg font-semibold mb-2">Total Users</h3>
+          <h3 className="text-lg font-semibold mb-2">{t("adminConsole.users.totalUsers", { defaultValue: "Total Users" })}</h3>
           <p className="text-3xl font-bold text-cyan-400">{stats.total}</p>
         </div>
         <div className="glass-card p-6 rounded-xl">
-          <h3 className="text-lg font-semibold mb-2">Starter Plan</h3>
+          <h3 className="text-lg font-semibold mb-2">{t("adminConsole.users.starterPlan", { defaultValue: "Starter Plan" })}</h3>
           <p className="text-3xl font-bold text-green-400">{stats.starter}</p>
         </div>
         <div className="glass-card p-6 rounded-xl">
-          <h3 className="text-lg font-semibold mb-2">Pro Plan</h3>
+          <h3 className="text-lg font-semibold mb-2">{t("adminConsole.users.proPlan", { defaultValue: "Pro Plan" })}</h3>
           <p className="text-3xl font-bold text-purple-400">{stats.pro}</p>
         </div>
         <div className="glass-card p-6 rounded-xl">
-          <h3 className="text-lg font-semibold mb-2">Expert Plan</h3>
+          <h3 className="text-lg font-semibold mb-2">{t("adminConsole.users.expertPlan", { defaultValue: "Expert Plan" })}</h3>
           <p className="text-3xl font-bold text-yellow-400">{stats.expert}</p>
         </div>
       </div>
@@ -78,7 +80,7 @@ export default function UserManagement({ users, onUserUpdate }) {
         <div className="mb-4">
           <input
             type="text"
-            placeholder="Search users by name or email..."
+            placeholder={t("adminConsole.users.searchPlaceholder", { defaultValue: "Search users by name or email..." })}
             className="search-input p-3 rounded-lg w-full"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -91,12 +93,12 @@ export default function UserManagement({ users, onUserUpdate }) {
           <table className="w-full min-w-[920px]">
             <thead className="border-b border-gray-700 sticky top-0 z-10 bg-[#161a2d]">
               <tr>
-                <th className="text-left p-4">User</th>
-                <th className="text-left p-4">Email</th>
-                <th className="text-left p-4">Role</th>
-                <th className="text-left p-4">Subscription Tier</th>
-                <th className="text-left p-4">Credits</th>
-                <th className="text-left p-4">Created</th>
+                <th className="text-left p-4">{t("adminConsole.users.colUser", { defaultValue: "User" })}</th>
+                <th className="text-left p-4">{t("adminConsole.users.colEmail", { defaultValue: "Email" })}</th>
+                <th className="text-left p-4">{t("adminConsole.users.colRole", { defaultValue: "Role" })}</th>
+                <th className="text-left p-4">{t("adminConsole.users.colSubscriptionTier", { defaultValue: "Subscription Tier" })}</th>
+                <th className="text-left p-4">{t("adminConsole.users.colCredits", { defaultValue: "Credits" })}</th>
+                <th className="text-left p-4">{t("adminConsole.users.colCreated", { defaultValue: "Created" })}</th>
               </tr>
             </thead>
             <tbody>
@@ -104,8 +106,8 @@ export default function UserManagement({ users, onUserUpdate }) {
                 const initials = getInitials(user.full_name);
                 const roleBadge = getBadgeColor(user.role);
                 const tier = user.subscription_tier || 'none';
-                const credits = user.credits_unlimited ? 'Unlimited' : (user.credits_balance || 0);
-                const createdDate = user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A';
+                const credits = user.credits_unlimited ? t("adminConsole.users.unlimited", { defaultValue: "Unlimited" }) : (user.credits_balance || 0);
+                const createdDate = user.created_at ? new Date(user.created_at).toLocaleDateString() : t("adminConsole.users.notAvailable", { defaultValue: "N/A" });
                 
                 return (
                   <tr key={user.id} className="border-b border-gray-800 hover:bg-gray-800/30 align-middle">
@@ -114,14 +116,14 @@ export default function UserManagement({ users, onUserUpdate }) {
                         <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                           <span className="text-sm font-bold">{initials}</span>
                         </div>
-                        <span className="truncate max-w-[180px]" title={user.full_name || 'N/A'}>{user.full_name || 'N/A'}</span>
+                        <span className="truncate max-w-[180px]" title={user.full_name || t("adminConsole.users.notAvailable", { defaultValue: "N/A" })}>{user.full_name || t("adminConsole.users.notAvailable", { defaultValue: "N/A" })}</span>
                       </div>
                     </td>
                     <td className="p-4" data-label="Email">
-                      <span className="truncate block max-w-[260px]" title={user.email || 'N/A'}>{user.email || 'N/A'}</span>
+                      <span className="truncate block max-w-[260px]" title={user.email || t("adminConsole.users.notAvailable", { defaultValue: "N/A" })}>{user.email || t("adminConsole.users.notAvailable", { defaultValue: "N/A" })}</span>
                     </td>
                     <td className="p-4" data-label="Role">
-                      <span className={`status-badge ${roleBadge}`}>{user.role || 'user'}</span>
+                      <span className={`status-badge ${roleBadge}`}>{t(`adminConsole.users.role_${user.role || 'user'}`, { defaultValue: user.role || 'user' })}</span>
                     </td>
                     <td className="p-4" data-label="Subscription Tier">
                       <select
@@ -130,8 +132,10 @@ export default function UserManagement({ users, onUserUpdate }) {
                         onChange={(e) => handleTierChange(user.id, tier, e.target.value)}
                         disabled={updatingId === user.id}
                       >
-                        {Tiers.map(t => (
-                          <option key={t} value={t} className="capitalize">{t}</option>
+                        {Tiers.map(tierOption => (
+                          <option key={tierOption} value={tierOption} className="capitalize">
+                            {t(`adminConsole.users.tier_${tierOption}`, { defaultValue: tierOption.charAt(0).toUpperCase() + tierOption.slice(1) })}
+                          </option>
                         ))}
                       </select>
                     </td>
@@ -147,7 +151,7 @@ export default function UserManagement({ users, onUserUpdate }) {
               {filteredUsers.length === 0 && (
                 <tr>
                   <td colSpan="6" className="p-8 text-center text-gray-400">
-                    No users found
+                    {t("adminConsole.users.noUsersFound", { defaultValue: "No users found" })}
                   </td>
                 </tr>
               )}

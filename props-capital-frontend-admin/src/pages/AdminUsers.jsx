@@ -343,12 +343,20 @@ export default function AdminUsers() {
         />
         <div className="mt-4 flex items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground whitespace-nowrap">
-              Page {page} of {usersData.totalPages} ({usersData.total} total)
+              {t("common.pagination.pageOf", {
+                current: page,
+                total: usersData.totalPages,
+                defaultValue: "Page {{current}} of {{total}}",
+              })}{" "}
+              ({usersData.total})
             </p>
             <Pagination className="w-auto mx-0">
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
+                    label={t("common.pagination.previous", {
+                      defaultValue: "Previous",
+                    })}
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
                   />
@@ -379,6 +387,9 @@ export default function AdminUsers() {
                   )}
                 <PaginationItem>
                   <PaginationNext
+                    label={t("common.pagination.next", {
+                      defaultValue: "Next",
+                    })}
                     onClick={() => setPage((p) => Math.min(usersData.totalPages, p + 1))}
                     className={page === usersData.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
                   />

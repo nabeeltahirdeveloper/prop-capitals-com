@@ -1,7 +1,9 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 export default function PackageModal({ package: pkg, type, onClose, onSave }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     id: '',
     name: '',
@@ -72,7 +74,7 @@ export default function PackageModal({ package: pkg, type, onClose, onSave }) {
     e.preventDefault();
   
   if (!formData.name || !formData.price || !formData.id) {
-    alert('Please fill in all required fields');
+    alert(t("adminConsole.packageModal.fillRequired", { defaultValue: "Please fill in all required fields" }));
     return;
   }
 
@@ -122,7 +124,13 @@ export default function PackageModal({ package: pkg, type, onClose, onSave }) {
       <div className="glass-card p-8 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold gradient-text">
-            {pkg ? 'Edit' : 'Create'} {type === 'packages' ? 'Package' : 'Credit Package'}
+            {pkg
+              ? (type === 'packages'
+                  ? t("adminConsole.packageModal.editPackage", { defaultValue: "Edit Package" })
+                  : t("adminConsole.packageModal.editCreditPackage", { defaultValue: "Edit Credit Package" }))
+              : (type === 'packages'
+                  ? t("adminConsole.packageModal.createPackage", { defaultValue: "Create Package" })
+                  : t("adminConsole.packageModal.createCreditPackage", { defaultValue: "Create Credit Package" }))}
           </h2>
           <button
             onClick={onClose}
@@ -137,32 +145,32 @@ export default function PackageModal({ package: pkg, type, onClose, onSave }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2">
-                Package ID <span className="text-red-400">*</span>
+                {t("adminConsole.packageModal.packageId", { defaultValue: "Package ID" })} <span className="text-red-400">*</span>
               </label>
               <input
                 type="text"
                 value={formData.id}
                 onChange={(e) => setFormData({ ...formData, id: e.target.value })}
                 className="search-input p-3 rounded-lg w-full"
-                placeholder="e.g., starter, credits-100"
+                placeholder={t("adminConsole.packageModal.packageIdPlaceholder", { defaultValue: "e.g., starter, credits-100" })}
                 required
                 disabled={!!pkg}
               />
               <p className="text-xs text-gray-400 mt-1">
-                Unique identifier (cannot be changed after creation)
+                {t("adminConsole.packageModal.packageIdHint", { defaultValue: "Unique identifier (cannot be changed after creation)" })}
               </p>
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-2">
-                Name <span className="text-red-400">*</span>
+                {t("adminConsole.packageModal.name", { defaultValue: "Name" })} <span className="text-red-400">*</span>
               </label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="search-input p-3 rounded-lg w-full"
-                placeholder="e.g., Professional"
+                placeholder={t("adminConsole.packageModal.namePlaceholder", { defaultValue: "e.g., Professional" })}
                 required
               />
             </div>
@@ -172,7 +180,7 @@ export default function PackageModal({ package: pkg, type, onClose, onSave }) {
 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
   <div>
     <label className="block text-sm font-medium mb-2">
-      Price <span className="text-red-400">*</span>
+      {t("adminConsole.packageModal.price", { defaultValue: "Price" })} <span className="text-red-400">*</span>
     </label>
     <input
       type="number"
@@ -186,7 +194,7 @@ export default function PackageModal({ package: pkg, type, onClose, onSave }) {
   </div>
 
   <div>
-    <label className="block text-sm font-medium mb-2">Currency</label>
+    <label className="block text-sm font-medium mb-2">{t("adminConsole.packageModal.currency", { defaultValue: "Currency" })}</label>
     <select
       value={formData.currency}
       onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
@@ -201,34 +209,34 @@ export default function PackageModal({ package: pkg, type, onClose, onSave }) {
 
   {/* Credits field is now always present and handles 'unlimited' or numbers */}
   <div>
-    <label className="block text-sm font-medium mb-2">Credits</label>
+    <label className="block text-sm font-medium mb-2">{t("adminConsole.packageModal.credits", { defaultValue: "Credits" })}</label>
     <input
       type="text"
-      value={formData.credits || ''} 
+      value={formData.credits || ''}
       onChange={(e) => setFormData({ ...formData, credits: e.target.value })}
       className="search-input p-3 rounded-lg w-full"
-      placeholder="e.g. 100 or unlimited"
+      placeholder={t("adminConsole.packageModal.creditsPlaceholder", { defaultValue: "e.g. 100 or unlimited" })}
     />
     <p className="text-[10px] text-gray-500 mt-1">
-      Use "unlimited" or a number.
+      {t("adminConsole.packageModal.creditsHint", { defaultValue: 'Use "unlimited" or a number.' })}
     </p>
   </div>
 </div>
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium mb-2">Description</label>
+            <label className="block text-sm font-medium mb-2">{t("adminConsole.packageModal.description", { defaultValue: "Description" })}</label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className="search-input p-3 rounded-lg w-full"
               rows="3"
-              placeholder="Brief description of the package"
+              placeholder={t("adminConsole.packageModal.descriptionPlaceholder", { defaultValue: "Brief description of the package" })}
             />
           </div>
 
           {/* Features */}
           <div>
-            <label className="block text-sm font-medium mb-2">Features</label>
+            <label className="block text-sm font-medium mb-2">{t("adminConsole.packageModal.features", { defaultValue: "Features" })}</label>
             <div className="flex gap-2 mb-3">
               <input
                 type="text"
@@ -236,7 +244,7 @@ export default function PackageModal({ package: pkg, type, onClose, onSave }) {
                 onChange={(e) => setFeatureInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())}
                 className="search-input p-3 rounded-lg flex-1"
-                placeholder="Add a feature and press Enter"
+                placeholder={t("adminConsole.packageModal.featuresPlaceholder", { defaultValue: "Add a feature and press Enter" })}
               />
               <button
                 type="button"
@@ -279,7 +287,7 @@ export default function PackageModal({ package: pkg, type, onClose, onSave }) {
               />
               <span className="text-sm font-medium">
                 <i className="fas fa-star text-yellow-400 mr-2"></i>
-                Mark as Popular
+                {t("adminConsole.packageModal.markAsPopular", { defaultValue: "Mark as Popular" })}
               </span>
             </label>
 
@@ -292,7 +300,7 @@ export default function PackageModal({ package: pkg, type, onClose, onSave }) {
               />
               <span className="text-sm font-medium">
                 <i className="fas fa-check-circle text-green-400 mr-2"></i>
-                Active
+                {t("adminConsole.packageModal.active", { defaultValue: "Active" })}
               </span>
             </label>
           </div>
@@ -307,7 +315,7 @@ export default function PackageModal({ package: pkg, type, onClose, onSave }) {
               >
                 <span className="text-lg font-semibold flex items-center">
                   <i className="fas fa-dollar-sign text-cyan-400 mr-2"></i>
-                  Currency-Specific Prices
+                  {t("adminConsole.packageModal.currencySpecificPrices", { defaultValue: "Currency-Specific Prices" })}
                 </span>
                 <i className={`fas fa-chevron-${showCurrencyPrices ? 'up' : 'down'} text-gray-400`}></i>
               </button>
@@ -315,7 +323,7 @@ export default function PackageModal({ package: pkg, type, onClose, onSave }) {
               {showCurrencyPrices && (
                 <div className="space-y-3">
                   <p className="text-sm text-gray-400 mb-4">
-                    Set custom prices for specific currencies. Leave blank to use auto-converted prices based on exchange rates.
+                    {t("adminConsole.packageModal.currencyPricesHint", { defaultValue: "Set custom prices for specific currencies. Leave blank to use auto-converted prices based on exchange rates." })}
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
                     {currencies.filter(c => c.active).map((currency) => {
@@ -327,10 +335,10 @@ export default function PackageModal({ package: pkg, type, onClose, onSave }) {
                               <span className="text-xl">{currency.symbol}</span>
                               <span className="font-semibold">{currency.code}</span>
                               {currency.is_base && (
-                                <span className="text-xs bg-purple-600 px-2 py-0.5 rounded">BASE</span>
+                                <span className="text-xs bg-purple-600 px-2 py-0.5 rounded">{t("adminConsole.packageModal.base", { defaultValue: "BASE" })}</span>
                               )}
                             </div>
-                            <span className="text-xs text-gray-400">Auto: {currency.symbol}{autoPrice}</span>
+                            <span className="text-xs text-gray-400">{t("adminConsole.packageModal.autoPrice", { price: `${currency.symbol}${autoPrice}`, defaultValue: "Auto: {{price}}" })}</span>
                           </div>
                           <input
                             type="number"
@@ -345,7 +353,7 @@ export default function PackageModal({ package: pkg, type, onClose, onSave }) {
                               }
                               setCurrencyPrices(newPrices);
                             }}
-                            placeholder={`Auto: ${autoPrice}`}
+                            placeholder={t("adminConsole.packageModal.autoPrice", { price: autoPrice, defaultValue: "Auto: {{price}}" })}
                             className="search-input p-2 rounded-lg w-full text-sm"
                           />
                           <p className="text-xs text-gray-500 mt-1">{currency.name}</p>
@@ -365,14 +373,16 @@ export default function PackageModal({ package: pkg, type, onClose, onSave }) {
               onClick={onClose}
               className="action-btn btn-secondary px-6"
             >
-              Cancel
+              {t("adminConsole.packageModal.cancel", { defaultValue: "Cancel" })}
             </button>
             <button
               type="submit"
               className="action-btn btn-primary px-6"
             >
               <i className="fas fa-save mr-2"></i>
-              {pkg ? 'Update' : 'Create'} Package
+              {pkg
+                ? t("adminConsole.packageModal.updatePackageBtn", { defaultValue: "Update Package" })
+                : t("adminConsole.packageModal.createPackageBtn", { defaultValue: "Create Package" })}
             </button>
           </div>
         </form>

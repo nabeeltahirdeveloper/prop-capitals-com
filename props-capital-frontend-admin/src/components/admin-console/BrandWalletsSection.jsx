@@ -1,7 +1,9 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 export default function BrandWalletsSection() {
+  const { t } = useTranslation();
   const [brandWallets, setBrandWallets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -43,9 +45,9 @@ export default function BrandWalletsSection() {
   };
 
   const getSettlementBadge = (method) => {
-    if (!method) return <span className="status-badge status-inactive">Not Set</span>;
-    if (method === 'crypto') return <span className="status-badge status-active">Crypto</span>;
-    if (method === 'fiat') return <span className="status-badge status-pending">FIAT</span>;
+    if (!method) return <span className="status-badge status-inactive">{t("adminConsole.brandWallets.notSet", { defaultValue: "Not Set" })}</span>;
+    if (method === 'crypto') return <span className="status-badge status-active">{t("adminConsole.brandWallets.crypto", { defaultValue: "Crypto" })}</span>;
+    if (method === 'fiat') return <span className="status-badge status-pending">{t("adminConsole.brandWallets.fiat", { defaultValue: "FIAT" })}</span>;
     return <span className="status-badge status-inactive">{method}</span>;
   };
 
@@ -68,8 +70,8 @@ export default function BrandWalletsSection() {
   return (
     <div>
       <div className="mb-6">
-        <h2 className="text-3xl font-bold gradient-text mb-2">Settlement Wallets</h2>
-        <p className="text-gray-400">View all brand and reseller settlement information for payouts</p>
+        <h2 className="text-3xl font-bold gradient-text mb-2">{t("adminConsole.brandWallets.title", { defaultValue: "Settlement Wallets" })}</h2>
+        <p className="text-gray-400">{t("adminConsole.brandWallets.subtitle", { defaultValue: "View all brand and reseller settlement information for payouts" })}</p>
       </div>
 
       {/* Tabs */}
@@ -84,7 +86,7 @@ export default function BrandWalletsSection() {
             }`}
           >
             <i className="fas fa-building mr-2"></i>
-            Brands
+            {t("adminConsole.brandWallets.brandsTab", { defaultValue: "Brands" })}
           </button>
           <button
             onClick={() => setActiveTab('resellers')}
@@ -95,7 +97,7 @@ export default function BrandWalletsSection() {
             }`}
           >
             <i className="fas fa-users mr-2"></i>
-            Resellers
+            {t("adminConsole.brandWallets.resellersTab", { defaultValue: "Resellers" })}
           </button>
         </div>
       </div>
@@ -104,16 +106,18 @@ export default function BrandWalletsSection() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div className="glass-card p-6 rounded-xl">
           <h3 className="text-lg font-semibold mb-2 text-gray-300">
-            Total {activeTab === 'brands' ? 'Brands' : 'Resellers'}
+            {activeTab === 'brands'
+              ? t("adminConsole.brandWallets.totalBrands", { defaultValue: "Total Brands" })
+              : t("adminConsole.brandWallets.totalResellers", { defaultValue: "Total Resellers" })}
           </h3>
           <p className="text-3xl font-bold text-cyan-400">{stats.total}</p>
         </div>
         <div className="glass-card p-6 rounded-xl">
-          <h3 className="text-lg font-semibold mb-2 text-gray-300">Crypto Wallets</h3>
+          <h3 className="text-lg font-semibold mb-2 text-gray-300">{t("adminConsole.brandWallets.cryptoWallets", { defaultValue: "Crypto Wallets" })}</h3>
           <p className="text-3xl font-bold text-green-400">{stats.crypto}</p>
         </div>
         <div className="glass-card p-6 rounded-xl">
-          <h3 className="text-lg font-semibold mb-2 text-gray-300">Bank Accounts</h3>
+          <h3 className="text-lg font-semibold mb-2 text-gray-300">{t("adminConsole.brandWallets.bankAccounts", { defaultValue: "Bank Accounts" })}</h3>
           <p className="text-3xl font-bold text-yellow-400">{stats.fiat}</p>
         </div>
       </div>
@@ -123,7 +127,9 @@ export default function BrandWalletsSection() {
         <div className="flex gap-4">
           <input
             type="text"
-            placeholder={`Search ${activeTab === 'brands' ? 'brands' : 'resellers'} by name or username...`}
+            placeholder={activeTab === 'brands'
+              ? t("adminConsole.brandWallets.searchBrandsPlaceholder", { defaultValue: "Search brands by name or username..." })
+              : t("adminConsole.brandWallets.searchResellersPlaceholder", { defaultValue: "Search resellers by name or username..." })}
             className="search-input p-3 rounded-lg flex-1"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -133,7 +139,7 @@ export default function BrandWalletsSection() {
             onClick={handleSearch}
             className="action-btn btn-primary px-6"
           >
-            <i className="fas fa-search mr-2"></i>Search
+            <i className="fas fa-search mr-2"></i>{t("adminConsole.brandWallets.search", { defaultValue: "Search" })}
           </button>
         </div>
       </div>
@@ -143,14 +149,20 @@ export default function BrandWalletsSection() {
         {loading ? (
           <div className="text-center py-12">
             <i className="fas fa-spinner fa-spin text-4xl text-cyan-400 mb-4"></i>
-            <p className="text-gray-400">Loading {activeTab === 'brands' ? 'brand' : 'reseller'} wallets...</p>
+            <p className="text-gray-400">{activeTab === 'brands'
+              ? t("adminConsole.brandWallets.loadingBrandWallets", { defaultValue: "Loading brand wallets..." })
+              : t("adminConsole.brandWallets.loadingResellerWallets", { defaultValue: "Loading reseller wallets..." })}</p>
           </div>
         ) : filteredWallets.length === 0 ? (
           <div className="text-center py-12">
             <i className="fas fa-wallet text-4xl text-gray-600 mb-4"></i>
-            <p className="text-gray-400">No {activeTab === 'brands' ? 'brand' : 'reseller'} wallets found.</p>
+            <p className="text-gray-400">{activeTab === 'brands'
+              ? t("adminConsole.brandWallets.noBrandWallets", { defaultValue: "No brand wallets found." })
+              : t("adminConsole.brandWallets.noResellerWallets", { defaultValue: "No reseller wallets found." })}</p>
             <p className="text-gray-500 text-sm mt-2">
-              {activeTab === 'brands' ? 'Brands' : 'Resellers'} need to configure their settlement methods in their settings.
+              {activeTab === 'brands'
+                ? t("adminConsole.brandWallets.brandsNeedConfig", { defaultValue: "Brands need to configure their settlement methods in their settings." })
+                : t("adminConsole.brandWallets.resellersNeedConfig", { defaultValue: "Resellers need to configure their settlement methods in their settings." })}
             </p>
           </div>
         ) : (
@@ -158,18 +170,20 @@ export default function BrandWalletsSection() {
             <table className="w-full">
               <thead className="border-b border-gray-700">
                 <tr>
-                  <th className="text-left p-4">{activeTab === 'brands' ? 'Brand' : 'Reseller'}</th>
-                  <th className="text-left p-4">Username</th>
-                  <th className="text-left p-4">Settlement Method</th>
-                  <th className="text-left p-4">Crypto Wallet</th>
-                  <th className="text-left p-4">Bank Details</th>
-                  <th className="text-left p-4">Status</th>
+                  <th className="text-left p-4">{activeTab === 'brands'
+                    ? t("adminConsole.brandWallets.colBrand", { defaultValue: "Brand" })
+                    : t("adminConsole.brandWallets.colReseller", { defaultValue: "Reseller" })}</th>
+                  <th className="text-left p-4">{t("adminConsole.brandWallets.colUsername", { defaultValue: "Username" })}</th>
+                  <th className="text-left p-4">{t("adminConsole.brandWallets.colSettlementMethod", { defaultValue: "Settlement Method" })}</th>
+                  <th className="text-left p-4">{t("adminConsole.brandWallets.colCryptoWallet", { defaultValue: "Crypto Wallet" })}</th>
+                  <th className="text-left p-4">{t("adminConsole.brandWallets.colBankDetails", { defaultValue: "Bank Details" })}</th>
+                  <th className="text-left p-4">{t("adminConsole.brandWallets.colStatus", { defaultValue: "Status" })}</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredWallets.map((brand) => (
                   <tr key={brand.id} className="border-b border-gray-800 hover:bg-gray-800/30">
-                    <td className="p-4" data-label="Brand">
+                    <td className="p-4" data-label={t("adminConsole.brandWallets.colBrand", { defaultValue: "Brand" })}>
                       <div className="flex items-center gap-3">
                         {brand.logo_url ? (
                           <img 
@@ -184,7 +198,7 @@ export default function BrandWalletsSection() {
                           </div>
                         )}
                         <div>
-                          <div className="font-semibold text-white">{brand.name || 'N/A'}</div>
+                          <div className="font-semibold text-white">{brand.name || t("adminConsole.brandWallets.notAvailable", { defaultValue: "N/A" })}</div>
                           {brand.website && (
                             <a 
                               href={brand.website} 
@@ -198,13 +212,13 @@ export default function BrandWalletsSection() {
                         </div>
                       </div>
                     </td>
-                    <td className="p-4 mono font-semibold text-cyan-400" data-label="Username">
+                    <td className="p-4 mono font-semibold text-cyan-400" data-label={t("adminConsole.brandWallets.colUsername", { defaultValue: "Username" })}>
                       {brand.username || '-'}
                     </td>
-                    <td className="p-4" data-label="Settlement Method">
+                    <td className="p-4" data-label={t("adminConsole.brandWallets.colSettlementMethod", { defaultValue: "Settlement Method" })}>
                       {getSettlementBadge(brand.settlement_method)}
                     </td>
-                    <td className="p-4" data-label="Crypto Wallet">
+                    <td className="p-4" data-label={t("adminConsole.brandWallets.colCryptoWallet", { defaultValue: "Crypto Wallet" })}>
                       {brand.settlement_crypto_wallet ? (
                         <div className="flex items-center gap-2">
                           <code className="text-sm bg-gray-800/50 px-2 py-1 rounded text-cyan-300">
@@ -214,12 +228,12 @@ export default function BrandWalletsSection() {
                           <button
                             onClick={() => copyToClipboard(brand.settlement_crypto_wallet, brand.id)}
                             className="action-btn btn-secondary text-xs py-1 px-2"
-                            title="Copy full address"
+                            title={t("adminConsole.brandWallets.copyFullAddress", { defaultValue: "Copy full address" })}
                           >
                             {copiedWallet === brand.id ? (
-                              <><i className="fas fa-check mr-1"></i>Copied</>
+                              <><i className="fas fa-check mr-1"></i>{t("adminConsole.brandWallets.copied", { defaultValue: "Copied" })}</>
                             ) : (
-                              <><i className="fas fa-copy mr-1"></i>Copy</>
+                              <><i className="fas fa-copy mr-1"></i>{t("adminConsole.brandWallets.copy", { defaultValue: "Copy" })}</>
                             )}
                           </button>
                         </div>
@@ -227,7 +241,7 @@ export default function BrandWalletsSection() {
                         <span className="text-gray-500">-</span>
                       )}
                     </td>
-                    <td className="p-4" data-label="Bank Details">
+                    <td className="p-4" data-label={t("adminConsole.brandWallets.colBankDetails", { defaultValue: "Bank Details" })}>
                       {brand.settlement_method === 'fiat' && brand.settlement_bank_holder ? (
                         <div className="text-sm">
                           <div className="text-white font-medium">{brand.settlement_bank_holder}</div>
@@ -242,7 +256,7 @@ export default function BrandWalletsSection() {
                         <span className="text-gray-500">-</span>
                       )}
                     </td>
-                    <td className="p-4" data-label="Status">
+                    <td className="p-4" data-label={t("adminConsole.brandWallets.colStatus", { defaultValue: "Status" })}>
                       <span className={`status-badge ${brand.status === 'active' ? 'status-active' : 'status-inactive'}`}>
                         {brand.status || 'active'}
                       </span>

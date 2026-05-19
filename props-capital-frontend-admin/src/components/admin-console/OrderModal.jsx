@@ -1,7 +1,9 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 export default function OrderModal({ order, mode, onClose, onSuccess, loading: orderLoading }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     orderId: '',
     email: '',
@@ -113,11 +115,14 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
     if (mode === 'edit' && (formData.status.toLowerCase() === 'refund' || formData.status.toLowerCase() === 'chargeback')) {
       const originalStatus = order?.payment_status?.toLowerCase() || '';
       if (originalStatus !== 'refund' && originalStatus !== 'chargeback') {
-        if (!confirm(`⚠️ WARNING: Changing status to ${formData.status.toUpperCase()} will:\n\n` +
-                     `• Revert any credits granted to the customer\n` +
-                     `• Revert any subscription/package granted\n` +
-                     `• Mark commission as cancelled\n\n` +
-                     `Are you sure you want to continue?`)) {
+        if (!confirm(t("adminConsole.orderModal.statusChangeConfirm", {
+              status: formData.status.toUpperCase(),
+              defaultValue: "⚠️ WARNING: Changing status to {{status}} will:\n\n" +
+                "• Revert any credits granted to the customer\n" +
+                "• Revert any subscription/package granted\n" +
+                "• Mark commission as cancelled\n\n" +
+                "Are you sure you want to continue?",
+            }))) {
           return;
         }
       }
@@ -155,7 +160,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
       onClose();
     } catch (error) {
       console.error('Failed to save order:', error);
-      alert('❌ Failed to save order: ' + error.message);
+      alert(t("adminConsole.orderModal.saveErrorAlert", { message: error.message, defaultValue: "❌ Failed to save order: {{message}}" }));
     } finally {
       setLoading(false);
     }
@@ -179,7 +184,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
   const handleAddItem = () => {
     // Validate
     if (!newItem.id || !newItem.name || !newItem.price) {
-      alert('Please fill in Item ID, Name, and Price');
+      alert(t("adminConsole.orderModal.fillItemFields", { defaultValue: "Please fill in Item ID, Name, and Price" }));
       return;
     }
 
@@ -234,9 +239,9 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
 
   // Show loading state while order is loading or brands are loading
   if (orderLoading || ((mode === 'create' || mode === 'edit') && loadingBrands)) {
-    const loadingMessage = orderLoading 
-      ? 'Loading order details...' 
-      : 'Loading brand information...';
+    const loadingMessage = orderLoading
+      ? t("adminConsole.orderModal.loadingOrderDetails", { defaultValue: "Loading order details..." })
+      : t("adminConsole.orderModal.loadingBrandInfo", { defaultValue: "Loading brand information..." });
     
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -244,7 +249,9 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
         <div className="glass-card w-full max-w-4xl p-6 rounded-xl relative z-10 flex flex-col items-center justify-center py-12">
           <i className="fas fa-spinner fa-spin text-5xl text-cyan-400 mb-4"></i>
           <h3 className="text-xl font-semibold text-gray-300 mb-2">
-            {orderLoading ? 'Loading Order' : 'Loading Brand Data'}
+            {orderLoading
+              ? t("adminConsole.orderModal.loadingOrderTitle", { defaultValue: "Loading Order" })
+              : t("adminConsole.orderModal.loadingBrandTitle", { defaultValue: "Loading Brand Data" })}
           </h3>
           <p className="text-gray-400 text-center">{loadingMessage}</p>
         </div>
@@ -257,14 +264,18 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
       <div className="absolute inset-0 bg-black/50" onClick={onClose}></div>
       <div className="glass-card w-full max-w-4xl p-6 rounded-xl relative z-10 max-h-[90vh] overflow-y-auto">
         <h3 className="text-xl font-semibold mb-4">
-          {mode === 'view' ? 'View Order' : mode === 'edit' ? 'Edit Order' : 'Create Manual Transaction'}
+          {mode === 'view'
+            ? t("adminConsole.orderModal.viewOrder", { defaultValue: "View Order" })
+            : mode === 'edit'
+              ? t("adminConsole.orderModal.editOrder", { defaultValue: "Edit Order" })
+              : t("adminConsole.orderModal.createManualTransaction", { defaultValue: "Create Manual Transaction" })}
         </h3>
         
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 gap-4">
             {mode !== 'create' && (
               <div>
-                <label className="text-sm text-gray-300 block mb-2">Order ID</label>
+                <label className="text-sm text-gray-300 block mb-2">{t("adminConsole.orderModal.orderId", { defaultValue: "Order ID" })}</label>
                 <input
                   type="text"
                   className="search-input p-3 rounded-lg w-full"
@@ -278,10 +289,12 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
             {(mode === 'create' || mode === 'edit') && (
               <div>
                 <label className="text-sm text-gray-300 block mb-2">
-                  {mode === 'edit' ? 'Brand Assignment' : 'Brand (Optional)'}
+                  {mode === 'edit'
+                    ? t("adminConsole.orderModal.brandAssignment", { defaultValue: "Brand Assignment" })
+                    : t("adminConsole.orderModal.brandOptional", { defaultValue: "Brand (Optional)" })}
                   {formData.brandId && selectedBrand && (
                     <span className="ml-2 text-xs text-blue-400">
-                      • Commission Rate: {selectedBrand.commission_rate || 10}%
+                      {t("adminConsole.orderModal.commissionRate", { rate: selectedBrand.commission_rate || 10, defaultValue: "• Commission Rate: {{rate}}%" })}
                     </span>
                   )}
                 </label>
@@ -290,13 +303,18 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                   value={formData.brandId || ''}
                   onChange={(e) => setFormData({ ...formData, brandId: e.target.value || null })}
                 >
-                  <option value="">No Brand (Direct Sale)</option>
+                  <option value="">{t("adminConsole.orderModal.noBrandDirectSale", { defaultValue: "No Brand (Direct Sale)" })}</option>
                   {loadingBrands ? (
-                    <option disabled>Loading brands...</option>
+                    <option disabled>{t("adminConsole.orderModal.loadingBrands", { defaultValue: "Loading brands..." })}</option>
                   ) : (
                     brands.map(brand => (
                       <option key={brand.id} value={String(brand.id)}>
-                        {brand.name || brand.username} ({brand.email}) - {brand.commission_rate || 10}% commission
+                        {t("adminConsole.orderModal.brandOption", {
+                          name: brand.name || brand.username,
+                          email: brand.email,
+                          rate: brand.commission_rate || 10,
+                          defaultValue: "{{name}} ({{email}}) - {{rate}}% commission",
+                        })}
                       </option>
                     ))
                   )}
@@ -305,7 +323,9 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                   <div className="mt-2 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
                     <div className="text-sm text-blue-300">
                       <i className="fas fa-info-circle mr-2"></i>
-                      {mode === 'edit' ? 'New Commission:' : 'Calculated Commission:'} <strong>${calculatedCommission.toFixed(2)}</strong>
+                      {mode === 'edit'
+                        ? t("adminConsole.orderModal.newCommission", { defaultValue: "New Commission:" })
+                        : t("adminConsole.orderModal.calculatedCommission", { defaultValue: "Calculated Commission:" })} <strong>${calculatedCommission.toFixed(2)}</strong>
                     </div>
                   </div>
                 )}
@@ -313,7 +333,9 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                   <div className="mt-2 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
                     <div className="text-sm text-yellow-300">
                       <i className="fas fa-exclamation-triangle mr-2"></i>
-                      {formData.brandId ? 'Brand will be changed' : 'Brand assignment will be removed'}
+                      {formData.brandId
+                        ? t("adminConsole.orderModal.brandWillBeChanged", { defaultValue: "Brand will be changed" })
+                        : t("adminConsole.orderModal.brandWillBeRemoved", { defaultValue: "Brand assignment will be removed" })}
                     </div>
                   </div>
                 )}
@@ -321,7 +343,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                   <div className="mt-2 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
                     <div className="text-sm text-green-300">
                       <i className="fas fa-check-circle mr-2"></i>
-                      Brand will be assigned to this order
+                      {t("adminConsole.orderModal.brandWillBeAssigned", { defaultValue: "Brand will be assigned to this order" })}
                     </div>
                   </div>
                 )}
@@ -331,7 +353,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm text-gray-300 block mb-2">
-                  Customer Email {!isReadOnly && <span className="text-red-400">*</span>}
+                  {t("adminConsole.orderModal.customerEmail", { defaultValue: "Customer Email" })} {!isReadOnly && <span className="text-red-400">*</span>}
                 </label>
                 <input
                   type="email"
@@ -346,14 +368,14 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
               {mode === 'create' && (
                 <div>
                   <label className="text-sm text-gray-300 block mb-2">
-                    Cardholder Name (Optional)
+                    {t("adminConsole.orderModal.cardholderName", { defaultValue: "Cardholder Name (Optional)" })}
                   </label>
                   <input
                     type="text"
                     className="search-input p-3 rounded-lg w-full"
                     value={formData.cardHolderName}
                     onChange={(e) => setFormData({ ...formData, cardHolderName: e.target.value })}
-                    placeholder="John Doe"
+                    placeholder={t("adminConsole.orderModal.cardholderPlaceholder", { defaultValue: "John Doe" })}
                   />
                 </div>
               )}
@@ -363,7 +385,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm text-gray-300 block mb-2">
-                    Phone (Optional)
+                    {t("adminConsole.orderModal.phone", { defaultValue: "Phone (Optional)" })}
                   </label>
                   <input
                     type="tel"
@@ -375,7 +397,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                 </div>
                 <div>
                   <label className="text-sm text-gray-300 block mb-2">
-                    Transaction Date
+                    {t("adminConsole.orderModal.transactionDate", { defaultValue: "Transaction Date" })}
                   </label>
                   <input
                     type="date"
@@ -403,7 +425,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                     ['failed', 'refund', 'chargeback'].includes(formData.status?.toLowerCase())
                       ? 'fa-exclamation-triangle'
                       : 'fa-info-circle'
-                  } mr-2`}></i>Payment Message
+                  } mr-2`}></i>{t("adminConsole.orderModal.paymentMessage", { defaultValue: "Payment Message" })}
                 </label>
                 <div className="text-gray-300 text-sm whitespace-pre-wrap">
                   {order.payment_message}
@@ -414,13 +436,13 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
             {mode === 'create' && (
               <div>
                 <label className="text-sm text-gray-300 block mb-2">
-                  Payment Message / Notes (Optional)
+                  {t("adminConsole.orderModal.paymentMessageNotes", { defaultValue: "Payment Message / Notes (Optional)" })}
                 </label>
                 <textarea
                   className="search-input p-3 rounded-lg w-full"
                   value={formData.paymentMessage}
                   onChange={(e) => setFormData({ ...formData, paymentMessage: e.target.value })}
-                  placeholder="Optional notes about this transaction..."
+                  placeholder={t("adminConsole.orderModal.paymentMessagePlaceholder", { defaultValue: "Optional notes about this transaction..." })}
                   rows="2"
                 />
               </div>
@@ -429,7 +451,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm text-gray-300 block mb-2">
-                  Total Amount {!isReadOnly && <span className="text-red-400">*</span>}
+                  {t("adminConsole.orderModal.totalAmount", { defaultValue: "Total Amount" })} {!isReadOnly && <span className="text-red-400">*</span>}
                 </label>
                 <input
                   type="number"
@@ -443,19 +465,19 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
               </div>
 
               <div>
-                <label className="text-sm text-gray-300 block mb-2">Status</label>
+                <label className="text-sm text-gray-300 block mb-2">{t("adminConsole.orderModal.status", { defaultValue: "Status" })}</label>
                 <select
                   className="search-input p-3 rounded-lg w-full"
                   value={formData.status}
                   onChange={(e) => handleStatusChange(e.target.value)}
                   disabled={isReadOnly}
                 >
-                  <option value="pending">Pending</option>
-                  <option value="unpaid">Unpaid (Customer Paid)</option>
-                  <option value="paid">Paid (Brand Paid)</option>
-                  <option value="failed">Failed / Declined</option>
-                  <option value="refund">Refund</option>
-                  <option value="chargeback">Chargeback</option>
+                  <option value="pending">{t("adminConsole.orderModal.statusPending", { defaultValue: "Pending" })}</option>
+                  <option value="unpaid">{t("adminConsole.orderModal.statusUnpaid", { defaultValue: "Unpaid (Customer Paid)" })}</option>
+                  <option value="paid">{t("adminConsole.orderModal.statusPaid", { defaultValue: "Paid (Brand Paid)" })}</option>
+                  <option value="failed">{t("adminConsole.orderModal.statusFailed", { defaultValue: "Failed / Declined" })}</option>
+                  <option value="refund">{t("adminConsole.orderModal.statusRefund", { defaultValue: "Refund" })}</option>
+                  <option value="chargeback">{t("adminConsole.orderModal.statusChargeback", { defaultValue: "Chargeback" })}</option>
                 </select>
               </div>
             </div>
@@ -467,13 +489,13 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                   <i className="fas fa-exclamation-triangle text-yellow-400 text-xl mt-1"></i>
                   <div className="flex-1">
                     <h4 className="text-sm font-semibold text-yellow-300 mb-2">
-                      Warning: Status Change to {formData.status}
+                      {t("adminConsole.orderModal.statusChangeWarningTitle", { status: formData.status, defaultValue: "Warning: Status Change to {{status}}" })}
                     </h4>
                     <ul className="text-sm text-gray-300 space-y-1 list-disc list-inside">
-                      <li>Any credits granted will be reverted from the customer</li>
-                      <li>Any subscription/package will be reverted to Free</li>
-                      <li>Commission status will be marked as cancelled</li>
-                      <li>This action will be logged in the payment message</li>
+                      <li>{t("adminConsole.orderModal.warningRevertCredits", { defaultValue: "Any credits granted will be reverted from the customer" })}</li>
+                      <li>{t("adminConsole.orderModal.warningRevertPackage", { defaultValue: "Any subscription/package will be reverted to Free" })}</li>
+                      <li>{t("adminConsole.orderModal.warningCommissionCancelled", { defaultValue: "Commission status will be marked as cancelled" })}</li>
+                      <li>{t("adminConsole.orderModal.warningLogged", { defaultValue: "This action will be logged in the payment message" })}</li>
                     </ul>
                   </div>
                 </div>
@@ -481,13 +503,15 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
             )}
 
             <div>
-              <label className="text-sm font-semibold text-gray-200 mb-2 block">Order Items</label>
+              <label className="text-sm font-semibold text-gray-200 mb-2 block">{t("adminConsole.orderModal.orderItems", { defaultValue: "Order Items" })}</label>
               <div className="glass-card p-4 rounded-lg">
                 {/* Items List */}
                 {formData.items.length === 0 ? (
                   <div className="text-center py-6 text-gray-400 text-sm border border-dashed border-white/10 rounded-lg">
                     <i className="fas fa-box-open mb-2 text-2xl block"></i>
-                    {isReadOnly ? 'No items in this order' : 'No items added yet. Add items using the form below.'}
+                    {isReadOnly
+                      ? t("adminConsole.orderModal.noItemsReadonly", { defaultValue: "No items in this order" })
+                      : t("adminConsole.orderModal.noItemsYet", { defaultValue: "No items added yet. Add items using the form below." })}
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -505,33 +529,33 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                                 <span className="text-2xl">{typeIcon}</span>
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2">
-                                    <h4 className="font-semibold text-white">{item.name || item.id || 'Unnamed Item'}</h4>
+                                    <h4 className="font-semibold text-white">{item.name || item.id || t("adminConsole.orderModal.unnamedItem", { defaultValue: "Unnamed Item" })}</h4>
                                     <span className={`px-2 py-1 ${typeBadge} rounded text-xs font-semibold`}>
-                                      {item.type?.toUpperCase() || 'ITEM'}
+                                      {item.type?.toUpperCase() || t("adminConsole.orderModal.itemBadgeDefault", { defaultValue: "ITEM" })}
                                     </span>
                                   </div>
-                                  {item.id && <span className="text-gray-500 text-xs">ID: {item.id}</span>}
+                                  {item.id && <span className="text-gray-500 text-xs">{t("adminConsole.orderModal.itemIdLabel", { id: item.id, defaultValue: "ID: {{id}}" })}</span>}
                                 </div>
                               </div>
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
                                 <div className="flex items-center gap-1 text-gray-400">
                                   <i className="fas fa-dollar-sign"></i>
-                                  <span>Price: <strong className="text-white">{item.currency || '$'}{Number(item.price || 0).toFixed(2)}</strong></span>
+                                  <span>{t("adminConsole.orderModal.priceLabel", { defaultValue: "Price:" })} <strong className="text-white">{item.currency || '$'}{Number(item.price || 0).toFixed(2)}</strong></span>
                                 </div>
                                 <div className="flex items-center gap-1 text-gray-400">
                                   <i className="fas fa-times"></i>
-                                  <span>Qty: <strong className="text-white">{item.quantity || 1}</strong></span>
+                                  <span>{t("adminConsole.orderModal.qtyLabel", { defaultValue: "Qty:" })} <strong className="text-white">{item.quantity || 1}</strong></span>
                                 </div>
                                 <div className="flex items-center gap-1 text-gray-400">
                                   <i className="fas fa-calculator"></i>
-                                  <span>Total: <strong className="text-green-400">{item.currency || '$'}{(Number(item.price || 0) * Number(item.quantity || 1)).toFixed(2)}</strong></span>
+                                  <span>{t("adminConsole.orderModal.totalLabel", { defaultValue: "Total:" })} <strong className="text-green-400">{item.currency || '$'}{(Number(item.price || 0) * Number(item.quantity || 1)).toFixed(2)}</strong></span>
                                 </div>
                                 {item.type === 'credits' && (
                                   <div className="text-sm">
                                     {item.unlimited ? (
-                                      <span className="text-yellow-400"><i className="fas fa-infinity mr-1"></i>Unlimited</span>
+                                      <span className="text-yellow-400"><i className="fas fa-infinity mr-1"></i>{t("adminConsole.orderModal.unlimited", { defaultValue: "Unlimited" })}</span>
                                     ) : (
-                                      <span className="text-gray-300"><i className="fas fa-coins mr-1"></i>{item.credits || 0} Credits</span>
+                                      <span className="text-gray-300"><i className="fas fa-coins mr-1"></i>{t("adminConsole.orderModal.creditsCount", { count: item.credits || 0, defaultValue: "{{count}} Credits" })}</span>
                                     )}
                                   </div>
                                 )}
@@ -542,7 +566,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                                 type="button"
                                 onClick={() => handleRemoveItem(idx)}
                                 className="action-btn btn-danger text-xs px-3 py-1.5 hover:scale-105 transition-transform"
-                                title="Remove item"
+                                title={t("adminConsole.orderModal.removeItemTooltip", { defaultValue: "Remove item" })}
                               >
                                 <i className="fas fa-trash"></i>
                               </button>
@@ -555,10 +579,10 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                     {/* Summary */}
                     <div className="border-t border-white/10 pt-3 mt-3 flex justify-between items-center text-sm">
                       <div className="text-gray-400">
-                        <i className="fas fa-box mr-1"></i> Total Items: <strong className="text-white">{formData.items.length}</strong>
+                        <i className="fas fa-box mr-1"></i> {t("adminConsole.orderModal.totalItems", { defaultValue: "Total Items:" })} <strong className="text-white">{formData.items.length}</strong>
                       </div>
                       <div className="text-gray-400">
-                        <i className="fas fa-receipt mr-1"></i> Total Cost: <strong className="text-green-400 text-lg">${Number(formData.totalAmount).toFixed(2)}</strong>
+                        <i className="fas fa-receipt mr-1"></i> {t("adminConsole.orderModal.totalCost", { defaultValue: "Total Cost:" })} <strong className="text-green-400 text-lg">${Number(formData.totalAmount).toFixed(2)}</strong>
                       </div>
                     </div>
                   </div>
@@ -567,26 +591,26 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                 {/* Add Item Form */}
                 {!isReadOnly && (
                   <div className="border-t border-white/10 pt-4 mt-4">
-                    <h4 className="text-sm font-semibold text-gray-200 mb-3">Add Item</h4>
+                    <h4 className="text-sm font-semibold text-gray-200 mb-3">{t("adminConsole.orderModal.addItem", { defaultValue: "Add Item" })}</h4>
                     <div className="grid grid-cols-1 gap-3">
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className="text-xs text-gray-400 mb-1 block">Item Type</label>
+                          <label className="text-xs text-gray-400 mb-1 block">{t("adminConsole.orderModal.itemType", { defaultValue: "Item Type" })}</label>
                           <select
                             className="search-input p-2.5 rounded-lg w-full text-sm"
                             value={newItem.type}
                             onChange={(e) => setNewItem({ ...newItem, type: e.target.value })}
                           >
-                            <option value="package">📦 Package</option>
-                            <option value="credits">⭐ Credits</option>
+                            <option value="package">{t("adminConsole.orderModal.itemTypePackage", { defaultValue: "📦 Package" })}</option>
+                            <option value="credits">{t("adminConsole.orderModal.itemTypeCredits", { defaultValue: "⭐ Credits" })}</option>
                           </select>
                         </div>
                         <div>
-                          <label className="text-xs text-gray-400 mb-1 block">Item ID <span className="text-red-400">*</span></label>
+                          <label className="text-xs text-gray-400 mb-1 block">{t("adminConsole.orderModal.itemId", { defaultValue: "Item ID" })} <span className="text-red-400">*</span></label>
                           <input
                             type="text"
                             className="search-input p-2.5 rounded-lg w-full text-sm"
-                            placeholder="e.g. professional"
+                            placeholder={t("adminConsole.orderModal.itemIdPlaceholder", { defaultValue: "e.g. professional" })}
                             value={newItem.id}
                             onChange={(e) => setNewItem({ ...newItem, id: e.target.value })}
                           />
@@ -594,11 +618,11 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                       </div>
 
                       <div>
-                        <label className="text-xs text-gray-400 mb-1 block">Display Name <span className="text-red-400">*</span></label>
+                        <label className="text-xs text-gray-400 mb-1 block">{t("adminConsole.orderModal.displayName", { defaultValue: "Display Name" })} <span className="text-red-400">*</span></label>
                         <input
                           type="text"
                           className="search-input p-2.5 rounded-lg w-full text-sm"
-                          placeholder="e.g. Professional Package"
+                          placeholder={t("adminConsole.orderModal.displayNamePlaceholder", { defaultValue: "e.g. Professional Package" })}
                           value={newItem.name}
                           onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
                         />
@@ -606,7 +630,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
 
                       <div className="grid grid-cols-3 gap-3">
                         <div>
-                          <label className="text-xs text-gray-400 mb-1 block">Price ($) <span className="text-red-400">*</span></label>
+                          <label className="text-xs text-gray-400 mb-1 block">{t("adminConsole.orderModal.priceField", { defaultValue: "Price ($)" })} <span className="text-red-400">*</span></label>
                           <input
                             type="number"
                             step="0.01"
@@ -618,7 +642,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                           />
                         </div>
                         <div>
-                          <label className="text-xs text-gray-400 mb-1 block">Quantity</label>
+                          <label className="text-xs text-gray-400 mb-1 block">{t("adminConsole.orderModal.quantity", { defaultValue: "Quantity" })}</label>
                           <input
                             type="number"
                             min="1"
@@ -628,7 +652,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                           />
                         </div>
                         <div>
-                          <label className="text-xs text-gray-400 mb-1 block">Currency</label>
+                          <label className="text-xs text-gray-400 mb-1 block">{t("adminConsole.orderModal.currency", { defaultValue: "Currency" })}</label>
                           <select
                             className="search-input p-2.5 rounded-lg w-full text-sm"
                             value={newItem.currency}
@@ -644,7 +668,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                       {newItem.type === 'credits' && (
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <label className="text-xs text-gray-400 mb-1 block">Credits Amount</label>
+                            <label className="text-xs text-gray-400 mb-1 block">{t("adminConsole.orderModal.creditsAmount", { defaultValue: "Credits Amount" })}</label>
                             <input
                               type="number"
                               min="0"
@@ -663,7 +687,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                                 checked={newItem.unlimited}
                                 onChange={(e) => setNewItem({ ...newItem, unlimited: e.target.checked, credits: '' })}
                               />
-                              <span>Unlimited Credits</span>
+                              <span>{t("adminConsole.orderModal.unlimitedCredits", { defaultValue: "Unlimited Credits" })}</span>
                             </label>
                           </div>
                         </div>
@@ -675,14 +699,14 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                           className="action-btn btn-secondary text-sm"
                           onClick={resetItemForm}
                         >
-                          Clear
+                          {t("adminConsole.orderModal.clear", { defaultValue: "Clear" })}
                         </button>
                         <button
                           type="button"
                           className="action-btn btn-primary text-sm"
                           onClick={handleAddItem}
                         >
-                          <i className="fas fa-plus mr-1"></i> Add Item
+                          <i className="fas fa-plus mr-1"></i> {t("adminConsole.orderModal.addItem", { defaultValue: "Add Item" })}
                         </button>
                       </div>
                     </div>
@@ -694,7 +718,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
             {order?.created_at && (
               <div className="text-sm text-gray-400">
                 <i className="fas fa-clock mr-2"></i>
-                Created: {new Date(order.created_at).toLocaleString()}
+                {t("adminConsole.orderModal.createdAt", { date: new Date(order.created_at).toLocaleString(), defaultValue: "Created: {{date}}" })}
               </div>
             )}
           </div>
@@ -705,7 +729,9 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
               className="action-btn btn-secondary"
               onClick={onClose}
             >
-              {isReadOnly ? 'Close' : 'Cancel'}
+              {isReadOnly
+                ? t("adminConsole.orderModal.close", { defaultValue: "Close" })
+                : t("adminConsole.orderModal.cancel", { defaultValue: "Cancel" })}
             </button>
             {!isReadOnly && (
               <button
@@ -715,11 +741,13 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
               >
                 {loading ? (
                   <>
-                    <i className="fas fa-spinner fa-spin mr-2"></i>Saving...
+                    <i className="fas fa-spinner fa-spin mr-2"></i>{t("adminConsole.orderModal.saving", { defaultValue: "Saving..." })}
                   </>
                 ) : (
                   <>
-                    <i className="fas fa-save mr-2"></i>{mode === 'create' ? 'Create Transaction' : 'Save Order'}
+                    <i className="fas fa-save mr-2"></i>{mode === 'create'
+                      ? t("adminConsole.orderModal.createTransaction", { defaultValue: "Create Transaction" })
+                      : t("adminConsole.orderModal.saveOrder", { defaultValue: "Save Order" })}
                   </>
                 )}
               </button>

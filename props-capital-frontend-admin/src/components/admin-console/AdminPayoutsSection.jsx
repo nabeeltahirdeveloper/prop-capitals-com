@@ -1,7 +1,9 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 export default function AdminPayoutsSection() {
+  const { t } = useTranslation();
   // Load saved date filters from localStorage on mount
   const loadSavedDateFilters = () => {
     try {
@@ -131,7 +133,7 @@ export default function AdminPayoutsSection() {
       setBrandNameById(nameMap);
     } catch (error) {
       console.error('Failed to load brands:', error);
-      alert('Failed to load brands');
+      alert(t("adminConsole.payouts.alertFailedLoadBrands", { defaultValue: "Failed to load brands" }));
     } finally {
       setLoadingBrands(false);
     }
@@ -267,7 +269,7 @@ export default function AdminPayoutsSection() {
       return filteredOrders;
     } catch (error) {
       console.error(`Failed to load orders for brand ${brandId}:`, error);
-      alert('Failed to load orders. Please try again.');
+      alert(t("adminConsole.payouts.alertFailedLoadOrders", { defaultValue: "Failed to load orders. Please try again." }));
       return [];
     } finally {
       setLoadingBrandOrders(prev => {
@@ -303,7 +305,7 @@ export default function AdminPayoutsSection() {
   // Apply date filters - fetch orders for ALL brands upfront
   const handleApplyFilters = async () => {
     if (!bulkFromDate || !bulkToDate) {
-      alert('Please select both from and to dates');
+      alert(t("adminConsole.payouts.alertSelectBothDates", { defaultValue: "Please select both from and to dates" }));
       return;
     }
 
@@ -331,7 +333,7 @@ export default function AdminPayoutsSection() {
       setFiltersApplied(true);
     } catch (error) {
       console.error('Failed to apply filters:', error);
-      alert('Failed to apply filters. Please try again.');
+      alert(t("adminConsole.payouts.alertFailedApplyFilters", { defaultValue: "Failed to apply filters. Please try again." }));
       // Don't set filtersApplied to true if there was an error
     } finally {
       setApplyingFilters(false);
@@ -367,7 +369,7 @@ export default function AdminPayoutsSection() {
       await Promise.all(brandIds.map(brandId => loadBrandOrders(brandId, false, null, null)));
     } catch (error) {
       console.error('Failed to clear filters:', error);
-      alert('Failed to clear filters. Please try again.');
+      alert(t("adminConsole.payouts.alertFailedClearFilters", { defaultValue: "Failed to clear filters. Please try again." }));
     } finally {
       setApplyingFilters(false);
       setFiltersApplied(false); // Mark filters as not applied AFTER loading completes
@@ -406,7 +408,7 @@ export default function AdminPayoutsSection() {
 
   const prepareBulkMarkPaid = () => {
     if (selectedOrders.size === 0) {
-      alert('Please select at least one order');
+      alert(t("adminConsole.payouts.alertSelectAtLeastOne", { defaultValue: "Please select at least one order" }));
       return;
     }
 
@@ -464,7 +466,7 @@ export default function AdminPayoutsSection() {
 
       const rangeLabel = pendingBulkAction.displayFromDate && pendingBulkAction.displayToDate
         ? `${pendingBulkAction.displayFromDate} → ${pendingBulkAction.displayToDate}`
-        : 'Selected orders';
+        : t("adminConsole.payouts.selectedOrders", { defaultValue: "Selected orders" });
 
       setSuccessSummary({
         brandNamesList: pendingBulkAction.brandNamesList,
@@ -482,7 +484,7 @@ export default function AdminPayoutsSection() {
       loadPayouts(); // Refresh payouts list
     } catch (error) {
       console.error('Failed to mark payouts:', error);
-      alert('❌ Failed to mark payouts: ' + error.message);
+      alert(t("adminConsole.payouts.alertFailedMarkPayouts", { message: error.message, defaultValue: "❌ Failed to mark payouts: {{message}}" }));
     } finally {
       setBulkLoading(false);
       setPendingBulkAction(null);
@@ -509,24 +511,26 @@ export default function AdminPayoutsSection() {
     const periodStart = new Date(payout.period_start).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     const periodEnd = new Date(payout.period_end).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     const amount = `$${Number(payout.amount || 0).toFixed(2)}`;
-    const status = payout.status === 'completed' ? 'Completed' : 'Pending';
-    const method = payout.method || 'Bank Transfer';
+    const status = payout.status === 'completed'
+      ? t("adminConsole.payouts.statusCompleted", { defaultValue: "Completed" })
+      : t("adminConsole.payouts.statusPending", { defaultValue: "Pending" });
+    const method = payout.method || t("adminConsole.payouts.bankTransfer", { defaultValue: "Bank Transfer" });
 
     const lines = [
       '=========================================',
-      '   PROP CAPITALS - PAYOUT STATEMENT',
+      '   ' + t("adminConsole.payouts.statementHeader", { defaultValue: "PROP CAPITALS - PAYOUT STATEMENT" }),
       '=========================================',
       '',
-      `Reference ID:     ${refId}`,
-      `Payout Date:      ${payoutDate}`,
-      `Period:           ${periodStart} - ${periodEnd}`,
-      `Amount:           ${amount}`,
-      `Status:           ${status}`,
-      `Payment Method:   ${method}`,
-      `Brand ID:         ${payout.brand_id || '-'}`,
+      `${t("adminConsole.payouts.statementReferenceId", { defaultValue: "Reference ID:" })}     ${refId}`,
+      `${t("adminConsole.payouts.statementPayoutDate", { defaultValue: "Payout Date:" })}      ${payoutDate}`,
+      `${t("adminConsole.payouts.statementPeriod", { defaultValue: "Period:" })}           ${periodStart} - ${periodEnd}`,
+      `${t("adminConsole.payouts.statementAmount", { defaultValue: "Amount:" })}           ${amount}`,
+      `${t("adminConsole.payouts.statementStatus", { defaultValue: "Status:" })}           ${status}`,
+      `${t("adminConsole.payouts.statementPaymentMethod", { defaultValue: "Payment Method:" })}   ${method}`,
+      `${t("adminConsole.payouts.statementBrandId", { defaultValue: "Brand ID:" })}         ${payout.brand_id || '-'}`,
       '',
       '=========================================',
-      `Generated on: ${new Date().toLocaleString('en-US')}`,
+      `${t("adminConsole.payouts.statementGeneratedOn", { date: new Date().toLocaleString('en-US'), defaultValue: "Generated on: {{date}}" })}`,
       '=========================================',
     ];
 
@@ -545,7 +549,7 @@ export default function AdminPayoutsSection() {
     return (
       <div className="text-center py-12">
         <i className="fas fa-spinner fa-spin text-4xl text-cyan-400 mb-4"></i>
-        <p className="text-gray-400">Loading payout history...</p>
+        <p className="text-gray-400">{t("adminConsole.payouts.loadingHistory", { defaultValue: "Loading payout history..." })}</p>
       </div>
     );
   }
@@ -555,9 +559,9 @@ export default function AdminPayoutsSection() {
       {/* Header with Bulk Mark Button */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold gradient-text mb-2">Payout History</h2>
+          <h2 className="text-3xl font-bold gradient-text mb-2">{t("adminConsole.payouts.title", { defaultValue: "Payout History" })}</h2>
           <p className="text-sm text-gray-400">
-            View and manage all your past and pending settlements
+            {t("adminConsole.payouts.subtitle", { defaultValue: "View and manage all your past and pending settlements" })}
           </p>
         </div>
         <button
@@ -565,7 +569,7 @@ export default function AdminPayoutsSection() {
           className="action-btn btn-primary px-6 py-3 flex items-center justify-center gap-2 whitespace-nowrap w-full sm:w-auto"
         >
           <i className="fas fa-check-double"></i>
-          <span>Bulk Mark as Paid</span>
+          <span>{t("adminConsole.payouts.bulkMarkAsPaid", { defaultValue: "Bulk Mark as Paid" })}</span>
         </button>
       </div>
 
@@ -578,7 +582,7 @@ export default function AdminPayoutsSection() {
               <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
                 <i className="fas fa-dollar-sign text-green-400 text-sm"></i>
               </div>
-              <span className="text-xs text-gray-400 sm:text-right">Total Paid Out</span>
+              <span className="text-xs text-gray-400 sm:text-right">{t("adminConsole.payouts.totalPaidOut", { defaultValue: "Total Paid Out" })}</span>
             </div>
             <p className="text-xl sm:text-2xl font-bold text-green-400">${Number(stats.total_paid || 0).toFixed(2)}</p>
           </div>
@@ -589,14 +593,14 @@ export default function AdminPayoutsSection() {
               <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
                 <i className="fas fa-calendar-check text-blue-400 text-sm"></i>
               </div>
-              <span className="text-xs text-gray-400 sm:text-right">Last Payout</span>
+              <span className="text-xs text-gray-400 sm:text-right">{t("adminConsole.payouts.lastPayout", { defaultValue: "Last Payout" })}</span>
             </div>
             <p className="text-xl sm:text-2xl font-bold text-blue-400">
               ${stats.last_payout ? Number(stats.last_payout.amount || 0).toFixed(2) : '0.00'}
             </p>
             {stats.last_payout?.date && (
               <p className="text-xs text-gray-500 mt-1">
-                on {new Date(stats.last_payout.date).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
+                {t("adminConsole.payouts.onDate", { date: new Date(stats.last_payout.date).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }), defaultValue: "on {{date}}" })}
               </p>
             )}
           </div>
@@ -607,7 +611,7 @@ export default function AdminPayoutsSection() {
               <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
                 <i className="fas fa-chart-line text-purple-400 text-sm"></i>
               </div>
-              <span className="text-xs text-gray-400 sm:text-right">Average Payout</span>
+              <span className="text-xs text-gray-400 sm:text-right">{t("adminConsole.payouts.averagePayout", { defaultValue: "Average Payout" })}</span>
             </div>
             <p className="text-xl sm:text-2xl font-bold text-purple-400">${Number(stats.average_payout || 0).toFixed(2)}</p>
           </div>
@@ -617,20 +621,20 @@ export default function AdminPayoutsSection() {
       {/* Filter Section */}
       <div className="glass-panel p-4 md:p-6 mb-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-white">Filter Payouts</h3>
+          <h3 className="text-lg font-semibold text-white">{t("adminConsole.payouts.filterPayouts", { defaultValue: "Filter Payouts" })}</h3>
           {(fromDate || toDate) && (
             <button
               onClick={handleClearFilters}
               className="action-btn btn-secondary"
             >
-              <i className="fas fa-times mr-2"></i>Clear Filters
+              <i className="fas fa-times mr-2"></i>{t("adminConsole.payouts.clearFilters", { defaultValue: "Clear Filters" })}
             </button>
           )}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              <i className="fas fa-calendar-alt mr-2 text-blue-400"></i>From Date
+              <i className="fas fa-calendar-alt mr-2 text-blue-400"></i>{t("adminConsole.payouts.fromDate", { defaultValue: "From Date" })}
             </label>
             <input
               type="date"
@@ -646,7 +650,7 @@ export default function AdminPayoutsSection() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              <i className="fas fa-calendar-check mr-2 text-blue-400"></i>To Date
+              <i className="fas fa-calendar-check mr-2 text-blue-400"></i>{t("adminConsole.payouts.toDate", { defaultValue: "To Date" })}
             </label>
             <input
               type="date"
@@ -667,16 +671,16 @@ export default function AdminPayoutsSection() {
       <div className="glass-panel p-4 md:p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
           <h3 className="text-lg md:text-xl font-semibold text-white">
-            <i className="fas fa-receipt mr-2 text-cyan-400"></i>Payouts ({payouts.length})
+            <i className="fas fa-receipt mr-2 text-cyan-400"></i>{t("adminConsole.payouts.payoutsCount", { count: payouts.length, defaultValue: "Payouts ({{count}})" })}
           </h3>
         </div>
 
         {payouts.length === 0 ? (
           <div className="text-center py-12">
             <i className="fas fa-file-invoice-dollar text-6xl text-gray-600 mb-4"></i>
-            <p className="text-gray-400">No payout history found</p>
+            <p className="text-gray-400">{t("adminConsole.payouts.noHistoryFound", { defaultValue: "No payout history found" })}</p>
             <p className="text-sm text-gray-500 mt-2">
-              Payouts will appear here once they are processed
+              {t("adminConsole.payouts.noHistoryHint", { defaultValue: "Payouts will appear here once they are processed" })}
             </p>
           </div>
         ) : (
@@ -685,13 +689,13 @@ export default function AdminPayoutsSection() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-700">
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Payout Date</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Amount</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Period</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Status</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Method</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Reference ID</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Actions</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.payouts.colPayoutDate", { defaultValue: "Payout Date" })}</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.payouts.colAmount", { defaultValue: "Amount" })}</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.payouts.colPeriod", { defaultValue: "Period" })}</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.payouts.colStatus", { defaultValue: "Status" })}</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.payouts.colMethod", { defaultValue: "Method" })}</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.payouts.colReferenceId", { defaultValue: "Reference ID" })}</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">{t("adminConsole.payouts.colActions", { defaultValue: "Actions" })}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -715,11 +719,13 @@ export default function AdminPayoutsSection() {
                             ? 'bg-green-500/20 text-green-400' 
                             : 'bg-orange-500/20 text-orange-400'
                         }`}>
-                          {payout.status === 'completed' ? 'Completed' : 'Pending'}
+                          {payout.status === 'completed'
+                            ? t("adminConsole.payouts.statusCompleted", { defaultValue: "Completed" })
+                            : t("adminConsole.payouts.statusPending", { defaultValue: "Pending" })}
                         </span>
                       </td>
                       <td className="py-3 px-4 text-sm text-gray-300">
-                        {payout.method || 'Bank Transfer'}
+                        {payout.method || t("adminConsole.payouts.bankTransfer", { defaultValue: "Bank Transfer" })}
                       </td>
                       <td className="py-3 px-4 text-sm font-mono text-gray-400">
                         {payout.reference_id || `SET-${payout.id}`}
@@ -730,7 +736,7 @@ export default function AdminPayoutsSection() {
                           className="text-cyan-400 hover:text-cyan-300 transition-colors"
                         >
                           <i className="fas fa-download mr-2"></i>
-                          Statement
+                          {t("adminConsole.payouts.statement", { defaultValue: "Statement" })}
                         </button>
                       </td>
                     </tr>
@@ -748,17 +754,17 @@ export default function AdminPayoutsSection() {
                   disabled={page <= 1}
                 >
                   <i className="fas fa-chevron-left mr-2"></i>
-                  Prev
+                  {t("common.pagination.previous", { defaultValue: "Previous" })}
                 </button>
                 <div className="text-sm text-gray-400 text-center order-first sm:order-none">
-                  Page {page} of {meta.pages} — {meta.total} total
+                  {t("common.pagination.pageOf", { current: page, total: meta.pages, defaultValue: "Page {{current}} of {{total}}" })} — {meta.total} {t("common.pagination.records", { defaultValue: "total" })}
                 </div>
                 <button
                   className="action-btn btn-secondary w-full sm:w-auto"
                   onClick={() => setPage(p => Math.min(meta.pages, p + 1))}
                   disabled={page >= meta.pages}
                 >
-                  Next
+                  {t("common.pagination.next", { defaultValue: "Next" })}
                   <i className="fas fa-chevron-right ml-2"></i>
                 </button>
               </div>
@@ -773,7 +779,7 @@ export default function AdminPayoutsSection() {
           <div className="glass-panel p-6 rounded-xl max-w-4xl w-full max-h-[90vh] flex flex-col" style={{ overflow: 'hidden' }} onClick={(e) => e.stopPropagation()}>
             {/* Modal Header */}
             <div className="flex justify-between items-center mb-6 flex-shrink-0">
-              <h3 className="text-2xl font-bold gradient-text">Bulk Mark Payouts as Paid</h3>
+              <h3 className="text-2xl font-bold gradient-text">{t("adminConsole.payouts.bulkModalTitle", { defaultValue: "Bulk Mark Payouts as Paid" })}</h3>
               <button
                 onClick={() => setShowBulkModal(false)}
                 className="text-gray-400 hover:text-white transition-colors"
@@ -787,12 +793,12 @@ export default function AdminPayoutsSection() {
               {/* Date Range Selection */}
               <div className="mb-6">
                 <h4 className="text-sm font-semibold text-gray-300 mb-3">
-                  <i className="fas fa-calendar-alt mr-2 text-blue-400"></i>Filter by Date Range (Optional)
+                  <i className="fas fa-calendar-alt mr-2 text-blue-400"></i>{t("adminConsole.payouts.filterByDateRangeOptional", { defaultValue: "Filter by Date Range (Optional)" })}
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      <i className="fas fa-calendar-alt mr-2 text-blue-400"></i>From Date
+                      <i className="fas fa-calendar-alt mr-2 text-blue-400"></i>{t("adminConsole.payouts.fromDate", { defaultValue: "From Date" })}
                     </label>
                     <input
                       type="date"
@@ -805,7 +811,7 @@ export default function AdminPayoutsSection() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      <i className="fas fa-calendar-check mr-2 text-blue-400"></i>To Date
+                      <i className="fas fa-calendar-check mr-2 text-blue-400"></i>{t("adminConsole.payouts.toDate", { defaultValue: "To Date" })}
                     </label>
                     <input
                       type="date"
@@ -826,12 +832,12 @@ export default function AdminPayoutsSection() {
                     {applyingFilters ? (
                       <>
                         <i className="fas fa-spinner fa-spin mr-2"></i>
-                        Clearing...
+                        {t("adminConsole.payouts.clearing", { defaultValue: "Clearing..." })}
                       </>
                     ) : (
                       <>
                         <i className="fas fa-times mr-2"></i>
-                        Clear Filters
+                        {t("adminConsole.payouts.clearFilters", { defaultValue: "Clear Filters" })}
                       </>
                     )}
                   </button>
@@ -844,12 +850,12 @@ export default function AdminPayoutsSection() {
                     {applyingFilters ? (
                       <>
                         <i className="fas fa-spinner fa-spin mr-2"></i>
-                        Applying Filters...
+                        {t("adminConsole.payouts.applyingFilters", { defaultValue: "Applying Filters..." })}
                       </>
                     ) : (
                       <>
                         <i className="fas fa-filter mr-2"></i>
-                        Apply Filters
+                        {t("adminConsole.payouts.applyFilters", { defaultValue: "Apply Filters" })}
                       </>
                     )}
                   </button>
@@ -857,8 +863,8 @@ export default function AdminPayoutsSection() {
                 <p className="text-xs text-gray-400 mt-2">
                   <i className="fas fa-info-circle mr-1"></i>
                   {filtersApplied
-                    ? 'Filters are applied. Click "Clear Filters" to remove date filters.'
-                    : 'Select date range and click "Apply Filters" to filter unpaid orders for all brands.'}
+                    ? t("adminConsole.payouts.filtersAppliedHint", { defaultValue: 'Filters are applied. Click "Clear Filters" to remove date filters.' })
+                    : t("adminConsole.payouts.filtersNotAppliedHint", { defaultValue: 'Select date range and click "Apply Filters" to filter unpaid orders for all brands.' })}
                 </p>
               </div>
 
@@ -866,11 +872,11 @@ export default function AdminPayoutsSection() {
               <div>
                 <div className="flex justify-between items-center mb-3">
                   <h4 className="text-sm font-semibold text-gray-300">
-                    <i className="fas fa-building mr-2 text-orange-400"></i>Brands
+                    <i className="fas fa-building mr-2 text-orange-400"></i>{t("adminConsole.payouts.brands", { defaultValue: "Brands" })}
                   </h4>
                   {selectedOrders.size > 0 && (
                     <span className="text-sm text-cyan-400 font-medium">
-                      {selectedOrders.size} order(s) selected
+                      {t("adminConsole.payouts.ordersSelected", { count: selectedOrders.size, defaultValue: "{{count}} order(s) selected" })}
                     </span>
                   )}
                 </div>
@@ -878,11 +884,11 @@ export default function AdminPayoutsSection() {
                 {loadingBrands ? (
                   <div className="text-center py-8">
                     <i className="fas fa-spinner fa-spin text-2xl text-cyan-400"></i>
-                    <p className="text-gray-400 mt-2">Loading brands...</p>
+                    <p className="text-gray-400 mt-2">{t("adminConsole.payouts.loadingBrands", { defaultValue: "Loading brands..." })}</p>
                   </div>
                 ) : brands.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
-                    No brands found
+                    {t("adminConsole.payouts.noBrandsFound", { defaultValue: "No brands found" })}
                   </div>
                 ) : (
                   <div className="border border-gray-700 rounded-lg max-h-[500px] overflow-y-auto">
@@ -916,19 +922,19 @@ export default function AdminPayoutsSection() {
                               {isLoading && (
                                 <>
                                   <i className="fas fa-spinner fa-spin text-cyan-400"></i>
-                                  <span className="text-cyan-400">Loading...</span>
+                                  <span className="text-cyan-400">{t("adminConsole.payouts.loading", { defaultValue: "Loading..." })}</span>
                                 </>
                               )}
                               {!isLoading && isExpanded && orders.length > 0 && (
                                 <span className="text-cyan-400">
-                                  {orders.length} unpaid order{orders.length !== 1 ? 's' : ''}
+                                  {t("adminConsole.payouts.unpaidOrdersCount", { count: orders.length, defaultValue: "{{count}} unpaid order(s)" })}
                                 </span>
                               )}
                               {!isLoading && !isExpanded && (
-                                <span>Click to view orders</span>
+                                <span>{t("adminConsole.payouts.clickToViewOrders", { defaultValue: "Click to view orders" })}</span>
                               )}
                               {!isLoading && isExpanded && orders.length === 0 && (
-                                <span className="text-gray-500">No orders</span>
+                                <span className="text-gray-500">{t("adminConsole.payouts.noOrders", { defaultValue: "No orders" })}</span>
                               )}
                             </div>
                           </div>
@@ -939,12 +945,12 @@ export default function AdminPayoutsSection() {
                               {isLoading ? (
                                 <div className="px-4 py-6 text-center">
                                   <i className="fas fa-spinner fa-spin text-xl text-cyan-400"></i>
-                                  <p className="text-gray-400 mt-2 text-sm">Loading orders...</p>
+                                  <p className="text-gray-400 mt-2 text-sm">{t("adminConsole.payouts.loadingOrders", { defaultValue: "Loading orders..." })}</p>
                                 </div>
                               ) : orders.length === 0 ? (
                                 <div className="px-4 py-6 text-center text-gray-400 text-sm">
-                                  No unpaid orders found
-                                  {bulkFromDate && bulkToDate && ' in the selected date range'}
+                                  {t("adminConsole.payouts.noUnpaidOrdersFound", { defaultValue: "No unpaid orders found" })}
+                                  {bulkFromDate && bulkToDate && t("adminConsole.payouts.inSelectedDateRange", { defaultValue: " in the selected date range" })}
                                 </div>
                               ) : (
                                 <>
@@ -958,7 +964,7 @@ export default function AdminPayoutsSection() {
                                         className="w-4 h-4 text-cyan-400 border-gray-600 rounded focus:ring-cyan-500 bg-transparent"
                                       />
                                       <span className="ml-2 text-sm text-gray-300">
-                                        Select all ({selectedCount}/{orders.length} selected)
+                                        {t("adminConsole.payouts.selectAllCount", { selected: selectedCount, total: orders.length, defaultValue: "Select all ({{selected}}/{{total}} selected)" })}
                                       </span>
                                     </label>
                                   </div>
@@ -978,7 +984,7 @@ export default function AdminPayoutsSection() {
                                         />
                                         <div className="ml-3 flex-1">
                                           <div className="text-sm font-medium text-white">
-                                            Order: {order.order_id || `#${order.id}`}
+                                            {t("adminConsole.payouts.orderLabel", { orderId: order.order_id || `#${order.id}`, defaultValue: "Order: {{orderId}}" })}
                                           </div>
                                           <div className="text-xs text-gray-400 flex items-center gap-4 mt-1">
                                             <span>
@@ -1016,7 +1022,7 @@ export default function AdminPayoutsSection() {
                 {selectedOrders.size > 0 && (
                   <span>
                     <i className="fas fa-check-circle mr-1 text-cyan-400"></i>
-                    {selectedOrders.size} order{selectedOrders.size !== 1 ? 's' : ''} selected
+                    {t("adminConsole.payouts.ordersSelectedShort", { count: selectedOrders.size, defaultValue: "{{count}} order(s) selected" })}
                   </span>
                 )}
               </div>
@@ -1026,7 +1032,7 @@ export default function AdminPayoutsSection() {
                   className="action-btn btn-secondary"
                   disabled={bulkLoading}
                 >
-                  Cancel
+                  {t("adminConsole.payouts.cancel", { defaultValue: "Cancel" })}
                 </button>
                 <button
                   onClick={prepareBulkMarkPaid}
@@ -1036,12 +1042,12 @@ export default function AdminPayoutsSection() {
                   {bulkLoading ? (
                     <>
                       <i className="fas fa-spinner fa-spin mr-2"></i>
-                      Processing...
+                      {t("adminConsole.payouts.processing", { defaultValue: "Processing..." })}
                     </>
                   ) : (
                     <>
                       <i className="fas fa-check mr-2"></i>
-                      Mark as Paid
+                      {t("adminConsole.payouts.markAsPaid", { defaultValue: "Mark as Paid" })}
                     </>
                   )}
                 </button>
@@ -1056,7 +1062,7 @@ export default function AdminPayoutsSection() {
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[60] p-4">
           <div className="glass-panel p-6 md:p-8 rounded-xl max-w-lg w-full relative">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-2xl font-bold gradient-text">Confirm Bulk Mark as Paid</h3>
+              <h3 className="text-2xl font-bold gradient-text">{t("adminConsole.payouts.confirmBulkTitle", { defaultValue: "Confirm Bulk Mark as Paid" })}</h3>
               <button
                 onClick={() => {
                   setConfirmModalOpen(false);
@@ -1069,16 +1075,17 @@ export default function AdminPayoutsSection() {
             </div>
 
             <p className="text-sm text-gray-300 mb-3">
-              You are about to mark <span className="text-white font-semibold">{pendingBulkAction.orderIds?.length || 0}</span>{' '}
-              order(s) as paid.
+              {t("adminConsole.payouts.aboutToMarkPrefix", { defaultValue: "You are about to mark" })}{' '}
+              <span className="text-white font-semibold">{pendingBulkAction.orderIds?.length || 0}</span>{' '}
+              {t("adminConsole.payouts.aboutToMarkSuffix", { defaultValue: "order(s) as paid." })}
             </p>
             <p className="text-xs text-gray-400 mb-4">
-              This will update the selected orders to paid status.
+              {t("adminConsole.payouts.willUpdateStatus", { defaultValue: "This will update the selected orders to paid status." })}
             </p>
 
             <div className="border border-gray-700 rounded-lg max-h-48 overflow-y-auto mb-4">
               <div className="px-4 py-2 bg-gray-800/50 border-b border-gray-700">
-                <p className="text-xs text-gray-400">Affected Brands:</p>
+                <p className="text-xs text-gray-400">{t("adminConsole.payouts.affectedBrands", { defaultValue: "Affected Brands:" })}</p>
               </div>
               {pendingBulkAction.brandNamesList.map((name, index) => (
                 <p
@@ -1094,11 +1101,11 @@ export default function AdminPayoutsSection() {
               <p className="flex items-center gap-2">
                 <i className="fas fa-calendar text-blue-400"></i>
                 <span>
-                  Date Range:{' '}
+                  {t("adminConsole.payouts.dateRangeLabel", { defaultValue: "Date Range:" })}{' '}
                   <span className="text-white font-medium">
                     {pendingBulkAction.displayFromDate && pendingBulkAction.displayToDate
                       ? `${pendingBulkAction.displayFromDate} → ${pendingBulkAction.displayToDate}`
-                      : 'All unpaid orders'}
+                      : t("adminConsole.payouts.allUnpaidOrders", { defaultValue: "All unpaid orders" })}
                   </span>
                 </span>
               </p>
@@ -1113,7 +1120,7 @@ export default function AdminPayoutsSection() {
                 className="action-btn btn-secondary"
                 disabled={bulkLoading}
               >
-                Cancel
+                {t("adminConsole.payouts.cancel", { defaultValue: "Cancel" })}
               </button>
               <button
                 onClick={executeBulkMarkPaid}
@@ -1123,12 +1130,12 @@ export default function AdminPayoutsSection() {
                 {bulkLoading ? (
                   <>
                     <i className="fas fa-spinner fa-spin"></i>
-                    Processing...
+                    {t("adminConsole.payouts.processing", { defaultValue: "Processing..." })}
                   </>
                 ) : (
                   <>
                     <i className="fas fa-check"></i>
-                    Confirm
+                    {t("adminConsole.payouts.confirm", { defaultValue: "Confirm" })}
                   </>
                 )}
               </button>
@@ -1147,7 +1154,7 @@ export default function AdminPayoutsSection() {
                   <i className="fas fa-check text-green-400 text-2xl"></i>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white">Brands Marked as Paid</h3>
+                  <h3 className="text-xl font-bold text-white">{t("adminConsole.payouts.brandsMarkedAsPaid", { defaultValue: "Brands Marked as Paid" })}</h3>
                   <p className="text-sm text-gray-400">{successSummary.rangeLabel}</p>
                 </div>
               </div>
@@ -1164,15 +1171,15 @@ export default function AdminPayoutsSection() {
 
             <div className="bg-gray-800/40 border border-gray-700 rounded-lg p-4 text-sm text-gray-300 mb-4">
               <p className="flex items-center justify-between mb-2">
-                <span>Total Brands</span>
+                <span>{t("adminConsole.payouts.totalBrands", { defaultValue: "Total Brands" })}</span>
                 <span className="text-white font-semibold">{successSummary.summary?.totalBrands || successSummary.brandNamesList.length}</span>
               </p>
               <p className="flex items-center justify-between mb-2">
-                <span>Total Orders Marked</span>
+                <span>{t("adminConsole.payouts.totalOrdersMarked", { defaultValue: "Total Orders Marked" })}</span>
                 <span className="text-cyan-400 font-semibold">{successSummary.summary?.totalOrders || 0}</span>
               </p>
               <p className="flex items-center justify-between">
-                <span>Total Amount</span>
+                <span>{t("adminConsole.payouts.totalAmount", { defaultValue: "Total Amount" })}</span>
                 <span className="text-green-400 font-semibold">
                   ${Number(successSummary.summary?.totalAmount || 0).toFixed(2)}
                 </span>
@@ -1198,7 +1205,7 @@ export default function AdminPayoutsSection() {
                 }}
                 className="action-btn btn-primary"
               >
-                Got it
+                {t("adminConsole.payouts.gotIt", { defaultValue: "Got it" })}
               </button>
             </div>
           </div>

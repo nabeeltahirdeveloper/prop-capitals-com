@@ -1,7 +1,9 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
+import { useTranslation } from "../../contexts/LanguageContext";
 
 export default function AdminPendingBrandsSection() {
+  const { t } = useTranslation();
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -28,11 +30,11 @@ export default function AdminPendingBrandsSection() {
       setMeta(data.meta || { total: 0, pages: 1 });
     } catch (err) {
       console.error('Failed to load pending brands:', err);
-      const errorMessage = err?.error || err?.message || 'Failed to load pending brands';
+      const errorMessage = err?.error || err?.message || t("adminConsole.pendingBrands.loadFailed", { defaultValue: "Failed to load pending brands" });
       setError(errorMessage);
       // If it's a 400 error with "invalid id", it might be a route conflict issue
       if (errorMessage.includes('invalid id')) {
-        setError('Route conflict detected. Please contact the administrator.');
+        setError(t("adminConsole.pendingBrands.routeConflict", { defaultValue: "Route conflict detected. Please contact the administrator." }));
       }
     } finally {
       setLoading(false);
@@ -40,7 +42,7 @@ export default function AdminPendingBrandsSection() {
   };
 
   const handleApprove = async (brandId) => {
-    if (!confirm('Are you sure you want to approve this brand? This will create a user account and send login credentials via email.')) {
+    if (!confirm(t("adminConsole.pendingBrands.approveConfirm", { defaultValue: "Are you sure you want to approve this brand? This will create a user account and send login credentials via email." }))) {
       return;
     }
 
@@ -50,14 +52,14 @@ export default function AdminPendingBrandsSection() {
 
     try {
       const response = await adminConsoleApi.brands.approve(brandId);
-      setSuccess(`Brand approved successfully! ${response.password_sent ? 'Login credentials have been sent via email.' : 'Note: Email service may not be configured.'}`);
+      setSuccess(t("adminConsole.pendingBrands.approveSuccess", { defaultValue: "Brand approved successfully!" }) + " " + (response.password_sent ? t("adminConsole.pendingBrands.credentialsSent", { defaultValue: "Login credentials have been sent via email." }) : t("adminConsole.pendingBrands.emailNotConfigured", { defaultValue: "Note: Email service may not be configured." })));
       setTimeout(() => {
         setSuccess('');
         loadPendingBrands();
       }, 3000);
     } catch (err) {
       console.error('Failed to approve brand:', err);
-      setError(err.message || 'Failed to approve brand');
+      setError(err.message || t("adminConsole.pendingBrands.approveFailed", { defaultValue: "Failed to approve brand" }));
       setTimeout(() => setError(''), 5000);
     } finally {
       setProcessingId(null);
@@ -73,7 +75,7 @@ export default function AdminPendingBrandsSection() {
 
     try {
       await adminConsoleApi.brands.reject(rejectModal.brandId, rejectModal.reason);
-      setSuccess('Brand rejected successfully. The reseller has been notified.');
+      setSuccess(t("adminConsole.pendingBrands.rejectSuccess", { defaultValue: "Brand rejected successfully. The reseller has been notified." }));
       setRejectModal({ show: false, brandId: null, reason: '' });
       setTimeout(() => {
         setSuccess('');
@@ -81,7 +83,7 @@ export default function AdminPendingBrandsSection() {
       }, 3000);
     } catch (err) {
       console.error('Failed to reject brand:', err);
-      setError(err.message || 'Failed to reject brand');
+      setError(err.message || t("adminConsole.pendingBrands.rejectFailed", { defaultValue: "Failed to reject brand" }));
       setTimeout(() => setError(''), 5000);
     } finally {
       setProcessingId(null);
@@ -100,7 +102,7 @@ export default function AdminPendingBrandsSection() {
     return (
       <div className="text-center py-12">
         <i className="fas fa-spinner fa-spin text-4xl text-purple-500 mb-4"></i>
-        <p className="text-gray-600">Loading pending brands...</p>
+        <p className="text-gray-600">{t("adminConsole.pendingBrands.loading", { defaultValue: "Loading pending brands..." })}</p>
       </div>
     );
   }
@@ -109,8 +111,8 @@ export default function AdminPendingBrandsSection() {
     <div>
       {/* Header */}
       <div className="mb-6">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Pending Brand Approvals</h2>
-        <p className="text-sm text-gray-600 mt-1">Review and approve brand registrations submitted by resellers</p>
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">{t("adminConsole.pendingBrands.title", { defaultValue: "Pending Brand Approvals" })}</h2>
+        <p className="text-sm text-gray-600 mt-1">{t("adminConsole.pendingBrands.subtitle", { defaultValue: "Review and approve brand registrations submitted by resellers" })}</p>
       </div>
 
       {/* Messages */}
@@ -132,7 +134,7 @@ export default function AdminPendingBrandsSection() {
       <div className="glass-card p-4 md:p-6 mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-600 mb-1">Total Pending Brands</p>
+            <p className="text-sm text-gray-600 mb-1">{t("adminConsole.pendingBrands.totalPending", { defaultValue: "Total Pending Brands" })}</p>
             <p className="text-3xl font-bold text-yellow-600">{meta.total}</p>
           </div>
           <div className="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center">
@@ -145,8 +147,8 @@ export default function AdminPendingBrandsSection() {
       {brands.length === 0 ? (
         <div className="glass-card p-12 text-center">
           <i className="fas fa-check-circle text-6xl text-green-400 mb-4"></i>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">No Pending Brands</h3>
-          <p className="text-gray-600">All brand registrations have been reviewed.</p>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">{t("adminConsole.pendingBrands.noPending", { defaultValue: "No Pending Brands" })}</h3>
+          <p className="text-gray-600">{t("adminConsole.pendingBrands.allReviewed", { defaultValue: "All brand registrations have been reviewed." })}</p>
         </div>
       ) : (
         <>
@@ -156,14 +158,14 @@ export default function AdminPendingBrandsSection() {
               <table className="w-full min-w-[1150px]">
                 <thead className="border-b border-gray-700">
                   <tr>
-                    <th className="text-left p-4 whitespace-nowrap min-w-[240px]">Brand Name</th>
-                    <th className="text-left p-4 whitespace-nowrap min-w-[220px]">Email</th>
-                    <th className="text-left p-4 whitespace-nowrap min-w-[130px]">Username</th>
-                    <th className="text-left p-4 whitespace-nowrap min-w-[120px]">Slug</th>
-                    <th className="text-left p-4 whitespace-nowrap min-w-[130px]">Commission Rate</th>
-                    <th className="text-left p-4 whitespace-nowrap min-w-[150px]">Created By</th>
-                    <th className="text-left p-4 whitespace-nowrap min-w-[120px]">Submitted</th>
-                    <th className="text-left p-4 whitespace-nowrap min-w-[220px]">Actions</th>
+                    <th className="text-left p-4 whitespace-nowrap min-w-[240px]">{t("adminConsole.pendingBrands.colBrandName", { defaultValue: "Brand Name" })}</th>
+                    <th className="text-left p-4 whitespace-nowrap min-w-[220px]">{t("adminConsole.pendingBrands.colEmail", { defaultValue: "Email" })}</th>
+                    <th className="text-left p-4 whitespace-nowrap min-w-[130px]">{t("adminConsole.pendingBrands.colUsername", { defaultValue: "Username" })}</th>
+                    <th className="text-left p-4 whitespace-nowrap min-w-[120px]">{t("adminConsole.pendingBrands.colSlug", { defaultValue: "Slug" })}</th>
+                    <th className="text-left p-4 whitespace-nowrap min-w-[130px]">{t("adminConsole.pendingBrands.colCommissionRate", { defaultValue: "Commission Rate" })}</th>
+                    <th className="text-left p-4 whitespace-nowrap min-w-[150px]">{t("adminConsole.pendingBrands.colCreatedBy", { defaultValue: "Created By" })}</th>
+                    <th className="text-left p-4 whitespace-nowrap min-w-[120px]">{t("adminConsole.pendingBrands.colSubmitted", { defaultValue: "Submitted" })}</th>
+                    <th className="text-left p-4 whitespace-nowrap min-w-[220px]">{t("adminConsole.pendingBrands.colActions", { defaultValue: "Actions" })}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -208,7 +210,7 @@ export default function AdminPendingBrandsSection() {
                             <span className="truncate" title={brand.parent_brand_name}>{brand.parent_brand_name}</span>
                           </span>
                         ) : (
-                          <span className="text-gray-500">N/A</span>
+                          <span className="text-gray-500">{t("adminConsole.pendingBrands.notAvailable", { defaultValue: "N/A" })}</span>
                         )}
                       </td>
                       <td className="p-4 text-sm text-gray-400 whitespace-nowrap">
@@ -224,12 +226,12 @@ export default function AdminPendingBrandsSection() {
                             {processingId === brand.id ? (
                               <>
                                 <i className="fas fa-spinner fa-spin mr-2"></i>
-                                Processing...
+                                {t("adminConsole.pendingBrands.processing", { defaultValue: "Processing..." })}
                               </>
                             ) : (
                               <>
                                 <i className="fas fa-check mr-2"></i>
-                                Approve
+                                {t("adminConsole.pendingBrands.approve", { defaultValue: "Approve" })}
                               </>
                             )}
                           </button>
@@ -239,7 +241,7 @@ export default function AdminPendingBrandsSection() {
                             className="action-btn btn-danger whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <i className="fas fa-times mr-2"></i>
-                            Reject
+                            {t("adminConsole.pendingBrands.reject", { defaultValue: "Reject" })}
                           </button>
                         </div>
                       </td>
@@ -277,24 +279,24 @@ export default function AdminPendingBrandsSection() {
                 
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">Username:</span>
+                    <span className="text-gray-400">{t("adminConsole.pendingBrands.usernameLabel", { defaultValue: "Username:" })}</span>
                     <code className="text-xs text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 px-2 py-1 rounded-md max-w-[55%] truncate">
                       {brand.username}
                     </code>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">Slug:</span>
+                    <span className="text-gray-400">{t("adminConsole.pendingBrands.slugLabel", { defaultValue: "Slug:" })}</span>
                     <code className="text-xs text-purple-300 bg-purple-500/10 border border-purple-500/30 px-2 py-1 rounded-md max-w-[55%] truncate">
                       {brand.slug}
                     </code>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">Commission:</span>
+                    <span className="text-gray-400">{t("adminConsole.pendingBrands.commissionLabel", { defaultValue: "Commission:" })}</span>
                     <span className="font-semibold text-white">{brand.commission_rate}%</span>
                   </div>
                   {brand.parent_brand_name && (
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-400">Created By:</span>
+                      <span className="text-gray-400">{t("adminConsole.pendingBrands.createdByLabel", { defaultValue: "Created By:" })}</span>
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
                         <i className="fas fa-network-wired mr-1"></i>
                         {brand.parent_brand_name}
@@ -302,7 +304,7 @@ export default function AdminPendingBrandsSection() {
                     </div>
                   )}
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">Submitted:</span>
+                    <span className="text-gray-400">{t("adminConsole.pendingBrands.submittedLabel", { defaultValue: "Submitted:" })}</span>
                     <span className="text-gray-300">{new Date(brand.created_at).toLocaleDateString()}</span>
                   </div>
                 </div>
@@ -316,12 +318,12 @@ export default function AdminPendingBrandsSection() {
                     {processingId === brand.id ? (
                       <>
                         <i className="fas fa-spinner fa-spin mr-2"></i>
-                        Processing...
+                        {t("adminConsole.pendingBrands.processing", { defaultValue: "Processing..." })}
                       </>
                     ) : (
                       <>
                         <i className="fas fa-check mr-2"></i>
-                        Approve
+                        {t("adminConsole.pendingBrands.approve", { defaultValue: "Approve" })}
                       </>
                     )}
                   </button>
@@ -331,7 +333,7 @@ export default function AdminPendingBrandsSection() {
                     className="action-btn btn-danger flex-1 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <i className="fas fa-times mr-2"></i>
-                    Reject
+                    {t("adminConsole.pendingBrands.reject", { defaultValue: "Reject" })}
                   </button>
                 </div>
               </div>
@@ -349,7 +351,7 @@ export default function AdminPendingBrandsSection() {
                 <i className="fas fa-chevron-left"></i>
               </button>
               <span className="text-sm text-gray-600">
-                Page {page} of {meta.pages}
+                {t("common.pagination.pageOf", { current: page, total: meta.pages, defaultValue: "Page {{current}} of {{total}}" })}
               </span>
               <button
                 onClick={() => setPage(p => Math.min(meta.pages, p + 1))}
@@ -369,7 +371,7 @@ export default function AdminPendingBrandsSection() {
           <div className="glass-panel max-w-md w-full">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-2xl font-bold gradient-text">Reject Brand</h3>
+                <h3 className="text-2xl font-bold gradient-text">{t("adminConsole.pendingBrands.rejectBrandTitle", { defaultValue: "Reject Brand" })}</h3>
                 <button 
                   onClick={closeRejectModal}
                   className="text-gray-400 hover:text-white text-2xl"
@@ -380,17 +382,17 @@ export default function AdminPendingBrandsSection() {
 
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2 text-gray-300">
-                  Rejection Reason (Optional)
+                  {t("adminConsole.pendingBrands.rejectionReasonLabel", { defaultValue: "Rejection Reason (Optional)" })}
                 </label>
                 <textarea
                   value={rejectModal.reason}
                   onChange={(e) => setRejectModal(prev => ({ ...prev, reason: e.target.value }))}
                   rows={4}
-                  placeholder="Provide a reason for rejection (will be sent to reseller via email)..."
+                  placeholder={t("adminConsole.pendingBrands.rejectionReasonPlaceholder", { defaultValue: "Provide a reason for rejection (will be sent to reseller via email)..." })}
                   className="search-input p-3 rounded-lg w-full resize-none"
                 />
                 <p className="text-xs text-gray-400 mt-1">
-                  This reason will be included in the rejection email sent to the reseller.
+                  {t("adminConsole.pendingBrands.rejectionReasonHint", { defaultValue: "This reason will be included in the rejection email sent to the reseller." })}
                 </p>
               </div>
 
@@ -399,7 +401,7 @@ export default function AdminPendingBrandsSection() {
                   onClick={closeRejectModal}
                   className="action-btn btn-secondary px-6"
                 >
-                  Cancel
+                  {t("adminConsole.pendingBrands.cancel", { defaultValue: "Cancel" })}
                 </button>
                 <button
                   onClick={handleReject}
@@ -409,12 +411,12 @@ export default function AdminPendingBrandsSection() {
                   {processingId === rejectModal.brandId ? (
                     <>
                       <i className="fas fa-spinner fa-spin mr-2"></i>
-                      Processing...
+                      {t("adminConsole.pendingBrands.processing", { defaultValue: "Processing..." })}
                     </>
                   ) : (
                     <>
                       <i className="fas fa-times mr-2"></i>
-                      Reject Brand
+                      {t("adminConsole.pendingBrands.rejectBrandButton", { defaultValue: "Reject Brand" })}
                     </>
                   )}
                 </button>
