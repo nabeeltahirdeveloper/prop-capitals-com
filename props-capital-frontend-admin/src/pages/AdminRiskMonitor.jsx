@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   adminGetRiskOverview,
   adminGetAllViolations,
@@ -42,15 +42,27 @@ import {
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import StatusBadge from "@/components/shared/StatusBadge";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function AdminRiskMonitor() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [riskFilter, setRiskFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedAccountId, setSelectedAccountId] = useState(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, riskFilter]);
 
   const {
     data: accounts = [],
@@ -171,6 +183,14 @@ export default function AdminRiskMonitor() {
     const matchesRisk = riskFilter === "all" || riskLevel === riskFilter;
     return matchesSearch && matchesRisk;
   });
+
+  const limit = 20;
+  const accountsTotal = filteredAccounts.length;
+  const totalPages = Math.ceil(accountsTotal / limit) || 1;
+  const paginatedAccounts = filteredAccounts.slice(
+    (currentPage - 1) * limit,
+    currentPage * limit
+  );
 
   const riskCounts = {
     critical: accounts.filter((a) => getRiskLevel(a) === "critical").length,
@@ -431,7 +451,7 @@ export default function AdminRiskMonitor() {
                   </TableCell>
                 </TableRow>
               )}
-              {filteredAccounts.map((account) => {
+              {paginatedAccounts.map((account) => {
                 const riskLevel = getRiskLevel(account);
                 const dailyDD = account.daily_drawdown_percent || 0;
                 const maxDD = account.overall_drawdown_percent || 0;
@@ -552,6 +572,41 @@ export default function AdminRiskMonitor() {
             </TableBody>
           </Table>
         </div>
+        {accountsTotal > limit && (
+          <div className="p-4 border-t border-border">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage > 1) setCurrentPage(p => p - 1);
+                    }}
+                    href="#"
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+                
+                <PaginationItem>
+                  <span className="text-sm text-muted-foreground px-4">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                </PaginationItem>
+
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage < totalPages) setCurrentPage(p => p + 1);
+                    }}
+                    href="#"
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </Card>
 
       {/* Recent Violations */}

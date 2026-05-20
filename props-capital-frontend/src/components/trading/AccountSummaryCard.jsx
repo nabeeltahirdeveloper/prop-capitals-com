@@ -267,6 +267,7 @@ import {
   Target,
 } from 'lucide-react';
 import { calculatePositionsWithPnL, calculateTotalOpenPnL } from '@/utils/positionCalculations';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 export default function AccountSummaryCard({
   account,
@@ -274,6 +275,7 @@ export default function AccountSummaryCard({
   currentPrices = {},
   // baaki props agar zarurat na ho to remove kar sakte ho
 }) {
+  const { symbol } = useCurrency();
   const profitTarget = account.current_phase === 'phase2' ? 5 : 8;
   const profitProgress = Math.min((account.current_profit_percent / profitTarget) * 100, 100);
   const dailyDDProgress = (account.daily_drawdown_percent / 5) * 100;
@@ -302,7 +304,7 @@ export default function AccountSummaryCard({
         <div>
           <div className="flex items-center gap-2 mb-1">
             <h2 className="text-xl font-bold text-white">
-              ${account.initial_balance?.toLocaleString()}
+              {symbol}{account.initial_balance?.toLocaleString()}
             </h2>
             <Badge variant="outline" className="text-xs">{account.platform}</Badge>
           </div>
@@ -322,7 +324,7 @@ export default function AccountSummaryCard({
             <span className="text-xs text-slate-400">Balanceeee</span>
           </div>
           <p className="text-lg font-bold text-white">
-            ${account.current_balance?.toLocaleString() || '—'}
+            {symbol}{account.current_balance?.toLocaleString() || '—'}
           </p>
         </div>
 
@@ -332,7 +334,7 @@ export default function AccountSummaryCard({
             <span className="text-xs text-slate-400">Equity</span>
           </div>
           <p className="text-lg font-bold text-white">
-            ${equityDisplay.toLocaleString() || '—'}
+            {symbol}{equityDisplay.toLocaleString() || '—'}
           </p>
         </div>
 

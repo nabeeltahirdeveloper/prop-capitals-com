@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useTranslation } from "../../contexts/LanguageContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import {
   Target,
   TrendingUp,
@@ -15,6 +16,7 @@ import {
 
 export default function PerformanceMetrics({ metrics }) {
   const { t } = useTranslation();
+  const { symbol } = useCurrency();
   const {
     totalTrades = 0,
     winningTrades = 0,
@@ -71,25 +73,25 @@ export default function PerformanceMetrics({ metrics }) {
     },
     {
       label: t("analytics.avgWin"),
-      value: `$${avgWin.toFixed(2)}`,
+      value: `${symbol}${avgWin.toFixed(2)}`,
       icon: TrendingUp,
       color: avgWin > 0 ? "text-emerald-400" : "text-slate-400",
     },
     {
       label: t("analytics.avgLoss"),
-      value: `$${Math.abs(avgLoss).toFixed(2)}`,
+      value: `${symbol}${Math.abs(avgLoss).toFixed(2)}`,
       icon: TrendingDown,
       color: avgLoss !== 0 ? "text-red-400" : "text-slate-400",
     },
     {
       label: t("analytics.bestTrade"),
-      value: `$${bestTrade.toFixed(2)}`,
+      value: `${symbol}${bestTrade.toFixed(2)}`,
       icon: Award,
       color: bestTrade > 0 ? "text-emerald-400" : "text-slate-400",
     },
     {
       label: t("analytics.worstTrade"),
-      value: `${worstTrade < 0 ? "-" : ""}$${Math.abs(worstTrade).toFixed(2)}`,
+      value: `${worstTrade < 0 ? "-" : ""}${symbol}${Math.abs(worstTrade).toFixed(2)}`,
       icon: Award,
       color: worstTrade < 0 ? "text-red-400" : "text-slate-400",
     },

@@ -1146,6 +1146,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { getChallenges } from '@/api/challenges';
 import { useNavigate } from 'react-router-dom';
+import { getFullPrice } from '@/utils/fullPrice';
 
 // Format any amount + currency as a localized currency string.
 // Backend Challenge rows carry their own currency; checkout defaults to EUR.
@@ -1216,7 +1217,7 @@ const platforms = [
 const TradeCheckoutPanelPage = () => {
   const { isDark } = useTraderTheme();
   const { user } = useAuth();
-  const { formatFee } = useCurrency();
+  const { formatFee, formatSize } = useCurrency();
   const navigate = useNavigate();
 
   const [selectedType, setSelectedType] = useState('1-step');
@@ -1323,7 +1324,7 @@ const TradeCheckoutPanelPage = () => {
                 : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                 }`}
             >
-              {size.label}
+              {formatSize(size.key)}
             </button>
           ))}
         </div>
@@ -1375,7 +1376,7 @@ const TradeCheckoutPanelPage = () => {
               return (
                 <div className={`text-center mb-4 py-4 rounded-xl ${isDark ? 'bg-black/30' : 'bg-slate-50'}`}>
                   <div className={`text-sm line-through mb-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                    {formatFee(cardPrice * 3)}
+                    {formatFee(getFullPrice(challenge.id, selectedSizeKey, cardPrice))}
                   </div>
                   <div className="text-amber-500 text-3xl font-black">
                     {formatFee(cardPrice)}
