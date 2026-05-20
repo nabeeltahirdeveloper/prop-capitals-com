@@ -642,7 +642,9 @@ export class PaymentsService {
     // Standard Checkout is POST-only and the response IS the hosted payment
     // page (HTML), so the customer's browser must POST the form directly.
     // We return the action URL + fields; the frontend auto-submits a form.
-    const checkoutUrl = `${baseUrl}/transaction/Checkout`;
+    // Strip any trailing slashes from baseUrl so we don't produce
+    // "https://host//transaction/Checkout" (which Xoala 404s on).
+    const checkoutUrl = `${baseUrl.replace(/\/+$/, '')}/transaction/Checkout`;
 
     this.logger.log(
       `[Xoala Checkout] Session ready: ref=${orderNumber}, checkoutUrl=${checkoutUrl}`,

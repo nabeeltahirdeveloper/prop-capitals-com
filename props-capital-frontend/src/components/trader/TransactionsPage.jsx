@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTraderTheme } from './TraderPanelLayout';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { getUserPayments } from '@/api/payments';
 
@@ -29,6 +30,7 @@ const TABS = [
 
 const TransactionsPage = () => {
   const { isDark } = useTraderTheme();
+  const { symbol } = useCurrency();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('all');
   const [search, setSearch] = useState('');
@@ -66,7 +68,7 @@ const TransactionsPage = () => {
 
   const formatAmount = (cents) => {
     if (!cents && cents !== 0) return '—';
-    return `€${(cents / 100).toFixed(2)}`;
+    return `${symbol}${(cents / 100).toFixed(2)}`;
   };
 
   const formatDate = (dateStr) => {
@@ -223,7 +225,7 @@ const TransactionsPage = () => {
                       <div>
                         <p className={`text-sm font-medium ${textClass}`}>{p.challenge?.name || '—'}</p>
                         <p className={`text-xs ${mutedClass}`}>
-                          {p.challenge?.accountSize ? `€${p.challenge.accountSize.toLocaleString()}` : ''}{' '}
+                          {p.challenge?.accountSize ? `${symbol}${p.challenge.accountSize.toLocaleString()}` : ''}{' '}
                           {p.challenge?.challengeType || ''}
                         </p>
                       </div>

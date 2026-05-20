@@ -12,6 +12,7 @@ import {
 } from "@/api/accounts";
 import { getAccountTrades } from "@/api/trades";
 import { useTranslation } from "../contexts/LanguageContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -61,6 +62,7 @@ function formatCompactCurrency(num) {
 
 export default function AccountDetails() {
   const { t } = useTranslation();
+  const { symbol } = useCurrency();
   const [selectedAccountId, setSelectedAccountId] = useState(null);
 
   // Get current user
@@ -309,7 +311,7 @@ export default function AccountDetails() {
                   >
                     <div className="flex items-center gap-2">
                       <span className="font-medium">
-                        ${acc.initial_balance?.toLocaleString()}
+                        {symbol}{acc.initial_balance?.toLocaleString()}
                       </span>
                       <span className="text-slate-400">•</span>
                       <span className="text-slate-400 text-xs">
@@ -668,7 +670,7 @@ export default function AccountDetails() {
         <span
           className={`font-medium ${row.profit >= 0 ? "text-emerald-400" : "text-red-400"}`}
         >
-          {row.profit >= 0 ? "+" : ""}${row.profit?.toFixed(2)}
+          {row.profit >= 0 ? "+" : ""}{symbol}{row.profit?.toFixed(2)}
         </span>
       ),
     },
@@ -705,7 +707,7 @@ export default function AccountDetails() {
           <div className="flex-1 w-full sm:w-auto">
             <div className="flex w-full justify-between md:justify-start items-center gap-3">
               <h1 className="text-base sm:text-2xl font-bold text-white">
-                ${account.initial_balance?.toLocaleString()}{" "}
+                {symbol}{account.initial_balance?.toLocaleString()}{" "}
                 {t("accountDetails.account")}
               </h1>
 
@@ -781,7 +783,7 @@ export default function AccountDetails() {
                 >
                   <div className="flex items-center gap-2">
                     <span className="font-medium">
-                      ${acc.initial_balance?.toLocaleString()}
+                      {symbol}{acc.initial_balance?.toLocaleString()}
                     </span>
                     <span className="text-slate-400">•</span>
                     <span className="text-slate-400 text-xs">
@@ -843,7 +845,7 @@ export default function AccountDetails() {
                 {t("accountDetails.balance")}
               </p>
               <p className="text-sm sm:text-xl md:text-2xl font-bold text-white truncate">
-                $
+                {symbol}
                 {account.current_balance?.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -855,7 +857,7 @@ export default function AccountDetails() {
                 {t("accountDetails.equity")}
               </p>
               <p className="text-sm sm:text-xl md:text-2xl font-bold text-white truncate">
-                $
+                {symbol}
                 {account.current_equity?.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -869,7 +871,7 @@ export default function AccountDetails() {
               <p
                 className={`text-sm sm:text-xl md:text-2xl font-bold truncate ${account.floating_pl >= 0 ? "text-emerald-400" : "text-red-400"}`}
               >
-                {account.floating_pl >= 0 ? "+" : ""}$
+                {account.floating_pl >= 0 ? "+" : ""}{symbol}
                 {account.floating_pl?.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -886,7 +888,7 @@ export default function AccountDetails() {
                 {account.current_balance - account.initial_balance >= 0
                   ? "+"
                   : ""}
-                $
+                {symbol}
                 {(
                   account.current_balance - account.initial_balance
                 ).toLocaleString(undefined, {
@@ -1033,9 +1035,9 @@ export default function AccountDetails() {
           <div className="text-center p-3 sm:p-4 bg-slate-800/50 rounded-xl overflow-hidden">
             <p
               className="text-lg sm:text-2xl md:text-3xl font-bold text-emerald-400 truncate"
-              title={`+$${Math.abs(stats.largestWin).toFixed(2)}`}
+              title={`+${symbol}${Math.abs(stats.largestWin).toFixed(2)}`}
             >
-              +${formatCompactCurrency(Math.abs(stats.largestWin))}
+              +{symbol}{formatCompactCurrency(Math.abs(stats.largestWin))}
             </p>
             <p className="text-xs sm:text-sm text-slate-400">
               {t("accountDetails.largestWin")}
@@ -1044,9 +1046,9 @@ export default function AccountDetails() {
           <div className="text-center p-3 sm:p-4 bg-slate-800/50 rounded-xl overflow-hidden">
             <p
               className="text-lg sm:text-2xl md:text-3xl font-bold text-red-400 truncate"
-              title={`-$${Math.abs(stats.largestLoss).toFixed(2)}`}
+              title={`-${symbol}${Math.abs(stats.largestLoss).toFixed(2)}`}
             >
-              -${formatCompactCurrency(Math.abs(stats.largestLoss))}
+              -{symbol}{formatCompactCurrency(Math.abs(stats.largestLoss))}
             </p>
             <p className="text-xs sm:text-sm text-slate-400">
               {t("accountDetails.largestLoss")}
