@@ -45,12 +45,22 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function AdminFundedAccounts() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedAccountId, setSelectedAccountId] = useState(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -61,21 +71,27 @@ export default function AdminFundedAccounts() {
     return () => clearTimeout(handle);
   }, [searchQuery]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch, statusFilter]);
+
+  const limit = 20;
   // Pinning phase=funded so the backend returns only funded rows. Search and
   // status are also pushed server-side — the local-only filter previously
   // missed accounts past the first page (default limit was 20).
   const { data: accountsResponse, isLoading } = useQuery({
-    queryKey: ["admin-accounts", "funded", debouncedSearch, statusFilter],
+    queryKey: ["admin-accounts", "funded", currentPage, debouncedSearch, statusFilter],
     queryFn: () =>
       adminGetAllAccounts({
-        page: 1,
-        limit: 50,
+        page: currentPage,
+        limit: limit,
         search: debouncedSearch,
         status: statusFilter,
         phase: "funded",
       }),
   });
   const accountsData = accountsResponse?.data ?? [];
+  const accountsTotal = accountsResponse?.total ?? 0;
 
   const { data: payoutsData = [] } = useQuery({
     queryKey: ["admin-payouts"],
@@ -611,6 +627,42 @@ export default function AdminFundedAccounts() {
           isLoading={isLoading}
           emptyMessage={t("admin.accounts.emptyMessage")}
         />
+        
+        {accountsTotal > limit && (
+          <div className="mt-4">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage > 1) setCurrentPage(p => p - 1);
+                    }}
+                    href="#"
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+                
+                <PaginationItem>
+                  <span className="text-sm text-muted-foreground px-4">
+                    Page {currentPage} of {Math.ceil(accountsTotal / limit)}
+                  </span>
+                </PaginationItem>
+
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage < Math.ceil(accountsTotal / limit)) setCurrentPage(p => p + 1);
+                    }}
+                    href="#"
+                    className={currentPage === Math.ceil(accountsTotal / limit) ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </Card>
 
       <Dialog open={isDetailsDialogOpen} onOpenChange={handleCloseDetails}>
