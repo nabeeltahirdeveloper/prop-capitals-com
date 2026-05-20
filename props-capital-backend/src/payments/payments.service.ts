@@ -437,6 +437,8 @@ export class PaymentsService {
       country,
       address,
       city,
+      state,
+      postalCode,
       brandSlug,
       linkSlug,
       card,
@@ -532,20 +534,25 @@ export class PaymentsService {
     const memberId = this.configService.get<string>('XOALA_MEMBER_ID');
     const secureKey = this.configService.get<string>('XOALA_SECURE_KEY');
     const frontendUrl = this.configService.get<string>('APP_FRONTEND_URL');
+    const backendUrl = this.configService.get<string>('APP_BACKEND_URL');
     const terminalId = this.configService.get<string>('XOALA_TERMINAL_ID');
     const notificationUrl = this.configService.get<string>('XOALA_NOTIFICATION_URL');
 
-    if (!s2sBaseUrl || !memberId || !secureKey || !frontendUrl) {
+    if (!s2sBaseUrl || !memberId || !secureKey || !frontendUrl || !backendUrl) {
       this.logger.error('Missing Xoala S2S env vars', {
         s2sBaseUrl: !!s2sBaseUrl,
         memberId: !!memberId,
         secureKey: !!secureKey,
         frontendUrl: !!frontendUrl,
+        backendUrl: !!backendUrl,
       });
       throw new BadRequestException('Xoala S2S environment variables not configured');
     }
 
-    const merchantRedirectUrl = `${frontendUrl}/pay/success?reference=${orderNumber}`;
+    // Xoala submits a form POST to merchantRedirectUrl after 3DS. Vite (dev)
+    // and most SPA hosts don't serve HTML on POST, so we route through a
+    // backend endpoint that accepts POST and 302-redirects to the SPA.
+    const merchantRedirectUrl = `${backendUrl}/payments/xoala/return?reference=${orderNumber}`;
     const orderCurrency = (challenge.currency || 'USD').toUpperCase();
     const amount = (amountCents / 100).toFixed(2);
     const orderDescription = `${challenge.name} ${challenge.accountSize} Account`;
@@ -572,6 +579,8 @@ export class PaymentsService {
         phone: phone || null,
         country: country || null,
         city: city || null,
+        state: state || null,
+        postalCode: postalCode || null,
       },
       card: {
         brand: card.brand || null,
@@ -623,6 +632,8 @@ export class PaymentsService {
             country: country || null,
             address: address || null,
             city: city || null,
+            state: state || null,
+            postalCode: postalCode || null,
           },
         },
         sessionPayload: safePayload,
@@ -660,6 +671,8 @@ export class PaymentsService {
     if (country) params['shipping.country'] = String(country);
     if (city) params['shipping.city'] = String(city);
     if (address) params['shipping.street1'] = String(address);
+    if (state) params['shipping.state'] = String(state);
+    if (postalCode) params['shipping.postcode'] = String(postalCode);
 
     const authToken = await this.xoalaAuthService.getAuthToken();
     const url = `${s2sBaseUrl}/transactionServices/REST/v1/payments`;
@@ -719,14 +732,16 @@ export class PaymentsService {
     };
 
     // ── Branch 1: 3DS required (cardholder must visit ACS) ──
-    // NOTE: Xoala's exact field name for the redirect URL was not in our
-    // docs; we check the most likely candidates. If 3DS works but redirect
-    // doesn't kick in, log the response and add the actual field here.
-    const redirectUrl =
+    // Xoala returns a `redirect` object: { url, method, parameters: [{name,value}, ...] }
+    // For 3DS the redirect is a POST with TermUrl + MD parameters, so the
+    // frontend must build and auto-submit a form (a plain location.href
+    // would do a GET and fail).
+    const redirect = xoalaResponse?.redirect;
+    const redirectUrl: string | null =
+      redirect?.url ||
       xoalaResponse?.redirectUrl ||
       xoalaResponse?.acsUrl ||
-      xoalaResponse?.result?.redirectUrl ||
-      xoalaResponse?.threeDSRedirect;
+      null;
     if (redirectUrl && transactionStatus !== 'Y') {
       await (this.prisma.payment as any).update({
         where: { id: payment.id },
@@ -746,6 +761,10 @@ export class PaymentsService {
         reference: orderNumber,
         paymentId: payment.id,
         redirectUrl,
+        redirectMethod: (redirect?.method || 'GET').toUpperCase(),
+        redirectParams: Array.isArray(redirect?.parameters)
+          ? redirect.parameters
+          : null,
       };
     }
 
