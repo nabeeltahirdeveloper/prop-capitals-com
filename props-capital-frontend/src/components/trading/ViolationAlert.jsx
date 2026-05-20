@@ -14,9 +14,11 @@ import {
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../../utils";
 import { useTranslation } from "../../contexts/LanguageContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 export default function ViolationAlert({ account, onDismiss }) {
   const { t } = useTranslation();
+  const { symbol } = useCurrency();
 
   // Only show if account is failed - violation_reason is optional for display
   if (account.status !== "failed") {
@@ -166,7 +168,7 @@ export default function ViolationAlert({ account, onDismiss }) {
                 {t("violationAlert.finalBalance")}
               </p>
               <p className="text-white font-medium">
-                ${account.current_balance?.toLocaleString()}
+                {symbol}{account.current_balance?.toLocaleString()}
               </p>
             </div>
             <div>

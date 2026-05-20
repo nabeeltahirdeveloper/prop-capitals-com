@@ -1,8 +1,10 @@
 import { DollarSign, TrendingUp, Activity } from "lucide-react";
 import { useTraderTheme } from "../trader/TraderPanelLayout";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const BalanceStatsRow = ({ balance, equity, floatingPL, profitPercent }) => {
   const { isDark } = useTraderTheme();
+  const { symbol } = useCurrency();
 
   const cardClass = `rounded-2xl border ${isDark ? "bg-[#12161d] border-white/5" : "bg-white border-slate-200"}`;
   const textClass = isDark ? "text-white" : "text-slate-900";
@@ -13,14 +15,14 @@ const BalanceStatsRow = ({ balance, equity, floatingPL, profitPercent }) => {
       id: "balance",
       icon: DollarSign,
       label: "Available",
-      value: `$${(balance || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+      value: `${symbol}${(balance || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
       color: textClass,
     },
     {
       id: "equity",
       icon: TrendingUp,
       label: "Equity",
-      value: `$${(equity || 0).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
+      value: `${symbol}${(equity || 0).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
       color: "text-emerald-500",
     },
     {

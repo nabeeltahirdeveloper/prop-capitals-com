@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { PaymentLogos } from '@/components/PaymentLogos';
 import { getChallengeBySlug } from '@/api/challenges';
 import { createXoalaCardSession, submitXoalaCheckout } from '@/api/payments';
@@ -64,6 +65,7 @@ const formatCurrency = (amount, currency) => {
 
 const PayCheckout = () => {
   const { isDark } = useTheme();
+  const { formatFee, cur } = useCurrency();
   const { slug } = useParams();
 
   const [form, setForm] = useState({
@@ -334,7 +336,7 @@ const PayCheckout = () => {
                 ) : (
                   <>
                     <CreditCard className="w-5 h-5 mr-2" />
-                    Pay {formatCurrency(challenge.price, challenge.currency || 'EUR')}
+                    Pay {formatFee(challenge.price)}
                   </>
                 )}
               </Button>
@@ -347,7 +349,7 @@ const PayCheckout = () => {
               <h3 className={`font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Order Summary</h3>
 
               <div className={`rounded-xl p-4 mb-4 ${isDark ? 'bg-amber-500/10' : 'bg-amber-50'}`}>
-                <div className="text-amber-500 font-bold text-lg">{challenge.name}</div>
+                <div className="text-amber-500 font-bold text-lg">{cur(challenge.name)}</div>
                 <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
                   {challenge.accountSize?.toLocaleString()} Account
                 </div>
@@ -377,7 +379,7 @@ const PayCheckout = () => {
               <div className={`mt-4 pt-4 border-t flex justify-between items-center ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
                 <span className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Total</span>
                 <span className="text-3xl font-black text-amber-500">
-                  {formatCurrency(challenge.price, challenge.currency || 'EUR')}
+                  {formatFee(challenge.price)}
                 </span>
               </div>
 

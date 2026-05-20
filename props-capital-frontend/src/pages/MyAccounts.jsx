@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getCurrentUser } from "@/api/auth";
 import { getUserAccounts } from "@/api/accounts";
 import { useTranslation } from "../contexts/LanguageContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -64,6 +65,7 @@ const translateViolationMessage = (violationReason, t) => {
 
 export default function MyAccounts() {
   const { t } = useTranslation();
+  const { symbol } = useCurrency();
   const [filter, setFilter] = useState("all");
   const [copiedId, setCopiedId] = useState(null);
 
@@ -388,7 +390,7 @@ export default function MyAccounts() {
                   {/* Row 2: Account size + Platform badge */}
                   <div className="flex items-center gap-2 mb-2 justify-between">
                     <span className="text-xl font-bold text-white flex gap-2">
-                      ${account.initial_balance?.toLocaleString()}
+                      {symbol}{account.initial_balance?.toLocaleString()}
                       <Badge variant="default" className="!text-[10px] px-1.5 ">
                         {account.platform}
                       </Badge>
@@ -443,7 +445,7 @@ export default function MyAccounts() {
                           {t("myAccounts.balance")}
                         </span>
                         <span className="text-white font-medium truncate">
-                          $
+                          {symbol}
                           {account.current_balance?.toLocaleString(undefined, {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,

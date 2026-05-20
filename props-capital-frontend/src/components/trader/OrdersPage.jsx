@@ -9,6 +9,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { useTrading } from '@/contexts/TradingContext';
 import { useChallenges } from '@/contexts/ChallengesContext';
 
@@ -50,6 +51,7 @@ const escapeCsv = (val) => `"${String(val ?? '').replace(/"/g, '""')}"`;
 
 const OrdersPage = () => {
   const { isDark } = useTraderTheme();
+  const { symbol } = useCurrency();
   const { orders, ordersLoading, fetchOrders } = useTrading();
   const { selectedChallengeId } = useChallenges();
   const [activeTab, setActiveTab] = useState('all');
@@ -153,13 +155,13 @@ const OrdersPage = () => {
         <div className={`rounded-2xl border p-3 sm:p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           <p className={`text-xs sm:text-sm mb-1 sm:mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Closed P/L</p>
           <p className={`text-xl sm:text-2xl font-bold ${totalProfit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-            {totalProfit >= 0 ? '+' : ''}${totalProfit.toFixed(2)}
+            {totalProfit >= 0 ? '+' : ''}{symbol}{totalProfit.toFixed(2)}
           </p>
         </div>
         <div className={`rounded-2xl border p-3 sm:p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           <p className={`text-xs sm:text-sm mb-1 sm:mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Open P/L</p>
           <p className={`text-xl sm:text-2xl font-bold ${openProfit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-            {openProfit >= 0 ? '+' : ''}${openProfit.toFixed(2)}
+            {openProfit >= 0 ? '+' : ''}{symbol}{openProfit.toFixed(2)}
           </p>
         </div>
         <div className={`rounded-2xl border p-3 sm:p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
@@ -257,7 +259,7 @@ const OrdersPage = () => {
                     <td className={`px-6 py-4 text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{formatDateTime(order.closeAt)}</td>
                     <td className="px-6 py-4">
                       <span className={`font-semibold ${order.profit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                        {order.profit >= 0 ? '+' : ''}${(order.profit || 0).toFixed(2)}
+                        {order.profit >= 0 ? '+' : ''}{symbol}{(order.profit || 0).toFixed(2)}
                       </span>
                     </td>
                     <td className="px-6 py-4">

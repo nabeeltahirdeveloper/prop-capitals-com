@@ -51,6 +51,7 @@ import {
 } from "@/components/ui/select";
 import { useTranslation } from "../contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { translateNotification } from "../utils/notificationTranslations";
 
 // Helper function to translate violation messages
@@ -88,6 +89,7 @@ const translateViolationMessage = (violationReason, t) => {
 export default function TraderDashboard() {
   const { t, language } = useTranslation();
   const { isDark } = useTheme();
+  const { symbol } = useCurrency();
   const [selectedAccountForRules, setSelectedAccountForRules] = useState(null);
   const queryClient = useQueryClient();
 
@@ -523,7 +525,7 @@ export default function TraderDashboard() {
         />
         <StatsCard
           title={t("dashboard.stats.totalPayouts")}
-          value={`$${totalPayouts.toLocaleString()}`}
+          value={`${symbol}${totalPayouts.toLocaleString()}`}
           icon={Wallet}
           gradient="from-amber-500 to-orange-500"
         />
@@ -553,7 +555,7 @@ export default function TraderDashboard() {
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <span className="text-white font-semibold text-sm sm:text-base">
-                      ${account.initial_balance?.toLocaleString()}
+                      {symbol}{account.initial_balance?.toLocaleString()}
                     </span>
                     <Badge variant="default" className="text-xs">
                       {account.platform}
@@ -688,7 +690,7 @@ export default function TraderDashboard() {
                 <DollarSign className="w-6 h-6 text-emerald-400 mx-auto" />
                 <div>
                   <p className="text-lg sm:text-xl font-bold text-white truncate">
-                    $
+                    {symbol}
                     {aggregatedMetrics.balance.toLocaleString("en-US", {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
@@ -895,7 +897,7 @@ export default function TraderDashboard() {
                       >
                         <div className="flex items-center gap-1.5 sm:gap-2 text-sm">
                           <span className="font-medium text-white">
-                            ${acc.initial_balance?.toLocaleString()}
+                            {symbol}{acc.initial_balance?.toLocaleString()}
                           </span>
                           <span className="text-slate-500">•</span>
                           <span className="text-slate-300">{acc.platform}</span>
