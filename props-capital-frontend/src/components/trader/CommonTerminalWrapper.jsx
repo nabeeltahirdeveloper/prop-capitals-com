@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTraderTheme } from "./TraderPanelLayout";
-import { useCurrency } from "@/contexts/CurrencyContext";
 import { useChallenges } from "@/contexts/ChallengesContext";
 import { usePrices } from "@/contexts/PriceContext";
 import {
@@ -111,7 +110,6 @@ const CommonTerminalWrapper = ({
   selectedChallenge: selectedChallengeProp = null,
 }) => {
   const { isDark } = useTraderTheme();
-  const { symbol } = useCurrency();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { prices } = usePrices();
@@ -665,7 +663,7 @@ const CommonTerminalWrapper = ({
       if (requiredMargin > availableMargin) {
         toast({
           title: "Insufficient margin",
-          description: `Required ${symbol}${requiredMargin.toFixed(2)}, available ${symbol}${availableMargin.toFixed(2)}.`,
+          description: `Required $${requiredMargin.toFixed(2)}, available $${availableMargin.toFixed(2)}.`,
           variant: "destructive",
         });
         return;
