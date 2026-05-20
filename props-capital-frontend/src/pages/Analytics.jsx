@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/api/auth";
 import { getUserAccounts, getAnalytics } from "@/api/accounts";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "../contexts/LanguageContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { Card } from "@/components/ui/card";
 import {
   Select,
@@ -33,6 +34,7 @@ import {
 
 export default function Analytics() {
   const { t } = useTranslation();
+  const { symbol } = useCurrency();
   const [selectedAccount, setSelectedAccount] = useState("all");
 
   const { data: user } = useQuery({
@@ -220,7 +222,7 @@ export default function Analytics() {
         <span
           className={`font-medium ${row.profit >= 0 ? "text-emerald-400" : "text-red-400"}`}
         >
-          {row.profit >= 0 ? "+" : ""}${row.profit?.toFixed(2)}
+          {row.profit >= 0 ? "+" : ""}{symbol}{row.profit?.toFixed(2)}
         </span>
       ),
     },
@@ -311,7 +313,7 @@ export default function Analytics() {
         />
         <StatsCard
           title={t("analytics.totalProfit")}
-          value={`${statistics.totalProfit >= 0 ? "+" : ""}$${statistics.totalProfit.toFixed(2)}`}
+          value={`${statistics.totalProfit >= 0 ? "+" : ""}${symbol}${statistics.totalProfit.toFixed(2)}`}
           icon={statistics.totalProfit >= 0 ? TrendingUp : TrendingDown}
           gradient={
             statistics.totalProfit >= 0

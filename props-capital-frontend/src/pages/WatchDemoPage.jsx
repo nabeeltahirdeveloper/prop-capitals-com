@@ -3,9 +3,11 @@ import { Play, Pause, Volume2, VolumeX, Maximize, SkipForward, SkipBack, CheckCi
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 const WatchDemoPage = () => {
   const { isDark } = useTheme();
+  const { cur } = useCurrency();
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -242,7 +244,7 @@ const WatchDemoPage = () => {
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-amber-500/10 rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3">
                     <stat.icon className="w-5 h-5 sm:w-6 sm:h-6 text-amber-500" />
                   </div>
-                  <div className={`text-lg sm:text-xl lg:text-2xl font-black mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{stat.value}</div>
+                  <div className={`text-lg sm:text-xl lg:text-2xl font-black mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{cur(stat.value)}</div>
                   <div className={`text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{stat.label}</div>
                 </div>
               ))}

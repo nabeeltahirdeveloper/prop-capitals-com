@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { CheckCircle2, Wallet } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 
 // Country flag components using SVG
@@ -123,6 +124,7 @@ const FlagIcon = ({ country }) => {
 };
 
 const PayoutCheck = ({ payout }) => {
+  const { cur } = useCurrency();
   return (
     <div className="flex-shrink-0 w-[320px] mx-3">
       <div className="relative bg-gradient-to-br from-[#fefce8] to-[#fef9c3] rounded-lg overflow-hidden shadow-xl border-2 border-amber-200">
@@ -178,7 +180,7 @@ const PayoutCheck = ({ payout }) => {
               <CheckCircle2 className="w-5 h-5 text-emerald-500" />
             </div>
             <div className="text-amber-900 text-2xl font-black mt-1">
-              ${payout.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              {cur(`$${payout.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`)}
             </div>
           </div>
 
@@ -209,6 +211,7 @@ const PayoutCheck = ({ payout }) => {
 
 const PayoutsSection = () => {
   const { isDark } = useTheme();
+  const { cur } = useCurrency();
   const scrollRef1 = useRef(null);
   const scrollRef2 = useRef(null);
 
@@ -262,7 +265,7 @@ const PayoutsSection = () => {
             <span className={`text-sm font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Real Trader Payouts</span>
           </div>
           <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-black mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Over <span className="text-amber-500">$15.2M+</span> Paid Out
+            Over <span className="text-amber-500">{cur('$15.2M+')}</span> Paid Out
           </h2>
           <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
             Every check represents a real trader who achieved their goals with Prop Capitals.

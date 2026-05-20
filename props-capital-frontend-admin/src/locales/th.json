@@ -1940,7 +1940,7 @@
       "dialog": {
         "title": "เพิ่มเซิร์ฟเวอร์โบรกเกอร์",
         "serverName": "ชื่อเซิร์ฟเวอร์",
-        "serverNamePlaceholder": "เช่น Prop Capitals MT5 Demo",
+        "serverNamePlaceholder": "เช่น Prop Capitals MT5 เดโม",
         "platform": "แพลตฟอร์ม",
         "serverAddress": "ที่อยู่เซิร์ฟเวอร์",
         "serverAddressPlaceholder": "broker.server.com",

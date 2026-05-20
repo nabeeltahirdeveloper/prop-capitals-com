@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { DollarSign, Users, Share2, TrendingUp, Gift, Award, ArrowRight, CheckCircle2, Copy, Check, Mail, User, Globe, Instagram, Youtube, Twitter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 const AffiliatePage = () => {
   const { isDark } = useTheme();
+  const { cur } = useCurrency();
   const [showSignupForm, setShowSignupForm] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
@@ -172,7 +174,7 @@ const AffiliatePage = () => {
               {faqs.map((faq, i) => (
                 <div key={i} className={`rounded-2xl p-6 border ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`}>
                   <h3 className={`font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{faq.q}</h3>
-                  <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{faq.a}</p>
+                  <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{cur(faq.a)}</p>
                 </div>
               ))}
             </div>

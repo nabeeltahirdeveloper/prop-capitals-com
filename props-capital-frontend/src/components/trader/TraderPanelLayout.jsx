@@ -48,6 +48,7 @@ import { Button } from "../ui/button";
 import { dayjs } from "@/lib/utils";
 import { usePlatformTokensStore } from "@/lib/stores/platform-tokens.store";
 import CompanyInfo from "@/components/CompanyInfo";
+import CurrencySwitcher from "@/components/CurrencySwitcher";
 
 export const TraderThemeContext = React.createContext();
 export const useTraderTheme = () => React.useContext(TraderThemeContext);
@@ -689,6 +690,9 @@ const TraderPanelLayoutInner = () => {
               {/* <span className={`hidden md:block text-xs sm:text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
                 Last Updated: {lastRefresh.toLocaleString()}
               </span> */}
+
+              {/* Currency Switcher (language dropdown hidden until translations finalized) */}
+              <CurrencySwitcher />
 
               {/* Theme Toggle */}
               <button

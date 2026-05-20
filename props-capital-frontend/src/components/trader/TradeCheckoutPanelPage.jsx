@@ -1143,8 +1143,10 @@ import {
 import { toast } from 'sonner';
 import { useTraderTheme } from './TraderPanelLayout';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { getChallenges } from '@/api/challenges';
 import { useNavigate } from 'react-router-dom';
+import { getFullPrice } from '@/utils/fullPrice';
 
 // Format any amount + currency as a localized currency string.
 // Backend Challenge rows carry their own currency; checkout defaults to EUR.
@@ -1162,10 +1164,10 @@ const formatCurrency = (amount, currency) => {
 };
 
 const accountSizes = [
-  { label: '€2K', key: '2K', value: 2000 },
   { label: '€5K', key: '5K', value: 5000 },
   { label: '€10K', key: '10K', value: 10000 },
-  { label: '€25K', key: '25K', value: 25000 },
+  { label: '€20K', key: '20K', value: 20000 },
+  { label: '€30K', key: '30K', value: 30000 },
   { label: '€50K', key: '50K', value: 50000 },
   { label: '€100K', key: '100K', value: 100000 },
   { label: '€200K', key: '200K', value: 200000 },
@@ -1185,7 +1187,7 @@ const challengeTypes = [
     leverage: '1:30',
     minDays: 'None',
     popular: true,
-    prices: { '2K': 35, '5K': 65, '10K': 99, '25K': 189, '50K': 299, '100K': 599, '200K': 949 },
+    prices: { '5K': 69, '10K': 99, '20K': 159, '30K': 219, '50K': 349, '100K': 599, '200K': 999 },
   },
   {
     id: '2-step',
@@ -1200,7 +1202,7 @@ const challengeTypes = [
     leverage: '1:50',
     minDays: 'None',
     popular: false,
-    prices: { '2K': 25, '5K': 45, '10K': 79, '25K': 245, '50K': 490, '100K': 449, '200K': 849 },
+    prices: { '5K': 59, '10K': 79, '20K': 129, '30K': 179, '50K': 299, '100K': 499, '200K': 799 },
   },
 ];
 
@@ -1215,6 +1217,7 @@ const platforms = [
 const TradeCheckoutPanelPage = () => {
   const { isDark } = useTraderTheme();
   const { user } = useAuth();
+  const { formatFee, formatSize } = useCurrency();
   const navigate = useNavigate();
 
   const [selectedType, setSelectedType] = useState('1-step');
@@ -1264,7 +1267,7 @@ const TradeCheckoutPanelPage = () => {
   // hardcoded EUR price (used by the visual cards) until backend data loads.
   const matchedCurrency = matchingBackendChallenge?.currency || 'EUR';
   const matchedPrice = matchingBackendChallenge?.price ?? finalPrice;
-  const matchedFormatted = formatCurrency(matchedPrice, matchedCurrency);
+  const matchedFormatted = formatFee(matchedPrice);
 
   const handlePlatformSelect = (platformId) => {
     if (platformId === 'tradelocker') {
@@ -1321,7 +1324,7 @@ const TradeCheckoutPanelPage = () => {
                 : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                 }`}
             >
-              {size.label}
+              {formatSize(size.key)}
             </button>
           ))}
         </div>
@@ -1373,10 +1376,10 @@ const TradeCheckoutPanelPage = () => {
               return (
                 <div className={`text-center mb-4 py-4 rounded-xl ${isDark ? 'bg-black/30' : 'bg-slate-50'}`}>
                   <div className={`text-sm line-through mb-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                    {formatCurrency(cardPrice * 3, cardCurrency)}
+                    {formatFee(getFullPrice(challenge.id, selectedSizeKey, cardPrice))}
                   </div>
                   <div className="text-amber-500 text-3xl font-black">
-                    {formatCurrency(cardPrice, cardCurrency)}
+                    {formatFee(cardPrice)}
                   </div>
                   <div className="text-emerald-500 text-xs font-semibold mt-1">70% OFF</div>
                 </div>

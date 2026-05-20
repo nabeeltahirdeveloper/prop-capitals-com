@@ -263,6 +263,7 @@ export default function AdminBrokerServers() {
                     )}
                   />
                 </div>
+
                 <div className="space-y-1.5 sm:space-y-2">
                   <Label className="text-muted-foreground text-xs sm:text-sm">
                     {t("admin.brokerServers.dialog.platform")}

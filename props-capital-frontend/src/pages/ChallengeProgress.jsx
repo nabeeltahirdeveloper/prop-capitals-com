@@ -6,6 +6,7 @@ import { getAccountById, getUserAccounts } from "@/api/accounts";
 import { getCurrentUser } from "@/api/auth";
 import { getPayoutStatistics } from "@/api/payouts";
 import { useTranslation } from "../contexts/LanguageContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import StatusBadge from "../components/shared/StatusBadge";
@@ -37,6 +38,7 @@ import {
 
 export default function ChallengeProgress() {
   const { t } = useTranslation();
+  const { symbol } = useCurrency();
   const [accountId, setAccountId] = useState(null);
 
   // Get current user
@@ -191,7 +193,7 @@ export default function ChallengeProgress() {
   const challenge = account.challenge || {};
   const challengeName =
     challenge.name ||
-    `$${(account.initialBalance || challenge.accountSize || 0).toLocaleString()} Challenge`;
+    `${symbol}${(account.initialBalance || challenge.accountSize || 0).toLocaleString()} Challenge`;
   const initialBalance = account.initialBalance || challenge.accountSize || 0;
   const profitPercent = account.profitPercent ?? 0;
   const tradingDaysCount = account.tradingDaysCount ?? 0;
@@ -218,7 +220,7 @@ export default function ChallengeProgress() {
       icon: ShoppingCart,
       status: "completed",
       description: t("challengeProgress.purchaseDesc") || "Challenge purchased",
-      badge: `$${initialBalance?.toLocaleString()} ${platform} Challenge`,
+      badge: `${symbol}${initialBalance?.toLocaleString()} ${platform} Challenge`,
     },
     {
       id: "phase1",
@@ -458,7 +460,7 @@ export default function ChallengeProgress() {
                   >
                     <div className="flex items-center gap-2">
                       <span className="font-medium">
-                        ${accInitialBalance?.toLocaleString()}
+                        {symbol}{accInitialBalance?.toLocaleString()}
                       </span>
                       <span className="text-slate-400">•</span>
                       <span className="text-slate-400 text-xs">
@@ -821,7 +823,7 @@ export default function ChallengeProgress() {
               </p>
             </div>
           </div>
-          <p className="text-3xl font-bold text-amber-400">$2M</p>
+          <p className="text-3xl font-bold text-amber-400">{symbol}2M</p>
           <p className="text-sm text-slate-400 mt-1">
             {t("challengeProgress.scalingLevels")}
           </p>

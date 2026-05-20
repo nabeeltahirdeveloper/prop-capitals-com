@@ -17,6 +17,7 @@ import {
   Users
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 const scenes = [
   {
@@ -76,6 +77,7 @@ const scenes = [
 ];
 
 export default function PropTradingExplainer() {
+  const { cur } = useCurrency();
   const [currentScene, setCurrentScene] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -297,7 +299,7 @@ export default function PropTradingExplainer() {
                     transition={{ delay: 0.2 + i * 0.15 }}
                     className={`px-4 py-3 rounded-xl border ${i === 2 ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-slate-800/50 border-slate-700 text-slate-400'}`}
                   >
-                    <p className="text-lg font-bold">{size}</p>
+                    <p className="text-lg font-bold">{cur(size)}</p>
                   </motion.div>
                 ))}
               </motion.div>
@@ -308,7 +310,7 @@ export default function PropTradingExplainer() {
                 transition={{ delay: 0.8 }}
               >
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{scene.title}</h2>
-                <p className="text-lg text-slate-400">{scene.subtitle}</p>
+                <p className="text-lg text-slate-400">{cur(scene.subtitle)}</p>
               </motion.div>
             </div>
           )}
@@ -492,7 +494,7 @@ export default function PropTradingExplainer() {
                     className="w-16 bg-gradient-to-t from-emerald-500/50 to-cyan-500 rounded-t-lg flex flex-col items-center justify-end pb-2"
                     style={{ maxHeight: '120px' }}
                   >
-                    <span className="text-xs text-white font-bold">{level.size}</span>
+                    <span className="text-xs text-white font-bold">{cur(level.size)}</span>
                   </motion.div>
                 ))}
               </motion.div>
@@ -502,7 +504,7 @@ export default function PropTradingExplainer() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 1.2 }}
               >
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{scene.title}</h2>
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{cur(scene.title)}</h2>
                 <p className="text-lg text-slate-400">{scene.subtitle}</p>
               </motion.div>
             </div>
@@ -548,11 +550,11 @@ export default function PropTradingExplainer() {
                   <p className="text-sm">Funded Traders</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-cyan-400">$50M+</p>
+                  <p className="text-2xl font-bold text-cyan-400">{cur('$50M+')}</p>
                   <p className="text-sm">Capital Deployed</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-amber-400">$8M+</p>
+                  <p className="text-2xl font-bold text-amber-400">{cur('$8M+')}</p>
                   <p className="text-sm">Paid Out</p>
                 </div>
               </motion.div>

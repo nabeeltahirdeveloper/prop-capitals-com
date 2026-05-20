@@ -52,7 +52,7 @@ export const testimonials = [
     avatar: "/assets/images/img2.png",
     promoVideo: "/assets/videos/video1.mp4",
     rating: "4.9/5.0 Rating",
-    payout: "$1,450.00",
+    payout: "€1,450.00",
   },
   {
     id: 2,
@@ -67,7 +67,7 @@ export const testimonials = [
     avatar: "/assets/images/img4.png",
     promoVideo: "/assets/videos/video2.mp4",
     rating: "5.0/5.0 Rating",
-    payout: "$3,500.00",
+    payout: "€3,500.00",
   },
   {
     id: 3,
@@ -82,14 +82,14 @@ export const testimonials = [
     avatarVideo: "/assets/videos/video3.mp4",
     promoVideo: "/assets/videos/video3.mp4",
     rating: "4.8/5.0 Rating",
-    payout: "$1,944.00",
+    payout: "€1,944.00",
   },
   {
     id: 4,
     name: "Nova",
     country: "SG",
     quote:
-      "From $25K to $200K funded account. Prop Capitals changed my trading career completely!",
+      "From €25K to €200K funded account. Prop Capitals changed my trading career completely!",
     highlight: "changed my trading career",
     tag: "Career Changer",
     avatar: "/assets/images/img1.png",
@@ -97,7 +97,7 @@ export const testimonials = [
     avatarVideo: "/assets/videos/video4.mp4",
     promoVideo: "/assets/videos/video4.mp4",
     rating: "4.9/5.0 Rating",
-    payout: "$933.00",
+    payout: "€933.00",
   },
 ];
 
@@ -173,12 +173,13 @@ export const challengeTypes = [
     leverage: "1:30",
     popular: true,
     prices: {
-      "5K": 55,
+      "5K": 69,
       "10K": 99,
-      "25K": 189,
-      "50K": 299,
-      "100K": 499,
-      "200K": 949,
+      "20K": 159,
+      "30K": 219,
+      "50K": 349,
+      "100K": 599,
+      "200K": 999,
     },
   },
   {
@@ -195,23 +196,25 @@ export const challengeTypes = [
     leverage: "1:50",
     popular: false,
     prices: {
-      "5K": 45,
+      "5K": 59,
       "10K": 79,
-      "25K": 159,
-      "50K": 249,
-      "100K": 449,
-      "200K": 849,
+      "20K": 129,
+      "30K": 179,
+      "50K": 299,
+      "100K": 499,
+      "200K": 799,
     },
   },
 ];
 
 export const accountSizes = [
-  { value: 5000, label: "$5K", key: "5K" },
-  { value: 10000, label: "$10K", key: "10K" },
-  { value: 25000, label: "$25K", key: "25K" },
-  { value: 50000, label: "$50K", key: "50K" },
-  { value: 100000, label: "$100K", key: "100K" },
-  { value: 200000, label: "$200K", key: "200K" },
+  { value: 5000, key: "5K" },
+  { value: 10000, key: "10K" },
+  { value: 20000, key: "20K" },
+  { value: 30000, key: "30K" },
+  { value: 50000, key: "50K" },
+  { value: 100000, key: "100K" },
+  { value: 200000, key: "200K" },
 ];
 
 export const tradingPlatforms = [
@@ -360,14 +363,14 @@ export const faqData = [
   {
     question: "Is there a scaling plan?",
     answer:
-      "Yes! Our scaling plan allows you to grow your account up to $5,000,000. Every time you reach a 10% profit milestone, your account size increases by 25%. Top traders can access our Elite program with even better conditions.",
+      "Yes! Our scaling plan allows you to grow your account up to €5,000,000. Every time you reach a 10% profit milestone, your account size increases by 25%. Top traders can access our Elite program with even better conditions.",
   },
 ];
 
 export const stats = {
   tradersCount: "18,500+",
-  totalPaid: "$15.2M+",
-  avgPayout: "$3,850",
+  totalPaid: "€15.2M+",
+  avgPayout: "€3,850",
   trustpilotRating: "4.8",
   payoutTime: "<90 min",
   successRate: "23%",
@@ -376,7 +379,7 @@ export const stats = {
 export const tradingConditions = [
   { label: "Forex Leverage", value: "Up to 1:100" },
   { label: "Spreads From", value: "0.0 pips" },
-  { label: "Commission", value: "$2/lot" },
+  { label: "Commission", value: "€2/lot" },
   { label: "Instruments", value: "100+" },
 ];
 
