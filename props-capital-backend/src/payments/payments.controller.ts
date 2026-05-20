@@ -16,10 +16,10 @@ export class PaymentsController {
         return this.paymentsService.purchaseChallenge(body);
     }
 
-    // Xoala: create hosted checkout session
-    @Post('xoala/session')
-    async xoalaSession(@Body() body: any) {
-        return this.paymentsService.createXoalaCheckoutSession(body);
+    // Xoala: Server-to-Server card charge (collects card details server-side)
+    @Post('xoala/charge')
+    async xoalaCharge(@Body() body: any) {
+        return this.paymentsService.createXoalaCharge(body);
     }
 
     // Xoala: Standard Checkout notification/callback

@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException, Logger } from '@nes
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
+import axios from 'axios';
 import { TradingPhase, TradingAccountStatus, NotificationType, NotificationCategory } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
@@ -10,6 +11,8 @@ import { CouponsService } from '../coupons/coupons.service';
 
 import { generatePassword } from 'src/utils/generate-password.util';
 import { EmailService } from 'src/email/email.service';
+import { XoalaAuthService } from './xoala-auth.service';
+import { buildXoalaRequestChecksum } from './xoala-checksum.util';
 
 @Injectable()
 
@@ -23,6 +26,7 @@ export class PaymentsService {
     private readonly emailService: EmailService,
     private couponsService: CouponsService,
     private readonly configService: ConfigService,
+    private readonly xoalaAuthService: XoalaAuthService,
   ) { }
 
   // ─── Platform normalization (shared) ───────────────────────────────
@@ -402,9 +406,21 @@ export class PaymentsService {
 
   }
 
-  // ─── Xoala: Create checkout session ────────────────────────────
+  // ─── Xoala: Server-to-Server card charge ───────────────────────
 
-  async createXoalaCheckoutSession(data: any) {
+  // S2S flow:
+  //   1. Resolve challenge + (optional) brand attribution from input.
+  //   2. Create Payment row up-front (pending) — audit trail even on failure.
+  //   3. Fetch cached AuthToken, build form-urlencoded body, POST to
+  //      {S2S_BASE}/transactionServices/REST/v1/payments.
+  //   4. Branch on response:
+  //        - result.code === "00001" && transactionStatus === "Y"  → succeeded
+  //          (provision account inline; webhook is the idempotent backup)
+  //        - response contains a redirect URL                       → requires_action (3DS)
+  //        - anything else                                          → failed
+  //   5. Card data (PAN/CVV) never touches the DB or app logs. Only
+  //      bin + last4 + brand from Xoala's response are persisted.
+  async createXoalaCharge(data: any) {
     const {
       slug,
       challengeId,
@@ -423,11 +439,17 @@ export class PaymentsService {
       city,
       brandSlug,
       linkSlug,
+      card,
     } = data || {};
 
     if (!slug && !challengeId && !accountSize) {
       throw new BadRequestException(
         'Missing required field: slug, challengeId, or accountSize',
+      );
+    }
+    if (!card?.number || !card?.expiryMonth || !card?.expiryYear || !card?.cvv) {
+      throw new BadRequestException(
+        'Card details (number, expiryMonth, expiryYear, cvv) are required',
       );
     }
 
@@ -474,7 +496,6 @@ export class PaymentsService {
       });
     }
 
-    // Explicit brand attribution from /checkout?brand=...&link=... params.
     if (!brandLink && linkSlug && typeof linkSlug === 'string') {
       brandLink = await (this.prisma as any).directPurchaseLink.findUnique({
         where: { slug: linkSlug },
@@ -494,101 +515,74 @@ export class PaymentsService {
     }
 
     const user = await this.resolveOrCreateGuestUser({
-      email,
-      firstName,
-      lastName,
-      phone,
-      country,
-      address,
-      city,
+      email, firstName, lastName, phone, country, address, city,
     });
 
     const amountCents = challenge.price * 100;
-
     const selectedPlatform =
-      platform ||
-      tradingPlatform ||
-      trading_platform ||
-      brokerPlatform ||
-      challenge.platform;
-
+      platform || tradingPlatform || trading_platform || brokerPlatform || challenge.platform;
     const normalizedPlatform = this.normalizePlatform(selectedPlatform);
 
     const orderNumber = `XOALA-${Date.now()}-${Math.random()
       .toString(36)
       .substring(2, 8)}`;
 
-    // Xoala "Standard Checkout" (POST {base}/transaction/Checkout).
-    // Account-specific values come from the Xoala merchant dashboard.
-    const baseUrl = this.configService.get<string>('XOALA_BASE_URL');
+    // ── S2S config ──
+    const s2sBaseUrl = this.configService.get<string>('XOALA_S2S_BASE_URL');
     const memberId = this.configService.get<string>('XOALA_MEMBER_ID');
     const secureKey = this.configService.get<string>('XOALA_SECURE_KEY');
-    const totype = this.configService.get<string>('XOALA_TOTYPE');
     const frontendUrl = this.configService.get<string>('APP_FRONTEND_URL');
     const terminalId = this.configService.get<string>('XOALA_TERMINAL_ID');
-    const paymentMode = this.configService.get<string>('XOALA_PAYMENT_MODE');
     const notificationUrl = this.configService.get<string>('XOALA_NOTIFICATION_URL');
 
-    if (!baseUrl || !memberId || !secureKey || !totype || !frontendUrl) {
-      this.logger.error('Missing Xoala env vars', {
-        baseUrl: !!baseUrl,
+    if (!s2sBaseUrl || !memberId || !secureKey || !frontendUrl) {
+      this.logger.error('Missing Xoala S2S env vars', {
+        s2sBaseUrl: !!s2sBaseUrl,
         memberId: !!memberId,
         secureKey: !!secureKey,
-        totype: !!totype,
         frontendUrl: !!frontendUrl,
       });
-
-      throw new BadRequestException('Xoala environment variables not configured');
+      throw new BadRequestException('Xoala S2S environment variables not configured');
     }
 
-    // Standard Checkout uses a SINGLE return URL; Xoala appends the status.
-    // The return page polls payment status (truth = the server-to-server
-    // notification webhook) and renders succeeded/failed/pending itself.
     const merchantRedirectUrl = `${frontendUrl}/pay/success?reference=${orderNumber}`;
     const orderCurrency = (challenge.currency || 'USD').toUpperCase();
-    // amount format per spec: [0-9]{1,8}\.[0-9]{2}
     const amount = (amountCents / 100).toFixed(2);
     const orderDescription = `${challenge.name} ${challenge.accountSize} Account`;
 
-    // Request checksum (per Standard Checkout spec):
-    //   MD5( memberId | totype | amount | merchantTransactionId | merchantRedirectUrl | secureKey )
-    // Values are joined raw with '|' (the browser url-encodes form fields in
-    // transit; Xoala validates the checksum against the decoded values).
-    const checksumSource = [
-      memberId,
-      totype,
-      amount,
-      orderNumber,
-      merchantRedirectUrl,
-      secureKey,
-    ].join('|');
-    const checksum = crypto
-      .createHash('md5')
-      .update(checksumSource)
-      .digest('hex');
+    // S2S request checksum:  MD5( memberId | secureKey | merchantTxId | amount )
+    const checksum = buildXoalaRequestChecksum({
+      memberId, secureKey, merchantTransactionId: orderNumber, amount,
+    });
 
-    // Form fields posted to {base}/transaction/Checkout by the browser.
-    const fields: Record<string, string> = {
+    // PCI-safe payload to persist (NEVER PAN, NEVER CVV).
+    const safePayload = {
       memberId,
-      totype,
+      terminalId: terminalId || null,
       amount,
       currency: orderCurrency,
       merchantTransactionId: orderNumber,
       merchantRedirectUrl,
       orderDescription,
-      checksum,
+      notificationUrl: notificationUrl || null,
+      customer: {
+        email: user.email,
+        firstName: firstName || null,
+        lastName: lastName || null,
+        phone: phone || null,
+        country: country || null,
+        city: city || null,
+      },
+      card: {
+        brand: card.brand || null,
+        expiryMonth: card.expiryMonth,
+        expiryYear: card.expiryYear,
+        holder: card.holder || null,
+      },
     };
-    if (notificationUrl) fields.notificationUrl = notificationUrl;
-    if (terminalId) fields.terminalid = terminalId;
-    if (paymentMode) fields.paymentMode = paymentMode;
-    if (user.email) fields.email = user.email;
-    if (firstName) fields.firstName = firstName;
-    if (lastName) fields.lastName = lastName;
-    if (country) fields.country = country;
-    if (city) fields.city = city;
 
     this.logger.log(
-      `[Xoala Checkout] Building Standard Checkout for user=${user.id}, challenge=${challenge.id}, ref=${orderNumber}, amount=${amount} ${orderCurrency}`,
+      `[Xoala S2S] Charging user=${user.id}, challenge=${challenge.id}, ref=${orderNumber}, amount=${amount} ${orderCurrency}`,
     );
 
     const brandIdAttribution: string | null = brandLink?.brandId ?? null;
@@ -622,41 +616,222 @@ export class PaymentsService {
           brandLinkId: brandLink?.id || null,
           brandLinkSlug: brandLink?.slug || null,
           isGuestCheckout: true,
+          flow: 's2s',
           billingDetails: {
-            firstName,
-            lastName,
+            firstName, lastName,
             phone: phone || null,
             country: country || null,
             address: address || null,
             city: city || null,
           },
         },
-        sessionPayload: fields,
+        sessionPayload: safePayload,
       },
     });
 
     this.logger.log(
-      `[Xoala Checkout] Payment record created: id=${payment.id}, ref=${orderNumber}`,
+      `[Xoala S2S] Payment row created: id=${payment.id}, ref=${orderNumber}`,
     );
 
-    // Standard Checkout is POST-only and the response IS the hosted payment
-    // page (HTML), so the customer's browser must POST the form directly.
-    // We return the action URL + fields; the frontend auto-submits a form.
-    const checkoutUrl = `${baseUrl}/transaction/Checkout`;
+    // ── Build form-urlencoded body for Xoala ──
+    const params: Record<string, string> = {
+      'authentication.memberId': memberId,
+      'authentication.checksum': checksum,
+      'merchantTransactionId': orderNumber,
+      'amount': amount,
+      'currency': orderCurrency,
+      'orderDescriptor': orderDescription,
+      'card.number': String(card.number).replace(/\s+/g, ''),
+      'card.expiryMonth': String(card.expiryMonth),
+      'card.expiryYear': String(card.expiryYear),
+      'card.cvv': String(card.cvv),
+      'paymentMode': 'CC',
+      'paymentType': 'DB',
+      'merchantRedirectUrl': merchantRedirectUrl,
+      'customer.email': user.email,
+      'customer.givenName': (firstName || '').trim(),
+      'customer.surname': (lastName || '').trim(),
+    };
+    if (terminalId) params['authentication.terminalId'] = terminalId;
+    if (notificationUrl) params['notificationUrl'] = notificationUrl;
+    if (card.brand) params['paymentBrand'] = String(card.brand).toUpperCase();
+    if (card.holder) params['card.holder'] = String(card.holder);
+    if (phone) params['customer.phone'] = String(phone);
+    if (country) params['shipping.country'] = String(country);
+    if (city) params['shipping.city'] = String(city);
+    if (address) params['shipping.street1'] = String(address);
 
-    this.logger.log(
-      `[Xoala Checkout] Session ready: ref=${orderNumber}, checkoutUrl=${checkoutUrl}`,
-    );
+    const authToken = await this.xoalaAuthService.getAuthToken();
+    const url = `${s2sBaseUrl}/transactionServices/REST/v1/payments`;
 
+    let xoalaResponse: any;
+    try {
+      const httpRes = await axios.post(url, new URLSearchParams(params).toString(), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'AuthToken': authToken,
+        },
+        timeout: 60_000,
+      });
+      xoalaResponse = httpRes.data;
+      this.logger.log(
+        `[Xoala S2S] Response ref=${orderNumber} httpStatus=${httpRes.status} txStatus=${xoalaResponse?.transactionStatus} resultCode=${xoalaResponse?.result?.code}`,
+      );
+    } catch (err: any) {
+      const httpStatus = err?.response?.status;
+      const respBody = err?.response?.data;
+      const message =
+        respBody?.result?.description ||
+        respBody?.message ||
+        err?.message ||
+        'Network error';
+
+      // 401 → token was rejected; clear cache so next attempt re-fetches.
+      if (httpStatus === 401) {
+        this.xoalaAuthService.invalidate();
+      }
+
+      this.logger.error(
+        `[Xoala S2S] HTTP error ref=${orderNumber} httpStatus=${httpStatus} body=${JSON.stringify(respBody).slice(0, 500)}`,
+      );
+
+      await (this.prisma.payment as any).update({
+        where: { id: payment.id },
+        data: {
+          status: 'failed',
+          failureReason: `S2S call failed: ${message}`,
+          callbackPayload: respBody ?? { error: err?.message },
+        },
+      });
+      return { status: 'failed', reference: orderNumber, paymentId: payment.id, message };
+    }
+
+    const resultCode = String(xoalaResponse?.result?.code ?? '');
+    const transactionStatus = String(xoalaResponse?.transactionStatus ?? '').toUpperCase();
+    const providerPaymentId = xoalaResponse?.paymentId
+      ? String(xoalaResponse.paymentId)
+      : null;
+    const respCard = xoalaResponse?.card || {};
+    const cardSummary = {
+      bin: respCard.bin || null,
+      last4: respCard.last4Digits || respCard.last4 || null,
+      brand: xoalaResponse.paymentBrand || card.brand || null,
+    };
+
+    // ── Branch 1: 3DS required (cardholder must visit ACS) ──
+    // NOTE: Xoala's exact field name for the redirect URL was not in our
+    // docs; we check the most likely candidates. If 3DS works but redirect
+    // doesn't kick in, log the response and add the actual field here.
+    const redirectUrl =
+      xoalaResponse?.redirectUrl ||
+      xoalaResponse?.acsUrl ||
+      xoalaResponse?.result?.redirectUrl ||
+      xoalaResponse?.threeDSRedirect;
+    if (redirectUrl && transactionStatus !== 'Y') {
+      await (this.prisma.payment as any).update({
+        where: { id: payment.id },
+        data: {
+          providerPaymentId,
+          orderStatus: transactionStatus || '3D',
+          callbackPayload: xoalaResponse,
+          metadata: {
+            ...(payment.metadata as object || {}),
+            card: cardSummary,
+          },
+        },
+      });
+      this.logger.log(`[Xoala S2S] 3DS required ref=${orderNumber}, redirecting to ACS`);
+      return {
+        status: 'requires_action',
+        reference: orderNumber,
+        paymentId: payment.id,
+        redirectUrl,
+      };
+    }
+
+    // ── Branch 2: Approved instantly (no 3DS) ──
+    if (resultCode === '00001' && transactionStatus === 'Y') {
+      await (this.prisma.payment as any).update({
+        where: { id: payment.id },
+        data: {
+          status: 'succeeded',
+          providerPaymentId,
+          orderStatus: transactionStatus,
+          callbackPayload: xoalaResponse,
+          metadata: {
+            ...(payment.metadata as object || {}),
+            card: cardSummary,
+          },
+        },
+      });
+
+      // Provision account immediately. The function is idempotent, so if the
+      // notification webhook fires later it will detect tradingAccountId and
+      // return the existing account without re-running side effects.
+      try {
+        const account = await this.provisionChallengeAfterPaymentSuccess(payment.id);
+        return {
+          status: 'succeeded',
+          reference: orderNumber,
+          paymentId: payment.id,
+          tradingAccountId: account?.id,
+        };
+      } catch (err: any) {
+        this.logger.error(
+          `[Xoala S2S] Inline provisioning failed for ref=${orderNumber} (webhook will retry): ${err?.message}`,
+        );
+        // Payment did succeed — don't surface a failed status to the user.
+        return { status: 'succeeded', reference: orderNumber, paymentId: payment.id };
+      }
+    }
+
+    // ── Branch 3: Declined / failed ──
+    const failMessage =
+      xoalaResponse?.result?.description ||
+      xoalaResponse?.remark ||
+      'Payment declined';
+
+    // Xoala can return the SAME paymentId across attempts for duplicate-
+    // detection responses (e.g. resultCode 20015). Our schema enforces
+    // `providerPaymentId @unique`, so on failure we try to save it but
+    // fall back to omitting it if it collides — the raw response stays
+    // in callbackPayload for audit either way.
+    const failData = {
+      status: 'failed',
+      orderStatus: transactionStatus,
+      callbackPayload: xoalaResponse,
+      failureReason: failMessage,
+      metadata: {
+        ...(payment.metadata as object || {}),
+        card: cardSummary,
+      },
+    };
+    try {
+      await (this.prisma.payment as any).update({
+        where: { id: payment.id },
+        data: { ...failData, providerPaymentId },
+      });
+    } catch (err: any) {
+      if (err?.code === 'P2002') {
+        this.logger.warn(
+          `[Xoala S2S] providerPaymentId=${providerPaymentId} already exists; saving failure without it (ref=${orderNumber})`,
+        );
+        await (this.prisma.payment as any).update({
+          where: { id: payment.id },
+          data: failData,
+        });
+      } else {
+        throw err;
+      }
+    }
     return {
-      message: 'Xoala checkout session created',
+      status: 'failed',
       reference: orderNumber,
       paymentId: payment.id,
-      checkoutUrl,
-      method: 'POST',
-      fields,
+      message: failMessage,
     };
   }
+
 
   // ─── WorldCard: Provision trading account after successful payment ─
 

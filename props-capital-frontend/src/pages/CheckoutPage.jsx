@@ -4,7 +4,7 @@ import { ArrowRight, ArrowLeft, Check, Shield, Clock, Star, CreditCard, User, Ma
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { PaymentLogos } from '@/components/PaymentLogos';
-import { createXoalaCardSession, submitXoalaCheckout } from '@/api/payments';
+// import { createXoalaCardSession, submitXoalaCheckout } from '@/api/payments';
 import { apiPost } from '@/lib/api';
 
 /**

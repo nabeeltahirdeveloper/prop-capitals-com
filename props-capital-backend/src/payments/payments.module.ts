@@ -21,6 +21,7 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { CouponsService } from '../coupons/coupons.service';
 import { EmailService } from '../email/email.service';
 import { WorldCardWebhookService } from './webhook.service';
+import { XoalaAuthService } from './xoala-auth.service';
 
 @Module({
   imports: [ConfigModule],
@@ -28,11 +29,12 @@ import { WorldCardWebhookService } from './webhook.service';
   providers: [
     PaymentsService,
     WorldCardWebhookService,
+    XoalaAuthService,
     PrismaService,
     NotificationsService,
     CouponsService,
     EmailService,
   ],
-  exports: [PaymentsService, WorldCardWebhookService],
+  exports: [PaymentsService, WorldCardWebhookService, XoalaAuthService],
 })
 export class PaymentsModule { }

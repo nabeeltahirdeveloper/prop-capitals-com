@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { PaymentLogos } from '@/components/PaymentLogos';
 import { getChallengeBySlug } from '@/api/challenges';
-import { createXoalaCardSession, submitXoalaCheckout } from '@/api/payments';
+// import { createXoalaCardSession, submitXoalaCheckout } from '@/api/payments';
 
 // Trader-side checkout destination. Reached when the user clicks
 // "Continue to Payment" inside /traderdashboard/checkout. The route param

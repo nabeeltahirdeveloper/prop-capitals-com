@@ -9,26 +9,12 @@ export const validateCoupon = async (code) => {
   return apiPost('/coupons/validate', { code });
 };
 
-// Xoala — single guest checkout session endpoint
-export const createXoalaCardSession = async (data) => {
-  return apiPost('/payments/xoala/session', data);
-};
-
-// Xoala Standard Checkout is POST-only and the response is the hosted
-// payment page itself, so the browser must submit a form to it directly.
-export const submitXoalaCheckout = ({ checkoutUrl, fields, method = 'POST' }) => {
-  const form = document.createElement('form');
-  form.method = method;
-  form.action = checkoutUrl;
-  Object.entries(fields || {}).forEach(([name, value]) => {
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = name;
-    input.value = value == null ? '' : String(value);
-    form.appendChild(input);
-  });
-  document.body.appendChild(form);
-  form.submit();
+// Xoala S2S — backend charges the card directly and returns one of:
+//   { status: 'succeeded', reference, paymentId, tradingAccountId? }
+//   { status: 'requires_action', reference, redirectUrl }   // 3DS challenge
+//   { status: 'failed', reference, message }
+export const chargeXoalaCard = async (data) => {
+  return apiPost('/payments/xoala/charge', data);
 };
 
 export const getPaymentStatus = async (reference) => {

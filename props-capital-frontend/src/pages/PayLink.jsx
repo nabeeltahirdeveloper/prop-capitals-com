@@ -14,12 +14,14 @@ import {
   Loader2,
   AlertTriangle,
   CreditCard,
+  Calendar,
+  KeyRound,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { PaymentLogos } from '@/components/PaymentLogos';
 import { getChallengeBySlug } from '@/api/challenges';
-import { createXoalaCardSession, submitXoalaCheckout } from '@/api/payments';
+import { chargeXoalaCard } from '@/api/payments';
 import { readBrandAttribution } from '@/pages/CheckoutPage';
 
 const COUNTRIES = [
@@ -53,6 +55,46 @@ const formatCurrency = (amount, currency) => {
   }
 };
 
+// ── Card helpers ───────────────────────────────────────────────────────
+// Xoala's merchant config uses short brand codes:
+//   Visa → VISA, Mastercard → MC, Amex → AMEX, Discover → DISCOVER.
+const detectBrand = (num) => {
+  const s = (num || '').replace(/\D/g, '');
+  if (/^4/.test(s)) return 'VISA';
+  if (/^(5[1-5]|2[2-7])/.test(s)) return 'MC';
+  if (/^3[47]/.test(s)) return 'AMEX';
+  if (/^6(?:011|5)/.test(s)) return 'DISCOVER';
+  return '';
+};
+
+const luhnValid = (num) => {
+  const s = (num || '').replace(/\D/g, '');
+  if (s.length < 12 || s.length > 19) return false;
+  let sum = 0;
+  let alt = false;
+  for (let i = s.length - 1; i >= 0; i--) {
+    let n = parseInt(s[i], 10);
+    if (alt) {
+      n *= 2;
+      if (n > 9) n -= 9;
+    }
+    sum += n;
+    alt = !alt;
+  }
+  return sum % 10 === 0;
+};
+
+const formatCardNumber = (val) => {
+  const digits = (val || '').replace(/\D/g, '').slice(0, 19);
+  return digits.replace(/(\d{4})(?=\d)/g, '$1 ');
+};
+
+const formatExpiry = (val) => {
+  const digits = (val || '').replace(/\D/g, '').slice(0, 4);
+  if (digits.length <= 2) return digits;
+  return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+};
+
 const PayLink = () => {
   const { isDark } = useTheme();
   const { slug } = useParams();
@@ -66,6 +108,10 @@ const PayLink = () => {
     country: '',
     address: '',
     city: '',
+    cardholderName: '',
+    cardNumber: '',
+    expiry: '',
+    cvv: '',
   });
 
   const {
@@ -80,24 +126,44 @@ const PayLink = () => {
     retry: 0,
   });
 
-  const sessionMutation = useMutation({
-    mutationFn: createXoalaCardSession,
+  const chargeMutation = useMutation({
+    mutationFn: chargeXoalaCard,
     onSuccess: (data) => {
-      if (data?.checkoutUrl && data?.fields) {
-        toast.success('Redirecting to secure payment...');
-        submitXoalaCheckout(data);
+      if (data?.status === 'succeeded') {
+        toast.success('Payment approved');
+        navigate(`/pay/success?reference=${data.reference}`);
+      } else if (data?.status === 'requires_action' && data?.redirectUrl) {
+        toast.info('Verifying with your bank…');
+        window.location.href = data.redirectUrl;
+      } else if (data?.status === 'failed') {
+        toast.error(data.message || 'Payment was declined. Please try a different card.');
       } else {
-        toast.error('Could not start checkout. Please try again.');
+        toast.error('Unexpected response from payment processor.');
       }
     },
     onError: (err) => {
-      toast.error(err?.message || 'Failed to start checkout. Please try again.');
+      toast.error(err?.message || 'Payment failed. Please try again.');
     },
   });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
+  const handleCardNumberChange = (e) => {
+    setForm({ ...form, cardNumber: formatCardNumber(e.target.value) });
+  };
+
+  const handleExpiryChange = (e) => {
+    setForm({ ...form, expiry: formatExpiry(e.target.value) });
+  };
+
+  const handleCvvChange = (e) => {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 4);
+    setForm({ ...form, cvv: digits });
+  };
+
+  const brand = detectBrand(form.cardNumber);
 
   const validate = () => {
     if (!form.firstName.trim()) return 'First name is required';
@@ -107,6 +173,22 @@ const PayLink = () => {
     if (!form.country) return 'Country is required';
     if (!form.address.trim()) return 'Address is required';
     if (!form.city.trim()) return 'City is required';
+
+    if (!form.cardholderName.trim()) return 'Cardholder name is required';
+
+    const cardDigits = form.cardNumber.replace(/\D/g, '');
+    if (cardDigits.length < 12) return 'Enter a valid card number';
+    if (!luhnValid(cardDigits)) return 'Card number is invalid';
+
+    const [mm, yy] = form.expiry.split('/');
+    if (!mm || !yy || mm.length !== 2 || yy.length !== 2) return 'Expiry must be MM/YY';
+    const monthNum = parseInt(mm, 10);
+    if (monthNum < 1 || monthNum > 12) return 'Invalid expiry month';
+    const expDate = new Date(2000 + parseInt(yy, 10), monthNum, 0, 23, 59, 59);
+    if (expDate < new Date()) return 'Card has expired';
+
+    if (form.cvv.length < 3) return 'CVV must be 3 or 4 digits';
+
     return null;
   };
 
@@ -117,16 +199,12 @@ const PayLink = () => {
       toast.error(err);
       return;
     }
-    // Forward any brand attribution captured upstream (e.g. user landed
-    // on /checkout?brand=X&link=Y first). Backend will resolve and credit
-    // the brand on the resulting Payment.
-    const attribution = readBrandAttribution();
 
-    sessionMutation.mutate({
-      // Always pass the canonical Challenge id that we resolved from the
-      // by-slug fetch — the URL param can be either a real slug or a raw
-      // Challenge id (the trader checkout navigates with the id), and the
-      // backend only does an exact slug lookup unless given a challengeId.
+    const attribution = readBrandAttribution();
+    const cardDigits = form.cardNumber.replace(/\D/g, '');
+    const [mm, yy] = form.expiry.split('/');
+
+    chargeMutation.mutate({
       challengeId: challenge.id,
       slug,
       firstName: form.firstName.trim(),
@@ -138,6 +216,14 @@ const PayLink = () => {
       city: form.city.trim(),
       ...(attribution?.brandSlug ? { brandSlug: attribution.brandSlug } : {}),
       ...(attribution?.linkSlug ? { linkSlug: attribution.linkSlug } : {}),
+      card: {
+        number: cardDigits,
+        expiryMonth: mm,
+        expiryYear: `20${yy}`,
+        cvv: form.cvv,
+        holder: form.cardholderName.trim(),
+        brand: brand || undefined,
+      },
     });
   };
 
@@ -148,6 +234,12 @@ const PayLink = () => {
   const cardClass = isDark
     ? 'bg-[#12161d] border border-white/10'
     : 'bg-white border border-slate-200';
+
+  const sectionHeaderClass = isDark
+    ? 'text-xs font-semibold uppercase tracking-wider text-amber-500/80'
+    : 'text-xs font-semibold uppercase tracking-wider text-amber-600';
+
+  const dividerClass = isDark ? 'border-white/10' : 'border-slate-200';
 
   if (loadingChallenge) {
     return (
@@ -173,23 +265,25 @@ const PayLink = () => {
     );
   }
 
-  const submitting = sessionMutation.isPending;
+  const submitting = chargeMutation.isPending;
 
   return (
     <div className={`min-h-screen pt-20 pb-12 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Form */}
-          <form onSubmit={handleSubmit} className="lg:col-span-2">
+          <form onSubmit={handleSubmit} className="lg:col-span-2" autoComplete="on">
             <div className={`${cardClass} rounded-2xl p-6 lg:p-8`}>
               <h1 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 Complete Your Purchase
               </h1>
               <p className={`mb-6 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                Enter your details to continue to the secure payment page.
+                Enter your billing and card details to complete your order.
               </p>
 
-              <div className="space-y-4">
+              {/* ── Billing details ── */}
+              <div className={sectionHeaderClass}>Billing Details</div>
+              <div className="mt-3 space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>First Name *</label>
@@ -314,10 +408,99 @@ const PayLink = () => {
                 </div>
               </div>
 
-              <div className={`mt-6 rounded-xl p-4 flex items-start gap-3 ${isDark ? 'bg-amber-500/5 border border-amber-500/20' : 'bg-amber-50 border border-amber-200'}`}>
-                <Lock className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+              {/* ── Card details ── */}
+              <div className={`mt-8 pt-6 border-t ${dividerClass}`}>
+                <div className={sectionHeaderClass}>Payment Details</div>
+                <div className="mt-3 space-y-4">
+                  <div>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Cardholder Name *</label>
+                    <div className="relative">
+                      <User className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
+                      <input
+                        type="text"
+                        name="cardholderName"
+                        value={form.cardholderName}
+                        onChange={handleChange}
+                        autoComplete="cc-name"
+                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
+                        placeholder="As shown on the card"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Card Number *</label>
+                    <div className="relative">
+                      <CreditCard className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
+                      <input
+                        type="tel"
+                        inputMode="numeric"
+                        name="cardNumber"
+                        value={form.cardNumber}
+                        onChange={handleCardNumberChange}
+                        autoComplete="cc-number"
+                        data-sentry-mask
+                        className={`w-full rounded-xl pl-12 pr-20 py-3 tracking-widest focus:outline-none ${inputClass}`}
+                        placeholder="1234 5678 9012 3456"
+                        maxLength={23}
+                        required
+                      />
+                      {brand && (
+                        <span className={`absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>
+                          {brand}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Expiry (MM/YY) *</label>
+                      <div className="relative">
+                        <Calendar className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
+                        <input
+                          type="tel"
+                          inputMode="numeric"
+                          name="expiry"
+                          value={form.expiry}
+                          onChange={handleExpiryChange}
+                          autoComplete="cc-exp"
+                          data-sentry-mask
+                          className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
+                          placeholder="07/27"
+                          maxLength={5}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>CVV *</label>
+                      <div className="relative">
+                        <KeyRound className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
+                        <input
+                          type="tel"
+                          inputMode="numeric"
+                          name="cvv"
+                          value={form.cvv}
+                          onChange={handleCvvChange}
+                          autoComplete="cc-csc"
+                          data-sentry-mask
+                          className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
+                          placeholder="123"
+                          maxLength={4}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className={`mt-6 rounded-xl p-4 flex items-start gap-3 ${isDark ? 'bg-emerald-500/5 border border-emerald-500/20' : 'bg-emerald-50 border border-emerald-200'}`}>
+                <Shield className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
                 <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
-                  After you click Pay, you'll be redirected to our secure payment processor to enter your card details. We never see or store your card number.
+                  Your card is processed securely over TLS. We store only the last 4 digits for receipts — never the full number or CVV. 3-D Secure may be requested by your bank.
                 </p>
               </div>
 
@@ -329,11 +512,11 @@ const PayLink = () => {
                 {submitting ? (
                   <>
                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Redirecting to payment...
+                    Processing payment…
                   </>
                 ) : (
                   <>
-                    <CreditCard className="w-5 h-5 mr-2" />
+                    <Lock className="w-5 h-5 mr-2" />
                     Pay {formatCurrency(challenge.price, challenge.currency)}
                   </>
                 )}
