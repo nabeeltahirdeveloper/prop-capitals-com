@@ -108,6 +108,8 @@ const PayLink = () => {
     country: '',
     address: '',
     city: '',
+    state: '',
+    postalCode: '',
     cardholderName: '',
     cardNumber: '',
     expiry: '',
@@ -134,7 +136,25 @@ const PayLink = () => {
         navigate(`/pay/success?reference=${data.reference}`);
       } else if (data?.status === 'requires_action' && data?.redirectUrl) {
         toast.info('Verifying with your bank…');
-        window.location.href = data.redirectUrl;
+        // Xoala 3DS uses a POST redirect with parameters (e.g. TermUrl, MD).
+        // For POST we build a hidden form and submit it; for GET we just
+        // change location.
+        if (data.redirectMethod === 'POST' && Array.isArray(data.redirectParams)) {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = data.redirectUrl;
+          data.redirectParams.forEach(({ name, value }) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = String(name);
+            input.value = value == null ? '' : String(value);
+            form.appendChild(input);
+          });
+          document.body.appendChild(form);
+          form.submit();
+        } else {
+          window.location.href = data.redirectUrl;
+        }
       } else if (data?.status === 'failed') {
         toast.error(data.message || 'Payment was declined. Please try a different card.');
       } else {
@@ -173,6 +193,10 @@ const PayLink = () => {
     if (!form.country) return 'Country is required';
     if (!form.address.trim()) return 'Address is required';
     if (!form.city.trim()) return 'City is required';
+    if (!form.postalCode.trim()) return 'Postal / ZIP code is required';
+    if (!/^[0-9A-Za-z\- ]{2,10}$/.test(form.postalCode.trim())) {
+      return 'Postal code must be 2-10 characters (letters, numbers, hyphens)';
+    }
 
     if (!form.cardholderName.trim()) return 'Cardholder name is required';
 
@@ -214,6 +238,8 @@ const PayLink = () => {
       country: form.country,
       address: form.address.trim(),
       city: form.city.trim(),
+      state: form.state.trim() || undefined,
+      postalCode: form.postalCode.trim(),
       ...(attribution?.brandSlug ? { brandSlug: attribution.brandSlug } : {}),
       ...(attribution?.linkSlug ? { linkSlug: attribution.linkSlug } : {}),
       card: {
@@ -390,18 +416,53 @@ const PayLink = () => {
                   </div>
                 </div>
 
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>City *</label>
+                    <div className="relative">
+                      <Building2 className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
+                      <input
+                        type="text"
+                        name="city"
+                        value={form.city}
+                        onChange={handleChange}
+                        autoComplete="address-level2"
+                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
+                        placeholder="London"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>State / Region (Optional)</label>
+                    <div className="relative">
+                      <MapPin className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
+                      <input
+                        type="text"
+                        name="state"
+                        value={form.state}
+                        onChange={handleChange}
+                        autoComplete="address-level1"
+                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
+                        placeholder="England"
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 <div>
-                  <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>City *</label>
+                  <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Postal / ZIP Code *</label>
                   <div className="relative">
-                    <Building2 className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
+                    <MapPin className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                     <input
                       type="text"
-                      name="city"
-                      value={form.city}
+                      name="postalCode"
+                      value={form.postalCode}
                       onChange={handleChange}
-                      autoComplete="address-level2"
+                      autoComplete="postal-code"
                       className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
-                      placeholder="London"
+                      placeholder="SW1A 1AA"
+                      maxLength={10}
                       required
                     />
                   </div>
