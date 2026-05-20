@@ -7,6 +7,7 @@ import { useCurrency } from '@/contexts/CurrencyContext';
 import { useQuery } from '@tanstack/react-query';
 import { getChallenges } from '@/api/challenges';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getFullPrice } from '@/utils/fullPrice';
 
 const features = [
   { icon: Zap, title: "No Time Limit", description: "Complete the challenge at your own pace" },
@@ -14,6 +15,7 @@ const features = [
   { icon: TrendingUp, title: "All Strategies", description: "EAs, scalping, news trading allowed" },
   { icon: Clock, title: "Fast Payouts", description: "Under 90 minutes average" }
 ];
+
 
 function formatAccountSize(size) {
   if (size >= 1000) return `${size / 1000}K`;
@@ -164,6 +166,7 @@ const ChallengesPage = () => {
                 {challengeTypes.map((challenge) => {
                   const sizeKey = accountSizes[safeSelectedSize]?.key;
                   const price = challenge.prices[sizeKey];
+                  const fullPrice = getFullPrice(challenge.id, sizeKey, price);
                   return (
                     <div
                       key={challenge.id}
@@ -197,7 +200,7 @@ const ChallengesPage = () => {
                       {price != null && (
                         <div className={`text-center mb-6 py-5 rounded-2xl ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
                           <div className={`text-sm line-through mb-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                            {formatFee(price * 3)}
+                            {formatFee(fullPrice)}
                           </div>
                           <div className="text-amber-500 text-4xl lg:text-5xl font-black">
                             {formatFee(price)}

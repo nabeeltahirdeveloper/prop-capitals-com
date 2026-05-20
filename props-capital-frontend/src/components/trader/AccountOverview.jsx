@@ -15,6 +15,7 @@ import {
   Check
 } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { useChallenges, challengeTypes } from '@/contexts/ChallengesContext';
 import { usePlatformTokensStore } from '@/lib/stores/platform-tokens.store';
 import { useQuery } from '@tanstack/react-query';
@@ -74,6 +75,7 @@ const ComplianceIndicator = ({ label, data, icon: Icon, type = 'progress', isDar
 
 const AccountOverview = () => {
   const { isDark } = useTraderTheme();
+  const { symbol } = useCurrency();
   const {
     challenges,
     selectedChallenge,
@@ -214,7 +216,7 @@ const AccountOverview = () => {
                 {/* Challenge info */}
                 <div className="flex items-baseline gap-2 mb-1">
                   <span className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    ${challenge.accountSize.toLocaleString()}
+                    {symbol}{challenge.accountSize.toLocaleString()}
                   </span>
                   <span className={`text-xs px-1.5 py-0.5 rounded ${challenge.type === '1-step' ? 'bg-blue-500/10 text-blue-500' : 'bg-purple-500/10 text-purple-500'
                     }`}>
@@ -291,13 +293,13 @@ const AccountOverview = () => {
             <div>
               <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Account Size</p>
               <p className={`font-semibold text-xl ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                ${selectedChallenge.accountSize.toLocaleString()}
+                {symbol}{selectedChallenge.accountSize.toLocaleString()}
               </p>
             </div>
             <div>
               <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Current Balance</p>
               <p className={`font-semibold text-xl ${profitAmount >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                ${selectedChallenge.currentBalance.toLocaleString()}
+                {symbol}{selectedChallenge.currentBalance.toLocaleString()}
               </p>
             </div>
             <div className="col-span-2 mt-4">
@@ -416,7 +418,7 @@ const AccountOverview = () => {
             <div className="relative h-48">
               {/* Current balance badge */}
               <div className="absolute top-2 right-2 z-10 px-3 py-1 rounded-lg text-sm font-bold bg-emerald-500/20 text-emerald-500">
-                ${Math.floor(selectedChallenge.currentBalance).toLocaleString()}
+                {symbol}{Math.floor(selectedChallenge.currentBalance).toLocaleString()}
               </div>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={equityCurveData} margin={{ top: 40, right: 8, left: 0, bottom: 0 }}>
@@ -434,7 +436,7 @@ const AccountOverview = () => {
                     contentStyle={{ backgroundColor: isDark ? '#1a1f2e' : '#fff', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
                     labelStyle={{ color: isDark ? '#9ca3af' : '#64748b' }}
                     itemStyle={{ color: '#fff' }}
-                    formatter={(value, name) => [`$${Number(value).toLocaleString()}`, name === 'balance' ? 'Balance' : 'Equity']}
+                    formatter={(value, name) => [`${symbol}${Number(value).toLocaleString()}`, name === 'balance' ? 'Balance' : 'Equity']}
                   />
                   <Area type="monotone" dataKey="balance" stroke="#3b82f6" strokeWidth={2} fill="url(#balanceGrad)" dot={false} />
                   <Area type="monotone" dataKey="equity" stroke="#10b981" strokeWidth={2} fill="url(#equityGrad)" dot={false} />
@@ -520,7 +522,7 @@ const AccountOverview = () => {
             </div>
           </div>
           <p className={`text-2xl font-bold mb-1 ${profitAmount >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-            {profitAmount >= 0 ? '+' : ''}${profitAmount.toLocaleString()}
+            {profitAmount >= 0 ? '+' : ''}{symbol}{profitAmount.toLocaleString()}
           </p>
           <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
             {profitPercent >= 0 ? '+' : ''}{profitPercent.toFixed(2)}% from start
@@ -613,7 +615,7 @@ const AccountOverview = () => {
               <div className="text-right">
                 <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Available</p>
                 <p className="text-2xl font-bold text-emerald-500">
-                  ${((selectedChallenge.currentBalance - selectedChallenge.accountSize) * (selectedChallenge.profitSplit / 100)).toLocaleString()}
+                  {symbol}{((selectedChallenge.currentBalance - selectedChallenge.accountSize) * (selectedChallenge.profitSplit / 100)).toLocaleString()}
                 </p>
               </div>
               <button className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all">

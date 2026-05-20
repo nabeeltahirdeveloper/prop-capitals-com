@@ -11,6 +11,7 @@ import { getCurrentUser } from "@/api/auth";
 import { useQuery } from "@tanstack/react-query";
 import { createPageUrl } from "../utils";
 import { useTranslation } from "../contexts/LanguageContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -44,6 +45,7 @@ import {
 
 export default function RuleCompliance() {
   const { t } = useTranslation();
+  const { symbol } = useCurrency();
   const [accountId, setAccountId] = useState(null);
 
   // Get current user
@@ -379,7 +381,7 @@ export default function RuleCompliance() {
                 >
                   <div className="flex items-center gap-2">
                     <span className="font-medium">
-                      ${accInitialBalance?.toLocaleString()}
+                      {symbol}{accInitialBalance?.toLocaleString()}
                     </span>
                     <span className="text-slate-400">•</span>
                     <span className="text-slate-400 text-xs">
