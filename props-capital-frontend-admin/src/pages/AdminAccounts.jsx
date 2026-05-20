@@ -45,6 +45,15 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function AdminAccounts() {
   const { t } = useTranslation();
@@ -52,6 +61,7 @@ export default function AdminAccounts() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [phaseFilter, setPhaseFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedAccountId, setSelectedAccountId] = useState(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -66,12 +76,17 @@ export default function AdminAccounts() {
     return () => clearTimeout(handle);
   }, [searchQuery]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch, statusFilter, phaseFilter]);
+
+  const limit = 20;
   const { data: accountsResponse, isLoading } = useQuery({
-    queryKey: ["admin-accounts", debouncedSearch, statusFilter, phaseFilter],
+    queryKey: ["admin-accounts", currentPage, debouncedSearch, statusFilter, phaseFilter],
     queryFn: () =>
       adminGetAllAccounts({
-        page: 1,
-        limit: 50,
+        page: currentPage,
+        limit: limit,
         search: debouncedSearch,
         status: statusFilter,
         phase: phaseFilter,
@@ -657,6 +672,42 @@ export default function AdminAccounts() {
           isLoading={isLoading}
           emptyMessage={t("admin.accounts.emptyMessage")}
         />
+        
+        {accountsTotal > limit && (
+          <div className="mt-4">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage > 1) setCurrentPage(p => p - 1);
+                    }}
+                    href="#"
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+                
+                <PaginationItem>
+                  <span className="text-sm text-muted-foreground px-4">
+                    Page {currentPage} of {Math.ceil(accountsTotal / limit)}
+                  </span>
+                </PaginationItem>
+
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage < Math.ceil(accountsTotal / limit)) setCurrentPage(p => p + 1);
+                    }}
+                    href="#"
+                    className={currentPage === Math.ceil(accountsTotal / limit) ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </Card>
 
       {/* Account Details Dialog */}
