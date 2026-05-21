@@ -65,7 +65,7 @@ const formatCurrency = (amount, currency) => {
 
 const PayCheckout = () => {
   const { isDark } = useTheme();
-  const { formatFee, cur } = useCurrency();
+  const { formatFee, cur, formatAmount } = useCurrency();
   const { slug } = useParams();
 
   const [form, setForm] = useState({
@@ -351,7 +351,7 @@ const PayCheckout = () => {
               <div className={`rounded-xl p-4 mb-4 ${isDark ? 'bg-amber-500/10' : 'bg-amber-50'}`}>
                 <div className="text-amber-500 font-bold text-lg">{cur(challenge.name)}</div>
                 <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                  {challenge.accountSize?.toLocaleString()} Account
+                  {challenge.accountSize != null ? formatAmount(challenge.accountSize) : ''} Account
                 </div>
               </div>
 

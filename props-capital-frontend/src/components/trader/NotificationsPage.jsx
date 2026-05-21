@@ -23,6 +23,7 @@ import {
   deleteNotification,
 } from '@/api/notifications';
 import { useTraderTheme } from './TraderPanelLayout';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 const formatRelativeTime = (dateStr) => {
   if (!dateStr) return '-';
@@ -38,6 +39,7 @@ const formatRelativeTime = (dateStr) => {
 
 const NotificationsPage = () => {
   const { isDark } = useTraderTheme();
+  const { cur } = useCurrency();
   const [activeTab, setActiveTab] = useState('all');
   const queryClient = useQueryClient();
 
@@ -239,14 +241,14 @@ const NotificationsPage = () => {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                          {notification.title}
+                          {cur(notification.title)}
                         </h3>
                         {!notification.read && (
                           <span className="w-2 h-2 bg-amber-500 rounded-full" />
                         )}
                       </div>
                       <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                        {notification.body}
+                        {cur(notification.body)}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">

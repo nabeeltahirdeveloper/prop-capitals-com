@@ -205,7 +205,7 @@ const HowItWorksPage = () => {
                         {/* Trade Indicator */}
                         <div className="absolute top-2 lg:top-4 right-2 lg:right-4 bg-emerald-500/20 border border-emerald-500/50 rounded-lg px-2 lg:px-3 py-1 lg:py-2">
                           <div className="text-emerald-400 text-[10px] lg:text-xs">BUY @ 1.0842</div>
-                          <div className="text-emerald-400 font-bold text-sm lg:text-base">+{cur('$')}{tradeProfit.toFixed(0)}</div>
+                          <div className="text-emerald-400 font-bold text-sm lg:text-base">+{cur(`$${tradeProfit.toFixed(0)}`)}</div>
                         </div>
                       </div>
                     </div>
