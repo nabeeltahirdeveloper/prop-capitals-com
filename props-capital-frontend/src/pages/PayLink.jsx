@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   User,
   Mail,
@@ -25,36 +26,75 @@ import { getChallengeBySlug } from '@/api/challenges';
 import { chargeXoalaCard } from '@/api/payments';
 import { readBrandAttribution } from '@/pages/CheckoutPage';
 
+// ISO-3166 alpha-2 — never use a placeholder like "OTHER" because the
+// gateway rejects anything that isn't a real country code.
 const COUNTRIES = [
-  { code: 'GB', name: 'United Kingdom' },
-  { code: 'US', name: 'United States' },
-  { code: 'CA', name: 'Canada' },
   { code: 'AE', name: 'United Arab Emirates' },
+  { code: 'AR', name: 'Argentina' },
+  { code: 'AT', name: 'Austria' },
   { code: 'AU', name: 'Australia' },
+  { code: 'BE', name: 'Belgium' },
+  { code: 'BG', name: 'Bulgaria' },
+  { code: 'BH', name: 'Bahrain' },
+  { code: 'BR', name: 'Brazil' },
+  { code: 'CA', name: 'Canada' },
+  { code: 'CH', name: 'Switzerland' },
+  { code: 'CL', name: 'Chile' },
+  { code: 'CO', name: 'Colombia' },
+  { code: 'CY', name: 'Cyprus' },
+  { code: 'CZ', name: 'Czech Republic' },
   { code: 'DE', name: 'Germany' },
-  { code: 'FR', name: 'France' },
+  { code: 'DK', name: 'Denmark' },
+  { code: 'EE', name: 'Estonia' },
+  { code: 'EG', name: 'Egypt' },
   { code: 'ES', name: 'Spain' },
-  { code: 'IT', name: 'Italy' },
-  { code: 'NL', name: 'Netherlands' },
+  { code: 'FI', name: 'Finland' },
+  { code: 'FR', name: 'France' },
+  { code: 'GB', name: 'United Kingdom' },
+  { code: 'GH', name: 'Ghana' },
+  { code: 'GR', name: 'Greece' },
+  { code: 'HK', name: 'Hong Kong' },
+  { code: 'HR', name: 'Croatia' },
+  { code: 'HU', name: 'Hungary' },
+  { code: 'ID', name: 'Indonesia' },
   { code: 'IE', name: 'Ireland' },
   { code: 'IN', name: 'India' },
-  { code: 'PK', name: 'Pakistan' },
+  { code: 'IT', name: 'Italy' },
+  { code: 'JP', name: 'Japan' },
+  { code: 'KE', name: 'Kenya' },
+  { code: 'KR', name: 'South Korea' },
+  { code: 'KW', name: 'Kuwait' },
+  { code: 'LT', name: 'Lithuania' },
+  { code: 'LU', name: 'Luxembourg' },
+  { code: 'LV', name: 'Latvia' },
+  { code: 'MA', name: 'Morocco' },
+  { code: 'MT', name: 'Malta' },
+  { code: 'MX', name: 'Mexico' },
+  { code: 'MY', name: 'Malaysia' },
   { code: 'NG', name: 'Nigeria' },
+  { code: 'NL', name: 'Netherlands' },
+  { code: 'NO', name: 'Norway' },
+  { code: 'NZ', name: 'New Zealand' },
+  { code: 'OM', name: 'Oman' },
+  { code: 'PE', name: 'Peru' },
+  { code: 'PH', name: 'Philippines' },
+  { code: 'PK', name: 'Pakistan' },
+  { code: 'PL', name: 'Poland' },
+  { code: 'PT', name: 'Portugal' },
+  { code: 'QA', name: 'Qatar' },
+  { code: 'RO', name: 'Romania' },
+  { code: 'SA', name: 'Saudi Arabia' },
+  { code: 'SE', name: 'Sweden' },
+  { code: 'SG', name: 'Singapore' },
+  { code: 'SI', name: 'Slovenia' },
+  { code: 'SK', name: 'Slovakia' },
+  { code: 'TH', name: 'Thailand' },
+  { code: 'TR', name: 'Turkey' },
+  { code: 'TW', name: 'Taiwan' },
+  { code: 'US', name: 'United States' },
+  { code: 'VN', name: 'Vietnam' },
   { code: 'ZA', name: 'South Africa' },
-  { code: 'OTHER', name: 'Other' },
 ];
-
-const formatCurrency = (amount, currency) => {
-  try {
-    return new Intl.NumberFormat('en-IE', {
-      style: 'currency',
-      currency: currency || 'EUR',
-      maximumFractionDigits: 0,
-    }).format(amount);
-  } catch {
-    return `${currency} ${amount}`;
-  }
-};
 
 // ── Card helpers ───────────────────────────────────────────────────────
 // Xoala's merchant config uses short brand codes:
@@ -70,7 +110,7 @@ const detectBrand = (num) => {
 
 const luhnValid = (num) => {
   const s = (num || '').replace(/\D/g, '');
-  if (s.length < 12 || s.length > 19) return false;
+  if (s.length < 13 || s.length > 19) return false;
   let sum = 0;
   let alt = false;
   for (let i = s.length - 1; i >= 0; i--) {
@@ -96,27 +136,138 @@ const formatExpiry = (val) => {
   return `${digits.slice(0, 2)}/${digits.slice(2)}`;
 };
 
+const INITIAL_FORM = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  country: '',
+  address: '',
+  city: '',
+  state: '',
+  postalCode: '',
+  cardholderName: '',
+  cardNumber: '',
+  expiry: '',
+  cvv: '',
+};
+
+const validateField = (name, value) => {
+  switch (name) {
+    case 'firstName':
+      if (!value.trim()) return 'First name is required';
+      if (value.trim().length < 2) return 'First name must be at least 2 characters';
+      return '';
+    case 'lastName':
+      if (!value.trim()) return 'Last name is required';
+      if (value.trim().length < 2) return 'Last name must be at least 2 characters';
+      return '';
+    case 'email': {
+      const v = value.trim();
+      if (!v) return 'Email is required';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return 'Enter a valid email address';
+      return '';
+    }
+    case 'phone': {
+      const v = value.trim();
+      if (!v) return ''; // optional
+      if (!/^[+\d][\d\s\-()]{5,19}$/.test(v)) return 'Enter a valid phone number';
+      return '';
+    }
+    case 'country':
+      return value ? '' : 'Country is required';
+    case 'address':
+      if (!value.trim()) return 'Billing address is required';
+      if (value.trim().length < 4) return 'Address looks too short';
+      return '';
+    case 'city':
+      return value.trim() ? '' : 'City is required';
+    case 'state':
+      return ''; // optional
+    case 'postalCode': {
+      const v = value.trim();
+      if (!v) return 'Postal / ZIP code is required';
+      if (!/^[0-9A-Za-z\- ]{2,10}$/.test(v)) return 'Postal code must be 2-10 letters, digits or hyphens';
+      return '';
+    }
+    case 'cardholderName':
+      if (!value.trim()) return 'Cardholder name is required';
+      if (!/^[A-Za-z\s.'-]{2,}$/.test(value.trim())) return 'Cardholder name has invalid characters';
+      return '';
+    case 'cardNumber': {
+      const digits = (value || '').replace(/\D/g, '');
+      if (!digits) return 'Card number is required';
+      if (digits.length < 13) return 'Enter a valid card number';
+      if (!luhnValid(digits)) return 'Card number is invalid';
+      return '';
+    }
+    case 'expiry': {
+      const [mm, yy] = (value || '').split('/');
+      if (!mm || !yy || mm.length !== 2 || yy.length !== 2) return 'Expiry must be MM/YY';
+      const monthNum = parseInt(mm, 10);
+      if (Number.isNaN(monthNum) || monthNum < 1 || monthNum > 12) return 'Invalid expiry month';
+      const yearNum = parseInt(yy, 10);
+      if (Number.isNaN(yearNum)) return 'Invalid expiry year';
+      const expDate = new Date(2000 + yearNum, monthNum, 0, 23, 59, 59);
+      if (expDate < new Date()) return 'Card has expired';
+      return '';
+    }
+    case 'cvv':
+      if (!value) return 'CVV is required';
+      if (value.length < 3) return 'CVV must be 3 or 4 digits';
+      return '';
+    default:
+      return '';
+  }
+};
+
+const FieldError = ({ name, error }) =>
+  error ? (
+    <p
+      id={`${name}-error`}
+      role="alert"
+      className="text-xs text-red-500 mt-1.5 flex items-center gap-1"
+    >
+      <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+      {error}
+    </p>
+  ) : null;
+
 const PayLink = () => {
   const { isDark } = useTheme();
   const { formatFee, cur } = useCurrency();
   const { slug } = useParams();
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    country: '',
-    address: '',
-    city: '',
-    state: '',
-    postalCode: '',
-    cardholderName: '',
-    cardNumber: '',
-    expiry: '',
-    cvv: '',
-  });
+  // Route is protected — anyone hitting /pay/:slug must be logged in. The
+  // email used to provision the trading account comes from the JWT on the
+  // backend, so we also autofill (and lock) the email field here to make
+  // it obvious which account the user is paying for.
+  const { status: authStatus, user: authUser } = useAuth();
+  const location = useLocation();
+
+  const [form, setForm] = useState(INITIAL_FORM);
+  const [errors, setErrors] = useState({});
+
+  // Bounce unauthenticated users to sign-in; preserve where they came from
+  // so they land back on this exact pay link after logging in.
+  useEffect(() => {
+    if (authStatus === 'unauthenticated') {
+      const next = encodeURIComponent(location.pathname + location.search);
+      navigate(`/SignIn?next=${next}`, { replace: true });
+    }
+  }, [authStatus, location.pathname, location.search, navigate]);
+
+  // Pre-fill name + email from the logged-in user once we have them.
+  useEffect(() => {
+    if (authStatus !== 'authenticated' || !authUser) return;
+    setForm((prev) => ({
+      ...prev,
+      email: prev.email || authUser.email || '',
+      firstName: prev.firstName || authUser.firstName || authUser.profile?.firstName || '',
+      lastName: prev.lastName || authUser.lastName || authUser.profile?.lastName || '',
+    }));
+  }, [authStatus, authUser]);
 
   const {
     data: challenge,
@@ -142,18 +293,18 @@ const PayLink = () => {
         // For POST we build a hidden form and submit it; for GET we just
         // change location.
         if (data.redirectMethod === 'POST' && Array.isArray(data.redirectParams)) {
-          const form = document.createElement('form');
-          form.method = 'POST';
-          form.action = data.redirectUrl;
+          const formEl = document.createElement('form');
+          formEl.method = 'POST';
+          formEl.action = data.redirectUrl;
           data.redirectParams.forEach(({ name, value }) => {
             const input = document.createElement('input');
             input.type = 'hidden';
             input.name = String(name);
             input.value = value == null ? '' : String(value);
-            form.appendChild(input);
+            formEl.appendChild(input);
           });
-          document.body.appendChild(form);
-          form.submit();
+          document.body.appendChild(formEl);
+          formEl.submit();
         } else {
           window.location.href = data.redirectUrl;
         }
@@ -168,61 +319,57 @@ const PayLink = () => {
     },
   });
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  // Revalidate inline only if the user has already seen an error for this
+  // field — keeps first-time typing quiet, but gives instant feedback once
+  // they're trying to fix something.
+  const setField = (name, value) => {
+    setForm((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => (prev[name] ? { ...prev, [name]: validateField(name, value) } : prev));
   };
 
-  const handleCardNumberChange = (e) => {
-    setForm({ ...form, cardNumber: formatCardNumber(e.target.value) });
-  };
+  const handleChange = (e) => setField(e.target.name, e.target.value);
+  const handleCardNumberChange = (e) => setField('cardNumber', formatCardNumber(e.target.value));
+  const handleExpiryChange = (e) => setField('expiry', formatExpiry(e.target.value));
+  // Phone field allows only +, digits, spaces, hyphens and parentheses so
+  // letters typed/pasted are silently stripped instead of just failing
+  // validation on blur.
+  const handlePhoneChange = (e) =>
+    setField('phone', e.target.value.replace(/[^\d+\s\-()]/g, '').slice(0, 20));
+  const handleCvvChange = (e) =>
+    setField('cvv', e.target.value.replace(/\D/g, '').slice(0, 4));
 
-  const handleExpiryChange = (e) => {
-    setForm({ ...form, expiry: formatExpiry(e.target.value) });
-  };
-
-  const handleCvvChange = (e) => {
-    const digits = e.target.value.replace(/\D/g, '').slice(0, 4);
-    setForm({ ...form, cvv: digits });
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    setErrors((prev) => ({ ...prev, [name]: validateField(name, value) }));
   };
 
   const brand = detectBrand(form.cardNumber);
 
-  const validate = () => {
-    if (!form.firstName.trim()) return 'First name is required';
-    if (!form.lastName.trim()) return 'Last name is required';
-    if (!form.email.trim()) return 'Email is required';
-    if (!/^\S+@\S+\.\S+$/.test(form.email)) return 'Email is not valid';
-    if (!form.country) return 'Country is required';
-    if (!form.address.trim()) return 'Address is required';
-    if (!form.city.trim()) return 'City is required';
-    if (!form.postalCode.trim()) return 'Postal / ZIP code is required';
-    if (!/^[0-9A-Za-z\- ]{2,10}$/.test(form.postalCode.trim())) {
-      return 'Postal code must be 2-10 characters (letters, numbers, hyphens)';
-    }
-
-    if (!form.cardholderName.trim()) return 'Cardholder name is required';
-
-    const cardDigits = form.cardNumber.replace(/\D/g, '');
-    if (cardDigits.length < 12) return 'Enter a valid card number';
-    if (!luhnValid(cardDigits)) return 'Card number is invalid';
-
-    const [mm, yy] = form.expiry.split('/');
-    if (!mm || !yy || mm.length !== 2 || yy.length !== 2) return 'Expiry must be MM/YY';
-    const monthNum = parseInt(mm, 10);
-    if (monthNum < 1 || monthNum > 12) return 'Invalid expiry month';
-    const expDate = new Date(2000 + parseInt(yy, 10), monthNum, 0, 23, 59, 59);
-    if (expDate < new Date()) return 'Card has expired';
-
-    if (form.cvv.length < 3) return 'CVV must be 3 or 4 digits';
-
-    return null;
+  const validateAll = () => {
+    const next = {};
+    let firstError = '';
+    let firstErrorField = '';
+    Object.keys(INITIAL_FORM).forEach((k) => {
+      const err = validateField(k, form[k]);
+      if (err) {
+        next[k] = err;
+        if (!firstError) {
+          firstError = err;
+          firstErrorField = k;
+        }
+      }
+    });
+    setErrors(next);
+    return { firstError, firstErrorField };
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const err = validate();
-    if (err) {
-      toast.error(err);
+    const { firstError, firstErrorField } = validateAll();
+    if (firstError) {
+      toast.error(firstError);
+      const el = document.getElementsByName(firstErrorField)[0];
+      if (el && typeof el.focus === 'function') el.focus();
       return;
     }
 
@@ -269,7 +416,19 @@ const PayLink = () => {
 
   const dividerClass = isDark ? 'border-white/10' : 'border-slate-200';
 
-  if (loadingChallenge) {
+  // Per-field error styling — appended after the base input class so the
+  // red border overrides the theme border.
+  const errClass = (name) =>
+    errors[name] ? 'border-red-500 focus:border-red-500' : '';
+  const ariaProps = (name) =>
+    errors[name]
+      ? { 'aria-invalid': true, 'aria-describedby': `${name}-error` }
+      : { 'aria-invalid': false };
+
+  // Hold render while auth status is still being checked (or unauth, during
+  // the brief moment before the redirect effect fires) — stops the form
+  // from flashing into view for users who shouldn't see it.
+  if (loadingChallenge || authStatus === 'checking' || authStatus === 'unauthenticated') {
     return (
       <div className={`min-h-screen pt-20 pb-12 flex items-center justify-center ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
         <Loader2 className="w-12 h-12 text-amber-500 animate-spin" />
@@ -300,7 +459,7 @@ const PayLink = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Form */}
-          <form onSubmit={handleSubmit} className="lg:col-span-2" autoComplete="on">
+          <form onSubmit={handleSubmit} className="lg:col-span-2" autoComplete="on" noValidate>
             <div className={`${cardClass} rounded-2xl p-6 lg:p-8`}>
               <h1 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 Complete Your Purchase
@@ -322,12 +481,15 @@ const PayLink = () => {
                         name="firstName"
                         value={form.firstName}
                         onChange={handleChange}
+                        onBlur={handleBlur}
                         autoComplete="given-name"
-                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
+                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass} ${errClass('firstName')}`}
                         placeholder="John"
                         required
+                        {...ariaProps('firstName')}
                       />
                     </div>
+                    <FieldError name="firstName" error={errors.firstName} />
                   </div>
                   <div>
                     <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Last Name *</label>
@@ -336,11 +498,14 @@ const PayLink = () => {
                       name="lastName"
                       value={form.lastName}
                       onChange={handleChange}
+                      onBlur={handleBlur}
                       autoComplete="family-name"
-                      className={`w-full rounded-xl px-4 py-3 focus:outline-none ${inputClass}`}
+                      className={`w-full rounded-xl px-4 py-3 focus:outline-none ${inputClass} ${errClass('lastName')}`}
                       placeholder="Doe"
                       required
+                      {...ariaProps('lastName')}
                     />
+                    <FieldError name="lastName" error={errors.lastName} />
                   </div>
                 </div>
 
@@ -352,15 +517,17 @@ const PayLink = () => {
                       type="email"
                       name="email"
                       value={form.email}
-                      onChange={handleChange}
+                      readOnly
                       autoComplete="email"
-                      className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
+                      className={`w-full rounded-xl pl-12 pr-12 py-3 focus:outline-none cursor-not-allowed opacity-90 ${inputClass}`}
                       placeholder="trader@example.com"
                       required
+                      aria-readonly="true"
                     />
+                    <Lock className={`absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                   </div>
                   <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                    We'll send your account access and trading credentials here.
+                    Locked to your account email. Credentials and receipts go here.
                   </p>
                 </div>
 
@@ -371,14 +538,22 @@ const PayLink = () => {
                       <Phone className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                       <input
                         type="tel"
+                        inputMode="tel"
                         name="phone"
                         value={form.phone}
-                        onChange={handleChange}
+                        onChange={handlePhoneChange}
+                        onBlur={handleBlur}
                         autoComplete="tel"
-                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
-                        placeholder="+44 7700 900000"
+                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass} ${errClass('phone')}`}
+                        placeholder="+1 555 0100"
+                        maxLength={20}
+                        {...ariaProps('phone')}
                       />
                     </div>
+                    <FieldError name="phone" error={errors.phone} />
+                    <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
+                      Enter phone number with country code (e.g. +1 555 0100).
+                    </p>
                   </div>
                   <div>
                     <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Country *</label>
@@ -388,9 +563,11 @@ const PayLink = () => {
                         name="country"
                         value={form.country}
                         onChange={handleChange}
+                        onBlur={handleBlur}
                         autoComplete="country"
-                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
+                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass} ${errClass('country')}`}
                         required
+                        {...ariaProps('country')}
                       >
                         <option value="">Select country</option>
                         {COUNTRIES.map((c) => (
@@ -398,6 +575,7 @@ const PayLink = () => {
                         ))}
                       </select>
                     </div>
+                    <FieldError name="country" error={errors.country} />
                   </div>
                 </div>
 
@@ -410,12 +588,15 @@ const PayLink = () => {
                       name="address"
                       value={form.address}
                       onChange={handleChange}
+                      onBlur={handleBlur}
                       autoComplete="street-address"
-                      className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
+                      className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass} ${errClass('address')}`}
                       placeholder="221B Baker Street"
                       required
+                      {...ariaProps('address')}
                     />
                   </div>
+                  <FieldError name="address" error={errors.address} />
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">
@@ -428,12 +609,15 @@ const PayLink = () => {
                         name="city"
                         value={form.city}
                         onChange={handleChange}
+                        onBlur={handleBlur}
                         autoComplete="address-level2"
-                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
+                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass} ${errClass('city')}`}
                         placeholder="London"
                         required
+                        {...ariaProps('city')}
                       />
                     </div>
+                    <FieldError name="city" error={errors.city} />
                   </div>
                   <div>
                     <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>State / Region (Optional)</label>
@@ -444,6 +628,7 @@ const PayLink = () => {
                         name="state"
                         value={form.state}
                         onChange={handleChange}
+                        onBlur={handleBlur}
                         autoComplete="address-level1"
                         className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
                         placeholder="England"
@@ -461,13 +646,16 @@ const PayLink = () => {
                       name="postalCode"
                       value={form.postalCode}
                       onChange={handleChange}
+                      onBlur={handleBlur}
                       autoComplete="postal-code"
-                      className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
+                      className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass} ${errClass('postalCode')}`}
                       placeholder="SW1A 1AA"
                       maxLength={10}
                       required
+                      {...ariaProps('postalCode')}
                     />
                   </div>
+                  <FieldError name="postalCode" error={errors.postalCode} />
                 </div>
               </div>
 
@@ -484,12 +672,15 @@ const PayLink = () => {
                         name="cardholderName"
                         value={form.cardholderName}
                         onChange={handleChange}
-                        autoComplete="cc-name"
-                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
+                        onBlur={handleBlur}
+                        autoComplete="off"
+                        className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass} ${errClass('cardholderName')}`}
                         placeholder="As shown on the card"
                         required
+                        {...ariaProps('cardholderName')}
                       />
                     </div>
+                    <FieldError name="cardholderName" error={errors.cardholderName} />
                   </div>
 
                   <div>
@@ -502,12 +693,14 @@ const PayLink = () => {
                         name="cardNumber"
                         value={form.cardNumber}
                         onChange={handleCardNumberChange}
-                        autoComplete="cc-number"
+                        onBlur={handleBlur}
+                        autoComplete="off"
                         data-sentry-mask
-                        className={`w-full rounded-xl pl-12 pr-20 py-3 tracking-widest focus:outline-none ${inputClass}`}
+                        className={`w-full rounded-xl pl-12 pr-20 py-3 tracking-widest focus:outline-none ${inputClass} ${errClass('cardNumber')}`}
                         placeholder="1234 5678 9012 3456"
                         maxLength={23}
                         required
+                        {...ariaProps('cardNumber')}
                       />
                       {brand && (
                         <span className={`absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>
@@ -515,6 +708,7 @@ const PayLink = () => {
                         </span>
                       )}
                     </div>
+                    <FieldError name="cardNumber" error={errors.cardNumber} />
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-4">
@@ -528,14 +722,17 @@ const PayLink = () => {
                           name="expiry"
                           value={form.expiry}
                           onChange={handleExpiryChange}
-                          autoComplete="cc-exp"
+                          onBlur={handleBlur}
+                          autoComplete="off"
                           data-sentry-mask
-                          className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
+                          className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass} ${errClass('expiry')}`}
                           placeholder="07/27"
                           maxLength={5}
                           required
+                          {...ariaProps('expiry')}
                         />
                       </div>
+                      <FieldError name="expiry" error={errors.expiry} />
                     </div>
                     <div>
                       <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>CVV *</label>
@@ -547,14 +744,17 @@ const PayLink = () => {
                           name="cvv"
                           value={form.cvv}
                           onChange={handleCvvChange}
-                          autoComplete="cc-csc"
+                          onBlur={handleBlur}
+                          autoComplete="off"
                           data-sentry-mask
-                          className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
+                          className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass} ${errClass('cvv')}`}
                           placeholder="123"
                           maxLength={4}
                           required
+                          {...ariaProps('cvv')}
                         />
                       </div>
+                      <FieldError name="cvv" error={errors.cvv} />
                     </div>
                   </div>
                 </div>
@@ -584,6 +784,11 @@ const PayLink = () => {
                   </>
                 )}
               </Button>
+              {submitting && (
+                <p className={`text-xs text-center mt-3 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
+                  Please don't close or refresh this window.
+                </p>
+              )}
             </div>
           </form>
 

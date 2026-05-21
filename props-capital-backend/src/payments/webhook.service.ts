@@ -11,12 +11,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PaymentsService } from './payments.service';
 import * as crypto from 'crypto';
 
-// Handles the Xoala "Standard Checkout" notification/callback
-// (POST {base}/transaction/Checkout flow). Xoala POSTs the result to the
-// notificationUrl configured in the merchant dashboard.
+// Handles the Xoala server-to-server notification/callback.
+// Xoala POSTs the final transaction result to the notificationUrl that
+// was passed in the original /transactionServices/REST/v1/payments call.
 @Injectable()
-export class WorldCardWebhookService {
-  private readonly logger = new Logger(WorldCardWebhookService.name);
+export class XoalaWebhookService {
+  private readonly logger = new Logger(XoalaWebhookService.name);
 
   constructor(
     private readonly prisma: PrismaService,
@@ -32,6 +32,21 @@ export class WorldCardWebhookService {
     return `${value}`.trim();
   }
 
+  // Xoala sends descriptive statuses in the payload (e.g. "capturesuccess",
+  // "capturefailed", "3DS", "captured"). Their docs document the SHORT status
+  // (Y / N / C / P / 3D) and the checksum is usually computed against either
+  // the raw payload status OR a normalized short code. We try both candidates
+  // so the integration is resilient to either variant.
+  private toShortStatus(raw: string): string | null {
+    const s = String(raw || '').trim().toLowerCase();
+    if (['y', 'success', 'capturesuccess', 'capture_success', 'captured', 'paid'].includes(s)) return 'Y';
+    if (['n', 'fail', 'failed', 'capturefail', 'capturefailed', 'capture_failed', 'declined'].includes(s)) return 'N';
+    if (['c', 'cancelled', 'canceled', 'voided'].includes(s)) return 'C';
+    if (['p', 'pending'].includes(s)) return 'P';
+    if (['3d', '3ds', 'threeds'].includes(s)) return '3D';
+    return null;
+  }
+
   // Response/callback checksum (Standard Checkout spec):
   //   MD5( paymentId | merchantTransactionId | amount | status | secureKey )
   private verifyChecksum(payload: any, paymentId: string): void {
@@ -41,28 +56,36 @@ export class WorldCardWebhookService {
     }
 
     const incoming = this.requireString(payload.checksum, 'checksum');
-    const source = [
-      paymentId,
-      this.requireString(payload.merchantTransactionId, 'merchantTransactionId'),
-      this.requireString(payload.amount, 'amount'),
-      this.requireString(payload.status, 'status'),
-      secureKey,
-    ].join('|');
-    const expected = crypto.createHash('md5').update(source).digest('hex');
+    const merchantTransactionId = this.requireString(payload.merchantTransactionId, 'merchantTransactionId');
+    const amount = this.requireString(payload.amount, 'amount');
+    const rawStatus = this.requireString(payload.status, 'status');
 
-    if (incoming.toLowerCase() !== expected.toLowerCase()) {
-      this.logger.warn(
-        `Xoala checksum mismatch for merchantTransactionId=${payload?.merchantTransactionId}`,
-      );
-      throw new BadRequestException('Invalid callback checksum');
+    const candidates: string[] = [rawStatus];
+    const short = this.toShortStatus(rawStatus);
+    if (short && short !== rawStatus) candidates.push(short);
+
+    for (const status of candidates) {
+      const source = [paymentId, merchantTransactionId, amount, status, secureKey].join('|');
+      const expected = crypto.createHash('md5').update(source).digest('hex');
+      if (incoming.toLowerCase() === expected.toLowerCase()) {
+        this.logger.log(
+          `Xoala checksum matched for ref=${merchantTransactionId} using status="${status}"`,
+        );
+        return;
+      }
     }
+
+    this.logger.warn(
+      `Xoala checksum mismatch ref=${merchantTransactionId} statuses_tried=[${candidates.join(',')}] incoming=${incoming}`,
+    );
+    throw new BadRequestException('Invalid callback checksum');
   }
 
   private normalizeStatus(raw: string): 'pending' | 'failed' | 'succeeded' {
-    const s = raw.trim().toUpperCase();
-    if (s === 'SUCCESS' || s === 'Y') return 'succeeded';
-    if (s === 'FAILED' || s === 'FAIL' || s === 'N' || s === 'C') return 'failed';
-    return 'pending'; // P, 3D, PENDING, anything else
+    const short = this.toShortStatus(raw);
+    if (short === 'Y') return 'succeeded';
+    if (short === 'N' || short === 'C') return 'failed';
+    return 'pending';
   }
 
   async handleCallback(payload: any) {
@@ -81,6 +104,9 @@ export class WorldCardWebhookService {
     this.logger.log(
       `Xoala callback received: merchantTransactionId=${merchantTransactionId}, paymentId=${providerPaymentId}, status=${statusRaw}`,
     );
+    // Full sanitized payload — useful for diagnosing checksum issues without
+    // leaking secureKey (Xoala never sends it back anyway).
+    this.logger.log(`Xoala callback payload: ${JSON.stringify(payload).slice(0, 1000)}`);
 
     this.verifyChecksum(payload, providerPaymentId);
 

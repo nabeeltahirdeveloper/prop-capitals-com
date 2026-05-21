@@ -265,6 +265,37 @@ model Payment {
   brandId           String?
   brandPaidOut      Boolean    @default(false)
   brandCommission   Int?       @default(0)
+
+  // ── Billing snapshot (from PayLink.jsx checkout form) ─────────────
+  // Captured at charge time so the receipt stays accurate even if the
+  // user later edits their profile.
+  billingFirstName  String?
+  billingLastName   String?
+  billingEmail      String?
+  billingPhone      String?
+  billingCountry    String?
+  billingAddress    String?
+  billingCity       String?
+  billingState      String?
+  billingPostalCode String?
+
+  // ── Card summary (PCI-safe — never PAN, never CVV) ────────────────
+  cardholderName    String?
+  cardBrand         String?
+  cardBin           String?
+  cardLast4         String?
+  cardExpiryMonth   String?
+  cardExpiryYear    String?
+
+  // ── Order context (selected at checkout) ──────────────────────────
+  accountSize       Int?
+  challengeType     String?
+  platform          String?
+
+  // ── Brand attribution (denormalized from cookie / link) ──────────
+  brandSlug         String?
+  linkSlug          String?
+
   challenge         Challenge? @relation(fields: [challengeId], references: [id])
   user              User       @relation(fields: [userId], references: [id])
   brand             Brand?     @relation(fields: [brandId], references: [id])
@@ -274,6 +305,8 @@ model Payment {
   @@index([tradingAccountId])
   @@index([status])
   @@index([brandId])
+  @@index([billingEmail])
+  @@index([cardLast4])
 }
 
 model Payout {

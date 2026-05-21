@@ -1,14 +1,15 @@
-import { All, Body, Controller, Get, HttpCode, Param, Post, Query, Res } from '@nestjs/common';
-import type { Response } from 'express';
+import { All, Body, Controller, Get, HttpCode, Param, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import type { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { PaymentsService } from './payments.service';
-import { WorldCardWebhookService } from './webhook.service';
+import { XoalaWebhookService } from './webhook.service';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
 @Controller('payments')
 export class PaymentsController {
     constructor(
         private readonly paymentsService: PaymentsService,
-        private readonly worldCardWebhookService: WorldCardWebhookService,
+        private readonly xoalaWebhookService: XoalaWebhookService,
         private readonly configService: ConfigService,
     ) { }
 
@@ -19,17 +20,26 @@ export class PaymentsController {
         return this.paymentsService.purchaseChallenge(body);
     }
 
-    // Xoala: Server-to-Server card charge (collects card details server-side)
+    // Xoala: Server-to-Server card charge (collects card details server-side).
+    // Guarded by JWT — the cardholder MUST be logged in. The trusted email
+    // comes from the JWT so users can't pay against someone else's account
+    // (or a typo) by changing the body's email field.
     @Post('xoala/charge')
-    async xoalaCharge(@Body() body: any) {
-        return this.paymentsService.createXoalaCharge(body);
+    @UseGuards(JwtAuthGuard)
+    async xoalaCharge(@Body() body: any, @Req() req: Request) {
+        const authUser = (req as any).user as { userId: string; email: string };
+        return this.paymentsService.createXoalaCharge({
+            ...body,
+            email: authUser.email,
+            authUserId: authUser.userId,
+        });
     }
 
     // Xoala: Standard Checkout notification/callback
     @Post('xoala/callback')
     @HttpCode(200)
     async xoalaCallback(@Body() body: any) {
-        return this.worldCardWebhookService.handleCallback(body);
+        return this.xoalaWebhookService.handleCallback(body);
     }
 
     // Xoala: cardholder-return after 3DS. Xoala submits a form POST here
