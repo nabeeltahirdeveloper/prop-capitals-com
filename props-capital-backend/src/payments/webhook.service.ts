@@ -11,12 +11,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PaymentsService } from './payments.service';
 import * as crypto from 'crypto';
 
-// Handles the Xoala "Standard Checkout" notification/callback
-// (POST {base}/transaction/Checkout flow). Xoala POSTs the result to the
-// notificationUrl configured in the merchant dashboard.
+// Handles the Xoala server-to-server notification/callback.
+// Xoala POSTs the final transaction result to the notificationUrl that
+// was passed in the original /transactionServices/REST/v1/payments call.
 @Injectable()
-export class WorldCardWebhookService {
-  private readonly logger = new Logger(WorldCardWebhookService.name);
+export class XoalaWebhookService {
+  private readonly logger = new Logger(XoalaWebhookService.name);
 
   constructor(
     private readonly prisma: PrismaService,

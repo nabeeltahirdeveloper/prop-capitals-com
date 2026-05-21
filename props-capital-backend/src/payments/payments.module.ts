@@ -20,7 +20,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { CouponsService } from '../coupons/coupons.service';
 import { EmailService } from '../email/email.service';
-import { WorldCardWebhookService } from './webhook.service';
+import { XoalaWebhookService } from './webhook.service';
 import { XoalaAuthService } from './xoala-auth.service';
 
 @Module({
@@ -28,13 +28,13 @@ import { XoalaAuthService } from './xoala-auth.service';
   controllers: [PaymentsController],
   providers: [
     PaymentsService,
-    WorldCardWebhookService,
+    XoalaWebhookService,
     XoalaAuthService,
     PrismaService,
     NotificationsService,
     CouponsService,
     EmailService,
   ],
-  exports: [PaymentsService, WorldCardWebhookService, XoalaAuthService],
+  exports: [PaymentsService, XoalaWebhookService, XoalaAuthService],
 })
 export class PaymentsModule { }

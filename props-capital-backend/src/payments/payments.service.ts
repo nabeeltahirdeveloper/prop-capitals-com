@@ -66,89 +66,6 @@ export class PaymentsService {
     return Number.isFinite(parsed) ? parsed : 0;
   }
 
-  // ─── Guest user resolution (shared by guest checkout flows) ────────
-  // Finds a user by email, or creates one with a random password and a
-  // profile. Existing profile fields are never overwritten.
-
-  private async resolveOrCreateGuestUser(input: {
-    email: string;
-    firstName: string;
-    lastName: string;
-    phone?: string;
-    country?: string;
-    address?: string;
-    city?: string;
-  }) {
-    const { firstName, lastName, phone, country, address, city } = input;
-
-    if (!input.email || typeof input.email !== 'string') {
-      throw new BadRequestException('Missing required field: email');
-    }
-    if (!firstName || !lastName) {
-      throw new BadRequestException('Missing required name fields');
-    }
-
-    const normalizedEmail = input.email.trim().toLowerCase();
-
-    let user = await this.prisma.user.findUnique({
-      where: { email: normalizedEmail },
-    });
-
-    if (!user) {
-      const randomPassword = generatePassword(20);
-      const hashed = await bcrypt.hash(randomPassword, 10);
-      user = await this.prisma.user.create({
-        data: {
-          email: normalizedEmail,
-          password: hashed,
-          passwordSet: false,
-          profile: {
-            create: {
-              firstName,
-              lastName,
-              phone: phone || null,
-              country: country || null,
-              address: address || null,
-              city: city || null,
-            },
-          },
-        } as any,
-      });
-      this.logger.log(`[GuestCheckout] Created user ${user.id} (${normalizedEmail})`);
-    } else {
-      const existingProfile = await this.prisma.userProfile.findUnique({
-        where: { userId: user.id },
-      });
-      if (!existingProfile) {
-        await this.prisma.userProfile.create({
-          data: {
-            userId: user.id,
-            firstName,
-            lastName,
-            phone: phone || null,
-            country: country || null,
-            address: address || null,
-            city: city || null,
-          } as any,
-        });
-      } else {
-        await this.prisma.userProfile.update({
-          where: { userId: user.id },
-          data: {
-            firstName: existingProfile.firstName ?? firstName,
-            lastName: existingProfile.lastName ?? lastName,
-            phone: existingProfile.phone ?? (phone || null),
-            country: existingProfile.country ?? (country || null),
-            address: existingProfile.address ?? (address || null),
-            city: existingProfile.city ?? (city || null),
-          } as any,
-        });
-      }
-    }
-
-    return user;
-  }
-
 
   // ─── Existing internal purchase flow (unchanged) ───────────────────
 
@@ -407,19 +324,6 @@ export class PaymentsService {
   }
 
   // ─── Xoala: Server-to-Server card charge ───────────────────────
-
-  // S2S flow:
-  //   1. Resolve challenge + (optional) brand attribution from input.
-  //   2. Create Payment row up-front (pending) — audit trail even on failure.
-  //   3. Fetch cached AuthToken, build form-urlencoded body, POST to
-  //      {S2S_BASE}/transactionServices/REST/v1/payments.
-  //   4. Branch on response:
-  //        - result.code === "00001" && transactionStatus === "Y"  → succeeded
-  //          (provision account inline; webhook is the idempotent backup)
-  //        - response contains a redirect URL                       → requires_action (3DS)
-  //        - anything else                                          → failed
-  //   5. Card data (PAN/CVV) never touches the DB or app logs. Only
-  //      bin + last4 + brand from Xoala's response are persisted.
   async createXoalaCharge(data: any) {
     const {
       slug,
@@ -516,9 +420,28 @@ export class PaymentsService {
       throw new NotFoundException('Challenge not found');
     }
 
-    const user = await this.resolveOrCreateGuestUser({
-      email, firstName, lastName, phone, country, address, city,
+    // Resolve user strictly — the email on the form must already match
+    // an existing account. We do NOT create users on the fly anymore: if
+    // the email is unknown we reject the charge before touching the
+    // payment gateway, so card data is never sent for a non-customer.
+    if (!email || typeof email !== 'string') {
+      throw new BadRequestException('Missing required field: email');
+    }
+    if (!firstName || !lastName) {
+      throw new BadRequestException('Missing required name fields');
+    }
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await this.prisma.user.findUnique({
+      where: { email: normalizedEmail },
     });
+    if (!user) {
+      this.logger.warn(
+        `[Xoala S2S] Rejected charge — no account for email=${normalizedEmail}`,
+      );
+      throw new NotFoundException(
+        'No account found for this email. Please sign up before purchasing.',
+      );
+    }
 
     const amountCents = challenge.price * 100;
     const selectedPlatform =
@@ -616,6 +539,33 @@ export class PaymentsService {
         provider: 'xoala',
         status: 'pending',
         reference: orderNumber,
+
+        // Billing snapshot (mirrors PayLink.jsx fields)
+        billingFirstName: firstName,
+        billingLastName: lastName,
+        billingEmail: user.email,
+        billingPhone: phone || null,
+        billingCountry: country || null,
+        billingAddress: address || null,
+        billingCity: city || null,
+        billingState: state || null,
+        billingPostalCode: postalCode || null,
+
+        // Card metadata (bin/last4 are filled once the gateway responds)
+        cardholderName: card.holder || null,
+        cardBrand: card.brand || null,
+        cardExpiryMonth: String(card.expiryMonth),
+        cardExpiryYear: String(card.expiryYear),
+
+        // Order context
+        accountSize: challenge.accountSize,
+        challengeType: challenge.challengeType,
+        platform: normalizedPlatform,
+
+        // Brand attribution
+        brandSlug: brandLink?.brand?.slug || brandSlug || null,
+        linkSlug: brandLink?.slug || linkSlug || null,
+
         metadata: {
           platform: normalizedPlatform,
           challengeId: challenge.id,
@@ -732,10 +682,7 @@ export class PaymentsService {
     };
 
     // ── Branch 1: 3DS required (cardholder must visit ACS) ──
-    // Xoala returns a `redirect` object: { url, method, parameters: [{name,value}, ...] }
-    // For 3DS the redirect is a POST with TermUrl + MD parameters, so the
-    // frontend must build and auto-submit a form (a plain location.href
-    // would do a GET and fail).
+
     const redirect = xoalaResponse?.redirect;
     const redirectUrl: string | null =
       redirect?.url ||
@@ -749,6 +696,9 @@ export class PaymentsService {
           providerPaymentId,
           orderStatus: transactionStatus || '3D',
           callbackPayload: xoalaResponse,
+          cardBin: cardSummary.bin,
+          cardLast4: cardSummary.last4,
+          cardBrand: cardSummary.brand || card.brand || null,
           metadata: {
             ...(payment.metadata as object || {}),
             card: cardSummary,
@@ -777,6 +727,9 @@ export class PaymentsService {
           providerPaymentId,
           orderStatus: transactionStatus,
           callbackPayload: xoalaResponse,
+          cardBin: cardSummary.bin,
+          cardLast4: cardSummary.last4,
+          cardBrand: cardSummary.brand || card.brand || null,
           metadata: {
             ...(payment.metadata as object || {}),
             card: cardSummary,
@@ -811,15 +764,15 @@ export class PaymentsService {
       'Payment declined';
 
     // Xoala can return the SAME paymentId across attempts for duplicate-
-    // detection responses (e.g. resultCode 20015). Our schema enforces
-    // `providerPaymentId @unique`, so on failure we try to save it but
-    // fall back to omitting it if it collides — the raw response stays
-    // in callbackPayload for audit either way.
+
     const failData = {
       status: 'failed',
       orderStatus: transactionStatus,
       callbackPayload: xoalaResponse,
       failureReason: failMessage,
+      cardBin: cardSummary.bin,
+      cardLast4: cardSummary.last4,
+      cardBrand: cardSummary.brand || card.brand || null,
       metadata: {
         ...(payment.metadata as object || {}),
         card: cardSummary,
@@ -852,7 +805,7 @@ export class PaymentsService {
   }
 
 
-  // ─── WorldCard: Provision trading account after successful payment ─
+  // ─── Provision trading account after successful payment ───────────
 
   async provisionChallengeAfterPaymentSuccess(paymentId: string) {
     // 1. Load payment with relations
