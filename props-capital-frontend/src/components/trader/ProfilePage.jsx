@@ -26,7 +26,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 const ProfilePage = () => {
   const { isDark } = useTraderTheme();
-  const { symbol } = useCurrency();
+  const { formatAmount } = useCurrency();
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState({
     firstName: '',
@@ -177,7 +177,7 @@ const ProfilePage = () => {
 
   const stats = [
     { label: 'Challenges Completed', value: user?.totalCompletedChallenges ?? 0, color: 'emerald' },
-    { label: 'Total Payouts', value: user?.totalPayouts ? `${symbol}${Number(user.totalPayouts).toLocaleString()}` : `${symbol}0`, color: 'amber' },
+    { label: 'Total Payouts', value: formatAmount(Number(user?.totalPayouts) || 0), color: 'amber' },
     { label: 'Win Rate', value: `${user?.winRate ?? 0}%`, color: 'blue' },
     { label: 'Member Since', value: user?.createdAt ? formatDate(user.createdAt) : '-', color: 'purple' },
   ];

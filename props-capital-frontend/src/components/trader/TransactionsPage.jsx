@@ -30,7 +30,7 @@ const TABS = [
 
 const TransactionsPage = () => {
   const { isDark } = useTraderTheme();
-  const { symbol } = useCurrency();
+  const { symbol, currency, formatAmount: formatAmountContext } = useCurrency();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('all');
   const [search, setSearch] = useState('');
@@ -66,9 +66,13 @@ const TransactionsPage = () => {
     failed: payments.filter((p) => p.status === 'failed').length,
   };
 
+  // DB stores cents (EUR-denominated). Convert at the same 0.85 rate the
+  // rest of the panel uses when toggle is GBP, then format with cents.
   const formatAmount = (cents) => {
     if (!cents && cents !== 0) return '—';
-    return `${symbol}${(cents / 100).toFixed(2)}`;
+    const eur = cents / 100;
+    const value = currency === 'GBP' ? eur * 0.85 : eur;
+    return `${symbol}${value.toFixed(2)}`;
   };
 
   const formatDate = (dateStr) => {
@@ -225,7 +229,7 @@ const TransactionsPage = () => {
                       <div>
                         <p className={`text-sm font-medium ${textClass}`}>{p.challenge?.name || '—'}</p>
                         <p className={`text-xs ${mutedClass}`}>
-                          {p.challenge?.accountSize ? `${symbol}${p.challenge.accountSize.toLocaleString()}` : ''}{' '}
+                          {p.challenge?.accountSize ? formatAmountContext(p.challenge.accountSize) : ''}{' '}
                           {p.challenge?.challengeType || ''}
                         </p>
                       </div>
