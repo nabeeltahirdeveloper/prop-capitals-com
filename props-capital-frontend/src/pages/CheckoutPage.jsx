@@ -1,11 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { ArrowRight, ArrowLeft, Check, Shield, Clock, Star, CreditCard, User, Mail, Phone, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { PaymentLogos } from '@/components/PaymentLogos';
-// import { createXoalaCardSession, submitXoalaCheckout } from '@/api/payments';
 import { apiPost } from '@/lib/api';
+import { getChallenges } from '@/api/challenges';
+
+// "50K" / "5M" / "25000" -> integer dollars. Mirrors backend's parseAccountSize.
+const parseSizeToInt = (raw) => {
+  if (raw == null) return 0;
+  const s = String(raw).trim().toUpperCase();
+  const m = s.match(/^(\d+(?:\.\d+)?)([KMB])?$/);
+  if (!m) return parseInt(s, 10) || 0;
+  const n = parseFloat(m[1]);
+  const unit = m[2];
+  if (unit === 'K') return Math.round(n * 1_000);
+  if (unit === 'M') return Math.round(n * 1_000_000);
+  if (unit === 'B') return Math.round(n * 1_000_000_000);
+  return Math.round(n);
+};
+
+// Map UI challengeType ("one-step" / "two-step") to schema values.
+const challengeTypeMatches = (dbType, uiType) => {
+  const db = String(dbType || '').toLowerCase();
+  const ui = String(uiType || '').toLowerCase();
+  if (ui === 'one-step') return db === 'one_phase' || db === 'one-step';
+  if (ui === 'two-step') return db === 'two_phase' || db === 'two-step';
+  return db === ui;
+};
 
 /**
  * Brand referral attribution.
@@ -114,6 +138,21 @@ const CheckoutPage = () => {
   const challenge = CHALLENGE_DATA[challengeType];
   const price = challenge?.prices?.[accountSize] || 299;
 
+  // Resolve the matching DB challenge so we know the slug to redirect to.
+  // /pay/:slug is the only flow that actually charges via Xoala.
+  const { data: dbChallenges = [] } = useQuery({
+    queryKey: ['challenges'],
+    queryFn: getChallenges,
+  });
+  const accountSizeInt = parseSizeToInt(accountSize);
+  const matchedChallenge = dbChallenges.find(
+    (c) =>
+      c.accountSize === accountSizeInt &&
+      challengeTypeMatches(c.challengeType, challengeType) &&
+      c.isActive !== false &&
+      c.slug,
+  );
+
   const [step, setStep] = useState(1);
   const [selectedPlatform, setSelectedPlatform] = useState('');
   const [formData, setFormData] = useState({
@@ -146,43 +185,20 @@ const CheckoutPage = () => {
     else navigate('/challenges');
   };
 
-  const handleConfirmOrder = async () => {
-    setIsProcessing(true);
-    try {
-      // Brand attribution captured on mount (or earlier in this session)
-      const attribution = readBrandAttribution();
-      // Send the type/size from the URL — backend will resolve to a real
-      // Challenge and create a Payment with brandId set when attribution is
-      // present. The backend returns the Xoala checkout URL + form fields;
-      // the browser POSTs them to land on the hosted card-entry page.
-      const res = await createXoalaCardSession({
-        // Backend resolves challenge from accountSize + challengeType when no
-        // slug/id is provided. Schema names ("two_phase") are accepted.
-        accountSize,
-        challengeType,
-        firstName: formData.firstName.trim(),
-        lastName: formData.lastName.trim(),
-        email: formData.email.trim().toLowerCase(),
-        phone: formData.phone?.trim() || undefined,
-        country: formData.country || undefined,
-        platform: selectedPlatform,
-        ...(attribution?.brandSlug ? { brandSlug: attribution.brandSlug } : {}),
-        ...(attribution?.linkSlug ? { linkSlug: attribution.linkSlug } : {}),
-      });
-      if (res?.checkoutUrl && res?.fields) {
-        // Brand attribution is preserved server-side (Payment.brandId), so we
-        // can clear the local copy now that it has been captured on the order.
-        try { localStorage.removeItem('pc_brand_attribution'); } catch (_e) {}
-        submitXoalaCheckout(res);
-        return;
-      }
-      alert('Could not start checkout. Please try again.');
-    } catch (err) {
-      console.error('Checkout failed:', err);
-      alert(err?.message || 'Checkout failed. Please try again.');
-    } finally {
-      setIsProcessing(false);
+  const handleConfirmOrder = () => {
+    if (!matchedChallenge?.slug) {
+      alert('Could not find a matching challenge for this configuration. Please go back and pick a different size/type.');
+      return;
     }
+    setIsProcessing(true);
+    // /pay/:slug handles card collection + the Xoala S2S charge. Forward the
+    // user's platform pick as a query param so the charge body carries it.
+    // Brand attribution is already in localStorage (captured on mount) and
+    // PayLink picks it up via readBrandAttribution.
+    const params = new URLSearchParams();
+    if (selectedPlatform) params.set('platform', selectedPlatform);
+    const qs = params.toString();
+    navigate(`/pay/${matchedChallenge.slug}${qs ? `?${qs}` : ''}`);
   };
 
   const inputClass = isDark 
