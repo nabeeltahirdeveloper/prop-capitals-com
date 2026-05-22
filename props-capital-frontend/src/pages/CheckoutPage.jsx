@@ -7,6 +7,8 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { PaymentLogos } from '@/components/PaymentLogos';
 import { apiPost } from '@/lib/api';
 import { getChallenges } from '@/api/challenges';
+import { useAuth } from '@/contexts/AuthContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 // "50K" / "5M" / "25000" -> integer dollars. Mirrors backend's parseAccountSize.
 const parseSizeToInt = (raw) => {
@@ -118,6 +120,11 @@ const CheckoutPage = () => {
   const { isDark } = useTheme();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { status: authStatus } = useAuth();
+  // Same currency context the Challenges page + PayLink use, so price/size
+  // displayed here matches what the customer saw on the previous step and
+  // what they'll be charged at the gateway.
+  const { formatFee, formatSize } = useCurrency();
 
   // Capture brand attribution from URL on mount and persist it for the rest
   // of the checkout session (and any later navigation to /pay/<slug>).
@@ -135,11 +142,16 @@ const CheckoutPage = () => {
   const challengeType = normalizeChallengeType(searchParams.get('type'));
   const accountSize = searchParams.get('size') || '50K';
 
-  const challenge = CHALLENGE_DATA[challengeType];
-  const price = challenge?.prices?.[accountSize] || 299;
-
-  // Resolve the matching DB challenge so we know the slug to redirect to.
-  // /pay/:slug is the only flow that actually charges via Xoala.
+  // Resolve the matching DB challenge so we know what to redirect to AND so
+  // the prices/name shown here match the dashboard + Challenges page (which
+  // are also DB-backed). The hardcoded CHALLENGE_DATA below is only used as
+  // a last-resort fallback for fields the API doesn't surface — never for
+  // pricing, since the customer will be charged the DB amount.
+  //
+  // The backend's /challenges/by-slug/:slug endpoint also falls back to a
+  // findUnique({id}) lookup when the param isn't a valid slug, so we can
+  // pass either `slug` or `id` in /pay/:slug — whichever is present on the
+  // row. That keeps things working for legacy challenges without a slug.
   const { data: dbChallenges = [] } = useQuery({
     queryKey: ['challenges'],
     queryFn: getChallenges,
@@ -149,9 +161,14 @@ const CheckoutPage = () => {
     (c) =>
       c.accountSize === accountSizeInt &&
       challengeTypeMatches(c.challengeType, challengeType) &&
-      c.isActive !== false &&
-      c.slug,
+      c.isActive !== false,
   );
+  const fallbackData = CHALLENGE_DATA[challengeType];
+  const challengeName = matchedChallenge?.name || fallbackData?.name || 'Challenge';
+  const price = matchedChallenge?.price ?? fallbackData?.prices?.[accountSize] ?? 0;
+  const sizeLabel = matchedChallenge
+    ? formatSize(`${matchedChallenge.accountSize / 1000}K`)
+    : formatSize(accountSize);
 
   const [step, setStep] = useState(1);
   const [selectedPlatform, setSelectedPlatform] = useState('');
@@ -169,8 +186,18 @@ const CheckoutPage = () => {
   };
 
   const handleNext = () => {
-    if (step === 1 && !selectedPlatform) {
-      alert('Please select a trading platform');
+    if (step === 1) {
+      if (!selectedPlatform) {
+        alert('Please select a trading platform');
+        return;
+      }
+      // After platform pick, jump straight to /pay/:slug. PayLink owns the
+      // billing form + card capture + Xoala S2S charge, and it already
+      // redirects unauthenticated users to /SignIn with a `next` param. The
+      // old Step 2 (Your Information) and Step 3 (Confirm) here were
+      // collecting fields PayLink immediately asks for again, so they're
+      // skipped.
+      handleConfirmOrder();
       return;
     }
     if (step === 2 && (!formData.firstName || !formData.lastName || !formData.email)) {
@@ -186,10 +213,38 @@ const CheckoutPage = () => {
   };
 
   const handleConfirmOrder = () => {
-    if (!matchedChallenge?.slug) {
-      alert('Could not find a matching challenge for this configuration. Please go back and pick a different size/type.');
+    // Auth gate: /pay/:slug requires a JWT for the Xoala charge, so bounce
+    // anonymous users to SignIn first. The `next` param brings them back here
+    // (with the same type/size/platform context) so they don't lose the flow.
+    if (authStatus !== 'authenticated') {
+      const ret = new URLSearchParams(searchParams);
+      if (selectedPlatform) ret.set('platform', selectedPlatform);
+      const next = `/checkout?${ret.toString()}`;
+      navigate(`/SignIn?next=${encodeURIComponent(next)}`);
       return;
     }
+
+    // Need at least an id (slug is optional — backend's findBySlug falls back
+    // to findUnique({id}) when the param isn't a real slug).
+    const identifier = matchedChallenge?.slug || matchedChallenge?.id;
+    if (!identifier) {
+      console.error('[Checkout] No matching DB challenge', {
+        requested: { accountSize, accountSizeInt, challengeType },
+        available: dbChallenges.map((c) => ({
+          id: c.id,
+          slug: c.slug,
+          accountSize: c.accountSize,
+          challengeType: c.challengeType,
+          isActive: c.isActive,
+        })),
+      });
+      alert(
+        `No active challenge in the database for ${accountSize} ${challengeType}. ` +
+        `Open the console to see what challenges exist, then seed the missing row.`,
+      );
+      return;
+    }
+
     setIsProcessing(true);
     // /pay/:slug handles card collection + the Xoala S2S charge. Forward the
     // user's platform pick as a query param so the charge body carries it.
@@ -198,7 +253,7 @@ const CheckoutPage = () => {
     const params = new URLSearchParams();
     if (selectedPlatform) params.set('platform', selectedPlatform);
     const qs = params.toString();
-    navigate(`/pay/${matchedChallenge.slug}${qs ? `?${qs}` : ''}`);
+    navigate(`/pay/${identifier}${qs ? `?${qs}` : ''}`);
   };
 
   const inputClass = isDark 
@@ -340,11 +395,11 @@ const CheckoutPage = () => {
                     <div className="space-y-3">
                       <div className="flex justify-between">
                         <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>Challenge Type</span>
-                        <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{challenge?.name}</span>
+                        <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{challengeName}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>Account Size</span>
-                        <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>${accountSize}</span>
+                        <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{sizeLabel}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>Platform</span>
@@ -394,22 +449,22 @@ const CheckoutPage = () => {
               <h3 className={`font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Order Summary</h3>
               
               <div className={`rounded-xl p-4 mb-4 ${isDark ? 'bg-amber-500/10' : 'bg-amber-50'}`}>
-                <div className="text-amber-500 font-bold text-lg">{challenge?.name}</div>
-                <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>${accountSize} Account</div>
+                <div className="text-amber-500 font-bold text-lg">{challengeName}</div>
+                <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{sizeLabel} Account</div>
               </div>
 
               <div className={`border-t pt-4 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
                 <div className="flex justify-between items-center mb-2">
                   <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>Subtotal</span>
-                  <span className={`line-through ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>${price * 3}</span>
+                  <span className={`line-through ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{formatFee(price * 3)}</span>
                 </div>
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-emerald-500 font-medium">70% OFF</span>
-                  <span className="text-emerald-500">-${price * 2}</span>
+                  <span className="text-emerald-500">-{formatFee(price * 2)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Total</span>
-                  <span className="text-3xl font-black text-amber-500">${price}</span>
+                  <span className="text-3xl font-black text-amber-500">{formatFee(price)}</span>
                 </div>
               </div>
 
