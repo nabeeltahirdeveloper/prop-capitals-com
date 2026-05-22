@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams, useLocation, useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
@@ -238,6 +238,10 @@ const PayLink = () => {
   const { currency, formatFee, cur, formatAmount } = useCurrency();
   const { slug } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // Forwarded from /checkout when the user picked a platform in that wizard.
+  // If not set, the backend falls back to challenge.platform.
+  const platformFromQuery = searchParams.get('platform') || undefined;
 
   // Route is protected — anyone hitting /pay/:slug must be logged in. The
   // email used to provision the trading account comes from the JWT on the
@@ -389,6 +393,7 @@ const PayLink = () => {
       challengeId: challenge.id,
       slug,
       currency,
+      ...(platformFromQuery ? { platform: platformFromQuery } : {}),
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
       email: form.email.trim().toLowerCase(),
