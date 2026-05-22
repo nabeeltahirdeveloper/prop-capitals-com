@@ -81,7 +81,8 @@ export class PaymentsService {
   // EUR is the canonical currency stored in challenge.price (or challenge.currency
   // may be GBP). Frontend sends the user-selected display currency; we recompute
   // the amount server-side so a tampered client can't change what we charge.
-  // Mirrors EUR_TO_GBP_RATE in CurrencyContext.jsx — keep these in sync.
+  // Mirrors EUR_TO_GBP_RATE + Math.round in CurrencyContext.jsx#formatFee —
+  // these must stay in sync or what the customer sees won't match the charge.
   private static readonly EUR_TO_GBP_RATE = 0.85;
 
   private computeChargeAmount(
@@ -95,12 +96,15 @@ export class PaymentsService {
     } else {
       priceEur = challenge.price;
     }
-    const finalPrice =
+    const converted =
       requestedCurrency === 'GBP'
         ? priceEur * PaymentsService.EUR_TO_GBP_RATE
         : priceEur;
-    const amountCents = Math.round(finalPrice * 100);
-    return { amount: (amountCents / 100).toFixed(2), amountCents };
+    // Round to whole units to match formatFee()'s display in the UI — a
+    // €2 challenge becomes "£2" on screen and £2.00 at the gateway, not £1.70.
+    const finalPrice = Math.round(converted);
+    const amountCents = finalPrice * 100;
+    return { amount: finalPrice.toFixed(2), amountCents };
   }
 
   // Accepts "25K", "100K", "5M", "25000", or a number. Returns integer dollars.
