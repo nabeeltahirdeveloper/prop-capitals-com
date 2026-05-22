@@ -1,4 +1,4 @@
-import { All, Body, Controller, Get, HttpCode, Param, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { All, Body, Controller, Get, HttpCode, Logger, Param, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { PaymentsService } from './payments.service';
@@ -7,6 +7,8 @@ import { JwtAuthGuard } from '../auth/jwt.guard';
 
 @Controller('payments')
 export class PaymentsController {
+    private readonly logger = new Logger(PaymentsController.name);
+
     constructor(
         private readonly paymentsService: PaymentsService,
         private readonly xoalaWebhookService: XoalaWebhookService,
@@ -43,10 +45,20 @@ export class PaymentsController {
     }
 
     // Xoala: cardholder-return after 3DS. Xoala submits a form POST here
-    // when the customer finishes the ACS challenge. Vite (dev) and SPA hosts
-    // (prod) don't serve HTML on POST routes, so we accept POST/GET on the
-    // backend and 302-redirect the browser to the frontend success page,
-    // forwarding the reference so the SPA can poll status from the webhook.
+    // when the customer finishes the ACS challenge.
+    //
+    // Two jobs:
+    //   1. Bounce the browser to the SPA success page (Vite/SPA hosts don't
+    //      serve HTML on POST routes, hence the backend hop).
+    //   2. If the POST body carries a signed status, treat it as a fallback
+    //      webhook delivery and flip the payment row before the SPA polls —
+    //      so the UI doesn't hang on "Confirming Your Payment…" when the
+    //      real webhook is delayed/dropped/unreachable.
+    //
+    // The fallback uses the same handleCallback() that the webhook does, so
+    // checksum + amount validation + idempotency are identical. Any failure
+    // here is swallowed: the redirect must always happen so the user lands
+    // somewhere instead of seeing a backend error page.
     @All('xoala/return')
     async xoalaReturn(
         @Query() query: any,
@@ -58,6 +70,20 @@ export class PaymentsController {
             body?.merchantTransactionId ||
             body?.reference ||
             '';
+
+        if (body && body.merchantTransactionId && body.status && body.checksum) {
+            try {
+                const result = await this.xoalaWebhookService.handleCallback(body);
+                this.logger.log(
+                    `[Xoala Return] Fallback status update ref=${reference} result=${JSON.stringify(result).slice(0, 200)}`,
+                );
+            } catch (err: any) {
+                this.logger.warn(
+                    `[Xoala Return] Fallback status update failed ref=${reference} message=${err?.message} — webhook should still process this`,
+                );
+            }
+        }
+
         const frontendUrl = this.configService.get<string>('APP_FRONTEND_URL') || '';
         const target = `${frontendUrl}/pay/success?reference=${encodeURIComponent(reference)}`;
         return res.redirect(302, target);
