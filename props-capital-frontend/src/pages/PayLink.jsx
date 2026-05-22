@@ -235,7 +235,7 @@ const FieldError = ({ name, error }) =>
 
 const PayLink = () => {
   const { isDark } = useTheme();
-  const { formatFee, cur, formatAmount } = useCurrency();
+  const { currency, formatFee, cur, formatAmount } = useCurrency();
   const { slug } = useParams();
   const navigate = useNavigate();
 
@@ -373,6 +373,14 @@ const PayLink = () => {
       return;
     }
 
+    // Mirrors the server-side check: only VISA/MC route to a terminal.
+    if (brand && brand !== 'VISA' && brand !== 'MC') {
+      toast.error('We only accept Visa and Mastercard for EUR/GBP payments.');
+      const el = document.getElementsByName('cardNumber')[0];
+      if (el && typeof el.focus === 'function') el.focus();
+      return;
+    }
+
     const attribution = readBrandAttribution();
     const cardDigits = form.cardNumber.replace(/\D/g, '');
     const [mm, yy] = form.expiry.split('/');
@@ -380,6 +388,7 @@ const PayLink = () => {
     chargeMutation.mutate({
       challengeId: challenge.id,
       slug,
+      currency,
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
       email: form.email.trim().toLowerCase(),

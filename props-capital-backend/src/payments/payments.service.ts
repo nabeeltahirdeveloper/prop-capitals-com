@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, InternalServerErrorException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
@@ -46,6 +46,61 @@ export class PaymentsService {
   private normalizePlatform(raw: string | undefined): string {
     if (!raw) return 'MT5';
     return this.platformMap[raw] || raw;
+  }
+
+  // ─── Card brand detection (server-side — never trust the client) ───
+  // Visa: starts with 4. Mastercard: 51-55 or 2221-2720. Anything else is
+  // unsupported for this merchant since we only have VISA + MC terminals.
+  private detectCardBrand(rawNumber: string): 'VISA' | 'MC' | null {
+    const digits = String(rawNumber || '').replace(/\D/g, '');
+    if (/^4\d{12,18}$/.test(digits)) return 'VISA';
+    if (/^(5[1-5]\d{14}|2(2[2-9]\d|[3-6]\d{2}|7([01]\d|20))\d{12})$/.test(digits)) {
+      return 'MC';
+    }
+    return null;
+  }
+
+  // ─── Per-(currency, brand) terminal lookup ─────────────────────────
+  // Bluehaven Management LTD has 4 terminals — one per currency × brand pair.
+  // Configured via XOALA_TERMINAL_{EUR,GBP}_{VISA,MC} env vars.
+  private resolveXoalaTerminalId(
+    currency: 'EUR' | 'GBP',
+    brand: 'VISA' | 'MC',
+  ): string {
+    const key = `XOALA_TERMINAL_${currency}_${brand}`;
+    const terminalId = this.configService.get<string>(key);
+    if (!terminalId) {
+      this.logger.error(`Missing ${key} env var`);
+      throw new InternalServerErrorException(
+        `Xoala terminal not configured for ${currency} ${brand}`,
+      );
+    }
+    return terminalId;
+  }
+
+  // EUR is the canonical currency stored in challenge.price (or challenge.currency
+  // may be GBP). Frontend sends the user-selected display currency; we recompute
+  // the amount server-side so a tampered client can't change what we charge.
+  // Mirrors EUR_TO_GBP_RATE in CurrencyContext.jsx — keep these in sync.
+  private static readonly EUR_TO_GBP_RATE = 0.85;
+
+  private computeChargeAmount(
+    challenge: { price: number; currency: string | null },
+    requestedCurrency: 'EUR' | 'GBP',
+  ): { amount: string; amountCents: number } {
+    const challengeCurrency = (challenge.currency || 'EUR').toUpperCase();
+    let priceEur: number;
+    if (challengeCurrency === 'GBP') {
+      priceEur = challenge.price / PaymentsService.EUR_TO_GBP_RATE;
+    } else {
+      priceEur = challenge.price;
+    }
+    const finalPrice =
+      requestedCurrency === 'GBP'
+        ? priceEur * PaymentsService.EUR_TO_GBP_RATE
+        : priceEur;
+    const amountCents = Math.round(finalPrice * 100);
+    return { amount: (amountCents / 100).toFixed(2), amountCents };
   }
 
   // Accepts "25K", "100K", "5M", "25000", or a number. Returns integer dollars.
@@ -346,6 +401,7 @@ export class PaymentsService {
       brandSlug,
       linkSlug,
       card,
+      currency: requestedCurrencyRaw,
     } = data || {};
 
     if (!slug && !challengeId && !accountSize) {
@@ -356,6 +412,26 @@ export class PaymentsService {
     if (!card?.number || !card?.expiryMonth || !card?.expiryYear || !card?.cvv) {
       throw new BadRequestException(
         'Card details (number, expiryMonth, expiryYear, cvv) are required',
+      );
+    }
+
+    // Currency must come from the request body (driven by the site-wide
+    // EUR/GBP toggle); we only support these two and reject anything else.
+    const requestedCurrency = String(requestedCurrencyRaw || '').toUpperCase();
+    if (requestedCurrency !== 'EUR' && requestedCurrency !== 'GBP') {
+      throw new BadRequestException(
+        'Unsupported currency. Only EUR and GBP are accepted.',
+      );
+    }
+
+    // Re-derive the card brand server-side. We never trust the brand the
+    // client sends, since terminal selection depends on it. Only Visa and
+    // Mastercard are supported by this merchant's terminals.
+    const sanitizedCardNumber = String(card.number).replace(/\D/g, '');
+    const detectedBrand = this.detectCardBrand(sanitizedCardNumber);
+    if (!detectedBrand) {
+      throw new BadRequestException(
+        'We only accept Visa and Mastercard for EUR/GBP payments.',
       );
     }
 
@@ -443,7 +519,10 @@ export class PaymentsService {
       );
     }
 
-    const amountCents = challenge.price * 100;
+    const { amount, amountCents } = this.computeChargeAmount(
+      challenge,
+      requestedCurrency,
+    );
     const selectedPlatform =
       platform || tradingPlatform || trading_platform || brokerPlatform || challenge.platform;
     const normalizedPlatform = this.normalizePlatform(selectedPlatform);
@@ -458,7 +537,7 @@ export class PaymentsService {
     const secureKey = this.configService.get<string>('XOALA_SECURE_KEY');
     const frontendUrl = this.configService.get<string>('APP_FRONTEND_URL');
     const backendUrl = this.configService.get<string>('APP_BACKEND_URL');
-    const terminalId = this.configService.get<string>('XOALA_TERMINAL_ID');
+    const terminalId = this.resolveXoalaTerminalId(requestedCurrency, detectedBrand);
     const notificationUrl = this.configService.get<string>('XOALA_NOTIFICATION_URL');
 
     if (!s2sBaseUrl || !memberId || !secureKey || !frontendUrl || !backendUrl) {
@@ -476,8 +555,7 @@ export class PaymentsService {
     // and most SPA hosts don't serve HTML on POST, so we route through a
     // backend endpoint that accepts POST and 302-redirects to the SPA.
     const merchantRedirectUrl = `${backendUrl}/payments/xoala/return?reference=${orderNumber}`;
-    const orderCurrency = (challenge.currency || 'USD').toUpperCase();
-    const amount = (amountCents / 100).toFixed(2);
+    const orderCurrency = requestedCurrency;
     const orderDescription = `${challenge.name} ${challenge.accountSize} Account`;
 
     // S2S request checksum:  MD5( memberId | secureKey | merchantTxId | amount )
@@ -488,7 +566,7 @@ export class PaymentsService {
     // PCI-safe payload to persist (NEVER PAN, NEVER CVV).
     const safePayload = {
       memberId,
-      terminalId: terminalId || null,
+      terminalId,
       amount,
       currency: orderCurrency,
       merchantTransactionId: orderNumber,
@@ -506,7 +584,7 @@ export class PaymentsService {
         postalCode: postalCode || null,
       },
       card: {
-        brand: card.brand || null,
+        brand: detectedBrand,
         expiryMonth: card.expiryMonth,
         expiryYear: card.expiryYear,
         holder: card.holder || null,
@@ -553,7 +631,7 @@ export class PaymentsService {
 
         // Card metadata (bin/last4 are filled once the gateway responds)
         cardholderName: card.holder || null,
-        cardBrand: card.brand || null,
+        cardBrand: detectedBrand,
         cardExpiryMonth: String(card.expiryMonth),
         cardExpiryYear: String(card.expiryYear),
 
@@ -602,20 +680,20 @@ export class PaymentsService {
       'amount': amount,
       'currency': orderCurrency,
       'orderDescriptor': orderDescription,
-      'card.number': String(card.number).replace(/\s+/g, ''),
+      'card.number': sanitizedCardNumber,
       'card.expiryMonth': String(card.expiryMonth),
       'card.expiryYear': String(card.expiryYear),
       'card.cvv': String(card.cvv),
       'paymentMode': 'CC',
       'paymentType': 'DB',
+      'paymentBrand': detectedBrand,
+      'authentication.terminalId': terminalId,
       'merchantRedirectUrl': merchantRedirectUrl,
       'customer.email': user.email,
       'customer.givenName': (firstName || '').trim(),
       'customer.surname': (lastName || '').trim(),
     };
-    if (terminalId) params['authentication.terminalId'] = terminalId;
     if (notificationUrl) params['notificationUrl'] = notificationUrl;
-    if (card.brand) params['paymentBrand'] = String(card.brand).toUpperCase();
     if (card.holder) params['card.holder'] = String(card.holder);
     if (phone) params['customer.phone'] = String(phone);
     if (country) params['shipping.country'] = String(country);
@@ -678,7 +756,7 @@ export class PaymentsService {
     const cardSummary = {
       bin: respCard.bin || null,
       last4: respCard.last4Digits || respCard.last4 || null,
-      brand: xoalaResponse.paymentBrand || card.brand || null,
+      brand: xoalaResponse.paymentBrand || detectedBrand,
     };
 
     // ── Branch 1: 3DS required (cardholder must visit ACS) ──
@@ -698,7 +776,7 @@ export class PaymentsService {
           callbackPayload: xoalaResponse,
           cardBin: cardSummary.bin,
           cardLast4: cardSummary.last4,
-          cardBrand: cardSummary.brand || card.brand || null,
+          cardBrand: cardSummary.brand || detectedBrand,
           metadata: {
             ...(payment.metadata as object || {}),
             card: cardSummary,
@@ -729,7 +807,7 @@ export class PaymentsService {
           callbackPayload: xoalaResponse,
           cardBin: cardSummary.bin,
           cardLast4: cardSummary.last4,
-          cardBrand: cardSummary.brand || card.brand || null,
+          cardBrand: cardSummary.brand || detectedBrand,
           metadata: {
             ...(payment.metadata as object || {}),
             card: cardSummary,
@@ -772,7 +850,7 @@ export class PaymentsService {
       failureReason: failMessage,
       cardBin: cardSummary.bin,
       cardLast4: cardSummary.last4,
-      cardBrand: cardSummary.brand || card.brand || null,
+      cardBrand: cardSummary.brand || detectedBrand,
       metadata: {
         ...(payment.metadata as object || {}),
         card: cardSummary,
