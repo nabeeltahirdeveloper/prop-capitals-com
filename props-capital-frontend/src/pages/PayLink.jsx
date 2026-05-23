@@ -170,7 +170,7 @@ const validateField = (name, value) => {
     }
     case 'phone': {
       const v = value.trim();
-      if (!v) return ''; // optional
+      if (!v) return 'Phone number is required'; // optional
       if (!/^[+\d][\d\s\-()]{5,19}$/.test(v)) return 'Enter a valid phone number';
       return '';
     }
