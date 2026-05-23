@@ -561,7 +561,7 @@ const PayLink = () => {
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Phone (Optional)</label>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Phone</label>
                     <div className="relative">
                       <Phone className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                       <input
@@ -572,6 +572,7 @@ const PayLink = () => {
                         onChange={handlePhoneChange}
                         onBlur={handleBlur}
                         autoComplete="tel"
+                        required
                         className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass} ${errClass('phone')}`}
                         placeholder="+1 555 0100"
                         maxLength={20}
