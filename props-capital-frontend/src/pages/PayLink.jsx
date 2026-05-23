@@ -252,6 +252,11 @@ const PayLink = () => {
 
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
+  // Required acknowledgements before submit. The Pay button stays disabled
+  // until both are ticked; the T&C link goes to the public Terms page, and
+  // the age confirmation is a hard regulatory gate.
+  const [agreedTerms, setAgreedTerms] = useState(false);
+  const [confirmedAge, setConfirmedAge] = useState(false);
 
   // Bounce unauthenticated users to sign-in; preserve where they came from
   // so they land back on this exact pay link after logging in.
@@ -382,6 +387,15 @@ const PayLink = () => {
       toast.error('We only accept Visa and Mastercard for EUR/GBP payments.');
       const el = document.getElementsByName('cardNumber')[0];
       if (el && typeof el.focus === 'function') el.focus();
+      return;
+    }
+
+    if (!agreedTerms) {
+      toast.error('Please accept the Terms & Conditions and Privacy Policy.');
+      return;
+    }
+    if (!confirmedAge) {
+      toast.error('You must confirm you are over 18 years old.');
       return;
     }
 
@@ -781,9 +795,58 @@ const PayLink = () => {
                 </p>
               </div>
 
+              <div className={`mt-6 rounded-xl p-4 flex items-start gap-3 ${isDark ? 'bg-amber-500/5 border border-amber-500/20' : 'bg-amber-50 border border-amber-200'}`}>
+                <input
+                  id="agreedTerms"
+                  type="checkbox"
+                  checked={agreedTerms}
+                  onChange={(e) => setAgreedTerms(e.target.checked)}
+                  className="mt-1 w-5 h-5 accent-amber-500 cursor-pointer flex-shrink-0"
+                />
+                <label
+                  htmlFor="agreedTerms"
+                  className={`text-sm cursor-pointer ${isDark ? 'text-gray-300' : 'text-slate-700'}`}
+                >
+                  I agree to the{' '}
+                  <a
+                    href="/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-bold text-amber-500 hover:text-amber-600 underline"
+                  >
+                    Terms &amp; Conditions
+                  </a>{' '}
+                  and{' '}
+                  <a
+                    href="/Privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-bold text-amber-500 hover:text-amber-600 underline"
+                  >
+                    Privacy Policy
+                  </a>
+                </label>
+              </div>
+
+              <div className={`mt-3 rounded-xl p-4 flex items-start gap-3 ${isDark ? 'bg-amber-500/5 border border-amber-500/20' : 'bg-amber-50 border border-amber-200'}`}>
+                <input
+                  id="confirmedAge"
+                  type="checkbox"
+                  checked={confirmedAge}
+                  onChange={(e) => setConfirmedAge(e.target.checked)}
+                  className="mt-1 w-5 h-5 accent-amber-500 cursor-pointer flex-shrink-0"
+                />
+                <label
+                  htmlFor="confirmedAge"
+                  className={`text-sm cursor-pointer ${isDark ? 'text-gray-300' : 'text-slate-700'}`}
+                >
+                  I confirm I am over 18 years old <span className="text-red-500">*</span>
+                </label>
+              </div>
+
               <Button
                 type="submit"
-                disabled={submitting}
+                disabled={submitting || !agreedTerms || !confirmedAge}
                 className="w-full mt-6 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-6 py-6 h-auto font-bold text-base disabled:opacity-50"
               >
                 {submitting ? (
