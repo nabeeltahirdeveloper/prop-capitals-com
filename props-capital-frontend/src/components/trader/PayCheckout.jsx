@@ -50,7 +50,7 @@ const validatePhoneNumber = (value) => {
   const compact = v.replace(/[\s\-()]/g, '');
   if (!v) return 'Phone number is required';
   if (!/^\+[1-9]\d{9,14}$/.test(compact)) {
-    return 'Enter a valid phone number with country code (e.g. +1 555 0100)';
+    return 'Enter a valid phone number with country code (e.g. +1 202 555 0100)';
   }
   return '';
 };
