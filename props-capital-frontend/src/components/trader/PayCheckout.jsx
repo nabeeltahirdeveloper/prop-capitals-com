@@ -20,7 +20,8 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { PaymentLogos } from '@/components/PaymentLogos';
 import { getChallengeBySlug } from '@/api/challenges';
-// import { createXoalaCardSession, submitXoalaCheckout } from '@/api/payments';
+import { COUNTRIES } from '@/constants/countries';
+import { createXoalaCardSession, submitXoalaCheckout } from '@/api/payments';
 
 // Trader-side checkout destination. Reached when the user clicks
 // "Continue to Payment" inside /traderdashboard/checkout. The route param
@@ -30,25 +31,6 @@ import { getChallengeBySlug } from '@/api/challenges';
 //
 // This page is intentionally a separate file from PayLink even though the
 // UI mirrors it, so the merchant-facing /pay/:slug page stays untouched.
-
-const COUNTRIES = [
-  { code: 'GB', name: 'United Kingdom' },
-  { code: 'US', name: 'United States' },
-  { code: 'CA', name: 'Canada' },
-  { code: 'AE', name: 'United Arab Emirates' },
-  { code: 'AU', name: 'Australia' },
-  { code: 'DE', name: 'Germany' },
-  { code: 'FR', name: 'France' },
-  { code: 'ES', name: 'Spain' },
-  { code: 'IT', name: 'Italy' },
-  { code: 'NL', name: 'Netherlands' },
-  { code: 'IE', name: 'Ireland' },
-  { code: 'IN', name: 'India' },
-  { code: 'PK', name: 'Pakistan' },
-  { code: 'NG', name: 'Nigeria' },
-  { code: 'ZA', name: 'South Africa' },
-  { code: 'OTHER', name: 'Other' },
-];
 
 const formatCurrency = (amount, currency) => {
   if (amount === undefined || amount === null) return '';
@@ -61,6 +43,15 @@ const formatCurrency = (amount, currency) => {
   } catch {
     return `${currency || ''} ${amount}`.trim();
   }
+};
+
+const validatePhoneNumber = (value) => {
+  const v = value.trim();
+  const digits = v.replace(/\D/g, '');
+  if (!v) return 'Phone number is required';
+  if (!/^\+?[\d\s\-()]+$/.test(v)) return 'Enter a valid phone number';
+  if (digits.length < 7 || digits.length > 15) return 'Phone number must be 7-15 digits';
+  return '';
 };
 
 const PayCheckout = () => {
@@ -106,7 +97,11 @@ const PayCheckout = () => {
   });
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({
+      ...form,
+      [name]: name === 'phone' ? value.replace(/[^\d+\s\-()]/g, '').slice(0, 24) : value,
+    });
   };
 
   const validate = () => {
@@ -114,6 +109,8 @@ const PayCheckout = () => {
     if (!form.lastName.trim()) return 'Last name is required';
     if (!form.email.trim()) return 'Email is required';
     if (!/^\S+@\S+\.\S+$/.test(form.email)) return 'Email is not valid';
+    const phoneError = validatePhoneNumber(form.phone);
+    if (phoneError) return phoneError;
     if (!form.country) return 'Country is required';
     if (!form.address.trim()) return 'Address is required';
     if (!form.city.trim()) return 'City is required';
@@ -136,7 +133,7 @@ const PayCheckout = () => {
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
       email: form.email.trim().toLowerCase(),
-      phone: form.phone.trim() || undefined,
+      phone: form.phone.trim(),
       country: form.country,
       address: form.address.trim(),
       city: form.city.trim(),
@@ -240,23 +237,26 @@ const PayCheckout = () => {
                     />
                   </div>
                   <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                    We'll send your account access and trading credentials here.
+                    We&apos;ll send your account access and trading credentials here.
                   </p>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Phone (Optional)</label>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Phone *</label>
                     <div className="relative">
                       <Phone className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                       <input
                         type="tel"
+                        inputMode="tel"
                         name="phone"
                         value={form.phone}
                         onChange={handleChange}
                         autoComplete="tel"
                         className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
                         placeholder="+44 7700 900000"
+                        maxLength={24}
+                        required
                       />
                     </div>
                   </div>
@@ -272,7 +272,7 @@ const PayCheckout = () => {
                         className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
                         required
                       >
-                        <option value="">Select country</option>
+                        <option value="">Select country...</option>
                         {COUNTRIES.map((c) => (
                           <option key={c.code} value={c.code}>{c.name}</option>
                         ))}
@@ -319,7 +319,7 @@ const PayCheckout = () => {
               <div className={`mt-6 rounded-xl p-4 flex items-start gap-3 ${isDark ? 'bg-amber-500/5 border border-amber-500/20' : 'bg-amber-50 border border-amber-200'}`}>
                 <Lock className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
                 <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
-                  After you click Pay, you'll be redirected to our secure payment processor to enter your card details. We never see or store your card number.
+                  After you click Pay, you&apos;ll be redirected to our secure payment processor to enter your card details. We never see or store your card number.
                 </p>
               </div>
 

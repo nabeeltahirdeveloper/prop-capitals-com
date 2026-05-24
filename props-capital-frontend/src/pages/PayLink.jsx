@@ -25,76 +25,7 @@ import { PaymentLogos } from '@/components/PaymentLogos';
 import { getChallengeBySlug } from '@/api/challenges';
 import { chargeXoalaCard } from '@/api/payments';
 import { readBrandAttribution } from '@/pages/CheckoutPage';
-
-// ISO-3166 alpha-2 — never use a placeholder like "OTHER" because the
-// gateway rejects anything that isn't a real country code.
-const COUNTRIES = [
-  { code: 'AE', name: 'United Arab Emirates' },
-  { code: 'AR', name: 'Argentina' },
-  { code: 'AT', name: 'Austria' },
-  { code: 'AU', name: 'Australia' },
-  { code: 'BE', name: 'Belgium' },
-  { code: 'BG', name: 'Bulgaria' },
-  { code: 'BH', name: 'Bahrain' },
-  { code: 'BR', name: 'Brazil' },
-  { code: 'CA', name: 'Canada' },
-  { code: 'CH', name: 'Switzerland' },
-  { code: 'CL', name: 'Chile' },
-  { code: 'CO', name: 'Colombia' },
-  { code: 'CY', name: 'Cyprus' },
-  { code: 'CZ', name: 'Czech Republic' },
-  { code: 'DE', name: 'Germany' },
-  { code: 'DK', name: 'Denmark' },
-  { code: 'EE', name: 'Estonia' },
-  { code: 'EG', name: 'Egypt' },
-  { code: 'ES', name: 'Spain' },
-  { code: 'FI', name: 'Finland' },
-  { code: 'FR', name: 'France' },
-  { code: 'GB', name: 'United Kingdom' },
-  { code: 'GH', name: 'Ghana' },
-  { code: 'GR', name: 'Greece' },
-  { code: 'HK', name: 'Hong Kong' },
-  { code: 'HR', name: 'Croatia' },
-  { code: 'HU', name: 'Hungary' },
-  { code: 'ID', name: 'Indonesia' },
-  { code: 'IE', name: 'Ireland' },
-  { code: 'IN', name: 'India' },
-  { code: 'IT', name: 'Italy' },
-  { code: 'JP', name: 'Japan' },
-  { code: 'KE', name: 'Kenya' },
-  { code: 'KR', name: 'South Korea' },
-  { code: 'KW', name: 'Kuwait' },
-  { code: 'LT', name: 'Lithuania' },
-  { code: 'LU', name: 'Luxembourg' },
-  { code: 'LV', name: 'Latvia' },
-  { code: 'MA', name: 'Morocco' },
-  { code: 'MT', name: 'Malta' },
-  { code: 'MX', name: 'Mexico' },
-  { code: 'MY', name: 'Malaysia' },
-  { code: 'NG', name: 'Nigeria' },
-  { code: 'NL', name: 'Netherlands' },
-  { code: 'NO', name: 'Norway' },
-  { code: 'NZ', name: 'New Zealand' },
-  { code: 'OM', name: 'Oman' },
-  { code: 'PE', name: 'Peru' },
-  { code: 'PH', name: 'Philippines' },
-  { code: 'PK', name: 'Pakistan' },
-  { code: 'PL', name: 'Poland' },
-  { code: 'PT', name: 'Portugal' },
-  { code: 'QA', name: 'Qatar' },
-  { code: 'RO', name: 'Romania' },
-  { code: 'SA', name: 'Saudi Arabia' },
-  { code: 'SE', name: 'Sweden' },
-  { code: 'SG', name: 'Singapore' },
-  { code: 'SI', name: 'Slovenia' },
-  { code: 'SK', name: 'Slovakia' },
-  { code: 'TH', name: 'Thailand' },
-  { code: 'TR', name: 'Turkey' },
-  { code: 'TW', name: 'Taiwan' },
-  { code: 'US', name: 'United States' },
-  { code: 'VN', name: 'Vietnam' },
-  { code: 'ZA', name: 'South Africa' },
-];
+import { COUNTRIES } from '@/constants/countries';
 
 // ── Card helpers ───────────────────────────────────────────────────────
 // Xoala's merchant config uses short brand codes:
@@ -170,8 +101,10 @@ const validateField = (name, value) => {
     }
     case 'phone': {
       const v = value.trim();
-      if (!v) return 'Phone number is required'; // optional
-      if (!/^[+\d][\d\s\-()]{5,19}$/.test(v)) return 'Enter a valid phone number';
+      const digits = v.replace(/\D/g, '');
+      if (!v) return 'Phone number is required';
+      if (!/^\+?[\d\s\-()]+$/.test(v)) return 'Enter a valid phone number';
+      if (digits.length < 7 || digits.length > 15) return 'Phone number must be 7-15 digits';
       return '';
     }
     case 'country':
@@ -561,7 +494,7 @@ const PayLink = () => {
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Phone</label>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Phone *</label>
                     <div className="relative">
                       <Phone className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                       <input
@@ -575,7 +508,7 @@ const PayLink = () => {
                         required
                         className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass} ${errClass('phone')}`}
                         placeholder="+1 555 0100"
-                        maxLength={20}
+                        maxLength={24}
                         {...ariaProps('phone')}
                       />
                     </div>
@@ -598,7 +531,7 @@ const PayLink = () => {
                         required
                         {...ariaProps('country')}
                       >
-                        <option value="">Select country</option>
+                        <option value="">Select country...</option>
                         {COUNTRIES.map((c) => (
                           <option key={c.code} value={c.code}>{c.name}</option>
                         ))}
@@ -864,7 +797,7 @@ const PayLink = () => {
               </Button>
               {submitting && (
                 <p className={`text-xs text-center mt-3 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                  Please don't close or refresh this window.
+                  Please don&apos;t close or refresh this window.
                 </p>
               )}
             </div>

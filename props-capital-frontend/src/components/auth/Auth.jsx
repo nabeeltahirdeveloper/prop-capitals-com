@@ -38,7 +38,8 @@ const Auth = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    agreeTerms: false
+    agreeTerms: false,
+    confirmedAge: false
   });
 
   const formatApiError = (err, fallbackKey) => {
@@ -148,6 +149,11 @@ const Auth = () => {
 
     if (!signupData.agreeTerms) {
       setError('Please agree to the Terms of Service and Privacy Policy');
+      return;
+    }
+
+    if (!signupData.confirmedAge) {
+      setError('Please confirm you are over 18 years old');
       return;
     }
 
@@ -470,6 +476,20 @@ const Auth = () => {
                       <Link to="/terms" className="text-amber-500 hover:text-amber-400">Terms of Service</Link>
                       {' '}and{' '}
                       <Link to="/privacy" className="text-amber-500 hover:text-amber-400">Privacy Policy</Link>
+                    </label>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      name="confirmedAge"
+                      checked={signupData.confirmedAge}
+                      onChange={handleSignupChange}
+                      required
+                      className={`w-4 h-4 mt-1 rounded text-amber-500 focus:ring-amber-500/50 ${isDark ? 'border-white/20 bg-[#0a0d12]' : 'border-slate-300 bg-white'}`}
+                    />
+                    <label className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
+                      I confirm I am over 18 years old <span className="text-red-500">*</span>
                     </label>
                   </div>
 
