@@ -21,7 +21,7 @@ import { useCurrency } from '@/contexts/CurrencyContext';
 import { PaymentLogos } from '@/components/PaymentLogos';
 import { getChallengeBySlug } from '@/api/challenges';
 import { COUNTRIES } from '@/constants/countries';
-// import { createXoalaCardSession, submitXoalaCheckout } from '@/api/payments';
+import { createXoalaCardSession, submitXoalaCheckout } from '@/api/payments';
 
 // Trader-side checkout destination. Reached when the user clicks
 // "Continue to Payment" inside /traderdashboard/checkout. The route param
@@ -237,7 +237,7 @@ const PayCheckout = () => {
                     />
                   </div>
                   <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                    We'll send your account access and trading credentials here.
+                    We&apos;ll send your account access and trading credentials here.
                   </p>
                 </div>
 
@@ -319,7 +319,7 @@ const PayCheckout = () => {
               <div className={`mt-6 rounded-xl p-4 flex items-start gap-3 ${isDark ? 'bg-amber-500/5 border border-amber-500/20' : 'bg-amber-50 border border-amber-200'}`}>
                 <Lock className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
                 <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
-                  After you click Pay, you'll be redirected to our secure payment processor to enter your card details. We never see or store your card number.
+                  After you click Pay, you&apos;ll be redirected to our secure payment processor to enter your card details. We never see or store your card number.
                 </p>
               </div>
 

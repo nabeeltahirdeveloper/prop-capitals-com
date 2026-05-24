@@ -17,6 +17,27 @@ export const chargeXoalaCard = async (data) => {
   return apiPost('/payments/xoala/charge', data);
 };
 
+export const createXoalaCardSession = async (data) => {
+  return apiPost('/payments/xoala/card-session', data);
+};
+
+export const submitXoalaCheckout = ({ checkoutUrl, fields }) => {
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = checkoutUrl;
+
+  Object.entries(fields || {}).forEach(([name, value]) => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = name;
+    input.value = value == null ? '' : String(value);
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+};
+
 export const getPaymentStatus = async (reference) => {
   return apiGet(`/payments/status/${reference}`);
 };

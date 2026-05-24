@@ -797,7 +797,7 @@ const PayLink = () => {
               </Button>
               {submitting && (
                 <p className={`text-xs text-center mt-3 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                  Please don't close or refresh this window.
+                  Please don&apos;t close or refresh this window.
                 </p>
               )}
             </div>
