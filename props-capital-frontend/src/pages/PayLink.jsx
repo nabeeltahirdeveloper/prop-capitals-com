@@ -101,10 +101,11 @@ const validateField = (name, value) => {
     }
     case 'phone': {
       const v = value.trim();
-      const digits = v.replace(/\D/g, '');
+      const compact = v.replace(/[\s\-()]/g, '');
       if (!v) return 'Phone number is required';
-      if (!/^\+?[\d\s\-()]+$/.test(v)) return 'Enter a valid phone number';
-      if (digits.length < 7 || digits.length > 15) return 'Phone number must be 7-15 digits';
+      if (!/^\+[1-9]\d{9,14}$/.test(compact)) {
+        return 'Enter a valid phone number with country code (e.g. +1 202 555 0100)';
+      }
       return '';
     }
     case 'country':
@@ -507,14 +508,14 @@ const PayLink = () => {
                         autoComplete="tel"
                         required
                         className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass} ${errClass('phone')}`}
-                        placeholder="+1 555 0100"
+                        placeholder="+1 202 555 0100"
                         maxLength={24}
                         {...ariaProps('phone')}
                       />
                     </div>
                     <FieldError name="phone" error={errors.phone} />
                     <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                      Enter phone number with country code (e.g. +1 555 0100).
+                      Use international format with + country code (e.g. +1 202 555 0100).
                     </p>
                   </div>
                   <div>

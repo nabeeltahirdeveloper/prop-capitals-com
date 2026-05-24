@@ -47,10 +47,11 @@ const formatCurrency = (amount, currency) => {
 
 const validatePhoneNumber = (value) => {
   const v = value.trim();
-  const digits = v.replace(/\D/g, '');
+  const compact = v.replace(/[\s\-()]/g, '');
   if (!v) return 'Phone number is required';
-  if (!/^\+?[\d\s\-()]+$/.test(v)) return 'Enter a valid phone number';
-  if (digits.length < 7 || digits.length > 15) return 'Phone number must be 7-15 digits';
+  if (!/^\+[1-9]\d{9,14}$/.test(compact)) {
+    return 'Enter a valid phone number with country code (e.g. +1 202 555 0100)';
+  }
   return '';
 };
 
