@@ -281,6 +281,26 @@ export class AdminConsoleController {
     return this.svc.backfillBrandLinks();
   }
 
+  @Post('direct-purchase-links')
+  createDirectPurchaseLink(@Body() body: any) {
+    return this.svc.createDirectPurchaseLink(body);
+  }
+
+  @Patch('direct-purchase-links/:id')
+  updateDirectPurchaseLink(@Param('id') id: string, @Body() body: any) {
+    return this.svc.updateDirectPurchaseLink(id, body);
+  }
+
+  @Delete('direct-purchase-links/:id')
+  deleteDirectPurchaseLink(@Param('id') id: string) {
+    return this.svc.deleteDirectPurchaseLink(id);
+  }
+
+  @Get('direct-purchase-links/challenges')
+  listChallengesForLinks() {
+    return this.svc.listChallengesForLinks();
+  }
+
   /**
    * Provision (or top up) direct purchase links for a single brand.
    */

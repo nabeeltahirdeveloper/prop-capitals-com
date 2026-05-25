@@ -90,7 +90,17 @@ export const adminConsoleApi = {
       apiGet(
         `${PREFIX}/direct-purchase-links/brand/${encodeURIComponent(brandId)}`,
       ),
+    listChallenges: () =>
+      apiGet(`${PREFIX}/direct-purchase-links/challenges`),
     backfill: () => apiPost(`${PREFIX}/direct-purchase-links/backfill`),
+    create: (data) => apiPost(`${PREFIX}/direct-purchase-links`, data),
+    update: (id, data) =>
+      apiPatch(
+        `${PREFIX}/direct-purchase-links/${encodeURIComponent(id)}`,
+        data,
+      ),
+    delete: (id) =>
+      apiDelete(`${PREFIX}/direct-purchase-links/${encodeURIComponent(id)}`),
 
     regenerateForBrand: (brandId) =>
       apiPost(`${PREFIX}/brands/${encodeURIComponent(brandId)}/regenerate-links`),
