@@ -1571,6 +1571,159 @@ export class AdminConsoleService {
     return { links: data.map((l: any) => this.mapDirectPurchaseLink(l)) };
   }
 
+  async createDirectPurchaseLink(body: any) {
+    if (!body?.brand_id) {
+      throw new Error('brand_id is required');
+    }
+
+    const brand = await this.db.brand.findUnique({ where: { id: body.brand_id } });
+    if (!brand) throw new Error('Brand not found');
+
+    let challengeId: string | null = null;
+    let amount: number | null =
+      body.amount != null && body.amount !== '' ? Number(body.amount) : null;
+
+    if (body.challenge_id) {
+      const ch = await this.db.challenge.findUnique({
+        where: { id: body.challenge_id },
+      });
+      if (!ch) throw new Error('Challenge not found');
+      challengeId = ch.id;
+      if (amount == null) amount = ch.price ?? null;
+    }
+
+    const customUrl =
+      typeof body.custom_url === 'string' && body.custom_url.trim()
+        ? body.custom_url.trim()
+        : null;
+
+    const metadata: any = {};
+    if (customUrl) metadata.custom_url = customUrl;
+    if (body.is_main_link === true || (!challengeId && customUrl)) {
+      metadata.is_main_link = true;
+    }
+
+    const link = await this.db.directPurchaseLink.create({
+      data: {
+        slug: body.slug || this.randomLinkSlug(),
+        name: body.name?.trim() || null,
+        brandId: brand.id,
+        challengeId,
+        amount,
+        currency: body.currency || 'USD',
+        metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
+        active: body.active !== false,
+      },
+      include: {
+        brand: { select: { id: true, name: true, slug: true } },
+        challenge: {
+          select: {
+            id: true,
+            slug: true,
+            name: true,
+            challengeType: true,
+            accountSize: true,
+            price: true,
+          },
+        },
+      },
+    });
+
+    return { link: this.mapDirectPurchaseLink(link) };
+  }
+
+  async updateDirectPurchaseLink(id: string, body: any) {
+    const existing = await this.db.directPurchaseLink.findUnique({
+      where: { id },
+    });
+    if (!existing) throw new Error('Link not found');
+
+    const data: any = {};
+    if (body.name !== undefined) data.name = body.name?.trim() || null;
+    if (body.amount !== undefined) {
+      data.amount =
+        body.amount === '' || body.amount == null ? null : Number(body.amount);
+    }
+    if (body.currency !== undefined) data.currency = body.currency || 'USD';
+    if (body.active !== undefined) data.active = !!body.active;
+    if (body.challenge_id !== undefined) {
+      data.challengeId = body.challenge_id || null;
+    }
+
+    if (body.custom_url !== undefined) {
+      const meta: any =
+        existing.metadata && typeof existing.metadata === 'object'
+          ? { ...(existing.metadata as any) }
+          : {};
+      const url =
+        typeof body.custom_url === 'string' && body.custom_url.trim()
+          ? body.custom_url.trim()
+          : null;
+      if (url) meta.custom_url = url;
+      else delete meta.custom_url;
+      data.metadata = Object.keys(meta).length > 0 ? meta : null;
+    }
+
+    const updated = await this.db.directPurchaseLink.update({
+      where: { id },
+      data,
+      include: {
+        brand: { select: { id: true, name: true, slug: true } },
+        challenge: {
+          select: {
+            id: true,
+            slug: true,
+            name: true,
+            challengeType: true,
+            accountSize: true,
+            price: true,
+          },
+        },
+      },
+    });
+
+    return { link: this.mapDirectPurchaseLink(updated) };
+  }
+
+  async deleteDirectPurchaseLink(id: string) {
+    const existing = await this.db.directPurchaseLink.findUnique({
+      where: { id },
+    });
+    if (!existing) throw new Error('Link not found');
+    await this.db.directPurchaseLink.delete({ where: { id } });
+    return { success: true };
+  }
+
+  /**
+   * Active challenges, in a shape the Create-Link modal can render in a dropdown.
+   */
+  async listChallengesForLinks() {
+    const challenges = await this.db.challenge.findMany({
+      where: { isActive: true },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        challengeType: true,
+        accountSize: true,
+        price: true,
+        currency: true,
+      },
+      orderBy: { price: 'asc' },
+    });
+    return {
+      challenges: challenges.map((c: any) => ({
+        id: c.id,
+        slug: c.slug,
+        name: c.name,
+        challenge_type: c.challengeType,
+        account_size: c.accountSize,
+        price: c.price,
+        currency: c.currency,
+      })),
+    };
+  }
+
   /* ---------- Brand Wallets ----------
    * Returns all brands with settlement info — the visionscope UI calls this
    * "Settlement Wallets". Partitioned client-side by account_type.

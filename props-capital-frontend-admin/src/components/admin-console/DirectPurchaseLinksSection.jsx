@@ -1,6 +1,7 @@
 ﻿import React, { useState, useEffect, useMemo } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
 import { useTranslation } from "../../contexts/LanguageContext";
+import DirectPurchaseLinkModal from './DirectPurchaseLinkModal';
 
 // Get the public site base URL where /pay/<slug> resolves brand links.
 // In dev the admin runs on :5175 and the public site on :5173. In prod we
@@ -25,6 +26,9 @@ export default function DirectPurchaseLinksSection() {
   const [error, setError] = useState('');
   const [selectedBrandId, setSelectedBrandId] = useState('');
   const [brands, setBrands] = useState([]);
+  const [modalLink, setModalLink] = useState(null); // edit target
+  const [modalOpen, setModalOpen] = useState(false);
+  const [busyId, setBusyId] = useState(null); // toggle/delete-in-flight tracker
 
   useEffect(() => {
     loadBrands();
@@ -77,6 +81,86 @@ export default function DirectPurchaseLinksSection() {
     return `${baseUrl}/pay/${link.link_id}`;
   };
 
+  const openCreateModal = () => {
+    setModalLink(null);
+    setModalOpen(true);
+  };
+
+  const openEditModal = (link) => {
+    setModalLink(link);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setModalLink(null);
+  };
+
+  const handleModalSaved = async () => {
+    closeModal();
+    setSuccess(
+      modalLink
+        ? t('adminConsole.directLinks.updateSuccess', {
+            defaultValue: 'Link updated successfully',
+          })
+        : t('adminConsole.directLinks.createSuccess', {
+            defaultValue: 'Link created successfully',
+          }),
+    );
+    setTimeout(() => setSuccess(''), 3000);
+    await loadLinks();
+  };
+
+  const handleToggleActive = async (link) => {
+    setBusyId(link.id);
+    setError('');
+    try {
+      await adminConsoleApi.directPurchaseLinks.update(link.id, {
+        active: !link.is_active,
+      });
+      await loadLinks();
+    } catch (err) {
+      setError(
+        err?.message ||
+          t('adminConsole.directLinks.updateError', {
+            defaultValue: 'Failed to update link',
+          }),
+      );
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const handleDelete = async (link) => {
+    const confirmMsg = t('adminConsole.directLinks.confirmDelete', {
+      name: link.name || link.link_id,
+      defaultValue: 'Delete "{{name}}"? This cannot be undone.',
+    });
+    if (!window.confirm(confirmMsg)) return;
+
+    setBusyId(link.id);
+    setError('');
+    try {
+      await adminConsoleApi.directPurchaseLinks.delete(link.id);
+      setSuccess(
+        t('adminConsole.directLinks.deleteSuccess', {
+          defaultValue: 'Link deleted',
+        }),
+      );
+      setTimeout(() => setSuccess(''), 3000);
+      await loadLinks();
+    } catch (err) {
+      setError(
+        err?.message ||
+          t('adminConsole.directLinks.deleteError', {
+            defaultValue: 'Failed to delete link',
+          }),
+      );
+    } finally {
+      setBusyId(null);
+    }
+  };
+
   return (
     <div>
       {/* Header */}
@@ -88,6 +172,14 @@ export default function DirectPurchaseLinksSection() {
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={openCreateModal}
+            disabled={loading}
+            className="action-btn btn-primary flex items-center gap-2"
+          >
+            <i className="fas fa-plus"></i>
+            {t("adminConsole.directLinks.createCustom", { defaultValue: "Create Custom Link" })}
+          </button>
           <button
             onClick={async () => {
               setError('');
@@ -120,7 +212,7 @@ export default function DirectPurchaseLinksSection() {
           <button
             onClick={loadLinks}
             disabled={loading}
-            className="action-btn btn-primary flex items-center gap-2"
+            className="action-btn btn-secondary flex items-center gap-2"
           >
             <i className={`fas fa-sync-alt ${loading ? 'fa-spin' : ''}`}></i>
             {t("adminConsole.directLinks.refresh", { defaultValue: "Refresh" })}
@@ -211,13 +303,46 @@ export default function DirectPurchaseLinksSection() {
                     ${Number(link.total_amount).toFixed(2)} • {t("adminConsole.directLinks.packageLabel", { defaultValue: "Package:" })} ${Number(link.package_price).toFixed(2)} • {t("adminConsole.directLinks.creditsLabel", { defaultValue: "Credits:" })} ${Number(link.credits_price).toFixed(2)} ({link.credits_amount === 'unlimited' ? t("adminConsole.directLinks.unlimited", { defaultValue: "Unlimited" }) : link.credits_amount} {t("adminConsole.directLinks.creditsWord", { defaultValue: "credits" })})
                   </p>
                 </div>
-                <button
-                  onClick={() => copyToClipboard(getPurchaseUrl(link))}
-                  className="action-btn btn-secondary whitespace-nowrap"
-                >
-                  <i className="fas fa-copy mr-2"></i>
-                  {t("adminConsole.directLinks.copyLink", { defaultValue: "Copy Link" })}
-                </button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    onClick={() => copyToClipboard(getPurchaseUrl(link))}
+                    className="action-btn btn-secondary whitespace-nowrap"
+                    title={t("adminConsole.directLinks.copyLink", { defaultValue: "Copy Link" })}
+                  >
+                    <i className="fas fa-copy mr-2"></i>
+                    {t("adminConsole.directLinks.copyLink", { defaultValue: "Copy Link" })}
+                  </button>
+                  <button
+                    onClick={() => openEditModal(link)}
+                    className="action-btn btn-secondary"
+                    title={t("adminConsole.directLinks.edit", { defaultValue: "Edit" })}
+                    disabled={busyId === link.id}
+                  >
+                    <i className="fas fa-edit"></i>
+                  </button>
+                  <button
+                    onClick={() => handleToggleActive(link)}
+                    className={`action-btn ${link.is_active ? 'btn-secondary' : 'btn-primary'}`}
+                    title={link.is_active
+                      ? t("adminConsole.directLinks.deactivate", { defaultValue: "Deactivate" })
+                      : t("adminConsole.directLinks.activate", { defaultValue: "Activate" })}
+                    disabled={busyId === link.id}
+                  >
+                    <i className={`fas fa-${link.is_active ? 'toggle-on' : 'toggle-off'}`}></i>
+                  </button>
+                  <button
+                    onClick={() => handleDelete(link)}
+                    className="action-btn btn-secondary !text-red-300 hover:!text-red-200"
+                    title={t("adminConsole.directLinks.delete", { defaultValue: "Delete" })}
+                    disabled={busyId === link.id}
+                  >
+                    {busyId === link.id ? (
+                      <i className="fas fa-spinner fa-spin"></i>
+                    ) : (
+                      <i className="fas fa-trash"></i>
+                    )}
+                  </button>
+                </div>
               </div>
 
               <div className="glass-card border border-white/10 rounded-lg p-3 mb-5 flex flex-col md:flex-row md:items-center gap-3">
@@ -274,10 +399,26 @@ export default function DirectPurchaseLinksSection() {
         <div className="glass-panel p-12 text-center">
           <i className="fas fa-link text-5xl text-gray-500 mb-4"></i>
           <h3 className="text-xl font-semibold text-gray-200 mb-2">{t("adminConsole.directLinks.noLinksTitle", { defaultValue: "No Direct Purchase Links" })}</h3>
-          <p className="text-gray-400">
+          <p className="text-gray-400 mb-4">
             {selectedBrandId ? t("adminConsole.directLinks.noLinksForBrand", { defaultValue: "This brand has no direct purchase links yet." }) : t("adminConsole.directLinks.noLinksFound", { defaultValue: "No direct purchase links found." })}
           </p>
+          <button
+            onClick={openCreateModal}
+            className="action-btn btn-primary inline-flex items-center gap-2"
+          >
+            <i className="fas fa-plus"></i>
+            {t("adminConsole.directLinks.createCustom", { defaultValue: "Create Custom Link" })}
+          </button>
         </div>
+      )}
+
+      {modalOpen && (
+        <DirectPurchaseLinkModal
+          link={modalLink}
+          brands={brands}
+          onClose={closeModal}
+          onSaved={handleModalSaved}
+        />
       )}
     </div>
   );
