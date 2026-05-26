@@ -496,6 +496,33 @@ export class PaymentsService {
         brandLink = { brandId: brand.id, brand, id: null, slug: null, active: true };
       }
     }
+    // Custom-amount DirectPurchaseLinks set `amount` to override the
+    // challenge's default price. We trust the DB value (not anything the
+    // client sent), and only when the link is active. The challenge is still
+    // used for everything else (drawdown, account size, platform); only the
+    // money charged comes from the link.
+    const linkPriceOverride: number | null =
+      brandLink?.active && brandLink?.amount != null && Number(brandLink.amount) > 0
+        ? Number(brandLink.amount)
+        : null;
+    // Custom-URL links may not be tied to a challenge in the DB. Fall back
+    // to the link's stored amount + accountSize hint so the charge can still
+    // proceed for "Custom $X" links the admin creates.
+    if (!challenge && brandLink?.active && linkPriceOverride != null) {
+      const fallbackSize =
+        brandLink.challenge?.accountSize ??
+        (accountSize ? this.parseAccountSize(accountSize) : 0);
+      const fallbackType =
+        brandLink.challenge?.challengeType ?? challengeType ?? 'one_phase';
+      const matched = await this.prisma.challenge.findFirst({
+        where: {
+          accountSize: fallbackSize,
+          challengeType: fallbackType,
+          isActive: true,
+        },
+      });
+      if (matched) challenge = matched;
+    }
     if (!challenge || !challenge.isActive) {
       throw new NotFoundException('Challenge not found');
     }
@@ -524,7 +551,12 @@ export class PaymentsService {
     }
 
     const { amount, amountCents } = this.computeChargeAmount(
-      challenge,
+      // For brand links with a custom amount, charge that instead of
+      // challenge.price. Currency conversion still runs on top so EUR/GBP
+      // display matches the gateway charge.
+      linkPriceOverride != null
+        ? { price: linkPriceOverride, currency: brandLink?.currency ?? challenge.currency }
+        : challenge,
       requestedCurrency,
     );
     const selectedPlatform =

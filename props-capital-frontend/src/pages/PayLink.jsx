@@ -176,6 +176,12 @@ const PayLink = () => {
   // Forwarded from /checkout when the user picked a platform in that wizard.
   // If not set, the backend falls back to challenge.platform.
   const platformFromQuery = searchParams.get('platform') || undefined;
+  const customPriceFromQuery = (() => {
+    const v = searchParams.get('customPrice');
+    if (!v) return null;
+    const n = Number(v);
+    return Number.isFinite(n) && n > 0 ? n : null;
+  })();
 
   // Route is protected — anyone hitting /pay/:slug must be logged in. The
   // email used to provision the trading account comes from the JWT on the
@@ -840,7 +846,7 @@ const PayLink = () => {
               <div className={`mt-4 pt-4 border-t flex justify-between items-center ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
                 <span className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Total</span>
                 <span className="text-3xl font-black text-amber-500">
-                  {formatFee(challenge.price)}
+                  {formatFee(customPriceFromQuery ?? challenge.price)}
                 </span>
               </div>
 

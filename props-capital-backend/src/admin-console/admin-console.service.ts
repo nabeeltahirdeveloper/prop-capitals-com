@@ -1430,7 +1430,9 @@ export class AdminConsoleService {
 
   private buildDestinationUrl(l: any): string {
     const meta = (l.metadata && typeof l.metadata === 'object') ? l.metadata : {};
-    if (meta.custom_url) return meta.custom_url;
+    if (meta.custom_url) {
+      return this.attachLinkSlugToUrl(meta.custom_url, l.slug);
+    }
 
     const baseUrl = this.getPublicSiteUrl();
     const params = new URLSearchParams();
@@ -1449,6 +1451,21 @@ export class AdminConsoleService {
     return `${baseUrl}/Challenges${qs ? '?' + qs : ''}`;
   }
 
+  private attachLinkSlugToUrl(rawUrl: string, slug: string | null | undefined): string {
+    if (!slug) return rawUrl;
+    try {
+      const isAbsolute = /^https?:\/\//i.test(rawUrl);
+      const u = new URL(rawUrl, this.getPublicSiteUrl());
+      if (!u.searchParams.has('link')) u.searchParams.set('link', slug);
+      return isAbsolute ? u.toString() : `${u.pathname}${u.search}${u.hash}`;
+    } catch {
+      const sep = rawUrl.includes('?') ? '&' : '?';
+      return /[?&]link=/.test(rawUrl)
+        ? rawUrl
+        : `${rawUrl}${sep}link=${encodeURIComponent(slug)}`;
+    }
+  }
+
   private mapDirectPurchaseLink(l: any) {
     const total = Number(l.amount ?? 0);
     const conversionRate =
@@ -1456,7 +1473,7 @@ export class AdminConsoleService {
     const meta = (l.metadata && typeof l.metadata === 'object') ? l.metadata : {};
     const isMainLink = !l.challengeId || meta?.is_main_link === true;
     const customUrl = meta?.custom_url ?? null;
-    const destinationUrl = customUrl || this.buildDestinationUrl(l);
+    const destinationUrl = this.buildDestinationUrl(l);
 
     return {
       id: l.id,
