@@ -1471,7 +1471,7 @@ export class AdminConsoleService {
     const conversionRate =
       l.clicks > 0 ? (l.conversions / l.clicks) * 100 : 0;
     const meta = (l.metadata && typeof l.metadata === 'object') ? l.metadata : {};
-    const isMainLink = !l.challengeId || meta?.is_main_link === true;
+    const isMainLink = meta?.is_main_link === true;
     const customUrl = meta?.custom_url ?? null;
     const destinationUrl = this.buildDestinationUrl(l);
 
@@ -1616,7 +1616,7 @@ export class AdminConsoleService {
 
     const metadata: any = {};
     if (customUrl) metadata.custom_url = customUrl;
-    if (body.is_main_link === true || (!challengeId && customUrl)) {
+    if (body.is_main_link === true) {
       metadata.is_main_link = true;
     }
 

@@ -396,8 +396,7 @@ export class BrandPortalService {
   private mapLink(l: any) {
     const total = Number(l.amount ?? 0);
     const meta = (l.metadata && typeof l.metadata === 'object') ? l.metadata : {};
-    // No challengeId on this link → it's the brand's main entry-point link
-    const isMainLink = !l.challengeId || meta?.is_main_link === true;
+    const isMainLink = meta?.is_main_link === true;
     const customUrl = meta?.custom_url ?? null;
 
     const destinationUrl = customUrl || this.buildDestinationUrl(l);

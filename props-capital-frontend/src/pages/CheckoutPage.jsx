@@ -86,7 +86,7 @@ const CHALLENGE_DATA = {
 
 const STEP_LABELS = ['Platform', 'Details', 'Confirm'];
 
-const persistBrandAttribution = (brandSlug, linkSlug) => {
+export const persistBrandAttribution = (brandSlug, linkSlug) => {
   if (!brandSlug && !linkSlug) return;
   try {
     localStorage.setItem(

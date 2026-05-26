@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Check, ArrowRight, Star, Shield, Zap, Clock, TrendingUp, Award, User } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -8,6 +8,8 @@ import { useQuery } from '@tanstack/react-query';
 import { getChallenges } from '@/api/challenges';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getFullPrice } from '@/utils/fullPrice';
+import { persistBrandAttribution } from '@/pages/CheckoutPage';
+import { apiPost } from '@/lib/api';
 
 const features = [
   { icon: Zap, title: "No Time Limit", description: "Complete the challenge at your own pace" },
@@ -26,6 +28,18 @@ const ChallengesPage = () => {
   const { isDark } = useTheme();
   const { formatFee, formatSize, cur } = useCurrency();
   const [selectedSize, setSelectedSize] = useState(3);
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const brandSlug = searchParams.get('brand');
+    const linkSlug = searchParams.get('link');
+    if (brandSlug || linkSlug) {
+      persistBrandAttribution(brandSlug, linkSlug);
+    }
+    if (linkSlug) {
+      apiPost(`/challenges/brand-link/${encodeURIComponent(linkSlug)}/track-click`).catch(() => {});
+    }
+  }, [searchParams]);
 
   const { data: rawChallenges = [], isLoading } = useQuery({
     queryKey: ['challenges'],

@@ -95,6 +95,16 @@ export default function BrandLinksSection() {
     });
   }, [validLinks]);
   
+  const customLinks = useMemo(() => {
+    return validLinks.filter(l => {
+      if (l?.is_main_link) return false;
+      if (l?.package_id) return false;
+      if (allPackagesLink?.id === l?.id) return false;
+      if (customCreditLink?.id === l?.id) return false;
+      return !!l?.custom_url;
+    });
+  }, [validLinks, allPackagesLink?.id, customCreditLink?.id]);
+
   // Get all active package links
   const packageLinks = useMemo(() => {
     const excludedIds = new Set([
@@ -276,6 +286,14 @@ export default function BrandLinksSection() {
         </div>
       )}
 
+      {/* Custom Links */}
+      {customLinks.length > 0 && (
+        <div className="mb-8">
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">Custom Links</h3>
+          <div className="space-y-6">{customLinks.map(renderLinkCard)}</div>
+        </div>
+      )}
+
       {/* Active Package Links */}
       {packageLinks.length > 0 && (
         <div className="mb-8">
@@ -285,7 +303,7 @@ export default function BrandLinksSection() {
       )}
 
       {/* No links */}
-      {!mainLink && !allPackagesLink && !customCreditLink && packageLinks.length === 0 && (
+      {!mainLink && !allPackagesLink && !customCreditLink && customLinks.length === 0 && packageLinks.length === 0 && (
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-12 text-center">
           <i className="fas fa-link text-6xl text-gray-400 mb-4"></i>
           <h3 className="text-xl font-bold text-gray-700 mb-2">No Active Links</h3>
