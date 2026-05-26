@@ -24,6 +24,18 @@ const parseSizeToInt = (raw) => {
   return Math.round(n);
 };
 
+const parseSizeWithCustomPrice = (raw) => {
+  if (raw == null) return { baseSize: '', customPrice: null };
+  const s = String(raw).trim();
+  const m = s.match(/^(.+?)_custom_(\d+(?:\.\d+)?)$/i);
+  if (!m) return { baseSize: s, customPrice: null };
+  const priceNum = Number(m[2]);
+  return {
+    baseSize: m[1],
+    customPrice: Number.isFinite(priceNum) ? priceNum : null,
+  };
+};
+
 // Map UI challengeType ("one-step" / "two-step") to schema values.
 const challengeTypeMatches = (dbType, uiType) => {
   const db = String(dbType || '').toLowerCase();
@@ -140,7 +152,8 @@ const CheckoutPage = () => {
   }, [searchParams]);
 
   const challengeType = normalizeChallengeType(searchParams.get('type'));
-  const accountSize = searchParams.get('size') || '50K';
+  const rawSize = searchParams.get('size') || '50K';
+  const { baseSize: accountSize, customPrice } = parseSizeWithCustomPrice(rawSize);
 
   // Resolve the matching DB challenge so we know what to redirect to AND so
   // the prices/name shown here match the dashboard + Challenges page (which
@@ -165,7 +178,10 @@ const CheckoutPage = () => {
   );
   const fallbackData = CHALLENGE_DATA[challengeType];
   const challengeName = matchedChallenge?.name || fallbackData?.name || 'Challenge';
-  const price = matchedChallenge?.price ?? fallbackData?.prices?.[accountSize] ?? 0;
+  // Display price priority: URL custom override → matched DB challenge → static fallback.
+  // Backend re-validates the override against the link record before charging.
+  const price =
+    customPrice ?? matchedChallenge?.price ?? fallbackData?.prices?.[accountSize] ?? 0;
   const sizeLabel = matchedChallenge
     ? formatSize(`${matchedChallenge.accountSize / 1000}K`)
     : formatSize(accountSize);
@@ -252,6 +268,10 @@ const CheckoutPage = () => {
     // PayLink picks it up via readBrandAttribution.
     const params = new URLSearchParams();
     if (selectedPlatform) params.set('platform', selectedPlatform);
+    // Carry the custom price through so PayLink can show the right total in
+    // its order summary. The actual charge amount is still resolved
+    // server-side from the link record — this param is display only.
+    if (customPrice != null) params.set('customPrice', String(customPrice));
     const qs = params.toString();
     navigate(`/pay/${identifier}${qs ? `?${qs}` : ''}`);
   };
