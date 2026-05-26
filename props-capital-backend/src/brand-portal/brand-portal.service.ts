@@ -224,55 +224,47 @@ export class BrandPortalService {
 
   /* ---------- Visits ---------- */
 
-  async listVisits(_brandId: string, params: { page?: number; limit?: number }) {
-    // Brand-attribution on visits would require a referral param; for now the
-    // brand portal sees the global visit feed (admin can lock this down later).
+  // Brand-portal visits read from this brand's DirectPurchaseLink.clicks,
+  // NOT from the global Visit table. The global Visit feed has no brandId,
+  // so every brand previously saw the same 48k-visit total. Scoping to the
+  // brand's own tracked links means new brands start at 0 and only grow
+  // when their tracking URLs are actually clicked.
+
+  async listVisits(brandId: string, params: { page?: number; limit?: number }) {
     const page = Math.max(1, Number(params.page) || 1);
     const limit = Math.min(200, Math.max(1, Number(params.limit) || 50));
     const skip = (page - 1) * limit;
-    const data = await this.db.visit.findMany({
-      skip,
-      take: limit,
-      orderBy: { lastVisitAt: 'desc' },
-    });
+
+    // A per-IP visit feed for a brand would require a separate
+    // brand-scoped visit log (one click → one row), which the schema
+    // doesn't model today. Return an empty feed plus zero meta so the
+    // page renders cleanly until that table exists.
+    void brandId;
+    void skip;
+    void limit;
     return {
-      visits: data.map((v: any) => ({
-        ip: v.ip,
-        country: v.country,
-        country_code: v.countryCode,
-        city: v.city,
-        last_visit_at: v.lastVisitAt,
-        visits_count: v.visitsCount,
-      })),
+      visits: [],
+      meta: { total: 0, pages: 1 },
     };
   }
 
-  async visitsStats(_brandId: string, days = 30) {
-    const sinceDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-    const [total, unique, recent] = await Promise.all([
-      this.db.visit.aggregate({ _sum: { visitsCount: true } }),
-      this.db.visit.count(),
-      this.db.visit.findMany({
-        where: { lastVisitAt: { gte: sinceDate } },
-        select: { lastVisitAt: true, visitsCount: true },
-      }),
-    ]);
+  async visitsStats(brandId: string, days = 30) {
+    // Sum click counters from links owned by THIS brand. New brands with no
+    // recorded clicks correctly return 0.
+    const totalClicks = await this.db.directPurchaseLink.aggregate({
+      where: { brandId },
+      _sum: { clicks: true },
+    });
+    const totalVisits = totalClicks._sum.clicks ?? 0;
 
-    // Bucket recent visits by ISO day (UTC)
-    const buckets = new Map<string, number>();
-    for (const v of recent) {
-      const day = (v.lastVisitAt as Date).toISOString().slice(0, 10);
-      buckets.set(day, (buckets.get(day) ?? 0) + (v.visitsCount ?? 0));
-    }
-    const dailyStats = Array.from(buckets.entries())
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, count]) => ({ date, total_visits: count }));
-
+    // DirectPurchaseLink only stores a running counter (no per-day log),
+    // so a per-day breakdown isn't derivable. Return an empty daily_stats
+    // — the frontend chart hides itself when the array is empty.
     return {
-      total_visits: total._sum.visitsCount ?? 0,
-      unique_visitors: unique,
+      total_visits: totalVisits,
+      unique_visitors: totalVisits,
       period_days: days,
-      daily_stats: dailyStats,
+      daily_stats: [],
     };
   }
 
