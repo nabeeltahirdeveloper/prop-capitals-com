@@ -3,7 +3,7 @@ import type { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { PaymentsService } from './payments.service';
 import { XoalaWebhookService } from './webhook.service';
-import { JwtAuthGuard } from '../auth/jwt.guard';
+import { OptionalJwtAuthGuard } from '../auth/optional-jwt.guard';
 
 @Controller('payments')
 export class PaymentsController {
@@ -23,17 +23,21 @@ export class PaymentsController {
     }
 
     // Xoala: Server-to-Server card charge (collects card details server-side).
-    // Guarded by JWT — the cardholder MUST be logged in. The trusted email
-    // comes from the JWT so users can't pay against someone else's account
-    // (or a typo) by changing the body's email field.
+    // JWT is optional: logged-in users keep the normal locked-account flow,
+    // while direct checkout guests can pay and have an account created from
+    // their billing details.
     @Post('xoala/charge')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(OptionalJwtAuthGuard)
     async xoalaCharge(@Body() body: any, @Req() req: Request) {
-        const authUser = (req as any).user as { userId: string; email: string };
+        const authUser = (req as any).user as { userId: string; email: string } | null;
         return this.paymentsService.createXoalaCharge({
             ...body,
-            email: authUser.email,
-            authUserId: authUser.userId,
+            authUserId: authUser?.userId,
+            ...(authUser
+                ? {
+                    email: authUser.email,
+                }
+                : {}),
         });
     }
 

@@ -125,6 +125,86 @@ export class PaymentsService {
     return Number.isFinite(parsed) ? parsed : 0;
   }
 
+  private async resolveCheckoutUser(data: {
+    authUserId?: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    country?: string;
+    address?: string;
+    city?: string;
+  }): Promise<{ user: any; wasCreated: boolean; isGuestCheckout: boolean }> {
+    if (data.authUserId) {
+      const user = await (this.prisma.user as any).findUnique({
+        where: { id: data.authUserId },
+        include: { profile: true },
+      });
+      if (!user) {
+        throw new NotFoundException('Authenticated user not found');
+      }
+      return { user, wasCreated: false, isGuestCheckout: false };
+    }
+
+    if (!data.email || typeof data.email !== 'string') {
+      throw new BadRequestException('Missing required field: email');
+    }
+
+    const normalizedEmail = data.email.trim().toLowerCase();
+    if (!normalizedEmail) {
+      throw new BadRequestException('Missing required field: email');
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(normalizedEmail)) {
+      throw new BadRequestException('Enter a valid email address');
+    }
+
+    const existing = await (this.prisma.user as any).findUnique({
+      where: { email: normalizedEmail },
+      include: { profile: true },
+    });
+    if (existing) {
+      return { user: existing, wasCreated: false, isGuestCheckout: true };
+    }
+
+    const generatedPassword = generatePassword(20);
+    const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+
+    try {
+      const user = await (this.prisma.user as any).create({
+        data: {
+          email: normalizedEmail,
+          password: hashedPassword,
+          passwordSet: false,
+          profile: {
+            create: {
+              firstName: data.firstName?.trim() || undefined,
+              lastName: data.lastName?.trim() || undefined,
+              phone: data.phone?.trim() || undefined,
+              country: data.country || undefined,
+              address: data.address?.trim() || undefined,
+              city: data.city?.trim() || undefined,
+            },
+          },
+        },
+        include: { profile: true },
+      });
+
+      this.logger.log(`[Xoala S2S] Created guest checkout user id=${user.id}, email=${user.email}`);
+      return { user, wasCreated: true, isGuestCheckout: true };
+    } catch (err: any) {
+      if (err?.code === 'P2002') {
+        const user = await (this.prisma.user as any).findUnique({
+          where: { email: normalizedEmail },
+          include: { profile: true },
+        });
+        if (user) {
+          return { user, wasCreated: false, isGuestCheckout: true };
+        }
+      }
+      throw err;
+    }
+  }
+
 
   // ─── Existing internal purchase flow (unchanged) ───────────────────
 
@@ -406,6 +486,7 @@ export class PaymentsService {
       linkSlug,
       card,
       currency: requestedCurrencyRaw,
+      authUserId,
     } = data || {};
 
     if (!slug && !challengeId && !accountSize) {
@@ -527,28 +608,25 @@ export class PaymentsService {
       throw new NotFoundException('Challenge not found');
     }
 
-    // Resolve user strictly — the email on the form must already match
-    // an existing account. We do NOT create users on the fly anymore: if
-    // the email is unknown we reject the charge before touching the
-    // payment gateway, so card data is never sent for a non-customer.
-    if (!email || typeof email !== 'string') {
-      throw new BadRequestException('Missing required field: email');
-    }
-    if (!firstName || !lastName) {
+    const billingFirstName = typeof firstName === 'string' ? firstName.trim() : '';
+    const billingLastName = typeof lastName === 'string' ? lastName.trim() : '';
+    if (!billingFirstName || !billingLastName) {
       throw new BadRequestException('Missing required name fields');
     }
-    const normalizedEmail = email.trim().toLowerCase();
-    const user = await this.prisma.user.findUnique({
-      where: { email: normalizedEmail },
+    const {
+      user,
+      wasCreated: userCreatedForCheckout,
+      isGuestCheckout,
+    } = await this.resolveCheckoutUser({
+      authUserId,
+      email,
+      firstName: billingFirstName,
+      lastName: billingLastName,
+      phone,
+      country,
+      address,
+      city,
     });
-    if (!user) {
-      this.logger.warn(
-        `[Xoala S2S] Rejected charge — no account for email=${normalizedEmail}`,
-      );
-      throw new NotFoundException(
-        'No account found for this email. Please sign up before purchasing.',
-      );
-    }
 
     const { amount, amountCents } = this.computeChargeAmount(
       // For brand links with a custom amount, charge that instead of
@@ -611,8 +689,8 @@ export class PaymentsService {
       notificationUrl: notificationUrl || null,
       customer: {
         email: user.email,
-        firstName: firstName || null,
-        lastName: lastName || null,
+        firstName: billingFirstName,
+        lastName: billingLastName,
         phone: phone || null,
         country: country || null,
         city: city || null,
@@ -655,8 +733,8 @@ export class PaymentsService {
         reference: orderNumber,
 
         // Billing snapshot (mirrors PayLink.jsx fields)
-        billingFirstName: firstName,
-        billingLastName: lastName,
+        billingFirstName,
+        billingLastName,
         billingEmail: user.email,
         billingPhone: phone || null,
         billingCountry: country || null,
@@ -688,10 +766,12 @@ export class PaymentsService {
           challengeType: challenge.challengeType,
           brandLinkId: brandLink?.id || null,
           brandLinkSlug: brandLink?.slug || null,
-          isGuestCheckout: true,
+          isGuestCheckout,
+          userCreatedForCheckout,
           flow: 's2s',
           billingDetails: {
-            firstName, lastName,
+            firstName: billingFirstName,
+            lastName: billingLastName,
             phone: phone || null,
             country: country || null,
             address: address || null,
@@ -726,8 +806,8 @@ export class PaymentsService {
       'authentication.terminalId': terminalId,
       'merchantRedirectUrl': merchantRedirectUrl,
       'customer.email': user.email,
-      'customer.givenName': (firstName || '').trim(),
-      'customer.surname': (lastName || '').trim(),
+      'customer.givenName': billingFirstName,
+      'customer.surname': billingLastName,
     };
     if (notificationUrl) params['notificationUrl'] = notificationUrl;
     if (card.holder) params['card.holder'] = String(card.holder);
