@@ -7,7 +7,6 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { PaymentLogos } from '@/components/PaymentLogos';
 import { apiPost } from '@/lib/api';
 import { getChallenges } from '@/api/challenges';
-import { useAuth } from '@/contexts/AuthContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 
 // "50K" / "5M" / "25000" -> integer dollars. Mirrors backend's parseAccountSize.
@@ -132,7 +131,6 @@ const CheckoutPage = () => {
   const { isDark } = useTheme();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { status: authStatus } = useAuth();
   // Same currency context the Challenges page + PayLink use, so price/size
   // displayed here matches what the customer saw on the previous step and
   // what they'll be charged at the gateway.
@@ -208,11 +206,8 @@ const CheckoutPage = () => {
         return;
       }
       // After platform pick, jump straight to /pay/:slug. PayLink owns the
-      // billing form + card capture + Xoala S2S charge, and it already
-      // redirects unauthenticated users to /SignIn with a `next` param. The
-      // old Step 2 (Your Information) and Step 3 (Confirm) here were
-      // collecting fields PayLink immediately asks for again, so they're
-      // skipped.
+      // billing form + card capture + Xoala S2S charge. Guests can complete
+      // checkout there and the backend creates their dashboard account.
       handleConfirmOrder();
       return;
     }
@@ -229,17 +224,6 @@ const CheckoutPage = () => {
   };
 
   const handleConfirmOrder = () => {
-    // Auth gate: /pay/:slug requires a JWT for the Xoala charge, so bounce
-    // anonymous users to SignIn first. The `next` param brings them back here
-    // (with the same type/size/platform context) so they don't lose the flow.
-    if (authStatus !== 'authenticated') {
-      const ret = new URLSearchParams(searchParams);
-      if (selectedPlatform) ret.set('platform', selectedPlatform);
-      const next = `/checkout?${ret.toString()}`;
-      navigate(`/SignIn?next=${encodeURIComponent(next)}`);
-      return;
-    }
-
     // Need at least an id (slug is optional — backend's findBySlug falls back
     // to findUnique({id}) when the param isn't a real slug).
     const identifier = matchedChallenge?.slug || matchedChallenge?.id;

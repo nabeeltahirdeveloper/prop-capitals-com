@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams, useLocation, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
@@ -183,12 +183,11 @@ const PayLink = () => {
     return Number.isFinite(n) && n > 0 ? n : null;
   })();
 
-  // Route is protected — anyone hitting /pay/:slug must be logged in. The
-  // email used to provision the trading account comes from the JWT on the
-  // backend, so we also autofill (and lock) the email field here to make
-  // it obvious which account the user is paying for.
+  // Logged-in users keep the normal locked-account flow. Guests can complete
+  // checkout with their billing email; the backend creates an account after
+  // payment and sends the set-password link on successful provisioning.
   const { status: authStatus, user: authUser } = useAuth();
-  const location = useLocation();
+  const isAuthenticated = authStatus === 'authenticated';
 
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
@@ -197,15 +196,6 @@ const PayLink = () => {
   // the age confirmation is a hard regulatory gate.
   const [agreedTerms, setAgreedTerms] = useState(false);
   const [confirmedAge, setConfirmedAge] = useState(false);
-
-  // Bounce unauthenticated users to sign-in; preserve where they came from
-  // so they land back on this exact pay link after logging in.
-  useEffect(() => {
-    if (authStatus === 'unauthenticated') {
-      const next = encodeURIComponent(location.pathname + location.search);
-      navigate(`/SignIn?next=${next}`, { replace: true });
-    }
-  }, [authStatus, location.pathname, location.search, navigate]);
 
   // Pre-fill name + email from the logged-in user once we have them.
   useEffect(() => {
@@ -393,10 +383,9 @@ const PayLink = () => {
       ? { 'aria-invalid': true, 'aria-describedby': `${name}-error` }
       : { 'aria-invalid': false };
 
-  // Hold render while auth status is still being checked (or unauth, during
-  // the brief moment before the redirect effect fires) — stops the form
-  // from flashing into view for users who shouldn't see it.
-  if (loadingChallenge || authStatus === 'checking' || authStatus === 'unauthenticated') {
+  // Hold render while auth status is still being checked. Without a token the
+  // status is immediately unauthenticated, which is allowed for guest checkout.
+  if (loadingChallenge || authStatus === 'checking') {
     return (
       <div className={`min-h-screen pt-20 pb-12 flex items-center justify-center ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
         <Loader2 className="w-12 h-12 text-amber-500 animate-spin" />
@@ -485,17 +474,25 @@ const PayLink = () => {
                       type="email"
                       name="email"
                       value={form.email}
-                      readOnly
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      readOnly={isAuthenticated}
                       autoComplete="email"
-                      className={`w-full rounded-xl pl-12 pr-12 py-3 focus:outline-none cursor-not-allowed opacity-90 ${inputClass}`}
+                      className={`w-full rounded-xl pl-12 ${isAuthenticated ? 'pr-12 cursor-not-allowed opacity-90' : 'pr-4'} py-3 focus:outline-none ${inputClass} ${errClass('email')}`}
                       placeholder="trader@example.com"
                       required
-                      aria-readonly="true"
+                      aria-readonly={isAuthenticated ? 'true' : 'false'}
+                      {...ariaProps('email')}
                     />
-                    <Lock className={`absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
+                    {isAuthenticated && (
+                      <Lock className={`absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
+                    )}
                   </div>
+                  <FieldError name="email" error={errors.email} />
                   <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                    Locked to your account email. Credentials and receipts go here.
+                    {isAuthenticated
+                      ? 'Locked to your account email. Credentials and receipts go here.'
+                      : 'We will create your dashboard account with this email after payment.'}
                   </p>
                 </div>
 
