@@ -262,6 +262,351 @@ export class WorldCardService {
     };
   }
 
+  // Hash for the hosted Standard Checkout session API:
+  //   SHA1( MD5( orderNumber + amount + currency + description + merchantPass ).toUpperCase() )
+  private generateSessionHash(
+    orderNumber: string,
+    amount: string,
+    currency: string,
+    description: string,
+    password: string,
+  ): string {
+    const source =
+      orderNumber + amount + currency + description + password;
+    const upperSource = source.toUpperCase();
+    const md5 = crypto.createHash('md5').update(upperSource).digest('hex');
+    return crypto.createHash('sha1').update(md5).digest('hex');
+  }
+
+  // Public: Hosted-page checkout session.
+  // POSTs to {BASE_URL}/api/v1/session and gets back a redirect_url that
+  // the customer's browser follows to enter card details on WorldCard's
+  // own hosted page. Used when the merchant account doesn't have the
+  // S2S APM protocol mapped (which is the default WorldCard setup).
+  // No card data ever crosses our backend in this flow.
+  async createHostedSession(data: WorldCardChargeInput) {
+    const {
+      slug,
+      challengeId,
+      accountSize,
+      challengeType,
+      platform,
+      tradingPlatform,
+      trading_platform,
+      brokerPlatform,
+      brandSlug,
+      linkSlug,
+    } = data || {};
+
+    if (!slug && !challengeId && !accountSize) {
+      throw new BadRequestException(
+        'Missing required field: slug, challengeId, or accountSize',
+      );
+    }
+
+    let challenge: any = null;
+    let brandLink: any = null;
+    if (challengeId && typeof challengeId === 'string') {
+      challenge = await this.prisma.challenge.findUnique({ where: { id: challengeId } });
+    }
+    if (!challenge && slug && typeof slug === 'string') {
+      challenge = await (this.prisma.challenge as any).findUnique({ where: { slug } });
+      if (!challenge) {
+        brandLink = await (this.prisma as any).directPurchaseLink.findUnique({
+          where: { slug },
+          include: { brand: true, challenge: true },
+        });
+        if (brandLink?.active) challenge = brandLink.challenge;
+      }
+    }
+    if (!challenge && accountSize) {
+      const sizeNumber = this.parseAccountSize(accountSize);
+      const typeMap: Record<string, string> = {
+        '1-step': 'one_phase', 'one-step': 'one_phase', 'one_step': 'one_phase',
+        'one-phase': 'one_phase', 'one_phase': 'one_phase',
+        '2-step': 'two_phase', 'two-step': 'two_phase', 'two_step': 'two_phase',
+        'two-phase': 'two_phase', 'two_phase': 'two_phase',
+      };
+      const mappedType =
+        typeMap[String(challengeType || '').toLowerCase()] ||
+        challengeType ||
+        'two_phase';
+      challenge = await this.prisma.challenge.findFirst({
+        where: { accountSize: sizeNumber, challengeType: mappedType, isActive: true },
+      });
+    }
+    if (!brandLink && linkSlug && typeof linkSlug === 'string') {
+      brandLink = await (this.prisma as any).directPurchaseLink.findUnique({
+        where: { slug: linkSlug },
+        include: { brand: true, challenge: true },
+      });
+    }
+    if (!brandLink && brandSlug && typeof brandSlug === 'string') {
+      const brand = await (this.prisma as any).brand.findUnique({
+        where: { slug: brandSlug },
+      });
+      if (brand) {
+        brandLink = { brandId: brand.id, brand, id: null, slug: null, active: true };
+      }
+    }
+    if (brandLink?.provider && String(brandLink.provider).toUpperCase() !== 'WORLDCARD') {
+      throw new BadRequestException(
+        'This link is configured to use a different payment gateway.',
+      );
+    }
+
+    const linkPriceOverride: number | null =
+      brandLink?.active && brandLink?.amount != null && Number(brandLink.amount) > 0
+        ? Number(brandLink.amount)
+        : null;
+    if (!challenge && brandLink?.active && linkPriceOverride != null) {
+      const fallbackSize =
+        brandLink.challenge?.accountSize ??
+        (accountSize ? this.parseAccountSize(accountSize) : 0);
+      const fallbackType =
+        brandLink.challenge?.challengeType ?? challengeType ?? 'one_phase';
+      const matched = await this.prisma.challenge.findFirst({
+        where: { accountSize: fallbackSize, challengeType: fallbackType, isActive: true },
+      });
+      if (matched) challenge = matched;
+    }
+
+    if (!challenge || !challenge.isActive) {
+      throw new NotFoundException('Challenge not found');
+    }
+
+    const billingFirstName = typeof data.firstName === 'string' ? data.firstName.trim() : '';
+    const billingLastName = typeof data.lastName === 'string' ? data.lastName.trim() : '';
+    if (!data.authUserId && (!billingFirstName || !billingLastName)) {
+      throw new BadRequestException('Missing required name fields');
+    }
+
+    const { user, wasCreated, isGuestCheckout } = await this.resolveCheckoutUser(data);
+
+    const basePrice =
+      linkPriceOverride != null ? linkPriceOverride : challenge.price;
+    const amountCents = Math.round(basePrice * 100);
+    const orderCurrency = (brandLink?.currency || challenge.currency || 'USD').toUpperCase();
+    const worldCardAmount = (amountCents / 100).toFixed(2);
+    const orderDescription = `${challenge.name} ${challenge.accountSize} Account`;
+
+    const selectedPlatform =
+      platform || tradingPlatform || trading_platform || brokerPlatform || challenge.platform;
+    const normalizedPlatform = this.normalizePlatform(selectedPlatform);
+
+    const merchantKey = this.configService.get<string>('WORLDCARD_MERCHANT_KEY');
+    const merchantPass = this.configService.get<string>('WORLDCARD_MERCHANT_PASS');
+    const notificationUrl = this.configService.get<string>('WORLDCARD_NOTIFICATION_URL');
+    // The session endpoint lives at {host}/api/v1/session. We strip any
+    // trailing slash so WORLDCARD_PAYMENT_URL=https://pay.world-card.co
+    // (with or without slash) builds the right URL.
+    const baseUrl = (this.configService.get<string>('WORLDCARD_PAYMENT_URL') || '').replace(/\/+$/, '');
+    const frontendUrl = this.configService.get<string>('APP_FRONTEND_URL');
+
+    if (!merchantKey || !merchantPass || !baseUrl || !frontendUrl) {
+      this.logger.error('Missing WorldCard env vars (hosted)', {
+        merchantKey: !!merchantKey,
+        merchantPass: !!merchantPass,
+        baseUrl: !!baseUrl,
+        frontendUrl: !!frontendUrl,
+      });
+      throw new InternalServerErrorException(
+        'WorldCard environment variables not configured',
+      );
+    }
+
+    const orderNumber = `WC-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+    const sessionHash = this.generateSessionHash(
+      orderNumber,
+      worldCardAmount,
+      orderCurrency,
+      orderDescription,
+      merchantPass,
+    );
+
+    const successUrl = `${frontendUrl}/pay/success?reference=${orderNumber}`;
+    const cancelUrl = `${frontendUrl}/pay/fail?reference=${orderNumber}`;
+    const errorUrl = `${frontendUrl}/pay/fail?reference=${orderNumber}`;
+
+    const customer: Record<string, any> = { email: user.email };
+    if (billingFirstName) customer.first_name = billingFirstName;
+    if (billingLastName) customer.last_name = billingLastName;
+    if (data.phone) customer.phone = data.phone;
+    if (data.country) customer.country = data.country;
+    if (data.address) customer.address = data.address;
+    if (data.city) customer.city = data.city;
+
+    const sessionPayload: Record<string, any> = {
+      merchant_key: merchantKey,
+      operation: 'purchase',
+      methods: ['card'],
+      hash: sessionHash,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      error_url: errorUrl,
+      order: {
+        number: orderNumber,
+        amount: worldCardAmount,
+        currency: orderCurrency,
+        description: orderDescription,
+      },
+      customer,
+      custom_data: {
+        userId: user.id,
+        challengeId: challenge.id,
+        platform: normalizedPlatform,
+      },
+    };
+    if (notificationUrl) sessionPayload.notification_url = notificationUrl;
+
+    const brandIdAttribution: string | null = brandLink?.brandId ?? null;
+    const brandCommissionRate: number = brandLink?.brand?.commissionRate ?? 0;
+    const brandCommissionCents: number = brandIdAttribution
+      ? Math.round((amountCents * brandCommissionRate) / 100)
+      : 0;
+
+    const payment = await (this.prisma.payment as any).create({
+      data: {
+        user: { connect: { id: user.id } },
+        challenge: { connect: { id: challenge.id } },
+        ...(brandIdAttribution
+          ? { brand: { connect: { id: brandIdAttribution } } }
+          : {}),
+        brandCommission: brandCommissionCents,
+        amount: amountCents,
+        originalAmount: amountCents,
+        discountAmount: 0,
+        couponCode: null,
+        currency: orderCurrency,
+        provider: 'worldcard',
+        status: 'pending',
+        reference: orderNumber,
+
+        billingFirstName: billingFirstName || null,
+        billingLastName: billingLastName || null,
+        billingEmail: user.email,
+        billingPhone: data.phone || null,
+        billingCountry: data.country || null,
+        billingAddress: data.address || null,
+        billingCity: data.city || null,
+
+        accountSize: challenge.accountSize,
+        challengeType: challenge.challengeType,
+        platform: normalizedPlatform,
+
+        brandSlug: brandLink?.brand?.slug || brandSlug || null,
+        linkSlug: brandLink?.slug || linkSlug || null,
+
+        metadata: {
+          platform: normalizedPlatform,
+          challengeId: challenge.id,
+          challengeName: challenge.name,
+          accountSize: challenge.accountSize,
+          challengeType: challenge.challengeType,
+          brandLinkId: brandLink?.id || null,
+          brandLinkSlug: brandLink?.slug || null,
+          isGuestCheckout,
+          userCreatedForCheckout: wasCreated,
+          flow: 'worldcard-hosted',
+        },
+        sessionPayload,
+      },
+    });
+
+    this.logger.log(
+      `[WorldCard Hosted] Payment row created: id=${payment.id}, ref=${orderNumber}, amount=${worldCardAmount} ${orderCurrency}`,
+    );
+
+    const apiUrl = `${baseUrl}/api/v1/session`;
+    this.logger.log(`[WorldCard Hosted] POST ${apiUrl} ref=${orderNumber}`);
+
+    let sessionResponse: any;
+    try {
+      const httpRes = await axios.post(apiUrl, sessionPayload, {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 60_000,
+        validateStatus: () => true,
+      });
+      sessionResponse = httpRes.data;
+      this.logger.log(
+        `[WorldCard Hosted] Response ref=${orderNumber} httpStatus=${httpRes.status} body=${JSON.stringify(sessionResponse).slice(0, 500)}`,
+      );
+
+      if (httpRes.status >= 400) {
+        const failMessage =
+          (sessionResponse && (sessionResponse.error_message || sessionResponse.decline_reason || sessionResponse.message)) ||
+          `Gateway returned HTTP ${httpRes.status}`;
+        await (this.prisma.payment as any).update({
+          where: { id: payment.id },
+          data: {
+            status: 'failed',
+            failureReason: `Gateway HTTP ${httpRes.status}: ${failMessage}`,
+            sessionResponse,
+          },
+        });
+        return {
+          provider: 'worldcard',
+          status: 'failed',
+          reference: orderNumber,
+          paymentId: payment.id,
+          message: `Payment gateway error (HTTP ${httpRes.status}). ${failMessage}`,
+        };
+      }
+    } catch (err: any) {
+      this.logger.error(
+        `[WorldCard Hosted] Network error ref=${orderNumber} message=${err?.message}`,
+        err?.stack,
+      );
+      await (this.prisma.payment as any).update({
+        where: { id: payment.id },
+        data: {
+          status: 'failed',
+          failureReason: `Network error contacting WorldCard: ${err?.message || 'unknown'}`,
+        },
+      });
+      return {
+        provider: 'worldcard',
+        status: 'failed',
+        reference: orderNumber,
+        paymentId: payment.id,
+        message: `Could not reach the payment gateway (${err?.message || 'network error'}).`,
+      };
+    }
+
+    await (this.prisma.payment as any).update({
+      where: { id: payment.id },
+      data: {
+        sessionResponse,
+        providerSessionId:
+          sessionResponse?.id || sessionResponse?.session_id || null,
+      },
+    });
+
+    const redirectUrl =
+      sessionResponse?.redirect_url || sessionResponse?.url || null;
+    if (!redirectUrl) {
+      this.logger.error(
+        `[WorldCard Hosted] No redirect_url in response ref=${orderNumber}: ${JSON.stringify(sessionResponse)}`,
+      );
+      return {
+        provider: 'worldcard',
+        status: 'failed',
+        reference: orderNumber,
+        paymentId: payment.id,
+        message: 'WorldCard did not return a checkout URL.',
+      };
+    }
+
+    return {
+      provider: 'worldcard',
+      status: 'requires_action',
+      reference: orderNumber,
+      paymentId: payment.id,
+      redirectUrl,
+      redirectMethod: 'GET',
+    };
+  }
+
   // ─── Public: S2S SALE charge ─────────────────────────────────────────
   async createCharge(data: WorldCardChargeInput) {
     const {

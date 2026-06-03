@@ -1,7 +1,17 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 
 export type PaymentProvider = 'xoala' | 'worldcard';
+// 'hosted' = WorldCard's hosted-page session (POST /api/v1/session +
+//            redirect_url). The customer never enters their card on our
+//            domain. Default until the merchant account has S2S APM
+//            mapped.
+// 's2s'    = WorldCard Server-to-Server SALE. Card entered on /pay/<slug>,
+//            POSTed to /payments/worldcard/charge. Requires the protocol
+//            mapping to be enabled on the merchant side and the correct
+//            PAYMENT_URL.
+export type WorldCardFlow = 'hosted' | 's2s';
 
 // ─── Payment provider routing ────────────────────────────────────────────
 // The decision tree for which gateway a checkout goes to:
@@ -22,7 +32,20 @@ export type PaymentProvider = 'xoala' | 'worldcard';
 export class PaymentProviderRouter {
   private readonly logger = new Logger(PaymentProviderRouter.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
+  ) {}
+
+  // Read the WorldCard flow override from env. Anything other than 's2s'
+  // (incl. unset, garbage, 'hosted') resolves to 'hosted' so we always
+  // default to the working flow.
+  worldCardFlow(): WorldCardFlow {
+    const raw = (this.configService.get<string>('WORLDCARD_FLOW') || '')
+      .trim()
+      .toLowerCase();
+    return raw === 's2s' ? 's2s' : 'hosted';
+  }
 
   private normalizeProvider(raw: any): PaymentProvider | null {
     if (!raw) return null;
@@ -75,11 +98,17 @@ export class PaymentProviderRouter {
     linkSlug?: string;
     challengeSlug?: string;
     clientAssigned?: string;
-  }): Promise<{ provider: PaymentProvider; locked: boolean; source: string }> {
+  }): Promise<{
+    provider: PaymentProvider;
+    locked: boolean;
+    source: string;
+    worldCardFlow: WorldCardFlow;
+  }> {
+    const worldCardFlow = this.worldCardFlow();
     // 1. Explicit link slug
     const linkProvider = await this.lookupLinkProvider(input.linkSlug);
     if (linkProvider) {
-      return { provider: linkProvider, locked: true, source: 'link' };
+      return { provider: linkProvider, locked: true, source: 'link', worldCardFlow };
     }
 
     // 2. /pay/:slug route param might itself be a link slug (no separate
@@ -88,17 +117,17 @@ export class PaymentProviderRouter {
     if (input.challengeSlug && input.challengeSlug !== input.linkSlug) {
       const fromRoute = await this.lookupLinkProvider(input.challengeSlug);
       if (fromRoute) {
-        return { provider: fromRoute, locked: true, source: 'route' };
+        return { provider: fromRoute, locked: true, source: 'route', worldCardFlow };
       }
     }
 
     // 3. No forced provider — honor the client's sticky pick.
     const assigned = this.normalizeProvider(input.clientAssigned);
     if (assigned) {
-      return { provider: assigned, locked: false, source: 'client' };
+      return { provider: assigned, locked: false, source: 'client', worldCardFlow };
     }
 
     // 4. Fresh visitor — flip the coin.
-    return { provider: this.random5050(), locked: false, source: 'random' };
+    return { provider: this.random5050(), locked: false, source: 'random', worldCardFlow };
   }
 }
