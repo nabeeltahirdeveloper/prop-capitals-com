@@ -738,6 +738,11 @@ model DirectPurchaseLink {
   active      Boolean    @default(true)
   clicks      Int        @default(0)
   conversions Int        @default(0)
+  // Forces this link to route through a specific gateway. Null means use
+  // the regular 50/50 split between XOALA and WORLDCARD. Accepted values:
+  // 'XOALA', 'WORLDCARD'. Plain string (not an enum) so adding a new
+  // gateway later doesn't need a migration.
+  provider    String?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime @updatedAt
 
