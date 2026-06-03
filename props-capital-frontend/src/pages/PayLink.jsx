@@ -23,7 +23,11 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { PaymentLogos } from '@/components/PaymentLogos';
 import { getChallengeBySlug } from '@/api/challenges';
-import { chargeXoalaCard } from '@/api/payments';
+import {
+  chargeXoalaCard,
+  chargeWorldCardCard,
+  resolvePaymentProvider,
+} from '@/api/payments';
 import { readBrandAttribution } from '@/pages/CheckoutPage';
 import { COUNTRIES } from '@/constants/countries';
 
@@ -197,6 +201,32 @@ const PayLink = () => {
   const [agreedTerms, setAgreedTerms] = useState(false);
   const [confirmedAge, setConfirmedAge] = useState(false);
 
+  // ── Payment provider routing ────────────────────────────────────────
+  // /payments/provider tells us whether to send this checkout through
+  // Xoala or WorldCard. The /pay/<slug> URL param can itself be a link
+  // slug — the backend checks both. Defaults to 'xoala' so the page
+  // never renders an undefined value if the resolver hasn't responded.
+  const [provider, setProvider] = useState('xoala');
+  const [providerResolved, setProviderResolved] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const attribution = readBrandAttribution();
+    const linkSlug = attribution?.linkSlug || slug;
+    resolvePaymentProvider({ linkSlug, challengeSlug: slug })
+      .then((res) => {
+        if (cancelled) return;
+        if (res?.provider) setProvider(res.provider);
+      })
+      .catch(() => {
+        /* fall back to default 'xoala' */
+      })
+      .finally(() => {
+        if (!cancelled) setProviderResolved(true);
+      });
+    return () => { cancelled = true; };
+  }, [slug]);
+
   // Pre-fill name + email from the logged-in user once we have them.
   useEffect(() => {
     if (authStatus !== 'authenticated' || !authUser) return;
@@ -249,6 +279,54 @@ const PayLink = () => {
         }
       } else if (data?.status === 'failed') {
         toast.error(data.message || 'Payment was declined. Please try a different card.');
+      } else {
+        toast.error('Unexpected response from payment processor.');
+      }
+    },
+    onError: (err) => {
+      toast.error(err?.message || 'Payment failed. Please try again.');
+    },
+  });
+
+  // WorldCard S2S returns the same shape as Xoala S2S (succeeded /
+  // requires_action / pending / failed). The handler mirrors
+  // chargeMutation's onSuccess; we keep them separate to avoid the
+  // temporal-dead-zone issue you get when one mutation's onSuccess tries
+  // to reference a helper defined further down in the same component.
+  const worldCardMutation = useMutation({
+    mutationFn: chargeWorldCardCard,
+    onSuccess: (data) => {
+      if (data?.status === 'succeeded') {
+        toast.success('Payment approved');
+        navigate(`/pay/success?reference=${data.reference}`);
+      } else if (data?.status === 'requires_action' && data?.redirectUrl) {
+        toast.info('Verifying with your bank…');
+        if (
+          String(data.redirectMethod || 'GET').toUpperCase() === 'POST' &&
+          Array.isArray(data.redirectParams)
+        ) {
+          const formEl = document.createElement('form');
+          formEl.method = 'POST';
+          formEl.action = data.redirectUrl;
+          data.redirectParams.forEach(({ name, value }) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = String(name);
+            input.value = value == null ? '' : String(value);
+            formEl.appendChild(input);
+          });
+          document.body.appendChild(formEl);
+          formEl.submit();
+        } else {
+          window.location.href = data.redirectUrl;
+        }
+      } else if (data?.status === 'pending') {
+        toast.info('Payment received — confirming with the bank…');
+        navigate(`/pay/success?reference=${data.reference}`);
+      } else if (data?.status === 'failed') {
+        toast.error(
+          data.message || 'Payment was declined. Please try a different card.',
+        );
       } else {
         toast.error('Unexpected response from payment processor.');
       }
@@ -333,10 +411,9 @@ const PayLink = () => {
     const cardDigits = form.cardNumber.replace(/\D/g, '');
     const [mm, yy] = form.expiry.split('/');
 
-    chargeMutation.mutate({
+    const baseBody = {
       challengeId: challenge.id,
       slug,
-      currency,
       ...(platformFromQuery ? { platform: platformFromQuery } : {}),
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
@@ -357,7 +434,15 @@ const PayLink = () => {
         holder: form.cardholderName.trim(),
         brand: brand || undefined,
       },
-    });
+    };
+
+    if (provider === 'worldcard') {
+      worldCardMutation.mutate(baseBody);
+    } else {
+      // Xoala S2S still needs the EUR/GBP display currency — the gateway
+      // picks the per-currency terminal from this value.
+      chargeMutation.mutate({ ...baseBody, currency });
+    }
   };
 
   const inputClass = isDark
@@ -385,7 +470,7 @@ const PayLink = () => {
 
   // Hold render while auth status is still being checked. Without a token the
   // status is immediately unauthenticated, which is allowed for guest checkout.
-  if (loadingChallenge || authStatus === 'checking') {
+  if (loadingChallenge || authStatus === 'checking' || !providerResolved) {
     return (
       <div className={`min-h-screen pt-20 pb-12 flex items-center justify-center ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
         <Loader2 className="w-12 h-12 text-amber-500 animate-spin" />
@@ -409,7 +494,7 @@ const PayLink = () => {
     );
   }
 
-  const submitting = chargeMutation.isPending;
+  const submitting = chargeMutation.isPending || worldCardMutation.isPending;
 
   return (
     <div className={`min-h-screen pt-20 pb-12 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
@@ -732,11 +817,6 @@ const PayLink = () => {
                   Your card is processed securely over TLS. We store only the last 4 digits for receipts — never the full number or CVV. 3-D Secure may be requested by your bank.
                 </p>
               </div>
-              {provider === 'worldcard' && (
-                <p className={`text-[10px] text-right mt-1 ${isDark ? 'text-gray-600' : 'text-slate-400'}`}>
-                  Powered by WorldCard
-                </p>
-              )}
 
               <div className={`mt-6 rounded-xl p-4 flex items-start gap-3 ${isDark ? 'bg-amber-500/5 border border-amber-500/20' : 'bg-amber-50 border border-amber-200'}`}>
                 <input
