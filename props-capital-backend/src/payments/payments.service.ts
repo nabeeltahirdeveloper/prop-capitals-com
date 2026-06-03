@@ -1,9 +1,20 @@
-import { Injectable, NotFoundException, BadRequestException, InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import axios from 'axios';
-import { TradingPhase, TradingAccountStatus, NotificationType, NotificationCategory } from '@prisma/client';
+import {
+  TradingPhase,
+  TradingAccountStatus,
+  NotificationType,
+  NotificationCategory,
+} from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
@@ -15,9 +26,7 @@ import { XoalaAuthService } from './xoala-auth.service';
 import { buildXoalaRequestChecksum } from './xoala-checksum.util';
 
 @Injectable()
-
 export class PaymentsService {
-
   private readonly logger = new Logger(PaymentsService.name);
 
   constructor(
@@ -27,20 +36,20 @@ export class PaymentsService {
     private couponsService: CouponsService,
     private readonly configService: ConfigService,
     private readonly xoalaAuthService: XoalaAuthService,
-  ) { }
+  ) {}
 
   // ─── Platform normalization (shared) ───────────────────────────────
 
   private readonly platformMap: Record<string, string> = {
-    'MT4': 'MT4',
-    'MT5': 'MT5',
-    'cTrader': 'CTRADER',
-    'DXTrade': 'DXTRADE',
-    'CTRADER': 'CTRADER',
-    'DXTRADE': 'DXTRADE',
-    'BYBIT': 'BYBIT',
-    'PT5': 'PT5',
-    'TRADELOCKER': 'TRADELOCKER',
+    MT4: 'MT4',
+    MT5: 'MT5',
+    cTrader: 'CTRADER',
+    DXTrade: 'DXTRADE',
+    CTRADER: 'CTRADER',
+    DXTRADE: 'DXTRADE',
+    BYBIT: 'BYBIT',
+    PT5: 'PT5',
+    TRADELOCKER: 'TRADELOCKER',
   };
 
   private normalizePlatform(raw: string | undefined): string {
@@ -54,7 +63,9 @@ export class PaymentsService {
   private detectCardBrand(rawNumber: string): 'VISA' | 'MC' | null {
     const digits = String(rawNumber || '').replace(/\D/g, '');
     if (/^4\d{12,18}$/.test(digits)) return 'VISA';
-    if (/^(5[1-5]\d{14}|2(2[2-9]\d|[3-6]\d{2}|7([01]\d|20))\d{12})$/.test(digits)) {
+    if (
+      /^(5[1-5]\d{14}|2(2[2-9]\d|[3-6]\d{2}|7([01]\d|20))\d{12})$/.test(digits)
+    ) {
       return 'MC';
     }
     return null;
@@ -189,7 +200,9 @@ export class PaymentsService {
         include: { profile: true },
       });
 
-      this.logger.log(`[Xoala S2S] Created guest checkout user id=${user.id}, email=${user.email}`);
+      this.logger.log(
+        `[Xoala S2S] Created guest checkout user id=${user.id}, email=${user.email}`,
+      );
       return { user, wasCreated: true, isGuestCheckout: true };
     } catch (err: any) {
       if (err?.code === 'P2002') {
@@ -205,19 +218,26 @@ export class PaymentsService {
     }
   }
 
-
   // ─── Existing internal purchase flow (unchanged) ───────────────────
 
   async purchaseChallenge(data: any) {
+    console.log('PURCHASE DATA:', data);
 
-    console.log("PURCHASE DATA:", data);
-
-    const { userId, challengeId, platform, tradingPlatform, trading_platform, brokerPlatform, couponCode, paymentMethod, accountSize, challengeType } = data;
+    const {
+      userId,
+      challengeId,
+      platform,
+      tradingPlatform,
+      trading_platform,
+      brokerPlatform,
+      couponCode,
+      paymentMethod,
+      accountSize,
+      challengeType,
+    } = data;
 
     if (!userId) {
-
-      throw new BadRequestException("Missing required field: userId");
-
+      throw new BadRequestException('Missing required field: userId');
     }
 
     const user = await this.prisma.user.findUnique({
@@ -240,13 +260,16 @@ export class PaymentsService {
       const typeMap = {
         '1-step': 'one_phase',
         '2-step': 'two_phase',
-        'one_phase': 'one_phase',
-        'two_phase': 'two_phase',
+        one_phase: 'one_phase',
+        two_phase: 'two_phase',
       };
       const mappedType = typeMap[challengeType] || challengeType || 'two_phase';
       challenge = await this.prisma.challenge.findFirst({
         where: {
-          accountSize: typeof accountSize === 'string' ? parseInt(accountSize) : accountSize,
+          accountSize:
+            typeof accountSize === 'string'
+              ? parseInt(accountSize)
+              : accountSize,
           challengeType: mappedType,
           isActive: true,
         },
@@ -254,20 +277,23 @@ export class PaymentsService {
     }
 
     if (!challenge) {
-
-      throw new NotFoundException("No matching challenge found for the selected configuration");
-
+      throw new NotFoundException(
+        'No matching challenge found for the selected configuration',
+      );
     }
 
     // 2. Validate and apply coupon if provided
     let finalPrice = challenge.price;
-    let appliedCoupon:
-      | { code: string; discountType: string; discountPct: number }
-      | null = null;
+    let appliedCoupon: {
+      code: string;
+      discountType: string;
+      discountPct: number;
+    } | null = null;
     let discountAmount = 0;
 
     if (couponCode) {
-      const couponValidation = await this.couponsService.validateCoupon(couponCode);
+      const couponValidation =
+        await this.couponsService.validateCoupon(couponCode);
 
       if (!couponValidation.valid) {
         throw new BadRequestException(couponValidation.message);
@@ -295,31 +321,29 @@ export class PaymentsService {
       discountPct: appliedCoupon?.discountPct || 0,
       discountAmount,
       finalPrice,
-      paymentMethod: paymentMethod || 'not specified'
+      paymentMethod: paymentMethod || 'not specified',
     });
 
     // 2. Create payment
 
     const payment = await this.prisma.payment.create({
-
       data: {
-
         user: { connect: { id: userId } },
 
         amount: finalPrice,
 
-        provider: "internal",
+        provider: 'internal',
 
-        status: "succeeded",
+        status: 'succeeded',
 
         reference: null,
-
       },
-
     });
 
     if (appliedCoupon?.code) {
-      const coupon = await this.couponsService.getCouponByCode(appliedCoupon.code);
+      const coupon = await this.couponsService.getCouponByCode(
+        appliedCoupon.code,
+      );
       if (coupon) {
         await this.prisma.coupon.update({
           where: { id: coupon.id },
@@ -333,22 +357,28 @@ export class PaymentsService {
     const initial = challenge.accountSize;
 
     // Determine the platform to use - check multiple field names sent from frontend
-    const selectedPlatform = platform || tradingPlatform || trading_platform || brokerPlatform || challenge.platform;
+    const selectedPlatform =
+      platform ||
+      tradingPlatform ||
+      trading_platform ||
+      brokerPlatform ||
+      challenge.platform;
 
     // Map frontend platform names to database enum values
     const platformMap = {
-      'MT4': 'MT4',
-      'MT5': 'MT5',
-      'cTrader': 'CTRADER',
-      'DXTrade': 'DXTRADE',
-      'CTRADER': 'CTRADER',
-      'DXTRADE': 'DXTRADE',
-      'BYBIT': 'BYBIT',
-      'PT5': 'PT5',
-      'TRADELOCKER': 'TRADELOCKER',
+      MT4: 'MT4',
+      MT5: 'MT5',
+      cTrader: 'CTRADER',
+      DXTrade: 'DXTRADE',
+      CTRADER: 'CTRADER',
+      DXTRADE: 'DXTRADE',
+      BYBIT: 'BYBIT',
+      PT5: 'PT5',
+      TRADELOCKER: 'TRADELOCKER',
     };
 
-    const normalizedPlatform = platformMap[selectedPlatform] || selectedPlatform;
+    const normalizedPlatform =
+      platformMap[selectedPlatform] || selectedPlatform;
 
     console.log('🔍 Platform Debug:', {
       received_platform: platform,
@@ -357,13 +387,11 @@ export class PaymentsService {
       received_brokerPlatform: brokerPlatform,
       challenge_platform: challenge.platform,
       selectedPlatform: selectedPlatform,
-      normalizedPlatform: normalizedPlatform
+      normalizedPlatform: normalizedPlatform,
     });
 
     const account = await this.prisma.tradingAccount.create({
-
       data: {
-
         userId,
 
         challengeId,
@@ -440,7 +468,6 @@ export class PaymentsService {
       );
     }
 
-
     // Create notification for challenge purchase
     await this.notificationsService.create(
       userId,
@@ -451,15 +478,12 @@ export class PaymentsService {
     );
 
     return {
-
-      message: "Challenge purchased successfully",
+      message: 'Challenge purchased successfully',
 
       payment,
 
       account,
-
     };
-
   }
 
   // ─── Xoala: Server-to-Server card charge ───────────────────────
@@ -494,7 +518,12 @@ export class PaymentsService {
         'Missing required field: slug, challengeId, or accountSize',
       );
     }
-    if (!card?.number || !card?.expiryMonth || !card?.expiryYear || !card?.cvv) {
+    if (
+      !card?.number ||
+      !card?.expiryMonth ||
+      !card?.expiryYear ||
+      !card?.cvv
+    ) {
       throw new BadRequestException(
         'Card details (number, expiryMonth, expiryYear, cvv) are required',
       );
@@ -526,10 +555,14 @@ export class PaymentsService {
     let brandLink: any = null;
 
     if (challengeId && typeof challengeId === 'string') {
-      challenge = await this.prisma.challenge.findUnique({ where: { id: challengeId } });
+      challenge = await this.prisma.challenge.findUnique({
+        where: { id: challengeId },
+      });
     }
     if (!challenge && slug && typeof slug === 'string') {
-      challenge = await (this.prisma.challenge as any).findUnique({ where: { slug } });
+      challenge = await (this.prisma.challenge as any).findUnique({
+        where: { slug },
+      });
       if (!challenge) {
         brandLink = await (this.prisma as any).directPurchaseLink.findUnique({
           where: { slug },
@@ -545,21 +578,25 @@ export class PaymentsService {
       const typeMap: Record<string, string> = {
         '1-step': 'one_phase',
         'one-step': 'one_phase',
-        'one_step': 'one_phase',
+        one_step: 'one_phase',
         'one-phase': 'one_phase',
-        'one_phase': 'one_phase',
+        one_phase: 'one_phase',
         '2-step': 'two_phase',
         'two-step': 'two_phase',
-        'two_step': 'two_phase',
+        two_step: 'two_phase',
         'two-phase': 'two_phase',
-        'two_phase': 'two_phase',
+        two_phase: 'two_phase',
       };
       const mappedType =
         typeMap[String(challengeType || '').toLowerCase()] ||
         challengeType ||
         'two_phase';
       challenge = await this.prisma.challenge.findFirst({
-        where: { accountSize: sizeNumber, challengeType: mappedType, isActive: true },
+        where: {
+          accountSize: sizeNumber,
+          challengeType: mappedType,
+          isActive: true,
+        },
       });
     }
 
@@ -574,8 +611,25 @@ export class PaymentsService {
         where: { slug: brandSlug },
       });
       if (brand) {
-        brandLink = { brandId: brand.id, brand, id: null, slug: null, active: true };
+        brandLink = {
+          brandId: brand.id,
+          brand,
+          id: null,
+          slug: null,
+          active: true,
+        };
       }
+    }
+    // Enforce link-level provider lock. If the brand admin pinned this
+    // link to a non-Xoala gateway, the Xoala S2S charge endpoint refuses
+    // the request so the customer must go through the correct flow.
+    if (
+      brandLink?.provider &&
+      String(brandLink.provider).toUpperCase() !== 'XOALA'
+    ) {
+      throw new BadRequestException(
+        'This link is configured to use a different payment gateway.',
+      );
     }
     // Custom-amount DirectPurchaseLinks set `amount` to override the
     // challenge's default price. We trust the DB value (not anything the
@@ -583,7 +637,9 @@ export class PaymentsService {
     // used for everything else (drawdown, account size, platform); only the
     // money charged comes from the link.
     const linkPriceOverride: number | null =
-      brandLink?.active && brandLink?.amount != null && Number(brandLink.amount) > 0
+      brandLink?.active &&
+      brandLink?.amount != null &&
+      Number(brandLink.amount) > 0
         ? Number(brandLink.amount)
         : null;
     // Custom-URL links may not be tied to a challenge in the DB. Fall back
@@ -608,7 +664,8 @@ export class PaymentsService {
       throw new NotFoundException('Challenge not found');
     }
 
-    const billingFirstName = typeof firstName === 'string' ? firstName.trim() : '';
+    const billingFirstName =
+      typeof firstName === 'string' ? firstName.trim() : '';
     const billingLastName = typeof lastName === 'string' ? lastName.trim() : '';
     if (!billingFirstName || !billingLastName) {
       throw new BadRequestException('Missing required name fields');
@@ -633,12 +690,19 @@ export class PaymentsService {
       // challenge.price. Currency conversion still runs on top so EUR/GBP
       // display matches the gateway charge.
       linkPriceOverride != null
-        ? { price: linkPriceOverride, currency: brandLink?.currency ?? challenge.currency }
+        ? {
+            price: linkPriceOverride,
+            currency: brandLink?.currency ?? challenge.currency,
+          }
         : challenge,
       requestedCurrency,
     );
     const selectedPlatform =
-      platform || tradingPlatform || trading_platform || brokerPlatform || challenge.platform;
+      platform ||
+      tradingPlatform ||
+      trading_platform ||
+      brokerPlatform ||
+      challenge.platform;
     const normalizedPlatform = this.normalizePlatform(selectedPlatform);
 
     const orderNumber = `XOALA-${Date.now()}-${Math.random()
@@ -651,8 +715,13 @@ export class PaymentsService {
     const secureKey = this.configService.get<string>('XOALA_SECURE_KEY');
     const frontendUrl = this.configService.get<string>('APP_FRONTEND_URL');
     const backendUrl = this.configService.get<string>('APP_BACKEND_URL');
-    const terminalId = this.resolveXoalaTerminalId(requestedCurrency, detectedBrand);
-    const notificationUrl = this.configService.get<string>('XOALA_NOTIFICATION_URL');
+    const terminalId = this.resolveXoalaTerminalId(
+      requestedCurrency,
+      detectedBrand,
+    );
+    const notificationUrl = this.configService.get<string>(
+      'XOALA_NOTIFICATION_URL',
+    );
 
     if (!s2sBaseUrl || !memberId || !secureKey || !frontendUrl || !backendUrl) {
       this.logger.error('Missing Xoala S2S env vars', {
@@ -662,7 +731,9 @@ export class PaymentsService {
         frontendUrl: !!frontendUrl,
         backendUrl: !!backendUrl,
       });
-      throw new BadRequestException('Xoala S2S environment variables not configured');
+      throw new BadRequestException(
+        'Xoala S2S environment variables not configured',
+      );
     }
 
     // Xoala submits a form POST to merchantRedirectUrl after 3DS. Vite (dev)
@@ -674,7 +745,10 @@ export class PaymentsService {
 
     // S2S request checksum:  MD5( memberId | secureKey | merchantTxId | amount )
     const checksum = buildXoalaRequestChecksum({
-      memberId, secureKey, merchantTransactionId: orderNumber, amount,
+      memberId,
+      secureKey,
+      merchantTransactionId: orderNumber,
+      amount,
     });
 
     // PCI-safe payload to persist (NEVER PAN, NEVER CVV).
@@ -792,19 +866,19 @@ export class PaymentsService {
     const params: Record<string, string> = {
       'authentication.memberId': memberId,
       'authentication.checksum': checksum,
-      'merchantTransactionId': orderNumber,
-      'amount': amount,
-      'currency': orderCurrency,
-      'orderDescriptor': orderDescription,
+      merchantTransactionId: orderNumber,
+      amount: amount,
+      currency: orderCurrency,
+      orderDescriptor: orderDescription,
       'card.number': sanitizedCardNumber,
       'card.expiryMonth': String(card.expiryMonth),
       'card.expiryYear': String(card.expiryYear),
       'card.cvv': String(card.cvv),
-      'paymentMode': 'CC',
-      'paymentType': 'DB',
-      'paymentBrand': detectedBrand,
+      paymentMode: 'CC',
+      paymentType: 'DB',
+      paymentBrand: detectedBrand,
       'authentication.terminalId': terminalId,
-      'merchantRedirectUrl': merchantRedirectUrl,
+      merchantRedirectUrl: merchantRedirectUrl,
       'customer.email': user.email,
       'customer.givenName': billingFirstName,
       'customer.surname': billingLastName,
@@ -823,13 +897,17 @@ export class PaymentsService {
 
     let xoalaResponse: any;
     try {
-      const httpRes = await axios.post(url, new URLSearchParams(params).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'AuthToken': authToken,
+      const httpRes = await axios.post(
+        url,
+        new URLSearchParams(params).toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            AuthToken: authToken,
+          },
+          timeout: 60_000,
         },
-        timeout: 60_000,
-      });
+      );
       xoalaResponse = httpRes.data;
       this.logger.log(
         `[Xoala S2S] Response ref=${orderNumber} httpStatus=${httpRes.status} txStatus=${xoalaResponse?.transactionStatus} resultCode=${xoalaResponse?.result?.code}`,
@@ -860,11 +938,18 @@ export class PaymentsService {
           callbackPayload: respBody ?? { error: err?.message },
         },
       });
-      return { status: 'failed', reference: orderNumber, paymentId: payment.id, message };
+      return {
+        status: 'failed',
+        reference: orderNumber,
+        paymentId: payment.id,
+        message,
+      };
     }
 
     const resultCode = String(xoalaResponse?.result?.code ?? '');
-    const transactionStatus = String(xoalaResponse?.transactionStatus ?? '').toUpperCase();
+    const transactionStatus = String(
+      xoalaResponse?.transactionStatus ?? '',
+    ).toUpperCase();
     const providerPaymentId = xoalaResponse?.paymentId
       ? String(xoalaResponse.paymentId)
       : null;
@@ -894,12 +979,14 @@ export class PaymentsService {
           cardLast4: cardSummary.last4,
           cardBrand: cardSummary.brand || detectedBrand,
           metadata: {
-            ...(payment.metadata as object || {}),
+            ...((payment.metadata as object) || {}),
             card: cardSummary,
           },
         },
       });
-      this.logger.log(`[Xoala S2S] 3DS required ref=${orderNumber}, redirecting to ACS`);
+      this.logger.log(
+        `[Xoala S2S] 3DS required ref=${orderNumber}, redirecting to ACS`,
+      );
       return {
         status: 'requires_action',
         reference: orderNumber,
@@ -925,7 +1012,7 @@ export class PaymentsService {
           cardLast4: cardSummary.last4,
           cardBrand: cardSummary.brand || detectedBrand,
           metadata: {
-            ...(payment.metadata as object || {}),
+            ...((payment.metadata as object) || {}),
             card: cardSummary,
           },
         },
@@ -935,7 +1022,9 @@ export class PaymentsService {
       // notification webhook fires later it will detect tradingAccountId and
       // return the existing account without re-running side effects.
       try {
-        const account = await this.provisionChallengeAfterPaymentSuccess(payment.id);
+        const account = await this.provisionChallengeAfterPaymentSuccess(
+          payment.id,
+        );
         return {
           status: 'succeeded',
           reference: orderNumber,
@@ -947,7 +1036,11 @@ export class PaymentsService {
           `[Xoala S2S] Inline provisioning failed for ref=${orderNumber} (webhook will retry): ${err?.message}`,
         );
         // Payment did succeed — don't surface a failed status to the user.
-        return { status: 'succeeded', reference: orderNumber, paymentId: payment.id };
+        return {
+          status: 'succeeded',
+          reference: orderNumber,
+          paymentId: payment.id,
+        };
       }
     }
 
@@ -968,7 +1061,7 @@ export class PaymentsService {
       cardLast4: cardSummary.last4,
       cardBrand: cardSummary.brand || detectedBrand,
       metadata: {
-        ...(payment.metadata as object || {}),
+        ...((payment.metadata as object) || {}),
         card: cardSummary,
       },
     };
@@ -998,7 +1091,6 @@ export class PaymentsService {
     };
   }
 
-
   // ─── Provision trading account after successful payment ───────────
 
   async provisionChallengeAfterPaymentSuccess(paymentId: string) {
@@ -1013,12 +1105,16 @@ export class PaymentsService {
     }
 
     if (payment.status !== 'succeeded') {
-      throw new BadRequestException(`Payment status is "${payment.status}", expected "succeeded"`);
+      throw new BadRequestException(
+        `Payment status is "${payment.status}", expected "succeeded"`,
+      );
     }
 
     // 2. Idempotency — if already provisioned, return existing account
     if (payment.tradingAccountId) {
-      this.logger.log(`Already provisioned: payment=${paymentId}, account=${payment.tradingAccountId}`);
+      this.logger.log(
+        `Already provisioned: payment=${paymentId}, account=${payment.tradingAccountId}`,
+      );
       const existingAccount = await this.prisma.tradingAccount.findUnique({
         where: { id: payment.tradingAccountId },
       });
@@ -1032,12 +1128,16 @@ export class PaymentsService {
       throw new NotFoundException(`User not found for payment ${paymentId}`);
     }
     if (!challenge) {
-      throw new NotFoundException(`Challenge not found for payment ${paymentId}`);
+      throw new NotFoundException(
+        `Challenge not found for payment ${paymentId}`,
+      );
     }
 
     // 3. Read platform from payment metadata, normalize to enum
-    const metadata = (payment.metadata || {}) as any;
-    const normalizedPlatform = this.normalizePlatform(metadata.platform || challenge.platform);
+    const metadata = payment.metadata || {};
+    const normalizedPlatform = this.normalizePlatform(
+      metadata.platform || challenge.platform,
+    );
     const initial = challenge.accountSize;
 
     // 4. Prisma interactive transaction — creates account + links payment + increments coupon atomically
@@ -1049,7 +1149,9 @@ export class PaymentsService {
       });
 
       if (freshPayment?.tradingAccountId) {
-        this.logger.log(`Race guard: account already exists for payment ${paymentId}`);
+        this.logger.log(
+          `Race guard: account already exists for payment ${paymentId}`,
+        );
         return tx.tradingAccount.findUnique({
           where: { id: freshPayment.tradingAccountId },
         });
@@ -1087,7 +1189,9 @@ export class PaymentsService {
 
       // Increment coupon usage (only once, inside the same transaction)
       if (payment.couponCode) {
-        const coupon = await this.couponsService.getCouponByCode(payment.couponCode);
+        const coupon = await this.couponsService.getCouponByCode(
+          payment.couponCode,
+        );
         if (coupon) {
           await tx.coupon.update({
             where: { id: coupon.id },
@@ -1100,10 +1204,14 @@ export class PaymentsService {
     });
 
     if (!account) {
-      throw new BadRequestException(`Failed to provision account for payment ${paymentId}`);
+      throw new BadRequestException(
+        `Failed to provision account for payment ${paymentId}`,
+      );
     }
 
-    this.logger.log(`Account provisioned: ${account.id}, platform=${account.platform}, challenge=${challenge.id}`);
+    this.logger.log(
+      `Account provisioned: ${account.id}, platform=${account.platform}, challenge=${challenge.id}`,
+    );
 
     // 5. MT5 platform credentials (outside transaction — side effects)
     if (account.platform === 'MT5') {
@@ -1146,7 +1254,10 @@ export class PaymentsService {
 
     // 7. Set-password email for guest-created users who haven't set their own password yet
     await this.sendSetPasswordEmailIfNeeded(user).catch((err) => {
-      this.logger.error(`Set-password email failed for user ${user.id}: ${err?.message}`, err?.stack);
+      this.logger.error(
+        `Set-password email failed for user ${user.id}: ${err?.message}`,
+        err?.stack,
+      );
     });
 
     return account;
@@ -1161,12 +1272,17 @@ export class PaymentsService {
 
     const frontendUrl = this.configService.get<string>('APP_FRONTEND_URL');
     if (!frontendUrl) {
-      this.logger.error('APP_FRONTEND_URL not set — cannot build set-password link');
+      this.logger.error(
+        'APP_FRONTEND_URL not set — cannot build set-password link',
+      );
       return;
     }
 
     const plainToken = crypto.randomBytes(32).toString('hex');
-    const tokenHash = crypto.createHash('sha256').update(plainToken).digest('hex');
+    const tokenHash = crypto
+      .createHash('sha256')
+      .update(plainToken)
+      .digest('hex');
     const expiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
     await (this.prisma.user as any).update({
@@ -1177,11 +1293,17 @@ export class PaymentsService {
       },
     });
 
-    const profile = await this.prisma.userProfile.findUnique({ where: { userId: user.id } });
+    const profile = await this.prisma.userProfile.findUnique({
+      where: { userId: user.id },
+    });
     const firstName = profile?.firstName || undefined;
     const setPasswordUrl = `${frontendUrl}/set-password?token=${plainToken}`;
 
-    await this.emailService.sendSetPasswordEmail(user.email, setPasswordUrl, firstName);
+    await this.emailService.sendSetPasswordEmail(
+      user.email,
+      setPasswordUrl,
+      firstName,
+    );
   }
 
   // ─── Payment status (for frontend polling) ─────────────────────────
@@ -1206,7 +1328,9 @@ export class PaymentsService {
     });
 
     if (!payment) {
-      throw new NotFoundException(`Payment not found for reference: ${reference}`);
+      throw new NotFoundException(
+        `Payment not found for reference: ${reference}`,
+      );
     }
 
     return payment;
@@ -1250,5 +1374,4 @@ export class PaymentsService {
 
     return payments;
   }
-
 }
