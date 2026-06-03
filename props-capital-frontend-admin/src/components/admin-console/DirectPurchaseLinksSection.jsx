@@ -288,13 +288,22 @@ export default function DirectPurchaseLinksSection() {
             <div key={link.id} className="glass-panel p-6">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
                 <div>
-                  <div className="flex items-center gap-3 mb-1">
+                  <div className="flex items-center gap-3 mb-1 flex-wrap">
                     <h3 className="text-2xl font-semibold text-white">{link.name}</h3>
                     <span className={`text-xs px-3 py-1 rounded-full ${
                       link.is_active ? 'bg-green-500/20 text-green-300' : 'bg-gray-500/20 text-gray-300'
                     }`}>
                       {link.is_active ? t("adminConsole.directLinks.statusActive", { defaultValue: "Active" }) : t("adminConsole.directLinks.statusInactive", { defaultValue: "Inactive" })}
                     </span>
+                    {link.provider && (
+                      <span className={`text-xs px-3 py-1 rounded-full ${
+                        link.provider === 'WORLDCARD'
+                          ? 'bg-indigo-500/20 text-indigo-300'
+                          : 'bg-amber-500/20 text-amber-300'
+                      }`}>
+                        {link.provider === 'WORLDCARD' ? 'WorldCard only' : 'Xoala only'}
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-gray-400 mb-1">
                     <span className="text-gray-300 font-medium">{t("adminConsole.directLinks.brandLabel", { defaultValue: "Brand:" })}</span> {link.brand_name || t("adminConsole.directLinks.notAvailable", { defaultValue: "N/A" })}
