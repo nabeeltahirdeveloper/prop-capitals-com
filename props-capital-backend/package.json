@@ -22,6 +22,7 @@
     "db:seed": "ts-node -r tsconfig-paths/register prisma/seed-challenges.ts",
     "db:seed:admins": "ts-node -r tsconfig-paths/register prisma/seed-admins.ts",
     "db:seed:gbp": "ts-node -r tsconfig-paths/register prisma/seed-gbp-challenges.ts",
+    "db:seed:global": "ts-node -r tsconfig-paths/register prisma/seed-global-brand.ts",
     "db:backfill": "ts-node -r tsconfig-paths/register prisma/backfill-ticket-messages.ts",
     "db:pull": "prisma db pull",
     "db:push": "prisma db push",

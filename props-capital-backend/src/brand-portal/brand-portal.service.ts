@@ -206,7 +206,10 @@ export class BrandPortalService {
       where: { brandId, status: 'succeeded', createdAt: { gte: since } },
       select: { amount: true, brandCommission: true, createdAt: true },
     });
-    const buckets = new Map<string, { revenue: number; commission: number; orders: number }>();
+    const buckets = new Map<
+      string,
+      { revenue: number; commission: number; orders: number }
+    >();
     for (const r of rows) {
       const day = (r.createdAt as Date).toISOString().slice(0, 10);
       const cur = buckets.get(day) ?? { revenue: 0, commission: 0, orders: 0 };
@@ -224,7 +227,10 @@ export class BrandPortalService {
 
   /* ---------- Visits ---------- */
 
-  async listVisits(_brandId: string, params: { page?: number; limit?: number }) {
+  async listVisits(
+    _brandId: string,
+    params: { page?: number; limit?: number },
+  ) {
     // Brand-attribution on visits would require a referral param; for now the
     // brand portal sees the global visit feed (admin can lock this down later).
     const page = Math.max(1, Number(params.page) || 1);
@@ -281,7 +287,16 @@ export class BrandPortalService {
   async listLinks(brandId: string) {
     const linkInclude = {
       brand: { select: { id: true, name: true, slug: true } },
-      challenge: { select: { id: true, slug: true, name: true, challengeType: true, accountSize: true, price: true } },
+      challenge: {
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+          challengeType: true,
+          accountSize: true,
+          price: true,
+        },
+      },
     };
 
     let links = await this.db.directPurchaseLink.findMany({
@@ -333,7 +348,9 @@ export class BrandPortalService {
   }
 
   async updateLink(brandId: string, id: string, body: any) {
-    const existing = await this.db.directPurchaseLink.findUnique({ where: { id } });
+    const existing = await this.db.directPurchaseLink.findUnique({
+      where: { id },
+    });
     if (!existing || existing.brandId !== brandId)
       throw new UnauthorizedException('Link not found');
     const data: any = {};
@@ -341,12 +358,17 @@ export class BrandPortalService {
     if (body.amount !== undefined) data.amount = Number(body.amount);
     if (body.active !== undefined) data.active = !!body.active;
     if (body.metadata !== undefined) data.metadata = body.metadata;
-    const updated = await this.db.directPurchaseLink.update({ where: { id }, data });
+    const updated = await this.db.directPurchaseLink.update({
+      where: { id },
+      data,
+    });
     return { link: this.mapLink(updated) };
   }
 
   async deleteLink(brandId: string, id: string) {
-    const existing = await this.db.directPurchaseLink.findUnique({ where: { id } });
+    const existing = await this.db.directPurchaseLink.findUnique({
+      where: { id },
+    });
     if (!existing || existing.brandId !== brandId)
       throw new UnauthorizedException('Link not found');
     await this.db.directPurchaseLink.delete({ where: { id } });
@@ -369,7 +391,7 @@ export class BrandPortalService {
   }
 
   private buildDestinationUrl(l: any): string {
-    const meta = (l.metadata && typeof l.metadata === 'object') ? l.metadata : {};
+    const meta = l.metadata && typeof l.metadata === 'object' ? l.metadata : {};
     if (meta.custom_url) return meta.custom_url;
 
     const baseUrl = this.getPublicSiteUrl();
@@ -395,7 +417,7 @@ export class BrandPortalService {
 
   private mapLink(l: any) {
     const total = Number(l.amount ?? 0);
-    const meta = (l.metadata && typeof l.metadata === 'object') ? l.metadata : {};
+    const meta = l.metadata && typeof l.metadata === 'object' ? l.metadata : {};
     const isMainLink = meta?.is_main_link === true;
     const customUrl = meta?.custom_url ?? null;
 
@@ -417,6 +439,9 @@ export class BrandPortalService {
       credits_price: 0,
       credits_amount: 0,
       currency: l.currency,
+      // Read-only for brand owners — only admins can override which gateway
+      // a link routes to. Surfaced here so the brand UI can show a badge.
+      provider: l.provider ?? null,
       is_active: l.active,
       visits_count: l.clicks,
       transactions_count: l.conversions,
@@ -492,9 +517,10 @@ export class BrandPortalService {
     return {
       transactions: data.map((p: any) => this.mapTransaction(p)),
       total: data.length,
-      stats: data.length > 0
-        ? this.computeTransactionStats(data)
-        : this.emptyTransactionsStats(),
+      stats:
+        data.length > 0
+          ? this.computeTransactionStats(data)
+          : this.emptyTransactionsStats(),
     };
   }
 
@@ -507,10 +533,11 @@ export class BrandPortalService {
    */
   private mapTransaction(p: any) {
     const amountDollars = (p.amount ?? 0) / 100;
-    const meta = (p.metadata && typeof p.metadata === 'object') ? p.metadata : {};
-    const billing = (meta.billingDetails && typeof meta.billingDetails === 'object')
-      ? meta.billingDetails
-      : {};
+    const meta = p.metadata && typeof p.metadata === 'object' ? p.metadata : {};
+    const billing =
+      meta.billingDetails && typeof meta.billingDetails === 'object'
+        ? meta.billingDetails
+        : {};
     const firstName = p.user?.profile?.firstName ?? billing.firstName ?? null;
     const lastName = p.user?.profile?.lastName ?? billing.lastName ?? null;
     const country = p.user?.profile?.country ?? billing.country ?? null;
@@ -673,24 +700,25 @@ export class BrandPortalService {
   /* ---------- Commission stats ---------- */
 
   async commissionStats(brandId: string) {
-    const [paidAgg, unpaidAgg, totalAgg, totalOrders, brand] = await Promise.all([
-      this.db.payment.aggregate({
-        _sum: { brandCommission: true },
-        where: { brandId, status: 'succeeded', brandPaidOut: true },
-      }),
-      this.db.payment.aggregate({
-        _sum: { brandCommission: true },
-        where: { brandId, status: 'succeeded', brandPaidOut: false },
-      }),
-      this.db.payment.aggregate({
-        _sum: { brandCommission: true, amount: true },
-        where: { brandId, status: 'succeeded' },
-      }),
-      this.db.payment.count({
-        where: { brandId, status: 'succeeded' },
-      }),
-      this.db.brand.findUnique({ where: { id: brandId } }),
-    ]);
+    const [paidAgg, unpaidAgg, totalAgg, totalOrders, brand] =
+      await Promise.all([
+        this.db.payment.aggregate({
+          _sum: { brandCommission: true },
+          where: { brandId, status: 'succeeded', brandPaidOut: true },
+        }),
+        this.db.payment.aggregate({
+          _sum: { brandCommission: true },
+          where: { brandId, status: 'succeeded', brandPaidOut: false },
+        }),
+        this.db.payment.aggregate({
+          _sum: { brandCommission: true, amount: true },
+          where: { brandId, status: 'succeeded' },
+        }),
+        this.db.payment.count({
+          where: { brandId, status: 'succeeded' },
+        }),
+        this.db.brand.findUnique({ where: { id: brandId } }),
+      ]);
     const paid = (paidAgg._sum.brandCommission ?? 0) / 100;
     const unpaid = (unpaidAgg._sum.brandCommission ?? 0) / 100;
     const total = (totalAgg._sum.brandCommission ?? 0) / 100;
@@ -715,7 +743,10 @@ export class BrandPortalService {
 
   /* ---------- Payouts ---------- */
 
-  async listPayouts(brandId: string, params: { page?: number; limit?: number }) {
+  async listPayouts(
+    brandId: string,
+    params: { page?: number; limit?: number },
+  ) {
     const page = Math.max(1, Number(params.page) || 1);
     const limit = Math.min(200, Math.max(1, Number(params.limit) || 50));
     const skip = (page - 1) * limit;
@@ -755,7 +786,10 @@ export class BrandPortalService {
         total_payouts: paidCount,
         average_payout: paidCount > 0 ? totalPaid / paidCount : 0,
         last_payout: lastPaid
-          ? { amount: lastPaid.amount, date: lastPaid.paidAt ?? lastPaid.createdAt }
+          ? {
+              amount: lastPaid.amount,
+              date: lastPaid.paidAt ?? lastPaid.createdAt,
+            }
           : null,
       },
       pagination: { total, page, totalPages: Math.ceil(total / limit) },

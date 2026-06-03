@@ -17,7 +17,6 @@ export class AdminConsoleService {
 
   /* ---------- Dashboard / Analytics overview ---------- */
 
-
   async revenueChart(days = 30) {
     const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
     const [payments, payouts] = await Promise.all([
@@ -42,13 +41,13 @@ export class AdminConsoleService {
       buckets.set(key, { revenue: 0, payouts: 0 });
     }
     for (const p of payments) {
-      const key = (p.createdAt as Date).toISOString().slice(0, 10);
+      const key = p.createdAt.toISOString().slice(0, 10);
       const cur = buckets.get(key) ?? { revenue: 0, payouts: 0 };
       cur.revenue += (p.amount ?? 0) / 100;
       buckets.set(key, cur);
     }
     for (const p of payouts) {
-      const key = (p.createdAt as Date).toISOString().slice(0, 10);
+      const key = p.createdAt.toISOString().slice(0, 10);
       const cur = buckets.get(key) ?? { revenue: 0, payouts: 0 };
       cur.payouts += (p.amount ?? 0) / 100;
       buckets.set(key, cur);
@@ -77,7 +76,9 @@ export class AdminConsoleService {
       take: limit,
     });
 
-    const challengeIds = grouped.map((g) => g.challengeId).filter(Boolean) as string[];
+    const challengeIds = grouped
+      .map((g) => g.challengeId)
+      .filter(Boolean) as string[];
     const challenges = challengeIds.length
       ? await this.prisma.challenge.findMany({
           where: { id: { in: challengeIds } },
@@ -102,34 +103,39 @@ export class AdminConsoleService {
   }
 
   async analyticsOverview() {
-    const [revenueAgg, userCount, orderCount, recentPayments, recentChallenges] =
-      await Promise.all([
-        this.prisma.payment.aggregate({
-          _sum: { amount: true },
-          where: { status: 'succeeded' },
-        }),
-        this.prisma.user.count(),
-        this.prisma.payment.count(),
-        this.prisma.payment.findMany({
-          take: 10,
-          orderBy: { createdAt: 'desc' },
-          include: {
-            user: { select: { email: true } },
-            challenge: { select: { name: true } },
-          },
-        }),
-        this.prisma.challenge.findMany({
-          take: 5,
-          orderBy: { createdAt: 'desc' },
-          select: {
-            id: true,
-            name: true,
-            price: true,
-            accountSize: true,
-            isActive: true,
-          },
-        }),
-      ]);
+    const [
+      revenueAgg,
+      userCount,
+      orderCount,
+      recentPayments,
+      recentChallenges,
+    ] = await Promise.all([
+      this.prisma.payment.aggregate({
+        _sum: { amount: true },
+        where: { status: 'succeeded' },
+      }),
+      this.prisma.user.count(),
+      this.prisma.payment.count(),
+      this.prisma.payment.findMany({
+        take: 10,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: { select: { email: true } },
+          challenge: { select: { name: true } },
+        },
+      }),
+      this.prisma.challenge.findMany({
+        take: 5,
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          name: true,
+          price: true,
+          accountSize: true,
+          isActive: true,
+        },
+      }),
+    ]);
 
     return {
       totals: {
@@ -270,7 +276,9 @@ export class AdminConsoleService {
   }
 
   private randomPassword() {
-    return Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+    return (
+      Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2)
+    );
   }
 
   /* ---------- Packages (mapped to Challenge) ----------
@@ -282,7 +290,8 @@ export class AdminConsoleService {
 
   private mapChallengeToPackage(c: any) {
     const features: string[] = [];
-    if (c.accountSize) features.push(`Account size: $${c.accountSize.toLocaleString()}`);
+    if (c.accountSize)
+      features.push(`Account size: $${c.accountSize.toLocaleString()}`);
     if (c.profitSplit) features.push(`Profit split: ${c.profitSplit}%`);
     if (c.phase1TargetPercent)
       features.push(`Phase 1 target: ${c.phase1TargetPercent}%`);
@@ -335,9 +344,9 @@ export class AdminConsoleService {
         name: data.name ?? 'Untitled',
         description: data.description ?? null,
         price: Math.round(Number(data.price) || 0),
-        currency: data.currency === '$' ? 'USD' : data.currency ?? 'USD',
+        currency: data.currency === '$' ? 'USD' : (data.currency ?? 'USD'),
         accountSize: Number(data.accountSize) || 10000,
-        platform: (data.platform ?? 'MT5') as any,
+        platform: data.platform ?? 'MT5',
         isActive: data.active !== false,
       },
     });
@@ -347,8 +356,10 @@ export class AdminConsoleService {
   async updatePackage(id: string, data: any) {
     const updateData: any = {};
     if (data.name !== undefined) updateData.name = data.name;
-    if (data.description !== undefined) updateData.description = data.description;
-    if (data.price !== undefined) updateData.price = Math.round(Number(data.price));
+    if (data.description !== undefined)
+      updateData.description = data.description;
+    if (data.price !== undefined)
+      updateData.price = Math.round(Number(data.price));
     if (data.currency !== undefined)
       updateData.currency = data.currency === '$' ? 'USD' : data.currency;
     if (data.active !== undefined) updateData.isActive = !!data.active;
@@ -510,7 +521,7 @@ export class AdminConsoleService {
     }
 
     const totalSum = data.reduce(
-      (acc, p) => acc + (p.status === 'succeeded' ? p.amount ?? 0 : 0),
+      (acc, p) => acc + (p.status === 'succeeded' ? (p.amount ?? 0) : 0),
       0,
     );
 
@@ -580,7 +591,8 @@ export class AdminConsoleService {
           package_id: p.challengeId,
           package_name: p.challenge?.name ?? null,
           coupon_code: p.couponCode,
-          discount_amount: p.discountAmount != null ? p.discountAmount / 100 : 0,
+          discount_amount:
+            p.discountAmount != null ? p.discountAmount / 100 : 0,
           refunded_at: p.refundedAt,
         };
       }),
@@ -737,7 +749,8 @@ export class AdminConsoleService {
         { email: { contains: params.q, mode: 'insensitive' } },
       ];
     }
-    if (params.status && params.status !== 'all') where.approvalStatus = params.status;
+    if (params.status && params.status !== 'all')
+      where.approvalStatus = params.status;
 
     const [data, total] = await Promise.all([
       this.db.brand.findMany({
@@ -802,7 +815,9 @@ export class AdminConsoleService {
     // brand has trackable referral URLs the moment they log in.
     const linkCount = await this.autoCreateBrandLinks(created.id, {
       mainLinkCustomUrl: data.main_link_custom_url ?? null,
-      explicitLinks: Array.isArray(data.custom_links) ? data.custom_links : null,
+      explicitLinks: Array.isArray(data.custom_links)
+        ? data.custom_links
+        : null,
     });
 
     return {
@@ -831,7 +846,12 @@ export class AdminConsoleService {
     brandId: string,
     opts: {
       mainLinkCustomUrl?: string | null;
-      explicitLinks?: Array<{ package_id?: string; name?: string; is_main_link?: boolean; custom_url?: string }> | null;
+      explicitLinks?: Array<{
+        package_id?: string;
+        name?: string;
+        is_main_link?: boolean;
+        custom_url?: string;
+      }> | null;
     },
   ): Promise<number> {
     let created = 0;
@@ -844,7 +864,9 @@ export class AdminConsoleService {
     const existingChallengeIds = new Set(
       existing.map((l: any) => l.challengeId).filter(Boolean),
     );
-    const existingNames = new Set(existing.map((l: any) => l.name).filter(Boolean));
+    const existingNames = new Set(
+      existing.map((l: any) => l.name).filter(Boolean),
+    );
 
     // 1) Main link (always one per brand, regardless of explicit links)
     if (!existingNames.has('Main link')) {
@@ -912,14 +934,18 @@ export class AdminConsoleService {
     return Math.random().toString(36).slice(2, 10);
   }
 
- 
   async backfillBrandLinks() {
     let brands: any[] = [];
     try {
-      brands = await this.db.brand.findMany({ select: { id: true, name: true } });
+      brands = await this.db.brand.findMany({
+        select: { id: true, name: true },
+      });
     } catch (err: any) {
       // eslint-disable-next-line no-console
-      console.error('[AdminConsole] backfill: failed to load brands:', err?.message);
+      console.error(
+        '[AdminConsole] backfill: failed to load brands:',
+        err?.message,
+      );
       return {
         success: false,
         brands_processed: 0,
@@ -971,7 +997,9 @@ export class AdminConsoleService {
    * Backfill links for one specific brand (e.g. after adding a new challenge).
    */
   async regenerateBrandLinks(brandId: string) {
-    const created = await this.autoCreateBrandLinks(brandId, { explicitLinks: null });
+    const created = await this.autoCreateBrandLinks(brandId, {
+      explicitLinks: null,
+    });
     return { success: true, links_created: created };
   }
 
@@ -991,8 +1019,7 @@ export class AdminConsoleService {
 
   private generateBrandPassword() {
     // 12 chars, upper + lower + digits — enough entropy and easy to type
-    const chars =
-      'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
     let out = '';
     for (let i = 0; i < 12; i++) {
       out += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -1027,7 +1054,10 @@ export class AdminConsoleService {
     for (const [src, dest] of Object.entries(fieldMap)) {
       if (data[src] !== undefined) updateData[dest] = data[src];
     }
-    const updated = await this.db.brand.update({ where: { id }, data: updateData });
+    const updated = await this.db.brand.update({
+      where: { id },
+      data: updateData,
+    });
     return { brand: this.mapBrand(updated) };
   }
 
@@ -1230,7 +1260,11 @@ export class AdminConsoleService {
     };
   }
 
-  async listBlockedIps(params: { page?: number; limit?: number; status?: string }) {
+  async listBlockedIps(params: {
+    page?: number;
+    limit?: number;
+    status?: string;
+  }) {
     const page = Math.max(1, Number(params.page) || 1);
     const limit = Math.min(200, Math.max(1, Number(params.limit) || 50));
     const skip = (page - 1) * limit;
@@ -1341,21 +1375,34 @@ export class AdminConsoleService {
     };
   }
 
-  async createCurrencyGeoMapping(body: { country_code: string; currency_code: string }) {
+  async createCurrencyGeoMapping(body: {
+    country_code: string;
+    currency_code: string;
+  }) {
     const m = await this.db.currencyGeoMapping.upsert({
       where: { countryCode: body.country_code },
-      create: { countryCode: body.country_code, currencyCode: body.currency_code },
+      create: {
+        countryCode: body.country_code,
+        currencyCode: body.currency_code,
+      },
       update: { currencyCode: body.currency_code },
     });
-    return { mapping: { country_code: m.countryCode, currency_code: m.currencyCode } };
+    return {
+      mapping: { country_code: m.countryCode, currency_code: m.currencyCode },
+    };
   }
 
-  async updateCurrencyGeoMapping(countryCode: string, body: { currency_code: string }) {
+  async updateCurrencyGeoMapping(
+    countryCode: string,
+    body: { currency_code: string },
+  ) {
     const m = await this.db.currencyGeoMapping.update({
       where: { countryCode },
       data: { currencyCode: body.currency_code },
     });
-    return { mapping: { country_code: m.countryCode, currency_code: m.currencyCode } };
+    return {
+      mapping: { country_code: m.countryCode, currency_code: m.currencyCode },
+    };
   }
 
   async deleteCurrencyGeoMapping(countryCode: string) {
@@ -1375,7 +1422,10 @@ export class AdminConsoleService {
     };
   }
 
-  async createPaymentGatewayMapping(body: { country_code: string; gateway: string }) {
+  async createPaymentGatewayMapping(body: {
+    country_code: string;
+    gateway: string;
+  }) {
     const m = await this.db.paymentGatewayMapping.upsert({
       where: { countryCode: body.country_code },
       create: { countryCode: body.country_code, gateway: body.gateway },
@@ -1384,7 +1434,10 @@ export class AdminConsoleService {
     return { mapping: { country_code: m.countryCode, gateway: m.gateway } };
   }
 
-  async updatePaymentGatewayMapping(countryCode: string, body: { gateway: string }) {
+  async updatePaymentGatewayMapping(
+    countryCode: string,
+    body: { gateway: string },
+  ) {
     const m = await this.db.paymentGatewayMapping.update({
       where: { countryCode },
       data: { gateway: body.gateway },
@@ -1397,7 +1450,9 @@ export class AdminConsoleService {
     return { success: true };
   }
 
-  async bulkPaymentGatewayMappings(mappings: Array<{ country_code: string; gateway: string }>) {
+  async bulkPaymentGatewayMappings(
+    mappings: Array<{ country_code: string; gateway: string }>,
+  ) {
     if (!mappings?.length) return { success: true, count: 0 };
     let count = 0;
     for (const m of mappings) {
@@ -1429,7 +1484,7 @@ export class AdminConsoleService {
   }
 
   private buildDestinationUrl(l: any): string {
-    const meta = (l.metadata && typeof l.metadata === 'object') ? l.metadata : {};
+    const meta = l.metadata && typeof l.metadata === 'object' ? l.metadata : {};
     if (meta.custom_url) {
       return this.attachLinkSlugToUrl(meta.custom_url, l.slug);
     }
@@ -1451,7 +1506,10 @@ export class AdminConsoleService {
     return `${baseUrl}/Challenges${qs ? '?' + qs : ''}`;
   }
 
-  private attachLinkSlugToUrl(rawUrl: string, slug: string | null | undefined): string {
+  private attachLinkSlugToUrl(
+    rawUrl: string,
+    slug: string | null | undefined,
+  ): string {
     if (!slug) return rawUrl;
     try {
       const isAbsolute = /^https?:\/\//i.test(rawUrl);
@@ -1468,9 +1526,8 @@ export class AdminConsoleService {
 
   private mapDirectPurchaseLink(l: any) {
     const total = Number(l.amount ?? 0);
-    const conversionRate =
-      l.clicks > 0 ? (l.conversions / l.clicks) * 100 : 0;
-    const meta = (l.metadata && typeof l.metadata === 'object') ? l.metadata : {};
+    const conversionRate = l.clicks > 0 ? (l.conversions / l.clicks) * 100 : 0;
+    const meta = l.metadata && typeof l.metadata === 'object' ? l.metadata : {};
     const isMainLink = meta?.is_main_link === true;
     const customUrl = meta?.custom_url ?? null;
     const destinationUrl = this.buildDestinationUrl(l);
@@ -1582,10 +1639,31 @@ export class AdminConsoleService {
       orderBy: { createdAt: 'desc' },
       include: {
         brand: { select: { id: true, name: true, slug: true } },
-        challenge: { select: { id: true, slug: true, name: true, challengeType: true, accountSize: true, price: true } },
+        challenge: {
+          select: {
+            id: true,
+            slug: true,
+            name: true,
+            challengeType: true,
+            accountSize: true,
+            price: true,
+          },
+        },
       },
     });
     return { links: data.map((l: any) => this.mapDirectPurchaseLink(l)) };
+  }
+
+  // Whitelist provider input — admins can only set a known gateway code,
+  // or null/empty to clear the override and fall back to the 50/50 router.
+  private normalizeProviderInput(raw: any): string | null | undefined {
+    if (raw === undefined) return undefined;
+    if (raw === null || raw === '') return null;
+    const s = String(raw).trim().toUpperCase();
+    if (s === 'XOALA') return 'XOALA';
+    if (s === 'WORLDCARD' || s === 'WORLD-CARD' || s === 'WC')
+      return 'WORLDCARD';
+    return null;
   }
 
   async createDirectPurchaseLink(body: any) {
@@ -1593,7 +1671,9 @@ export class AdminConsoleService {
       throw new Error('brand_id is required');
     }
 
-    const brand = await this.db.brand.findUnique({ where: { id: body.brand_id } });
+    const brand = await this.db.brand.findUnique({
+      where: { id: body.brand_id },
+    });
     if (!brand) throw new Error('Brand not found');
 
     let challengeId: string | null = null;
@@ -1620,6 +1700,8 @@ export class AdminConsoleService {
       metadata.is_main_link = true;
     }
 
+    const providerInput = this.normalizeProviderInput(body.provider);
+
     const link = await this.db.directPurchaseLink.create({
       data: {
         slug: body.slug || this.randomLinkSlug(),
@@ -1628,6 +1710,7 @@ export class AdminConsoleService {
         challengeId,
         amount,
         currency: body.currency || 'USD',
+        ...(providerInput !== undefined ? { provider: providerInput } : {}),
         metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
         active: body.active !== false,
       },
@@ -1666,11 +1749,14 @@ export class AdminConsoleService {
     if (body.challenge_id !== undefined) {
       data.challengeId = body.challenge_id || null;
     }
+    if (body.provider !== undefined) {
+      data.provider = this.normalizeProviderInput(body.provider);
+    }
 
     if (body.custom_url !== undefined) {
       const meta: any =
         existing.metadata && typeof existing.metadata === 'object'
-          ? { ...(existing.metadata as any) }
+          ? { ...existing.metadata }
           : {};
       const url =
         typeof body.custom_url === 'string' && body.custom_url.trim()
@@ -1800,7 +1886,7 @@ export class AdminConsoleService {
     };
 
     const [data, total, unpaidSum] = await Promise.all([
-      (this.db as any).payment.findMany({
+      this.db.payment.findMany({
         where,
         skip,
         take: limit,
@@ -1811,8 +1897,8 @@ export class AdminConsoleService {
           brand: { select: { id: true, name: true, commissionRate: true } },
         },
       }),
-      (this.db as any).payment.count({ where }),
-      (this.db as any).payment.aggregate({
+      this.db.payment.count({ where }),
+      this.db.payment.aggregate({
         _sum: { amount: true, brandCommission: true },
         where,
       }),
@@ -1848,7 +1934,8 @@ export class AdminConsoleService {
     return {
       success: true,
       updated: 0,
-      message: 'Prop-capitals uses single-currency USD pricing — nothing to fix.',
+      message:
+        'Prop-capitals uses single-currency USD pricing — nothing to fix.',
     };
   }
 
@@ -1869,7 +1956,7 @@ export class AdminConsoleService {
   }) {
     if (!input.ip) return;
     try {
-      await (this.db as any).visit.upsert({
+      await this.db.visit.upsert({
         where: { ip: input.ip },
         create: {
           ip: input.ip,
@@ -1973,7 +2060,10 @@ export class AdminConsoleService {
         page,
         totalPages: Math.ceil(total / limit),
       },
-      statistics: stats.map((s: any) => ({ level: s.logLevel, count: s._count })),
+      statistics: stats.map((s: any) => ({
+        level: s.logLevel,
+        count: s._count,
+      })),
     };
   }
 
@@ -2048,7 +2138,12 @@ export class AdminConsoleService {
 
   /* ---------- Bot Logs (live: BotLog) ---------- */
 
-  async listBotLogs(params: { page?: number; limit?: number; level?: string; category?: string }) {
+  async listBotLogs(params: {
+    page?: number;
+    limit?: number;
+    level?: string;
+    category?: string;
+  }) {
     const page = Math.max(1, Number(params.page) || 1);
     const limit = Math.min(500, Math.max(1, Number(params.limit) || 50));
     const skip = (page - 1) * limit;

@@ -732,6 +732,11 @@ const PayLink = () => {
                   Your card is processed securely over TLS. We store only the last 4 digits for receipts — never the full number or CVV. 3-D Secure may be requested by your bank.
                 </p>
               </div>
+              {provider === 'worldcard' && (
+                <p className={`text-[10px] text-right mt-1 ${isDark ? 'text-gray-600' : 'text-slate-400'}`}>
+                  Powered by WorldCard
+                </p>
+              )}
 
               <div className={`mt-6 rounded-xl p-4 flex items-start gap-3 ${isDark ? 'bg-amber-500/5 border border-amber-500/20' : 'bg-amber-50 border border-amber-200'}`}>
                 <input
