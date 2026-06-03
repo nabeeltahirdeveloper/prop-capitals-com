@@ -628,7 +628,26 @@ export class WorldCardService {
     params['custom_data[platform]'] = normalizedPlatform;
     if (brandLink?.id) params['custom_data[brand_link_id]'] = brandLink.id;
 
+    // PCI-safe redacted echo of the form body for diagnostics. Card data
+    // is masked; everything else is exactly what we POST so we can spot
+    // hash/key/brand misconfig in logs without re-running the request.
+    const redactedParams: Record<string, string> = {};
+    for (const [k, v] of Object.entries(params)) {
+      if (k.endsWith('[pan]') || k.endsWith('[card_number]') || k.endsWith('[cardNumber]')) {
+        redactedParams[k] = v.length > 4 ? `****${v.slice(-4)}` : '****';
+      } else if (k.endsWith('[cvv]') || k.endsWith('[cvv2]')) {
+        redactedParams[k] = '***';
+      } else {
+        redactedParams[k] = v;
+      }
+    }
+    this.logger.log(
+      `[WorldCard S2S] POST ${paymentUrl} ref=${orderId} params=${JSON.stringify(redactedParams)}`,
+    );
+
     let wcResponse: any;
+    let rawResponseText: string | null = null;
+    let responseHttpStatus: number | null = null;
     try {
       const httpRes = await axios.post(
         paymentUrl,
@@ -636,32 +655,71 @@ export class WorldCardService {
         {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           timeout: 60_000,
+          // Treat 2xx as success but capture EVERYTHING else manually so
+          // we can log + return the gateway's actual body instead of
+          // swallowing it inside axios's thrown error.
+          validateStatus: () => true,
+          transformResponse: [(d) => d],
         },
       );
-      wcResponse = httpRes.data;
-      this.logger.log(
-        `[WorldCard S2S] Response ref=${orderId} httpStatus=${httpRes.status} result=${wcResponse?.result} status=${wcResponse?.status}`,
-      );
-    } catch (err: any) {
-      const httpStatus = err?.response?.status;
-      const respBody = err?.response?.data;
-      const message =
-        respBody?.error_message ||
-        respBody?.decline_reason ||
-        respBody?.message ||
-        err?.message ||
-        'Network error';
+      responseHttpStatus = httpRes.status;
+      rawResponseText = typeof httpRes.data === 'string' ? httpRes.data : JSON.stringify(httpRes.data);
 
+      try {
+        wcResponse = rawResponseText ? JSON.parse(rawResponseText) : {};
+      } catch {
+        wcResponse = { raw: rawResponseText };
+      }
+
+      this.logger.log(
+        `[WorldCard S2S] Response ref=${orderId} httpStatus=${httpRes.status} bodyPreview=${(rawResponseText || '').slice(0, 500)}`,
+      );
+
+      if (httpRes.status >= 400) {
+        // Gateway-side error — surface the raw body so we know whether
+        // it's an IP-allowlist issue, missing protocol mapping, wrong
+        // endpoint path, etc. WorldCard usually returns either a JSON
+        // body with { error_message } or a plain text snippet.
+        const failMessage =
+          (wcResponse && (wcResponse.error_message || wcResponse.decline_reason || wcResponse.message)) ||
+          (rawResponseText && rawResponseText.slice(0, 300)) ||
+          `Gateway returned HTTP ${httpRes.status}`;
+
+        this.logger.error(
+          `[WorldCard S2S] Gateway error ref=${orderId} httpStatus=${httpRes.status} body=${(rawResponseText || '').slice(0, 1000)}`,
+        );
+
+        await (this.prisma.payment as any).update({
+          where: { id: payment.id },
+          data: {
+            status: 'failed',
+            failureReason: `Gateway HTTP ${httpRes.status}: ${failMessage}`,
+            callbackPayload: wcResponse ?? { error: rawResponseText },
+          },
+        });
+        return {
+          provider: 'worldcard',
+          status: 'failed',
+          reference: orderId,
+          paymentId: payment.id,
+          message: `Payment gateway error (HTTP ${httpRes.status}). ${failMessage}`,
+        };
+      }
+    } catch (err: any) {
+      // Only true network / timeout / DNS failures reach here because
+      // validateStatus: () => true swallows HTTP errors above.
+      const message = err?.message || 'Network error';
       this.logger.error(
-        `[WorldCard S2S] HTTP error ref=${orderId} httpStatus=${httpStatus} body=${JSON.stringify(respBody).slice(0, 500)}`,
+        `[WorldCard S2S] Network error ref=${orderId} message=${message}`,
+        err?.stack,
       );
 
       await (this.prisma.payment as any).update({
         where: { id: payment.id },
         data: {
           status: 'failed',
-          failureReason: `S2S call failed: ${message}`,
-          callbackPayload: respBody ?? { error: err?.message },
+          failureReason: `Network error contacting WorldCard: ${message}`,
+          callbackPayload: { error: message },
         },
       });
       return {
@@ -669,7 +727,7 @@ export class WorldCardService {
         status: 'failed',
         reference: orderId,
         paymentId: payment.id,
-        message,
+        message: `Could not reach the payment gateway (${message}). Please try again in a moment.`,
       };
     }
 
