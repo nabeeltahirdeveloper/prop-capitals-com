@@ -38,14 +38,26 @@ export const submitXoalaCheckout = ({ checkoutUrl, fields }) => {
   form.submit();
 };
 
-// ─── WorldCard S2S APM (server-to-server card charge) ─────────────
-// Same response shape as the Xoala S2S charge so the PayLink mutation
-// can branch on `data.status` without caring which gateway handled it.
+// WorldCard hosted-page session (default flow).
+// We never see PAN/CVV — backend POSTs to WorldCard and returns a
+// redirect_url; the customer's browser follows it and enters card data
+// on WorldCard's own domain. Response shape matches the Xoala 3DS path
+// so PayLink reuses the same redirect handler.
+//   { provider: 'worldcard', status: 'requires_action', reference,
+//                                                      redirectUrl, redirectMethod }
+//   { provider: 'worldcard', status: 'failed',          reference, message }
+export const createWorldCardSession = async (data) => {
+  return apiPost('/payments/worldcard/session', data);
+};
+
+// WorldCard S2S APM — opt-in via WORLDCARD_FLOW=s2s on the backend.
+// Only works when the merchant account has the S2S APM protocol mapped
+// and WORLDCARD_PAYMENT_URL points at the correct endpoint path.
 //   { provider: 'worldcard', status: 'succeeded', reference, paymentId, tradingAccountId? }
 //   { provider: 'worldcard', status: 'requires_action', reference, redirectUrl,
 //                                                      redirectMethod, redirectParams }
-//   { provider: 'worldcard', status: 'pending', reference }   // async (webhook will finalize)
-//   { provider: 'worldcard', status: 'failed',  reference, message }
+//   { provider: 'worldcard', status: 'pending',   reference }   // async (webhook will finalize)
+//   { provider: 'worldcard', status: 'failed',    reference, message }
 export const chargeWorldCardCard = async (data) => {
   return apiPost('/payments/worldcard/charge', data);
 };

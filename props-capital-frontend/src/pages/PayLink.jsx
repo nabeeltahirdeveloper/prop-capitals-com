@@ -26,6 +26,7 @@ import { getChallengeBySlug } from '@/api/challenges';
 import {
   chargeXoalaCard,
   chargeWorldCardCard,
+  createWorldCardSession,
   resolvePaymentProvider,
 } from '@/api/payments';
 import { readBrandAttribution } from '@/pages/CheckoutPage';
@@ -201,12 +202,12 @@ const PayLink = () => {
   const [agreedTerms, setAgreedTerms] = useState(false);
   const [confirmedAge, setConfirmedAge] = useState(false);
 
-  // ── Payment provider routing ────────────────────────────────────────
-  // /payments/provider tells us whether to send this checkout through
-  // Xoala or WorldCard. The /pay/<slug> URL param can itself be a link
-  // slug — the backend checks both. Defaults to 'xoala' so the page
-  // never renders an undefined value if the resolver hasn't responded.
+  // Payment provider routing.
+  // /payments/provider tells us which gateway to use AND, for WorldCard,
+  // which flow ('hosted' vs 's2s'). The route param /pay/<slug> can
+  // itself be a brand-link slug — the backend checks both.
   const [provider, setProvider] = useState('xoala');
+  const [worldCardFlow, setWorldCardFlow] = useState('hosted');
   const [providerResolved, setProviderResolved] = useState(false);
 
   useEffect(() => {
@@ -217,10 +218,9 @@ const PayLink = () => {
       .then((res) => {
         if (cancelled) return;
         if (res?.provider) setProvider(res.provider);
+        if (res?.worldCardFlow) setWorldCardFlow(res.worldCardFlow);
       })
-      .catch(() => {
-        /* fall back to default 'xoala' */
-      })
+      .catch(() => { /* fall back to default 'xoala' / 'hosted' */ })
       .finally(() => {
         if (!cancelled) setProviderResolved(true);
       });
@@ -288,11 +288,29 @@ const PayLink = () => {
     },
   });
 
-  // WorldCard S2S returns the same shape as Xoala S2S (succeeded /
-  // requires_action / pending / failed). The handler mirrors
-  // chargeMutation's onSuccess; we keep them separate to avoid the
-  // temporal-dead-zone issue you get when one mutation's onSuccess tries
-  // to reference a helper defined further down in the same component.
+  // WorldCard hosted-page session: backend returns redirectUrl; the
+  // browser follows it and the customer enters card on WorldCard's
+  // own domain. No PAN/CVV ever touches our backend in this flow.
+  const worldCardSessionMutation = useMutation({
+    mutationFn: createWorldCardSession,
+    onSuccess: (data) => {
+      if (data?.status === 'requires_action' && data?.redirectUrl) {
+        toast.success('Redirecting to secure payment…');
+        window.location.href = data.redirectUrl;
+      } else if (data?.status === 'failed') {
+        toast.error(data.message || 'Could not start checkout. Please try again.');
+      } else {
+        toast.error('Unexpected response from payment processor.');
+      }
+    },
+    onError: (err) => {
+      toast.error(err?.message || 'Failed to start checkout. Please try again.');
+    },
+  });
+
+  // WorldCard S2S charge (opt-in via WORLDCARD_FLOW=s2s on the backend).
+  // Same response shape as Xoala S2S; reuses the shared redirect/success
+  // handling pattern.
   const worldCardMutation = useMutation({
     mutationFn: chargeWorldCardCard,
     onSuccess: (data) => {
@@ -324,9 +342,7 @@ const PayLink = () => {
         toast.info('Payment received — confirming with the bank…');
         navigate(`/pay/success?reference=${data.reference}`);
       } else if (data?.status === 'failed') {
-        toast.error(
-          data.message || 'Payment was declined. Please try a different card.',
-        );
+        toast.error(data.message || 'Payment was declined. Please try a different card.');
       } else {
         toast.error('Unexpected response from payment processor.');
       }
@@ -366,7 +382,10 @@ const PayLink = () => {
     const next = {};
     let firstError = '';
     let firstErrorField = '';
-    Object.keys(INITIAL_FORM).forEach((k) => {
+    const fieldsToCheck = Object.keys(INITIAL_FORM).filter(
+      (k) => !isHostedWorldCard || !CARD_FIELDS.includes(k),
+    );
+    fieldsToCheck.forEach((k) => {
       const err = validateField(k, form[k]);
       if (err) {
         next[k] = err;
@@ -391,8 +410,9 @@ const PayLink = () => {
     }
 
     // Mirrors the server-side check: only VISA/MC route to a terminal.
-    if (brand && brand !== 'VISA' && brand !== 'MC') {
-      toast.error('We only accept Visa and Mastercard for EUR/GBP payments.');
+    // Skipped for hosted WorldCard — the card isn't entered here.
+    if (!isHostedWorldCard && brand && brand !== 'VISA' && brand !== 'MC') {
+      toast.error('We only accept Visa and Mastercard payments.');
       const el = document.getElementsByName('cardNumber')[0];
       if (el && typeof el.focus === 'function') el.focus();
       return;
@@ -426,22 +446,39 @@ const PayLink = () => {
       postalCode: form.postalCode.trim(),
       ...(attribution?.brandSlug ? { brandSlug: attribution.brandSlug } : {}),
       ...(attribution?.linkSlug ? { linkSlug: attribution.linkSlug } : {}),
-      card: {
-        number: cardDigits,
-        expiryMonth: mm,
-        expiryYear: `20${yy}`,
-        cvv: form.cvv,
-        holder: form.cardholderName.trim(),
-        brand: brand || undefined,
-      },
     };
 
-    if (provider === 'worldcard') {
-      worldCardMutation.mutate(baseBody);
+    if (provider === 'worldcard' && worldCardFlow === 'hosted') {
+      // Hosted flow: send billing only; the card form is hidden in this
+      // mode because card data is captured on WorldCard's own page.
+      worldCardSessionMutation.mutate(baseBody);
+    } else if (provider === 'worldcard') {
+      // S2S flow: include card data.
+      worldCardMutation.mutate({
+        ...baseBody,
+        card: {
+          number: cardDigits,
+          expiryMonth: mm,
+          expiryYear: `20${yy}`,
+          cvv: form.cvv,
+          holder: form.cardholderName.trim(),
+          brand: brand || undefined,
+        },
+      });
     } else {
-      // Xoala S2S still needs the EUR/GBP display currency — the gateway
-      // picks the per-currency terminal from this value.
-      chargeMutation.mutate({ ...baseBody, currency });
+      // Xoala S2S — also needs the EUR/GBP display currency.
+      chargeMutation.mutate({
+        ...baseBody,
+        currency,
+        card: {
+          number: cardDigits,
+          expiryMonth: mm,
+          expiryYear: `20${yy}`,
+          cvv: form.cvv,
+          holder: form.cardholderName.trim(),
+          brand: brand || undefined,
+        },
+      });
     }
   };
 
@@ -494,7 +531,7 @@ const PayLink = () => {
     );
   }
 
-  const submitting = chargeMutation.isPending || worldCardMutation.isPending;
+  const submitting = chargeMutation.isPending || worldCardMutation.isPending || worldCardSessionMutation.isPending;
 
   return (
     <div className={`min-h-screen pt-20 pb-12 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
@@ -710,7 +747,8 @@ const PayLink = () => {
                 </div>
               </div>
 
-              {/* ── Card details ── */}
+              {/* ── Card details (S2S flows only — hosted collects them off-site) ── */}
+              {!isHostedWorldCard && (
               <div className={`mt-8 pt-6 border-t ${dividerClass}`}>
                 <div className={sectionHeaderClass}>Payment Details</div>
                 <div className="mt-3 space-y-4">
@@ -810,11 +848,14 @@ const PayLink = () => {
                   </div>
                 </div>
               </div>
+              )}
 
               <div className={`mt-6 rounded-xl p-4 flex items-start gap-3 ${isDark ? 'bg-emerald-500/5 border border-emerald-500/20' : 'bg-emerald-50 border border-emerald-200'}`}>
                 <Shield className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
                 <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
-                  Your card is processed securely over TLS. We store only the last 4 digits for receipts — never the full number or CVV. 3-D Secure may be requested by your bank.
+                  {isHostedWorldCard
+                    ? 'After you click Pay, you\u2019ll be redirected to our secure payment processor to enter your card details. We never see or store your card number.'
+                    : 'Your card is processed securely over TLS. We store only the last 4 digits for receipts — never the full number or CVV. 3-D Secure may be requested by your bank.'}
                 </p>
               </div>
 
