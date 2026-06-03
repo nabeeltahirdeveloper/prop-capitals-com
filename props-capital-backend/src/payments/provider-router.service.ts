@@ -37,14 +37,15 @@ export class PaymentProviderRouter {
     private readonly configService: ConfigService,
   ) {}
 
-  // Read the WorldCard flow override from env. Anything other than 's2s'
-  // (incl. unset, garbage, 'hosted') resolves to 'hosted' so we always
-  // default to the working flow.
+  // Read the WorldCard flow override from env. Defaults to 's2s' (the
+  // S2S CARD protocol — customer enters card on /pay/<slug>, backend
+  // posts directly to WorldCard's /v2/post). Set WORLDCARD_FLOW=hosted
+  // to switch back to the hosted-page session flow as a fallback.
   worldCardFlow(): WorldCardFlow {
     const raw = (this.configService.get<string>('WORLDCARD_FLOW') || '')
       .trim()
       .toLowerCase();
-    return raw === 's2s' ? 's2s' : 'hosted';
+    return raw === 'hosted' ? 'hosted' : 's2s';
   }
 
   private normalizeProvider(raw: any): PaymentProvider | null {
