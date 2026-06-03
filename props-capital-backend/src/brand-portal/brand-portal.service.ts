@@ -406,6 +406,13 @@ export class BrandPortalService {
       const size = this.formatAccountSize(l.challenge.accountSize);
       params.set('type', type);
       if (size) params.set('size', size);
+      // Forward custom price when the link overrides the challenge's
+      // default price (matches the admin-console copy of this builder).
+      const linkAmount = Number(l.amount ?? 0);
+      const challengePrice = Number(l.challenge.price ?? 0);
+      if (linkAmount > 0 && linkAmount !== challengePrice) {
+        params.set('customPrice', String(linkAmount));
+      }
       return `${baseUrl}/checkout?${params.toString()}`;
     }
 
