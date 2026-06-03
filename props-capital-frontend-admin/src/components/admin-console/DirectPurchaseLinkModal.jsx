@@ -30,6 +30,10 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
     custom_url: link?.custom_url || '',
     amount: link?.total_amount != null ? String(link.total_amount) : '',
     currency: link?.currency || 'USD',
+    // Empty string == "Auto (50/50 split between Xoala and WorldCard)".
+    // Backend stores 'XOALA' / 'WORLDCARD' or null; normalize to '' so
+    // the <select> below matches one of its <option value="..."> values.
+    provider: link?.provider || '',
     active: link?.is_active !== undefined ? link.is_active : true,
   });
 
@@ -145,6 +149,10 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
       amount: formData.amount !== '' ? Number(formData.amount) : null,
       challenge_id: mode === 'challenge' ? formData.challenge_id : null,
       custom_url: mode === 'custom' ? formData.custom_url.trim() : '',
+      // null clears the override and falls the link back to the 50/50
+      // router. Backend whitelist-validates the value, so any unknown
+      // string is coerced to null server-side too.
+      provider: formData.provider || null,
     };
 
     setLoading(true);
