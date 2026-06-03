@@ -468,6 +468,26 @@ export class PaymentsService {
       );
     }
 
+    // Send "Thank you for your purchase" receipt — separate from the
+    // credentials email above. Invoice numbers are derived from the running
+    // count of succeeded payments so we don't need a new column on Payment.
+    try {
+      const invoiceNumber = await this.prisma.payment.count({
+        where: { status: 'succeeded' },
+      });
+      await this.emailService.sendPurchaseReceiptEmail({
+        to: user.email,
+        challengeName: challenge.name,
+        amount: finalPrice,
+        currency: challenge.currency || 'EUR',
+        invoiceNumber,
+      });
+    } catch (e) {
+      this.logger.warn(
+        `Failed to send purchase receipt email for user ${userId}: ${e instanceof Error ? e.message : e}`,
+      );
+    }
+
     // Create notification for challenge purchase
     await this.notificationsService.create(
       userId,
@@ -1240,6 +1260,25 @@ export class PaymentsService {
           platform: account.platform,
         },
         'setup',
+      );
+    }
+
+    // Send "Thank you for your purchase" receipt. Amount comes from the
+    // already-confirmed `payment` row so coupons/discounts are reflected.
+    try {
+      const invoiceNumber = await this.prisma.payment.count({
+        where: { status: 'succeeded' },
+      });
+      await this.emailService.sendPurchaseReceiptEmail({
+        to: user.email,
+        challengeName: challenge.name,
+        amount: (payment.amount ?? 0) / 100,
+        currency: payment.currency || challenge.currency || 'EUR',
+        invoiceNumber,
+      });
+    } catch (e) {
+      this.logger.warn(
+        `Failed to send purchase receipt email for payment ${paymentId}: ${e instanceof Error ? e.message : e}`,
       );
     }
 

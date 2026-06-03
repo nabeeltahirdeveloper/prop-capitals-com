@@ -273,6 +273,92 @@ export class EmailService {
   }
 
   /**
+   * Send "Thank you for your purchase" receipt email after a challenge is
+   * successfully paid for and the trading account has been provisioned.
+   *
+   * The login-credentials email is sent separately by
+   * `sendPlatformAccountCredentials` — this one is the receipt only.
+   */
+  async sendPurchaseReceiptEmail(args: {
+    to: string;
+    challengeName: string;
+    amount: number; // in major units, e.g. 599 for EUR 599.00
+    currency: string; // e.g. "EUR"
+    invoiceNumber: number;
+  }): Promise<EmailResult> {
+    const { to, challengeName, amount, currency, invoiceNumber } = args;
+    const formattedAmount = amount.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    const supportEmail = 'support@prop-capitals.com';
+    const year = new Date().getFullYear();
+
+    return this.sendWithTimeout({
+      to,
+      from: this.fromEmail,
+      subject: `Your Prop Capitals receipt #${invoiceNumber}`,
+      text: `Hi ${to},
+
+We have received your payment for ${challengeName}. Your official receipt is below.
+
+Amount Paid: ${currency} ${formattedAmount}
+Invoice #${invoiceNumber}
+
+Your trading account has been provisioned and login details have been sent in a separate email.
+
+If you have any questions, concerns, or issues regarding this payment, please contact our support team. We are available 24/7 and happy to assist you at ${supportEmail}.
+
+© ${year} Prop Capitals. All rights reserved.`,
+      html: `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background-color: #f4f5f7; padding: 24px 12px;">
+          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 32px; box-shadow: 0 1px 3px rgba(15,23,42,0.05);">
+            <div style="text-align: center; margin-bottom: 18px;">
+              <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 800; letter-spacing: 1px; color: #0a0d12;">
+                PROP<span style="color: #f59e0b;">CAPITALS</span>
+              </span>
+            </div>
+
+            <h1 style="margin: 0 0 16px 0; color: #0a0d12; font-size: 22px; font-weight: 800; line-height: 30px;">
+              Thank you for your <span style="color: #f59e0b;">purchase</span>
+            </h1>
+
+            <p style="margin: 0 0 14px 0; color: #334155; font-size: 14px; line-height: 22px;">
+              Hi <a href="mailto:${to}" style="color: #0a0d12; font-weight: 600; text-decoration: none;">${to}</a>,
+            </p>
+
+            <p style="margin: 0 0 18px 0; color: #334155; font-size: 14px; line-height: 22px;">
+              We have received your payment for <strong style="color: #0a0d12;">${challengeName}</strong>. Your official receipt details are below (Invoice <strong>#${invoiceNumber}</strong>).
+            </p>
+
+            <div style="margin: 18px 0 22px 0; padding: 18px 20px; background-color: #ecfdf5; border-left: 4px solid #10b981; border-radius: 8px;">
+              <p style="margin: 0 0 6px 0; color: #065f46; font-size: 13px; font-weight: 600;">
+                Amount Paid
+              </p>
+              <p style="margin: 0; color: #065f46; font-size: 24px; font-weight: 800; letter-spacing: 0.3px;">
+                ${currency} ${formattedAmount}
+              </p>
+            </div>
+
+            <p style="margin: 0 0 14px 0; color: #334155; font-size: 14px; line-height: 22px;">
+              Your trading account has been provisioned and login details have been sent in a separate email.
+            </p>
+
+            <p style="margin: 0 0 6px 0; color: #334155; font-size: 14px; line-height: 22px;">
+              If you have any questions, concerns, or issues regarding this payment, please contact our support team. We are available 24/7 and happy to assist you at
+              <a href="mailto:${supportEmail}" style="color: #f59e0b; text-decoration: underline;">${supportEmail}</a>.
+            </p>
+          </div>
+
+          <p style="text-align: center; color: #6b7280; font-size: 12px; margin: 18px 0 0 0;">
+            © ${year} Prop Capitals. All rights reserved.
+          </p>
+        </div>
+      `,
+    });
+  }
+
+  /**
    * Send contact form confirmation email to user
    */
   async sendContactConfirmationEmail(
