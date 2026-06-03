@@ -241,7 +241,7 @@ const TransactionsPage = () => {
                       )}
                     </td>
                     <td className={`px-4 py-3.5 text-sm ${mutedClass}`}>
-                      {p.provider === 'worldcard' ? 'WorldCard' : p.provider === 'internal' ? 'Internal' : p.provider}
+                      {p.provider === 'internal' ? 'Internal' : 'Card'}
                     </td>
                     <td className="px-4 py-3.5">
                       <StatusBadge status={p.status} />
