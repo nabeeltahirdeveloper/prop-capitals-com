@@ -145,6 +145,10 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
       amount: formData.amount !== '' ? Number(formData.amount) : null,
       challenge_id: mode === 'challenge' ? formData.challenge_id : null,
       custom_url: mode === 'custom' ? formData.custom_url.trim() : '',
+      // null clears the override and falls the link back to the 50/50
+      // router. Backend whitelist-validates the value so any garbage
+      // becomes null too.
+      provider: formData.provider || null,
     };
 
     setLoading(true);
@@ -429,37 +433,6 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
                 ))}
               </select>
             </div>
-          </div>
-
-          {/* Payment provider override */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              {t('adminConsole.directLinks.modal.provider', {
-                defaultValue: 'Payment Gateway',
-              })}
-            </label>
-            <select
-              value={formData.provider}
-              onChange={(e) =>
-                setFormData({ ...formData, provider: e.target.value })
-              }
-              className="search-input p-3 rounded-lg w-full"
-            >
-              <option value="">
-                {t('adminConsole.directLinks.modal.providerAuto', {
-                  defaultValue:
-                    'Auto — 50/50 split between Xoala and WorldCard',
-                })}
-              </option>
-              <option value="XOALA">Xoala</option>
-              <option value="WORLDCARD">WorldCard</option>
-            </select>
-            <p className="text-xs text-gray-400 mt-1">
-              {t('adminConsole.directLinks.modal.providerHint', {
-                defaultValue:
-                  'Forces all checkouts opened through this link to the chosen gateway. Leave on Auto for the default 50/50 split.',
-              })}
-            </p>
           </div>
 
           {/* Active toggle */}
