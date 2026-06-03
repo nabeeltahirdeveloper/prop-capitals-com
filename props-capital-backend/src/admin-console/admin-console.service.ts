@@ -1499,6 +1499,15 @@ export class AdminConsoleService {
       const size = this.formatAccountSize(l.challenge.accountSize);
       params.set('type', type);
       if (size) params.set('size', size);
+      // If the link overrides the challenge's default price (custom-amount
+      // brand link), forward it so the order summary on /checkout and the
+      // total on /pay/<slug> show what the customer will actually be
+      // charged. The backend still enforces the link amount at charge time.
+      const linkAmount = Number(l.amount ?? 0);
+      const challengePrice = Number(l.challenge.price ?? 0);
+      if (linkAmount > 0 && linkAmount !== challengePrice) {
+        params.set('customPrice', String(linkAmount));
+      }
       return `${baseUrl}/checkout?${params.toString()}`;
     }
 
@@ -1666,6 +1675,43 @@ export class AdminConsoleService {
     return null;
   }
 
+  // Pick the best-fit active challenge for a custom-amount link. Used
+  // when the admin (or a seed) creates a link with an `amount` but no
+  // explicit `challenge_id` — we still need a challenge attached so the
+  // /checkout flow renders the platform picker (instead of bouncing the
+  // customer to the marketing /Challenges page) and so payment provisioning
+  // knows which challenge config to instantiate after a successful charge.
+  //
+  // Heuristic:
+  //  - Only active challenges.
+  //  - Closest absolute price difference wins.
+  //  - Ties break toward 'one_phase' (one-step is the default flow).
+  //  - Among same-type ties, smallest accountSize wins (safer default).
+  //
+  // Returns null when there are no active challenges at all.
+  async findClosestChallengeForAmount(amount: number): Promise<any | null> {
+    if (!Number.isFinite(amount) || amount <= 0) return null;
+    const challenges = await this.db.challenge.findMany({
+      where: { isActive: true },
+      select: { id: true, price: true, challengeType: true, accountSize: true },
+    });
+    if (challenges.length === 0) return null;
+    const scored = challenges.map((c: any) => ({
+      c,
+      diff: Math.abs(Number(c.price ?? 0) - amount),
+      typeRank: c.challengeType === 'one_phase' ? 0 : 1,
+      size: Number(c.accountSize ?? 0),
+    }));
+    scored.sort((a: any, b: any) =>
+      a.diff !== b.diff
+        ? a.diff - b.diff
+        : a.typeRank !== b.typeRank
+          ? a.typeRank - b.typeRank
+          : a.size - b.size,
+    );
+    return scored[0].c;
+  }
+
   async createDirectPurchaseLink(body: any) {
     if (!body?.brand_id) {
       throw new Error('brand_id is required');
@@ -1693,6 +1739,16 @@ export class AdminConsoleService {
       typeof body.custom_url === 'string' && body.custom_url.trim()
         ? body.custom_url.trim()
         : null;
+
+    // Auto-match challenge when none was picked but the link has an amount
+    // (and isn't a custom-URL redirect that points elsewhere). Without an
+    // attached challenge, buildDestinationUrl falls back to /Challenges and
+    // the customer sees the marketing page instead of going straight to
+    // the platform picker.
+    if (!challengeId && !customUrl && amount && amount > 0) {
+      const matched = await this.findClosestChallengeForAmount(amount);
+      if (matched) challengeId = matched.id;
+    }
 
     const metadata: any = {};
     if (customUrl) metadata.custom_url = customUrl;
