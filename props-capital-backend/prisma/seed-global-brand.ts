@@ -86,6 +86,11 @@ async function seedGlobalBrand() {
     }
 
     const slug = randomLinkSlug();
+    // Best-effort match a challenge so the destination URL renders the
+    // /checkout platform picker (instead of bouncing customers to the
+    // marketing /Challenges page). Customer is still charged `amount`
+    // — the matched challenge only provides drawdown config + platform.
+    const matched = await findClosestChallengeForAmount(amount);
     const created = await (prisma as any).directPurchaseLink.create({
       data: {
         slug,
@@ -95,9 +100,12 @@ async function seedGlobalBrand() {
         currency: 'USD',
         active: true,
         provider: 'WORLDCARD',
+        ...(matched ? { challengeId: matched.id } : {}),
       },
     });
-    console.log(`  + Created $${amount} link (slug=${created.slug}, WORLDCARD)`);
+    console.log(
+      `  + Created $${amount} link (slug=${created.slug}, WORLDCARD${matched ? `, challenge=${matched.id}` : ', no challenge matched'})`,
+    );
   }
 
   console.log('✅ Global brand seed complete.');
@@ -106,6 +114,30 @@ async function seedGlobalBrand() {
 function randomLinkSlug() {
   return Math.random().toString(36).slice(2, 10);
 }
+
+async function findClosestChallengeForAmount(amount: number): Promise<any | null> {
+  if (!Number.isFinite(amount) || amount <= 0) return null;
+  const challenges = await prisma.challenge.findMany({
+    where: { isActive: true },
+    select: { id: true, price: true, challengeType: true, accountSize: true },
+  });
+  if (challenges.length === 0) return null;
+  const scored = challenges.map((c: any) => ({
+    c,
+    diff: Math.abs(Number(c.price ?? 0) - amount),
+    typeRank: c.challengeType === 'one_phase' ? 0 : 1,
+    size: Number(c.accountSize ?? 0),
+  }));
+  scored.sort((a: any, b: any) =>
+    a.diff !== b.diff
+      ? a.diff - b.diff
+      : a.typeRank !== b.typeRank
+        ? a.typeRank - b.typeRank
+        : a.size - b.size,
+  );
+  return scored[0].c;
+}
+
 
 seedGlobalBrand()
   .catch((e) => {

@@ -62,6 +62,60 @@ export class AdminConsoleModule implements NestModule, OnApplicationBootstrap {
         err?.message,
       );
     }
+
+    // Backfill: any amount-only link still missing a challengeId (e.g.
+    // Global's three before this code shipped, or admin-created links from
+    // before auto-match landed) gets one attached by best-effort price
+    // match. Without this the link's destination_url falls back to the
+    // public /Challenges page; with it, the customer lands on the
+    // platform picker as intended.
+    try {
+      const attached = await this.attachChallengesToOrphanLinks();
+      if (attached > 0) {
+        // eslint-disable-next-line no-console
+        console.log(
+          `[AdminConsole] Attached challenges to ${attached} legacy amount-only link(s).`,
+        );
+      }
+    } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error(
+        '[AdminConsole] Orphan-link backfill failed (will retry on next startup):',
+        err?.message,
+      );
+    }
+  }
+
+  /**
+   * Walk every active DirectPurchaseLink that has an `amount` but no
+   * `challengeId` and no custom_url override, and assign the best-fit
+   * challenge so the link's destination URL points to /checkout (platform
+   * picker) instead of the marketing /Challenges page.
+   *
+   * Idempotent: links that already have a challengeId or a custom_url
+   * are skipped.
+   */
+  private async attachChallengesToOrphanLinks(): Promise<number> {
+    const orphans = await (this.prisma as any).directPurchaseLink.findMany({
+      where: { challengeId: null, active: true },
+      select: { id: true, amount: true, metadata: true },
+    });
+    let attached = 0;
+    for (const l of orphans) {
+      const meta = (l.metadata && typeof l.metadata === 'object') ? l.metadata : {};
+      // Skip links the admin explicitly pointed at a custom URL.
+      if (meta?.custom_url) continue;
+      const amount = Number(l.amount ?? 0);
+      if (!Number.isFinite(amount) || amount <= 0) continue;
+      const matched = await this.svc.findClosestChallengeForAmount(amount);
+      if (!matched) continue;
+      await (this.prisma as any).directPurchaseLink.update({
+        where: { id: l.id },
+        data: { challengeId: matched.id },
+      });
+      attached += 1;
+    }
+    return attached;
   }
 
   /**
@@ -124,6 +178,11 @@ export class AdminConsoleModule implements NestModule, OnApplicationBootstrap {
         continue;
       }
       const slug = Math.random().toString(36).slice(2, 10);
+      // Best-effort match a challenge so the destination URL renders the
+      // platform picker step instead of dumping the customer on the public
+      // /Challenges page. The matched challenge's drawdown rules apply
+      // post-purchase; the customer-facing price still comes from `amount`.
+      const matched = await this.svc.findClosestChallengeForAmount(amount);
       await (this.prisma as any).directPurchaseLink.create({
         data: {
           slug,
@@ -133,6 +192,7 @@ export class AdminConsoleModule implements NestModule, OnApplicationBootstrap {
           currency: 'USD',
           active: true,
           provider: 'WORLDCARD',
+          ...(matched ? { challengeId: matched.id } : {}),
         },
       });
       linksCreated += 1;
