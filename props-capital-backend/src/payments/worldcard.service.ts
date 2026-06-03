@@ -607,7 +607,40 @@ export class WorldCardService {
     };
   }
 
-  // ─── Public: S2S SALE charge ─────────────────────────────────────────
+  // S2S CARD SALE hash (Appendix A, Formula 1):
+  //   md5( strtoupper( strrev(email) + PASSWORD + strrev(first6 + last4) ) )
+  // - first6 / last4 = first six and last four digits of the PAN.
+  // - PASSWORD is NOT reversed; only the full concatenation is uppercased.
+  private generateS2SCardSaleHash(input: {
+    email: string;
+    password: string;
+    cardNumber: string;
+  }): string {
+    const reverse = (s: string) => s.split('').reverse().join('');
+    const digits = String(input.cardNumber).replace(/\D/g, '');
+    const first6 = digits.slice(0, 6);
+    const last4 = digits.slice(-4);
+    const part = reverse(input.email) + input.password + reverse(first6 + last4);
+    return crypto.createHash('md5').update(part.toUpperCase()).digest('hex');
+  }
+
+  // ─── Public: S2S CARD SALE charge ────────────────────────────────────
+  // Implements https://docs.world-card.co/docs/guides/s2s_card
+  // Endpoint: ${WORLDCARD_PAYMENT_URL}/v2/post (v2 returns redirect_params
+  // as an array of {name, value} entries, which is easier to forward to a
+  // form for 3DS than the legacy key-value object).
+  //
+  // Request: application/x-www-form-urlencoded with top-level card_number /
+  // card_exp_month / card_exp_year / card_cvv2 fields. Hash uses the email
+  // + first6/last4 formula (see generateS2SCardSaleHash above).
+  //
+  // Response handling:
+  //   - result=SUCCESS,  status=SETTLED      → succeeded inline
+  //   - result=REDIRECT, status=3DS|REDIRECT → 3DS challenge, return
+  //     redirectUrl + redirectParams so the browser POSTs/GETs the ACS
+  //   - result=UNDEFINED                     → pending (callback finalizes)
+  //   - result=DECLINED                      → failed with decline_reason
+  //   - result=ERROR                         → failed with error_message
   async createCharge(data: WorldCardChargeInput) {
     const {
       slug,
@@ -629,18 +662,15 @@ export class WorldCardService {
         'Missing required field: slug, challengeId, or accountSize',
       );
     }
-    if (
-      !card?.number ||
-      !card?.expiryMonth ||
-      !card?.expiryYear ||
-      !card?.cvv
-    ) {
+    if (!card?.number || !card?.expiryMonth || !card?.expiryYear || !card?.cvv) {
       throw new BadRequestException(
         'Card details (number, expiryMonth, expiryYear, cvv) are required',
       );
     }
 
-    // Re-derive the card brand server-side — never trust the client.
+    // Server-side brand detection. We don't pass `brand` to WorldCard for
+    // S2S CARD (the gateway routes by BIN) but we still need a brand to
+    // reject anything we don't accept and to store for receipts.
     const sanitizedCardNumber = String(card.number).replace(/\D/g, '');
     const detectedBrand = this.detectCardBrand(sanitizedCardNumber);
     if (!detectedBrand) {
@@ -654,22 +684,16 @@ export class WorldCardService {
     let brandLink: any = null;
 
     if (challengeId && typeof challengeId === 'string') {
-      challenge = await this.prisma.challenge.findUnique({
-        where: { id: challengeId },
-      });
+      challenge = await this.prisma.challenge.findUnique({ where: { id: challengeId } });
     }
     if (!challenge && slug && typeof slug === 'string') {
-      challenge = await (this.prisma.challenge as any).findUnique({
-        where: { slug },
-      });
+      challenge = await (this.prisma.challenge as any).findUnique({ where: { slug } });
       if (!challenge) {
         brandLink = await (this.prisma as any).directPurchaseLink.findUnique({
           where: { slug },
           include: { brand: true, challenge: true },
         });
-        if (brandLink?.active) {
-          challenge = brandLink.challenge;
-        }
+        if (brandLink?.active) challenge = brandLink.challenge;
       }
     }
     if (!challenge && accountSize) {
@@ -677,28 +701,23 @@ export class WorldCardService {
       const typeMap: Record<string, string> = {
         '1-step': 'one_phase',
         'one-step': 'one_phase',
-        one_step: 'one_phase',
+        'one_step': 'one_phase',
         'one-phase': 'one_phase',
-        one_phase: 'one_phase',
+        'one_phase': 'one_phase',
         '2-step': 'two_phase',
         'two-step': 'two_phase',
-        two_step: 'two_phase',
+        'two_step': 'two_phase',
         'two-phase': 'two_phase',
-        two_phase: 'two_phase',
+        'two_phase': 'two_phase',
       };
       const mappedType =
         typeMap[String(challengeType || '').toLowerCase()] ||
         challengeType ||
         'two_phase';
       challenge = await this.prisma.challenge.findFirst({
-        where: {
-          accountSize: sizeNumber,
-          challengeType: mappedType,
-          isActive: true,
-        },
+        where: { accountSize: sizeNumber, challengeType: mappedType, isActive: true },
       });
     }
-
     if (!brandLink && linkSlug && typeof linkSlug === 'string') {
       brandLink = await (this.prisma as any).directPurchaseLink.findUnique({
         where: { slug: linkSlug },
@@ -710,31 +729,17 @@ export class WorldCardService {
         where: { slug: brandSlug },
       });
       if (brand) {
-        brandLink = {
-          brandId: brand.id,
-          brand,
-          id: null,
-          slug: null,
-          active: true,
-        };
+        brandLink = { brandId: brand.id, brand, id: null, slug: null, active: true };
       }
     }
-    // Provider lock: refuse if the brand admin pinned the link to a
-    // different gateway. The router is supposed to keep customers in the
-    // right flow but we double-check server-side.
-    if (
-      brandLink?.provider &&
-      String(brandLink.provider).toUpperCase() !== 'WORLDCARD'
-    ) {
+    if (brandLink?.provider && String(brandLink.provider).toUpperCase() !== 'WORLDCARD') {
       throw new BadRequestException(
         'This link is configured to use a different payment gateway.',
       );
     }
 
     const linkPriceOverride: number | null =
-      brandLink?.active &&
-      brandLink?.amount != null &&
-      Number(brandLink.amount) > 0
+      brandLink?.active && brandLink?.amount != null && Number(brandLink.amount) > 0
         ? Number(brandLink.amount)
         : null;
     if (!challenge && brandLink?.active && linkPriceOverride != null) {
@@ -744,11 +749,7 @@ export class WorldCardService {
       const fallbackType =
         brandLink.challenge?.challengeType ?? challengeType ?? 'one_phase';
       const matched = await this.prisma.challenge.findFirst({
-        where: {
-          accountSize: fallbackSize,
-          challengeType: fallbackType,
-          isActive: true,
-        },
+        where: { accountSize: fallbackSize, challengeType: fallbackType, isActive: true },
       });
       if (matched) challenge = matched;
     }
@@ -757,58 +758,49 @@ export class WorldCardService {
       throw new NotFoundException('Challenge not found');
     }
 
-    const billingFirstName =
-      typeof data.firstName === 'string' ? data.firstName.trim() : '';
-    const billingLastName =
-      typeof data.lastName === 'string' ? data.lastName.trim() : '';
+    const billingFirstName = typeof data.firstName === 'string' ? data.firstName.trim() : '';
+    const billingLastName = typeof data.lastName === 'string' ? data.lastName.trim() : '';
     if (!data.authUserId && (!billingFirstName || !billingLastName)) {
       throw new BadRequestException('Missing required name fields');
     }
 
-    const { user, wasCreated, isGuestCheckout } =
-      await this.resolveCheckoutUser(data);
+    const { user, wasCreated, isGuestCheckout } = await this.resolveCheckoutUser(data);
 
     const basePrice =
       linkPriceOverride != null ? linkPriceOverride : challenge.price;
     const amountCents = Math.round(basePrice * 100);
-    const orderCurrency = (
-      brandLink?.currency ||
-      challenge.currency ||
-      'USD'
-    ).toUpperCase();
+    const orderCurrency = (brandLink?.currency || challenge.currency || 'USD').toUpperCase();
     const orderAmount = (amountCents / 100).toFixed(2);
     const orderDescription = `${challenge.name} ${challenge.accountSize} Account`;
 
     const selectedPlatform =
-      platform ||
-      tradingPlatform ||
-      trading_platform ||
-      brokerPlatform ||
-      challenge.platform;
+      platform || tradingPlatform || trading_platform || brokerPlatform || challenge.platform;
     const normalizedPlatform = this.normalizePlatform(selectedPlatform);
 
     const orderId = `WC-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-    // identifier per docs must be unique per request; we reuse orderId
-    // since the platform stores both side-by-side.
-    const identifier = orderId;
 
-    // ── Env / credentials ────────────────────────────────────────────
+    // ── Env / credentials ───────────────────────────────────────────
     const clientKey = this.configService.get<string>('WORLDCARD_MERCHANT_KEY');
     const password = this.configService.get<string>('WORLDCARD_MERCHANT_PASS');
-    const paymentUrl = this.configService.get<string>('WORLDCARD_PAYMENT_URL');
-    const notificationUrl = this.configService.get<string>(
-      'WORLDCARD_NOTIFICATION_URL',
-    );
+    // Accept either the bare host or a full URL. We always append the
+    // S2S CARD path (/v2/post by default; /post if WORLDCARD_S2S_PATH
+    // is set to that).
+    const baseUrl = (this.configService.get<string>('WORLDCARD_PAYMENT_URL') || '').replace(/\/+$/, '');
+    const channelId = this.configService.get<string>('WORLDCARD_CHANNEL_ID') || '';
+    const notificationUrl = this.configService.get<string>('WORLDCARD_NOTIFICATION_URL');
     const frontendUrl = this.configService.get<string>('APP_FRONTEND_URL');
     const backendUrl = this.configService.get<string>('APP_BACKEND_URL');
-    const channelId =
-      this.configService.get<string>('WORLDCARD_CHANNEL_ID') || '';
+    // Default to /v2/post (redirect_params as an array of {name,value}).
+    // The legacy /post endpoint returns redirect_params as a key-value
+    // object — both protocols are otherwise identical.
+    const s2sPath = (this.configService.get<string>('WORLDCARD_S2S_PATH') || '/v2/post')
+      .replace(/^\/?/, '/');
 
-    if (!clientKey || !password || !paymentUrl || !frontendUrl) {
-      this.logger.error('Missing WorldCard env vars', {
+    if (!clientKey || !password || !baseUrl || !frontendUrl) {
+      this.logger.error('Missing WorldCard env vars (S2S CARD)', {
         clientKey: !!clientKey,
         password: !!password,
-        paymentUrl: !!paymentUrl,
+        baseUrl: !!baseUrl,
         frontendUrl: !!frontendUrl,
       });
       throw new InternalServerErrorException(
@@ -816,36 +808,36 @@ export class WorldCardService {
       );
     }
 
-    const brandIdentifier = this.resolveBrandIdentifier(detectedBrand);
-    const hash = this.generateSaleHash({
-      identifier,
-      orderId,
-      orderAmount,
-      orderCurrency,
-      password,
-    });
-
-    // Cardholder browser returns here after 3DS / APM redirect. We funnel
-    // through a backend hop so SPA hosts that don't serve HTML on POST
-    // still resolve the success page.
-    const returnUrl = backendUrl
+    // 3DS return URL — Customer's browser is redirected here AFTER the
+    // ACS challenge completes. Backend bounces to the SPA success page;
+    // the real status comes from the notification webhook.
+    const termUrl3ds = backendUrl
       ? `${backendUrl}/payments/worldcard/return?reference=${orderId}`
       : `${frontendUrl}/pay/success?reference=${orderId}`;
+
+    const hash = this.generateS2SCardSaleHash({
+      email: user.email,
+      password,
+      cardNumber: sanitizedCardNumber,
+    });
+
+    // First6 + last4 cached on the Payment row so the webhook can rebuild
+    // the callback hash (which also includes first6/last4) without us
+    // re-handling the PAN.
+    const cardBin = sanitizedCardNumber.slice(0, 6);
+    const cardLast4 = sanitizedCardNumber.slice(-4);
 
     // PCI-safe payload to persist (NEVER PAN, NEVER CVV).
     const safePayload: Record<string, any> = {
       action: 'SALE',
       client_key: clientKey,
-      brand: brandIdentifier,
       order_id: orderId,
-      identifier,
       order_amount: orderAmount,
       order_currency: orderCurrency,
       order_description: orderDescription,
-      return_url: returnUrl,
-      payer_first_name: billingFirstName || user.profile?.firstName || null,
-      payer_last_name: billingLastName || user.profile?.lastName || null,
       payer_email: user.email,
+      payer_first_name: billingFirstName || (user as any).profile?.firstName || null,
+      payer_last_name: billingLastName || (user as any).profile?.lastName || null,
       payer_phone: data.phone || null,
       payer_country: data.country || null,
       payer_city: data.city || null,
@@ -853,8 +845,11 @@ export class WorldCardService {
       payer_zip: data.postalCode || null,
       payer_address: data.address || null,
       payer_ip: payerIp || null,
+      term_url_3ds: termUrl3ds,
       card: {
         brand: detectedBrand,
+        bin: cardBin,
+        last4: cardLast4,
         expiryMonth: card.expiryMonth,
         expiryYear: card.expiryYear,
         holder: card.holder || null,
@@ -896,6 +891,8 @@ export class WorldCardService {
 
         cardholderName: card.holder || null,
         cardBrand: detectedBrand,
+        cardBin,
+        cardLast4,
         cardExpiryMonth: String(card.expiryMonth),
         cardExpiryYear: String(card.expiryYear),
 
@@ -923,117 +920,92 @@ export class WorldCardService {
     });
 
     this.logger.log(
-      `[WorldCard S2S] Payment row created: id=${payment.id}, ref=${orderId}, amount=${orderAmount} ${orderCurrency}`,
+      `[WorldCard S2S CARD] Payment row created: id=${payment.id}, ref=${orderId}, amount=${orderAmount} ${orderCurrency}`,
     );
 
-    // ── Build form-urlencoded body for WorldCard ─────────────────────
-    const keys = this.cardParamKeys();
+    // ── Build form-urlencoded body per S2S CARD spec ────────────────
     const expMonth = String(card.expiryMonth).padStart(2, '0');
-    // expiryYear may be sent as 4-digit (e.g. "2028") — that's the gateway
-    // convention. Tolerate both YY and YYYY by normalizing here.
     const expYearRaw = String(card.expiryYear);
     const expYear = expYearRaw.length === 2 ? `20${expYearRaw}` : expYearRaw;
 
     const params: Record<string, string> = {
       action: 'SALE',
       client_key: clientKey,
-      brand: brandIdentifier,
       order_id: orderId,
-      identifier,
       order_amount: orderAmount,
       order_currency: orderCurrency,
       order_description: orderDescription,
-      return_url: returnUrl,
+      card_number: sanitizedCardNumber,
+      card_exp_month: expMonth,
+      card_exp_year: expYear,
+      card_cvv2: String(card.cvv),
+      payer_first_name: billingFirstName,
+      payer_last_name: billingLastName,
+      payer_email: user.email,
+      payer_phone: data.phone || '',
+      payer_country: data.country || '',
+      payer_city: data.city || '',
+      payer_zip: data.postalCode || '',
+      payer_address: data.address || '',
+      payer_ip: payerIp || '',
+      term_url_3ds: termUrl3ds,
       hash,
-
-      [`parameters[${keys.number}]`]: sanitizedCardNumber,
-      [`parameters[${keys.expMonth}]`]: expMonth,
-      [`parameters[${keys.expYear}]`]: expYear,
-      [`parameters[${keys.cvv}]`]: String(card.cvv),
     };
 
-    if (channelId) params['channel_id'] = channelId;
-    if (notificationUrl) params['notification_url'] = notificationUrl;
+    if (channelId) params.channel_id = channelId;
+    if (data.state) params.payer_state = String(data.state);
+    if (notificationUrl) params.notification_url = notificationUrl;
 
-    if (billingFirstName) params['payer_first_name'] = billingFirstName;
-    if (billingLastName) params['payer_last_name'] = billingLastName;
-    if (user.email) params['payer_email'] = user.email;
-    if (data.phone) params['payer_phone'] = String(data.phone);
-    if (data.country) params['payer_country'] = String(data.country);
-    if (data.state) params['payer_state'] = String(data.state);
-    if (data.city) params['payer_city'] = String(data.city);
-    if (data.postalCode) params['payer_zip'] = String(data.postalCode);
-    if (data.address) params['payer_address'] = String(data.address);
-    if (payerIp) params['payer_ip'] = String(payerIp);
-    if (card.holder) params[`parameters[${keys.holder}]`] = String(card.holder);
-
-    // Echo a couple custom_data fields back so they appear on the
-    // callback payload — useful for tracing brand attribution.
+    // Echo a couple of fields back via custom_data so they appear on the
+    // callback — useful for tracing brand attribution + platform pick.
     params['custom_data[challenge_id]'] = challenge.id;
     params['custom_data[platform]'] = normalizedPlatform;
     if (brandLink?.id) params['custom_data[brand_link_id]'] = brandLink.id;
 
-    // PCI-safe redacted echo of the form body for diagnostics. Card data
-    // is masked; everything else is exactly what we POST so we can spot
-    // hash/key/brand misconfig in logs without re-running the request.
+    // PCI-safe redacted echo for diagnostics.
     const redactedParams: Record<string, string> = {};
     for (const [k, v] of Object.entries(params)) {
-      if (k.endsWith('[pan]') || k.endsWith('[card_number]') || k.endsWith('[cardNumber]')) {
+      if (k === 'card_number') {
         redactedParams[k] = v.length > 4 ? `****${v.slice(-4)}` : '****';
-      } else if (k.endsWith('[cvv]') || k.endsWith('[cvv2]')) {
+      } else if (k === 'card_cvv2') {
         redactedParams[k] = '***';
       } else {
         redactedParams[k] = v;
       }
     }
+    const apiUrl = `${baseUrl}${s2sPath}`;
     this.logger.log(
-      `[WorldCard S2S] POST ${paymentUrl} ref=${orderId} params=${JSON.stringify(redactedParams)}`,
+      `[WorldCard S2S CARD] POST ${apiUrl} ref=${orderId} params=${JSON.stringify(redactedParams)}`,
     );
 
     let wcResponse: any;
     let rawResponseText: string | null = null;
-    let responseHttpStatus: number | null = null;
     try {
       const httpRes = await axios.post(
-        paymentUrl,
+        apiUrl,
         new URLSearchParams(params).toString(),
         {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           timeout: 60_000,
-          // Treat 2xx as success but capture EVERYTHING else manually so
-          // we can log + return the gateway's actual body instead of
-          // swallowing it inside axios's thrown error.
           validateStatus: () => true,
           transformResponse: [(d) => d],
         },
       );
-      responseHttpStatus = httpRes.status;
       rawResponseText = typeof httpRes.data === 'string' ? httpRes.data : JSON.stringify(httpRes.data);
-
       try {
         wcResponse = rawResponseText ? JSON.parse(rawResponseText) : {};
       } catch {
         wcResponse = { raw: rawResponseText };
       }
-
       this.logger.log(
-        `[WorldCard S2S] Response ref=${orderId} httpStatus=${httpRes.status} bodyPreview=${(rawResponseText || '').slice(0, 500)}`,
+        `[WorldCard S2S CARD] Response ref=${orderId} httpStatus=${httpRes.status} bodyPreview=${(rawResponseText || '').slice(0, 500)}`,
       );
 
       if (httpRes.status >= 400) {
-        // Gateway-side error — surface the raw body so we know whether
-        // it's an IP-allowlist issue, missing protocol mapping, wrong
-        // endpoint path, etc. WorldCard usually returns either a JSON
-        // body with { error_message } or a plain text snippet.
         const failMessage =
           (wcResponse && (wcResponse.error_message || wcResponse.decline_reason || wcResponse.message)) ||
           (rawResponseText && rawResponseText.slice(0, 300)) ||
           `Gateway returned HTTP ${httpRes.status}`;
-
-        this.logger.error(
-          `[WorldCard S2S] Gateway error ref=${orderId} httpStatus=${httpRes.status} body=${(rawResponseText || '').slice(0, 1000)}`,
-        );
-
         await (this.prisma.payment as any).update({
           where: { id: payment.id },
           data: {
@@ -1051,20 +1023,15 @@ export class WorldCardService {
         };
       }
     } catch (err: any) {
-      // Only true network / timeout / DNS failures reach here because
-      // validateStatus: () => true swallows HTTP errors above.
-      const message = err?.message || 'Network error';
       this.logger.error(
-        `[WorldCard S2S] Network error ref=${orderId} message=${message}`,
+        `[WorldCard S2S CARD] Network error ref=${orderId} message=${err?.message}`,
         err?.stack,
       );
-
       await (this.prisma.payment as any).update({
         where: { id: payment.id },
         data: {
           status: 'failed',
-          failureReason: `Network error contacting WorldCard: ${message}`,
-          callbackPayload: { error: message },
+          failureReason: `Network error contacting WorldCard: ${err?.message || 'unknown'}`,
         },
       });
       return {
@@ -1072,17 +1039,15 @@ export class WorldCardService {
         status: 'failed',
         reference: orderId,
         paymentId: payment.id,
-        message: `Could not reach the payment gateway (${message}). Please try again in a moment.`,
+        message: `Could not reach the payment gateway (${err?.message || 'network error'}).`,
       };
     }
 
     const result = String(wcResponse?.result ?? '').toUpperCase();
     const txStatus = String(wcResponse?.status ?? '').toUpperCase();
-    const providerPaymentId = wcResponse?.trans_id
-      ? String(wcResponse.trans_id)
-      : null;
+    const providerPaymentId = wcResponse?.trans_id ? String(wcResponse.trans_id) : null;
 
-    // ── Branch 1: REDIRECT (3DS or APM challenge) ───────────────────
+    // ── Branch 1: REDIRECT (3DS) ────────────────────────────────────
     if (result === 'REDIRECT' && wcResponse?.redirect_url) {
       await (this.prisma.payment as any).update({
         where: { id: payment.id },
@@ -1092,70 +1057,78 @@ export class WorldCardService {
           callbackPayload: wcResponse,
         },
       });
-      this.logger.log(`[WorldCard S2S] Redirect required ref=${orderId}`);
+
+      // /v2/post returns redirect_params as an array of {name,value}; the
+      // legacy /post endpoint returns it as a key-value object. Normalise
+      // to the array shape so the frontend submit-form handler works for
+      // both endpoint variants.
+      let redirectParams: any = null;
+      if (Array.isArray(wcResponse.redirect_params)) {
+        redirectParams = wcResponse.redirect_params;
+      } else if (wcResponse.redirect_params && typeof wcResponse.redirect_params === 'object') {
+        redirectParams = Object.entries(wcResponse.redirect_params).map(([name, value]) => ({ name, value }));
+      }
+
+      this.logger.log(`[WorldCard S2S CARD] 3DS required ref=${orderId}`);
       return {
         provider: 'worldcard',
         status: 'requires_action',
         reference: orderId,
         paymentId: payment.id,
         redirectUrl: wcResponse.redirect_url,
-        redirectMethod: String(
-          wcResponse.redirect_method || 'GET',
-        ).toUpperCase(),
-        redirectParams: Array.isArray(wcResponse.redirect_params)
-          ? wcResponse.redirect_params
-          : wcResponse.redirect_params &&
-              typeof wcResponse.redirect_params === 'object'
-            ? Object.entries(wcResponse.redirect_params).map(
-                ([name, value]) => ({ name, value }),
-              )
-            : null,
+        redirectMethod: String(wcResponse.redirect_method || 'GET').toUpperCase(),
+        redirectParams,
       };
     }
 
     // ── Branch 2: SUCCESS / SETTLED ─────────────────────────────────
-    if (result === 'SUCCESS' && txStatus === 'SETTLED') {
+    if (result === 'SUCCESS' && (txStatus === 'SETTLED' || txStatus === 'PENDING')) {
+      const succeeded = txStatus === 'SETTLED';
       await (this.prisma.payment as any).update({
         where: { id: payment.id },
         data: {
-          status: 'succeeded',
+          status: succeeded ? 'succeeded' : 'pending',
           providerPaymentId,
           orderStatus: txStatus,
           callbackPayload: wcResponse,
         },
       });
-      try {
-        const account =
-          await this.paymentsService.provisionChallengeAfterPaymentSuccess(
+
+      if (succeeded) {
+        try {
+          const account = await this.paymentsService.provisionChallengeAfterPaymentSuccess(
             payment.id,
           );
-        return {
-          provider: 'worldcard',
-          status: 'succeeded',
-          reference: orderId,
-          paymentId: payment.id,
-          tradingAccountId: account?.id,
-        };
-      } catch (err: any) {
-        this.logger.error(
-          `[WorldCard S2S] Inline provisioning failed for ref=${orderId} (webhook will retry): ${err?.message}`,
-        );
-        return {
-          provider: 'worldcard',
-          status: 'succeeded',
-          reference: orderId,
-          paymentId: payment.id,
-        };
+          return {
+            provider: 'worldcard',
+            status: 'succeeded',
+            reference: orderId,
+            paymentId: payment.id,
+            tradingAccountId: account?.id,
+          };
+        } catch (err: any) {
+          this.logger.error(
+            `[WorldCard S2S CARD] Inline provisioning failed for ref=${orderId} (webhook will retry): ${err?.message}`,
+          );
+          return { provider: 'worldcard', status: 'succeeded', reference: orderId, paymentId: payment.id };
+        }
       }
+      return {
+        provider: 'worldcard',
+        status: 'pending',
+        reference: orderId,
+        paymentId: payment.id,
+        message: 'Awaiting capture',
+      };
     }
 
     // ── Branch 3: UNDEFINED / PREPARE — wait for webhook ────────────
-    if (result === 'UNDEFINED' || txStatus === 'PREPARE' || result === 'INIT') {
+    if (result === 'UNDEFINED' || txStatus === 'PREPARE') {
       await (this.prisma.payment as any).update({
         where: { id: payment.id },
         data: {
           providerPaymentId,
-          orderStatus: txStatus,
+          orderStatus: txStatus || 'PREPARE',
           callbackPayload: wcResponse,
         },
       });
@@ -1192,6 +1165,7 @@ export class WorldCardService {
       message: failMessage,
     };
   }
+
 }
 
 // ─── Webhook (notification_url) handler ────────────────────────────────
@@ -1216,49 +1190,112 @@ export class WorldCardWebhookService {
     return `${value}`.trim();
   }
 
-  // Recursive helper: sort keys alphabetically and concatenate reversed
-  // primitive values. Matches the PHP-style array_walk_recursive +
-  // ksort + implode sequence from Appendix A.
-  private buildCallbackSource(input: any): string {
+  private reverseString(s: string): string {
+    return String(s).split('').reverse().join('');
+  }
+
+  // Hosted-session (legacy / Standard Checkout) callback signature:
+  // PHP array_walk_recursive(strrev) + ksort + implode + uppercase +
+  // append PASSWORD.toUpperCase(), then MD5. Kept for back-compat with
+  // payments created via /payments/worldcard/session (the hosted flow
+  // we ship behind WORLDCARD_FLOW=hosted).
+  private buildHostedCallbackSource(input: any): string {
     if (input === null || input === undefined) return '';
     if (Array.isArray(input)) {
-      // PHP-style numeric-keyed arrays: walk in numeric order.
-      return input.map((v) => this.buildCallbackSource(v)).join('');
+      return input.map((v) => this.buildHostedCallbackSource(v)).join('');
     }
     if (typeof input === 'object') {
       const sortedKeys = Object.keys(input).sort();
-      return sortedKeys.map((k) => this.buildCallbackSource(input[k])).join('');
+      return sortedKeys
+        .map((k) => this.buildHostedCallbackSource(input[k]))
+        .join('');
     }
-    const reversed = String(input).split('').reverse().join('');
-    return reversed;
+    return this.reverseString(String(input));
   }
 
-  private verifyCallbackHash(payload: any): void {
+  // S2S CARD callback signature (per docs Appendix A, Formula 2):
+  //   md5( strtoupper( strrev(email) + PASSWORD + trans_id + strrev(first6 + last4) ) )
+  // We rebuild first6/last4 from the stored Payment row (cardBin /
+  // cardLast4) because the callback only ships the masked card.
+  private computeS2SCardCallbackHash(input: {
+    email: string;
+    password: string;
+    transId: string;
+    cardBin: string;
+    cardLast4: string;
+  }): string {
+    const bin = input.cardBin + input.cardLast4;
+    const part =
+      this.reverseString(input.email) +
+      input.password +
+      input.transId +
+      this.reverseString(bin);
+    return crypto.createHash('md5').update(part.toUpperCase()).digest('hex');
+  }
+
+  // Verify either the S2S CARD callback hash OR the legacy hosted-session
+  // hash. We try the flow stored on the Payment row first; if that doesn't
+  // match (e.g. early callbacks before metadata.flow is reliable, or
+  // cross-flow edge cases) we fall back to the other formula before
+  // rejecting. Logs every attempt so misconfig is easy to diagnose.
+  private async verifyCallbackHash(payload: any, payment: any): Promise<void> {
     const password = this.configService.get<string>('WORLDCARD_MERCHANT_PASS');
     if (!password) {
       throw new BadRequestException('Missing WORLDCARD_MERCHANT_PASS in env');
     }
-
     const incomingHash = this.requireString(payload.hash, 'hash');
 
-    // Build a clone without the hash itself (the spec excludes it).
+    const flow = (payment?.metadata as any)?.flow ?? null;
+    const candidates: Array<{ kind: string; hash: string }> = [];
+
+    // Build S2S CARD candidate
+    const transId = payload.trans_id ? String(payload.trans_id) : '';
+    if (transId && payment?.billingEmail && payment?.cardBin && payment?.cardLast4) {
+      candidates.push({
+        kind: 's2s-card',
+        hash: this.computeS2SCardCallbackHash({
+          email: String(payment.billingEmail),
+          password,
+          transId,
+          cardBin: String(payment.cardBin),
+          cardLast4: String(payment.cardLast4),
+        }),
+      });
+    }
+
+    // Build hosted-session candidate
     const clone: any = { ...payload };
     delete clone.hash;
+    const concat = this.buildHostedCallbackSource(clone);
+    candidates.push({
+      kind: 'hosted',
+      hash: crypto
+        .createHash('md5')
+        .update((concat + password).toUpperCase())
+        .digest('hex'),
+    });
 
-    const concat = this.buildCallbackSource(clone);
-    const upper = concat.toUpperCase();
-    const withPassword = upper + password.toUpperCase();
-    const expected = crypto
-      .createHash('md5')
-      .update(withPassword)
-      .digest('hex');
+    // Prefer the candidate matching the stored flow first so logs read
+    // intuitively, but try all candidates before failing.
+    const ordered = [...candidates].sort((a) => {
+      if (flow === 'worldcard-s2s' && a.kind === 's2s-card') return -1;
+      if (flow === 'worldcard-hosted' && a.kind === 'hosted') return -1;
+      return 1;
+    });
 
-    if (incomingHash.toLowerCase() !== expected.toLowerCase()) {
-      this.logger.warn(
-        `WorldCard callback hash mismatch for order_id=${payload?.order_id} (incoming=${incomingHash}, expected=${expected})`,
-      );
-      throw new BadRequestException('Invalid callback hash');
+    for (const c of ordered) {
+      if (incomingHash.toLowerCase() === c.hash.toLowerCase()) {
+        this.logger.log(
+          `WorldCard callback hash verified via ${c.kind} formula for order_id=${payload?.order_id}`,
+        );
+        return;
+      }
     }
+
+    this.logger.warn(
+      `WorldCard callback hash mismatch for order_id=${payload?.order_id}; tried ${ordered.map((c) => c.kind).join(', ')} (incoming=${incomingHash})`,
+    );
+    throw new BadRequestException('Invalid callback hash');
   }
 
   private normalizeStatus(
@@ -1287,10 +1324,9 @@ export class WorldCardWebhookService {
       `WorldCard callback payload: ${JSON.stringify(payload).slice(0, 1000)}`,
     );
 
-    // Verify before doing anything else — refuse to mutate state on a
-    // forged callback.
-    this.verifyCallbackHash(payload);
-
+    // Look up the Payment row first — the S2S CARD callback hash needs
+    // its stored email + card bin/last4 to verify. Refuse to mutate state
+    // on a forged callback.
     const payment = await this.prisma.payment.findUnique({
       where: { reference: orderId },
     });
@@ -1299,6 +1335,8 @@ export class WorldCardWebhookService {
         `Payment not found for reference: ${orderId}`,
       );
     }
+
+    await this.verifyCallbackHash(payload, payment);
 
     if (payment.amount !== undefined && payload.amount !== undefined) {
       const callbackAmountCents = Math.round(Number(payload.amount) * 100);
