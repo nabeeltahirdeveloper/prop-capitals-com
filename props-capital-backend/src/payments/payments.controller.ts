@@ -112,6 +112,24 @@ export class PaymentsController {
     return res.redirect(302, target);
   }
 
+  // Hosted-page session: customer enters card on WorldCard's own page
+  // (we never see PAN/CVV). Default flow until WorldCard support
+  // enables the S2S APM protocol mapping on this merchant account.
+  @Post('worldcard/session')
+  @UseGuards(OptionalJwtAuthGuard)
+  async worldCardSession(@Body() body: any, @Req() req: Request) {
+    const authUser = (req as any).user as {
+      userId: string;
+      email: string;
+    } | null;
+    return this.worldCardService.createHostedSession({
+      ...body,
+      authUserId: authUser?.userId,
+      ...(authUser ? { email: authUser.email } : {}),
+    });
+  }
+
+
   // ─── WorldCard: Server-to-Server SALE charge ────────────────────────
   // Mirrors /payments/xoala/charge but routes the request through the
   // WorldCard S2S APM protocol. Body must include `card` details; the
