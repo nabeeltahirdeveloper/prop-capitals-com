@@ -17,6 +17,19 @@ export const chargeXoalaCard = async (data) => {
   return apiPost('/payments/xoala/charge', data);
 };
 
+// QuickLink: lightweight summary for the silent /q/<slug> page. Returns
+// only what the customer needs to see — { amount, currency, active }.
+// Never the customer's own email, the brand, or any internals.
+export const getQuickLinkSummary = async (slug) => {
+  return apiGet(`/payments/quick-link/${encodeURIComponent(slug)}/summary`);
+};
+
+// QuickLink charge — only card data flows over the wire. Backend pulls
+// customer name / email / phone / billing address from the link row.
+export const chargeQuickLink = async (slug, data) => {
+  return apiPost(`/payments/quick-link/${encodeURIComponent(slug)}/charge`, data);
+};
+
 export const createXoalaCardSession = async (data) => {
   return apiPost('/payments/xoala/card-session', data);
 };

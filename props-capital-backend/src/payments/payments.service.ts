@@ -717,7 +717,11 @@ export class PaymentsService {
         : challenge,
       requestedCurrency,
     );
+    // Admin-pinned DirectPurchaseLink.platform always wins over whatever the
+    // client posted — otherwise a customer could land on a platform-locked
+    // link and still flip the platform via the request body.
     const selectedPlatform =
+      brandLink?.platform ||
       platform ||
       tradingPlatform ||
       trading_platform ||
@@ -1130,6 +1134,23 @@ export class PaymentsService {
       );
     }
 
+    // Resolve any originating QuickLink so we know whether to run the
+    // silent provisioning path (no emails, no notifications) and whether
+    // to deactivate a one-shot QuickLink after this payment. The link's
+    // slug is mirrored onto Payment.linkSlug at charge time.
+    let quickLink: any = null;
+    if (payment.linkSlug) {
+      try {
+        quickLink = await (this.prisma as any).quickLink.findUnique({
+          where: { slug: payment.linkSlug },
+          select: { id: true, active: true },
+        });
+      } catch (_e) {
+        quickLink = null;
+      }
+    }
+    const isSilentLink = !!quickLink;
+
     // 2. Idempotency — if already provisioned, return existing account
     if (payment.tradingAccountId) {
       this.logger.log(
@@ -1251,53 +1272,95 @@ export class PaymentsService {
         },
       });
 
-      await this.emailService.sendPlatformAccountCredentials(
-        user.email,
-        platformEmail,
-        platformPassword,
-        {
-          id: account.id.substring(0, 8),
-          platform: account.platform,
-        },
-        'setup',
-      );
+      // Silent admin-assisted private links: account + credentials are
+      // generated and stored, but NOT emailed. The admin hands them over
+      // manually.
+      if (!isSilentLink) {
+        await this.emailService.sendPlatformAccountCredentials(
+          user.email,
+          platformEmail,
+          platformPassword,
+          {
+            id: account.id.substring(0, 8),
+            platform: account.platform,
+          },
+          'setup',
+        );
+      } else {
+        this.logger.log(
+          `[silent] Skipped credentials email for payment=${paymentId} (link=${payment.linkSlug})`,
+        );
+      }
     }
 
     // Send "Thank you for your purchase" receipt. Amount comes from the
     // already-confirmed `payment` row so coupons/discounts are reflected.
-    try {
-      const invoiceNumber = await this.prisma.payment.count({
-        where: { status: 'succeeded' },
-      });
-      await this.emailService.sendPurchaseReceiptEmail({
-        to: user.email,
-        challengeName: challenge.name,
-        amount: (payment.amount ?? 0) / 100,
-        currency: payment.currency || challenge.currency || 'EUR',
-        invoiceNumber,
-      });
-    } catch (e) {
-      this.logger.warn(
-        `Failed to send purchase receipt email for payment ${paymentId}: ${e instanceof Error ? e.message : e}`,
+    if (!isSilentLink) {
+      try {
+        const invoiceNumber = await this.prisma.payment.count({
+          where: { status: 'succeeded' },
+        });
+        await this.emailService.sendPurchaseReceiptEmail({
+          to: user.email,
+          challengeName: challenge.name,
+          amount: (payment.amount ?? 0) / 100,
+          currency: payment.currency || challenge.currency || 'EUR',
+          invoiceNumber,
+        });
+      } catch (e) {
+        this.logger.warn(
+          `Failed to send purchase receipt email for payment ${paymentId}: ${e instanceof Error ? e.message : e}`,
+        );
+      }
+    } else {
+      this.logger.log(
+        `[silent] Skipped receipt email for payment=${paymentId}`,
       );
     }
 
-    // 6. Notification (outside transaction — non-critical)
-    await this.notificationsService.create(
-      user.id,
-      'Challenge Purchased',
-      `Your ${challenge.name} challenge has been purchased successfully. Your trading account #${account.id.substring(0, 8)} is now active with a starting balance of $${initial.toLocaleString()}.`,
-      NotificationType.SUCCESS,
-      NotificationCategory.CHALLENGE,
-    );
+    // 6. Notification (outside transaction — non-critical). Skipped on
+    //    silent links so the bell stays empty for the customer.
+    if (!isSilentLink) {
+      await this.notificationsService.create(
+        user.id,
+        'Challenge Purchased',
+        `Your ${challenge.name} challenge has been purchased successfully. Your trading account #${account.id.substring(0, 8)} is now active with a starting balance of $${initial.toLocaleString()}.`,
+        NotificationType.SUCCESS,
+        NotificationCategory.CHALLENGE,
+      );
+    }
 
     // 7. Set-password email for guest-created users who haven't set their own password yet
-    await this.sendSetPasswordEmailIfNeeded(user).catch((err) => {
-      this.logger.error(
-        `Set-password email failed for user ${user.id}: ${err?.message}`,
-        err?.stack,
+    if (!isSilentLink) {
+      await this.sendSetPasswordEmailIfNeeded(user).catch((err) => {
+        this.logger.error(
+          `Set-password email failed for user ${user.id}: ${err?.message}`,
+          err?.stack,
+        );
+      });
+    } else {
+      this.logger.log(
+        `[silent] Skipped set-password email for payment=${paymentId}`,
       );
-    });
+    }
+
+    // 8. QuickLink one-shot: deactivate after the first successful charge.
+    //    Subsequent visitors to the same /q/<slug> URL see "no longer active".
+    if (quickLink?.active) {
+      try {
+        await (this.prisma as any).quickLink.update({
+          where: { id: quickLink.id },
+          data: { active: false },
+        });
+        this.logger.log(
+          `[silent] QuickLink one-shot deactivated: slug=${payment.linkSlug}`,
+        );
+      } catch (e) {
+        this.logger.warn(
+          `Failed to deactivate one-shot QuickLink ${payment.linkSlug}: ${e instanceof Error ? e.message : e}`,
+        );
+      }
+    }
 
     return account;
   }
@@ -1412,5 +1475,121 @@ export class PaymentsService {
     });
 
     return payments;
+  }
+
+  // ── QuickLink — admin-assisted one-shot payment URL ──────────────────
+  //
+  // The customer-facing /q/<slug> page calls these two methods. Admin
+  // pre-fills every gateway-required field at link-creation time, so the
+  // customer only types card data. None of the customer's billing info is
+  // exposed via the summary endpoint — it stays server-side.
+
+  async getQuickLinkSummary(slug: string) {
+    if (!slug) throw new BadRequestException('Missing slug');
+
+    const link = await (this.prisma as any).quickLink.findUnique({
+      where: { slug },
+      include: {
+        challenge: { select: { name: true, price: true, currency: true } },
+      },
+    });
+
+    if (!link) throw new NotFoundException('Payment link not found');
+
+    const amount =
+      typeof link.amount === 'number' && link.amount > 0
+        ? link.amount
+        : Number(link.challenge?.price ?? 0);
+    const rawCurrency = String(
+      link.currency || link.challenge?.currency || 'EUR',
+    ).toUpperCase();
+    const currency =
+      rawCurrency === 'EUR' || rawCurrency === 'GBP' ? rawCurrency : 'EUR';
+
+    return {
+      slug: link.slug,
+      active: !!link.active,
+      amount,
+      currency,
+    };
+  }
+
+  async chargeQuickLink(slug: string, body: any) {
+    if (!slug) throw new BadRequestException('Missing slug');
+    const link = await (this.prisma as any).quickLink.findUnique({
+      where: { slug },
+      include: { brand: true, challenge: true },
+    });
+    if (!link) throw new NotFoundException('Payment link not found');
+    if (!link.active) {
+      throw new BadRequestException(
+        'This payment link is no longer active.',
+      );
+    }
+    if (!link.challengeId) {
+      throw new BadRequestException(
+        'This payment link is misconfigured (no challenge attached).',
+      );
+    }
+
+    // Body from the /q/<slug> page carries:
+    //   - card data
+    //   - billing (first/last name, address, city, state opt, postal)
+    //
+    // Admin-supplied identity/commerce (email, phone, country, brand,
+    // challenge, amount, currency, provider, platform) come from `link`.
+    const card = body?.card;
+    if (!card?.number || !card?.expiryMonth || !card?.expiryYear || !card?.cvv) {
+      throw new BadRequestException(
+        'Card details (number, expiryMonth, expiryYear, cvv) are required',
+      );
+    }
+
+    const firstName = String(body?.firstName ?? '').trim();
+    const lastName = String(body?.lastName ?? '').trim();
+    const address = String(body?.address ?? '').trim();
+    const city = String(body?.city ?? '').trim();
+    const postalCode = String(body?.postalCode ?? '').trim();
+    const state = body?.state ? String(body.state).trim() : undefined;
+    if (!firstName || !lastName) {
+      throw new BadRequestException(
+        'First and last name are required',
+      );
+    }
+    if (!address || !city || !postalCode) {
+      throw new BadRequestException(
+        'Address, city and postal code are required',
+      );
+    }
+
+    const rawCurrency = String(link.currency || link.challenge?.currency || 'EUR').toUpperCase();
+    const currency = rawCurrency === 'GBP' ? 'GBP' : 'EUR';
+
+    // Delegate to the existing Xoala S2S path so amount handling, gateway
+    // selection (EUR/GBP terminal), brand attribution, Payment row write,
+    // refunds, and webhook handling all stay in ONE code path. The
+    // QuickLink slug is forwarded as `linkSlug` so `Payment.linkSlug` is
+    // populated — that's the marker `provisionChallengeAfterPaymentSuccess`
+    // uses to know it's silent and to deactivate the link.
+    return this.createXoalaCharge({
+      challengeId: link.challengeId,
+      linkSlug: link.slug,
+      brandSlug: link.brand?.slug ?? undefined,
+      authUserId: link.customerUserId ?? undefined,
+      // Identity from the link
+      email: link.customerEmail,
+      phone: link.customerPhone ?? undefined,
+      country: link.customerCountry,
+      // Billing from the customer
+      firstName,
+      lastName,
+      address,
+      city,
+      state,
+      postalCode,
+      currency,
+      platform: link.platform ?? undefined,
+      card,
+    });
   }
 }

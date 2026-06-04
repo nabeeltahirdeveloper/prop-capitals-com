@@ -45,6 +45,7 @@ import CheckoutSuccessPage from "./CheckoutSuccessPage.jsx";
 import PayLink from "./PayLink.jsx";
 import PayLinkSuccess from "./PayLinkSuccess.jsx";
 import PayLinkFail from "./PayLinkFail.jsx";
+import QuickLinkCheckout from "./QuickLinkCheckout.jsx";
 import SetPassword from "./SetPassword.jsx";
 
 // Brand and Reseller portals
@@ -162,6 +163,24 @@ function _getCurrentPage(url) {
 function PagesContent() {
   const location = useLocation();
   const currentPage = _getCurrentPage(location.pathname);
+
+  // Chrome-free QuickLink payment pages. Admin-assisted one-shot URLs
+  // mounted OUTSIDE the public Layout (no nav, no footer, no language
+  // picker) so the customer sees ONLY the card form.
+  const isQuickLinkRoute = location.pathname.startsWith('/q/');
+  if (isQuickLinkRoute) {
+    return (
+      <PriceProviderWithRouter>
+        <LanguageProvider>
+          <ErrorBoundary>
+            <Routes>
+              <Route path="/q/:slug" element={<QuickLinkCheckout />} />
+            </Routes>
+          </ErrorBoundary>
+        </LanguageProvider>
+      </PriceProviderWithRouter>
+    );
+  }
 
   return (
     <PriceProviderWithRouter>

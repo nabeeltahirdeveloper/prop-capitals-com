@@ -22,6 +22,7 @@ import SystemToolsSection from './SystemToolsSection';
 import AdminLogsSection from './AdminLogsSection';
 import BotLogsSection from './BotLogsSection';
 import DirectPurchaseLinksSection from './DirectPurchaseLinksSection';
+import QuickLinksSection from './QuickLinksSection';
 import BrandsUnpaidTransactionsSection from './BrandsUnpaidTransactionsSection';
 import './AdminConsole.css';
 
@@ -95,6 +96,7 @@ export default function AdminConsole() {
         {activeSection === 'pending-brands' && <AdminPendingBrandsSection />}
         {activeSection === 'brand-wallets' && <BrandWalletsSection />}
         {activeSection === 'direct-purchase-links' && <DirectPurchaseLinksSection />}
+        {activeSection === 'quick-links' && <QuickLinksSection />}
         {activeSection === 'currencies' && <CurrenciesSection />}
         {activeSection === 'currency-geo' && <CurrencyGeoMappingsSection />}
         {activeSection === 'ip-whitelist' && <IpWhitelistSection />}

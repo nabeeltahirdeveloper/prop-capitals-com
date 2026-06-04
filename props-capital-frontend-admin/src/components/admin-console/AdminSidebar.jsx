@@ -48,6 +48,7 @@ export default function AdminSidebar({ activeSection, onSectionChange, isOpen, o
         { id: 'transactions', icon: 'fa-list', label: 'All Transactions', i18nKey: 'nav.allTransactions', color: 'text-green-400' },
         { id: 'payouts', icon: 'fa-dollar-sign', label: 'Payouts', i18nKey: 'nav.payouts', color: 'text-emerald-400' },
         { id: 'direct-purchase-links', icon: 'fa-link', label: 'Direct Purchase Links', i18nKey: 'nav.directPurchaseLinks', color: 'text-orange-400' },
+        { id: 'quick-links', icon: 'fa-bolt', label: 'Quick Links', i18nKey: 'nav.quickLinks', color: 'text-amber-400' },
         { id: 'packages', icon: 'fa-box', label: 'Packages', i18nKey: 'nav.packages', color: 'text-pink-400' },
         { id: 'brands-unpaid-transactions', icon: 'fa-exclamation-triangle', label: 'Brands For Payouts', i18nKey: 'nav.brandsForPayouts', color: 'text-red-400' },
       ]

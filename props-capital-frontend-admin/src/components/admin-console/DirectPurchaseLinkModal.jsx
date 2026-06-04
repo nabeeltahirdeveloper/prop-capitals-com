@@ -496,7 +496,6 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
             </p>
           </div>
 
-
           {/* Active toggle */}
           <div>
             <label className="flex items-center gap-3 cursor-pointer">

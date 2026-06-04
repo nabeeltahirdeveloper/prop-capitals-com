@@ -105,6 +105,12 @@ export const adminConsoleApi = {
     regenerateForBrand: (brandId) =>
       apiPost(`${PREFIX}/brands/${encodeURIComponent(brandId)}/regenerate-links`),
   },
+  quickLinks: {
+    list: (params) => apiGet(`${PREFIX}/quick-links${qs(params)}`),
+    create: (data) => apiPost(`${PREFIX}/quick-links`, data),
+    delete: (id) =>
+      apiDelete(`${PREFIX}/quick-links/${encodeURIComponent(id)}`),
+  },
   orders: {
     list: (params) => apiGet(`${PREFIX}/orders${qs(params)}`),
     get: (id) => apiGet(`${PREFIX}/orders/${encodeURIComponent(id)}`),
