@@ -87,32 +87,33 @@ model NotificationPreference {
 }
 
 model Challenge {
-  id                     String            @id @default(cuid())
+  id                     String               @id @default(cuid())
   name                   String
   description            String?
   accountSize            Int
   price                  Int
   platform               ChallengePlatform
-  phase1TargetPercent    Float             @default(8.0)
-  phase2TargetPercent    Float             @default(5.0)
-  dailyDrawdownPercent   Float             @default(5.0)
-  overallDrawdownPercent Float             @default(10.0)
-  minTradingDays         Int               @default(5)
+  phase1TargetPercent    Float                @default(8.0)
+  phase2TargetPercent    Float                @default(5.0)
+  dailyDrawdownPercent   Float                @default(5.0)
+  overallDrawdownPercent Float                @default(10.0)
+  minTradingDays         Int                  @default(5)
   maxTradingDays         Int?
-  createdAt              DateTime          @default(now())
-  updatedAt              DateTime          @updatedAt
-  challengeType          String            @default("two_phase")
-  eaAllowed              Boolean           @default(true)
-  isActive               Boolean           @default(true)
-  newsTradingAllowed     Boolean           @default(true)
-  profitSplit            Float             @default(80.0)
-  scalingEnabled         Boolean           @default(false)
-  weekendHoldingAllowed  Boolean           @default(true)
-  currency               String            @default("USD")
-  slug                   String?           @unique
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  challengeType          String               @default("two_phase")
+  eaAllowed              Boolean              @default(true)
+  isActive               Boolean              @default(true)
+  newsTradingAllowed     Boolean              @default(true)
+  profitSplit            Float                @default(80.0)
+  scalingEnabled         Boolean              @default(false)
+  weekendHoldingAllowed  Boolean              @default(true)
+  currency               String               @default("USD")
+  slug                   String?              @unique
+  directPurchaseLinks    DirectPurchaseLink[]
+  quickLinks             QuickLink[]
   payments               Payment[]
   accounts               TradingAccount[]
-  directPurchaseLinks    DirectPurchaseLink[]
 }
 
 model TradingAccount {
@@ -262,43 +263,32 @@ model Payment {
   sessionPayload    Json?
   sessionResponse   Json?
   tradingAccountId  String?
+  brandCommission   Int?       @default(0)
   brandId           String?
   brandPaidOut      Boolean    @default(false)
-  brandCommission   Int?       @default(0)
-
-  // ── Billing snapshot (from PayLink.jsx checkout form) ─────────────
-  // Captured at charge time so the receipt stays accurate even if the
-  // user later edits their profile.
-  billingFirstName  String?
-  billingLastName   String?
-  billingEmail      String?
-  billingPhone      String?
-  billingCountry    String?
+  accountSize       Int?
   billingAddress    String?
   billingCity       String?
-  billingState      String?
+  billingCountry    String?
+  billingEmail      String?
+  billingFirstName  String?
+  billingLastName   String?
+  billingPhone      String?
   billingPostalCode String?
-
-  // ── Card summary (PCI-safe — never PAN, never CVV) ────────────────
-  cardholderName    String?
-  cardBrand         String?
+  billingState      String?
+  brandSlug         String?
   cardBin           String?
-  cardLast4         String?
+  cardBrand         String?
   cardExpiryMonth   String?
   cardExpiryYear    String?
-
-  // ── Order context (selected at checkout) ──────────────────────────
-  accountSize       Int?
+  cardLast4         String?
+  cardholderName    String?
   challengeType     String?
-  platform          String?
-
-  // ── Brand attribution (denormalized from cookie / link) ──────────
-  brandSlug         String?
   linkSlug          String?
-
+  platform          String?
+  brand             Brand?     @relation(fields: [brandId], references: [id])
   challenge         Challenge? @relation(fields: [challengeId], references: [id])
   user              User       @relation(fields: [userId], references: [id])
-  brand             Brand?     @relation(fields: [brandId], references: [id])
 
   @@index([userId])
   @@index([challengeId])
@@ -524,7 +514,6 @@ model ChatSession {
   @@index([userId])
 }
 
-
 model Brand {
   id                     String               @id @default(cuid())
   name                   String
@@ -543,8 +532,6 @@ model Brand {
   passwordHash           String?
   accountType            String               @default("brand")
   parentBrandId          String?
-  parentBrand            Brand?               @relation("BrandHierarchy", fields: [parentBrandId], references: [id], onDelete: SetNull)
-  childBrands            Brand[]              @relation("BrandHierarchy")
   settlementMethod       String?
   settlementCryptoWallet String?
   settlementBankHolder   String?
@@ -554,8 +541,11 @@ model Brand {
   settlementBankAddress  String?
   createdAt              DateTime             @default(now())
   updatedAt              DateTime             @updatedAt
+  parentBrand            Brand?               @relation("BrandHierarchy", fields: [parentBrandId], references: [id])
+  childBrands            Brand[]              @relation("BrandHierarchy")
   brandPayouts           BrandPayout[]
   directPurchaseLinks    DirectPurchaseLink[]
+  quickLinks             QuickLink[]
   payments               Payment[]
 
   @@index([approvalStatus])
@@ -564,7 +554,6 @@ model Brand {
 model BrandPayout {
   id          String    @id @default(cuid())
   brandId     String
-  brand       Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
   amount      Float
   periodStart DateTime  @db.Date
   periodEnd   DateTime  @db.Date
@@ -573,6 +562,7 @@ model BrandPayout {
   referenceId String?
   createdAt   DateTime  @default(now())
   paidAt      DateTime?
+  brand       Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
 
   @@index([brandId])
 }
@@ -592,9 +582,9 @@ model AdminCurrency {
 model CurrencyGeoMapping {
   countryCode  String        @id @db.VarChar(2)
   currencyCode String
-  currency     AdminCurrency @relation(fields: [currencyCode], references: [code], onDelete: Cascade)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+  currency     AdminCurrency @relation(fields: [currencyCode], references: [code], onDelete: Cascade)
 }
 
 model PaymentGatewayMapping {
@@ -654,11 +644,11 @@ model BlockedIp {
 model BlockedIpAttempt {
   id          BigInt    @id @default(autoincrement())
   blockedIpId BigInt
-  blockedIp   BlockedIp @relation(fields: [blockedIpId], references: [id], onDelete: Cascade)
   ip          String
   endpoint    String?
   userAgent   String?
   attemptedAt DateTime  @default(now())
+  blockedIp   BlockedIp @relation(fields: [blockedIpId], references: [id], onDelete: Cascade)
 
   @@index([blockedIpId])
   @@index([ip])
@@ -727,26 +717,68 @@ model BotLog {
 model DirectPurchaseLink {
   id          String     @id @default(cuid())
   slug        String     @unique
-  name        String?
   brandId     String?
-  brand       Brand?     @relation(fields: [brandId], references: [id], onDelete: SetNull)
   challengeId String?
-  challenge   Challenge? @relation(fields: [challengeId], references: [id], onDelete: SetNull)
   amount      Float?
   currency    String     @default("USD")
   metadata    Json?
   active      Boolean    @default(true)
   clicks      Int        @default(0)
   conversions Int        @default(0)
-  // Forces this link to route through a specific gateway. Null means use
-  // the regular 50/50 split between XOALA and WORLDCARD. Accepted values:
-  // 'XOALA', 'WORLDCARD'. Plain string (not an enum) so adding a new
-  // gateway later doesn't need a migration.
-  provider    String?
   createdAt   DateTime   @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime   @updatedAt
+  name        String?
+  provider    String?
+  platform    String?
+  brand       Brand?     @relation(fields: [brandId], references: [id])
+  challenge   Challenge? @relation(fields: [challengeId], references: [id])
 
   @@index([brandId])
+}
+
+// QuickLink — admin-assisted one-shot payment URL.
+//
+// Lives separately from DirectPurchaseLink. Admin enters EVERY field the
+// gateway requires (full billing snapshot + customer email), so the
+// customer-facing /q/<slug> page only asks for raw card data. No emails or
+// notifications are sent on success; the link auto-deactivates after one
+// successful charge.
+model QuickLink {
+  id             String     @id @default(cuid())
+  slug           String     @unique
+  // Linkage — same as DirectPurchaseLink
+  brandId        String?
+  challengeId    String?
+  brand          Brand?     @relation(fields: [brandId], references: [id])
+  challenge      Challenge? @relation(fields: [challengeId], references: [id])
+  // Charge config
+  name           String?
+  amount         Float?
+  currency       String     @default("EUR")
+  provider       String?
+  platform       String?
+  // Pre-filled customer details. Admin always supplies email + phone +
+  // country (identity). Name + city + address + postal are collected from
+  // the customer on the /q/<slug> page itself, so they're nullable here.
+  customerUserId  String?
+  customerEmail   String
+  customerFirstName String?
+  customerLastName  String?
+  customerPhone     String?
+  customerCountry   String
+  customerState     String?
+  customerCity      String?
+  customerAddress   String?
+  customerPostalCode String?
+  // Lifecycle
+  active        Boolean   @default(true)
+  clicks        Int       @default(0)
+  conversions   Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([brandId])
+  @@index([customerEmail])
 }
 
 enum UserRole {

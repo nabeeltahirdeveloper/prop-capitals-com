@@ -30,10 +30,8 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
     custom_url: link?.custom_url || '',
     amount: link?.total_amount != null ? String(link.total_amount) : '',
     currency: link?.currency || 'USD',
-    // Empty string == "Auto (50/50 split between Xoala and WorldCard)".
-    // Backend stores 'XOALA' / 'WORLDCARD' or null; normalize to '' so
-    // the <select> below matches one of its <option value="..."> values.
     provider: link?.provider || '',
+    platform: link?.platform || '',
     active: link?.is_active !== undefined ? link.is_active : true,
   });
 
@@ -149,10 +147,8 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
       amount: formData.amount !== '' ? Number(formData.amount) : null,
       challenge_id: mode === 'challenge' ? formData.challenge_id : null,
       custom_url: mode === 'custom' ? formData.custom_url.trim() : '',
-      // null clears the override and falls the link back to the 50/50
-      // router. Backend whitelist-validates the value, so any unknown
-      // string is coerced to null server-side too.
       provider: formData.provider || null,
+      platform: formData.platform || null,   // ← new
     };
 
     setLoading(true);
@@ -168,9 +164,9 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
     } catch (err) {
       setError(
         err?.message ||
-          t('adminConsole.directLinks.modal.saveError', {
-            defaultValue: 'Failed to save link',
-          }),
+        t('adminConsole.directLinks.modal.saveError', {
+          defaultValue: 'Failed to save link',
+        }),
       );
     } finally {
       setLoading(false);
@@ -184,11 +180,11 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
           <h2 className="text-2xl font-bold gradient-text">
             {isEdit
               ? t('adminConsole.directLinks.modal.editTitle', {
-                  defaultValue: 'Edit Direct Purchase Link',
-                })
+                defaultValue: 'Edit Direct Purchase Link',
+              })
               : t('adminConsole.directLinks.modal.createTitle', {
-                  defaultValue: 'Create Direct Purchase Link',
-                })}
+                defaultValue: 'Create Direct Purchase Link',
+              })}
           </h2>
           <button
             onClick={onClose}
@@ -219,11 +215,10 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
                 <button
                   type="button"
                   onClick={() => setMode('custom')}
-                  className={`p-4 rounded-lg border-2 text-left transition-colors ${
-                    mode === 'custom'
-                      ? 'border-orange-400 bg-orange-500/10'
-                      : 'border-white/10 hover:border-white/20'
-                  }`}
+                  className={`p-4 rounded-lg border-2 text-left transition-colors ${mode === 'custom'
+                    ? 'border-orange-400 bg-orange-500/10'
+                    : 'border-white/10 hover:border-white/20'
+                    }`}
                 >
                   <div className="font-semibold mb-1">
                     <i className="fas fa-link mr-2"></i>
@@ -241,11 +236,10 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
                 <button
                   type="button"
                   onClick={() => setMode('challenge')}
-                  className={`p-4 rounded-lg border-2 text-left transition-colors ${
-                    mode === 'challenge'
-                      ? 'border-orange-400 bg-orange-500/10'
-                      : 'border-white/10 hover:border-white/20'
-                  }`}
+                  className={`p-4 rounded-lg border-2 text-left transition-colors ${mode === 'challenge'
+                    ? 'border-orange-400 bg-orange-500/10'
+                    : 'border-white/10 hover:border-white/20'
+                    }`}
                 >
                   <div className="font-semibold mb-1">
                     <i className="fas fa-trophy mr-2"></i>
@@ -469,6 +463,38 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
               })}
             </p>
           </div>
+          {/* Trading platform pre-selection */}
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              {t('adminConsole.directLinks.modal.platform', {
+                defaultValue: 'Trading Platform',
+              })}
+            </label>
+            <select
+              value={formData.platform}
+              onChange={(e) =>
+                setFormData({ ...formData, platform: e.target.value })
+              }
+              className="search-input p-3 rounded-lg w-full"
+            >
+              <option value="">
+                {t('adminConsole.directLinks.modal.platformAuto', {
+                  defaultValue: 'Let customer choose (show platform picker)',
+                })}
+              </option>
+              <option value="MT5">MetaTrader 5</option>
+              <option value="MT4">MetaTrader 4</option>
+              <option value="BYBIT">Bybit</option>
+              <option value="PT5">PT5 WebTrader</option>
+              <option value="TRADELOCKER">TradeLocker</option>
+            </select>
+            <p className="text-xs text-gray-400 mt-1">
+              {t('adminConsole.directLinks.modal.platformHint', {
+                defaultValue:
+                  'When set, the customer skips the platform-selection step and goes straight to the payment page with this platform pre-selected.',
+              })}
+            </p>
+          </div>
 
           {/* Active toggle */}
           <div>
@@ -509,11 +535,11 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
               {loading && <i className="fas fa-spinner fa-spin"></i>}
               {isEdit
                 ? t('adminConsole.directLinks.modal.save', {
-                    defaultValue: 'Save Changes',
-                  })
+                  defaultValue: 'Save Changes',
+                })
                 : t('adminConsole.directLinks.modal.create', {
-                    defaultValue: 'Create Link',
-                  })}
+                  defaultValue: 'Create Link',
+                })}
             </button>
           </div>
         </form>

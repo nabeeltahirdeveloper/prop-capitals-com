@@ -301,6 +301,28 @@ export class AdminConsoleController {
     return this.svc.listChallengesForLinks();
   }
 
+  /* ---- Quick Links (admin-assisted one-shot payment URLs) ---- */
+  @Get('quick-links')
+  listQuickLinks(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.svc.listQuickLinks({
+      page: page ? Number(page) : undefined,
+      limit: limit ? Number(limit) : undefined,
+    });
+  }
+
+  @Post('quick-links')
+  createQuickLink(@Body() body: any) {
+    return this.svc.createQuickLink(body);
+  }
+
+  @Delete('quick-links/:id')
+  deleteQuickLink(@Param('id') id: string) {
+    return this.svc.deleteQuickLink(id);
+  }
+
   /**
    * Provision (or top up) direct purchase links for a single brand.
    */

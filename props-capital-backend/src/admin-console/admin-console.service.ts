@@ -1,19 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
-/**
- * AdminConsoleService
- * Aggregates data from existing prop-capitals tables (User, Payment, Payout,
- * Challenge, ApiKey) and reshapes it into the response format expected by the
- * ported visionscope-style admin console frontend.
- *
- * Tables that don't yet exist in prop-capitals (brands, currencies, visits,
- * blocked_ips, etc.) are stubbed with empty arrays in the controller and will
- * be backfilled with real Prisma models in subsequent phases.
- */
 @Injectable()
 export class AdminConsoleService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   /* ---------- Dashboard / Analytics overview ---------- */
 
@@ -81,9 +71,9 @@ export class AdminConsoleService {
       .filter(Boolean) as string[];
     const challenges = challengeIds.length
       ? await this.prisma.challenge.findMany({
-          where: { id: { in: challengeIds } },
-          select: { id: true, name: true, accountSize: true, price: true },
-        })
+        where: { id: { in: challengeIds } },
+        select: { id: true, name: true, accountSize: true, price: true },
+      })
       : [];
     const cmap = new Map(challenges.map((c) => [c.id, c]));
 
@@ -934,6 +924,46 @@ export class AdminConsoleService {
     return Math.random().toString(36).slice(2, 10);
   }
 
+  // Professional slug used for admin-assisted QuickLink payment URLs.
+  // Looks like a Stripe/PSP token — `qlk_` prefix makes the kind obvious.
+  // Cryptographically random, 22 base62 chars (~131 bits of entropy).
+  private quickLinkSlug(): string {
+    const crypto = require('crypto');
+    const alphabet =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const bytes = crypto.randomBytes(22);
+    let out = '';
+    for (let i = 0; i < 22; i++) {
+      out += alphabet[bytes[i] % alphabet.length];
+    }
+    return `qlk_${out}`;
+  }
+
+  // Look up a user by email, or create a minimal placeholder one (no
+  // password set, no profile) so the QuickLink has a User to attach
+  // payments to. Existing customers are reused.
+  private async resolveQuickLinkUser(rawEmail: string): Promise<string> {
+    const email = String(rawEmail).trim().toLowerCase();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new Error('Invalid customer email');
+    }
+    const existing = await this.db.user.findUnique({ where: { email } });
+    if (existing) return existing.id;
+    const bcrypt = await import('bcrypt');
+    const crypto = require('crypto');
+    const randomPassword = crypto.randomBytes(24).toString('base64');
+    const passwordHash = await bcrypt.hash(randomPassword, 10);
+    const created = await this.db.user.create({
+      data: {
+        email,
+        password: passwordHash,
+        passwordSet: false,
+        role: 'TRADER',
+      },
+    });
+    return created.id;
+  }
+
   async backfillBrandLinks() {
     let brands: any[] = [];
     try {
@@ -1485,11 +1515,12 @@ export class AdminConsoleService {
 
   private buildDestinationUrl(l: any): string {
     const meta = l.metadata && typeof l.metadata === 'object' ? l.metadata : {};
+    const baseUrl = this.getPublicSiteUrl();
+
     if (meta.custom_url) {
       return this.attachLinkSlugToUrl(meta.custom_url, l.slug);
     }
 
-    const baseUrl = this.getPublicSiteUrl();
     const params = new URLSearchParams();
     if (l.brand?.slug) params.set('brand', l.brand.slug);
     if (l.slug) params.set('link', l.slug);
@@ -1508,6 +1539,9 @@ export class AdminConsoleService {
       if (linkAmount > 0 && linkAmount !== challengePrice) {
         params.set('customPrice', String(linkAmount));
       }
+      // Pinned-platform links skip the platform-picker step at /checkout.
+      // The page reads this param and auto-advances to the billing form.
+      if (l.platform) params.set('platform', String(l.platform));
       return `${baseUrl}/checkout?${params.toString()}`;
     }
 
@@ -1558,6 +1592,10 @@ export class AdminConsoleService {
       credits_price: 0,
       credits_amount: 0,
       currency: l.currency,
+      provider: l.provider ?? null,
+      // Pinned trading platform (MT5 / MT4 / etc.) — null means "ask the
+      // customer at checkout".
+      platform: l.platform ?? null,
       metadata: l.metadata,
       is_active: l.active,
       visits_count: l.clicks,
@@ -1675,20 +1713,14 @@ export class AdminConsoleService {
     return null;
   }
 
-  // Pick the best-fit active challenge for a custom-amount link. Used
-  // when the admin (or a seed) creates a link with an `amount` but no
-  // explicit `challenge_id` — we still need a challenge attached so the
-  // /checkout flow renders the platform picker (instead of bouncing the
-  // customer to the marketing /Challenges page) and so payment provisioning
-  // knows which challenge config to instantiate after a successful charge.
-  //
-  // Heuristic:
-  //  - Only active challenges.
-  //  - Closest absolute price difference wins.
-  //  - Ties break toward 'one_phase' (one-step is the default flow).
-  //  - Among same-type ties, smallest accountSize wins (safer default).
-  //
-  // Returns null when there are no active challenges at all.
+  private normalizeLinkPlatformInput(input: any): string | null {
+    if (input === undefined || input === null || input === '') return null;
+    const v = String(input).trim().toUpperCase();
+    const allowed = ['MT5', 'MT4', 'BYBIT', 'PT5', 'TRADELOCKER'];
+    return allowed.includes(v) ? v : null;
+  }
+
+
   async findClosestChallengeForAmount(amount: number): Promise<any | null> {
     if (!Number.isFinite(amount) || amount <= 0) return null;
     const challenges = await this.db.challenge.findMany({
@@ -1740,11 +1772,6 @@ export class AdminConsoleService {
         ? body.custom_url.trim()
         : null;
 
-    // Auto-match challenge when none was picked but the link has an amount
-    // (and isn't a custom-URL redirect that points elsewhere). Without an
-    // attached challenge, buildDestinationUrl falls back to /Challenges and
-    // the customer sees the marketing page instead of going straight to
-    // the platform picker.
     if (!challengeId && !customUrl && amount && amount > 0) {
       const matched = await this.findClosestChallengeForAmount(amount);
       if (matched) challengeId = matched.id;
@@ -1757,6 +1784,7 @@ export class AdminConsoleService {
     }
 
     const providerInput = this.normalizeProviderInput(body.provider);
+    const platformInput = this.normalizeLinkPlatformInput(body.platform);
 
     const link = await this.db.directPurchaseLink.create({
       data: {
@@ -1767,6 +1795,10 @@ export class AdminConsoleService {
         amount,
         currency: body.currency || 'USD',
         ...(providerInput !== undefined ? { provider: providerInput } : {}),
+        // Admin-pinned trading platform. When set, the customer skips the
+        // platform-selection step at checkout and lands straight on the
+        // billing form with this platform locked in.
+        ...(platformInput !== null ? { platform: platformInput } : {}),
         metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
         active: body.active !== false,
       },
@@ -1807,6 +1839,11 @@ export class AdminConsoleService {
     }
     if (body.provider !== undefined) {
       data.provider = this.normalizeProviderInput(body.provider);
+    }
+    if (body.platform !== undefined) {
+      // Empty string from the modal → null (clears the lock and restores the
+      // legacy "let the customer pick" behaviour).
+      data.platform = this.normalizeLinkPlatformInput(body.platform);
     }
 
     if (body.custom_url !== undefined) {
@@ -1850,6 +1887,182 @@ export class AdminConsoleService {
     });
     if (!existing) throw new Error('Link not found');
     await this.db.directPurchaseLink.delete({ where: { id } });
+    return { success: true };
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+   *  QuickLink — admin-assisted one-shot payment URLs
+   *
+   *  Admin enters EVERY field the gateway requires:
+   *    brand_id, challenge_id, amount, currency, provider, platform,
+   *    customer's first_name + last_name + email + phone + country +
+   *    state + city + address + postal_code.
+   *
+   *  The customer-facing /q/<slug> page only collects card data; the
+   *  service merges in the link's stored billing snapshot to build the
+   *  Xoala SALE call, so the gateway never rejects on missing address.
+   *  After the first successful charge the link auto-deactivates.
+   *  ───────────────────────────────────────────────────────────────────── */
+
+  private mapQuickLink(l: any) {
+    const baseUrl = this.getPublicSiteUrl();
+    const url = l.slug ? `${baseUrl}/q/${l.slug}` : null;
+    const conversionRate = l.clicks > 0 ? (l.conversions / l.clicks) * 100 : 0;
+    return {
+      id: l.id,
+      slug: l.slug,
+      link_id: l.slug,
+      name: l.name ?? null,
+      brand_id: l.brandId ?? null,
+      brand_name: l.brand?.name ?? null,
+      challenge_id: l.challengeId ?? null,
+      challenge_name: l.challenge?.name ?? null,
+      amount: Number(l.amount ?? 0),
+      currency: l.currency,
+      provider: l.provider ?? null,
+      platform: l.platform ?? null,
+      // Customer snapshot — visible only to admins, never to the page.
+      customer_email: l.customerEmail,
+      customer_first_name: l.customerFirstName,
+      customer_last_name: l.customerLastName,
+      customer_phone: l.customerPhone ?? null,
+      customer_country: l.customerCountry,
+      customer_state: l.customerState ?? null,
+      customer_city: l.customerCity,
+      customer_address: l.customerAddress,
+      customer_postal_code: l.customerPostalCode,
+      is_active: l.active,
+      destination_url: url,
+      visits_count: l.clicks,
+      transactions_count: l.conversions,
+      conversion_rate: conversionRate,
+      created_at: l.createdAt,
+      updated_at: l.updatedAt,
+    };
+  }
+
+  // Required-field guard for QuickLink create. Lists every Xoala-required
+  // field up-front so we fail fast with a useful error instead of letting
+  // the gateway 400 with an inscrutable message.
+  private validateQuickLinkBody(body: any) {
+    // Admin-supplied identity + commerce. Name + city + address + postal
+    // are collected from the customer on the /q/<slug> page, so they're
+    // NOT required here.
+    const required: Array<[string, any]> = [
+      ['brand_id', body.brand_id],
+      ['challenge_id', body.challenge_id],
+      ['customer_email', body.customer_email],
+      ['customer_country', body.customer_country],
+    ];
+    const missing = required
+      .filter(([, v]) => v == null || String(v).trim() === '')
+      .map(([k]) => k);
+    if (missing.length > 0) {
+      throw new Error(`Missing required field(s): ${missing.join(', ')}`);
+    }
+    const email = String(body.customer_email).trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new Error('Invalid customer_email');
+    }
+    return email;
+  }
+
+  async createQuickLink(body: any) {
+    const customerEmail = this.validateQuickLinkBody(body);
+
+    const brand = await this.db.brand.findUnique({
+      where: { id: body.brand_id },
+    });
+    if (!brand) throw new Error('Brand not found');
+
+    const challenge = await this.db.challenge.findUnique({
+      where: { id: body.challenge_id },
+    });
+    if (!challenge) throw new Error('Challenge not found');
+
+    const providerInput = this.normalizeProviderInput(body.provider);
+    const platformInput = this.normalizeLinkPlatformInput(body.platform);
+
+    // Find-or-create the customer's User row up front so the eventual
+    // Payment is bound to the same trader if they ever sign up later.
+    const customerUserId = await this.resolveQuickLinkUser(customerEmail);
+
+    const amount =
+      body.amount != null && body.amount !== ''
+        ? Number(body.amount)
+        : (challenge.price ?? 0);
+
+    const link = await this.db.quickLink.create({
+      data: {
+        slug: this.quickLinkSlug(),
+        name: body.name?.trim() || null,
+        brandId: brand.id,
+        challengeId: challenge.id,
+        amount,
+        currency: (body.currency || challenge.currency || 'EUR').toUpperCase(),
+        ...(providerInput !== undefined ? { provider: providerInput } : {}),
+        ...(platformInput !== null ? { platform: platformInput } : {}),
+        customerUserId,
+        customerEmail,
+        customerPhone: body.customer_phone?.trim() || null,
+        customerCountry: String(body.customer_country).trim().toUpperCase(),
+        // First/last name, city, state, address, postal — the customer
+        // enters these on the /q/<slug> page, so we leave them null on
+        // the link itself.
+        active: body.active !== false,
+      },
+      include: {
+        brand: { select: { id: true, name: true, slug: true } },
+        challenge: {
+          select: {
+            id: true,
+            slug: true,
+            name: true,
+            challengeType: true,
+            accountSize: true,
+            price: true,
+          },
+        },
+      },
+    });
+    return { link: this.mapQuickLink(link) };
+  }
+
+  async listQuickLinks(params: { page?: number; limit?: number }) {
+    const page = Math.max(1, Number(params.page) || 1);
+    const limit = Math.min(200, Math.max(1, Number(params.limit) || 50));
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.db.quickLink.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          brand: { select: { id: true, name: true, slug: true } },
+          challenge: {
+            select: {
+              id: true,
+              slug: true,
+              name: true,
+              challengeType: true,
+              accountSize: true,
+              price: true,
+            },
+          },
+        },
+      }),
+      this.db.quickLink.count(),
+    ]);
+    return {
+      links: data.map((l: any) => this.mapQuickLink(l)),
+      meta: { total, page, pages: Math.ceil(total / limit) },
+    };
+  }
+
+  async deleteQuickLink(id: string) {
+    const existing = await this.db.quickLink.findUnique({ where: { id } });
+    if (!existing) throw new Error('Link not found');
+    await this.db.quickLink.delete({ where: { id } });
     return { success: true };
   }
 

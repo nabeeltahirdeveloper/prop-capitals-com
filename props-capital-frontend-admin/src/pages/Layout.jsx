@@ -268,6 +268,13 @@ export default function Layout({ children, currentPageName }) {
             icon: Link2,
             section: "direct-purchase-links",
           },
+          {
+            name: t("nav.quickLinks", {
+              defaultValue: "Quick Links",
+            }),
+            icon: Zap,
+            section: "quick-links",
+          },
           // { name: "Packages", icon: Package, section: "packages" },
           {
             name: t("nav.brandsForPayouts", {

@@ -220,4 +220,23 @@ export class PaymentsController {
   async userPayments(@Param('userId') userId: string) {
     return this.paymentsService.getUserPayments(userId);
   }
+
+  // ─── QuickLink (admin-assisted one-shot payment URL) ─────────────────
+  // The customer-facing /q/<slug> page calls these two endpoints. Summary
+  // never leaks customer email or any link internals — only what's needed
+  // to render the price. The charge route accepts ONLY card data; the
+  // service pulls billing / email / phone from the QuickLink row server-side.
+
+  @Get('quick-link/:slug/summary')
+  async quickLinkSummary(@Param('slug') slug: string) {
+    return this.paymentsService.getQuickLinkSummary(slug);
+  }
+
+  @Post('quick-link/:slug/charge')
+  async quickLinkCharge(
+    @Param('slug') slug: string,
+    @Body() body: any,
+  ) {
+    return this.paymentsService.chargeQuickLink(slug, body);
+  }
 }

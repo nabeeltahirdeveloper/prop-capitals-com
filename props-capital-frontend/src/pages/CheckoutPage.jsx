@@ -184,8 +184,17 @@ const CheckoutPage = () => {
     ? formatSize(`${matchedChallenge.accountSize / 1000}K`)
     : formatSize(accountSize);
 
-  const [step, setStep] = useState(1);
-  const [selectedPlatform, setSelectedPlatform] = useState('');
+  // Admin-pinned platform on a DirectPurchaseLink → forwarded via
+  // ?platform=MT5. When present we skip the platform-picker step entirely
+  // and land the customer straight on the billing form.
+  const ALLOWED_PLATFORMS = ['mt5', 'mt4', 'ctrader', 'dxtrade', 'pt5', 'tradelocker', 'bybit'];
+  const pinnedPlatformRaw = (searchParams.get('platform') || '').toLowerCase();
+  const pinnedPlatform = ALLOWED_PLATFORMS.includes(pinnedPlatformRaw)
+    ? pinnedPlatformRaw
+    : '';
+
+  const [step, setStep] = useState(pinnedPlatform ? 2 : 1);
+  const [selectedPlatform, setSelectedPlatform] = useState(pinnedPlatform);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
