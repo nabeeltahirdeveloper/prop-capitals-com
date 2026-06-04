@@ -37,15 +37,17 @@ export class PaymentProviderRouter {
     private readonly configService: ConfigService,
   ) {}
 
-  // Read the WorldCard flow override from env. Defaults to 's2s' (the
-  // S2S CARD protocol — customer enters card on /pay/<slug>, backend
-  // posts directly to WorldCard's /v2/post). Set WORLDCARD_FLOW=hosted
-  // to switch back to the hosted-page session flow as a fallback.
+  // Read the WorldCard flow override from env. Defaults to 'hosted'
+  // (the Standard Checkout session endpoint POST /api/v1/session, which
+  // returns a redirect_url — the customer enters card on WorldCard's
+  // own hosted page). The merchant account doesn't have the S2S CARD
+  // protocol enabled, so 's2s' is opt-in only and will 404 until
+  // WorldCard support maps it on their side.
   worldCardFlow(): WorldCardFlow {
     const raw = (this.configService.get<string>('WORLDCARD_FLOW') || '')
       .trim()
       .toLowerCase();
-    return raw === 'hosted' ? 'hosted' : 's2s';
+    return raw === 's2s' ? 's2s' : 'hosted';
   }
 
   private normalizeProvider(raw: any): PaymentProvider | null {
