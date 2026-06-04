@@ -2,7 +2,7 @@ import { apiGet, apiPost, apiPatch } from "@/lib/api";
 
 // API Functions
 export const createAccount = async (data) => {
-  return apiPost("/trading-accounts", data);
+  return apiPost("/trading-accounts",data);
 };
 
 export const getUserAccounts = async (userId) => {
