@@ -88,6 +88,10 @@ const INITIAL_FORM = {
   cvv: '',
 };
 
+// Card-entry fields. Skipped during validation in the hosted WorldCard flow,
+// where the card is captured on WorldCard's own page rather than here.
+const CARD_FIELDS = ['cardholderName', 'cardNumber', 'expiry', 'cvv'];
+
 const validateField = (name, value) => {
   switch (name) {
     case 'firstName':
@@ -377,6 +381,11 @@ const PayLink = () => {
   };
 
   const brand = detectBrand(form.cardNumber);
+
+  // Hosted WorldCard: the customer enters their card on WorldCard's own page,
+  // so the card fields are hidden here and skipped during validation. Mirrors
+  // the routing check in handleSubmit (provider === 'worldcard' && flow hosted).
+  const isHostedWorldCard = provider === 'worldcard' && worldCardFlow === 'hosted';
 
   const validateAll = () => {
     const next = {};

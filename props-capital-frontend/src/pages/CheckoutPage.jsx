@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowRight, ArrowLeft, Check, Shield, Clock, Star, CreditCard, User, Mail, Phone, Globe } from 'lucide-react';
@@ -62,6 +62,16 @@ const PLATFORMS = [
   { id: 'bybit', name: 'Bybit', description: 'Crypto trading platform', icon: '₿' },
   { id: 'pt5', name: 'PT5 WebTrader', description: 'Our newest platform', icon: '🚀', isNew: true }
 ];
+
+// Auto-selection pool: every platform the picker offers EXCEPT TradeLocker
+// (not live yet). When a direct purchase link doesn't pin a platform we pick
+// one of these at random so the customer never sees the picker step.
+const AUTO_PLATFORM_POOL = PLATFORMS.filter((p) => p.id !== 'tradelocker').map(
+  (p) => p.id,
+);
+
+const pickRandomPlatform = () =>
+  AUTO_PLATFORM_POOL[Math.floor(Math.random() * AUTO_PLATFORM_POOL.length)];
 
 // Challenge data
 const CHALLENGE_DATA = {
@@ -163,7 +173,7 @@ const CheckoutPage = () => {
   // findUnique({id}) lookup when the param isn't a valid slug, so we can
   // pass either `slug` or `id` in /pay/:slug — whichever is present on the
   // row. That keeps things working for legacy challenges without a slug.
-  const { data: dbChallenges = [] } = useQuery({
+  const { data: dbChallenges = [], isLoading: challengesLoading } = useQuery({
     queryKey: ['challenges'],
     queryFn: getChallenges,
   });
@@ -193,8 +203,16 @@ const CheckoutPage = () => {
     ? pinnedPlatformRaw
     : '';
 
-  const [step, setStep] = useState(pinnedPlatform ? 2 : 1);
-  const [selectedPlatform, setSelectedPlatform] = useState(pinnedPlatform);
+  // The platform-picker step is skipped entirely: when the link doesn't pin a
+  // platform we auto-pick a random one (never TradeLocker — it's not live yet)
+  // and forward the customer straight to /pay/:slug. Chosen once per mount so
+  // it stays stable across re-renders.
+  const [effectivePlatform] = useState(
+    () => pinnedPlatform || pickRandomPlatform(),
+  );
+
+  const [step, setStep] = useState(2);
+  const [selectedPlatform, setSelectedPlatform] = useState(effectivePlatform);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -269,7 +287,39 @@ const CheckoutPage = () => {
     navigate(`/pay/${identifier}${qs ? `?${qs}` : ''}`);
   };
 
-  const inputClass = isDark 
+  // Auto-skip the platform picker: as soon as the matching DB challenge is
+  // resolved, forward the customer straight to /pay/:slug with the
+  // (random/pinned) platform pre-selected. Runs once.
+  const didAutoRedirect = useRef(false);
+  useEffect(() => {
+    if (didAutoRedirect.current) return;
+    if (challengesLoading) return; // wait for the challenge list
+    const identifier = matchedChallenge?.slug || matchedChallenge?.id;
+    if (!identifier) return; // no match → fall back to the visible picker UI
+    didAutoRedirect.current = true;
+    const params = new URLSearchParams();
+    params.set('platform', effectivePlatform);
+    if (customPrice != null) params.set('customPrice', String(customPrice));
+    navigate(`/pay/${identifier}?${params.toString()}`, { replace: true });
+  }, [challengesLoading, matchedChallenge, effectivePlatform, customPrice, navigate]);
+
+  // While we're loading challenges or about to redirect, show a lightweight
+  // spinner instead of flashing the (now-skipped) platform picker. We only
+  // fall through to the full UI when there's genuinely no matching challenge.
+  const matchIdentifier = matchedChallenge?.slug || matchedChallenge?.id;
+  const redirecting = challengesLoading || !!matchIdentifier;
+  if (redirecting) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+          <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>Preparing your checkout…</p>
+        </div>
+      </div>
+    );
+  }
+
+  const inputClass = isDark
     ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500' 
     : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400';
 
