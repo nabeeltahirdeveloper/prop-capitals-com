@@ -292,12 +292,11 @@ export class EmailService {
       maximumFractionDigits: 2,
     });
     const supportEmail = 'support@prop-capitals.com';
-    const year = new Date().getFullYear();
 
     return this.sendWithTimeout({
       to,
       from: this.fromEmail,
-      subject: `Your Prop Capitals receipt #${invoiceNumber}`,
+      subject: `Your Receipt #${invoiceNumber}`,
       text: `Hi ${to},
 
 We have received your payment for ${challengeName}. Your official receipt is below.
@@ -309,16 +308,10 @@ Your trading account has been provisioned and login details have been sent in a 
 
 If you have any questions, concerns, or issues regarding this payment, please contact our support team. We are available 24/7 and happy to assist you at ${supportEmail}.
 
-© ${year} Prop Capitals. All rights reserved.`,
+Thank you for choosing us.`,
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background-color: #f4f5f7; padding: 24px 12px;">
           <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 32px; box-shadow: 0 1px 3px rgba(15,23,42,0.05);">
-            <div style="text-align: center; margin-bottom: 18px;">
-              <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 800; letter-spacing: 1px; color: #0a0d12;">
-                PROP<span style="color: #f59e0b;">CAPITALS</span>
-              </span>
-            </div>
-
             <h1 style="margin: 0 0 16px 0; color: #0a0d12; font-size: 22px; font-weight: 800; line-height: 30px;">
               Thank you for your <span style="color: #f59e0b;">purchase</span>
             </h1>
@@ -351,7 +344,7 @@ If you have any questions, concerns, or issues regarding this payment, please co
           </div>
 
           <p style="text-align: center; color: #6b7280; font-size: 12px; margin: 18px 0 0 0;">
-            © ${year} Prop Capitals. All rights reserved.
+            Thank you for choosing us.
           </p>
         </div>
       `,
