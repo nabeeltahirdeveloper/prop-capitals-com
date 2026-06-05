@@ -4,6 +4,8 @@ import {
   BadRequestException,
   InternalServerErrorException,
   Logger,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
@@ -23,6 +25,7 @@ import { CouponsService } from '../coupons/coupons.service';
 import { generatePassword } from 'src/utils/generate-password.util';
 import { EmailService } from 'src/email/email.service';
 import { XoalaAuthService } from './xoala-auth.service';
+import { WorldCardService } from './worldcard.service';
 import { buildXoalaRequestChecksum } from './xoala-checksum.util';
 
 @Injectable()
@@ -36,6 +39,9 @@ export class PaymentsService {
     private couponsService: CouponsService,
     private readonly configService: ConfigService,
     private readonly xoalaAuthService: XoalaAuthService,
+    // WorldCardService injects PaymentsService → forwardRef breaks the cycle.
+    @Inject(forwardRef(() => WorldCardService))
+    private readonly worldCardService: WorldCardService,
   ) {}
 
   // ─── Platform normalization (shared) ───────────────────────────────
@@ -1506,11 +1512,18 @@ export class PaymentsService {
     const currency =
       rawCurrency === 'EUR' || rawCurrency === 'GBP' ? rawCurrency : 'EUR';
 
+    // Expose the gateway so the /q/ page knows whether to collect the card
+    // (Xoala S2S) or send the customer to WorldCard's hosted page.
+    const provider = link.provider
+      ? String(link.provider).toUpperCase()
+      : null;
+
     return {
       slug: link.slug,
       active: !!link.active,
       amount,
       currency,
+      provider,
     };
   }
 
@@ -1532,14 +1545,28 @@ export class PaymentsService {
       );
     }
 
+    // Provider routing (decided up-front so we know whether a card is
+    // expected on this request).
+    //   - link.provider = 'WORLDCARD' → WorldCard HOSTED page. The customer
+    //     enters their card on WorldCard's own page, so no card data is
+    //     collected on our /q/ page. (S2S CARD is not enabled on the
+    //     merchant account, so we cannot post the PAN ourselves.)
+    //   - link.provider = 'XOALA' / null / 'AUTO' → Xoala S2S. The card is
+    //     collected on the /q/ page and posted server-to-server.
+    const wantsWorldCard =
+      String(link.provider || '').toUpperCase() === 'WORLDCARD';
+
     // Body from the /q/<slug> page carries:
-    //   - card data
+    //   - card data (Xoala S2S only)
     //   - billing (first/last name, address, city, state opt, postal)
     //
     // Admin-supplied identity/commerce (email, phone, country, brand,
     // challenge, amount, currency, provider, platform) come from `link`.
     const card = body?.card;
-    if (!card?.number || !card?.expiryMonth || !card?.expiryYear || !card?.cvv) {
+    if (
+      !wantsWorldCard &&
+      (!card?.number || !card?.expiryMonth || !card?.expiryYear || !card?.cvv)
+    ) {
       throw new BadRequestException(
         'Card details (number, expiryMonth, expiryYear, cvv) are required',
       );
@@ -1551,27 +1578,46 @@ export class PaymentsService {
     const city = String(body?.city ?? '').trim();
     const postalCode = String(body?.postalCode ?? '').trim();
     const state = body?.state ? String(body.state).trim() : undefined;
-    if (!firstName || !lastName) {
-      throw new BadRequestException(
-        'First and last name are required',
-      );
-    }
-    if (!address || !city || !postalCode) {
-      throw new BadRequestException(
-        'Address, city and postal code are required',
-      );
+    // Billing is only collected/required for the on-page (Xoala S2S) flow.
+    // WorldCard's hosted page gathers name + address itself, so the /q/ page
+    // sends none of it for hosted links.
+    if (!wantsWorldCard) {
+      if (!firstName || !lastName) {
+        throw new BadRequestException('First and last name are required');
+      }
+      if (!address || !city || !postalCode) {
+        throw new BadRequestException(
+          'Address, city and postal code are required',
+        );
+      }
     }
 
     const rawCurrency = String(link.currency || link.challenge?.currency || 'EUR').toUpperCase();
     const currency = rawCurrency === 'GBP' ? 'GBP' : 'EUR';
 
-    // Delegate to the existing Xoala S2S path so amount handling, gateway
-    // selection (EUR/GBP terminal), brand attribution, Payment row write,
-    // refunds, and webhook handling all stay in ONE code path. The
-    // QuickLink slug is forwarded as `linkSlug` so `Payment.linkSlug` is
-    // populated — that's the marker `provisionChallengeAfterPaymentSuccess`
+    this.logger.log(
+      `[QuickLink] slug=${slug} provider=${link.provider ?? '<null/auto>'} → routing to ${wantsWorldCard ? 'WORLDCARD (hosted)' : 'XOALA'}`,
+    );
+    if (wantsWorldCard && !this.worldCardService) {
+      // Defensive: should never happen, but if Nest hot-reload misses the
+      // forwardRef injection we want a clear error instead of a cryptic
+      // "Cannot read properties of undefined".
+      throw new InternalServerErrorException(
+        'WorldCard gateway is not wired up. Restart Nest and try again.',
+      );
+    }
+
+    // Shared input for both gateways — fields/names align (we built the
+    // WorldCardChargeInput shape to mirror createXoalaCharge intentionally).
+    // The QuickLink slug is forwarded as `linkSlug` so `Payment.linkSlug`
+    // is populated — that's the marker `provisionChallengeAfterPaymentSuccess`
     // uses to know it's silent and to deactivate the link.
-    return this.createXoalaCharge({
+    // The QuickLink's own amount overrides the challenge default so the
+    // charged total matches the /q/ summary the customer saw.
+    const amountOverride =
+      link.amount != null && Number(link.amount) > 0 ? Number(link.amount) : null;
+
+    const chargeInput: any = {
       challengeId: link.challengeId,
       linkSlug: link.slug,
       brandSlug: link.brand?.slug ?? undefined,
@@ -1588,8 +1634,18 @@ export class PaymentsService {
       state,
       postalCode,
       currency,
+      amountOverride,
       platform: link.platform ?? undefined,
       card,
-    });
+      // WorldCard requires cardholder IP; harmless for Xoala.
+      payerIp: body?.payerIp,
+    };
+
+    if (wantsWorldCard) {
+      // Hosted page: returns { status: 'requires_action', redirectUrl } and
+      // the /q/ page sends the customer to WorldCard to enter their card.
+      return this.worldCardService.createHostedSession(chargeInput);
+    }
+    return this.createXoalaCharge(chargeInput);
   }
 }

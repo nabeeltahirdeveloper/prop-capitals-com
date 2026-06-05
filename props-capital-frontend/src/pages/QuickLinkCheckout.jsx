@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { toast, Toaster } from 'sonner';
 import { Loader2, Lock, AlertTriangle } from 'lucide-react';
 import { getQuickLinkSummary, chargeQuickLink } from '@/api/payments';
 
@@ -103,12 +103,23 @@ export default function QuickLinkCheckout() {
   });
 
   const inactive = linkSummary && linkSummary.active === false;
+  // WorldCard links use the gateway's HOSTED page — the customer enters
+  // their card on WorldCard, not here. So we collect billing only and hide
+  // the card fields. Xoala links collect the card on this page (S2S).
+  const isHosted = linkSummary?.provider === 'WORLDCARD';
 
   const chargeMutation = useMutation({
     mutationFn: (payload) => chargeQuickLink(slug, payload),
     onSuccess: (res) => {
       if (res?.status === 'succeeded') {
-        window.location.href = '/pay/success';
+        toast.success('Payment successful! Redirecting…');
+        const ref = res.reference
+          ? `?reference=${encodeURIComponent(res.reference)}`
+          : '';
+        // Brief pause so the success notification is visible before redirect.
+        setTimeout(() => {
+          window.location.href = `/pay/success${ref}`;
+        }, 1200);
       } else if (res?.status === 'requires_action' && res.redirectUrl) {
         window.location.href = res.redirectUrl;
       } else {
@@ -127,31 +138,36 @@ export default function QuickLinkCheckout() {
 
   const validate = () => {
     const next = {};
-    // Billing
-    if (!form.firstName.trim()) next.firstName = 'First name is required';
-    if (!form.lastName.trim()) next.lastName = 'Last name is required';
-    if (!form.address.trim() || form.address.trim().length < 4)
-      next.address = 'Address is required';
-    if (!form.city.trim()) next.city = 'City is required';
-    if (!form.postalCode.trim()) next.postalCode = 'Postal code is required';
-    // Card
-    if (!form.cardholderName.trim() || form.cardholderName.trim().length < 2)
-      next.cardholderName = 'Cardholder name is required';
-    const digits = (form.cardNumber || '').replace(/\D/g, '');
-    if (!digits) next.cardNumber = 'Card number is required';
-    else if (digits.length < 13 || !luhnValid(digits))
-      next.cardNumber = 'Card number is invalid';
-    const [mm, yy] = (form.expiry || '').split('/');
-    if (!mm || !yy || mm.length !== 2 || yy.length !== 2)
-      next.expiry = 'Expiry must be MM/YY';
-    else {
-      const m = parseInt(mm, 10);
-      const y = parseInt(yy, 10);
-      const exp = new Date(2000 + y, m, 0, 23, 59, 59);
-      if (Number.isNaN(m) || m < 1 || m > 12) next.expiry = 'Invalid month';
-      else if (exp < new Date()) next.expiry = 'Card has expired';
+    // Billing + card are only collected on the on-page (Xoala S2S) flow.
+    // Hosted (WorldCard) collects everything on the gateway's own page, so
+    // the only requirement here is the T&C consent.
+    if (!isHosted) {
+      // Billing
+      if (!form.firstName.trim()) next.firstName = 'First name is required';
+      if (!form.lastName.trim()) next.lastName = 'Last name is required';
+      if (!form.address.trim() || form.address.trim().length < 4)
+        next.address = 'Address is required';
+      if (!form.city.trim()) next.city = 'City is required';
+      if (!form.postalCode.trim()) next.postalCode = 'Postal code is required';
+      // Card
+      if (!form.cardholderName.trim() || form.cardholderName.trim().length < 2)
+        next.cardholderName = 'Cardholder name is required';
+      const digits = (form.cardNumber || '').replace(/\D/g, '');
+      if (!digits) next.cardNumber = 'Card number is required';
+      else if (digits.length < 13 || !luhnValid(digits))
+        next.cardNumber = 'Card number is invalid';
+      const [mm, yy] = (form.expiry || '').split('/');
+      if (!mm || !yy || mm.length !== 2 || yy.length !== 2)
+        next.expiry = 'Expiry must be MM/YY';
+      else {
+        const m = parseInt(mm, 10);
+        const y = parseInt(yy, 10);
+        const exp = new Date(2000 + y, m, 0, 23, 59, 59);
+        if (Number.isNaN(m) || m < 1 || m > 12) next.expiry = 'Invalid month';
+        else if (exp < new Date()) next.expiry = 'Card has expired';
+      }
+      if (!form.cvv || form.cvv.length < 3) next.cvv = 'CVV must be 3-4 digits';
     }
-    if (!form.cvv || form.cvv.length < 3) next.cvv = 'CVV must be 3-4 digits';
     if (!agreedTerms) next.agreedTerms = 'You must accept the T&Cs';
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -161,23 +177,28 @@ export default function QuickLinkCheckout() {
     e.preventDefault();
     if (!linkSummary || inactive) return;
     if (!validate()) return;
-    const [mm, yy] = (form.expiry || '').split('/');
-    chargeMutation.mutate({
+    const payload = {
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
       address: form.address.trim(),
       city: form.city.trim(),
       state: form.state.trim() || undefined,
       postalCode: form.postalCode.trim(),
-      card: {
+    };
+    // Card is only sent for the on-page (Xoala S2S) flow. Hosted (WorldCard)
+    // collects it on the gateway's page after the redirect.
+    if (!isHosted) {
+      const [mm, yy] = (form.expiry || '').split('/');
+      payload.card = {
         number: form.cardNumber.replace(/\s+/g, ''),
         expiryMonth: mm,
         expiryYear: `20${yy}`,
         cvv: form.cvv,
         holder: form.cardholderName.trim(),
         brand: detectBrand(form.cardNumber),
-      },
-    });
+      };
+    }
+    chargeMutation.mutate(payload);
   };
 
   const priceLabel = useMemo(() => {
@@ -233,6 +254,12 @@ export default function QuickLinkCheckout() {
         </div>
 
         <div className="px-5 py-5 space-y-4">
+          {/* For hosted (WorldCard) links the customer enters name, billing
+              address and card on WorldCard's own page, so we collect nothing
+              here — just show the total and a Continue button. The billing
+              form below is only for the on-page (Xoala S2S) flow. */}
+          {!isHosted && (
+          <>
           {/* ── Billing details ────────────────────────────────────── */}
           <div className="flex items-center gap-2 text-slate-700 text-sm font-semibold">
             <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-slate-100">
@@ -330,8 +357,25 @@ export default function QuickLinkCheckout() {
               )}
             </div>
           </div>
+          </>
+          )}
 
-          {/* ── Card ──────────────────────────────────────────────── */}
+          {/* ── Hosted (WorldCard) notice ─────────────────────────── */}
+          {isHosted && (
+            <div className="flex items-start gap-2 text-xs text-slate-600 pt-3 border-t border-slate-100">
+              <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-slate-100 flex-shrink-0">
+                🔒
+              </span>
+              <p>
+                After you continue, you'll be taken to our secure payment
+                provider to enter your card details and complete the payment.
+              </p>
+            </div>
+          )}
+
+          {/* ── Card (collected on this page — Xoala S2S only) ─────── */}
+          {!isHosted && (
+          <>
           <div className="flex items-center gap-2 text-slate-700 text-sm font-semibold pt-2 border-t border-slate-100">
             <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-slate-100">
               💳
@@ -411,6 +455,8 @@ export default function QuickLinkCheckout() {
               <p className="text-xs text-red-500 mt-1">{errors.cardholderName}</p>
             )}
           </div>
+          </>
+          )}
 
           {/* T&C */}
           <label className="flex items-start gap-2 text-xs text-slate-600 cursor-pointer">
@@ -448,6 +494,8 @@ export default function QuickLinkCheckout() {
                 <Loader2 className="w-4 h-4 animate-spin" />
                 Processing…
               </>
+            ) : isHosted ? (
+              <>Continue to secure payment</>
             ) : (
               <>Pay {priceLabel}</>
             )}
@@ -463,16 +511,13 @@ export default function QuickLinkCheckout() {
   );
 }
 
-// Minimal shell — PROPCAPITALS wordmark only. No nav, no footer.
+// Minimal shell — no header, no nav, no footer. Just the card form on a
+// neutral background, plus the toast container for success/failure notices.
 function Shell({ children }) {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <header className="py-5 px-4 flex justify-center">
-        <span className="font-extrabold text-lg tracking-wider text-slate-900">
-          PROP<span className="text-amber-500">CAPITALS</span>
-        </span>
-      </header>
-      <main className="flex-1 px-4 pb-10">{children}</main>
+      <Toaster position="top-center" richColors closeButton />
+      <main className="flex-1 px-4 pt-10 pb-10">{children}</main>
     </div>
   );
 }

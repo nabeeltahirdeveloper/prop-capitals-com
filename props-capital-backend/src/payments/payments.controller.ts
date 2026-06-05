@@ -236,7 +236,15 @@ export class PaymentsController {
   async quickLinkCharge(
     @Param('slug') slug: string,
     @Body() body: any,
+    @Req() req: Request,
   ) {
-    return this.paymentsService.chargeQuickLink(slug, body);
+    // WorldCard requires the cardholder IP. Resolve the same way as the
+    // /payments/worldcard/charge route above.
+    const xff = String(req.headers['x-forwarded-for'] || '')
+      .split(',')[0]
+      ?.trim();
+    const payerIp =
+      req.ip || xff || (req.socket as any)?.remoteAddress || undefined;
+    return this.paymentsService.chargeQuickLink(slug, { ...body, payerIp });
   }
 }
