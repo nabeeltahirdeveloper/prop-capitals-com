@@ -472,18 +472,17 @@ export class WorldCardService {
       .trim();
     if (customerName.length >= 2) customer.name = customerName;
 
-    // `methods` is merchant-specific. Forcing an unsupported value makes the
-    // session API return HTTP 400 "Not found acceptable methods". Default to
-    // omitting it so WorldCard offers whatever the merchant has enabled;
-    // set WORLDCARD_METHODS="card" (comma-separated) only if the account
-    // actually requires it to be specified.
+    // Per the docs "Methods" page the card flow is requested with
+    // methods: ["card"], so that's our default. Override with
+    // WORLDCARD_METHODS (comma-separated) if the account uses a different
+    // connector identifier.
     const methodsCsv = this.configService.get<string>('WORLDCARD_METHODS');
     const methods = methodsCsv
       ? methodsCsv
           .split(',')
           .map((m) => m.trim())
           .filter(Boolean)
-      : null;
+      : ['card'];
 
     const sessionPayload: Record<string, any> = {
       merchant_key: merchantKey,
