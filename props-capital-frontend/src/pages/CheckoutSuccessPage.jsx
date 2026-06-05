@@ -43,14 +43,6 @@ const CheckoutSuccessPage = () => {
             </div>
           </div>
 
-          {/* Demo Notice */}
-          <div className={`rounded-xl p-4 border-2 border-dashed mb-8 ${
-            isDark ? 'border-amber-500/30 bg-amber-500/5' : 'border-amber-300 bg-amber-50'
-          }`}>
-            <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
-              <strong>Demo Mode:</strong> This is a demo checkout. In production, you would receive real account credentials and platform access.
-            </p>
-          </div>
 
           {/* What's Next */}
           <div className="text-left mb-8">

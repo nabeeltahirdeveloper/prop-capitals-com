@@ -382,9 +382,11 @@ const PayLink = () => {
 
   const brand = detectBrand(form.cardNumber);
 
-  // Hosted WorldCard: the customer enters their card on WorldCard's own page,
-  // so the card fields are hidden here and skipped during validation. Mirrors
-  // the routing check in handleSubmit (provider === 'worldcard' && flow hosted).
+  // Card fields are only collected when we're processing the SALE on
+  // our domain. For the WorldCard hosted-page flow the card is entered
+  // on WorldCard's site, so we skip card validation and hide the card
+  // inputs (see JSX below).
+  const CARD_FIELDS = ['cardholderName', 'cardNumber', 'expiry', 'cvv'];
   const isHostedWorldCard = provider === 'worldcard' && worldCardFlow === 'hosted';
 
   const validateAll = () => {

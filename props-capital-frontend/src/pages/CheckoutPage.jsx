@@ -476,10 +476,10 @@ const CheckoutPage = () => {
                   <div className={`rounded-xl p-5 border-2 border-dashed ${isDark ? 'border-amber-500/30 bg-amber-500/5' : 'border-amber-300 bg-amber-50'}`}>
                     <div className="flex items-center gap-3">
                       <CreditCard className="w-6 h-6 text-amber-500" />
-                      <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Demo Mode</span>
+                      <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Secure Payment</span>
                     </div>
                     <p className={`text-sm mt-2 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                      Payment gateway integration coming soon. This is a demo checkout flow.
+                      After you confirm, you&apos;ll be redirected to our secure payment processor to enter your card details. We never see or store your card number.
                     </p>
                   </div>
                 </div>
