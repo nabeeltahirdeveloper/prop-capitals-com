@@ -164,17 +164,22 @@ function PagesContent() {
   const location = useLocation();
   const currentPage = _getCurrentPage(location.pathname);
 
-  // Chrome-free QuickLink payment pages. Admin-assisted one-shot URLs
-  // mounted OUTSIDE the public Layout (no nav, no footer, no language
-  // picker) so the customer sees ONLY the card form.
-  const isQuickLinkRoute = location.pathname.startsWith('/q/');
-  if (isQuickLinkRoute) {
+  // Chrome-free payment / link pages. Admin-assisted one-shot URLs and the
+  // pay-link result pages are mounted OUTSIDE the public Layout (no nav, no
+  // footer, no PropCapitals header) so the customer sees ONLY the payment UI.
+  const isChromeFreeRoute =
+    location.pathname.startsWith('/q/') ||
+    location.pathname.startsWith('/pay/');
+  if (isChromeFreeRoute) {
     return (
       <PriceProviderWithRouter>
         <LanguageProvider>
           <ErrorBoundary>
             <Routes>
               <Route path="/q/:slug" element={<QuickLinkCheckout />} />
+              <Route path="/pay/success" element={<PayLinkSuccess />} />
+              <Route path="/pay/fail" element={<PayLinkFail />} />
+              <Route path="/pay/:slug" element={<PayLink />} />
             </Routes>
           </ErrorBoundary>
         </LanguageProvider>
@@ -215,9 +220,7 @@ function PagesContent() {
               <Route path="/aml-policy" element={<AmlPolicyPage />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/set-password" element={<SetPassword />} />
-              <Route path="/pay/success" element={<PayLinkSuccess />} />
-              <Route path="/pay/fail" element={<PayLinkFail />} />
-              <Route path="/pay/:slug" element={<PayLink />} />
+              {/* /pay/* result pages are rendered chrome-free above. */}
 
               {/* Brand portal */}
               <Route path="/brand-login" element={<BrandLogin />} />

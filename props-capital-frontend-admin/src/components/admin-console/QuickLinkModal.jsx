@@ -165,7 +165,7 @@ export default function QuickLinkModal({ onClose, onSaved }) {
               onClick={() =>
                 navigator.clipboard.writeText(savedLink.destination_url || '')
               }
-              className="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500"
+              className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-semibold"
             >
               Copy URL
             </button>
@@ -379,7 +379,7 @@ export default function QuickLinkModal({ onClose, onSaved }) {
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 disabled:opacity-60"
+            className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-semibold disabled:opacity-60"
           >
             {loading ? 'Creating…' : 'Create Quick Link'}
           </button>

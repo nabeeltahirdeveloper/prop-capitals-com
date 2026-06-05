@@ -215,14 +215,30 @@ export default function QuickLinksSection() {
                   </div>
                 </div>
 
-                {/* Challenge + Brand */}
+                {/* Challenge + Brand + Gateway */}
                 <div className="col-span-12 md:col-span-3 min-w-0">
                   <p className="text-sm text-foreground truncate">
                     {l.challenge_name || '—'}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                    {l.brand_name ? `Brand · ${l.brand_name}` : 'No brand'}
-                    {l.name ? ` · ${l.name}` : ''}
+                  <p className="text-xs text-muted-foreground mt-0.5 truncate flex items-center gap-1.5 flex-wrap">
+                    {/* Gateway pill — null = Auto (defaults to Xoala) */}
+                    {l.provider === 'WORLDCARD' ? (
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-500/15 text-blue-500 border border-blue-500/30">
+                        WORLDCARD
+                      </span>
+                    ) : l.provider === 'XOALA' ? (
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-500/15 text-purple-500 border border-purple-500/30">
+                        XOALA
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-muted text-muted-foreground border border-border">
+                        AUTO
+                      </span>
+                    )}
+                    <span className="truncate">
+                      {l.brand_name ? `Brand · ${l.brand_name}` : 'No brand'}
+                      {l.name ? ` · ${l.name}` : ''}
+                    </span>
                   </p>
                 </div>
 

@@ -57,6 +57,12 @@ interface WorldCardChargeInput {
   brandSlug?: string;
   linkSlug?: string;
 
+  // QuickLink overrides — the link carries its own price/currency that
+  // must win over the challenge default (the challenge is still used for
+  // account size / platform / drawdown).
+  amountOverride?: number | null;
+  currency?: string;
+
   // S2S only — required.
   card?: {
     number: string;
@@ -383,10 +389,23 @@ export class WorldCardService {
 
     const { user, wasCreated, isGuestCheckout } = await this.resolveCheckoutUser(data);
 
+    // QuickLink amount/currency win over the challenge default and the
+    // DirectPurchaseLink override. This keeps the hosted page total in sync
+    // with what the customer saw on the /q/ summary.
+    const quickLinkOverride =
+      data.amountOverride != null && Number(data.amountOverride) > 0
+        ? Number(data.amountOverride)
+        : null;
     const basePrice =
-      linkPriceOverride != null ? linkPriceOverride : challenge.price;
+      quickLinkOverride != null
+        ? quickLinkOverride
+        : linkPriceOverride != null
+          ? linkPriceOverride
+          : challenge.price;
     const amountCents = Math.round(basePrice * 100);
-    const orderCurrency = (brandLink?.currency || challenge.currency || 'USD').toUpperCase();
+    const orderCurrency = String(
+      data.currency || brandLink?.currency || challenge.currency || 'USD',
+    ).toUpperCase();
     const worldCardAmount = (amountCents / 100).toFixed(2);
     const orderDescription = `${challenge.name} ${challenge.accountSize} Account`;
 
@@ -394,13 +413,26 @@ export class WorldCardService {
       platform || tradingPlatform || trading_platform || brokerPlatform || challenge.platform;
     const normalizedPlatform = this.normalizePlatform(selectedPlatform);
 
-    const merchantKey = this.configService.get<string>('WORLDCARD_MERCHANT_KEY');
-    const merchantPass = this.configService.get<string>('WORLDCARD_MERCHANT_PASS');
-    const notificationUrl = this.configService.get<string>('WORLDCARD_NOTIFICATION_URL');
+    // Accept both naming conventions: the documented *_MERCHANT_*/*_PAYMENT_URL
+    // keys and the legacy *_CLIENT_KEY/*_PASSWORD/*_BASE_URL keys that exist in
+    // the deployed .env. Whichever is set wins — no rename required.
+    const merchantKey =
+      this.configService.get<string>('WORLDCARD_MERCHANT_KEY') ||
+      this.configService.get<string>('WORLDCARD_CLIENT_KEY');
+    const merchantPass =
+      this.configService.get<string>('WORLDCARD_MERCHANT_PASS') ||
+      this.configService.get<string>('WORLDCARD_PASSWORD');
+    const notificationUrl =
+      this.configService.get<string>('WORLDCARD_NOTIFICATION_URL') ||
+      this.configService.get<string>('WORLDCARD_CALLBACK_URL');
     // The session endpoint lives at {host}/api/v1/session. We strip any
     // trailing slash so WORLDCARD_PAYMENT_URL=https://pay.world-card.co
     // (with or without slash) builds the right URL.
-    const baseUrl = (this.configService.get<string>('WORLDCARD_PAYMENT_URL') || '').replace(/\/+$/, '');
+    const baseUrl = (
+      this.configService.get<string>('WORLDCARD_PAYMENT_URL') ||
+      this.configService.get<string>('WORLDCARD_BASE_URL') ||
+      ''
+    ).replace(/\/+$/, '');
     const frontendUrl = this.configService.get<string>('APP_FRONTEND_URL');
 
     if (!merchantKey || !merchantPass || !baseUrl || !frontendUrl) {
@@ -428,18 +460,35 @@ export class WorldCardService {
     const cancelUrl = `${frontendUrl}/pay/fail?reference=${orderNumber}`;
     const errorUrl = `${frontendUrl}/pay/fail?reference=${orderNumber}`;
 
+    // WorldCard's hosted Checkout `customer` schema is { name, email,
+    // birth_date } — a SINGLE `name` ("First Last"), NOT first_name/last_name,
+    // and no phone/country/address/city. Sending undocumented fields can fail
+    // validation. Name + the rest of the billing are collected by WorldCard
+    // on its own page, so we only send what we reliably have.
     const customer: Record<string, any> = { email: user.email };
-    if (billingFirstName) customer.first_name = billingFirstName;
-    if (billingLastName) customer.last_name = billingLastName;
-    if (data.phone) customer.phone = data.phone;
-    if (data.country) customer.country = data.country;
-    if (data.address) customer.address = data.address;
-    if (data.city) customer.city = data.city;
+    const customerName = [billingFirstName, billingLastName]
+      .filter(Boolean)
+      .join(' ')
+      .trim();
+    if (customerName.length >= 2) customer.name = customerName;
+
+    // `methods` is merchant-specific. Forcing an unsupported value makes the
+    // session API return HTTP 400 "Not found acceptable methods". Default to
+    // omitting it so WorldCard offers whatever the merchant has enabled;
+    // set WORLDCARD_METHODS="card" (comma-separated) only if the account
+    // actually requires it to be specified.
+    const methodsCsv = this.configService.get<string>('WORLDCARD_METHODS');
+    const methods = methodsCsv
+      ? methodsCsv
+          .split(',')
+          .map((m) => m.trim())
+          .filter(Boolean)
+      : null;
 
     const sessionPayload: Record<string, any> = {
       merchant_key: merchantKey,
       operation: 'purchase',
-      methods: ['card'],
+      ...(methods && methods.length ? { methods } : {}),
       hash: sessionHash,
       success_url: successUrl,
       cancel_url: cancelUrl,
@@ -518,7 +567,12 @@ export class WorldCardService {
     );
 
     const apiUrl = `${baseUrl}/api/v1/session`;
-    this.logger.log(`[WorldCard Hosted] POST ${apiUrl} ref=${orderNumber}`);
+    // Full request payload is safe to log for the hosted flow — it carries
+    // NO card data (the customer enters that on WorldCard). This is the
+    // exact body the gateway evaluated, useful evidence for support tickets.
+    this.logger.log(
+      `[WorldCard Hosted] POST ${apiUrl} ref=${orderNumber} payload=${JSON.stringify(sessionPayload)}`,
+    );
 
     let sessionResponse: any;
     try {
@@ -529,7 +583,7 @@ export class WorldCardService {
       });
       sessionResponse = httpRes.data;
       this.logger.log(
-        `[WorldCard Hosted] Response ref=${orderNumber} httpStatus=${httpRes.status} body=${JSON.stringify(sessionResponse).slice(0, 500)}`,
+        `[WorldCard Hosted] Response ref=${orderNumber} httpStatus=${httpRes.status} body=${JSON.stringify(sessionResponse)}`,
       );
 
       if (httpRes.status >= 400) {
@@ -780,14 +834,27 @@ export class WorldCardService {
     const orderId = `WC-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
 
     // ── Env / credentials ───────────────────────────────────────────
-    const clientKey = this.configService.get<string>('WORLDCARD_MERCHANT_KEY');
-    const password = this.configService.get<string>('WORLDCARD_MERCHANT_PASS');
+    // Accept both naming conventions (see createHostedSession): documented
+    // *_MERCHANT_*/*_PAYMENT_URL keys or the legacy *_CLIENT_KEY/*_PASSWORD/
+    // *_BASE_URL keys present in the deployed .env.
+    const clientKey =
+      this.configService.get<string>('WORLDCARD_MERCHANT_KEY') ||
+      this.configService.get<string>('WORLDCARD_CLIENT_KEY');
+    const password =
+      this.configService.get<string>('WORLDCARD_MERCHANT_PASS') ||
+      this.configService.get<string>('WORLDCARD_PASSWORD');
     // Accept either the bare host or a full URL. We always append the
     // S2S CARD path (/v2/post by default; /post if WORLDCARD_S2S_PATH
     // is set to that).
-    const baseUrl = (this.configService.get<string>('WORLDCARD_PAYMENT_URL') || '').replace(/\/+$/, '');
+    const baseUrl = (
+      this.configService.get<string>('WORLDCARD_PAYMENT_URL') ||
+      this.configService.get<string>('WORLDCARD_BASE_URL') ||
+      ''
+    ).replace(/\/+$/, '');
     const channelId = this.configService.get<string>('WORLDCARD_CHANNEL_ID') || '';
-    const notificationUrl = this.configService.get<string>('WORLDCARD_NOTIFICATION_URL');
+    const notificationUrl =
+      this.configService.get<string>('WORLDCARD_NOTIFICATION_URL') ||
+      this.configService.get<string>('WORLDCARD_CALLBACK_URL');
     const frontendUrl = this.configService.get<string>('APP_FRONTEND_URL');
     const backendUrl = this.configService.get<string>('APP_BACKEND_URL');
     // Default to /v2/post (redirect_params as an array of {name,value}).
@@ -1239,7 +1306,9 @@ export class WorldCardWebhookService {
   // cross-flow edge cases) we fall back to the other formula before
   // rejecting. Logs every attempt so misconfig is easy to diagnose.
   private async verifyCallbackHash(payload: any, payment: any): Promise<void> {
-    const password = this.configService.get<string>('WORLDCARD_MERCHANT_PASS');
+    const password =
+      this.configService.get<string>('WORLDCARD_MERCHANT_PASS') ||
+      this.configService.get<string>('WORLDCARD_PASSWORD');
     if (!password) {
       throw new BadRequestException('Missing WORLDCARD_MERCHANT_PASS in env');
     }
