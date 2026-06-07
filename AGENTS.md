@@ -8,7 +8,7 @@ Yarn workspaces monorepo with three packages:
 
 | Directory | Yarn workspace name | Dev port |
 |-----------|---------------------|----------|
-| `props-capital-backend` | `props-capital-backend` | 5101 |
+| `props-capital-backend` | `props-capital-backend` | 5002 (from `PORT` secret) or 5101 locally |
 | `props-capital-frontend` | `props-capital-frontend` | 5173 |
 | `props-capital-frontend-admin` | `props-capital-admin` | 5175 |
 
@@ -30,21 +30,26 @@ sudo -u postgres psql -c "CREATE USER propcap WITH PASSWORD 'propcap_dev' CREATE
 sudo -u postgres psql -c "CREATE DATABASE propcap OWNER propcap;"
 ```
 
-### Environment files (gitignored — create locally)
+### Environment variables
 
-**`props-capital-backend/.env`** (minimum to boot):
+**Cursor Cloud:** backend/payment/email keys are injected as process env vars (see repo Secrets). Sync them into gitignored `.env` files before starting Nest/Vite — Prisma and Nest load `props-capital-backend/.env`; Vite reads per-package `.env`.
 
+```bash
+# Example: regenerate backend .env from injected secrets (run from repo root)
+python3 -c "
+import os
+from pathlib import Path
+keys = [k for k in os.environ if k.startswith(('DATABASE_', 'JWT_', 'OPENAI_', 'SENDGRID_', 'XOALA_', 'WORLDCARD_', 'MASSIVE_', 'APP_', 'EMAIL_', 'CHATBOT_', 'TWELVE_', 'PORT', 'NODE_ENV'))]
+Path('props-capital-backend/.env').write_text('\\n'.join(f'{k}={os.environ[k]!r}' for k in sorted(keys)) + '\\n')
+port = os.environ.get('PORT', '5002')
+for p in ['props-capital-frontend/.env', 'props-capital-frontend-admin/.env']:
+    Path(p).write_text(f'VITE_API_URL=http://localhost:{port}\\nVITE_WEBSOCKET_URL=http://localhost:{port}\\n')
+"
 ```
-DATABASE_URL="postgresql://propcap:propcap_dev@localhost:5432/propcap?schema=public"
-JWT_SECRET="<at-least-32-character-local-dev-secret>"
-OPENAI_API_KEY="<any-non-empty-placeholder-for-local-boot>"
-PORT=5101
-EMAIL_ENABLED=false
-```
 
-`OPENAI_API_KEY` is required at runtime (`ChatbotService` uses `getOrThrow`), even though env validation only warns about it.
+**Local-only fallback** (no secrets): use local Postgres (`propcap` user/db) plus placeholder `OPENAI_API_KEY` and `PORT=5101`, with `VITE_API_URL=http://localhost:5101` on frontends.
 
-**Frontends** — set `VITE_API_URL=http://localhost:5101` in `.env` under each frontend package. Without this, both default to `http://localhost:5002`, which does not match the backend default port `5101`.
+`OPENAI_API_KEY` is required at runtime (`ChatbotService` uses `getOrThrow`). Injected `PORT` is typically `5002`, which matches the frontend dev default when `VITE_API_URL` is unset.
 
 ### Database schema and seeds
 
@@ -67,7 +72,7 @@ yarn workspace props-capital-admin dev --host 0.0.0.0
 
 Quick health checks:
 
-- Backend: `curl http://localhost:5101/challenges` → `[]`
+- Backend: `curl http://localhost:5002/challenges` → `[]` (or `:5101` if using local-only env)
 - Trader UI: `http://localhost:5173/`
 - Admin UI: `http://localhost:5175/SignIn`
 
