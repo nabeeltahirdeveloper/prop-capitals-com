@@ -1187,7 +1187,7 @@ const challengeTypes = [
     leverage: '1:30',
     minDays: 'None',
     popular: true,
-    prices: { '5K': 69, '10K': 99, '20K': 159, '30K': 219, '50K': 349, '100K': 599, '200K': 999 },
+    prices: { '5K': 79, '10K': 99, '20K': 159, '30K': 219, '50K': 299, '100K': 499, '200K': 899 },
   },
   {
     id: '2-step',
@@ -1202,7 +1202,7 @@ const challengeTypes = [
     leverage: '1:50',
     minDays: 'None',
     popular: false,
-    prices: { '5K': 59, '10K': 79, '20K': 129, '30K': 179, '50K': 299, '100K': 499, '200K': 799 },
+    prices: { '5K': 59, '10K': 79, '20K': 129, '30K': 179, '50K': 249, '100K': 399, '200K': 699 },
   },
 ];
 

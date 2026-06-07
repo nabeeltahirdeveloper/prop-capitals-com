@@ -66,12 +66,10 @@ const TransactionsPage = () => {
     failed: payments.filter((p) => p.status === 'failed').length,
   };
 
-  // DB stores cents (EUR-denominated). Convert at the same 0.85 rate the
-  // rest of the panel uses when toggle is GBP, then format with cents.
+  // DB stores cents; GBP uses the same numeric amount as EUR.
   const formatAmount = (cents) => {
     if (!cents && cents !== 0) return '—';
-    const eur = cents / 100;
-    const value = currency === 'GBP' ? eur * 0.85 : eur;
+    const value = cents / 100;
     return `${symbol}${value.toFixed(2)}`;
   };
 

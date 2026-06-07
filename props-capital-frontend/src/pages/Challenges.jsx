@@ -8,6 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getChallenges } from '@/api/challenges';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getFullPrice } from '@/utils/fullPrice';
+import { isCanonicalAccountSize } from '@/constants/challengePricing';
 import { persistBrandAttribution } from '@/pages/CheckoutPage';
 import { apiPost } from '@/lib/api';
 
@@ -44,6 +45,7 @@ const ChallengesPage = () => {
   const { data: rawChallenges = [], isLoading } = useQuery({
     queryKey: ['challenges'],
     queryFn: getChallenges,
+    select: (data) => (Array.isArray(data) ? data.filter((c) => isCanonicalAccountSize(c.accountSize)) : data),
   });
 
   // Group challenges by type and build account size / price structure

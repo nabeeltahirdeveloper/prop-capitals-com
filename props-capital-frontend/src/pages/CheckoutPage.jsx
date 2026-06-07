@@ -81,7 +81,7 @@ const CHALLENGE_DATA = {
     dailyDrawdown: '4%',
     maxDrawdown: '8%',
     profitSplit: '85%',
-    prices: { '5K': 55, '10K': 99, '25K': 189, '50K': 299, '100K': 499, '200K': 949 }
+    prices: { '5K': 79, '10K': 99, '20K': 159, '30K': 219, '50K': 299, '100K': 499, '200K': 899 }
   },
   'two-step': {
     name: '2-Step Challenge',
@@ -89,7 +89,7 @@ const CHALLENGE_DATA = {
     dailyDrawdown: '5%',
     maxDrawdown: '10%',
     profitSplit: '90%',
-    prices: { '5K': 45, '10K': 79, '25K': 159, '50K': 249, '100K': 449, '200K': 849 }
+    prices: { '5K': 59, '10K': 79, '20K': 129, '30K': 179, '50K': 249, '100K': 399, '200K': 699 }
   }
 };
 

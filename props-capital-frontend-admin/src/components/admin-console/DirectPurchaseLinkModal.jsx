@@ -2,6 +2,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
 import { apiGet } from '@/lib/api';
 import { useTranslation } from '../../contexts/LanguageContext';
+import {
+  formatChallengePriceLabel,
+  isCanonicalAccountSize,
+} from '@/utils/challengePricing';
 
 const formatAccountSize = (size) => {
   if (!size) return '';
@@ -52,7 +56,7 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
     try {
       const data = await adminConsoleApi.directPurchaseLinks.listChallenges();
       if (Array.isArray(data?.challenges) && data.challenges.length > 0) {
-        setChallenges(data.challenges);
+        setChallenges(data.challenges.filter((c) => isCanonicalAccountSize(c.account_size ?? c.accountSize)));
         return;
       }
     } catch (err) {
@@ -63,7 +67,7 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
       const list = Array.isArray(raw) ? raw : raw?.challenges || [];
       setChallenges(
         list
-          .filter((c) => c.isActive !== false)
+          .filter((c) => c.isActive !== false && isCanonicalAccountSize(c.accountSize))
           .map((c) => ({
             id: c.id,
             slug: c.slug,
@@ -320,9 +324,7 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
                 </option>
                 {challenges.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.name}
-                    {c.account_size ? ` — ${formatAccountSize(c.account_size)}` : ''}
-                    {c.price != null ? ` ($${c.price})` : ''}
+                    {formatChallengePriceLabel(c, formData.currency)}
                   </option>
                 ))}
               </select>

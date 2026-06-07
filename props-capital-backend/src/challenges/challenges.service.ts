@@ -4,6 +4,8 @@ import { PrismaService } from '../prisma/prisma.service';
 
 import { Prisma } from '@prisma/client';
 
+const CANONICAL_ACCOUNT_SIZES = [5000, 10000, 20000, 30000, 50000, 100000, 200000];
+
 @Injectable()
 
 export class ChallengesService {
@@ -15,7 +17,7 @@ export class ChallengesService {
 
   async findAll() {
     return this.prisma.challenge.findMany({
-      where: { isActive: true },
+      where: { isActive: true, accountSize: { in: CANONICAL_ACCOUNT_SIZES } },
       orderBy: { createdAt: 'desc' },
     });
   }
