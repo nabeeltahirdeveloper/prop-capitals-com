@@ -7,22 +7,22 @@ const challengeTypes = ['one_phase', 'two_phase'] as const;
 
 const priceMap = {
   one_phase: {
-    5000: 69,
+    5000: 79,
     10000: 99,
     20000: 159,
     30000: 219,
-    50000: 349,
-    100000: 599,
-    200000: 999,
+    50000: 299,
+    100000: 499,
+    200000: 899,
   },
   two_phase: {
     5000: 59,
     10000: 79,
     20000: 129,
     30000: 179,
-    50000: 299,
-    100000: 499,
-    200000: 799,
+    50000: 249,
+    100000: 399,
+    200000: 699,
   },
 } as const;
 
@@ -36,6 +36,15 @@ async function seedChallenges() {
     data: { isActive: false },
   });
   console.log(`Deactivated ${deactivated.count} existing rows.`);
+
+  // Retire legacy tiers (e.g. €15K) that are no longer sold.
+  const retired = await prisma.challenge.updateMany({
+    where: { accountSize: { in: [15000, 24000, 25000] } },
+    data: { isActive: false },
+  });
+  if (retired.count > 0) {
+    console.log(`Retired ${retired.count} legacy account-size row(s).`);
+  }
 
   // Step 2: for each canonical (size, type), activate ONE row — preferring
   // the most-recent existing match — and update price/name/currency. Any

@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
 import { apiGet } from '@/lib/api';
 import { COUNTRIES } from '@/constants/countries';
+import {
+  formatChallengePriceLabel,
+  isCanonicalAccountSize,
+} from '@/utils/challengePricing';
 
 /**
  * QuickLinkModal
@@ -55,7 +59,7 @@ export default function QuickLinkModal({ onClose, onSaved }) {
     try {
       const data = await adminConsoleApi.directPurchaseLinks.listChallenges();
       if (Array.isArray(data?.challenges) && data.challenges.length > 0) {
-        setChallenges(data.challenges);
+        setChallenges(data.challenges.filter((c) => isCanonicalAccountSize(c.account_size ?? c.accountSize)));
         return;
       }
     } catch (_e) {}
@@ -64,7 +68,7 @@ export default function QuickLinkModal({ onClose, onSaved }) {
       const list = Array.isArray(raw) ? raw : raw?.challenges || [];
       setChallenges(
         list
-          .filter((c) => c.isActive !== false)
+          .filter((c) => c.isActive !== false && isCanonicalAccountSize(c.accountSize))
           .map((c) => ({
             id: c.id,
             slug: c.slug,
@@ -87,7 +91,7 @@ export default function QuickLinkModal({ onClose, onSaved }) {
     if (!selectedChallenge) return;
     setFormData((prev) => ({
       ...prev,
-      amount: prev.amount === '' ? String(selectedChallenge.price ?? '') : prev.amount,
+      amount: String(selectedChallenge.price ?? ''),
       currency:
         prev.currency === 'EUR' && selectedChallenge.currency
           ? selectedChallenge.currency
@@ -225,14 +229,14 @@ export default function QuickLinkModal({ onClose, onSaved }) {
             <select
               value={formData.challenge_id}
               onChange={(e) =>
-                setFormData({ ...formData, challenge_id: e.target.value })
+                setFormData({ ...formData, challenge_id: e.target.value, amount: '' })
               }
               className="search-input p-3 rounded-lg w-full"
             >
               <option value="">Select challenge…</option>
               {challenges.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.name}
+                  {formatChallengePriceLabel(c, formData.currency)}
                 </option>
               ))}
             </select>

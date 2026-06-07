@@ -169,13 +169,15 @@ function PagesContent() {
   // footer, no PropCapitals header) so the customer sees ONLY the payment UI.
   const isChromeFreeRoute =
     location.pathname.startsWith('/q/') ||
-    location.pathname.startsWith('/pay/');
+    location.pathname.startsWith('/pay/') ||
+    location.pathname === '/checkout';
   if (isChromeFreeRoute) {
     return (
       <PriceProviderWithRouter>
         <LanguageProvider>
           <ErrorBoundary>
             <Routes>
+              <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/q/:slug" element={<QuickLinkCheckout />} />
               <Route path="/pay/success" element={<PayLinkSuccess />} />
               <Route path="/pay/fail" element={<PayLinkFail />} />

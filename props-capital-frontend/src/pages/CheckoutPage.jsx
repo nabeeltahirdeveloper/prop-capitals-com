@@ -81,7 +81,7 @@ const CHALLENGE_DATA = {
     dailyDrawdown: '4%',
     maxDrawdown: '8%',
     profitSplit: '85%',
-    prices: { '5K': 55, '10K': 99, '25K': 189, '50K': 299, '100K': 499, '200K': 949 }
+    prices: { '5K': 79, '10K': 99, '20K': 159, '30K': 219, '50K': 299, '100K': 499, '200K': 899 }
   },
   'two-step': {
     name: '2-Step Challenge',
@@ -89,7 +89,7 @@ const CHALLENGE_DATA = {
     dailyDrawdown: '5%',
     maxDrawdown: '10%',
     profitSplit: '90%',
-    prices: { '5K': 45, '10K': 79, '25K': 159, '50K': 249, '100K': 449, '200K': 849 }
+    prices: { '5K': 59, '10K': 79, '20K': 129, '30K': 179, '50K': 249, '100K': 399, '200K': 699 }
   }
 };
 
@@ -159,9 +159,17 @@ const CheckoutPage = () => {
     }
   }, [searchParams]);
 
+  const brandLinkSlug = searchParams.get('link');
   const challengeType = normalizeChallengeType(searchParams.get('type'));
   const rawSize = searchParams.get('size') || '50K';
   const { baseSize: accountSize, customPrice } = parseSizeWithCustomPrice(rawSize);
+  const customPriceFromQuery = (() => {
+    const v = searchParams.get('customPrice');
+    if (!v) return null;
+    const n = Number(v);
+    return Number.isFinite(n) && n > 0 ? n : null;
+  })();
+  const resolvedCustomPrice = customPriceFromQuery ?? customPrice;
 
   // Resolve the matching DB challenge so we know what to redirect to AND so
   // the prices/name shown here match the dashboard + Challenges page (which
@@ -173,9 +181,14 @@ const CheckoutPage = () => {
   // findUnique({id}) lookup when the param isn't a valid slug, so we can
   // pass either `slug` or `id` in /pay/:slug — whichever is present on the
   // row. That keeps things working for legacy challenges without a slug.
-  const { data: dbChallenges = [], isLoading: challengesLoading } = useQuery({
+  const {
+    data: dbChallenges = [],
+    isLoading: challengesLoading,
+    isError: challengesError,
+  } = useQuery({
     queryKey: ['challenges'],
     queryFn: getChallenges,
+    enabled: !brandLinkSlug,
   });
   const accountSizeInt = parseSizeToInt(accountSize);
   const matchedChallenge = dbChallenges.find(
@@ -189,7 +202,7 @@ const CheckoutPage = () => {
   // Display price priority: URL custom override → matched DB challenge → static fallback.
   // Backend re-validates the override against the link record before charging.
   const price =
-    customPrice ?? matchedChallenge?.price ?? fallbackData?.prices?.[accountSize] ?? 0;
+    resolvedCustomPrice ?? matchedChallenge?.price ?? fallbackData?.prices?.[accountSize] ?? 0;
   const sizeLabel = matchedChallenge
     ? formatSize(`${matchedChallenge.accountSize / 1000}K`)
     : formatSize(accountSize);
@@ -282,38 +295,67 @@ const CheckoutPage = () => {
     // Carry the custom price through so PayLink can show the right total in
     // its order summary. The actual charge amount is still resolved
     // server-side from the link record — this param is display only.
-    if (customPrice != null) params.set('customPrice', String(customPrice));
+    if (resolvedCustomPrice != null) params.set('customPrice', String(resolvedCustomPrice));
     const qs = params.toString();
     navigate(`/pay/${identifier}${qs ? `?${qs}` : ''}`);
   };
 
-  // Auto-skip the platform picker: as soon as the matching DB challenge is
-  // resolved, forward the customer straight to /pay/:slug with the
-  // (random/pinned) platform pre-selected. Runs once.
+  // Brand direct-purchase links carry ?link=<slug>. The /pay/:slug route
+  // resolves that row server-side (custom price, provider, platform) — no
+  // need to wait for GET /challenges or match by size/type in the client.
   const didAutoRedirect = useRef(false);
   useEffect(() => {
     if (didAutoRedirect.current) return;
-    if (challengesLoading) return; // wait for the challenge list
-    const identifier = matchedChallenge?.slug || matchedChallenge?.id;
-    if (!identifier) return; // no match → fall back to the visible picker UI
-    didAutoRedirect.current = true;
+
     const params = new URLSearchParams();
     params.set('platform', effectivePlatform);
-    if (customPrice != null) params.set('customPrice', String(customPrice));
-    navigate(`/pay/${identifier}?${params.toString()}`, { replace: true });
-  }, [challengesLoading, matchedChallenge, effectivePlatform, customPrice, navigate]);
+    if (resolvedCustomPrice != null) params.set('customPrice', String(resolvedCustomPrice));
+    const qs = params.toString();
+    const toPay = (slug) => `/pay/${encodeURIComponent(slug)}${qs ? `?${qs}` : ''}`;
 
-  // While we're loading challenges or about to redirect, show a lightweight
-  // spinner instead of flashing the (now-skipped) platform picker. We only
-  // fall through to the full UI when there's genuinely no matching challenge.
+    if (brandLinkSlug) {
+      didAutoRedirect.current = true;
+      navigate(toPay(brandLinkSlug), { replace: true });
+      return;
+    }
+
+    if (challengesLoading) return;
+    const identifier = matchedChallenge?.slug || matchedChallenge?.id;
+    if (!identifier) return;
+    didAutoRedirect.current = true;
+    navigate(toPay(identifier), { replace: true });
+  }, [
+    brandLinkSlug,
+    challengesLoading,
+    matchedChallenge,
+    effectivePlatform,
+    resolvedCustomPrice,
+    navigate,
+  ]);
+
   const matchIdentifier = matchedChallenge?.slug || matchedChallenge?.id;
-  const redirecting = challengesLoading || !!matchIdentifier;
+  const redirecting = !!brandLinkSlug || challengesLoading || !!matchIdentifier;
   if (redirecting) {
     return (
       <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
           <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>Preparing your checkout…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (challengesError) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center px-4 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
+        <div className={`rounded-2xl p-8 max-w-md text-center border ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`}>
+          <h2 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            Checkout unavailable
+          </h2>
+          <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>
+            We could not load challenge pricing. Please refresh the page or contact support@prop-capitals.com.
+          </p>
         </div>
       </div>
     );

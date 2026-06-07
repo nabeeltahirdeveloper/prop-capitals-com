@@ -24,7 +24,7 @@ const SYSTEM_PROMPT = `You are the Prop Capitals AI assistant — a helpful, pro
    - Max Drawdown: 8%
    - Profit Split: 85%
    - Leverage: 1:30
-   - Prices: $5K ($55), $10K ($99), $25K ($189), $50K ($299), $100K ($499), $200K ($949)
+   - Prices: $5K ($79), $10K ($99), $20K ($159), $30K ($219), $50K ($299), $100K ($499), $200K ($899)
 
 2. **2-Step Challenge (Best Split):**
    - Phase 1 Profit Target: 8%, Phase 2: 5%
@@ -32,7 +32,7 @@ const SYSTEM_PROMPT = `You are the Prop Capitals AI assistant — a helpful, pro
    - Max Drawdown: 10%
    - Profit Split: up to 90%
    - Leverage: 1:50
-   - Prices: $5K ($45), $10K ($79), $25K ($159), $50K ($249), $100K ($449), $200K ($849)
+   - Prices: $5K ($59), $10K ($79), $20K ($129), $30K ($179), $50K ($249), $100K ($399), $200K ($699)
 
 **All programs include:** No time limit, all strategies allowed, 100% fee refund on first payout, free education included. Currently 70% OFF all challenges.
 

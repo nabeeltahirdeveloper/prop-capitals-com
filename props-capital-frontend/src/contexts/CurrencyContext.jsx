@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-// Display-only EUR -> GBP rate. Change this single constant to retune GBP pricing.
-export const EUR_TO_GBP_RATE = 0.85;
+// Challenge fees use the same numeric amount in EUR and GBP (symbol only changes).
+export const EUR_TO_GBP_RATE = 1;
 
 export const supportedCurrencies = [
   { code: 'EUR', symbol: '€', name: 'Euro' },
@@ -24,9 +24,7 @@ export const CurrencyProvider = ({ children }) => {
     const symbol = currency === 'GBP' ? '£' : '€';
     const isGBP = currency === 'GBP';
 
-    // All displayed values are EUR-denominated in source data; we apply the
-    // same fixed FX whenever GBP is active, so every helper produces the same
-    // converted amount the customer expects.
+    // Fees are stored once; GBP shows the same number with a £ prefix.
     const convert = (n) => (isGBP ? n * EUR_TO_GBP_RATE : n);
 
     // Format a "unit-suffixed" number ("5K", "1.5M", "200K") after FX. Keeps

@@ -2070,8 +2070,9 @@ export class AdminConsoleService {
    * Active challenges, in a shape the Create-Link modal can render in a dropdown.
    */
   async listChallengesForLinks() {
+    const canonicalSizes = [5000, 10000, 20000, 30000, 50000, 100000, 200000];
     const challenges = await this.db.challenge.findMany({
-      where: { isActive: true },
+      where: { isActive: true, accountSize: { in: canonicalSizes } },
       select: {
         id: true,
         slug: true,

@@ -100,7 +100,7 @@ export class PaymentsService {
   // the amount server-side so a tampered client can't change what we charge.
   // Mirrors EUR_TO_GBP_RATE + Math.round in CurrencyContext.jsx#formatFee —
   // these must stay in sync or what the customer sees won't match the charge.
-  private static readonly EUR_TO_GBP_RATE = 0.85;
+  private static readonly EUR_TO_GBP_RATE = 1;
 
   private computeChargeAmount(
     challenge: { price: number; currency: string | null },
