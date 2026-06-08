@@ -135,7 +135,6 @@ const MT5TradingArea = ({
     queryFn: async () => getUserAccounts(user?.userId),
     enabled: !!user?.userId,
   });
-console.log("SDK VERSION:", sdkVersion.mt5SdkVersion);
   // console.log("MT5", userAccounts)
   // console.log("USER:", user);
   // console.log("USER ID:", user?.id);
@@ -169,7 +168,6 @@ console.log("SDK VERSION:", sdkVersion.mt5SdkVersion);
       const response = await processPlatformLogin(accountId, email, password);
       if (response?.platformToken) {
         setPlatformToken(accountId, response.platformToken);
-        console.log(accountId, response);
         toast({ title: "Successfully connected to MT5" });
       }
     } catch (error) {

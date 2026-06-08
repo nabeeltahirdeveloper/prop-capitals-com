@@ -292,11 +292,6 @@ export default function AccountSummaryCard({
 
   const equityDisplay = (account.current_balance || 0) + openPositionsPnl;
 
-  console.log("AccountSummaryCard → open PnL:", openPositionsPnl);
-  console.log("AccountSummaryCard → open PnL:");
-  console.log("AccountSummaryCard → Equity:", equityDisplay);
-  console.log("AccountSummaryCard → positions count:", positionsWithPnL.length);
-
   return (
     <Card className="bg-slate-900 border-slate-800 p-6">
       {/* Header */}
