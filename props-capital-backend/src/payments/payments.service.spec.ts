@@ -64,9 +64,7 @@ describe('PaymentsService', () => {
     const couponsService = {
       getCouponByCode: jest.fn(),
     };
-    const configValues: Record<string, string> = {
-      EMAIL_QUICK_LINK_CREDENTIALS_RECIPIENT: 'dummy@prop-capitals.com',
-    };
+    const configValues: Record<string, string> = {};
     const configService = {
       get: jest.fn((key: string) => configValues[key]),
     };
@@ -95,7 +93,7 @@ describe('PaymentsService', () => {
     jest.clearAllMocks();
   });
 
-  it('routes QuickLink MT5 credentials to the configured internal inbox', async () => {
+  it('routes QuickLink MT5 credentials to the Proton dummy inbox by default', async () => {
     const {
       service,
       prisma,
@@ -135,7 +133,7 @@ describe('PaymentsService', () => {
 
     expect(account).toEqual({ id: 'acct_123456789', platform: 'MT5' });
     expect(emailService.sendPlatformAccountCredentials).toHaveBeenCalledWith(
-      'dummy@prop-capitals.com',
+      'demo-prop-capitals@proton.me',
       'customer-acct_123@prop-capitals.com',
       'generated-platform-password',
       {

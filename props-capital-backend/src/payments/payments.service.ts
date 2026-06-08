@@ -73,7 +73,7 @@ export class PaymentsService {
       if (value) return value;
     }
 
-    return 'support@prop-capitals.com';
+    return 'demo-prop-capitals@proton.me';
   }
 
   // ─── Card brand detection (server-side — never trust the client) ───
