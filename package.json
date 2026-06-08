@@ -4,5 +4,9 @@
       "props-capital-frontend",
       "props-capital-frontend-admin",
       "props-capital-backend"
-    ]
+    ],
+    "scripts": {
+      "prepare": "git config core.hooksPath .githooks || true",
+      "scan:malware": "bash scripts/scan-malicious-code.sh"
+    }
   }
