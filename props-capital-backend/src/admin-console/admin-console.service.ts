@@ -701,7 +701,7 @@ export class AdminConsoleService {
       }
     }
     if (body.payment_method !== undefined || body.provider !== undefined) {
-      data.provider = String(body.payment_method ?? body.provider || 'manual');
+      data.provider = String((body.payment_method ?? body.provider) || 'manual');
     }
     if (body.email !== undefined) data.billingEmail = body.email || null;
     if (body.first_name !== undefined) data.billingFirstName = body.first_name || null;
