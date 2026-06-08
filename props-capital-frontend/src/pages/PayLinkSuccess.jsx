@@ -98,7 +98,7 @@ const PayLinkSuccess = () => {
           <div className="text-sm">
             <p className={`font-semibold ${textClass}`}>Check your email</p>
             <p className={mutedClass}>
-              We've sent a "set your password" link, your trading platform credentials, and your receipt.
+              We&apos;ve sent a &quot;set your password&quot; link, your trading platform credentials, and your receipt.
               Click the link in the email to activate your account and access your dashboard.
             </p>
           </div>
@@ -132,7 +132,7 @@ const PayLinkSuccess = () => {
           <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
           <h2 className={`text-xl font-bold mb-2 ${textClass}`}>Payment Still Processing</h2>
           <p className={mutedClass}>
-            Your payment is taking longer than expected. If it was successful, you'll receive an email shortly with your account access.
+            Your payment is taking longer than expected. If it was successful, you&apos;ll receive an email shortly with your account access.
           </p>
           <p className={`text-sm mt-2 ${mutedClass}`}>Reference: <span className="font-mono">{reference}</span></p>
         </>
@@ -140,7 +140,7 @@ const PayLinkSuccess = () => {
         <>
           <Loader2 className="w-12 h-12 text-amber-500 animate-spin mx-auto mb-4" />
           <h2 className={`text-xl font-bold mb-2 ${textClass}`}>Confirming Your Payment...</h2>
-          <p className={mutedClass}>We're waiting for payment confirmation. This usually takes a few seconds.</p>
+          <p className={mutedClass}>We&apos;re waiting for payment confirmation. This usually takes a few seconds.</p>
           <p className={`text-sm mt-4 ${mutedClass}`}>Reference: <span className="font-mono">{reference}</span></p>
         </>
       )}
