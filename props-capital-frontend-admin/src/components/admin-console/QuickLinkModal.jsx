@@ -270,9 +270,12 @@ export default function QuickLinkModal({ onClose, onSaved }) {
                 setFormData({ ...formData, amount: e.target.value })
               }
               className="search-input p-3 rounded-lg w-full"
-              placeholder={isCustomChallenge ? 'Required for CUSTOM' : ''}
+              placeholder={isCustomChallenge ? 'Required' : ''}
               required={isCustomChallenge}
             />
+            {isCustomChallenge && (
+              <p className="text-[11px] text-gray-500 mt-1">Required for CUSTOM</p>
+            )}
           </div>
           <div>
             <label className="block text-xs text-gray-400 mb-1">Currency</label>
