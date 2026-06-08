@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Check, ArrowRight, Star, Shield, Zap, Clock, TrendingUp, Award, User } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -18,22 +18,6 @@ const features = [
   { icon: Clock, title: "Fast Payouts", description: "Under 90 minutes average" }
 ];
 
-const CUSTOM_CHALLENGE_CARD = {
-  id: 'custom',
-  name: 'CUSTOM Challenge',
-  badge: 'Tailored',
-  description: 'Need a different account size or setup? Our team can build a custom offer for you.',
-  phases: 'Custom',
-  profitTarget: 'Custom',
-  dailyDrawdown: 'Custom',
-  maxDrawdown: 'Custom',
-  profitSplit: 'Up to 90%',
-  minDays: 'Custom',
-  prices: {},
-  popular: false,
-  isCustom: true,
-};
-
 function formatAccountSize(size) {
   if (size >= 1000) return `${size / 1000}K`;
   return String(size);
@@ -41,9 +25,11 @@ function formatAccountSize(size) {
 
 const ChallengesPage = () => {
   const { isDark } = useTheme();
-  const { formatFee, formatSize, cur } = useCurrency();
+  const { formatFee, formatAmount, formatSize, cur, symbol } = useCurrency();
   const [selectedSize, setSelectedSize] = useState(3);
+  const [customPrice, setCustomPrice] = useState('50');
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const brandSlug = searchParams.get('brand');
@@ -63,9 +49,7 @@ const ChallengesPage = () => {
 
   // Group challenges by type and build account size / price structure
   const { accountSizes, challengeTypes } = useMemo(() => {
-    if (!rawChallenges.length) {
-      return { accountSizes: [], challengeTypes: [CUSTOM_CHALLENGE_CARD] };
-    }
+    if (!rawChallenges.length) return { accountSizes: [], challengeTypes: [] };
 
     // Collect unique account sizes across all challenges
     const sizeSet = new Set();
@@ -117,7 +101,7 @@ const ChallengesPage = () => {
       };
     });
 
-    return { accountSizes: sizes, challengeTypes: [...types, CUSTOM_CHALLENGE_CARD] };
+    return { accountSizes: sizes, challengeTypes: types };
   }, [rawChallenges, formatSize]);
 
   // Build comparison rows from fetched data
@@ -137,7 +121,24 @@ const ChallengesPage = () => {
     ];
   }, [challengeTypes]);
 
-  const safeSelectedSize = Math.min(selectedSize, accountSizes.length - 1);
+  const isCustomSelected = selectedSize === 'custom' || accountSizes.length === 0;
+  const safeSelectedSize = isCustomSelected
+    ? 0
+    : Math.min(selectedSize, Math.max(accountSizes.length - 1, 0));
+  const customPriceNumber = Number(customPrice);
+  const isCustomPriceValid =
+    Number.isFinite(customPriceNumber) && customPriceNumber >= 1 && customPriceNumber <= 1000;
+  const customAccountSize = isCustomPriceValid ? Math.round(customPriceNumber * 100) : 0;
+
+  const handleStartCustomChallenge = () => {
+    if (!isCustomPriceValid) return;
+    const params = new URLSearchParams({
+      subject: 'custom-challenge',
+      price: String(customPriceNumber),
+      accountSize: String(customAccountSize),
+    });
+    navigate(`/Contact?${params.toString()}`);
+  };
 
   return (
     <div className={`min-h-screen pt-20 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
@@ -174,7 +175,6 @@ const ChallengesPage = () => {
           ) : (
             <>
               {/* Account Size Selector */}
-              {accountSizes.length > 0 && (
               <div className="flex justify-center mb-12 overflow-x-auto pb-2">
                 <div className={`rounded-full p-1.5 inline-flex gap-1 border min-w-max ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`}>
                   {accountSizes.map((size, index) => (
@@ -182,7 +182,7 @@ const ChallengesPage = () => {
                       key={size.value}
                       onClick={() => setSelectedSize(index)}
                       className={`px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${
-                        safeSelectedSize === index
+                        !isCustomSelected && safeSelectedSize === index
                           ? 'bg-amber-400 text-[#0a0d12]'
                           : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                       }`}
@@ -190,12 +190,98 @@ const ChallengesPage = () => {
                       {size.label}
                     </button>
                   ))}
+                  <button
+                    onClick={() => setSelectedSize('custom')}
+                    className={`px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${
+                      isCustomSelected
+                        ? 'bg-amber-400 text-[#0a0d12]'
+                        : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    Custom {symbol}
+                  </button>
                 </div>
               </div>
-              )}
 
               {/* Challenge Cards */}
-              <div className={`grid gap-6 lg:gap-8 max-w-5xl mx-auto ${challengeTypes.length === 1 ? 'max-w-lg' : 'md:grid-cols-2 lg:grid-cols-3'}`}>
+              {isCustomSelected ? (
+                <div
+                  className={`relative rounded-3xl p-6 lg:p-8 border transition-all duration-300 max-w-lg mx-auto border-amber-400 shadow-[0_0_40px_rgba(251,191,36,0.15)] ${
+                    isDark
+                      ? 'bg-gradient-to-br from-[#12161d] to-[#0d1117]'
+                      : 'bg-white shadow-xl shadow-amber-500/10'
+                  }`}
+                >
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <div className="px-4 py-1 rounded-full text-sm font-bold bg-gradient-to-r from-amber-400 to-amber-500 text-[#0a0d12] whitespace-nowrap">
+                      Custom Pricing
+                    </div>
+                  </div>
+
+                  <div className="text-center mb-6 pt-4">
+                    <h3 className={`text-xl lg:text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                      Build Your Own
+                    </h3>
+                    <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
+                      Pick any price between {formatFee(1)} and {formatFee(1000)}. Your account size = price x 100.
+                    </p>
+                  </div>
+
+                  <div className={`mb-6 rounded-2xl p-5 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
+                    <label className={`text-sm font-semibold mb-2 block ${isDark ? 'text-gray-300' : 'text-slate-600'}`}>
+                      Challenge Price ({symbol})
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="1000"
+                      step="1"
+                      value={customPrice}
+                      onChange={(e) => setCustomPrice(e.target.value)}
+                      className={`w-full rounded-xl px-4 py-4 text-xl font-bold outline-none transition-colors ${
+                        isDark
+                          ? 'bg-[#12161d] border border-white/10 text-white focus:border-amber-500/60'
+                          : 'bg-white border border-slate-200 text-slate-900 focus:border-amber-500/60'
+                      }`}
+                    />
+                    <p className={`text-sm mt-3 ${isCustomPriceValid ? (isDark ? 'text-gray-300' : 'text-slate-600') : 'text-red-400'}`}>
+                      {isCustomPriceValid
+                        ? <>For <span className="text-amber-500 font-bold">{formatFee(customPriceNumber)}</span> you get a <span className="text-amber-500 font-bold">{formatAmount(customAccountSize)}</span> account.</>
+                        : `Enter a price from ${formatFee(1)} to ${formatFee(1000)}.`}
+                    </p>
+                  </div>
+
+                  <div className="space-y-3 mb-8">
+                    {[
+                      { label: 'Phases', value: '1 Phase' },
+                      { label: 'Profit Target', value: '10%' },
+                      { label: 'Daily Drawdown', value: '4%' },
+                      { label: 'Max Drawdown', value: '8%' },
+                      { label: 'Min Trading Days', value: 'None', highlight: true },
+                      { label: 'Profit Split', value: '85%', highlight: 'amber', large: true }
+                    ].map((item, index) => (
+                      <div key={index} className={`flex items-center justify-between py-2 ${index < 5 ? isDark ? 'border-b border-white/5' : 'border-b border-slate-100' : ''}`}>
+                        <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>{item.label}</span>
+                        <span className={`font-semibold ${
+                          item.highlight === 'amber' ? 'text-amber-500 text-xl font-bold' :
+                          item.highlight ? 'text-emerald-400' :
+                          isDark ? 'text-white' : 'text-slate-900'
+                        }`}>{item.value}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Button
+                    onClick={handleStartCustomChallenge}
+                    disabled={!isCustomPriceValid}
+                    className="w-full rounded-full py-6 h-auto text-base font-bold transition-all group bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] shadow-lg shadow-amber-500/25 disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    Start Custom Challenge
+                    <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </div>
+              ) : (
+              <div className={`grid gap-6 lg:gap-8 max-w-4xl mx-auto ${challengeTypes.length === 1 ? 'max-w-lg' : 'md:grid-cols-2'}`}>
                 {challengeTypes.map((challenge) => {
                   const sizeKey = accountSizes[safeSelectedSize]?.key;
                   const price = challenge.prices[sizeKey];
@@ -230,16 +316,7 @@ const ChallengesPage = () => {
                       </div>
 
                       {/* Price */}
-                      {challenge.isCustom ? (
-                        <div className={`text-center mb-6 py-5 rounded-2xl ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
-                          <div className="text-amber-500 text-3xl lg:text-4xl font-black">
-                            Custom quote
-                          </div>
-                          <div className="text-emerald-400 text-sm font-semibold mt-1">
-                            Manual amount available
-                          </div>
-                        </div>
-                      ) : price != null && (
+                      {price != null && (
                         <div className={`text-center mb-6 py-5 rounded-2xl ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
                           <div className={`text-sm line-through mb-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
                             {formatFee(fullPrice)}
@@ -254,7 +331,7 @@ const ChallengesPage = () => {
                       {/* Stats */}
                       <div className="space-y-3 mb-6">
                         {[
-                          { label: 'Phases', value: challenge.isCustom ? 'Custom' : `${challenge.phases} Phase${challenge.phases !== 1 ? 's' : ''}` },
+                          { label: 'Phases', value: `${challenge.phases} Phase${challenge.phases !== 1 ? 's' : ''}` },
                           { label: 'Profit Target', value: challenge.profitTarget },
                           { label: 'Daily Drawdown', value: challenge.dailyDrawdown },
                           { label: 'Max Drawdown', value: challenge.maxDrawdown },
@@ -285,7 +362,7 @@ const ChallengesPage = () => {
                       </div>
 
                       {/* CTA Button */}
-                      <Link to={challenge.isCustom ? '/Contact' : `/checkout?type=${challenge.id}&size=${accountSizes[safeSelectedSize]?.key}`}>
+                      <Link to={`/checkout?type=${challenge.id}&size=${accountSizes[safeSelectedSize]?.key}`}>
                         <Button
                           className={`w-full rounded-full py-6 h-auto text-base font-bold transition-all group ${
                             challenge.popular
@@ -293,7 +370,7 @@ const ChallengesPage = () => {
                               : 'bg-slate-900 hover:bg-slate-800 text-white'
                           }`}
                         >
-                          {challenge.isCustom ? 'Request Custom Challenge' : 'Start Challenge'}
+                          Start Challenge
                           <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
                         </Button>
                       </Link>
@@ -301,6 +378,7 @@ const ChallengesPage = () => {
                   );
                 })}
               </div>
+              )}
             </>
           )}
         </div>
