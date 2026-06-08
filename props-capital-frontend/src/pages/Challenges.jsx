@@ -194,7 +194,7 @@ const ChallengesPage = () => {
                     onClick={() => setSelectedSize('custom')}
                     className={`px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${
                       isCustomSelected
-                        ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/25'
+                        ? 'bg-amber-400 text-[#0a0d12]'
                         : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                     }`}
                   >
@@ -206,14 +206,14 @@ const ChallengesPage = () => {
               {/* Challenge Cards */}
               {isCustomSelected ? (
                 <div
-                  className={`relative rounded-3xl p-6 lg:p-8 border-2 transition-all duration-300 max-w-lg mx-auto ${
+                  className={`relative rounded-3xl p-6 lg:p-8 border transition-all duration-300 max-w-lg mx-auto border-amber-400 shadow-[0_0_40px_rgba(251,191,36,0.15)] ${
                     isDark
-                      ? 'bg-gradient-to-br from-[#12161d] to-[#0d1117] border-blue-500 shadow-[0_0_40px_rgba(59,130,246,0.18)]'
-                      : 'bg-white border-blue-500 shadow-xl shadow-blue-500/10'
+                      ? 'bg-gradient-to-br from-[#12161d] to-[#0d1117]'
+                      : 'bg-white shadow-xl shadow-amber-500/10'
                   }`}
                 >
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <div className="px-4 py-1 rounded-full text-sm font-bold bg-blue-500 text-white whitespace-nowrap">
+                    <div className="px-4 py-1 rounded-full text-sm font-bold bg-gradient-to-r from-amber-400 to-amber-500 text-[#0a0d12] whitespace-nowrap">
                       Custom Pricing
                     </div>
                   </div>
@@ -240,13 +240,13 @@ const ChallengesPage = () => {
                       onChange={(e) => setCustomPrice(e.target.value)}
                       className={`w-full rounded-xl px-4 py-4 text-xl font-bold outline-none transition-colors ${
                         isDark
-                          ? 'bg-[#12161d] border border-white/10 text-white focus:border-blue-500/60'
-                          : 'bg-white border border-slate-200 text-slate-900 focus:border-blue-500/60'
+                          ? 'bg-[#12161d] border border-white/10 text-white focus:border-amber-500/60'
+                          : 'bg-white border border-slate-200 text-slate-900 focus:border-amber-500/60'
                       }`}
                     />
                     <p className={`text-sm mt-3 ${isCustomPriceValid ? (isDark ? 'text-gray-300' : 'text-slate-600') : 'text-red-400'}`}>
                       {isCustomPriceValid
-                        ? <>For <span className="text-blue-500 font-bold">{formatFee(customPriceNumber)}</span> you get a <span className="text-blue-500 font-bold">{formatAmount(customAccountSize)}</span> account.</>
+                        ? <>For <span className="text-amber-500 font-bold">{formatFee(customPriceNumber)}</span> you get a <span className="text-amber-500 font-bold">{formatAmount(customAccountSize)}</span> account.</>
                         : `Enter a price from ${formatFee(1)} to ${formatFee(1000)}.`}
                     </p>
                   </div>
@@ -258,12 +258,12 @@ const ChallengesPage = () => {
                       { label: 'Daily Drawdown', value: '4%' },
                       { label: 'Max Drawdown', value: '8%' },
                       { label: 'Min Trading Days', value: 'None', highlight: true },
-                      { label: 'Profit Split', value: '85%', highlight: 'blue', large: true }
+                      { label: 'Profit Split', value: '85%', highlight: 'amber', large: true }
                     ].map((item, index) => (
                       <div key={index} className={`flex items-center justify-between py-2 ${index < 5 ? isDark ? 'border-b border-white/5' : 'border-b border-slate-100' : ''}`}>
                         <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>{item.label}</span>
                         <span className={`font-semibold ${
-                          item.highlight === 'blue' ? 'text-blue-500 text-xl font-bold' :
+                          item.highlight === 'amber' ? 'text-amber-500 text-xl font-bold' :
                           item.highlight ? 'text-emerald-400' :
                           isDark ? 'text-white' : 'text-slate-900'
                         }`}>{item.value}</span>
@@ -274,7 +274,7 @@ const ChallengesPage = () => {
                   <Button
                     onClick={handleStartCustomChallenge}
                     disabled={!isCustomPriceValid}
-                    className="w-full rounded-full py-6 h-auto text-base font-bold transition-all group bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white shadow-lg shadow-blue-500/25 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="w-full rounded-full py-6 h-auto text-base font-bold transition-all group bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] shadow-lg shadow-amber-500/25 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     Start Custom Challenge
                     <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
