@@ -10,6 +10,12 @@ export interface EmailResult {
   errorCode?: string;
 }
 
+export interface PlatformCredentialsEmailContext {
+  customerEmail?: string;
+  paymentReference?: string | null;
+  linkSlug?: string | null;
+}
+
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
@@ -534,12 +540,38 @@ Thank you for choosing us.`,
     password: string,
     cardData: Pick<TradingAccount, 'id' | 'platform'>,
     type: 'setup' | 'password-reset',
+    context?: PlatformCredentialsEmailContext,
   ): Promise<EmailResult> {
+    const contextRows = [
+      context?.customerEmail ? ['Customer email', context.customerEmail] : null,
+      context?.paymentReference ? ['Payment reference', context.paymentReference] : null,
+      context?.linkSlug ? ['QuickLink slug', context.linkSlug] : null,
+    ].filter(Boolean) as Array<[string, string]>;
+    const contextText = contextRows.length
+      ? `\n\nQuickLink deposit context:\n${contextRows
+          .map(([label, value]) => `${label}: ${value}`)
+          .join('\n')}`
+      : '';
+    const contextHtml = contextRows.length
+      ? `
+          <div style="margin: 12px 0; padding: 12px; background-color: #fff7ed; border-radius: 4px;">
+            <p style="margin: 0 0 8px;"><strong>QuickLink deposit context</strong></p>
+            ${contextRows
+              .map(
+                ([label, value]) =>
+                  `<p style="margin: 0 0 6px;"><strong>${label}:</strong> ${value}</p>`,
+              )
+              .join('')}
+          </div>
+        `
+      : '';
+    const subjectPrefix = contextRows.length ? '[QuickLink] ' : '';
+
     return this.sendWithTimeout({
       to,
       from: this.fromEmail,
-      subject: `Your Prop Capitals ${cardData.platform} Account Credentials`,
-      text: `Your Prop Capitals ${cardData.platform} account ${type === 'setup' ? 'has been created' : 'password has been reset'}.\n\nEmail: ${email}\nPassword: ${password}`,
+      subject: `${subjectPrefix}Your Prop Capitals ${cardData.platform} Account Credentials`,
+      text: `Your Prop Capitals ${cardData.platform} account ${type === 'setup' ? 'has been created' : 'password has been reset'}.\n\nEmail: ${email}\nPassword: ${password}${contextText}`,
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.5;">
           <h2 style="margin: 0 0 12px;">${type === 'setup' ? 'Your account is ready' : 'Your password has been reset'}</h2>
@@ -548,6 +580,7 @@ Thank you for choosing us.`,
             <p style="margin: 0 0 8px;"><strong>Email:</strong> ${email}</p>
             <p style="margin: 0;"><strong>Password:</strong> ${password}</p>
           </div>
+          ${contextHtml}
         </div>
       `,
     });
