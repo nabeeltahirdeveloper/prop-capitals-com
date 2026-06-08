@@ -111,9 +111,10 @@ export class XoalaAuthService {
 
       const status = err?.response?.status;
       const respBody = err?.response?.data;
-      const bodyStr = respBody !== undefined
-        ? String(JSON.stringify(respBody)).slice(0, 300)
-        : '(no response body)';
+      const bodyStr =
+        respBody !== undefined
+          ? String(JSON.stringify(respBody)).slice(0, 300)
+          : '(no response body)';
       this.logger.error(
         `[Xoala Auth] Failed to fetch AuthToken status=${status} body=${bodyStr} message=${err?.message}`,
       );

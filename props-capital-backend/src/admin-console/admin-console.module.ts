@@ -34,13 +34,12 @@ export class AdminConsoleModule implements NestModule, OnApplicationBootstrap {
   async onApplicationBootstrap() {
     try {
       const result = await this.svc.backfillBrandLinks();
-      // eslint-disable-next-line no-console
+
       console.log(
         `[AdminConsole] Direct purchase link backfill complete: ` +
           `${result.brands_processed} brands, ${result.total_links_created} new links created.`,
       );
     } catch (err: any) {
-      // eslint-disable-next-line no-console
       console.error(
         '[AdminConsole] Backfill failed (will retry on next startup):',
         err?.message,
@@ -51,12 +50,11 @@ export class AdminConsoleModule implements NestModule, OnApplicationBootstrap {
     // links ($199 / $299 / $320). Idempotent — see ensureGlobalBrand().
     try {
       const summary = await this.ensureGlobalBrand();
-      // eslint-disable-next-line no-console
+
       console.log(
         `[AdminConsole] Global brand seed: brand=${summary.brandStatus}, links created=${summary.linksCreated}, repinned=${summary.linksRepinned}.`,
       );
     } catch (err: any) {
-      // eslint-disable-next-line no-console
       console.error(
         '[AdminConsole] Global brand seed failed (will retry on next startup):',
         err?.message,
@@ -72,13 +70,11 @@ export class AdminConsoleModule implements NestModule, OnApplicationBootstrap {
     try {
       const attached = await this.attachChallengesToOrphanLinks();
       if (attached > 0) {
-        // eslint-disable-next-line no-console
         console.log(
           `[AdminConsole] Attached challenges to ${attached} legacy amount-only link(s).`,
         );
       }
     } catch (err: any) {
-      // eslint-disable-next-line no-console
       console.error(
         '[AdminConsole] Orphan-link backfill failed (will retry on next startup):',
         err?.message,
@@ -102,7 +98,8 @@ export class AdminConsoleModule implements NestModule, OnApplicationBootstrap {
     });
     let attached = 0;
     for (const l of orphans) {
-      const meta = (l.metadata && typeof l.metadata === 'object') ? l.metadata : {};
+      const meta =
+        l.metadata && typeof l.metadata === 'object' ? l.metadata : {};
       // Skip links the admin explicitly pointed at a custom URL.
       if (meta?.custom_url) continue;
       const amount = Number(l.amount ?? 0);
@@ -144,7 +141,7 @@ export class AdminConsoleModule implements NestModule, OnApplicationBootstrap {
       if (!initialPassword) {
         const { randomBytes } = await import('node:crypto');
         initialPassword = randomBytes(18).toString('base64url');
-        // eslint-disable-next-line no-console
+
         console.warn(
           `[AdminConsole] GLOBAL_BRAND_INITIAL_PASSWORD is not set — generated a ` +
             `one-time password for the "${BRAND_USERNAME}" brand. Capture it now ` +

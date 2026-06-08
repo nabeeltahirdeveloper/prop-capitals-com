@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsEmail, IsOptional, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsEmail,
+  IsOptional,
+  IsEnum,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ContactCategory } from '@prisma/client';
 

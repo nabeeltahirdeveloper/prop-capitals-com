@@ -1,14 +1,21 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 
 import { PrismaService } from '../../prisma/prisma.service';
 import { NotificationsService } from '../../notifications/notifications.service';
 
-import { TradingAccountStatus, TradingPhase, NotificationType, NotificationCategory } from '@prisma/client';
+import {
+  TradingAccountStatus,
+  TradingPhase,
+  NotificationType,
+  NotificationCategory,
+} from '@prisma/client';
 
 @Injectable()
-
 export class AdminAccountsService {
-
   constructor(
     private prisma: PrismaService,
     private notificationsService: NotificationsService,
@@ -16,7 +23,19 @@ export class AdminAccountsService {
 
   // List all trading accounts with pagination and filtering
 
-  async getAll({ page, limit, search, status, phase }: { page: number; limit: number; search?: string; status?: string; phase?: string }) {
+  async getAll({
+    page,
+    limit,
+    search,
+    status,
+    phase,
+  }: {
+    page: number;
+    limit: number;
+    search?: string;
+    status?: string;
+    phase?: string;
+  }) {
     const skip = (page - 1) * limit;
 
     const where: any = {};
@@ -48,20 +67,43 @@ export class AdminAccountsService {
         },
       }),
       this.prisma.tradingAccount.count({ where }),
-      this.prisma.tradingAccount.count({ where: { status: TradingAccountStatus.ACTIVE } }),
-      this.prisma.tradingAccount.count({ where: { phase: TradingPhase.PHASE2 } }),
-      this.prisma.tradingAccount.count({ where: { phase: TradingPhase.FUNDED } }),
-      this.prisma.tradingAccount.count({ where: { phase: TradingPhase.FAILED } }),
+      this.prisma.tradingAccount.count({
+        where: { status: TradingAccountStatus.ACTIVE },
+      }),
+      this.prisma.tradingAccount.count({
+        where: { phase: TradingPhase.PHASE2 },
+      }),
+      this.prisma.tradingAccount.count({
+        where: { phase: TradingPhase.FUNDED },
+      }),
+      this.prisma.tradingAccount.count({
+        where: { phase: TradingPhase.FAILED },
+      }),
     ];
 
-    const [data, total, activeCount, phase2Count, fundedCount, failedCount] = await Promise.all(baseQueries);
+    const [data, total, activeCount, phase2Count, fundedCount, failedCount] =
+      await Promise.all(baseQueries);
 
     let fundedSummary: Record<string, number> = {};
     if (isFundedView) {
       const [activeFundedCount, balanceAgg, payoutAgg] = await Promise.all([
-        this.prisma.tradingAccount.count({ where: { phase: TradingPhase.FUNDED, status: TradingAccountStatus.ACTIVE } }),
-        this.prisma.tradingAccount.aggregate({ where: { phase: TradingPhase.FUNDED }, _sum: { initialBalance: true, balance: true } }),
-        this.prisma.payout.aggregate({ where: { tradingAccount: { phase: TradingPhase.FUNDED }, status: 'PAID' as any }, _sum: { amount: true } }),
+        this.prisma.tradingAccount.count({
+          where: {
+            phase: TradingPhase.FUNDED,
+            status: TradingAccountStatus.ACTIVE,
+          },
+        }),
+        this.prisma.tradingAccount.aggregate({
+          where: { phase: TradingPhase.FUNDED },
+          _sum: { initialBalance: true, balance: true },
+        }),
+        this.prisma.payout.aggregate({
+          where: {
+            tradingAccount: { phase: TradingPhase.FUNDED },
+            status: 'PAID' as any,
+          },
+          _sum: { amount: true },
+        }),
       ]);
       fundedSummary = {
         activeFunded: activeFundedCount,
@@ -76,20 +118,23 @@ export class AdminAccountsService {
       total,
       page,
       totalPages: Math.ceil(total / limit),
-      summary: { active: activeCount, phase2: phase2Count, funded: fundedCount, failed: failedCount, ...fundedSummary },
+      summary: {
+        active: activeCount,
+        phase2: phase2Count,
+        funded: fundedCount,
+        failed: failedCount,
+        ...fundedSummary,
+      },
     };
   }
 
   // Get one account with details
 
   async getOne(id: string) {
-
     const account = await this.prisma.tradingAccount.findUnique({
-
       where: { id },
 
       include: {
-
         user: true,
 
         challenge: true,
@@ -101,25 +146,23 @@ export class AdminAccountsService {
         equityShots: true,
 
         phaseHistory: true,
-
       },
-
     });
 
     if (!account) throw new NotFoundException('Trading account not found');
 
     return account;
-
   }
 
   // Change account status
 
   async updateStatus(id: string, status: string) {
-
-    if (!Object.values(TradingAccountStatus).includes(status as TradingAccountStatus)) {
-
+    if (
+      !Object.values(TradingAccountStatus).includes(
+        status as TradingAccountStatus,
+      )
+    ) {
       throw new BadRequestException('Invalid status');
-
     }
 
     // Get account before update to check previous status
@@ -138,11 +181,9 @@ export class AdminAccountsService {
 
     const previousStatus = account.status;
     const updatedAccount = await this.prisma.tradingAccount.update({
-
       where: { id },
 
       data: { status: status as TradingAccountStatus },
-
     });
 
     // Create notification for status changes
@@ -151,7 +192,7 @@ export class AdminAccountsService {
       let title = '';
       let message = '';
       let notificationType: NotificationType = NotificationType.INFO;
-      
+
       if (status === TradingAccountStatus.PAUSED) {
         title = 'Account Paused';
         message = `Your trading account #${accountNumber} has been paused. Trading is temporarily disabled.`;
@@ -160,7 +201,10 @@ export class AdminAccountsService {
         title = 'Account Closed';
         message = `Your trading account #${accountNumber} has been closed.`;
         notificationType = NotificationType.INFO;
-      } else if (status === TradingAccountStatus.ACTIVE && previousStatus === TradingAccountStatus.PAUSED) {
+      } else if (
+        status === TradingAccountStatus.ACTIVE &&
+        previousStatus === TradingAccountStatus.PAUSED
+      ) {
         title = 'Account Resumed';
         message = `Your trading account #${accountNumber} has been resumed. Trading is now active.`;
         notificationType = NotificationType.SUCCESS;
@@ -178,17 +222,13 @@ export class AdminAccountsService {
     }
 
     return updatedAccount;
-
   }
 
   // Change account phase
 
   async updatePhase(id: string, phase: string) {
-
     if (!Object.values(TradingPhase).includes(phase as TradingPhase)) {
-
       throw new BadRequestException('Invalid phase');
-
     }
 
     // Get account before update
@@ -212,18 +252,17 @@ export class AdminAccountsService {
 
     const previousPhase = account.phase;
     const updatedAccount = await this.prisma.tradingAccount.update({
-
       where: { id },
 
       data: { phase: phase as TradingPhase },
-
     });
 
     // Create notification for phase changes
     if (account.userId && previousPhase !== phase) {
-      const accountNumber = account.brokerLogin || id.substring(0, 8);
-      
-      if (phase === TradingPhase.FUNDED && previousPhase !== TradingPhase.FUNDED) {
+      if (
+        phase === TradingPhase.FUNDED &&
+        previousPhase !== TradingPhase.FUNDED
+      ) {
         // Phase 2 completion - Account is now funded
         await this.notificationsService.create(
           account.userId,
@@ -232,7 +271,10 @@ export class AdminAccountsService {
           NotificationType.SUCCESS,
           NotificationCategory.CHALLENGE,
         );
-      } else if (phase === TradingPhase.PHASE2 && previousPhase === TradingPhase.PHASE1) {
+      } else if (
+        phase === TradingPhase.PHASE2 &&
+        previousPhase === TradingPhase.PHASE1
+      ) {
         // Phase 1 to Phase 2 transition (if done manually by admin)
         await this.notificationsService.create(
           account.userId,
@@ -245,8 +287,5 @@ export class AdminAccountsService {
     }
 
     return updatedAccount;
-
   }
-
 }
-

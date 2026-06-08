@@ -1,4 +1,11 @@
-import { Injectable, Inject, forwardRef, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  forwardRef,
+  Logger,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { TradesService } from '../trades/trades.service';
 import { PendingOrderRegistryService } from './pending-order-registry.service';
@@ -12,14 +19,21 @@ export class PendingOrdersService {
     @Inject(forwardRef(() => TradesService))
     private tradesService: TradesService,
     private pendingOrderRegistryService: PendingOrderRegistryService,
-  ) { }
+  ) {}
 
   /**
    * Create a new pending order (limit/stop order)
    */
   private static readonly SPOT_SYMBOLS = [
-    'BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'DOGEUSDT',
-    'BNBUSDT', 'ADAUSDT', 'AVAXUSDT', 'DOTUSDT',
+    'BTCUSDT',
+    'ETHUSDT',
+    'SOLUSDT',
+    'XRPUSDT',
+    'DOGEUSDT',
+    'BNBUSDT',
+    'ADAUSDT',
+    'AVAXUSDT',
+    'DOTUSDT',
     'LINKUSDT',
   ];
   async createPendingOrder(data: {
@@ -36,8 +50,13 @@ export class PendingOrdersService {
     leverage?: number;
   }) {
     if (data.orderType === 'STOP_LIMIT') {
-      if (!Number.isFinite(Number(data.limitPrice)) || Number(data.limitPrice) <= 0) {
-        throw new BadRequestException('limitPrice is required for STOP_LIMIT orders.');
+      if (
+        !Number.isFinite(Number(data.limitPrice)) ||
+        Number(data.limitPrice) <= 0
+      ) {
+        throw new BadRequestException(
+          'limitPrice is required for STOP_LIMIT orders.',
+        );
       }
     }
 
@@ -47,13 +66,17 @@ export class PendingOrdersService {
 
       if (data.type === 'BUY') {
         if (limitPrice > triggerPrice) {
-          throw new BadRequestException('For BUY STOP_LIMIT, limitPrice should be less than or equal to trigger price.');
+          throw new BadRequestException(
+            'For BUY STOP_LIMIT, limitPrice should be less than or equal to trigger price.',
+          );
         }
       }
 
       if (data.type === 'SELL') {
         if (limitPrice < triggerPrice) {
-          throw new BadRequestException('For SELL STOP_LIMIT, limitPrice should be greater than or equal to trigger price.');
+          throw new BadRequestException(
+            'For SELL STOP_LIMIT, limitPrice should be greater than or equal to trigger price.',
+          );
         }
       }
     }
@@ -69,25 +92,37 @@ export class PendingOrdersService {
     const positionType = data.positionType === 'SPOT' ? 'SPOT' : 'CFD';
 
     if (positionType === 'SPOT') {
-      const sym = String(data.symbol || '').toUpperCase().replace('/', '');
+      const sym = String(data.symbol || '')
+        .toUpperCase()
+        .replace('/', '');
       if (!PendingOrdersService.SPOT_SYMBOLS.includes(sym)) {
-        throw new BadRequestException(`Symbol ${data.symbol} is not available for spot trading.`);
+        throw new BadRequestException(
+          `Symbol ${data.symbol} is not available for spot trading.`,
+        );
       }
     }
 
-    const requestedLeverage = positionType === 'SPOT' ? 1 : Number(data.leverage);
+    const requestedLeverage =
+      positionType === 'SPOT' ? 1 : Number(data.leverage);
     const effectiveLeverage =
       Number.isFinite(requestedLeverage) && requestedLeverage > 0
         ? requestedLeverage
         : 100;
 
     if (account.status === ('DAILY_LOCKED' as any)) {
-      throw new BadRequestException('Daily loss limit reached. Trading locked until tomorrow.');
+      throw new BadRequestException(
+        'Daily loss limit reached. Trading locked until tomorrow.',
+      );
     }
     if (account.status === ('DISQUALIFIED' as any)) {
-      throw new BadRequestException('Challenge disqualified. Trading is no longer allowed.');
+      throw new BadRequestException(
+        'Challenge disqualified. Trading is no longer allowed.',
+      );
     }
-    if (account.status === ('CLOSED' as any) || account.status === ('PAUSED' as any)) {
+    if (
+      account.status === ('CLOSED' as any) ||
+      account.status === ('PAUSED' as any)
+    ) {
       throw new BadRequestException('Account is not active for trading.');
     }
 
@@ -168,12 +203,19 @@ export class PendingOrdersService {
 
     const accountStatus = tradingAccount?.status;
     if (accountStatus === ('DAILY_LOCKED' as any)) {
-      throw new BadRequestException('Daily loss limit reached. Trading locked until tomorrow.');
+      throw new BadRequestException(
+        'Daily loss limit reached. Trading locked until tomorrow.',
+      );
     }
     if (accountStatus === ('DISQUALIFIED' as any)) {
-      throw new BadRequestException('Challenge disqualified. Trading is no longer allowed.');
+      throw new BadRequestException(
+        'Challenge disqualified. Trading is no longer allowed.',
+      );
     }
-    if (accountStatus === ('CLOSED' as any) || accountStatus === ('PAUSED' as any)) {
+    if (
+      accountStatus === ('CLOSED' as any) ||
+      accountStatus === ('PAUSED' as any)
+    ) {
       throw new BadRequestException('Account is not active for trading.');
     }
 
@@ -216,8 +258,6 @@ export class PendingOrdersService {
       return null; // 🔥 THIS LINE IS CRITICAL
     }
 
-
-
     // Step 2: fetch the claimed order
     const pendingOrder = await this.prisma.pendingOrder.findUnique({
       where: { id: orderId },
@@ -234,7 +274,10 @@ export class PendingOrdersService {
     // STOP_LIMIT activation: convert to LIMIT order instead of executing a trade
     if (pendingOrder.orderType === 'STOP_LIMIT') {
       const newLimitPrice = (pendingOrder as any).limitPrice;
-      if (!Number.isFinite(Number(newLimitPrice)) || Number(newLimitPrice) <= 0) {
+      if (
+        !Number.isFinite(Number(newLimitPrice)) ||
+        Number(newLimitPrice) <= 0
+      ) {
         // Invalid limitPrice — rollback to PENDING as STOP_LIMIT
         await this.prisma.pendingOrder.update({
           where: { id: orderId },
@@ -253,7 +296,9 @@ export class PendingOrdersService {
           takeProfit: pendingOrder.takeProfit,
           status: 'PENDING',
         });
-        throw new BadRequestException('STOP_LIMIT order has invalid limitPrice, cannot activate.');
+        throw new BadRequestException(
+          'STOP_LIMIT order has invalid limitPrice, cannot activate.',
+        );
       }
 
       // Convert to LIMIT order in DB
@@ -286,7 +331,14 @@ export class PendingOrdersService {
         `STOP_LIMIT activated: order ${orderId} converted to ${pendingOrder.type} LIMIT at price ${newLimitPrice}`,
       );
 
-      return { activated: true, order: { id: orderId, orderType: 'LIMIT', price: Number(newLimitPrice) } };
+      return {
+        activated: true,
+        order: {
+          id: orderId,
+          orderType: 'LIMIT',
+          price: Number(newLimitPrice),
+        },
+      };
     }
 
     const finalPrice = executionPrice ?? pendingOrder.price;

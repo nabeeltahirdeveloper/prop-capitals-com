@@ -69,7 +69,8 @@ export type EventDetail = {
 @Injectable()
 export class EconomicCalendarService {
   private readonly logger = new Logger(EconomicCalendarService.name);
-  private readonly endpoint = 'https://www.mql5.com/en/economic-calendar/content';
+  private readonly endpoint =
+    'https://www.mql5.com/en/economic-calendar/content';
 
   constructor(
     private readonly http: HttpService,
@@ -251,9 +252,12 @@ export class EconomicCalendarService {
     if (hasAnyKeyword) {
       // Strategy 1: Label/value row scraping
       const labelValueMap = this.extractLabelValuePairs($);
-      this.logger.debug(`Extracted label-value pairs: ${JSON.stringify(labelValueMap)}`);
+      this.logger.debug(
+        `Extracted label-value pairs: ${JSON.stringify(labelValueMap)}`,
+      );
 
-      nextRelease = labelValueMap['next release'] || labelValueMap['nextrelease'] || null;
+      nextRelease =
+        labelValueMap['next release'] || labelValueMap['nextrelease'] || null;
       source = labelValueMap['source'] || null;
       frequency = labelValueMap['frequency'] || null;
       unit = labelValueMap['unit'] || labelValueMap['units'] || null;
@@ -513,7 +517,7 @@ export class EconomicCalendarService {
       try {
         const data = JSON.parse(match[1]);
         this.extractFromNestedJson(data, result);
-      } catch (e) {
+      } catch {
         // Ignore parse errors for generic matches
       }
     }
@@ -562,21 +566,34 @@ export class EconomicCalendarService {
 
         if (isHistory && !result.history) {
           result.history = obj.map((item) => ({
-            date: String((item as Record<string, unknown>).date || ''),
-            actual: (item as Record<string, unknown>).actual != null 
-              ? String((item as Record<string, unknown>).actual) 
-              : null,
-            forecast: (item as Record<string, unknown>).forecast != null 
-              ? String((item as Record<string, unknown>).forecast) 
-              : null,
-            previous: (item as Record<string, unknown>).previous != null 
-              ? String((item as Record<string, unknown>).previous) 
-              : null,
+            date: this.stringifyUnknown(
+              (item as Record<string, unknown>).date || '',
+            ),
+            actual:
+              (item as Record<string, unknown>).actual != null
+                ? String((item as Record<string, unknown>).actual)
+                : null,
+            forecast:
+              (item as Record<string, unknown>).forecast != null
+                ? String((item as Record<string, unknown>).forecast)
+                : null,
+            previous:
+              (item as Record<string, unknown>).previous != null
+                ? String((item as Record<string, unknown>).previous)
+                : null,
           }));
         } else if (isChart && !result.chartSeries) {
           result.chartSeries = obj.map((item) => ({
-            date: String((item as Record<string, unknown>).date || (item as Record<string, unknown>).x || ''),
-            value: Number((item as Record<string, unknown>).value || (item as Record<string, unknown>).y || 0),
+            date: this.stringifyUnknown(
+              (item as Record<string, unknown>).date ||
+                (item as Record<string, unknown>).x ||
+                '',
+            ),
+            value: Number(
+              (item as Record<string, unknown>).value ||
+                (item as Record<string, unknown>).y ||
+                0,
+            ),
           }));
         }
       }
@@ -598,9 +615,13 @@ export class EconomicCalendarService {
         !result.nextRelease &&
         value
       ) {
-        result.nextRelease = String(value);
+        result.nextRelease = this.stringifyUnknown(value);
       }
-      if (keyLower === 'source' && !result.source && typeof value === 'string') {
+      if (
+        keyLower === 'source' &&
+        !result.source &&
+        typeof value === 'string'
+      ) {
         result.source = value;
       }
       if (
@@ -611,20 +632,28 @@ export class EconomicCalendarService {
         result.sourceUrl = value;
       }
       if (keyLower === 'frequency' && !result.frequency && value) {
-        result.frequency = String(value);
-      }
-      if ((keyLower === 'unit' || keyLower === 'units') && !result.unit && value) {
-        result.unit = String(value);
+        result.frequency = this.stringifyUnknown(value);
       }
       if (
-        (keyLower === 'history' || keyLower === 'values' || keyLower === 'data') &&
+        (keyLower === 'unit' || keyLower === 'units') &&
+        !result.unit &&
+        value
+      ) {
+        result.unit = this.stringifyUnknown(value);
+      }
+      if (
+        (keyLower === 'history' ||
+          keyLower === 'values' ||
+          keyLower === 'data') &&
         Array.isArray(value) &&
         !result.history
       ) {
         this.extractFromNestedJson(value, result);
       }
       if (
-        (keyLower === 'chart' || keyLower === 'chartseries' || keyLower === 'series') &&
+        (keyLower === 'chart' ||
+          keyLower === 'chartseries' ||
+          keyLower === 'series') &&
         Array.isArray(value) &&
         !result.chartSeries
       ) {
@@ -639,9 +668,37 @@ export class EconomicCalendarService {
   }
 
   /**
+   * Safely convert an unknown value to a string. Primitive values are
+   * stringified directly; objects/arrays are serialized as JSON so we never
+   * fall back to the unhelpful '[object Object]' representation.
+   */
+  private stringifyUnknown(value: unknown): string {
+    if (value === null || value === undefined) return '';
+    if (typeof value === 'string') return value;
+    if (
+      typeof value === 'number' ||
+      typeof value === 'boolean' ||
+      typeof value === 'bigint'
+    ) {
+      return value.toString();
+    }
+    if (typeof value === 'symbol') return value.toString();
+    if (typeof value === 'object') {
+      try {
+        return JSON.stringify(value);
+      } catch {
+        return '';
+      }
+    }
+    return '';
+  }
+
+  /**
    * Extract history data from HTML tables
    */
-  private extractHistoryFromTable($: cheerio.CheerioAPI): HistoryEntry[] | undefined {
+  private extractHistoryFromTable(
+    $: cheerio.CheerioAPI,
+  ): HistoryEntry[] | undefined {
     const history: HistoryEntry[] = [];
 
     // Look for tables that might contain history data
@@ -652,7 +709,9 @@ export class EconomicCalendarService {
         .get();
 
       // Check if this looks like a history table
-      const hasDateCol = headers.some((h) => h.includes('date') || h.includes('time'));
+      const hasDateCol = headers.some(
+        (h) => h.includes('date') || h.includes('time'),
+      );
       const hasValueCol = headers.some(
         (h) =>
           h.includes('actual') ||
@@ -662,7 +721,9 @@ export class EconomicCalendarService {
       );
 
       if (hasDateCol || hasValueCol) {
-        const dateIdx = headers.findIndex((h) => h.includes('date') || h.includes('time'));
+        const dateIdx = headers.findIndex(
+          (h) => h.includes('date') || h.includes('time'),
+        );
         const actualIdx = headers.findIndex((h) => h.includes('actual'));
         const forecastIdx = headers.findIndex((h) => h.includes('forecast'));
         const previousIdx = headers.findIndex((h) => h.includes('previous'));
@@ -674,9 +735,18 @@ export class EconomicCalendarService {
             if (cells.length >= 2) {
               const entry: HistoryEntry = {
                 date: dateIdx >= 0 ? $(cells[dateIdx]).text().trim() : '',
-                actual: actualIdx >= 0 ? $(cells[actualIdx]).text().trim() || null : null,
-                forecast: forecastIdx >= 0 ? $(cells[forecastIdx]).text().trim() || null : null,
-                previous: previousIdx >= 0 ? $(cells[previousIdx]).text().trim() || null : null,
+                actual:
+                  actualIdx >= 0
+                    ? $(cells[actualIdx]).text().trim() || null
+                    : null,
+                forecast:
+                  forecastIdx >= 0
+                    ? $(cells[forecastIdx]).text().trim() || null
+                    : null,
+                previous:
+                  previousIdx >= 0
+                    ? $(cells[previousIdx]).text().trim() || null
+                    : null,
               };
 
               if (entry.date || entry.actual || entry.forecast) {

@@ -11,7 +11,6 @@ import { TpSlMonitorService } from './tp-sl-monitor.service';
 import { WebsocketModule } from '../websocket/websocket.module';
 
 @Module({
-
   imports: [
     PrismaModule,
     forwardRef(() => EvaluationModule),
@@ -24,7 +23,5 @@ import { WebsocketModule } from '../websocket/websocket.module';
   providers: [TradesService, TpSlMonitorService],
 
   exports: [TradesService],
-
 })
-
 export class TradesModule {}

@@ -33,9 +33,8 @@ export class NotificationsService {
         return notification;
       }
 
-      // Infer type and category from title/body
+      // Infer type and category from title
       const title = notification.title?.toLowerCase() || '';
-      const body = notification.body?.toLowerCase() || '';
 
       let type = notification.type || NotificationType.INFO;
       let category = notification.category || NotificationCategory.SYSTEM;

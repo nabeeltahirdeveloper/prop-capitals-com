@@ -7,14 +7,10 @@ import { AdminCouponsService } from './admin-coupons.service';
 import { PrismaModule } from '../../prisma/prisma.module';
 
 @Module({
-
   imports: [PrismaModule],
 
   controllers: [AdminCouponsController],
 
   providers: [AdminCouponsService],
-
 })
-
 export class AdminCouponsModule {}
-

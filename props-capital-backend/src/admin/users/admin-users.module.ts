@@ -7,14 +7,10 @@ import { AdminUsersService } from './admin-users.service';
 import { PrismaModule } from '../../prisma/prisma.module';
 
 @Module({
-
   imports: [PrismaModule],
 
   controllers: [AdminUsersController],
 
   providers: [AdminUsersService],
-
 })
-
 export class AdminUsersModule {}
-

@@ -19,4 +19,3 @@ import { ChallengeRulesService } from './challenge-rules.service';
   exports: [EvaluationService, ChallengeRulesService],
 })
 export class EvaluationModule {}
-

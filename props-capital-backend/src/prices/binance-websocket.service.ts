@@ -57,14 +57,24 @@ export class BinanceWebSocketService implements OnModuleInit, OnModuleDestroy {
         this.connectTime = Date.now();
       });
 
-      this.ws.on('message', (data) => {
+      this.ws.on('message', (data: WebSocket.RawData) => {
         try {
-          const payload = JSON.parse(data.toString());
+          let raw: string;
+          if (Array.isArray(data)) {
+            raw = Buffer.concat(data).toString();
+          } else if (data instanceof ArrayBuffer) {
+            raw = Buffer.from(new Uint8Array(data)).toString();
+          } else {
+            raw = data.toString();
+          }
+          const payload = JSON.parse(raw);
           // Payload: { stream: '...', data: { s: 'BTCUSDT', b: '...', a: '...' } }
           if (payload.data) {
             this.handleMessage(payload.data);
           }
-        } catch (e) {}
+        } catch {
+          // intentionally ignored: malformed/non-JSON frames are skipped
+        }
       });
 
       this.ws.on('close', () => {

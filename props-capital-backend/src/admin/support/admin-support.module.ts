@@ -8,14 +8,10 @@ import { AdminSupportService } from './admin-support.service';
 import { AdminSupportController } from './admin-support.controller';
 
 @Module({
-
   imports: [PrismaModule, WebsocketModule],
 
   controllers: [AdminSupportController],
 
   providers: [AdminSupportService],
-
 })
-
 export class AdminSupportModule {}
-

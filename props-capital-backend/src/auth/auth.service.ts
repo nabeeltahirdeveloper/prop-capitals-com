@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
 import { UsersService } from '../users/users.service';
@@ -14,19 +18,15 @@ import type { JwtPayload, PlatformJwtPayload } from './types';
 import { generatePassword } from 'src/utils/generate-password.util';
 
 @Injectable()
-
 export class AuthService {
-
   constructor(
-
     private usersService: UsersService,
     private prisma: PrismaService,
     private emailService: EmailService,
 
     private jwtService: JwtService,
     private configService: ConfigService,
-
-  ) { }
+  ) {}
 
   private getOtpSecret() {
     return (
@@ -41,7 +41,10 @@ export class AuthService {
     if (!secret) {
       throw new Error('OTP_SECRET/JWT_SECRET environment variable is not set');
     }
-    return crypto.createHmac('sha256', secret).update(`${email}:${otp}`).digest('hex');
+    return crypto
+      .createHmac('sha256', secret)
+      .update(`${email}:${otp}`)
+      .digest('hex');
   }
 
   private generateOtp() {
@@ -49,7 +52,12 @@ export class AuthService {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
-  async requestRegisterOtp(data: { email: string; password: string; firstName?: string; lastName?: string }) {
+  async requestRegisterOtp(data: {
+    email: string;
+    password: string;
+    firstName?: string;
+    lastName?: string;
+  }) {
     const email = (data.email || '').trim().toLowerCase();
     if (!email) throw new BadRequestException('Email is required');
     if (!data.password) throw new BadRequestException('Password is required');
@@ -58,7 +66,9 @@ export class AuthService {
     if (existingUser) throw new BadRequestException('Email already registered');
 
     const now = new Date();
-    const existingOtp = await this.prisma.signupOtp.findUnique({ where: { email } });
+    const existingOtp = await this.prisma.signupOtp.findUnique({
+      where: { email },
+    });
 
     // If we're still within resend cooldown, don't send again—just return cooldown time.
     if (existingOtp && existingOtp.resendAvailableAt > now) {
@@ -100,9 +110,11 @@ export class AuthService {
 
     if (!emailResult.success) {
       // Delete the OTP record since email failed
-      await this.prisma.signupOtp.delete({ where: { email } }).catch(() => undefined);
+      await this.prisma.signupOtp
+        .delete({ where: { email } })
+        .catch(() => undefined);
       throw new BadRequestException(
-        `Failed to send verification email: ${emailResult.error || 'Unknown error'}. Please try again later.`
+        `Failed to send verification email: ${emailResult.error || 'Unknown error'}. Please try again later.`,
       );
     }
 
@@ -112,7 +124,13 @@ export class AuthService {
     };
   }
 
-  async verifyRegisterOtp(data: { email: string; otp: string; password: string; firstName?: string; lastName?: string }) {
+  async verifyRegisterOtp(data: {
+    email: string;
+    otp: string;
+    password: string;
+    firstName?: string;
+    lastName?: string;
+  }) {
     const email = (data.email || '').trim().toLowerCase();
     const otp = (data.otp || '').trim();
     if (!email) throw new BadRequestException('Email is required');
@@ -123,17 +141,26 @@ export class AuthService {
     if (existingUser) throw new BadRequestException('Email already registered');
 
     const record = await this.prisma.signupOtp.findUnique({ where: { email } });
-    if (!record) throw new BadRequestException('OTP not found. Please request a new code.');
+    if (!record)
+      throw new BadRequestException(
+        'OTP not found. Please request a new code.',
+      );
 
     const now = new Date();
     if (record.expiresAt <= now) {
-      await this.prisma.signupOtp.delete({ where: { email } }).catch(() => undefined);
+      await this.prisma.signupOtp
+        .delete({ where: { email } })
+        .catch(() => undefined);
       throw new BadRequestException('OTP expired. Please request a new code.');
     }
 
     if (record.attempts >= 5) {
-      await this.prisma.signupOtp.delete({ where: { email } }).catch(() => undefined);
-      throw new BadRequestException('Too many attempts. Please request a new code.');
+      await this.prisma.signupOtp
+        .delete({ where: { email } })
+        .catch(() => undefined);
+      throw new BadRequestException(
+        'Too many attempts. Please request a new code.',
+      );
     }
 
     const expectedHash = this.hashOtp(email, otp);
@@ -158,9 +185,13 @@ export class AuthService {
       },
     });
 
-    await this.prisma.signupOtp.delete({ where: { email } }).catch(() => undefined);
+    await this.prisma.signupOtp
+      .delete({ where: { email } })
+      .catch(() => undefined);
 
-    this.emailService.sendWelcomeEmail(email, data.firstName).catch(() => undefined);
+    this.emailService
+      .sendWelcomeEmail(email, data.firstName)
+      .catch(() => undefined);
 
     const token = await this.jwtService.signAsync<JwtPayload>({
       sub: user.id,
@@ -178,8 +209,12 @@ export class AuthService {
     };
   }
 
-  async register(data: { email: string; password: string; firstName?: string; lastName?: string }) {
-
+  async register(data: {
+    email: string;
+    password: string;
+    firstName?: string;
+    lastName?: string;
+  }) {
     const existing = await this.usersService.findByEmail(data.email);
 
     if (existing) throw new BadRequestException('Email already registered');
@@ -187,43 +222,31 @@ export class AuthService {
     const hashed = await bcrypt.hash(data.password, 10);
 
     const user = await this.usersService.createUser({
-
       email: data.email,
 
       password: hashed,
 
       profile: {
-
         create: {
-
           firstName: data.firstName,
 
           lastName: data.lastName,
-
         },
-
       },
-
     });
 
     return {
-
       message: 'User registered successfully',
 
       user: {
-
         id: user.id,
 
         email: user.email,
-
       },
-
     };
-
   }
 
   async validateUser(email: string, password: string) {
-
     const user = await this.usersService.findByEmail(email);
 
     if (!user) throw new UnauthorizedException('Invalid credentials');
@@ -233,39 +256,30 @@ export class AuthService {
     if (!match) throw new UnauthorizedException('Invalid credentials');
 
     return user;
-
   }
 
   async login(data: { email: string; password: string }) {
-
     const user = await this.validateUser(data.email, data.password);
 
     const token = await this.jwtService.signAsync<JwtPayload>({
-
       sub: user.id,
 
       email: user.email,
 
       role: user.role,
-
     });
 
     return {
-
       accessToken: token,
 
       user: {
-
         id: user.id,
 
         email: user.email,
 
         role: user.role,
-
       },
-
     };
-
   }
 
   async getUserStats(userId: string) {
@@ -330,7 +344,6 @@ export class AuthService {
 
   // Get current user with full profile data
   async getCurrentUser(userId: string) {
-
     const user = await this.usersService.findById(userId);
     if (!user) throw new BadRequestException('User not found');
 
@@ -347,12 +360,14 @@ export class AuthService {
       updatedAt: user.updatedAt,
       ...stats,
     };
-
   }
 
   // Change password
-  async changePassword(userId: string, currentPassword: string, newPassword: string) {
-
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ) {
     const user = await this.usersService.findById(userId);
 
     if (!user) throw new BadRequestException('User not found');
@@ -360,7 +375,8 @@ export class AuthService {
     // Verify current password
     const match = await bcrypt.compare(currentPassword, user.password);
 
-    if (!match) throw new UnauthorizedException('Current password is incorrect');
+    if (!match)
+      throw new UnauthorizedException('Current password is incorrect');
 
     // Hash new password
     const hashed = await bcrypt.hash(newPassword, 10);
@@ -369,9 +385,7 @@ export class AuthService {
     await this.usersService.updatePassword(userId, hashed);
 
     return { message: 'Password changed successfully' };
-
   }
-
 
   async sendResetPasswordOtp(email: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
@@ -397,14 +411,19 @@ export class AuthService {
     });
 
     // Send OTP email using EmailService (SendGrid)
-    const emailResult = await this.emailService.sendPasswordResetOtp(email, otp);
+    const emailResult = await this.emailService.sendPasswordResetOtp(
+      email,
+      otp,
+    );
 
     if (!emailResult.success) {
       // Log error but generally return success to user for security,
       // UNLESS needed for debugging. Given the user's issue,
       // if it fails we might want to throw to let them know config is wrong.
       console.error(`Failed to send reset OTP: ${emailResult.error}`);
-      throw new BadRequestException('Failed to send email. Please contact support.');
+      throw new BadRequestException(
+        'Failed to send email. Please contact support.',
+      );
     }
 
     return { message: 'If this email exists, an OTP has been sent.' };
@@ -425,8 +444,13 @@ export class AuthService {
       where: { setPasswordTokenHash: tokenHash },
     });
     if (!user) throw new BadRequestException('Invalid or expired link');
-    if (!user.setPasswordTokenExpiry || user.setPasswordTokenExpiry < new Date()) {
-      throw new BadRequestException('Link has expired. Please contact support for a new one.');
+    if (
+      !user.setPasswordTokenExpiry ||
+      user.setPasswordTokenExpiry < new Date()
+    ) {
+      throw new BadRequestException(
+        'Link has expired. Please contact support for a new one.',
+      );
     }
     return user;
   }
@@ -440,7 +464,11 @@ export class AuthService {
   }
 
   async setPasswordWithToken(plainToken: string, newPassword: string) {
-    if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 8) {
+    if (
+      !newPassword ||
+      typeof newPassword !== 'string' ||
+      newPassword.length < 8
+    ) {
       throw new BadRequestException('Password must be at least 8 characters');
     }
     const user = await this.findUserBySetPasswordToken(plainToken);
@@ -474,7 +502,11 @@ export class AuthService {
     };
   }
 
-  async verifyOtpAndResetPassword(email: string, otp: string, newPassword: string) {
+  async verifyOtpAndResetPassword(
+    email: string,
+    otp: string,
+    newPassword: string,
+  ) {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) {
       throw new BadRequestException('Invalid request');
@@ -503,8 +535,6 @@ export class AuthService {
 
     return { message: 'Password reset successfully' };
   }
-
-
 
   async processPlatformLogin(
     user: JwtPayload,
@@ -561,9 +591,9 @@ export class AuthService {
     try {
       validated =
         await this.jwtService.verifyAsync<PlatformJwtPayload>(platformToken);
-    } catch (e) {
+    } catch {
       throw new UnauthorizedException(
-        'Invalid or expired platform access. Please login again'
+        'Invalid or expired platform access. Please login again',
       );
     }
 

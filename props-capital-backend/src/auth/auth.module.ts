@@ -16,46 +16,33 @@ import { EmailModule } from '../email/email.module';
 import { JwtStrategy } from './jwt.strategy';
 
 @Module({
-
   imports: [
-
     UsersModule,
     EmailModule,
 
     PassportModule,
 
     JwtModule.registerAsync({
-
       imports: [ConfigModule],
 
       useFactory: (configService: ConfigService) => {
-
         const secret = configService.get<string>('JWT_SECRET');
 
         if (!secret) {
-
           throw new Error('JWT_SECRET environment variable is not set');
-
         }
 
         return {
-
           secret,
 
           signOptions: {
-
             expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '1d',
-
           } as any,
-
         };
-
       },
 
       inject: [ConfigService],
-
     }),
-
   ],
 
   providers: [AuthService, JwtStrategy],
@@ -63,7 +50,5 @@ import { JwtStrategy } from './jwt.strategy';
   controllers: [AuthController],
 
   exports: [JwtModule],
-
 })
-
 export class AuthModule {}

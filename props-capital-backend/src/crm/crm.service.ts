@@ -126,7 +126,9 @@ export class CrmService {
         source: data.source,
         leadStatus: data.leadStatus || LeadStatus.NEW,
         onlineStatus: data.onlineStatus || LeadOnlineStatus.OFFLINE,
-        leadReceivedDate: data.leadReceivedDate ? new Date(data.leadReceivedDate) : new Date(),
+        leadReceivedDate: data.leadReceivedDate
+          ? new Date(data.leadReceivedDate)
+          : new Date(),
         ftdAmount: data.ftdAmount,
         paymentMethod: data.paymentMethod,
         paymentProvider: data.paymentProvider,
@@ -205,7 +207,9 @@ export class CrmService {
       where: { id },
       data: {
         ...data,
-        leadReceivedDate: data.leadReceivedDate ? new Date(data.leadReceivedDate) : undefined,
+        leadReceivedDate: data.leadReceivedDate
+          ? new Date(data.leadReceivedDate)
+          : undefined,
         convertedAt: data.convertedAt ? new Date(data.convertedAt) : undefined,
       },
     });

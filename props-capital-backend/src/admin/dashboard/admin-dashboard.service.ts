@@ -1,11 +1,15 @@
-import { Injectable, Logger, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UserRole } from '@prisma/client';
 
 /**
  * FIXED Admin Dashboard Service
- * 
- * 
+ *
+ *
  * Improvements:
  * 1. ✅ Added comprehensive error handling with try-catch
  * 2. ✅ Added pagination support to prevent performance issues
@@ -95,33 +99,46 @@ export class AdminDashboardService {
       // Extract values with fallbacks
       const stats = {
         totalUsers: totalUsers.status === 'fulfilled' ? totalUsers.value : 0,
-        totalTraders: totalTraders.status === 'fulfilled' ? totalTraders.value : 0,
+        totalTraders:
+          totalTraders.status === 'fulfilled' ? totalTraders.value : 0,
         totalRevenue:
           totalRevenue.status === 'fulfilled'
             ? Number(totalRevenue.value._sum.amount || 0)
             : 0,
         revenueChangePercent: this.calculatePercentChange(
-          currentMonthRevenue.status === 'fulfilled' ? currentMonthRevenue.value : 0,
+          currentMonthRevenue.status === 'fulfilled'
+            ? currentMonthRevenue.value
+            : 0,
           lastMonthRevenue.status === 'fulfilled' ? lastMonthRevenue.value : 0,
         ),
         usersChangePercent: this.calculatePercentChange(
-          currentMonthUsers.status === 'fulfilled' ? currentMonthUsers.value : 0,
+          currentMonthUsers.status === 'fulfilled'
+            ? currentMonthUsers.value
+            : 0,
           lastMonthUsers.status === 'fulfilled' ? lastMonthUsers.value : 0,
         ),
-        activeAccounts: activeAccounts.status === 'fulfilled' ? activeAccounts.value : 0,
-        fundedAccounts: fundedAccounts.status === 'fulfilled' ? fundedAccounts.value : 0,
+        activeAccounts:
+          activeAccounts.status === 'fulfilled' ? activeAccounts.value : 0,
+        fundedAccounts:
+          fundedAccounts.status === 'fulfilled' ? fundedAccounts.value : 0,
         pendingPayoutsAmount:
           pendingPayoutsAmount.status === 'fulfilled'
             ? Number(pendingPayoutsAmount.value._sum.amount || 0)
             : 0,
-        violationsToday: violationsToday.status === 'fulfilled' ? violationsToday.value : 0,
+        violationsToday:
+          violationsToday.status === 'fulfilled' ? violationsToday.value : 0,
       };
 
       this.logger.debug(`Dashboard overview fetched successfully`);
       return stats;
     } catch (error) {
-      this.logger.error(`Failed to fetch dashboard overview: ${error.message}`, error.stack);
-      throw new InternalServerErrorException('Failed to fetch dashboard overview statistics');
+      this.logger.error(
+        `Failed to fetch dashboard overview: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        'Failed to fetch dashboard overview statistics',
+      );
     }
   }
 
@@ -131,7 +148,9 @@ export class AdminDashboardService {
   async getRecentAccounts(page: number = 1, limit: number = 5) {
     try {
       const skip = (page - 1) * limit;
-      this.logger.debug(`Fetching recent accounts: page=${page}, limit=${limit}, skip=${skip}`);
+      this.logger.debug(
+        `Fetching recent accounts: page=${page}, limit=${limit}, skip=${skip}`,
+      );
 
       const [accounts, total] = await Promise.all([
         this.prisma.tradingAccount.findMany({
@@ -157,7 +176,9 @@ export class AdminDashboardService {
         this.prisma.tradingAccount.count(),
       ]);
 
-      this.logger.debug(`Fetched ${accounts.length} recent accounts (total: ${total})`);
+      this.logger.debug(
+        `Fetched ${accounts.length} recent accounts (total: ${total})`,
+      );
 
       return {
         data: accounts,
@@ -169,8 +190,13 @@ export class AdminDashboardService {
         },
       };
     } catch (error) {
-      this.logger.error(`Failed to fetch recent accounts: ${error.message}`, error.stack);
-      throw new InternalServerErrorException('Failed to fetch recent trading accounts');
+      this.logger.error(
+        `Failed to fetch recent accounts: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        'Failed to fetch recent trading accounts',
+      );
     }
   }
 
@@ -181,7 +207,9 @@ export class AdminDashboardService {
   async getRecentViolations(page: number = 1, limit: number = 10) {
     try {
       const skip = (page - 1) * limit;
-      this.logger.debug(`Fetching recent violations: page=${page}, limit=${limit}, skip=${skip}`);
+      this.logger.debug(
+        `Fetching recent violations: page=${page}, limit=${limit}, skip=${skip}`,
+      );
 
       const [violations, total] = await Promise.all([
         this.prisma.violation.findMany({
@@ -210,7 +238,9 @@ export class AdminDashboardService {
         this.prisma.violation.count(),
       ]);
 
-      this.logger.debug(`Fetched ${violations.length} recent violations (total: ${total})`);
+      this.logger.debug(
+        `Fetched ${violations.length} recent violations (total: ${total})`,
+      );
 
       return {
         data: violations,
@@ -222,8 +252,13 @@ export class AdminDashboardService {
         },
       };
     } catch (error) {
-      this.logger.error(`Failed to fetch recent violations: ${error.message}`, error.stack);
-      throw new InternalServerErrorException('Failed to fetch recent violations');
+      this.logger.error(
+        `Failed to fetch recent violations: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        'Failed to fetch recent violations',
+      );
     }
   }
 
@@ -275,7 +310,10 @@ export class AdminDashboardService {
       payments.forEach((p) => {
         if (p.createdAt && p.amount !== null && p.amount !== undefined) {
           const dateKey = p.createdAt.toISOString().substring(0, 10);
-          revenueMap.set(dateKey, (revenueMap.get(dateKey) || 0) + Number(p.amount));
+          revenueMap.set(
+            dateKey,
+            (revenueMap.get(dateKey) || 0) + Number(p.amount),
+          );
         }
       });
 
@@ -284,7 +322,10 @@ export class AdminDashboardService {
         const payoutDate = p.processedAt ?? p.createdAt;
         if (payoutDate && p.amount !== null && p.amount !== undefined) {
           const dateKey = payoutDate.toISOString().substring(0, 10);
-          payoutMap.set(dateKey, (payoutMap.get(dateKey) || 0) + Number(p.amount));
+          payoutMap.set(
+            dateKey,
+            (payoutMap.get(dateKey) || 0) + Number(p.amount),
+          );
         }
       });
 
@@ -306,8 +347,13 @@ export class AdminDashboardService {
       this.logger.debug(`Revenue chart data fetched: ${result.length} days`);
       return result;
     } catch (error) {
-      this.logger.error(`Failed to fetch revenue chart: ${error.message}`, error.stack);
-      throw new InternalServerErrorException('Failed to fetch revenue chart data');
+      this.logger.error(
+        `Failed to fetch revenue chart: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        'Failed to fetch revenue chart data',
+      );
     }
   }
 
@@ -334,11 +380,18 @@ export class AdminDashboardService {
         total: Number(r.total), // Convert BigInt → number
       }));
 
-      this.logger.debug(`Registrations chart data fetched: ${result.length} months`);
+      this.logger.debug(
+        `Registrations chart data fetched: ${result.length} months`,
+      );
       return result;
     } catch (error) {
-      this.logger.error(`Failed to fetch registrations chart: ${error.message}`, error.stack);
-      throw new InternalServerErrorException('Failed to fetch registrations chart data');
+      this.logger.error(
+        `Failed to fetch registrations chart: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        'Failed to fetch registrations chart data',
+      );
     }
   }
 

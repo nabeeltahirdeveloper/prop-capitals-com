@@ -4,9 +4,9 @@ import { Injectable, Logger } from '@nestjs/common';
  * Circuit breaker states
  */
 export enum CircuitState {
-  CLOSED = 'CLOSED',     // Normal operation - requests flow through
-  OPEN = 'OPEN',         // Failing - requests are blocked
-  HALF_OPEN = 'HALF_OPEN' // Testing - allowing limited requests
+  CLOSED = 'CLOSED', // Normal operation - requests flow through
+  OPEN = 'OPEN', // Failing - requests are blocked
+  HALF_OPEN = 'HALF_OPEN', // Testing - allowing limited requests
 }
 
 /**
@@ -72,7 +72,7 @@ export type FetchErrorCode =
 
 /**
  * Resilient HTTP client with timeout, retry, and circuit breaker
- * 
+ *
  * Features:
  * - Configurable timeout per request
  * - Exponential backoff retry
@@ -88,34 +88,44 @@ export class ResilientHttpService {
   private circuits: Map<string, CircuitBreaker> = new Map();
 
   // Circuit breaker configuration
-  private readonly FAILURE_THRESHOLD = 5;        // Open circuit after 5 failures
-  private readonly RECOVERY_TIMEOUT = 30000;     // Try again after 30 seconds
-  private readonly SUCCESS_THRESHOLD = 2;        // Close circuit after 2 successes in half-open
+  private readonly FAILURE_THRESHOLD = 5; // Open circuit after 5 failures
+  private readonly RECOVERY_TIMEOUT = 30000; // Try again after 30 seconds
+  private readonly SUCCESS_THRESHOLD = 2; // Close circuit after 2 successes in half-open
 
   // Default fetch options
-  private readonly DEFAULT_TIMEOUT = 10000;      // 10 seconds
+  private readonly DEFAULT_TIMEOUT = 10000; // 10 seconds
   private readonly DEFAULT_RETRIES = 3;
-  private readonly DEFAULT_RETRY_DELAY = 1000;   // 1 second
+  private readonly DEFAULT_RETRY_DELAY = 1000; // 1 second
   private readonly DEFAULT_MAX_RETRY_DELAY = 10000; // 10 seconds
 
   /**
    * Make a resilient HTTP GET request
    */
-  async get<T = any>(url: string, options: Omit<FetchOptions, 'method' | 'body'> = {}): Promise<FetchResult<T>> {
+  async get<T = any>(
+    url: string,
+    options: Omit<FetchOptions, 'method' | 'body'> = {},
+  ): Promise<FetchResult<T>> {
     return this.fetch<T>(url, { ...options, method: 'GET' });
   }
 
   /**
    * Make a resilient HTTP POST request
    */
-  async post<T = any>(url: string, body: any, options: Omit<FetchOptions, 'method' | 'body'> = {}): Promise<FetchResult<T>> {
+  async post<T = any>(
+    url: string,
+    body: any,
+    options: Omit<FetchOptions, 'method' | 'body'> = {},
+  ): Promise<FetchResult<T>> {
     return this.fetch<T>(url, { ...options, method: 'POST', body });
   }
 
   /**
    * Main fetch method with all resilience features
    */
-  async fetch<T = any>(url: string, options: FetchOptions = {}): Promise<FetchResult<T>> {
+  async fetch<T = any>(
+    url: string,
+    options: FetchOptions = {},
+  ): Promise<FetchResult<T>> {
     const {
       timeout = this.DEFAULT_TIMEOUT,
       retries = this.DEFAULT_RETRIES,
@@ -171,10 +181,9 @@ export class ResilientHttpService {
           retryCount: attempt - 1,
           circuitState: this.getCircuit(circuitName).state,
         };
-
       } catch (error) {
         lastError = this.classifyError(error);
-        
+
         // Record failure for circuit breaker
         if (!skipCircuitBreaker) {
           this.recordFailure(circuitName);
@@ -182,15 +191,21 @@ export class ResilientHttpService {
 
         // Don't retry on certain errors
         if (this.isNonRetryableError(lastError.code)) {
-          this.logger.error(`[${circuitName}] Non-retryable error: ${lastError.message}`);
+          this.logger.error(
+            `[${circuitName}] Non-retryable error: ${lastError.message}`,
+          );
           break;
         }
 
         // Check if we should retry
         if (attempt <= retries) {
-          const delay = this.calculateBackoff(attempt, retryDelay, maxRetryDelay);
+          const delay = this.calculateBackoff(
+            attempt,
+            retryDelay,
+            maxRetryDelay,
+          );
           this.logger.warn(
-            `[${circuitName}] Attempt ${attempt}/${retries + 1} failed: ${lastError.message}. Retrying in ${delay}ms...`
+            `[${circuitName}] Attempt ${attempt}/${retries + 1} failed: ${lastError.message}. Retrying in ${delay}ms...`,
           );
           await this.sleep(delay);
         }
@@ -199,7 +214,7 @@ export class ResilientHttpService {
 
     // All retries exhausted
     this.logger.error(
-      `[${circuitName}] All ${retries + 1} attempts failed. Last error: ${lastError?.message}`
+      `[${circuitName}] All ${retries + 1} attempts failed. Last error: ${lastError?.message}`,
     );
 
     return {
@@ -221,7 +236,7 @@ export class ResilientHttpService {
       headers: Record<string, string>;
       body?: string;
       timeout: number;
-    }
+    },
   ): Promise<{ data: T; statusCode: number }> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), options.timeout);
@@ -243,10 +258,9 @@ export class ResilientHttpService {
       }
 
       // Parse JSON response
-      const data = await response.json() as T;
-      
-      return { data, statusCode: response.status };
+      const data = (await response.json()) as T;
 
+      return { data, statusCode: response.status };
     } catch (error) {
       clearTimeout(timeoutId);
       throw error;
@@ -266,14 +280,18 @@ export class ResilientHttpService {
 
     // HTTP errors
     if (error instanceof HttpError) {
-      return { 
-        message: `HTTP ${error.statusCode}: ${error.statusText} - ${error.body}`, 
-        code: 'HTTP_ERROR' 
+      return {
+        message: `HTTP ${error.statusCode}: ${error.statusText} - ${error.body}`,
+        code: 'HTTP_ERROR',
       };
     }
 
     // DNS errors
-    if (message.includes('ENOTFOUND') || message.includes('EAI_AGAIN') || message.includes('getaddrinfo')) {
+    if (
+      message.includes('ENOTFOUND') ||
+      message.includes('EAI_AGAIN') ||
+      message.includes('getaddrinfo')
+    ) {
       return { message: 'DNS resolution failed', code: 'DNS_ERROR' };
     }
 
@@ -282,7 +300,11 @@ export class ResilientHttpService {
       return { message: 'Connection refused', code: 'CONNECTION_REFUSED' };
     }
 
-    if (message.includes('ECONNRESET') || message.includes('ETIMEDOUT') || message.includes('EPIPE')) {
+    if (
+      message.includes('ECONNRESET') ||
+      message.includes('ETIMEDOUT') ||
+      message.includes('EPIPE')
+    ) {
       return { message: 'Network connection error', code: 'NETWORK_ERROR' };
     }
 
@@ -305,13 +327,17 @@ export class ResilientHttpService {
   /**
    * Calculate exponential backoff with jitter
    */
-  private calculateBackoff(attempt: number, baseDelay: number, maxDelay: number): number {
+  private calculateBackoff(
+    attempt: number,
+    baseDelay: number,
+    maxDelay: number,
+  ): number {
     // Exponential backoff: delay = baseDelay * 2^(attempt-1)
     const exponentialDelay = baseDelay * Math.pow(2, attempt - 1);
-    
+
     // Add jitter (±25%) to prevent thundering herd
     const jitter = exponentialDelay * 0.25 * (Math.random() * 2 - 1);
-    
+
     // Cap at max delay
     return Math.min(exponentialDelay + jitter, maxDelay);
   }
@@ -320,7 +346,7 @@ export class ResilientHttpService {
    * Sleep helper
    */
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   // ==================== Circuit Breaker ====================
@@ -355,14 +381,17 @@ export class ResilientHttpService {
   /**
    * Check if request should be allowed through circuit
    */
-  private checkCircuit(name: string): { allowed: boolean; state: CircuitState } {
+  private checkCircuit(name: string): {
+    allowed: boolean;
+    state: CircuitState;
+  } {
     const circuit = this.getCircuit(name);
 
     switch (circuit.state) {
       case CircuitState.CLOSED:
         return { allowed: true, state: circuit.state };
 
-      case CircuitState.OPEN:
+      case CircuitState.OPEN: {
         // Check if recovery timeout has passed
         const timeSinceFailure = Date.now() - circuit.lastFailureTime;
         if (timeSinceFailure >= this.RECOVERY_TIMEOUT) {
@@ -373,6 +402,7 @@ export class ResilientHttpService {
           return { allowed: true, state: circuit.state };
         }
         return { allowed: false, state: circuit.state };
+      }
 
       case CircuitState.HALF_OPEN:
         // Allow limited requests in half-open state
@@ -396,7 +426,9 @@ export class ResilientHttpService {
         circuit.state = CircuitState.CLOSED;
         circuit.failureCount = 0;
         circuit.successCount = 0;
-        this.logger.log(`[${name}] Circuit CLOSED after ${this.SUCCESS_THRESHOLD} successes`);
+        this.logger.log(
+          `[${name}] Circuit CLOSED after ${this.SUCCESS_THRESHOLD} successes`,
+        );
       }
     } else if (circuit.state === CircuitState.CLOSED) {
       // Reset failure count on success
@@ -416,28 +448,43 @@ export class ResilientHttpService {
       // Immediately open circuit on failure in half-open state
       circuit.state = CircuitState.OPEN;
       this.logger.warn(`[${name}] Circuit OPEN (failed in half-open state)`);
-    } else if (circuit.state === CircuitState.CLOSED && circuit.failureCount >= this.FAILURE_THRESHOLD) {
+    } else if (
+      circuit.state === CircuitState.CLOSED &&
+      circuit.failureCount >= this.FAILURE_THRESHOLD
+    ) {
       // Open circuit after threshold failures
       circuit.state = CircuitState.OPEN;
-      this.logger.warn(`[${name}] Circuit OPEN after ${this.FAILURE_THRESHOLD} failures`);
+      this.logger.warn(
+        `[${name}] Circuit OPEN after ${this.FAILURE_THRESHOLD} failures`,
+      );
     }
   }
 
   /**
    * Get circuit breaker status for monitoring
    */
-  getCircuitStatus(name?: string): Record<string, { state: CircuitState; failureCount: number }> {
+  getCircuitStatus(
+    name?: string,
+  ): Record<string, { state: CircuitState; failureCount: number }> {
     if (name) {
       const circuit = this.circuits.get(name);
       if (circuit) {
-        return { [name]: { state: circuit.state, failureCount: circuit.failureCount } };
+        return {
+          [name]: { state: circuit.state, failureCount: circuit.failureCount },
+        };
       }
       return {};
     }
 
-    const status: Record<string, { state: CircuitState; failureCount: number }> = {};
+    const status: Record<
+      string,
+      { state: CircuitState; failureCount: number }
+    > = {};
     this.circuits.forEach((circuit, circuitName) => {
-      status[circuitName] = { state: circuit.state, failureCount: circuit.failureCount };
+      status[circuitName] = {
+        state: circuit.state,
+        failureCount: circuit.failureCount,
+      };
     });
     return status;
   }
@@ -469,7 +516,7 @@ class HttpError extends Error {
   constructor(
     public readonly statusCode: number,
     public readonly statusText: string,
-    public readonly body: string
+    public readonly body: string,
   ) {
     super(`HTTP ${statusCode}: ${statusText}`);
     this.name = 'HttpError';

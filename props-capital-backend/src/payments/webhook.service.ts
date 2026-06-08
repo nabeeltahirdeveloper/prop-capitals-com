@@ -23,7 +23,7 @@ export class XoalaWebhookService {
     private readonly configService: ConfigService,
     @Inject(forwardRef(() => PaymentsService))
     private readonly paymentsService: PaymentsService,
-  ) { }
+  ) {}
 
   private requireString(value: any, field: string): string {
     if (value === undefined || value === null || `${value}`.trim() === '') {
@@ -38,9 +38,32 @@ export class XoalaWebhookService {
   // the raw payload status OR a normalized short code. We try both candidates
   // so the integration is resilient to either variant.
   private toShortStatus(raw: string): string | null {
-    const s = String(raw || '').trim().toLowerCase();
-    if (['y', 'success', 'capturesuccess', 'capture_success', 'captured', 'paid'].includes(s)) return 'Y';
-    if (['n', 'fail', 'failed', 'capturefail', 'capturefailed', 'capture_failed', 'declined'].includes(s)) return 'N';
+    const s = String(raw || '')
+      .trim()
+      .toLowerCase();
+    if (
+      [
+        'y',
+        'success',
+        'capturesuccess',
+        'capture_success',
+        'captured',
+        'paid',
+      ].includes(s)
+    )
+      return 'Y';
+    if (
+      [
+        'n',
+        'fail',
+        'failed',
+        'capturefail',
+        'capturefailed',
+        'capture_failed',
+        'declined',
+      ].includes(s)
+    )
+      return 'N';
     if (['c', 'cancelled', 'canceled', 'voided'].includes(s)) return 'C';
     if (['p', 'pending'].includes(s)) return 'P';
     if (['3d', '3ds', 'threeds'].includes(s)) return '3D';
@@ -56,7 +79,10 @@ export class XoalaWebhookService {
     }
 
     const incoming = this.requireString(payload.checksum, 'checksum');
-    const merchantTransactionId = this.requireString(payload.merchantTransactionId, 'merchantTransactionId');
+    const merchantTransactionId = this.requireString(
+      payload.merchantTransactionId,
+      'merchantTransactionId',
+    );
     const amount = this.requireString(payload.amount, 'amount');
     const rawStatus = this.requireString(payload.status, 'status');
 
@@ -65,7 +91,13 @@ export class XoalaWebhookService {
     if (short && short !== rawStatus) candidates.push(short);
 
     for (const status of candidates) {
-      const source = [paymentId, merchantTransactionId, amount, status, secureKey].join('|');
+      const source = [
+        paymentId,
+        merchantTransactionId,
+        amount,
+        status,
+        secureKey,
+      ].join('|');
       const expected = crypto.createHash('md5').update(source).digest('hex');
       if (incoming.toLowerCase() === expected.toLowerCase()) {
         this.logger.log(
@@ -106,7 +138,9 @@ export class XoalaWebhookService {
     );
     // Full sanitized payload — useful for diagnosing checksum issues without
     // leaking secureKey (Xoala never sends it back anyway).
-    this.logger.log(`Xoala callback payload: ${JSON.stringify(payload).slice(0, 1000)}`);
+    this.logger.log(
+      `Xoala callback payload: ${JSON.stringify(payload).slice(0, 1000)}`,
+    );
 
     this.verifyChecksum(payload, providerPaymentId);
 

@@ -10,17 +10,18 @@ export interface TradingDaysMetrics {
 
 export function calculateTradingDaysMetrics(
   trades: Array<{ openedAt: Date | string }>,
-  minTradingDays: number
+  minTradingDays: number,
 ): TradingDaysMetrics {
   // Extract unique dates from trades
   const uniqueDates = new Set<string>();
-  
+
   trades.forEach((trade) => {
     if (trade.openedAt) {
-      const dateString = typeof trade.openedAt === 'string'
-        ? new Date(trade.openedAt).toISOString().substring(0, 10)
-        : trade.openedAt.toISOString().substring(0, 10);
-      
+      const dateString =
+        typeof trade.openedAt === 'string'
+          ? new Date(trade.openedAt).toISOString().substring(0, 10)
+          : trade.openedAt.toISOString().substring(0, 10);
+
       uniqueDates.add(dateString);
     }
   });
@@ -49,18 +50,18 @@ export function calculateTradingDaysMetrics(
  */
 export function formatTradingDaysDisplay(metrics: TradingDaysMetrics): string {
   const { tradingDaysCompleted, tradedToday, daysRemaining } = metrics;
-  
+
   let display = `${tradingDaysCompleted} trading days completed`;
-  
+
   if (tradedToday) {
     display += ' (including today)';
   }
-  
+
   if (daysRemaining > 0) {
     display += ` - ${daysRemaining} days remaining`;
   } else {
     display += ' - requirement met!';
   }
-  
+
   return display;
 }

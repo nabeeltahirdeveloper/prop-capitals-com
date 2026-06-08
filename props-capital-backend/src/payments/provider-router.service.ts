@@ -111,7 +111,12 @@ export class PaymentProviderRouter {
     // 1. Explicit link slug
     const linkProvider = await this.lookupLinkProvider(input.linkSlug);
     if (linkProvider) {
-      return { provider: linkProvider, locked: true, source: 'link', worldCardFlow };
+      return {
+        provider: linkProvider,
+        locked: true,
+        source: 'link',
+        worldCardFlow,
+      };
     }
 
     // 2. /pay/:slug route param might itself be a link slug (no separate
@@ -120,17 +125,32 @@ export class PaymentProviderRouter {
     if (input.challengeSlug && input.challengeSlug !== input.linkSlug) {
       const fromRoute = await this.lookupLinkProvider(input.challengeSlug);
       if (fromRoute) {
-        return { provider: fromRoute, locked: true, source: 'route', worldCardFlow };
+        return {
+          provider: fromRoute,
+          locked: true,
+          source: 'route',
+          worldCardFlow,
+        };
       }
     }
 
     // 3. No forced provider — honor the client's sticky pick.
     const assigned = this.normalizeProvider(input.clientAssigned);
     if (assigned) {
-      return { provider: assigned, locked: false, source: 'client', worldCardFlow };
+      return {
+        provider: assigned,
+        locked: false,
+        source: 'client',
+        worldCardFlow,
+      };
     }
 
     // 4. Fresh visitor — flip the coin.
-    return { provider: this.random5050(), locked: false, source: 'random', worldCardFlow };
+    return {
+      provider: this.random5050(),
+      locked: false,
+      source: 'random',
+      worldCardFlow,
+    };
   }
 }

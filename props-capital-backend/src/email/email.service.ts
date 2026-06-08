@@ -20,22 +20,32 @@ export class EmailService {
 
   constructor(private readonly configService: ConfigService) {
     // Check if email is enabled (default: true in production, can be disabled for local dev)
-    this.isEnabled = this.configService.get<string>('EMAIL_ENABLED', 'true') === 'true';
+    this.isEnabled =
+      this.configService.get<string>('EMAIL_ENABLED', 'true') === 'true';
 
     // Configurable timeout (default: 10 seconds)
-    this.timeoutMs = parseInt(this.configService.get<string>('EMAIL_TIMEOUT_MS', '10000'), 10);
+    this.timeoutMs = parseInt(
+      this.configService.get<string>('EMAIL_TIMEOUT_MS', '10000'),
+      10,
+    );
 
-    this.fromEmail = this.configService.get<string>('SENDGRID_FROM') || 'noreply@prop-capitals.com';
+    this.fromEmail =
+      this.configService.get<string>('SENDGRID_FROM') ||
+      'noreply@prop-capitals.com';
 
     const apiKey = this.configService.get<string>('SENDGRID_API_KEY');
 
     if (!this.isEnabled) {
-      this.logger.warn('Email sending is DISABLED (EMAIL_ENABLED=false). Emails will be logged but not sent.');
+      this.logger.warn(
+        'Email sending is DISABLED (EMAIL_ENABLED=false). Emails will be logged but not sent.',
+      );
       return;
     }
 
     if (!apiKey) {
-      this.logger.error(' SENDGRID_API_KEY is not set. Email sending will fail.');
+      this.logger.error(
+        ' SENDGRID_API_KEY is not set. Email sending will fail.',
+      );
       // Don't throw - allow app to start, but emails will fail gracefully
       return;
     }
@@ -50,20 +60,48 @@ export class EmailService {
   }
 
   /**
+   * Convert a SendGrid recipient field (string, { name?, email }, or arrays of
+   * those, possibly undefined) into a readable string for log messages.
+   */
+  private formatRecipient(to: sgMail.MailDataRequired['to']): string {
+    if (to == null) {
+      return 'unknown';
+    }
+
+    const formatOne = (
+      entry: string | { name?: string; email: string },
+    ): string => (typeof entry === 'string' ? entry : entry.email);
+
+    if (Array.isArray(to)) {
+      return to.map(formatOne).join(', ');
+    }
+
+    return formatOne(to);
+  }
+
+  /**
    * Send email with timeout and error handling
    * Returns result object instead of throwing
    */
-  private async sendWithTimeout(mailOptions: sgMail.MailDataRequired): Promise<EmailResult> {
+  private async sendWithTimeout(
+    mailOptions: sgMail.MailDataRequired,
+  ): Promise<EmailResult> {
     // If disabled, log and return success (for dev/test environments)
     if (!this.isEnabled) {
-      this.logger.log(` [DEV MODE] Would send email to: ${mailOptions.to}, subject: "${mailOptions.subject}"`);
+      this.logger.log(
+        ` [DEV MODE] Would send email to: ${this.formatRecipient(mailOptions.to)}, subject: "${mailOptions.subject}"`,
+      );
       return { success: true, messageId: 'dev-mode-disabled' };
     }
 
     // If not configured, fail gracefully
     if (!this.isConfigured) {
       this.logger.error('Email not sent: SendGrid is not configured');
-      return { success: false, error: 'Email service not configured', errorCode: 'NOT_CONFIGURED' };
+      return {
+        success: false,
+        error: 'Email service not configured',
+        errorCode: 'NOT_CONFIGURED',
+      };
     }
 
     // Create abort controller for timeout
@@ -89,7 +127,9 @@ export class EmailService {
       const response = Array.isArray(result) ? result[0] : result;
       const messageId = response?.headers?.['x-message-id'] || 'unknown';
 
-      this.logger.log(`Email sent successfully to ${mailOptions.to} (messageId: ${messageId})`);
+      this.logger.log(
+        `Email sent successfully to ${this.formatRecipient(mailOptions.to)} (messageId: ${messageId})`,
+      );
 
       return { success: true, messageId };
     } catch (error) {
@@ -98,10 +138,13 @@ export class EmailService {
       // Classify and log the error appropriately
       const { errorMessage, errorCode } = this.classifyError(error);
 
-      this.logger.error(` Failed to send email to ${mailOptions.to}: ${errorMessage}`, {
-        errorCode,
-        subject: mailOptions.subject,
-      });
+      this.logger.error(
+        ` Failed to send email to ${this.formatRecipient(mailOptions.to)}: ${errorMessage}`,
+        {
+          errorCode,
+          subject: mailOptions.subject,
+        },
+      );
 
       return { success: false, error: errorMessage, errorCode };
     }
@@ -110,22 +153,42 @@ export class EmailService {
   /**
    * Classify SendGrid errors for better logging and handling
    */
-  private classifyError(error: any): { errorMessage: string; errorCode: string } {
+  private classifyError(error: any): {
+    errorMessage: string;
+    errorCode: string;
+  } {
     const message = error?.message || 'Unknown error';
 
     // Timeout
     if (message === 'EMAIL_TIMEOUT' || message.includes('abort')) {
-      return { errorMessage: `Email send timed out after ${this.timeoutMs}ms`, errorCode: 'TIMEOUT' };
+      return {
+        errorMessage: `Email send timed out after ${this.timeoutMs}ms`,
+        errorCode: 'TIMEOUT',
+      };
     }
 
     // DNS resolution failures
-    if (message.includes('ENOTFOUND') || message.includes('EAI_AGAIN') || message.includes('getaddrinfo')) {
-      return { errorMessage: 'DNS resolution failed - check network connectivity', errorCode: 'DNS_ERROR' };
+    if (
+      message.includes('ENOTFOUND') ||
+      message.includes('EAI_AGAIN') ||
+      message.includes('getaddrinfo')
+    ) {
+      return {
+        errorMessage: 'DNS resolution failed - check network connectivity',
+        errorCode: 'DNS_ERROR',
+      };
     }
 
     // Connection errors
-    if (message.includes('ECONNREFUSED') || message.includes('ECONNRESET') || message.includes('ETIMEDOUT')) {
-      return { errorMessage: 'Connection to SendGrid failed - network issue', errorCode: 'CONNECTION_ERROR' };
+    if (
+      message.includes('ECONNREFUSED') ||
+      message.includes('ECONNRESET') ||
+      message.includes('ETIMEDOUT')
+    ) {
+      return {
+        errorMessage: 'Connection to SendGrid failed - network issue',
+        errorCode: 'CONNECTION_ERROR',
+      };
     }
 
     // SendGrid API errors (from response)
@@ -135,26 +198,41 @@ export class EmailService {
 
       // Authentication error
       if (statusCode === 401 || statusCode === 403) {
-        return { errorMessage: 'SendGrid authentication failed - check API key', errorCode: 'AUTH_ERROR' };
+        return {
+          errorMessage: 'SendGrid authentication failed - check API key',
+          errorCode: 'AUTH_ERROR',
+        };
       }
 
       // Rate limiting
       if (statusCode === 429) {
-        return { errorMessage: 'SendGrid rate limit exceeded - too many requests', errorCode: 'RATE_LIMIT' };
+        return {
+          errorMessage: 'SendGrid rate limit exceeded - too many requests',
+          errorCode: 'RATE_LIMIT',
+        };
       }
 
       // Bad request (invalid email, etc.)
       if (statusCode === 400) {
         const errorDetail = body?.errors?.[0]?.message || 'Invalid request';
-        return { errorMessage: `SendGrid rejected request: ${errorDetail}`, errorCode: 'BAD_REQUEST' };
+        return {
+          errorMessage: `SendGrid rejected request: ${errorDetail}`,
+          errorCode: 'BAD_REQUEST',
+        };
       }
 
       // Server errors
       if (statusCode >= 500) {
-        return { errorMessage: `SendGrid server error (${statusCode})`, errorCode: 'SERVER_ERROR' };
+        return {
+          errorMessage: `SendGrid server error (${statusCode})`,
+          errorCode: 'SERVER_ERROR',
+        };
       }
 
-      return { errorMessage: `SendGrid error: ${statusCode} - ${JSON.stringify(body)}`, errorCode: 'API_ERROR' };
+      return {
+        errorMessage: `SendGrid error: ${statusCode} - ${JSON.stringify(body)}`,
+        errorCode: 'API_ERROR',
+      };
     }
 
     // Generic error
@@ -186,7 +264,11 @@ export class EmailService {
   /**
    * Send password reset email
    */
-  async sendPasswordResetEmail(to: string, resetToken: string, resetUrl: string): Promise<EmailResult> {
+  async sendPasswordResetEmail(
+    to: string,
+    resetToken: string,
+    resetUrl: string,
+  ): Promise<EmailResult> {
     return this.sendWithTimeout({
       to,
       from: this.fromEmail,
@@ -258,7 +340,11 @@ export class EmailService {
   /**
    * Send generic notification email
    */
-  async sendNotificationEmail(to: string, subject: string, message: string): Promise<EmailResult> {
+  async sendNotificationEmail(
+    to: string,
+    subject: string,
+    message: string,
+  ): Promise<EmailResult> {
     return this.sendWithTimeout({
       to,
       from: this.fromEmail,
@@ -420,7 +506,9 @@ Thank you for choosing us.`,
     subject: string,
     message: string,
   ): Promise<EmailResult> {
-    const supportEmail = this.configService.get<string>('SUPPORT_EMAIL') || 'support@prop-capitals.com';
+    const supportEmail =
+      this.configService.get<string>('SUPPORT_EMAIL') ||
+      'support@prop-capitals.com';
 
     return this.sendWithTimeout({
       to: supportEmail,
@@ -500,7 +588,11 @@ Thank you for choosing us.`,
    * Send "set your password" email to a guest-created user after their first
    * successful payment. Link contains a one-time token (valid 7 days).
    */
-  async sendSetPasswordEmail(to: string, setPasswordUrl: string, firstName?: string): Promise<EmailResult> {
+  async sendSetPasswordEmail(
+    to: string,
+    setPasswordUrl: string,
+    firstName?: string,
+  ): Promise<EmailResult> {
     const name = firstName || 'Trader';
     return this.sendWithTimeout({
       to,
@@ -552,5 +644,4 @@ Thank you for choosing us.`,
       `,
     });
   }
-
 }

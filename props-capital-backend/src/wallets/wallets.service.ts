@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -44,13 +48,16 @@ export class WalletsService {
     });
 
     // Aggregate by base asset (e.g. BTCUSDT → BTC)
-    const assetMap = new Map<string, {
-      asset: string;
-      symbol: string;
-      totalQty: number;
-      weightedCostSum: number;
-      openTrades: any[];
-    }>();
+    const assetMap = new Map<
+      string,
+      {
+        asset: string;
+        symbol: string;
+        totalQty: number;
+        weightedCostSum: number;
+        openTrades: any[];
+      }
+    >();
 
     for (const trade of openSpotTrades) {
       const asset = this.getBaseAsset(trade.symbol);
@@ -77,7 +84,8 @@ export class WalletsService {
       asset: entry.asset,
       symbol: entry.symbol,
       totalQty: entry.totalQty,
-      avgCostUsd: entry.totalQty > 0 ? entry.weightedCostSum / entry.totalQty : 0,
+      avgCostUsd:
+        entry.totalQty > 0 ? entry.weightedCostSum / entry.totalQty : 0,
       openTrades: entry.openTrades,
     }));
 

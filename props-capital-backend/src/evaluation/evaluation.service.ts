@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable no-irregular-whitespace */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import {
   Injectable,
   NotFoundException,
@@ -225,8 +225,7 @@ export class EvaluationService {
     // CRITICAL: Fallback to initialBalance (not equity) for todayStartEquity and minEquityToday
     // Using current equity as fallback is WRONG because it already includes losses,
     // which would make drawdown calculations start from the wrong base
-    let todayStartEquity =
-      (account as any).todayStartEquity ?? initialBalance;
+    let todayStartEquity = (account as any).todayStartEquity ?? initialBalance;
     let maxEquityToDate = (account as any).maxEquityToDate ?? initialBalance;
     let minEquityToday = (account as any).minEquityToday ?? initialBalance;
     let minEquityOverall = (account as any).minEquityOverall ?? initialBalance;
@@ -295,12 +294,23 @@ export class EvaluationService {
     const ruleOutputs = this.challengeRulesService.calculateRules(ruleInputs);
 
     // Calculate peak values (monotonic - can only increase, never decrease)
-    const prevPeakDaily = dailyReset ? 0 : ((account as any).peakDailyDrawdownPercent ?? 0);
+    const prevPeakDaily = dailyReset
+      ? 0
+      : ((account as any).peakDailyDrawdownPercent ?? 0);
     const prevPeakOverall = (account as any).peakOverallDrawdownPercent ?? 0;
     const prevPeakProfit = (account as any).peakProfitPercent ?? 0;
-    const peakDailyDrawdownPercent = Math.max(prevPeakDaily, ruleOutputs.dailyLossPercent);
-    const peakOverallDrawdownPercent = Math.max(prevPeakOverall, ruleOutputs.drawdownPercent);
-    const peakProfitPercent = Math.max(prevPeakProfit, ruleOutputs.profitPercent);
+    const peakDailyDrawdownPercent = Math.max(
+      prevPeakDaily,
+      ruleOutputs.dailyLossPercent,
+    );
+    const peakOverallDrawdownPercent = Math.max(
+      prevPeakOverall,
+      ruleOutputs.drawdownPercent,
+    );
+    const peakProfitPercent = Math.max(
+      prevPeakProfit,
+      ruleOutputs.profitPercent,
+    );
 
     // SINGLE ATOMIC DB WRITE - equity + tracking fields + peak values
     const updateData: any = {
@@ -439,7 +449,7 @@ export class EvaluationService {
           accountId,
           ViolationType.DAILY_DRAWDOWN,
           `Daily drawdown exceeded: ${ruleOutputs.dailyLossPercent.toFixed(2)}% > ${challenge.dailyDrawdownPercent}%`,
-          'DAILY_LOCKED' as TradingAccountStatus,
+          'DAILY_LOCKED',
           nextMidnight,
           true, // dailyLossViolated
           false, // drawdownViolated
@@ -505,7 +515,7 @@ export class EvaluationService {
           accountId,
           ViolationType.OVERALL_DRAWDOWN,
           `Overall drawdown exceeded: ${ruleOutputs.drawdownPercent.toFixed(2)}% > ${challenge.overallDrawdownPercent}%`,
-          'DISQUALIFIED' as TradingAccountStatus,
+          'DISQUALIFIED',
           null,
           false, // dailyLossViolated
           true, // drawdownViolated
@@ -1019,9 +1029,18 @@ export class EvaluationService {
     const ruleOutputs = this.challengeRulesService.calculateRules(ruleInputs);
 
     // Update peak values (monotonic - can only increase)
-    const peakDailyDD = Math.max((account as any).peakDailyDrawdownPercent ?? 0, ruleOutputs.dailyLossPercent);
-    const peakOverallDD = Math.max((account as any).peakOverallDrawdownPercent ?? 0, ruleOutputs.drawdownPercent);
-    const peakProfit = Math.max((account as any).peakProfitPercent ?? 0, ruleOutputs.profitPercent);
+    const peakDailyDD = Math.max(
+      (account as any).peakDailyDrawdownPercent ?? 0,
+      ruleOutputs.dailyLossPercent,
+    );
+    const peakOverallDD = Math.max(
+      (account as any).peakOverallDrawdownPercent ?? 0,
+      ruleOutputs.drawdownPercent,
+    );
+    const peakProfit = Math.max(
+      (account as any).peakProfitPercent ?? 0,
+      ruleOutputs.profitPercent,
+    );
     await this.prisma.tradingAccount.update({
       where: { id: accountId },
       data: {
@@ -1054,7 +1073,7 @@ export class EvaluationService {
           accountId,
           ViolationType.DAILY_DRAWDOWN,
           `Daily drawdown exceeded: ${ruleOutputs.dailyLossPercent.toFixed(2)}% > ${challenge.dailyDrawdownPercent}%`,
-          'DAILY_LOCKED' as TradingAccountStatus,
+          'DAILY_LOCKED',
           nextMidnight,
           true, // dailyLossViolated
           false, // drawdownViolated (not set)
@@ -1078,7 +1097,7 @@ export class EvaluationService {
           accountId,
           ViolationType.OVERALL_DRAWDOWN,
           `Overall drawdown exceeded: ${ruleOutputs.drawdownPercent.toFixed(2)}% > ${challenge.overallDrawdownPercent}%`,
-          'DISQUALIFIED' as TradingAccountStatus,
+          'DISQUALIFIED',
           null,
           false, // dailyLossViolated (not set)
           true, // drawdownViolated
@@ -1343,7 +1362,7 @@ export class EvaluationService {
           accountId,
           ViolationType.DAILY_DRAWDOWN,
           `Daily drawdown exceeded: ${ruleOutputs.dailyLossPercent.toFixed(2)}% > ${challenge.dailyDrawdownPercent}%`,
-          'DAILY_LOCKED' as TradingAccountStatus,
+          'DAILY_LOCKED',
           nextMidnight,
           true, // dailyLossViolated
           false, // drawdownViolated (not set)
@@ -1366,7 +1385,7 @@ export class EvaluationService {
           accountId,
           ViolationType.OVERALL_DRAWDOWN,
           `Overall drawdown exceeded: ${ruleOutputs.drawdownPercent.toFixed(2)}% > ${challenge.overallDrawdownPercent}%`,
-          'DISQUALIFIED' as TradingAccountStatus,
+          'DISQUALIFIED',
           null,
           false, // dailyLossViolated (not set)
           true, // drawdownViolated
@@ -1547,7 +1566,7 @@ export class EvaluationService {
     // This ensures daily drawdown starts fresh each day
     const activeAccounts = await this.prisma.tradingAccount.findMany({
       where: {
-        status: 'ACTIVE' as TradingAccountStatus,
+        status: 'ACTIVE',
       },
     });
 

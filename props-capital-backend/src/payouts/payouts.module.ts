@@ -9,13 +9,10 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { TradingAccountsModule } from '../trading-accounts/trading-accounts.module';
 
 @Module({
-
   imports: [PrismaModule, TradingAccountsModule],
 
   controllers: [PayoutsController],
 
   providers: [PayoutsService],
-
 })
-
 export class PayoutsModule {}

@@ -617,8 +617,6 @@
 // //   }
 // // }
 
-
-
 // import {
 //   Injectable,
 //   NotFoundException,
@@ -1211,9 +1209,6 @@
 //   }
 // }
 
-
-
-
 import {
   Injectable,
   NotFoundException,
@@ -1382,9 +1377,12 @@ export class TradesService {
               : isCrypto
                 ? 1
                 : 100000;
-          const tradeLeverage = Number((t as any).leverage) > 0 ? Number((t as any).leverage) : 100;
+          const tradeLeverage =
+            Number((t as any).leverage) > 0 ? Number((t as any).leverage) : 100;
           return (
-            sum + (Number(t.volume) * contractSize * Number(t.openPrice)) / tradeLeverage
+            sum +
+            (Number(t.volume) * contractSize * Number(t.openPrice)) /
+              tradeLeverage
           );
         }, 0);
 
@@ -1726,7 +1724,9 @@ export class TradesService {
     // and the per-second TP/SL monitor.
     if (stopLoss != null || takeProfit != null) {
       try {
-        const pricesData = await this.marketDataService.getUnifiedPrices([trade.symbol]);
+        const pricesData = await this.marketDataService.getUnifiedPrices([
+          trade.symbol,
+        ]);
         const prices = pricesData?.find?.(
           (p: any) => p?.symbol?.toUpperCase() === trade.symbol?.toUpperCase(),
         );

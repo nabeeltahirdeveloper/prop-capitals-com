@@ -8,32 +8,20 @@ import { RefundPaymentDto } from './dto/refund-payment.dto';
 @Controller('admin/payments')
 @UseGuards(JwtAuthGuard, AdminRoleGuard)
 export class AdminPaymentsController {
-
   constructor(private readonly service: AdminPaymentsService) {}
 
   @Get()
-
   async getAll() {
-
     return this.service.getAll();
-
   }
 
   @Get('statistics')
-
   async getStatistics() {
-
     return this.service.getStatistics();
-
   }
 
   @Patch(':id/refund')
-
   async refundPayment(@Param('id') id: string, @Body() body: RefundPaymentDto) {
-
     return this.service.refundPayment(id, body.reason);
-
   }
-
 }
-

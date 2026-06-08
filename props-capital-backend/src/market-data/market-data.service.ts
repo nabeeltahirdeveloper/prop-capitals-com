@@ -6,7 +6,7 @@ import { Candlestick } from '../prices/twelve-data.service';
 import { ResilientHttpService } from 'src/common/resilient-http.service';
 import { MassiveWebSocketService } from '../prices/massive-websocket.service';
 import { PendingOrderRegistryService } from '../pending-orders/pending-order-registry.service';
-import { PendingOrdersService} from "../pending-orders/pending-orders.service"
+import { PendingOrdersService } from '../pending-orders/pending-orders.service';
 
 interface CandleCache {
   candles: Candlestick[];
@@ -59,21 +59,21 @@ export class MarketDataService {
     'BNB/USD': 'binancecoin',
     'AVAX/USD': 'avalanche-2',
     'DOT/USD': 'polkadot',
-  //  'MATIC/USD': 'matic-network',
+    //  'MATIC/USD': 'matic-network',
     'LINK/USD': 'chainlink',
   };
 
   constructor(
-  private readonly pricesService: PricesService,
-  private readonly binanceMarketService: BinanceMarketService,
-  private readonly binanceWebSocketService: BinanceWebSocketService,
-  private readonly massiveWebSocketService: MassiveWebSocketService,
-  private readonly httpService: ResilientHttpService,
-  private readonly pendingOrderRegistryService: PendingOrderRegistryService,
-  private readonly pendingOrdersService: PendingOrdersService,
-) {
-  this.startSyntheticCandleBuilder();
-}
+    private readonly pricesService: PricesService,
+    private readonly binanceMarketService: BinanceMarketService,
+    private readonly binanceWebSocketService: BinanceWebSocketService,
+    private readonly massiveWebSocketService: MassiveWebSocketService,
+    private readonly httpService: ResilientHttpService,
+    private readonly pendingOrderRegistryService: PendingOrderRegistryService,
+    private readonly pendingOrdersService: PendingOrdersService,
+  ) {
+    this.startSyntheticCandleBuilder();
+  }
 
   private isForexSymbol(symbol: string): boolean {
     return this.FOREX_SYMBOLS.includes(symbol);
@@ -88,7 +88,8 @@ export class MarketDataService {
     const s = String(symbol).toUpperCase();
     if (s.includes('/')) return s;
     if (s.endsWith('USDT')) return `${s.replace(/USDT$/, '')}/USD`;
-    if (s.length >= 6 && /^[A-Z]+$/.test(s)) return `${s.slice(0, 3)}/${s.slice(3)}`;
+    if (s.length >= 6 && /^[A-Z]+$/.test(s))
+      return `${s.slice(0, 3)}/${s.slice(3)}`;
     return s;
   }
 
@@ -111,7 +112,10 @@ export class MarketDataService {
             price: wsPrice.bid,
             bid: wsPrice.bid,
             ask: wsPrice.ask,
-            change: this.pricesService.getChangePercent(normalizedSymbol, wsPrice.bid),
+            change: this.pricesService.getChangePercent(
+              normalizedSymbol,
+              wsPrice.bid,
+            ),
             timestamp: new Date(wsPrice.timestamp).toISOString(),
           };
         }
@@ -130,7 +134,10 @@ export class MarketDataService {
             price: wsPrice.bid,
             bid: wsPrice.bid,
             ask: wsPrice.ask,
-            change: this.pricesService.getChangePercent(normalizedSymbol, wsPrice.bid),
+            change: this.pricesService.getChangePercent(
+              normalizedSymbol,
+              wsPrice.bid,
+            ),
             timestamp: new Date(wsPrice.timestamp).toISOString(),
           };
         }
@@ -141,71 +148,80 @@ export class MarketDataService {
 
       throw new NotFoundException(`Symbol ${normalizedSymbol} not available`);
     } catch (e) {
-      this.logger.warn(`Price fetch failed for ${normalizedSymbol}: ${this.getErrorMessage(e)}`);
+      this.logger.warn(
+        `Price fetch failed for ${normalizedSymbol}: ${this.getErrorMessage(e)}`,
+      );
       throw e;
     }
   }
 
-
   async processPendingOrdersForSymbol(symbol: string) {
-  const normalizedSymbol = this.normalizeSymbol(symbol);
+    const normalizedSymbol = this.normalizeSymbol(symbol);
 
-  const priceData = await this.getCurrentPrice(normalizedSymbol);
+    const priceData = await this.getCurrentPrice(normalizedSymbol);
 
-  const bid = Number(priceData.bid);
-  const ask = Number(priceData.ask);
+    const bid = Number(priceData.bid);
+    const ask = Number(priceData.ask);
 
-  const triggeredOrderIds =
-    this.pendingOrderRegistryService.findTriggeredOrders(normalizedSymbol, bid, ask);
+    const triggeredOrderIds =
+      this.pendingOrderRegistryService.findTriggeredOrders(
+        normalizedSymbol,
+        bid,
+        ask,
+      );
 
-  if (triggeredOrderIds.length === 0) {
+    if (triggeredOrderIds.length === 0) {
+      return {
+        symbol: normalizedSymbol,
+        bid,
+        ask,
+        triggered: 0,
+        executed: 0,
+      };
+    }
+
+    let executed = 0;
+
+    for (const orderId of triggeredOrderIds) {
+      try {
+        const runtimeOrder =
+          this.pendingOrderRegistryService.getOrderById(orderId);
+        if (!runtimeOrder) {
+          continue;
+        }
+
+        const executionPrice = runtimeOrder.type === 'BUY' ? ask : bid;
+
+        const result = await this.pendingOrdersService.executePendingOrder(
+          orderId,
+          executionPrice,
+        );
+
+        // STOP_LIMIT activation returns { activated: true } — not a trade execution
+        if (result && (result as any).activated) {
+          this.logger.log(
+            `STOP_LIMIT order ${orderId} activated for ${normalizedSymbol}, now waiting as LIMIT`,
+          );
+        } else if (result) {
+          executed++;
+        }
+      } catch (error) {
+        this.logger.warn(
+          `Failed to execute pending order ${orderId} for ${normalizedSymbol}: ${
+            error instanceof Error ? error.message : 'Unknown error'
+          }`,
+        );
+      }
+    }
+
     return {
       symbol: normalizedSymbol,
       bid,
       ask,
-      triggered: 0,
-      executed: 0,
+      triggered: triggeredOrderIds.length,
+      executed,
     };
   }
-
-  let executed = 0;
-
-  for (const orderId of triggeredOrderIds) {
-    try {
-      const runtimeOrder = this.pendingOrderRegistryService.getOrderById(orderId);
-      if (!runtimeOrder) {
-        continue;
-      }
-
-      const executionPrice = runtimeOrder.type === 'BUY' ? ask : bid;
-
-      const result = await this.pendingOrdersService.executePendingOrder(orderId, executionPrice);
-
-      // STOP_LIMIT activation returns { activated: true } — not a trade execution
-      if (result && (result as any).activated) {
-        this.logger.log(
-          `STOP_LIMIT order ${orderId} activated for ${normalizedSymbol}, now waiting as LIMIT`,
-        );
-      } else if (result) {
-        executed++;
-      }
-    } catch (error) {
-      this.logger.warn(
-        `Failed to execute pending order ${orderId} for ${normalizedSymbol}: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`,
-      );
-    }
-  }
-
-  return {
-    symbol: normalizedSymbol,
-    bid,
-    ask,
-    triggered: triggeredOrderIds.length,
-    executed,
-  };
-}
   /**
    * Check if circuit breaker is open (API is failing too much)
    */
@@ -214,7 +230,10 @@ export class MarketDataService {
       return false;
     }
     // Check if enough time has passed to reset
-    if (Date.now() - this.historicalApiLastFailure > this.CIRCUIT_BREAKER_RESET_MS) {
+    if (
+      Date.now() - this.historicalApiLastFailure >
+      this.CIRCUIT_BREAKER_RESET_MS
+    ) {
       this.historicalApiFailures = 0;
       this.logger.log('📊 Historical API circuit breaker reset');
       return false;
@@ -231,7 +250,7 @@ export class MarketDataService {
     if (this.historicalApiFailures >= this.CIRCUIT_BREAKER_THRESHOLD) {
       this.logger.warn(
         `⚠️ Historical API circuit breaker OPEN after ${this.historicalApiFailures} failures. ` +
-        `Using synthetic data for ${this.CIRCUIT_BREAKER_RESET_MS / 1000}s`
+          `Using synthetic data for ${this.CIRCUIT_BREAKER_RESET_MS / 1000}s`,
       );
     }
   }
@@ -266,7 +285,9 @@ export class MarketDataService {
       if (this.isForexSymbol(normalizedSymbol)) {
         // Check circuit breaker
         if (this.isCircuitBreakerOpen()) {
-          this.logger.debug(`Circuit breaker open, using synthetic data for ${normalizedSymbol}`);
+          this.logger.debug(
+            `Circuit breaker open, using synthetic data for ${normalizedSymbol}`,
+          );
           return this.getSyntheticCandles(normalizedSymbol, timeframe, limit);
         }
 
@@ -291,12 +312,15 @@ export class MarketDataService {
           }
 
           // API returned empty - use synthetic fallback
-          this.logger.debug(`No historical data for ${symbol}, using synthetic fallback`);
+          this.logger.debug(
+            `No historical data for ${symbol}, using synthetic fallback`,
+          );
           this.recordApiFailure();
           return this.getSyntheticCandles(normalizedSymbol, timeframe, limit);
-
         } catch (apiError) {
-          this.logger.warn(`Historical API error for ${normalizedSymbol}: ${this.getErrorMessage(apiError)}`);
+          this.logger.warn(
+            `Historical API error for ${normalizedSymbol}: ${this.getErrorMessage(apiError)}`,
+          );
           this.recordApiFailure();
           return this.getSyntheticCandles(normalizedSymbol, timeframe, limit);
         }
@@ -309,12 +333,14 @@ export class MarketDataService {
           timeframe,
           limit,
         );
-        return candles as unknown as Candlestick[];
+        return candles;
       }
 
       return [];
     } catch (error) {
-      this.logger.error(`History failed for ${normalizedSymbol}: ${this.getErrorMessage(error)}`);
+      this.logger.error(
+        `History failed for ${normalizedSymbol}: ${this.getErrorMessage(error)}`,
+      );
       // Last resort: return synthetic candles
       if (this.isForexSymbol(normalizedSymbol)) {
         return this.getSyntheticCandles(normalizedSymbol, timeframe, limit);
@@ -351,10 +377,12 @@ export class MarketDataService {
       const currentMinute = Math.floor(now / candleInterval) * candleInterval;
 
       let candles = this.syntheticCandles.get(symbol) || [];
-      const lastUpdate = this.lastSyntheticUpdate.get(symbol) || 0;
 
       // Check if we need to start a new candle
-      if (candles.length === 0 || currentMinute > candles[candles.length - 1].time) {
+      if (
+        candles.length === 0 ||
+        currentMinute > candles[candles.length - 1].time
+      ) {
         // Start new candle
         candles.push({
           time: currentMinute,
@@ -478,7 +506,10 @@ export class MarketDataService {
   /**
    * Aggregate M1 candles to larger timeframes
    */
-  private aggregateCandles(m1Candles: Candlestick[], timeframe: string): Candlestick[] {
+  private aggregateCandles(
+    m1Candles: Candlestick[],
+    timeframe: string,
+  ): Candlestick[] {
     const multipliers: { [key: string]: number } = {
       M1: 1,
       M5: 5,
@@ -534,7 +565,7 @@ export class MarketDataService {
           change: priceData.change ?? 0,
           timestamp: new Date(priceData.timestamp).getTime(),
         };
-      } catch (e) {
+      } catch {
         return null;
       }
     });
@@ -573,7 +604,10 @@ export class MarketDataService {
         ? new Date(this.historicalApiLastFailure).toISOString()
         : null,
       syntheticCandlesCounts: Object.fromEntries(
-        Array.from(this.syntheticCandles.entries()).map(([k, v]) => [k, v.length])
+        Array.from(this.syntheticCandles.entries()).map(([k, v]) => [
+          k,
+          v.length,
+        ]),
       ),
     };
   }

@@ -85,7 +85,7 @@ export class PricesService {
   /**
    * ✅ GET FOREX RATES (Twelve Data WS)
    */
-  async getForexRates(): Promise<ForexRates> {
+  getForexRates(): Promise<ForexRates> {
     const rates: ForexRates = {};
     const pairs = [
       { symbol: 'EUR/USD', base: 'EUR', inverse: false },
@@ -107,7 +107,7 @@ export class PricesService {
       }
     }
     rates['USD'] = 1;
-    return rates;
+    return Promise.resolve(rates);
   }
 
   /**
@@ -187,7 +187,7 @@ export class PricesService {
         }
       }
       return prices;
-    } catch (e) {
+    } catch {
       return {};
     }
   }
@@ -304,9 +304,10 @@ export class PricesService {
           bid: val.usd,
           ask: val.usd * 1.001,
           spread: 10,
-          change: val.usd_24h_change != null
-            ? parseFloat(val.usd_24h_change.toFixed(2))
-            : this.getChangePercent(symbolMap[key], val.usd),
+          change:
+            val.usd_24h_change != null
+              ? parseFloat(val.usd_24h_change.toFixed(2))
+              : this.getChangePercent(symbolMap[key], val.usd),
         };
       })
       .filter((x) => x.symbol);

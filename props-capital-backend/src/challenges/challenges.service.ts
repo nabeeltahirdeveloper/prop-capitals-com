@@ -5,9 +5,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
-
 export class ChallengesService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   async create(data: Prisma.ChallengeCreateInput) {
     return this.prisma.challenge.create({ data });
@@ -103,7 +102,6 @@ export class ChallengesService {
     });
   }
 
-
   async trackBrandLinkClick(slug: string) {
     if (!slug) return { success: true, tracked: false };
     try {
@@ -112,10 +110,9 @@ export class ChallengesService {
         data: { clicks: { increment: 1 } },
       });
       return { success: true, tracked: true };
-    } catch (_e) {
+    } catch {
       // Slug not found, link inactive, or DB error — never block the caller
       return { success: true, tracked: false };
     }
   }
-
 }

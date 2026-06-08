@@ -70,15 +70,17 @@ export class AdminCouponsService {
         throw new BadRequestException('discountPct must be greater than 0');
       }
       if (discountType === 'percentage' && discountPct > 100) {
-        throw new BadRequestException(
-          'percentage discount cannot exceed 100',
-        );
+        throw new BadRequestException('percentage discount cannot exceed 100');
       }
       parsed.discountPct = Math.floor(discountPct);
     }
 
     if (!isUpdate || has('maxUses')) {
-      if (data.maxUses === null || data.maxUses === undefined || data.maxUses === '') {
+      if (
+        data.maxUses === null ||
+        data.maxUses === undefined ||
+        data.maxUses === ''
+      ) {
         parsed.maxUses = null;
       } else {
         const maxUses = Number(data.maxUses);

@@ -149,38 +149,45 @@ export class ResellerPortalService {
       status: 'succeeded',
     };
 
-    const [networkAgg, networkCount, ownAgg, ownCount, paidAgg, unpaidAgg, reseller] =
-      await Promise.all([
-        this.db.payment.aggregate({
-          _sum: { amount: true, brandCommission: true },
-          where: networkPaymentsWhere,
-        }),
-        this.db.payment.count({ where: networkPaymentsWhere }),
-        this.db.payment.aggregate({
-          _sum: { amount: true, brandCommission: true },
-          where: { brandId: resellerId, status: 'succeeded' },
-        }),
-        this.db.payment.count({
-          where: { brandId: resellerId, status: 'succeeded' },
-        }),
-        this.db.payment.aggregate({
-          _sum: { brandCommission: true },
-          where: {
-            brandId: { in: childIds.length ? childIds : ['__none__'] },
-            status: 'succeeded',
-            brandPaidOut: true,
-          },
-        }),
-        this.db.payment.aggregate({
-          _sum: { brandCommission: true },
-          where: {
-            brandId: { in: childIds.length ? childIds : ['__none__'] },
-            status: 'succeeded',
-            brandPaidOut: false,
-          },
-        }),
-        this.db.brand.findUnique({ where: { id: resellerId } }),
-      ]);
+    const [
+      networkAgg,
+      networkCount,
+      ownAgg,
+      ownCount,
+      paidAgg,
+      unpaidAgg,
+      reseller,
+    ] = await Promise.all([
+      this.db.payment.aggregate({
+        _sum: { amount: true, brandCommission: true },
+        where: networkPaymentsWhere,
+      }),
+      this.db.payment.count({ where: networkPaymentsWhere }),
+      this.db.payment.aggregate({
+        _sum: { amount: true, brandCommission: true },
+        where: { brandId: resellerId, status: 'succeeded' },
+      }),
+      this.db.payment.count({
+        where: { brandId: resellerId, status: 'succeeded' },
+      }),
+      this.db.payment.aggregate({
+        _sum: { brandCommission: true },
+        where: {
+          brandId: { in: childIds.length ? childIds : ['__none__'] },
+          status: 'succeeded',
+          brandPaidOut: true,
+        },
+      }),
+      this.db.payment.aggregate({
+        _sum: { brandCommission: true },
+        where: {
+          brandId: { in: childIds.length ? childIds : ['__none__'] },
+          status: 'succeeded',
+          brandPaidOut: false,
+        },
+      }),
+      this.db.brand.findUnique({ where: { id: resellerId } }),
+    ]);
 
     const networkRevenue = (networkAgg._sum.amount ?? 0) / 100;
     const ownRevenue = (ownAgg._sum.amount ?? 0) / 100;
@@ -212,7 +219,10 @@ export class ResellerPortalService {
 
   /* ---------- Visits ---------- */
 
-  async listVisits(_resellerId: string, params: { page?: number; limit?: number }) {
+  async listVisits(
+    _resellerId: string,
+    params: { page?: number; limit?: number },
+  ) {
     const page = Math.max(1, Number(params.page) || 1);
     const limit = Math.min(200, Math.max(1, Number(params.limit) || 50));
     const skip = (page - 1) * limit;
@@ -298,19 +308,26 @@ export class ResellerPortalService {
   }
 
   async updateLink(resellerId: string, id: string, body: any) {
-    const existing = await this.db.directPurchaseLink.findUnique({ where: { id } });
+    const existing = await this.db.directPurchaseLink.findUnique({
+      where: { id },
+    });
     if (!existing || existing.brandId !== resellerId)
       throw new UnauthorizedException();
     const data: any = {};
     if (body.name !== undefined) data.name = body.name;
     if (body.amount !== undefined) data.amount = Number(body.amount);
     if (body.active !== undefined) data.active = !!body.active;
-    const updated = await this.db.directPurchaseLink.update({ where: { id }, data });
+    const updated = await this.db.directPurchaseLink.update({
+      where: { id },
+      data,
+    });
     return { link: this.mapLink(updated) };
   }
 
   async deleteLink(resellerId: string, id: string) {
-    const existing = await this.db.directPurchaseLink.findUnique({ where: { id } });
+    const existing = await this.db.directPurchaseLink.findUnique({
+      where: { id },
+    });
     if (!existing || existing.brandId !== resellerId)
       throw new UnauthorizedException();
     await this.db.directPurchaseLink.delete({ where: { id } });
@@ -335,7 +352,10 @@ export class ResellerPortalService {
 
   /* ---------- Orders ---------- */
 
-  async listOrders(resellerId: string, params: { page?: number; limit?: number }) {
+  async listOrders(
+    resellerId: string,
+    params: { page?: number; limit?: number },
+  ) {
     const page = Math.max(1, Number(params.page) || 1);
     const limit = Math.min(200, Math.max(1, Number(params.limit) || 50));
     const skip = (page - 1) * limit;
@@ -365,7 +385,10 @@ export class ResellerPortalService {
 
   /* ---------- Network (child brands) ---------- */
 
-  async networkBrands(resellerId: string, params: { page?: number; limit?: number }) {
+  async networkBrands(
+    resellerId: string,
+    params: { page?: number; limit?: number },
+  ) {
     const page = Math.max(1, Number(params.page) || 1);
     const limit = Math.min(200, Math.max(1, Number(params.limit) || 50));
     const skip = (page - 1) * limit;
@@ -385,7 +408,10 @@ export class ResellerPortalService {
     };
   }
 
-  async networkTransactions(resellerId: string, params: { page?: number; limit?: number }) {
+  async networkTransactions(
+    resellerId: string,
+    params: { page?: number; limit?: number },
+  ) {
     const page = Math.max(1, Number(params.page) || 1);
     const limit = Math.min(500, Math.max(1, Number(params.limit) || 100));
     const skip = (page - 1) * limit;
@@ -397,7 +423,10 @@ export class ResellerPortalService {
     const childMap = new Map(children.map((c: any) => [c.id, c.name]));
     const childIds = children.map((c: any) => c.id);
     if (!childIds.length)
-      return { transactions: [], pagination: { total: 0, page: 1, totalPages: 0 } };
+      return {
+        transactions: [],
+        pagination: { total: 0, page: 1, totalPages: 0 },
+      };
 
     const where = { brandId: { in: childIds }, status: 'succeeded' };
     const [data, total] = await Promise.all([
@@ -446,7 +475,11 @@ export class ResellerPortalService {
 
   /* ---------- MIDs / aggregate stats / commission / payouts ---------- */
 
-  async listMids(_resellerId: string) {
+  listMids(resellerId: string) {
+    // MIDs are looked up per reseller; none are configured yet so the list is
+    // empty regardless of the reseller. `resellerId` is referenced to keep the
+    // call-site contract while satisfying lint until real lookups are wired up.
+    void resellerId;
     return { mids: [] };
   }
 
@@ -467,11 +500,19 @@ export class ResellerPortalService {
     const [paid, unpaid] = await Promise.all([
       this.db.payment.aggregate({
         _sum: { brandCommission: true },
-        where: { brandId: { in: childIds }, status: 'succeeded', brandPaidOut: true },
+        where: {
+          brandId: { in: childIds },
+          status: 'succeeded',
+          brandPaidOut: true,
+        },
       }),
       this.db.payment.aggregate({
         _sum: { brandCommission: true },
-        where: { brandId: { in: childIds }, status: 'succeeded', brandPaidOut: false },
+        where: {
+          brandId: { in: childIds },
+          status: 'succeeded',
+          brandPaidOut: false,
+        },
       }),
     ]);
     return {
@@ -480,7 +521,10 @@ export class ResellerPortalService {
     };
   }
 
-  async listPayouts(resellerId: string, params: { page?: number; limit?: number }) {
+  async listPayouts(
+    resellerId: string,
+    params: { page?: number; limit?: number },
+  ) {
     const page = Math.max(1, Number(params.page) || 1);
     const limit = Math.min(200, Math.max(1, Number(params.limit) || 50));
     const skip = (page - 1) * limit;
@@ -519,7 +563,10 @@ export class ResellerPortalService {
         total_payouts: paidCount,
         average_payout: paidCount > 0 ? totalPaid / paidCount : 0,
         last_payout: lastPaid
-          ? { amount: lastPaid.amount, date: lastPaid.paidAt ?? lastPaid.createdAt }
+          ? {
+              amount: lastPaid.amount,
+              date: lastPaid.paidAt ?? lastPaid.createdAt,
+            }
           : null,
       },
       pagination: { total, page, totalPages: Math.ceil(total / limit) },
@@ -550,12 +597,16 @@ export class ResellerPortalService {
     const totalOrderAmount =
       succeeded.reduce((acc: number, p: any) => acc + (p.amount ?? 0), 0) / 100;
     const totalCommission =
-      succeeded.reduce((acc: number, p: any) => acc + (p.brandCommission ?? 0), 0) / 100;
+      succeeded.reduce(
+        (acc: number, p: any) => acc + (p.brandCommission ?? 0),
+        0,
+      ) / 100;
     const rollingReserve = totalOrderAmount * 0.1;
     const totalPaid =
       succeeded
         .filter((p: any) => p.brandPaidOut === true)
-        .reduce((acc: number, p: any) => acc + (p.brandCommission ?? 0), 0) / 100;
+        .reduce((acc: number, p: any) => acc + (p.brandCommission ?? 0), 0) /
+      100;
 
     return {
       transactions: data.map((p: any) => ({

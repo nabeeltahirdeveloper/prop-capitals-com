@@ -277,8 +277,7 @@ export class WorldCardService {
     description: string,
     password: string,
   ): string {
-    const source =
-      orderNumber + amount + currency + description + password;
+    const source = orderNumber + amount + currency + description + password;
     const upperSource = source.toUpperCase();
     const md5 = crypto.createHash('md5').update(upperSource).digest('hex');
     return crypto.createHash('sha1').update(md5).digest('hex');
@@ -313,10 +312,14 @@ export class WorldCardService {
     let challenge: any = null;
     let brandLink: any = null;
     if (challengeId && typeof challengeId === 'string') {
-      challenge = await this.prisma.challenge.findUnique({ where: { id: challengeId } });
+      challenge = await this.prisma.challenge.findUnique({
+        where: { id: challengeId },
+      });
     }
     if (!challenge && slug && typeof slug === 'string') {
-      challenge = await (this.prisma.challenge as any).findUnique({ where: { slug } });
+      challenge = await (this.prisma.challenge as any).findUnique({
+        where: { slug },
+      });
       if (!challenge) {
         brandLink = await (this.prisma as any).directPurchaseLink.findUnique({
           where: { slug },
@@ -328,17 +331,27 @@ export class WorldCardService {
     if (!challenge && accountSize) {
       const sizeNumber = this.parseAccountSize(accountSize);
       const typeMap: Record<string, string> = {
-        '1-step': 'one_phase', 'one-step': 'one_phase', 'one_step': 'one_phase',
-        'one-phase': 'one_phase', 'one_phase': 'one_phase',
-        '2-step': 'two_phase', 'two-step': 'two_phase', 'two_step': 'two_phase',
-        'two-phase': 'two_phase', 'two_phase': 'two_phase',
+        '1-step': 'one_phase',
+        'one-step': 'one_phase',
+        one_step: 'one_phase',
+        'one-phase': 'one_phase',
+        one_phase: 'one_phase',
+        '2-step': 'two_phase',
+        'two-step': 'two_phase',
+        two_step: 'two_phase',
+        'two-phase': 'two_phase',
+        two_phase: 'two_phase',
       };
       const mappedType =
         typeMap[String(challengeType || '').toLowerCase()] ||
         challengeType ||
         'two_phase';
       challenge = await this.prisma.challenge.findFirst({
-        where: { accountSize: sizeNumber, challengeType: mappedType, isActive: true },
+        where: {
+          accountSize: sizeNumber,
+          challengeType: mappedType,
+          isActive: true,
+        },
       });
     }
     if (!brandLink && linkSlug && typeof linkSlug === 'string') {
@@ -352,17 +365,28 @@ export class WorldCardService {
         where: { slug: brandSlug },
       });
       if (brand) {
-        brandLink = { brandId: brand.id, brand, id: null, slug: null, active: true };
+        brandLink = {
+          brandId: brand.id,
+          brand,
+          id: null,
+          slug: null,
+          active: true,
+        };
       }
     }
-    if (brandLink?.provider && String(brandLink.provider).toUpperCase() !== 'WORLDCARD') {
+    if (
+      brandLink?.provider &&
+      String(brandLink.provider).toUpperCase() !== 'WORLDCARD'
+    ) {
       throw new BadRequestException(
         'This link is configured to use a different payment gateway.',
       );
     }
 
     const linkPriceOverride: number | null =
-      brandLink?.active && brandLink?.amount != null && Number(brandLink.amount) > 0
+      brandLink?.active &&
+      brandLink?.amount != null &&
+      Number(brandLink.amount) > 0
         ? Number(brandLink.amount)
         : null;
     if (!challenge && brandLink?.active && linkPriceOverride != null) {
@@ -372,7 +396,11 @@ export class WorldCardService {
       const fallbackType =
         brandLink.challenge?.challengeType ?? challengeType ?? 'one_phase';
       const matched = await this.prisma.challenge.findFirst({
-        where: { accountSize: fallbackSize, challengeType: fallbackType, isActive: true },
+        where: {
+          accountSize: fallbackSize,
+          challengeType: fallbackType,
+          isActive: true,
+        },
       });
       if (matched) challenge = matched;
     }
@@ -381,13 +409,16 @@ export class WorldCardService {
       throw new NotFoundException('Challenge not found');
     }
 
-    const billingFirstName = typeof data.firstName === 'string' ? data.firstName.trim() : '';
-    const billingLastName = typeof data.lastName === 'string' ? data.lastName.trim() : '';
+    const billingFirstName =
+      typeof data.firstName === 'string' ? data.firstName.trim() : '';
+    const billingLastName =
+      typeof data.lastName === 'string' ? data.lastName.trim() : '';
     if (!data.authUserId && (!billingFirstName || !billingLastName)) {
       throw new BadRequestException('Missing required name fields');
     }
 
-    const { user, wasCreated, isGuestCheckout } = await this.resolveCheckoutUser(data);
+    const { user, wasCreated, isGuestCheckout } =
+      await this.resolveCheckoutUser(data);
 
     // QuickLink amount/currency win over the challenge default and the
     // DirectPurchaseLink override. This keeps the hosted page total in sync
@@ -410,7 +441,11 @@ export class WorldCardService {
     const orderDescription = `${challenge.name} ${challenge.accountSize} Account`;
 
     const selectedPlatform =
-      platform || tradingPlatform || trading_platform || brokerPlatform || challenge.platform;
+      platform ||
+      tradingPlatform ||
+      trading_platform ||
+      brokerPlatform ||
+      challenge.platform;
     const normalizedPlatform = this.normalizePlatform(selectedPlatform);
 
     // Accept both naming conventions: the documented *_MERCHANT_*/*_PAYMENT_URL
@@ -587,7 +622,10 @@ export class WorldCardService {
 
       if (httpRes.status >= 400) {
         const failMessage =
-          (sessionResponse && (sessionResponse.error_message || sessionResponse.decline_reason || sessionResponse.message)) ||
+          (sessionResponse &&
+            (sessionResponse.error_message ||
+              sessionResponse.decline_reason ||
+              sessionResponse.message)) ||
           `Gateway returned HTTP ${httpRes.status}`;
         await (this.prisma.payment as any).update({
           where: { id: payment.id },
@@ -673,7 +711,8 @@ export class WorldCardService {
     const digits = String(input.cardNumber).replace(/\D/g, '');
     const first6 = digits.slice(0, 6);
     const last4 = digits.slice(-4);
-    const part = reverse(input.email) + input.password + reverse(first6 + last4);
+    const part =
+      reverse(input.email) + input.password + reverse(first6 + last4);
     return crypto.createHash('md5').update(part.toUpperCase()).digest('hex');
   }
 
@@ -715,7 +754,12 @@ export class WorldCardService {
         'Missing required field: slug, challengeId, or accountSize',
       );
     }
-    if (!card?.number || !card?.expiryMonth || !card?.expiryYear || !card?.cvv) {
+    if (
+      !card?.number ||
+      !card?.expiryMonth ||
+      !card?.expiryYear ||
+      !card?.cvv
+    ) {
       throw new BadRequestException(
         'Card details (number, expiryMonth, expiryYear, cvv) are required',
       );
@@ -737,10 +781,14 @@ export class WorldCardService {
     let brandLink: any = null;
 
     if (challengeId && typeof challengeId === 'string') {
-      challenge = await this.prisma.challenge.findUnique({ where: { id: challengeId } });
+      challenge = await this.prisma.challenge.findUnique({
+        where: { id: challengeId },
+      });
     }
     if (!challenge && slug && typeof slug === 'string') {
-      challenge = await (this.prisma.challenge as any).findUnique({ where: { slug } });
+      challenge = await (this.prisma.challenge as any).findUnique({
+        where: { slug },
+      });
       if (!challenge) {
         brandLink = await (this.prisma as any).directPurchaseLink.findUnique({
           where: { slug },
@@ -754,21 +802,25 @@ export class WorldCardService {
       const typeMap: Record<string, string> = {
         '1-step': 'one_phase',
         'one-step': 'one_phase',
-        'one_step': 'one_phase',
+        one_step: 'one_phase',
         'one-phase': 'one_phase',
-        'one_phase': 'one_phase',
+        one_phase: 'one_phase',
         '2-step': 'two_phase',
         'two-step': 'two_phase',
-        'two_step': 'two_phase',
+        two_step: 'two_phase',
         'two-phase': 'two_phase',
-        'two_phase': 'two_phase',
+        two_phase: 'two_phase',
       };
       const mappedType =
         typeMap[String(challengeType || '').toLowerCase()] ||
         challengeType ||
         'two_phase';
       challenge = await this.prisma.challenge.findFirst({
-        where: { accountSize: sizeNumber, challengeType: mappedType, isActive: true },
+        where: {
+          accountSize: sizeNumber,
+          challengeType: mappedType,
+          isActive: true,
+        },
       });
     }
     if (!brandLink && linkSlug && typeof linkSlug === 'string') {
@@ -782,17 +834,28 @@ export class WorldCardService {
         where: { slug: brandSlug },
       });
       if (brand) {
-        brandLink = { brandId: brand.id, brand, id: null, slug: null, active: true };
+        brandLink = {
+          brandId: brand.id,
+          brand,
+          id: null,
+          slug: null,
+          active: true,
+        };
       }
     }
-    if (brandLink?.provider && String(brandLink.provider).toUpperCase() !== 'WORLDCARD') {
+    if (
+      brandLink?.provider &&
+      String(brandLink.provider).toUpperCase() !== 'WORLDCARD'
+    ) {
       throw new BadRequestException(
         'This link is configured to use a different payment gateway.',
       );
     }
 
     const linkPriceOverride: number | null =
-      brandLink?.active && brandLink?.amount != null && Number(brandLink.amount) > 0
+      brandLink?.active &&
+      brandLink?.amount != null &&
+      Number(brandLink.amount) > 0
         ? Number(brandLink.amount)
         : null;
     if (!challenge && brandLink?.active && linkPriceOverride != null) {
@@ -802,7 +865,11 @@ export class WorldCardService {
       const fallbackType =
         brandLink.challenge?.challengeType ?? challengeType ?? 'one_phase';
       const matched = await this.prisma.challenge.findFirst({
-        where: { accountSize: fallbackSize, challengeType: fallbackType, isActive: true },
+        where: {
+          accountSize: fallbackSize,
+          challengeType: fallbackType,
+          isActive: true,
+        },
       });
       if (matched) challenge = matched;
     }
@@ -811,23 +878,34 @@ export class WorldCardService {
       throw new NotFoundException('Challenge not found');
     }
 
-    const billingFirstName = typeof data.firstName === 'string' ? data.firstName.trim() : '';
-    const billingLastName = typeof data.lastName === 'string' ? data.lastName.trim() : '';
+    const billingFirstName =
+      typeof data.firstName === 'string' ? data.firstName.trim() : '';
+    const billingLastName =
+      typeof data.lastName === 'string' ? data.lastName.trim() : '';
     if (!data.authUserId && (!billingFirstName || !billingLastName)) {
       throw new BadRequestException('Missing required name fields');
     }
 
-    const { user, wasCreated, isGuestCheckout } = await this.resolveCheckoutUser(data);
+    const { user, wasCreated, isGuestCheckout } =
+      await this.resolveCheckoutUser(data);
 
     const basePrice =
       linkPriceOverride != null ? linkPriceOverride : challenge.price;
     const amountCents = Math.round(basePrice * 100);
-    const orderCurrency = (brandLink?.currency || challenge.currency || 'USD').toUpperCase();
+    const orderCurrency = (
+      brandLink?.currency ||
+      challenge.currency ||
+      'USD'
+    ).toUpperCase();
     const orderAmount = (amountCents / 100).toFixed(2);
     const orderDescription = `${challenge.name} ${challenge.accountSize} Account`;
 
     const selectedPlatform =
-      platform || tradingPlatform || trading_platform || brokerPlatform || challenge.platform;
+      platform ||
+      tradingPlatform ||
+      trading_platform ||
+      brokerPlatform ||
+      challenge.platform;
     const normalizedPlatform = this.normalizePlatform(selectedPlatform);
 
     const orderId = `WC-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
@@ -850,7 +928,8 @@ export class WorldCardService {
       this.configService.get<string>('WORLDCARD_BASE_URL') ||
       ''
     ).replace(/\/+$/, '');
-    const channelId = this.configService.get<string>('WORLDCARD_CHANNEL_ID') || '';
+    const channelId =
+      this.configService.get<string>('WORLDCARD_CHANNEL_ID') || '';
     const notificationUrl =
       this.configService.get<string>('WORLDCARD_NOTIFICATION_URL') ||
       this.configService.get<string>('WORLDCARD_CALLBACK_URL');
@@ -859,8 +938,9 @@ export class WorldCardService {
     // Default to /v2/post (redirect_params as an array of {name,value}).
     // The legacy /post endpoint returns redirect_params as a key-value
     // object — both protocols are otherwise identical.
-    const s2sPath = (this.configService.get<string>('WORLDCARD_S2S_PATH') || '/v2/post')
-      .replace(/^\/?/, '/');
+    const s2sPath = (
+      this.configService.get<string>('WORLDCARD_S2S_PATH') || '/v2/post'
+    ).replace(/^\/?/, '/');
 
     if (!clientKey || !password || !baseUrl || !frontendUrl) {
       this.logger.error('Missing WorldCard env vars (S2S CARD)', {
@@ -902,8 +982,8 @@ export class WorldCardService {
       order_currency: orderCurrency,
       order_description: orderDescription,
       payer_email: user.email,
-      payer_first_name: billingFirstName || (user as any).profile?.firstName || null,
-      payer_last_name: billingLastName || (user as any).profile?.lastName || null,
+      payer_first_name: billingFirstName || user.profile?.firstName || null,
+      payer_last_name: billingLastName || user.profile?.lastName || null,
       payer_phone: data.phone || null,
       payer_country: data.country || null,
       payer_city: data.city || null,
@@ -1057,7 +1137,10 @@ export class WorldCardService {
           transformResponse: [(d) => d],
         },
       );
-      rawResponseText = typeof httpRes.data === 'string' ? httpRes.data : JSON.stringify(httpRes.data);
+      rawResponseText =
+        typeof httpRes.data === 'string'
+          ? httpRes.data
+          : JSON.stringify(httpRes.data);
       try {
         wcResponse = rawResponseText ? JSON.parse(rawResponseText) : {};
       } catch {
@@ -1069,7 +1152,10 @@ export class WorldCardService {
 
       if (httpRes.status >= 400) {
         const failMessage =
-          (wcResponse && (wcResponse.error_message || wcResponse.decline_reason || wcResponse.message)) ||
+          (wcResponse &&
+            (wcResponse.error_message ||
+              wcResponse.decline_reason ||
+              wcResponse.message)) ||
           (rawResponseText && rawResponseText.slice(0, 300)) ||
           `Gateway returned HTTP ${httpRes.status}`;
         await (this.prisma.payment as any).update({
@@ -1111,7 +1197,9 @@ export class WorldCardService {
 
     const result = String(wcResponse?.result ?? '').toUpperCase();
     const txStatus = String(wcResponse?.status ?? '').toUpperCase();
-    const providerPaymentId = wcResponse?.trans_id ? String(wcResponse.trans_id) : null;
+    const providerPaymentId = wcResponse?.trans_id
+      ? String(wcResponse.trans_id)
+      : null;
 
     // ── Branch 1: REDIRECT (3DS) ────────────────────────────────────
     if (result === 'REDIRECT' && wcResponse?.redirect_url) {
@@ -1131,8 +1219,13 @@ export class WorldCardService {
       let redirectParams: any = null;
       if (Array.isArray(wcResponse.redirect_params)) {
         redirectParams = wcResponse.redirect_params;
-      } else if (wcResponse.redirect_params && typeof wcResponse.redirect_params === 'object') {
-        redirectParams = Object.entries(wcResponse.redirect_params).map(([name, value]) => ({ name, value }));
+      } else if (
+        wcResponse.redirect_params &&
+        typeof wcResponse.redirect_params === 'object'
+      ) {
+        redirectParams = Object.entries(wcResponse.redirect_params).map(
+          ([name, value]) => ({ name, value }),
+        );
       }
 
       this.logger.log(`[WorldCard S2S CARD] 3DS required ref=${orderId}`);
@@ -1142,13 +1235,18 @@ export class WorldCardService {
         reference: orderId,
         paymentId: payment.id,
         redirectUrl: wcResponse.redirect_url,
-        redirectMethod: String(wcResponse.redirect_method || 'GET').toUpperCase(),
+        redirectMethod: String(
+          wcResponse.redirect_method || 'GET',
+        ).toUpperCase(),
         redirectParams,
       };
     }
 
     // ── Branch 2: SUCCESS / SETTLED ─────────────────────────────────
-    if (result === 'SUCCESS' && (txStatus === 'SETTLED' || txStatus === 'PENDING')) {
+    if (
+      result === 'SUCCESS' &&
+      (txStatus === 'SETTLED' || txStatus === 'PENDING')
+    ) {
       const succeeded = txStatus === 'SETTLED';
       await (this.prisma.payment as any).update({
         where: { id: payment.id },
@@ -1162,9 +1260,10 @@ export class WorldCardService {
 
       if (succeeded) {
         try {
-          const account = await this.paymentsService.provisionChallengeAfterPaymentSuccess(
-            payment.id,
-          );
+          const account =
+            await this.paymentsService.provisionChallengeAfterPaymentSuccess(
+              payment.id,
+            );
           return {
             provider: 'worldcard',
             status: 'succeeded',
@@ -1176,7 +1275,12 @@ export class WorldCardService {
           this.logger.error(
             `[WorldCard S2S CARD] Inline provisioning failed for ref=${orderId} (webhook will retry): ${err?.message}`,
           );
-          return { provider: 'worldcard', status: 'succeeded', reference: orderId, paymentId: payment.id };
+          return {
+            provider: 'worldcard',
+            status: 'succeeded',
+            reference: orderId,
+            paymentId: payment.id,
+          };
         }
       }
       return {
@@ -1231,7 +1335,6 @@ export class WorldCardService {
       message: failMessage,
     };
   }
-
 }
 
 // ─── Webhook (notification_url) handler ────────────────────────────────
@@ -1304,7 +1407,7 @@ export class WorldCardWebhookService {
   // match (e.g. early callbacks before metadata.flow is reliable, or
   // cross-flow edge cases) we fall back to the other formula before
   // rejecting. Logs every attempt so misconfig is easy to diagnose.
-  private async verifyCallbackHash(payload: any, payment: any): Promise<void> {
+  private verifyCallbackHash(payload: any, payment: any): void {
     const password =
       this.configService.get<string>('WORLDCARD_MERCHANT_PASS') ||
       this.configService.get<string>('WORLDCARD_PASSWORD');
@@ -1313,12 +1416,17 @@ export class WorldCardWebhookService {
     }
     const incomingHash = this.requireString(payload.hash, 'hash');
 
-    const flow = (payment?.metadata as any)?.flow ?? null;
+    const flow = payment?.metadata?.flow ?? null;
     const candidates: Array<{ kind: string; hash: string }> = [];
 
     // Build S2S CARD candidate
     const transId = payload.trans_id ? String(payload.trans_id) : '';
-    if (transId && payment?.billingEmail && payment?.cardBin && payment?.cardLast4) {
+    if (
+      transId &&
+      payment?.billingEmail &&
+      payment?.cardBin &&
+      payment?.cardLast4
+    ) {
       candidates.push({
         kind: 's2s-card',
         hash: this.computeS2SCardCallbackHash({
@@ -1404,7 +1512,7 @@ export class WorldCardWebhookService {
       );
     }
 
-    await this.verifyCallbackHash(payload, payment);
+    this.verifyCallbackHash(payload, payment);
 
     if (payment.amount !== undefined && payload.amount !== undefined) {
       const callbackAmountCents = Math.round(Number(payload.amount) * 100);

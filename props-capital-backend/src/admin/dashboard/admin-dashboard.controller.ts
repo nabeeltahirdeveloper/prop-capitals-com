@@ -1,13 +1,21 @@
-import { Controller, Get, UseGuards, Query, HttpStatus, HttpException, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  UseGuards,
+  Query,
+  HttpStatus,
+  HttpException,
+  Logger,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../../auth/jwt.guard';
 import { AdminRoleGuard } from '../../auth/admin-role.guard';
 import { AdminDashboardService } from './admin-dashboard.service';
 
 /**
  * FIXED Admin Dashboard Controller
- * 
+ *
  * KEY FIX: Properly converts query params to numbers (Prisma requires integers, not strings)
- * 
+ *
  * Improvements:
  * 1. ✅ Added JwtAuthGuard + AdminRoleGuard on all endpoints
  * 2. ✅ Added comprehensive error handling with try-catch
@@ -33,7 +41,10 @@ export class AdminDashboardController {
       this.logger.debug('Fetching dashboard overview');
       return await this.dashboardService.getOverview();
     } catch (error) {
-      this.logger.error(`Failed to fetch dashboard overview: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to fetch dashboard overview: ${error.message}`,
+        error.stack,
+      );
       throw new HttpException(
         {
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -50,12 +61,15 @@ export class AdminDashboardController {
    * GET /admin/dashboard/recent-accounts?page=1&limit=10
    */
   @Get('recent-accounts')
-  async getRecentAccounts(@Query('page') page?: string, @Query('limit') limit?: string) {
+  async getRecentAccounts(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
     try {
       // Convert string query params to numbers with defaults
       const pageNum = page ? parseInt(page, 10) : 1;
       const limitNum = limit ? parseInt(limit, 10) : 5;
-      
+
       // Validate converted numbers
       if (isNaN(pageNum) || pageNum < 1) {
         throw new HttpException(
@@ -66,7 +80,7 @@ export class AdminDashboardController {
           HttpStatus.BAD_REQUEST,
         );
       }
-      
+
       if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
         throw new HttpException(
           {
@@ -76,18 +90,23 @@ export class AdminDashboardController {
           HttpStatus.BAD_REQUEST,
         );
       }
-      
-      this.logger.debug(`Fetching recent accounts: page=${pageNum}, limit=${limitNum}`);
-      
+
+      this.logger.debug(
+        `Fetching recent accounts: page=${pageNum}, limit=${limitNum}`,
+      );
+
       return await this.dashboardService.getRecentAccounts(pageNum, limitNum);
     } catch (error) {
-      this.logger.error(`Failed to fetch recent accounts: ${error.message}`, error.stack);
-      
+      this.logger.error(
+        `Failed to fetch recent accounts: ${error.message}`,
+        error.stack,
+      );
+
       // Re-throw if already an HttpException
       if (error instanceof HttpException) {
         throw error;
       }
-      
+
       throw new HttpException(
         {
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -104,12 +123,15 @@ export class AdminDashboardController {
    * GET /admin/dashboard/recent-violations?page=1&limit=10
    */
   @Get('recent-violations')
-  async getRecentViolations(@Query('page') page?: string, @Query('limit') limit?: string) {
+  async getRecentViolations(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
     try {
       // Convert string query params to numbers with defaults
       const pageNum = page ? parseInt(page, 10) : 1;
       const limitNum = limit ? parseInt(limit, 10) : 10;
-      
+
       // Validate converted numbers
       if (isNaN(pageNum) || pageNum < 1) {
         throw new HttpException(
@@ -120,7 +142,7 @@ export class AdminDashboardController {
           HttpStatus.BAD_REQUEST,
         );
       }
-      
+
       if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
         throw new HttpException(
           {
@@ -130,18 +152,23 @@ export class AdminDashboardController {
           HttpStatus.BAD_REQUEST,
         );
       }
-      
-      this.logger.debug(`Fetching recent violations: page=${pageNum}, limit=${limitNum}`);
-      
+
+      this.logger.debug(
+        `Fetching recent violations: page=${pageNum}, limit=${limitNum}`,
+      );
+
       return await this.dashboardService.getRecentViolations(pageNum, limitNum);
     } catch (error) {
-      this.logger.error(`Failed to fetch recent violations: ${error.message}`, error.stack);
-      
+      this.logger.error(
+        `Failed to fetch recent violations: ${error.message}`,
+        error.stack,
+      );
+
       // Re-throw if already an HttpException
       if (error instanceof HttpException) {
         throw error;
       }
-      
+
       throw new HttpException(
         {
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -163,7 +190,10 @@ export class AdminDashboardController {
       this.logger.debug('Fetching revenue chart data');
       return await this.dashboardService.getRevenueChart();
     } catch (error) {
-      this.logger.error(`Failed to fetch revenue chart: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to fetch revenue chart: ${error.message}`,
+        error.stack,
+      );
       throw new HttpException(
         {
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -185,7 +215,10 @@ export class AdminDashboardController {
       this.logger.debug('Fetching registrations chart data');
       return await this.dashboardService.getRegistrationsChart();
     } catch (error) {
-      this.logger.error(`Failed to fetch registrations chart: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to fetch registrations chart: ${error.message}`,
+        error.stack,
+      );
       throw new HttpException(
         {
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,

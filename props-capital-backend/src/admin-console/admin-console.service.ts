@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AdminConsoleService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   /* ---------- Dashboard / Analytics overview ---------- */
 
@@ -71,9 +72,9 @@ export class AdminConsoleService {
       .filter(Boolean) as string[];
     const challenges = challengeIds.length
       ? await this.prisma.challenge.findMany({
-        where: { id: { in: challengeIds } },
-        select: { id: true, name: true, accountSize: true, price: true },
-      })
+          where: { id: { in: challengeIds } },
+          select: { id: true, name: true, accountSize: true, price: true },
+        })
       : [];
     const cmap = new Map(challenges.map((c) => [c.id, c]));
 
@@ -505,7 +506,6 @@ export class AdminConsoleService {
         },
       });
     } catch (err: any) {
-      // eslint-disable-next-line no-console
       console.error('[AdminConsole] listAllTransactions failed:', err?.message);
       data = [];
     }
@@ -928,7 +928,6 @@ export class AdminConsoleService {
   // Looks like a Stripe/PSP token — `qlk_` prefix makes the kind obvious.
   // Cryptographically random, 22 base62 chars (~131 bits of entropy).
   private quickLinkSlug(): string {
-    const crypto = require('crypto');
     const alphabet =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const bytes = crypto.randomBytes(22);
@@ -950,7 +949,6 @@ export class AdminConsoleService {
     const existing = await this.db.user.findUnique({ where: { email } });
     if (existing) return existing.id;
     const bcrypt = await import('bcrypt');
-    const crypto = require('crypto');
     const randomPassword = crypto.randomBytes(24).toString('base64');
     const passwordHash = await bcrypt.hash(randomPassword, 10);
     const created = await this.db.user.create({
@@ -971,7 +969,6 @@ export class AdminConsoleService {
         select: { id: true, name: true },
       });
     } catch (err: any) {
-      // eslint-disable-next-line no-console
       console.error(
         '[AdminConsole] backfill: failed to load brands:',
         err?.message,
@@ -1001,7 +998,6 @@ export class AdminConsoleService {
         totalCreated += created;
         results.push({ brandId: b.id, brandName: b.name, created });
       } catch (err: any) {
-        // eslint-disable-next-line no-console
         console.error(
           `[AdminConsole] backfill: failed for brand ${b.id} (${b.name}):`,
           err?.message,
@@ -1648,7 +1644,6 @@ export class AdminConsoleService {
         this.db.directPurchaseLink.count({ where }),
       ]);
     } catch (err: any) {
-      // eslint-disable-next-line no-console
       console.error(
         '[AdminConsole] listDirectPurchaseLinks rich query failed, falling back:',
         err?.message,
@@ -1664,7 +1659,6 @@ export class AdminConsoleService {
           this.db.directPurchaseLink.count({ where }),
         ]);
       } catch (err2: any) {
-        // eslint-disable-next-line no-console
         console.error(
           '[AdminConsole] listDirectPurchaseLinks fallback query failed:',
           err2?.message,
@@ -1720,8 +1714,7 @@ export class AdminConsoleService {
     return allowed.includes(v) ? v : null;
   }
 
-
-  async findClosestChallengeForAmount(amount: number): Promise<any | null> {
+  async findClosestChallengeForAmount(amount: number): Promise<any> {
     if (!Number.isFinite(amount) || amount <= 0) return null;
     const challenges = await this.db.challenge.findMany({
       where: { isActive: true },
@@ -1976,9 +1969,7 @@ export class AdminConsoleService {
 
     let challenge: any = null;
     const amount =
-      body.amount != null && body.amount !== ''
-        ? Number(body.amount)
-        : null;
+      body.amount != null && body.amount !== '' ? Number(body.amount) : null;
     if (amount != null && (!Number.isFinite(amount) || amount <= 0)) {
       throw new Error('Amount must be greater than 0');
     }
@@ -1994,7 +1985,9 @@ export class AdminConsoleService {
       }
       challenge = await this.findClosestChallengeForAmount(amount);
       if (!challenge) {
-        throw new Error('No active challenges available for CUSTOM quick links');
+        throw new Error(
+          'No active challenges available for CUSTOM quick links',
+        );
       }
     }
 
@@ -2011,7 +2004,7 @@ export class AdminConsoleService {
         name: body.name?.trim() || null,
         brandId: brand.id,
         challengeId: challenge.id,
-        amount: amount ?? (challenge.price ?? 0),
+        amount: amount ?? challenge.price ?? 0,
         currency: (body.currency || challenge.currency || 'EUR').toUpperCase(),
         ...(providerInput !== undefined ? { provider: providerInput } : {}),
         ...(platformInput !== null ? { platform: platformInput } : {}),
@@ -2212,7 +2205,7 @@ export class AdminConsoleService {
 
   /* ---------- System Tools ---------- */
 
-  async fixUsdAmounts() {
+  fixUsdAmounts() {
     return {
       success: true,
       updated: 0,
@@ -2262,7 +2255,7 @@ export class AdminConsoleService {
       });
     } catch (err) {
       // never block the request on tracking failure
-      // eslint-disable-next-line no-console
+
       console.error('[admin-console] failed to track visit', err);
     }
   }
@@ -2413,7 +2406,7 @@ export class AdminConsoleService {
       await this.db.adminLog.create({ data: entry });
     } catch (err) {
       // never let logging break the request
-      // eslint-disable-next-line no-console
+
       console.error('[admin-console] failed to write admin log', err);
     }
   }

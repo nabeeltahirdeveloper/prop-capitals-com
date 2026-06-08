@@ -8,7 +8,10 @@ import { ConfigService } from '@nestjs/config';
  * distinguishable from trader and brand tokens.
  */
 @Injectable()
-export class ResellerJwtStrategy extends PassportStrategy(Strategy, 'reseller-jwt') {
+export class ResellerJwtStrategy extends PassportStrategy(
+  Strategy,
+  'reseller-jwt',
+) {
   constructor(private configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -17,7 +20,7 @@ export class ResellerJwtStrategy extends PassportStrategy(Strategy, 'reseller-jw
     });
   }
 
-  async validate(payload: any) {
+  validate(payload: any) {
     if (payload?.kind !== 'reseller') return null;
     return {
       resellerId: payload.sub,

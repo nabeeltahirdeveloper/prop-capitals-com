@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ChallengePlatform } from '@prisma/client';
 import { CreateBrokerServerDto } from './dto/create-broker-server.dto';
@@ -103,7 +107,8 @@ export class BrokerServersService {
     const updateData: any = {};
 
     if (data.name !== undefined) updateData.name = data.name;
-    if (data.description !== undefined) updateData.description = data.description || null;
+    if (data.description !== undefined)
+      updateData.description = data.description || null;
     if (data.server_address !== undefined || data.host !== undefined) {
       updateData.host = data.server_address || data.host;
     }
@@ -156,7 +161,7 @@ export class BrokerServersService {
 
     if (server._count.accounts > 0) {
       throw new BadRequestException(
-        `Cannot delete broker server. It has ${server._count.accounts} linked trading account(s).`
+        `Cannot delete broker server. It has ${server._count.accounts} linked trading account(s).`,
       );
     }
 

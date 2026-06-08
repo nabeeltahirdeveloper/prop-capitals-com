@@ -41,8 +41,6 @@ export class ChallengeRulesService {
   calculateRules(inputs: RuleInputs): RuleOutputs {
     const {
       startingBalance,
-      currentBalance,
-      currentEquity,
       todayStartEquity,
       maxEquityToDate,
       minEquityToday,
@@ -117,4 +115,3 @@ export class ChallengeRulesService {
     };
   }
 }
-

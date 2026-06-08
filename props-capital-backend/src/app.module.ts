@@ -132,4 +132,4 @@ import { ChatbotModule } from './chatbot/chatbot.module';
     ChatbotModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}

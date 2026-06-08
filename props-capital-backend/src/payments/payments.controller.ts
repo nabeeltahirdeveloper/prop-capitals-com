@@ -152,7 +152,6 @@ export class PaymentsController {
     });
   }
 
-
   // ─── WorldCard: Server-to-Server SALE charge ────────────────────────
   // Mirrors /payments/xoala/charge but routes the request through the
   // WorldCard S2S APM protocol. Body must include `card` details; the
@@ -203,7 +202,7 @@ export class PaymentsController {
   // the browser to the SPA success page; the actual status comes from
   // the webhook (truth) or the /payments/status polling endpoint.
   @All('worldcard/return')
-  async worldCardReturn(
+  worldCardReturn(
     @Query() query: any,
     @Body() body: any,
     @Res() res: Response,
