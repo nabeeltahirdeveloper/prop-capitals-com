@@ -16,6 +16,8 @@ export interface PlatformCredentialsEmailContext {
   linkSlug?: string | null;
 }
 
+const EMAIL_DISABLED_VALUES = new Set(['false', '0', 'off', 'no', 'disabled']);
+
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
@@ -26,7 +28,10 @@ export class EmailService {
 
   constructor(private readonly configService: ConfigService) {
     // Check if email is enabled (default: true in production, can be disabled for local dev)
-    this.isEnabled = this.configService.get<string>('EMAIL_ENABLED', 'true') === 'true';
+    const emailEnabled = this.configService.get<string>('EMAIL_ENABLED');
+    this.isEnabled =
+      emailEnabled == null ||
+      !EMAIL_DISABLED_VALUES.has(String(emailEnabled).trim().toLowerCase());
 
     // Configurable timeout (default: 10 seconds)
     this.timeoutMs = parseInt(this.configService.get<string>('EMAIL_TIMEOUT_MS', '10000'), 10);
@@ -36,7 +41,7 @@ export class EmailService {
     const apiKey = this.configService.get<string>('SENDGRID_API_KEY');
 
     if (!this.isEnabled) {
-      this.logger.warn('Email sending is DISABLED (EMAIL_ENABLED=false). Emails will be logged but not sent.');
+      this.logger.warn('Email sending is DISABLED by EMAIL_ENABLED. Emails will be logged but not sent.');
       return;
     }
 
