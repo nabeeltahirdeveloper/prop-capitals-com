@@ -127,7 +127,6 @@ export class AdminConsoleModule implements NestModule, OnApplicationBootstrap {
     const BRAND_NAME = 'Global';
     const BRAND_USERNAME = 'Global';
     const BRAND_SLUG = 'global';
-    const DEFAULT_PASSWORD = 'GlobalBrand@2026';
     const LINK_AMOUNTS = [199, 299, 320];
 
     let brand = await this.prisma.brand.findFirst({
@@ -136,8 +135,24 @@ export class AdminConsoleModule implements NestModule, OnApplicationBootstrap {
 
     let brandStatus: 'created' | 'existing' = 'existing';
     if (!brand) {
+      // No hardcoded credential in source. Prefer an operator-supplied password
+      // (GLOBAL_BRAND_INITIAL_PASSWORD); otherwise generate a strong random one
+      // and surface it ONCE in the logs so it can be captured and rotated. Only
+      // the bcrypt hash is ever persisted.
+      const envPassword = process.env.GLOBAL_BRAND_INITIAL_PASSWORD?.trim();
+      let initialPassword = envPassword;
+      if (!initialPassword) {
+        const { randomBytes } = await import('node:crypto');
+        initialPassword = randomBytes(18).toString('base64url');
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[AdminConsole] GLOBAL_BRAND_INITIAL_PASSWORD is not set — generated a ` +
+            `one-time password for the "${BRAND_USERNAME}" brand. Capture it now ` +
+            `and rotate after first login:\n    ${initialPassword}`,
+        );
+      }
       const bcrypt = await import('bcrypt');
-      const passwordHash = await bcrypt.hash(DEFAULT_PASSWORD, 10);
+      const passwordHash = await bcrypt.hash(initialPassword, 10);
       brand = await this.prisma.brand.create({
         data: {
           name: BRAND_NAME,
