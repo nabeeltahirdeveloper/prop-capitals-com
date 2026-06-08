@@ -95,16 +95,10 @@ const ChatSupport = () => {
   const handleSend = async () => {
     if (!message.trim()) return;
 
+    // Anyone can ask general questions. A token is sent only when present, so
+    // logged-in users still get a persisted, multi-turn session; guests get a
+    // stateless answer from the same knowledge base.
     const token = localStorage.getItem('token');
-    if (!token) {
-      setMessages(prev => [...prev, {
-        type: 'bot',
-        text: "you must login before chat",
-        timestamp: new Date()
-      }]);
-      setMessage('');
-      return;
-    }
 
     const userMessage = {
       type: 'user',
@@ -118,12 +112,12 @@ const ChatSupport = () => {
     setIsTyping(true);
 
     try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
       const response = await fetch(`${BACKEND_URL}/chatbot/message`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers,
         body: JSON.stringify({
           sessionId: sessionId || undefined,
           message: currentMessage
@@ -527,6 +521,12 @@ const ChatSupport = () => {
                     <Send className="w-4 h-4" />
                   </button>
                 </div>
+                {!localStorage.getItem('token') && (
+                  <p className={`mt-2 text-[11px] text-center ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
+                    <a href="/SignIn" className="font-medium text-amber-500 hover:text-amber-400 underline">Log in</a>
+                    {' '}for account-specific help (balance, trades, payouts).
+                  </p>
+                )}
                 {/* Safe area padding for mobile */}
                 <div className="h-safe sm:hidden" />
               </div>
