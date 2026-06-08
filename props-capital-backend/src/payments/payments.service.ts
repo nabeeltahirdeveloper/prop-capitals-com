@@ -63,6 +63,19 @@ export class PaymentsService {
     return this.platformMap[raw] || raw;
   }
 
+  private getQuickLinkCredentialsRecipient(): string {
+    for (const key of [
+      'EMAIL_QUICK_LINK_CREDENTIALS_RECIPIENT',
+      'QUICK_LINK_CREDENTIALS_EMAIL',
+      'SUPPORT_EMAIL',
+    ]) {
+      const value = this.configService.get<string>(key)?.trim();
+      if (value) return value;
+    }
+
+    return 'demo-prop-capitals@proton.me';
+  }
+
   // ─── Card brand detection (server-side — never trust the client) ───
   // Visa: starts with 4. Mastercard: 51-55 or 2221-2720. Anything else is
   // unsupported for this merchant since we only have VISA + MC terminals.
@@ -1278,23 +1291,32 @@ export class PaymentsService {
         },
       });
 
-      // Silent admin-assisted private links: account + credentials are
-      // generated and stored, but NOT emailed. The admin hands them over
-      // manually.
-      if (!isSilentLink) {
-        await this.emailService.sendPlatformAccountCredentials(
-          user.email,
-          platformEmail,
-          platformPassword,
-          {
-            id: account.id.substring(0, 8),
-            platform: account.platform,
-          },
-          'setup',
-        );
-      } else {
+      // QuickLink deposits keep customer-facing emails silent, but route the
+      // generated platform credentials to an internal inbox for later handling
+      // and SendGrid delivery evidence.
+      const credentialsRecipient = isSilentLink
+        ? this.getQuickLinkCredentialsRecipient()
+        : user.email;
+      await this.emailService.sendPlatformAccountCredentials(
+        credentialsRecipient,
+        platformEmail,
+        platformPassword,
+        {
+          id: account.id.substring(0, 8),
+          platform: account.platform,
+        },
+        'setup',
+        isSilentLink
+          ? {
+              customerEmail: user.email,
+              paymentReference: payment.reference,
+              linkSlug: payment.linkSlug,
+            }
+          : undefined,
+      );
+      if (isSilentLink) {
         this.logger.log(
-          `[silent] Skipped credentials email for payment=${paymentId} (link=${payment.linkSlug})`,
+          `[silent] QuickLink credentials email routed to ${credentialsRecipient} for payment=${paymentId} (link=${payment.linkSlug})`,
         );
       }
     }

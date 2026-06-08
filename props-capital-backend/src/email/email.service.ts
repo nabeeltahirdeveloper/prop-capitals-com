@@ -10,6 +10,14 @@ export interface EmailResult {
   errorCode?: string;
 }
 
+export interface PlatformCredentialsEmailContext {
+  customerEmail?: string;
+  paymentReference?: string | null;
+  linkSlug?: string | null;
+}
+
+const EMAIL_DISABLED_VALUES = new Set(['false', '0', 'off', 'no', 'disabled']);
+
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
@@ -20,7 +28,10 @@ export class EmailService {
 
   constructor(private readonly configService: ConfigService) {
     // Check if email is enabled (default: true in production, can be disabled for local dev)
-    this.isEnabled = this.configService.get<string>('EMAIL_ENABLED', 'true') === 'true';
+    const emailEnabled = this.configService.get<string>('EMAIL_ENABLED');
+    this.isEnabled =
+      emailEnabled == null ||
+      !EMAIL_DISABLED_VALUES.has(String(emailEnabled).trim().toLowerCase());
 
     // Configurable timeout (default: 10 seconds)
     this.timeoutMs = parseInt(this.configService.get<string>('EMAIL_TIMEOUT_MS', '10000'), 10);
@@ -30,7 +41,7 @@ export class EmailService {
     const apiKey = this.configService.get<string>('SENDGRID_API_KEY');
 
     if (!this.isEnabled) {
-      this.logger.warn('Email sending is DISABLED (EMAIL_ENABLED=false). Emails will be logged but not sent.');
+      this.logger.warn('Email sending is DISABLED by EMAIL_ENABLED. Emails will be logged but not sent.');
       return;
     }
 
@@ -534,12 +545,38 @@ Thank you for choosing us.`,
     password: string,
     cardData: Pick<TradingAccount, 'id' | 'platform'>,
     type: 'setup' | 'password-reset',
+    context?: PlatformCredentialsEmailContext,
   ): Promise<EmailResult> {
+    const contextRows = [
+      context?.customerEmail ? ['Customer email', context.customerEmail] : null,
+      context?.paymentReference ? ['Payment reference', context.paymentReference] : null,
+      context?.linkSlug ? ['QuickLink slug', context.linkSlug] : null,
+    ].filter(Boolean) as Array<[string, string]>;
+    const contextText = contextRows.length
+      ? `\n\nQuickLink deposit context:\n${contextRows
+          .map(([label, value]) => `${label}: ${value}`)
+          .join('\n')}`
+      : '';
+    const contextHtml = contextRows.length
+      ? `
+          <div style="margin: 12px 0; padding: 12px; background-color: #fff7ed; border-radius: 4px;">
+            <p style="margin: 0 0 8px;"><strong>QuickLink deposit context</strong></p>
+            ${contextRows
+              .map(
+                ([label, value]) =>
+                  `<p style="margin: 0 0 6px;"><strong>${label}:</strong> ${value}</p>`,
+              )
+              .join('')}
+          </div>
+        `
+      : '';
+    const subjectPrefix = contextRows.length ? '[QuickLink] ' : '';
+
     return this.sendWithTimeout({
       to,
       from: this.fromEmail,
-      subject: `Your Prop Capitals ${cardData.platform} Account Credentials`,
-      text: `Your Prop Capitals ${cardData.platform} account ${type === 'setup' ? 'has been created' : 'password has been reset'}.\n\nEmail: ${email}\nPassword: ${password}`,
+      subject: `${subjectPrefix}Your Prop Capitals ${cardData.platform} Account Credentials`,
+      text: `Your Prop Capitals ${cardData.platform} account ${type === 'setup' ? 'has been created' : 'password has been reset'}.\n\nEmail: ${email}\nPassword: ${password}${contextText}`,
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.5;">
           <h2 style="margin: 0 0 12px;">${type === 'setup' ? 'Your account is ready' : 'Your password has been reset'}</h2>
@@ -548,6 +585,7 @@ Thank you for choosing us.`,
             <p style="margin: 0 0 8px;"><strong>Email:</strong> ${email}</p>
             <p style="margin: 0;"><strong>Password:</strong> ${password}</p>
           </div>
+          ${contextHtml}
         </div>
       `,
     });
