@@ -110,9 +110,15 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
         this.authenticate();
       });
 
-      this.ws.on('message', (data) => {
+      this.ws.on('message', (data: WebSocket.RawData) => {
         try {
-          const messages = JSON.parse(data.toString());
+          const buf = Array.isArray(data)
+            ? Buffer.concat(data)
+            : Buffer.isBuffer(data)
+              ? data
+              : Buffer.from(data);
+          const raw = buf.toString();
+          const messages = JSON.parse(raw);
 
           // Massive sends array of messages
           const msgArray = Array.isArray(messages) ? messages : [messages];
@@ -300,7 +306,13 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
     };
 
     const getSpread = (symbol: string) =>
-      symbol.includes('JPY') ? 0.02 : symbol.includes('XAU') ? 0.5 : symbol.includes('XAG') ? 0.03 : 0.0002;
+      symbol.includes('JPY')
+        ? 0.02
+        : symbol.includes('XAU')
+          ? 0.5
+          : symbol.includes('XAG')
+            ? 0.03
+            : 0.0002;
 
     // Only initialize symbols not already streaming from real WS
     let initCount = 0;
@@ -318,7 +330,9 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
     });
 
     if (initCount > 0) {
-      this.logger.log(`Mock prices initialized for ${initCount} symbol(s) not covered by WS stream`);
+      this.logger.log(
+        `Mock prices initialized for ${initCount} symbol(s) not covered by WS stream`,
+      );
     }
 
     // Start the mock update interval only once
@@ -498,17 +512,23 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
   /**
    * Convert timeframe: "M5" -> {multiplier: 5, timespan: "minute"}
    */
-  private convertTimeframe(timeframe: string): { multiplier: number; timespan: string } {
-    const timeframeMap: Record<string, { multiplier: number; timespan: string }> = {
-      'M1': { multiplier: 1, timespan: 'minute' },
-      'M5': { multiplier: 5, timespan: 'minute' },
-      'M15': { multiplier: 15, timespan: 'minute' },
-      'M30': { multiplier: 30, timespan: 'minute' },
-      'H1': { multiplier: 1, timespan: 'hour' },
-      'H4': { multiplier: 4, timespan: 'hour' },
-      'D1': { multiplier: 1, timespan: 'day' },
-      'W1': { multiplier: 1, timespan: 'week' },
-      'MN': { multiplier: 1, timespan: 'month' },
+  private convertTimeframe(timeframe: string): {
+    multiplier: number;
+    timespan: string;
+  } {
+    const timeframeMap: Record<
+      string,
+      { multiplier: number; timespan: string }
+    > = {
+      M1: { multiplier: 1, timespan: 'minute' },
+      M5: { multiplier: 5, timespan: 'minute' },
+      M15: { multiplier: 15, timespan: 'minute' },
+      M30: { multiplier: 30, timespan: 'minute' },
+      H1: { multiplier: 1, timespan: 'hour' },
+      H4: { multiplier: 4, timespan: 'hour' },
+      D1: { multiplier: 1, timespan: 'day' },
+      W1: { multiplier: 1, timespan: 'week' },
+      MN: { multiplier: 1, timespan: 'month' },
     };
 
     return timeframeMap[timeframe] || { multiplier: 5, timespan: 'minute' };

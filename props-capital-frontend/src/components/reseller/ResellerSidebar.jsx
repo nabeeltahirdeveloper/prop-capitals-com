@@ -30,7 +30,7 @@ export default function ResellerSidebar({ activeSection, onSectionChange, isOpen
 
   const handleLogout = async () => {
     try {
-      await brandApi.auth.logout();
+      await resellerApi.auth.logout();
     } catch (e) {
       console.error('Logout failed:', e);
     }

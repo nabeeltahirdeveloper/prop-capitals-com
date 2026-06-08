@@ -31,6 +31,7 @@ export default function PhaseProgressTimeline({
   // Get current metrics
   const profitPercent = metrics.profitPercent || 0;
   const dailyDrawdownPercent = metrics.dailyDrawdownPercent || 0;
+  const tradingDaysCompleted = metrics.tradingDays || 0;
   
   const phases = [
     {
