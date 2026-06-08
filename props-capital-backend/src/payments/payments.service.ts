@@ -56,6 +56,13 @@ export class PaymentsService {
     BYBIT: 'BYBIT',
     PT5: 'PT5',
     TRADELOCKER: 'TRADELOCKER',
+    mt4: 'MT4',
+    mt5: 'MT5',
+    ctrader: 'CTRADER',
+    dxtrade: 'DXTRADE',
+    bybit: 'BYBIT',
+    pt5: 'PT5',
+    tradelocker: 'TRADELOCKER',
   };
 
   private normalizePlatform(raw: string | undefined): string {

@@ -1,25 +1,26 @@
-package-lock.json
-
-# Apple Files
-.DS_Store
-.AppleDouble
-.LSOverride
-._*
-.claude*
-
-CLAUDE.md
-
-# Editor Configuration  Files
-.zed
-.vscode
-node_modules
-props-capital-backend/yarn.lock
-props-capital-frontend/yarn.lock
-props-capital-admin/yarn.lock
-props-capital-frontend/package-lock.json
-props-capital-admin/package-lock.json
-props-capital-backend/package-lock.json
-props-capital-frontend/package-lock.json
-config.bat
-.playwright-mcp/
+package-lock.json
+
+# Apple Files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.claude*
+
+CLAUDE.md
+
+# Editor Configuration  Files
+.zed
+.vscode
+node_modules
+props-capital-backend/yarn.lock
+props-capital-frontend/yarn.lock
+props-capital-admin/yarn.lock
+props-capital-frontend/package-lock.json
+props-capital-admin/package-lock.json
+props-capital-backend/package-lock.json
+props-capital-frontend/package-lock.json
+config.bat
+.playwright-mcp/
 docs/
+.env
