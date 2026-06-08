@@ -18,6 +18,21 @@ const features = [
   { icon: Clock, title: "Fast Payouts", description: "Under 90 minutes average" }
 ];
 
+const CUSTOM_CHALLENGE_CARD = {
+  id: 'custom',
+  name: 'CUSTOM Challenge',
+  badge: 'Tailored',
+  description: 'Need a different account size or setup? Our team can build a custom offer for you.',
+  phases: 'Custom',
+  profitTarget: 'Custom',
+  dailyDrawdown: 'Custom',
+  maxDrawdown: 'Custom',
+  profitSplit: 'Up to 90%',
+  minDays: 'Custom',
+  prices: {},
+  popular: false,
+  isCustom: true,
+};
 
 function formatAccountSize(size) {
   if (size >= 1000) return `${size / 1000}K`;
@@ -48,7 +63,9 @@ const ChallengesPage = () => {
 
   // Group challenges by type and build account size / price structure
   const { accountSizes, challengeTypes } = useMemo(() => {
-    if (!rawChallenges.length) return { accountSizes: [], challengeTypes: [] };
+    if (!rawChallenges.length) {
+      return { accountSizes: [], challengeTypes: [CUSTOM_CHALLENGE_CARD] };
+    }
 
     // Collect unique account sizes across all challenges
     const sizeSet = new Set();
@@ -100,7 +117,7 @@ const ChallengesPage = () => {
       };
     });
 
-    return { accountSizes: sizes, challengeTypes: types };
+    return { accountSizes: sizes, challengeTypes: [...types, CUSTOM_CHALLENGE_CARD] };
   }, [rawChallenges, formatSize]);
 
   // Build comparison rows from fetched data
@@ -157,6 +174,7 @@ const ChallengesPage = () => {
           ) : (
             <>
               {/* Account Size Selector */}
+              {accountSizes.length > 0 && (
               <div className="flex justify-center mb-12 overflow-x-auto pb-2">
                 <div className={`rounded-full p-1.5 inline-flex gap-1 border min-w-max ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`}>
                   {accountSizes.map((size, index) => (
@@ -174,9 +192,10 @@ const ChallengesPage = () => {
                   ))}
                 </div>
               </div>
+              )}
 
               {/* Challenge Cards */}
-              <div className={`grid gap-6 lg:gap-8 max-w-4xl mx-auto ${challengeTypes.length === 1 ? 'max-w-lg' : 'md:grid-cols-2'}`}>
+              <div className={`grid gap-6 lg:gap-8 max-w-5xl mx-auto ${challengeTypes.length === 1 ? 'max-w-lg' : 'md:grid-cols-2 lg:grid-cols-3'}`}>
                 {challengeTypes.map((challenge) => {
                   const sizeKey = accountSizes[safeSelectedSize]?.key;
                   const price = challenge.prices[sizeKey];
@@ -211,7 +230,16 @@ const ChallengesPage = () => {
                       </div>
 
                       {/* Price */}
-                      {price != null && (
+                      {challenge.isCustom ? (
+                        <div className={`text-center mb-6 py-5 rounded-2xl ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
+                          <div className="text-amber-500 text-3xl lg:text-4xl font-black">
+                            Custom quote
+                          </div>
+                          <div className="text-emerald-400 text-sm font-semibold mt-1">
+                            Manual amount available
+                          </div>
+                        </div>
+                      ) : price != null && (
                         <div className={`text-center mb-6 py-5 rounded-2xl ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
                           <div className={`text-sm line-through mb-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
                             {formatFee(fullPrice)}
@@ -226,7 +254,7 @@ const ChallengesPage = () => {
                       {/* Stats */}
                       <div className="space-y-3 mb-6">
                         {[
-                          { label: 'Phases', value: `${challenge.phases} Phase${challenge.phases !== 1 ? 's' : ''}` },
+                          { label: 'Phases', value: challenge.isCustom ? 'Custom' : `${challenge.phases} Phase${challenge.phases !== 1 ? 's' : ''}` },
                           { label: 'Profit Target', value: challenge.profitTarget },
                           { label: 'Daily Drawdown', value: challenge.dailyDrawdown },
                           { label: 'Max Drawdown', value: challenge.maxDrawdown },
@@ -257,7 +285,7 @@ const ChallengesPage = () => {
                       </div>
 
                       {/* CTA Button */}
-                      <Link to={`/checkout?type=${challenge.id}&size=${accountSizes[safeSelectedSize]?.key}`}>
+                      <Link to={challenge.isCustom ? '/Contact' : `/checkout?type=${challenge.id}&size=${accountSizes[safeSelectedSize]?.key}`}>
                         <Button
                           className={`w-full rounded-full py-6 h-auto text-base font-bold transition-all group ${
                             challenge.popular
@@ -265,7 +293,7 @@ const ChallengesPage = () => {
                               : 'bg-slate-900 hover:bg-slate-800 text-white'
                           }`}
                         >
-                          Start Challenge
+                          {challenge.isCustom ? 'Request Custom Challenge' : 'Start Challenge'}
                           <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
                         </Button>
                       </Link>
