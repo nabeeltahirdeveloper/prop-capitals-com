@@ -5,24 +5,28 @@ const prisma = new PrismaClient();
 const accountSizes = [5000, 10000, 20000, 30000, 50000, 100000, 200000];
 const challengeTypes = ['one_phase', 'two_phase'] as const;
 
+// Discounted (charged) price per (type, size). The struck-through "full" price
+// shown on the site is derived as price * 3 client-side (utils/fullPrice.js),
+// with a single override for 2-step:20K (397). Keep these in sync with the
+// frontend fallback in props-capital-frontend/src/components/home/data/mockData.js.
 const priceMap = {
   one_phase: {
-    5000: 69,
+    5000: 79,
     10000: 99,
     20000: 159,
     30000: 219,
-    50000: 349,
-    100000: 599,
-    200000: 999,
+    50000: 299,
+    100000: 499,
+    200000: 899,
   },
   two_phase: {
     5000: 59,
     10000: 79,
     20000: 129,
     30000: 179,
-    50000: 299,
-    100000: 499,
-    200000: 799,
+    50000: 249,
+    100000: 399,
+    200000: 699,
   },
 } as const;
 

@@ -83,15 +83,19 @@ export default function QuickLinkModal({ onClose, onSaved }) {
   const selectedChallenge = challenges.find(
     (c) => c.id === formData.challenge_id,
   );
+  // When the admin picks a (different) challenge, auto-populate Amount with that
+  // challenge's discounted price and match its currency. This only fires when the
+  // selected challenge id changes, so a manually edited amount is preserved while
+  // the same challenge stays selected.
   useEffect(() => {
     if (!selectedChallenge) return;
     setFormData((prev) => ({
       ...prev,
-      amount: prev.amount === '' ? String(selectedChallenge.price ?? '') : prev.amount,
-      currency:
-        prev.currency === 'EUR' && selectedChallenge.currency
-          ? selectedChallenge.currency
-          : prev.currency,
+      amount:
+        selectedChallenge.price != null
+          ? String(selectedChallenge.price)
+          : prev.amount,
+      currency: selectedChallenge.currency || prev.currency,
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedChallenge?.id]);
@@ -230,11 +234,34 @@ export default function QuickLinkModal({ onClose, onSaved }) {
               className="search-input p-3 rounded-lg w-full"
             >
               <option value="">Select challenge…</option>
-              {challenges.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
+              {challenges.map((c) => {
+                const sizeK = c.accountSize
+                  ? `${Math.round(c.accountSize / 1000)}K`
+                  : '';
+                const step =
+                  c.challengeType === 'one_phase'
+                    ? '1 Step'
+                    : c.challengeType === 'two_phase'
+                      ? '2 Step'
+                      : '';
+                const sym =
+                  c.currency === 'GBP'
+                    ? '£'
+                    : c.currency === 'USD'
+                      ? '$'
+                      : '€';
+                const priceStr =
+                  c.price != null ? ` (${sym}${c.price})` : '';
+                const label =
+                  sizeK && step
+                    ? `${sizeK} - ${step}${priceStr}`
+                    : `${c.name || 'Challenge'}${priceStr}`;
+                return (
+                  <option key={c.id} value={c.id}>
+                    {label}
+                  </option>
+                );
+              })}
             </select>
           </div>
         </div>

@@ -6,6 +6,7 @@ import { getCurrentUser } from '@/api/auth';
 import { getChallenges } from '@/api/challenges';
 import { purchaseChallenge } from '@/api/payments';
 import { useTranslation } from '../contexts/LanguageContext';
+import { useCurrency } from '../contexts/CurrencyContext';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -41,6 +42,7 @@ import {
 
 export default function BuyChallenge() {
   const { t } = useTranslation();
+  const { symbol } = useCurrency();
   const [step, setStep] = useState(1);
   const [selectedChallenge, setSelectedChallenge] = useState(null);
   const [selectedPlatform, setSelectedPlatform] = useState('');
@@ -211,7 +213,7 @@ export default function BuyChallenge() {
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-400">{t('buyChallenge.amountPaid')}</span>
-                <span className="text-emerald-400 font-bold">${calculateTotal()}</span>
+                <span className="text-emerald-400 font-bold">{symbol}{calculateTotal()}</span>
               </div>
             </div>
           </Card>
@@ -304,7 +306,7 @@ export default function BuyChallenge() {
                       </div>
                     )}
                     <div className="text-center mb-4">
-                      <p className="text-2xl font-bold text-white">${challenge.account_size?.toLocaleString()}</p>
+                      <p className="text-2xl font-bold text-white">{symbol}{challenge.account_size?.toLocaleString()}</p>
                       <p className="text-slate-400 text-sm">{t('buyChallenge.accountSize')}</p>
                     </div>
                     <div className="space-y-2 text-sm">
@@ -322,7 +324,7 @@ export default function BuyChallenge() {
                       </div>
                     </div>
                     <div className="mt-4 pt-4 border-t border-slate-800 text-center">
-                      <p className="text-2xl font-bold text-white">${challenge.price}</p>
+                      <p className="text-2xl font-bold text-white">{symbol}{challenge.price}</p>
                     </div>
                   </Card>
                 ))}
@@ -485,7 +487,7 @@ export default function BuyChallenge() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">{t('buyChallenge.accountSize')}</span>
-                      <span className="text-white">${selectedChallenge?.account_size?.toLocaleString()}</span>
+                      <span className="text-white">{symbol}{selectedChallenge?.account_size?.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">{t('buyChallenge.profitSplit')}</span>
@@ -496,17 +498,17 @@ export default function BuyChallenge() {
                   <div className="border-t border-slate-800 pt-4 mb-6">
                     <div className="flex justify-between mb-2">
                       <span className="text-slate-400">{t('buyChallenge.subtotal')}</span>
-                      <span className="text-white">${selectedChallenge?.price}</span>
+                      <span className="text-white">{symbol}{selectedChallenge?.price}</span>
                     </div>
                     {couponApplied && (
                       <div className="flex justify-between mb-2">
                         <span className="text-emerald-400">{t('buyChallenge.discount')} ({couponApplied.discount}%)</span>
-                        <span className="text-emerald-400">-${(selectedChallenge?.price * couponApplied.discount / 100).toFixed(2)}</span>
+                        <span className="text-emerald-400">-{symbol}{(selectedChallenge?.price * couponApplied.discount / 100).toFixed(2)}</span>
                       </div>
                     )}
                     <div className="flex justify-between text-lg font-bold">
                       <span className="text-white">{t('buyChallenge.total')}</span>
-                      <span className="text-emerald-400">${calculateTotal()}</span>
+                      <span className="text-emerald-400">{symbol}{calculateTotal()}</span>
                     </div>
                   </div>
 
@@ -520,7 +522,7 @@ export default function BuyChallenge() {
                     ) : (
                       <>
                         <Lock className="w-5 h-5 mr-2" />
-                        {t('buyChallenge.pay')} ${calculateTotal()}
+                        {t('buyChallenge.pay')} {symbol}{calculateTotal()}
                       </>
                     )}
                   </Button>

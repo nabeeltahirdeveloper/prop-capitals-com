@@ -101,60 +101,63 @@ export const testimonials = [
   },
 ];
 
+// "others" reflects what most reputable prop firms actually offer today (kept
+// accurate rather than strawman). "highlight" is reserved for points where Prop
+// Capitals has a genuine, measurable edge — chiefly payout/response speed.
 export const comparisonData = [
   {
     feature: "Evaluation Process",
-    others: "Complex multi-phase",
+    others: "1-Step or 2-Step",
     propCapitals: "Simple 1 or 2 Step Challenge",
-    highlight: true,
+    highlight: false,
   },
   {
     feature: "Payout Times",
-    others: "5-7+ Days",
+    others: "Weekly / Biweekly cycles",
     propCapitals: "Less than 90 Minutes",
     highlight: true,
   },
   {
     feature: "Support",
-    others: "Email Only",
+    others: "24/7 Live Chat & Email",
     propCapitals: "24/7 Live Chat & Email",
     highlight: false,
   },
   {
     feature: "Support Response",
-    others: "Up to 7 Days",
+    others: "Minutes to a few hours",
     propCapitals: "Under 60 Seconds Avg",
     highlight: true,
   },
   {
     feature: "Trading Education",
-    others: "Not Included",
+    others: "Sometimes Included",
     propCapitals: "Free Course Included",
     highlight: false,
   },
   {
     feature: "Profit Split",
-    others: "70-80%",
+    others: "Up to 90% (by plan)",
     propCapitals: "Up to 90%",
-    highlight: true,
+    highlight: false,
   },
   {
     feature: "News Trading",
-    others: "Restricted",
+    others: "Often Restricted",
     propCapitals: "Fully Allowed",
     highlight: false,
   },
   {
     feature: "Weekend Holding",
-    others: "Not Allowed",
+    others: "Allowed (with/without swap)",
     propCapitals: "Fully Allowed",
     highlight: false,
   },
   {
     feature: "Challenge Fee Refund",
-    others: "Rarely Offered",
+    others: "Refunded on 1st Payout",
     propCapitals: "100% Refund on 1st Payout",
-    highlight: true,
+    highlight: false,
   },
 ];
 
@@ -173,13 +176,13 @@ export const challengeTypes = [
     leverage: "1:30",
     popular: true,
     prices: {
-      "5K": 69,
+      "5K": 79,
       "10K": 99,
       "20K": 159,
       "30K": 219,
-      "50K": 349,
-      "100K": 599,
-      "200K": 999,
+      "50K": 299,
+      "100K": 499,
+      "200K": 899,
     },
   },
   {
@@ -200,9 +203,9 @@ export const challengeTypes = [
       "10K": 79,
       "20K": 129,
       "30K": 179,
-      "50K": 299,
-      "100K": 499,
-      "200K": 799,
+      "50K": 249,
+      "100K": 399,
+      "200K": 699,
     },
   },
 ];
