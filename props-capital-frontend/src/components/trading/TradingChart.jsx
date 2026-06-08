@@ -2374,6 +2374,40 @@ const ChartArea = forwardRef(function ChartArea(
       return null;
     }
 
+    // While a drawing is being dragged we must fully disable the chart's own
+    // pan/zoom, otherwise the chart scrolls together with the line. Toggling
+    // handleScroll/handleScale is bulletproof regardless of event propagation.
+    const setChartInteractionEnabled = (enabled) => {
+      if (!chartRef.current) return;
+      if (!enabled) {
+        chartRef.current.applyOptions({
+          handleScroll: false,
+          handleScale: false,
+        });
+        return;
+      }
+      // Restore to exactly what the crosshair/lock effect would have set.
+      const isDrawingTool =
+        activeTool != null && activeTool !== 1 && activeTool !== 0;
+      const panAllowed = chartLocked !== true && !isDrawingTool;
+      const zoomAllowed = chartLocked !== true;
+      chartRef.current.applyOptions({
+        handleScroll: {
+          mouseWheel: zoomAllowed,
+          pressedMouseMove: panAllowed,
+          horzTouchDrag: panAllowed,
+          vertTouchDrag: panAllowed,
+        },
+        handleScale: {
+          axisPressedMouseMove: { time: panAllowed, price: panAllowed },
+          axisDoubleClickReset: { time: zoomAllowed, price: zoomAllowed },
+          axisTouch: { time: panAllowed, price: panAllowed },
+          mouseWheel: zoomAllowed,
+          pinch: zoomAllowed,
+        },
+      });
+    };
+
     const handleSelectionMouseDown = (e) => {
       const rect = container.getBoundingClientRect();
       const x = e.clientX - rect.left;
@@ -2384,6 +2418,8 @@ const ChartArea = forwardRef(function ChartArea(
         e.stopPropagation();
         setSelectedChartObject(hit.object);
         dragModeRef.current = hit.mode;
+        // Freeze chart pan/zoom for the duration of the drag.
+        setChartInteractionEnabled(false);
         if (hit.mode === "line") {
           dragStartRef.current = {
             x,
@@ -2401,6 +2437,9 @@ const ChartArea = forwardRef(function ChartArea(
 
     const handleSelectionMouseMove = (e) => {
       if (!dragModeRef.current) return;
+      // Stop the chart from also reacting to this drag (pan/scale).
+      e.preventDefault();
+      e.stopPropagation();
       const obj = selectedChartObjectRef.current;
       if (!obj || !obj.point1 || !obj.point2) return;
 
@@ -2483,8 +2522,11 @@ const ChartArea = forwardRef(function ChartArea(
     };
 
     const handleSelectionMouseUp = () => {
+      const wasDragging = !!dragModeRef.current;
       dragModeRef.current = null;
       dragStartRef.current = null;
+      // Re-enable chart pan/zoom now that the drag has ended.
+      if (wasDragging) setChartInteractionEnabled(true);
     };
 
     const options = { capture: true, passive: false };

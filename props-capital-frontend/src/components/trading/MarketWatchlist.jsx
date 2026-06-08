@@ -211,9 +211,14 @@ export default function MarketWatchlist({
           const newBid = priceData.bid;
           const newAsk = priceData.ask;
 
-          // Calculate change percentage from previous bid
+          // Daily change % comes from the backend (previous-day close baseline),
+          // NOT from the diff between two 1-second polls. Recomputing it tick-to-tick
+          // produced a meaningless ~0% (or noisy) value that did not match the real
+          // daily move. Fall back to the last known daily change, then 0.
           const changePercent =
-            prevBid > 0 ? ((newBid - prevBid) / prevBid) * 100 : 0;
+            typeof priceData.change === "number"
+              ? priceData.change
+              : (s.change ?? 0);
 
           // Calculate spread
           const spread =
@@ -229,6 +234,7 @@ export default function MarketWatchlist({
             ask: newAsk,
             spread: spread,
             change: changePercent,
+            // Tick direction (for the live up/down flash) still uses the last tick.
             direction:
               newBid > prevBid ? "up" : newBid < prevBid ? "down" : s.direction,
           };

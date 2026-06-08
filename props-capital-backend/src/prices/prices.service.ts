@@ -19,20 +19,59 @@ export class PricesService {
   private cryptoCache: { data: CryptoPrices; timestamp: number } | null = null;
   private activeCryptoRequest: Promise<CryptoPrices> | null = null;
 
-  // Session open price cache — stores first bid seen per symbol on server start
-  // Used to calculate daily % change since session began
-  private readonly sessionOpenCache = new Map<string, number>();
+  // Live metals (gold) cache. The Massive WS plan does not stream metal quotes,
+  // so we proxy spot gold via Binance PAX Gold (PAXG ≈ 1 troy oz). This avoids a
+  // stale hardcoded price and yields a real 24h change — no extra credentials.
+  private metalCache: {
+    data: Record<string, { bid: number; change: number }>;
+    timestamp: number;
+  } | null = null;
+  private activeMetalRequest: Promise<
+    Record<string, { bid: number; change: number }>
+  > | null = null;
 
-  /** Returns change% since session open. Stores first bid as open reference. */
+  // Daily change baseline cache, keyed per symbol.
+  //   day       — the UTC calendar day the baseline belongs to (YYYY-MM-DD)
+  //   prevClose — the previous UTC day's closing price (last bid seen before rollover)
+  //   lastPrice — the most recent bid seen today (becomes tomorrow's prevClose)
+  // Daily % change is measured against the PREVIOUS day's close and resets at UTC
+  // midnight — NOT against the first bid seen when the server happened to boot.
+  private readonly dailyChangeState = new Map<
+    string,
+    { day: string; prevClose: number; lastPrice: number }
+  >();
+
+  /**
+   * Returns the daily % change measured from the previous UTC day's close:
+   *   ((currentBid - previousDayClose) / previousDayClose) * 100
+   * The baseline rolls over automatically at UTC midnight. On the very first
+   * observation of a symbol (no prior close yet) it returns 0 and seeds state,
+   * self-correcting on the next day rollover.
+   */
   getChangePercent(symbol: string, currentBid: number): number {
     if (!currentBid || currentBid <= 0) return 0;
-    if (!this.sessionOpenCache.has(symbol)) {
-      this.sessionOpenCache.set(symbol, currentBid);
+    const today = new Date().toISOString().slice(0, 10); // UTC YYYY-MM-DD
+    const state = this.dailyChangeState.get(symbol);
+
+    if (!state) {
+      this.dailyChangeState.set(symbol, {
+        day: today,
+        prevClose: currentBid,
+        lastPrice: currentBid,
+      });
       return 0;
     }
-    const openBid = this.sessionOpenCache.get(symbol)!;
-    if (!openBid || openBid <= 0) return 0;
-    return parseFloat(((currentBid - openBid) / openBid * 100).toFixed(2));
+
+    if (state.day !== today) {
+      // UTC day rolled over: yesterday's last observed price is its close.
+      state.prevClose = state.lastPrice;
+      state.day = today;
+    }
+    state.lastPrice = currentBid;
+
+    const base = state.prevClose;
+    if (!base || base <= 0) return 0;
+    return parseFloat((((currentBid - base) / base) * 100).toFixed(2));
   }
 
   private readonly BINANCE_API = 'https://api.binance.com/api/v3';
@@ -154,12 +193,58 @@ export class PricesService {
   }
 
   /**
+   * Live spot-gold proxy via Binance PAX Gold (PAXG/USDT ≈ 1 troy oz of gold).
+   * Cached ~3s and deduplicated, mirroring the crypto fetch. Falls back to the
+   * last cached value (then the caller's hardcoded fallback) on any error.
+   */
+  private async getMetalPrices(): Promise<
+    Record<string, { bid: number; change: number }>
+  > {
+    if (this.metalCache && Date.now() - this.metalCache.timestamp < 3000) {
+      return this.metalCache.data;
+    }
+    if (this.activeMetalRequest) return this.activeMetalRequest;
+
+    this.activeMetalRequest = (async () => {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
+        const res = await fetch(
+          `${this.BINANCE_API}/ticker/24hr?symbol=PAXGUSDT`,
+          { signal: controller.signal },
+        );
+        clearTimeout(timeoutId);
+        if (!res.ok) throw new Error('Binance metals error');
+        const t = await res.json();
+        const bid = parseFloat(t.lastPrice);
+        const change = parseFloat(t.priceChangePercent);
+        const data: Record<string, { bid: number; change: number }> = {};
+        if (Number.isFinite(bid) && bid > 0) {
+          data['XAU/USD'] = {
+            bid,
+            change: Number.isFinite(change) ? change : 0,
+          };
+        }
+        this.metalCache = { data, timestamp: Date.now() };
+        return data;
+      } catch {
+        return this.metalCache?.data || {};
+      } finally {
+        this.activeMetalRequest = null;
+      }
+    })();
+
+    return this.activeMetalRequest;
+  }
+
+  /**
    * ✅ GET ALL PRICES (Unified)
    */
   async getAllPrices() {
-    const [forexRates, cryptoPrices] = await Promise.all([
+    const [forexRates, cryptoPrices, metalPrices] = await Promise.all([
       this.getForexRates(),
       this.getCryptoPrices(),
+      this.getMetalPrices(),
     ]);
 
     // Forex Formatting
@@ -227,7 +312,8 @@ export class PricesService {
       .filter((x) => x.symbol);
 
     // Metal Formatting (XAU/USD, XAG/USD)
-    // Fallback prices used when Massive WS plan doesn't stream metal quotes
+    // Price source priority: Massive WS quote → live Binance PAXG proxy (gold only)
+    // → hardcoded fallback (last resort, stale). XAG has no live proxy yet.
     const metalSymbols = [
       { symbol: 'XAU/USD', spread: 0.5, fallbackBid: 2870.0 },
       { symbol: 'XAG/USD', spread: 0.03, fallbackBid: 32.5 },
@@ -235,15 +321,22 @@ export class PricesService {
 
     const formattedMetals = metalSymbols.map((s) => {
       const quote = this.massiveWebSocketService.getPrice(s.symbol);
-      const bid = quote?.bid ?? s.fallbackBid;
-      const ask = quote?.ask ?? (bid + s.spread);
+      const live = metalPrices[s.symbol];
+      const bid = quote?.bid ?? live?.bid ?? s.fallbackBid;
+      const ask = quote?.ask ?? bid + s.spread;
+      // Prefer the provider's real 24h change when we have a live quote; otherwise
+      // fall back to the previous-day-close baseline tracker.
+      const change =
+        live?.change != null
+          ? parseFloat(live.change.toFixed(2))
+          : this.getChangePercent(s.symbol, bid);
       return {
         symbol: s.symbol,
         category: 'metal',
         bid,
         ask,
         spread: s.spread,
-        change: this.getChangePercent(s.symbol, bid),
+        change,
       };
     });
 
