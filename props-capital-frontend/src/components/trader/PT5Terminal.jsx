@@ -89,7 +89,7 @@ const PT5Terminal = ({
 
   return (
     <div className="flex flex-col gap-4 p-0.5 overflow-y-auto">
-      <div className="grid grid-cols-12 gap-3 auto-rows-[minmax(250px,1fr)] lg:grid-rows-1 lg:h-[580px] items-stretch">
+      <div className="grid grid-cols-12 gap-3 auto-rows-[minmax(250px,1fr)] lg:grid-rows-1 lg:h-[clamp(420px,calc(100vh_-_13rem),580px)] items-stretch">
         <div
           className={`${sidebarCollapsed ? "hidden lg:flex lg:col-span-1" : "col-span-12 lg:col-span-2"} transition-all duration-500 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] relative flex flex-col rounded-2xl overflow-hidden shadow-sm border bg-card border-border h-full`}
         >
