@@ -38,9 +38,15 @@ export class ChatbotService {
 
 
   async sendMessage(
-    userId: string,
+    userId: string | null,
     dto: SendMessageDto,
   ): Promise<SendMessageResponseDto> {
+
+    // Anonymous (not logged in): answer general FAQ-type questions statelessly.
+    // No session is persisted because there is no user to attach it to.
+    if (!userId) {
+      return this.answerStateless(dto.message);
+    }
 
     const session = dto.sessionId
       ? await this.getExistingSession(dto.sessionId, userId)
@@ -155,6 +161,39 @@ export class ChatbotService {
   // -------------------------------------------------------
   // PRIVATE HELPERS
   // -------------------------------------------------------
+
+  /**
+   * Stateless single-turn answer for anonymous users. Uses the same knowledge-base
+   * system prompt as the authenticated flow, but persists nothing and returns a
+   * null sessionId. Account-specific queries are naturally declined because the
+   * system prompt only knows the public knowledge base.
+   */
+  private async answerStateless(
+    message: string,
+  ): Promise<SendMessageResponseDto> {
+    try {
+      const response = await this.openai.chat.completions.create({
+        model: this.model,
+        max_tokens: this.maxTokens,
+        messages: [
+          { role: 'system', content: this.buildSystemPrompt() },
+          { role: 'user', content: message },
+        ],
+      });
+
+      const reply =
+        response.choices[0]?.message?.content ??
+        'I could not generate a response. Please try again.';
+      const tokensUsed = response.usage?.total_tokens ?? 0;
+
+      return { reply, sessionId: null, tokensUsed };
+    } catch (error) {
+      this.logger.error('OpenAI API error', error);
+      throw new InternalServerErrorException(
+        'The AI service is temporarily unavailable. Please try again shortly.',
+      );
+    }
+  }
 
   private async createSession(userId: string) {
     return this.prisma.chatSession.create({ data: { userId } });

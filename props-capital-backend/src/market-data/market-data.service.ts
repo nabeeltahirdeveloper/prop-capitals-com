@@ -385,6 +385,20 @@ export class MarketDataService {
   /**
    * Get synthetic candles for a symbol with timeframe aggregation
    */
+  // Minutes-per-bar for each supported timeframe. Single source of truth used by
+  // both aggregation and timeframe-aware synthetic generation.
+  private readonly TIMEFRAME_MINUTES: { [key: string]: number } = {
+    M1: 1,
+    M5: 5,
+    M15: 15,
+    M30: 30,
+    H1: 60,
+    H4: 240,
+    D1: 1440,
+    W1: 10080,
+    MN: 43200,
+  };
+
   private getSyntheticCandles(
     symbol: string,
     timeframe: string,
@@ -392,51 +406,70 @@ export class MarketDataService {
   ): Candlestick[] {
     const m1Candles = this.syntheticCandles.get(symbol) || [];
 
-    if (m1Candles.length === 0) {
-      // Generate minimal candles from current price
-      return this.generateMinimalCandles(symbol, limit);
+    if (m1Candles.length > 0) {
+      // Aggregate the real-time-built M1 candles to the requested timeframe.
+      const aggregated = this.aggregateCandles(m1Candles, timeframe);
+      // Only trust the aggregation when it actually fills a usable portion of
+      // the requested window. We retain at most ~500 M1 candles, which aggregate
+      // down to only a handful of bars on higher timeframes (e.g. H4/D1) —
+      // returning those alone leaves the chart almost empty and is exactly why
+      // "switching timeframes doesn't load full chart data". Fall through to
+      // timeframe-aware generation otherwise so every timeframe shows a full chart.
+      if (aggregated.length >= Math.min(limit, 120)) {
+        return aggregated.slice(-limit);
+      }
     }
 
-    // Aggregate M1 candles to requested timeframe
-    const aggregated = this.aggregateCandles(m1Candles, timeframe);
-    return aggregated.slice(-limit);
+    // Generate a full, timeframe-aligned series from the current price.
+    return this.generateMinimalCandles(symbol, timeframe, limit);
   }
 
   /**
-   * Generate minimal candles from current price when no history available
+   * Generate a full set of timeframe-aligned candles from the current price when
+   * no real history is available. Spacing matches the requested timeframe (so D1
+   * candles are 1 day apart, not a hardcoded 5 minutes) and bars are connected
+   * (each open = previous close) for a realistic, gap-free chart.
    */
-  private generateMinimalCandles(symbol: string, limit: number): Candlestick[] {
+  private generateMinimalCandles(
+    symbol: string,
+    timeframe: string,
+    limit: number,
+  ): Candlestick[] {
     const price = this.massiveWebSocketService.getPrice(symbol);
     if (!price) return [];
 
     const currentPrice = price.bid;
+    const intervalMs = (this.TIMEFRAME_MINUTES[timeframe] || 5) * 60000;
     const now = Date.now();
-    const interval = 300000; // 5 minutes
+    // Align the most recent bar to the timeframe grid (same rule as aggregateCandles).
+    const lastBucket = Math.floor(now / intervalMs) * intervalMs;
+    const spread =
+      symbol === 'USD/JPY' ? 0.02 : symbol.includes('XAU') ? 0.5 : 0.0002;
+
+    // Random-walk the closes backwards from the live price, then reverse so the
+    // series runs oldest → newest and ends exactly at the current price.
+    const closes: number[] = [];
+    let p = currentPrice;
+    for (let i = 0; i < limit; i++) {
+      closes.push(p);
+      const drift = (Math.random() - 0.5) * 0.002 * p;
+      p = Math.max(p - drift, p * 0.5);
+    }
+    closes.reverse();
+
     const candles: Candlestick[] = [];
-
-    // Generate candles going back in time
-    for (let i = limit - 1; i >= 0; i--) {
-      const time = now - i * interval;
-      // Add small random variation for realism
-      const variation = (Math.random() - 0.5) * 0.001 * currentPrice;
-      const candlePrice = currentPrice + variation;
-      const spread = symbol === 'USD/JPY' ? 0.02 : 0.0002;
-
-      candles.push({
-        time,
-        open: candlePrice - spread / 2,
-        high: candlePrice + spread,
-        low: candlePrice - spread,
-        close: candlePrice + spread / 2,
-        volume: 0,
-      });
+    for (let i = 0; i < limit; i++) {
+      const time = lastBucket - (limit - 1 - i) * intervalMs;
+      const close = closes[i];
+      const open = i === 0 ? close - spread / 2 : candles[i - 1].close;
+      const high = Math.max(open, close) + spread;
+      const low = Math.min(open, close) - spread;
+      candles.push({ time, open, high, low, close, volume: 0 });
     }
 
-    // Make sure last candle matches current price
+    // Pin the final candle to the live price.
     if (candles.length > 0) {
-      const lastCandle = candles[candles.length - 1];
-      lastCandle.close = currentPrice;
-      lastCandle.time = now;
+      candles[candles.length - 1].close = currentPrice;
     }
 
     return candles;

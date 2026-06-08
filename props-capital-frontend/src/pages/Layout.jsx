@@ -96,10 +96,22 @@ export default function Layout({ children, currentPageName }) {
 
   // Protected authenticated pages (old standalone routes like /Notifications, /MyAccounts, etc.)
   // Wrap with Navbar so users always have navigation context
+  //
+  // The Trading Terminal is a full-width, data-dense app surface — boxing it into
+  // the 1280px `max-w-7xl` content column makes it feel cramped/"zoomed in" on
+  // laptop viewports and wastes horizontal space on large monitors. Give it the
+  // full viewport width with tighter padding instead.
+  const isTerminalPage = currentPageName === "TradingTerminal";
   return (
     <div className="min-h-screen bg-slate-950 transition-colors duration-300">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div
+        className={
+          isTerminalPage
+            ? "w-full px-2 sm:px-4 lg:px-6 py-4"
+            : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+        }
+      >
         {children}
       </div>
     </div>

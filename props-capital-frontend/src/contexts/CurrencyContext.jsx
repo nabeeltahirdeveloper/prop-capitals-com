@@ -22,12 +22,12 @@ export const CurrencyProvider = ({ children }) => {
 
   const value = useMemo(() => {
     const symbol = currency === 'GBP' ? '£' : '€';
-    const isGBP = currency === 'GBP';
 
-    // All displayed values are EUR-denominated in source data; we apply the
-    // same fixed FX whenever GBP is active, so every helper produces the same
-    // converted amount the customer expects.
-    const convert = (n) => (isGBP ? n * EUR_TO_GBP_RATE : n);
+    // Amounts are FIXED across currencies: switching the currency selector only
+    // swaps the symbol (€ <-> £), never the number. Prices like £299 stay 299
+    // whether GBP or EUR is selected. (Previously this multiplied by
+    // EUR_TO_GBP_RATE, which made the displayed number change on toggle.)
+    const convert = (n) => n;
 
     // Format a "unit-suffixed" number ("5K", "1.5M", "200K") after FX. Keeps
     // one decimal only when the conversion produced a fraction, so €20K stays

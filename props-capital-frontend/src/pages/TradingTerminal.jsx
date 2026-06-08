@@ -4492,7 +4492,7 @@ const {
           <div className="grid grid-cols-12 gap-4">
             {/* Left Sidebar - Market Watch */}
             <div
-              className={`${sidebarCollapsed ? "col-span-1" : "col-span-3 lg:col-span-2"} transition-all relative h-[450px] md:hidden lg:block`}
+              className={`${sidebarCollapsed ? "col-span-1" : "col-span-3 lg:col-span-2"} transition-all relative h-[clamp(360px,55vh,480px)] md:hidden lg:block`}
             >
               {sidebarCollapsed ? (
                 <div
@@ -4551,7 +4551,7 @@ const {
 
             {/* Center - Chart - flex so chart fills full height */}
             <div
-              className={`${sidebarCollapsed ? "col-span-11" : "col-span-12 lg:col-span-7"} transition-all flex flex-col h-[450px] min-w-0`}
+              className={`${sidebarCollapsed ? "col-span-11" : "col-span-12 lg:col-span-7"} transition-all flex flex-col h-[clamp(360px,55vh,480px)] min-w-0`}
             >
               <TopBar
                    selectedSymbol={selectedSymbol}
@@ -4607,7 +4607,7 @@ const {
 
           {/* Bottom Section - Positions & Rules */}
           <div className="grid grid-cols-12 gap-4">
-            <div className="col-span-7">
+            <div className="col-span-12 lg:col-span-7">
               <Tabs defaultValue="positions" className="w-full">
                 <TabsList className="bg-slate-900 border border-slate-800">
                   <TabsTrigger
@@ -5126,7 +5126,7 @@ const {
                 </TabsContent>
               </Tabs>
             </div>
-            <div className="col-span-5">
+            <div className="col-span-12 lg:col-span-5">
               <ChallengeRulesPanel
                 account={account}
                 challenge={selectedAccount}

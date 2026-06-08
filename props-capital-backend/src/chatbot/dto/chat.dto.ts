@@ -15,7 +15,8 @@ export class SendMessageDto {
 
 export class SendMessageResponseDto {
   reply: string;
-  sessionId: string;
+  // null for anonymous (not-logged-in) users — their chat is stateless and not persisted.
+  sessionId: string | null;
   tokensUsed: number;
 }
 

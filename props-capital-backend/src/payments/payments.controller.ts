@@ -33,10 +33,26 @@ export class PaymentsController {
     private readonly configService: ConfigService,
   ) {}
 
+  /**
+   * Removes price/currency fields from an untrusted request body so a public
+   * caller can never dictate what they are charged. The real amount and currency
+   * are resolved server-side from the challenge / link record inside the gateway
+   * services. Trusted internal callers (e.g. chargeQuickLink) pass these fields
+   * directly to the service methods and are unaffected.
+   */
+  private stripClientPriceFields(body: any): any {
+    const safe = { ...(body || {}) };
+    delete safe.amountOverride;
+    delete safe.currency;
+    delete safe.amount;
+    delete safe.amountCents;
+    delete safe.price;
+    return safe;
+  }
+
   // Existing internal purchase (no payment gateway)
   @Post('purchase')
   async purchase(@Body() body: any) {
-    console.log('PURCHASE BODY:', body);
     return this.paymentsService.purchaseChallenge(body);
   }
 
@@ -51,8 +67,9 @@ export class PaymentsController {
       userId: string;
       email: string;
     } | null;
+    const safeBody = this.stripClientPriceFields(body);
     return this.paymentsService.createXoalaCharge({
-      ...body,
+      ...safeBody,
       authUserId: authUser?.userId,
       ...(authUser
         ? {
@@ -122,8 +139,14 @@ export class PaymentsController {
       userId: string;
       email: string;
     } | null;
+    // Security: the charged amount and currency are ALWAYS resolved server-side
+    // from the trusted challenge / DirectPurchaseLink / QuickLink record. Never
+    // let a public caller dictate price by injecting amountOverride/currency into
+    // the body (price-tampering). Legitimate overrides arrive via the internal
+    // PaymentsService.chargeQuickLink path, which bypasses this controller.
+    const safeBody = this.stripClientPriceFields(body);
     return this.worldCardService.createHostedSession({
-      ...body,
+      ...safeBody,
       authUserId: authUser?.userId,
       ...(authUser ? { email: authUser.email } : {}),
     });
@@ -150,8 +173,9 @@ export class PaymentsController {
       ?.trim();
     const payerIp =
       req.ip || xff || (req.socket as any)?.remoteAddress || undefined;
+    const safeBody = this.stripClientPriceFields(body);
     return this.worldCardService.createCharge({
-      ...body,
+      ...safeBody,
       payerIp,
       authUserId: authUser?.userId,
       ...(authUser ? { email: authUser.email } : {}),

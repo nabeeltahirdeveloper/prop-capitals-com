@@ -105,8 +105,6 @@ const TraderPanelLayoutInner = () => {
     theme: "dark",
   });
 
-  console.log("User : ", user);
-
   useEffect(() => {
     if (user) {
       const firstName = user.profile?.firstName || "";

@@ -232,6 +232,23 @@ const ChartArea = forwardRef(function ChartArea(
   const zoomStateMapRef = useRef(new Map());
   // Track last symbol+timeframe for stale detection
   const lastSymbolTimeframeRef = useRef(null);
+  // Signature of the candle dataset currently rendered on the series. setData()
+  // + view-fit re-run whenever this changes (i.e. a fresh fetch for a new
+  // symbol/timeframe). This fixes a race where a premature setData with a tiny
+  // stale candle set flipped a one-shot "initialized" flag and permanently
+  // blocked the real historical data from being rendered — leaving the chart
+  // stuck zoomed-in on a few giant candles after a timeframe change.
+  const lastDataKeyRef = useRef(null);
+  // Monotonic id for candle fetches. Only the latest fetch is allowed to write
+  // candle state, so a slow/stale response from a previous symbol/timeframe can
+  // never clobber the current one (which caused a brief wrong-data flicker on
+  // timeframe change).
+  const fetchSeqRef = useRef(0);
+  // Which (symbol, timeframe) the current `candles` state actually belongs to.
+  // Updated synchronously (refs, not state) so the render effect can tell when
+  // `candles` is stale relative to the just-selected symbol/timeframe and skip
+  // drawing the previous timeframe's data for a frame.
+  const candlesMetaRef = useRef({ symbol: null, timeframe: null });
 
   // Helper to get zoom state key
   const getZoomKey = (symbol, timeframe) => `${symbol}_${timeframe}`;
@@ -884,6 +901,8 @@ const ChartArea = forwardRef(function ChartArea(
 
   // Fetch historical candles when symbol or timeframe changes (PROFESSIONAL - Instant load like Binance)
   useEffect(() => {
+    const seq = ++fetchSeqRef.current;
+    const isStale = () => seq !== fetchSeqRef.current;
     const fetchCandles = async () => {
       if (!selectedSymbolStr || !selectedTimeframe) {
         setCandles([]);
@@ -897,17 +916,17 @@ const ChartArea = forwardRef(function ChartArea(
         // CRITICAL: Reset candles to empty array FIRST when symbol changes
         // This ensures chart data init effect knows we're waiting for new data
         setCandles([]);
+        // Mark the candle state as not belonging to any symbol/timeframe yet, so
+        // the render effect won't draw the previous timeframe's data while this
+        // fetch is in flight (synchronous ref update beats the queued setState).
+        candlesMetaRef.current = { symbol: null, timeframe: null };
         lastHistTimeRef.current = 0;
         hasInitializedRef.current = false; // Reset initialization flag for new symbol
 
-        // CRITICAL: Clear chart immediately to prevent old/new data mixing (MT5/TradingView style)
-        if (seriesRef.current) {
-          try {
-            seriesRef.current.setData([]); // Clear immediately
-          } catch (e) {
-            // ignore errors
-          }
-        }
+        // NOTE: intentionally do NOT clear the series here. Keeping the previous
+        // candles visible until the new timeframe's data is ready avoids a blank
+        // flash / flicker on switch. The data-init effect waits (candles=[] while
+        // loading) and then atomically swaps in the new dataset via setData().
 
         console.log(
           `📊 Fetching candles for ${selectedSymbolStr} @ ${selectedTimeframe}`,
@@ -924,6 +943,10 @@ const ChartArea = forwardRef(function ChartArea(
           selectedTimeframe,
           limit,
         );
+
+        // A newer symbol/timeframe fetch started while this one was in flight —
+        // drop this stale response so it can't clobber the current chart.
+        if (isStale()) return;
 
         if (rawCandles && rawCandles.length > 0) {
           console.log(`✅ Loaded ${rawCandles.length} raw candles from server`);
@@ -949,6 +972,11 @@ const ChartArea = forwardRef(function ChartArea(
 
           if (processedCandles.length > 0) {
             setCandles(processedCandles);
+            // Stamp the dataset with the symbol/timeframe it belongs to.
+            candlesMetaRef.current = {
+              symbol: selectedSymbolStr,
+              timeframe: selectedTimeframe,
+            };
             lastHistTimeRef.current = processedCandles.at(-1)?.time || 0;
 
             // Build candles map for quick updates
@@ -971,11 +999,14 @@ const ChartArea = forwardRef(function ChartArea(
           lastHistTimeRef.current = 0;
         }
       } catch (error) {
+        if (isStale()) return;
         console.error(`❌ Error fetching ${selectedSymbolStr}:`, error.message);
         setCandles([]); // No fallback - show empty chart
         lastHistTimeRef.current = 0;
       } finally {
-        setCandlesLoading(false);
+        // Only the latest fetch owns the loading flag, so a stale response can't
+        // flip it off while the current fetch is still loading.
+        if (!isStale()) setCandlesLoading(false);
       }
     };
 
@@ -1084,9 +1115,27 @@ const ChartArea = forwardRef(function ChartArea(
       return; // Done initializing empty chart
     }
 
-    // Only setData on initial load (when hasInitializedRef is false)
-    // This prevents resetting zoom on every real-time update
-    if (!hasInitializedRef.current) {
+    // Render the full dataset (and re-fit the view) whenever it actually changes
+    // — i.e. a fresh fetch for a new symbol/timeframe. Real-time ticks update via
+    // series.update() and never touch `candles`, so this signature is stable
+    // between fetches and the user's zoom is preserved on live updates. Keying on
+    // the dataset (instead of a one-shot "initialized" flag) means a late-arriving
+    // full history still gets rendered even if a premature/stale setData ran first.
+    const dataKey = `${selectedSymbolStr}|${selectedTimeframe}|${displayCandles.length}|${displayCandles[0]?.time ?? 0}|${displayCandles[displayCandles.length - 1]?.time ?? 0}`;
+    // Only render once the fetch for this timeframe has fully completed AND the
+    // candle dataset actually belongs to the currently-selected symbol/timeframe.
+    // This skips any premature/partial dataset and the previous timeframe's data
+    // that briefly lingers mid-switch — both sources of a sub-second flicker.
+    const metaMatches =
+      candlesMetaRef.current.symbol === selectedSymbolStr &&
+      candlesMetaRef.current.timeframe === selectedTimeframe;
+    if (
+      displayCandles.length > 0 &&
+      !candlesLoading &&
+      metaMatches &&
+      lastDataKeyRef.current !== dataKey
+    ) {
+      lastDataKeyRef.current = dataKey;
       const timeScale = c.timeScale();
       const currentKey = getZoomKey(selectedSymbolStr, selectedTimeframe);
 
@@ -1124,23 +1173,37 @@ const ChartArea = forwardRef(function ChartArea(
         }
       }
 
-      // Show last ~150 bars on initial load (MT5/TradingView style)
-      // Calling fitContent() on large datasets (e.g. M1 = 4320 candles) makes
-      // each candle <1px wide — they appear as thin lines. Instead, zoom to
-      // the last N bars so candles have reasonable width.
+      // Show last ~150 bars on a fresh dataset (MT5/TradingView style). Calling
+      // fitContent() on large datasets (e.g. M1 = 4320 candles) makes each candle
+      // <1px wide — they appear as thin lines. Instead, zoom to the last N bars
+      // so candles have a reasonable width.
       const BARS_TO_SHOW = 150;
-      try {
-        if (displayCandles.length > BARS_TO_SHOW) {
-          timeScale.setVisibleLogicalRange({
-            from: displayCandles.length - BARS_TO_SHOW,
-            to: displayCandles.length + 5, // slight right padding
-          });
-        } else {
-          timeScale.fitContent();
+      const barCount = displayCandles.length;
+      const fitView = () => {
+        try {
+          if (barCount > BARS_TO_SHOW) {
+            timeScale.setVisibleLogicalRange({
+              from: barCount - BARS_TO_SHOW,
+              to: barCount + 5, // slight right padding
+            });
+          } else {
+            timeScale.fitContent();
+          }
+        } catch (e) {
+          try {
+            timeScale.fitContent();
+          } catch (_) {
+            /* ignore */
+          }
         }
-      } catch (e) {
-        timeScale.fitContent(); // fallback
-      }
+      };
+      // Apply now, then again after a double rAF. Competing async handlers (the
+      // ResizeObserver range-restore and the series-recreate restore) can re-apply
+      // a stale/over-zoomed range right after a timeframe switch; re-applying on a
+      // later frame makes our fit win so the chart never sticks on a few giant
+      // candles.
+      fitView();
+      requestAnimationFrame(() => requestAnimationFrame(fitView));
 
       // Nudge right price scale so horizontal grid lines (tied to price ticks) recompute
       try {
@@ -1166,7 +1229,9 @@ const ChartArea = forwardRef(function ChartArea(
     selectedTimeframe,
     isDark,
     displayCandles,
+    candlesLoading,
   ]);
+
 
   // Switch chart type (bars, candles, line, area) - preserve zoom
   useEffect(() => {
@@ -2374,6 +2439,40 @@ const ChartArea = forwardRef(function ChartArea(
       return null;
     }
 
+    // While a drawing is being dragged we must fully disable the chart's own
+    // pan/zoom, otherwise the chart scrolls together with the line. Toggling
+    // handleScroll/handleScale is bulletproof regardless of event propagation.
+    const setChartInteractionEnabled = (enabled) => {
+      if (!chartRef.current) return;
+      if (!enabled) {
+        chartRef.current.applyOptions({
+          handleScroll: false,
+          handleScale: false,
+        });
+        return;
+      }
+      // Restore to exactly what the crosshair/lock effect would have set.
+      const isDrawingTool =
+        activeTool != null && activeTool !== 1 && activeTool !== 0;
+      const panAllowed = chartLocked !== true && !isDrawingTool;
+      const zoomAllowed = chartLocked !== true;
+      chartRef.current.applyOptions({
+        handleScroll: {
+          mouseWheel: zoomAllowed,
+          pressedMouseMove: panAllowed,
+          horzTouchDrag: panAllowed,
+          vertTouchDrag: panAllowed,
+        },
+        handleScale: {
+          axisPressedMouseMove: { time: panAllowed, price: panAllowed },
+          axisDoubleClickReset: { time: zoomAllowed, price: zoomAllowed },
+          axisTouch: { time: panAllowed, price: panAllowed },
+          mouseWheel: zoomAllowed,
+          pinch: zoomAllowed,
+        },
+      });
+    };
+
     const handleSelectionMouseDown = (e) => {
       const rect = container.getBoundingClientRect();
       const x = e.clientX - rect.left;
@@ -2384,6 +2483,8 @@ const ChartArea = forwardRef(function ChartArea(
         e.stopPropagation();
         setSelectedChartObject(hit.object);
         dragModeRef.current = hit.mode;
+        // Freeze chart pan/zoom for the duration of the drag.
+        setChartInteractionEnabled(false);
         if (hit.mode === "line") {
           dragStartRef.current = {
             x,
@@ -2401,6 +2502,9 @@ const ChartArea = forwardRef(function ChartArea(
 
     const handleSelectionMouseMove = (e) => {
       if (!dragModeRef.current) return;
+      // Stop the chart from also reacting to this drag (pan/scale).
+      e.preventDefault();
+      e.stopPropagation();
       const obj = selectedChartObjectRef.current;
       if (!obj || !obj.point1 || !obj.point2) return;
 
@@ -2483,8 +2587,11 @@ const ChartArea = forwardRef(function ChartArea(
     };
 
     const handleSelectionMouseUp = () => {
+      const wasDragging = !!dragModeRef.current;
       dragModeRef.current = null;
       dragStartRef.current = null;
+      // Re-enable chart pan/zoom now that the drag has ended.
+      if (wasDragging) setChartInteractionEnabled(true);
     };
 
     const options = { capture: true, passive: false };

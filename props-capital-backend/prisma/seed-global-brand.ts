@@ -14,22 +14,26 @@
  */
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { randomBytes } from 'crypto';
 
 const prisma = new PrismaClient();
 
 const BRAND_NAME = 'Global';
 const BRAND_USERNAME = 'Global';
 const BRAND_SLUG = 'global';
-// One-time password; the admin should change it via the admin console
-// after first login. Kept here so re-running the seed yields a stable
-// known credential during onboarding.
-const DEFAULT_PASSWORD = 'GlobalBrand@2026';
+// One-time initial password. Prefer an operator-supplied value via
+// GLOBAL_BRAND_INITIAL_PASSWORD; otherwise generate a strong random one (printed
+// once below). Never hardcode a credential in source. The admin should rotate it
+// via the admin console after first login.
+const INITIAL_PASSWORD =
+  process.env.GLOBAL_BRAND_INITIAL_PASSWORD?.trim() ||
+  randomBytes(18).toString('base64url');
 const LINK_AMOUNTS = [199, 299, 320];
 
 async function seedGlobalBrand() {
   console.log(`🌱 Seeding "${BRAND_NAME}" brand + WorldCard links...`);
 
-  const passwordHash = await bcrypt.hash(DEFAULT_PASSWORD, 10);
+  const passwordHash = await bcrypt.hash(INITIAL_PASSWORD, 10);
 
   // Brand lookup is case-insensitive (Username unique constraint is
   // case-sensitive at the DB level, but we want to match either form).
@@ -54,7 +58,7 @@ async function seedGlobalBrand() {
     console.log(
       `✓ Created brand "${BRAND_NAME}" (id=${brand.id}, slug=${BRAND_SLUG}, username=${BRAND_USERNAME})`,
     );
-    console.log(`  default password: ${DEFAULT_PASSWORD}`);
+    console.log(`  initial password (capture & rotate): ${INITIAL_PASSWORD}`);
   } else {
     console.log(`✓ Brand "${BRAND_NAME}" already exists (id=${brand.id})`);
   }
