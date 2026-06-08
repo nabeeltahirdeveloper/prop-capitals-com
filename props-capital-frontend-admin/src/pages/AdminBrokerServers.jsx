@@ -117,7 +117,7 @@ export default function AdminBrokerServers() {
     setTestingServer(server.id);
     try {
       await testConnectionMutation.mutateAsync(server.id);
-    } catch (e) {
+    } catch {
       // Error handled by mutation
     }
     setTestingServer(null);

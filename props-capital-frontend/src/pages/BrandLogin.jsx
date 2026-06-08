@@ -23,7 +23,9 @@ export default function BrandLogin() {
       if (t && (t === localStorage.getItem('brand_token') || t === localStorage.getItem('reseller_token'))) {
         localStorage.removeItem('token');
       }
-    } catch (_e) {}
+    } catch (_e) {
+      /* intentionally ignored: localStorage may be unavailable (private mode / blocked storage); cleanup is best-effort */
+    }
   }, []);
 
   const onSubmit = async (e) => {

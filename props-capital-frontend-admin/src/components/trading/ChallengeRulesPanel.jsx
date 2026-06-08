@@ -111,8 +111,6 @@ export default function ChallengeRulesPanel({ account, challenge }) {
   const minTradingDays = parseInt(
     challenge?.minTradingDays || account.minTradingDays || 5,
   );
-  const maxDays = parseInt(challenge?.maxTradingDays || 30);
-
 
   const {
     profitPercent,

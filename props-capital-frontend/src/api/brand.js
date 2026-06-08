@@ -29,7 +29,9 @@ brandAxios.interceptors.response.use(
     if (error.response?.status === 401) {
       try {
         localStorage.removeItem(BRAND_TOKEN_KEY);
-      } catch (_e) {}
+      } catch (_e) {
+        /* intentionally ignored: localStorage may be unavailable (e.g. private mode) */
+      }
       // Only redirect if we're inside the brand portal — never hijack the
       // trader site's loading screens
       if (typeof window !== "undefined" && window.location.pathname.startsWith("/brand")) {
@@ -71,7 +73,9 @@ export const brandApi = {
       if (res?.token) {
         try {
           localStorage.setItem(BRAND_TOKEN_KEY, res.token);
-        } catch (_e) {}
+        } catch (_e) {
+          /* intentionally ignored: localStorage may be unavailable (e.g. private mode) */
+        }
       }
       return res?.brand;
     },
@@ -82,7 +86,9 @@ export const brandApi = {
     logout() {
       try {
         localStorage.removeItem(BRAND_TOKEN_KEY);
-      } catch (_e) {}
+      } catch (_e) {
+        /* intentionally ignored: localStorage may be unavailable (e.g. private mode) */
+      }
     },
     getToken() {
       try {

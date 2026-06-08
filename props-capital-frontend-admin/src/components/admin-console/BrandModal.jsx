@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
 import { useTranslation } from "../../contexts/LanguageContext";
 
@@ -245,7 +245,8 @@ export default function BrandModal({ brand, mode, onClose, onSuccess }) {
         }
       } else {
         // Exclude username from updates (cannot be changed after creation)
-        const { username, ...updateData } = dataToSend;
+        const updateData = { ...dataToSend };
+        delete updateData.username;
         await adminConsoleApi.brands.update(brand.id, updateData);
       }
       onSuccess();

@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiPatch } from "@/lib/api";
+import { apiGet, apiPost } from "@/lib/api";
 
 // API Functions
 export const createAccount = async (data) => {

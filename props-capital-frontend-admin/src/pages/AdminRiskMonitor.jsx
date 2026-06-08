@@ -111,7 +111,7 @@ export default function AdminRiskMonitor() {
   const handleRefresh = async () => {
     try {
       await Promise.all([refetch(), refetchViolations()]);
-    } catch (error) {
+    } catch {
       toast({
         title: t("common.error"),
         description: t("admin.riskMonitor.toasts.refreshFailed", {

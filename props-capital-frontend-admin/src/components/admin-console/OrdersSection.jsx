@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
 import OrderModal from './OrderModal';
 import DeleteConfirmModal from './DeleteConfirmModal';
@@ -150,7 +150,7 @@ export default function OrdersSection() {
       const pkgName = p ? (p.name || p.id || t("adminConsole.orders.packageDefault", { defaultValue: "Package" })) : '';
       const credits = c ? (c.unlimited ? t("adminConsole.orders.unlimited", { defaultValue: "Unlimited" }) : (c.credits ? t("adminConsole.orders.creditsCount", { count: c.credits, defaultValue: "{{count}} Credits" }) : '')) : '';
       return [pkgName, credits].filter(Boolean).join(' - ');
-    } catch (e) {
+    } catch {
       return '';
     }
   };

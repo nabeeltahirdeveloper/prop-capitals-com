@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, BarChart3, Activity } from "lucide-react";
 import { useTranslation } from "../../contexts/LanguageContext";

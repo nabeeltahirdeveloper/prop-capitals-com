@@ -1,4 +1,3 @@
-import React from 'react'
 import { useTranslation } from "../../contexts/LanguageContext"
 
 const DEBUG_ATTEMPTS = true
@@ -7,7 +6,7 @@ const formatDateTime = (value, t) => {
   if (!value) return t("adminConsole.ipHistoryModal.notAvailable", { defaultValue: "N/A" })
   try {
     return new Date(value).toLocaleString()
-  } catch (err) {
+  } catch {
     return t("adminConsole.ipHistoryModal.invalidDate", { defaultValue: "Invalid date" })
   }
 }

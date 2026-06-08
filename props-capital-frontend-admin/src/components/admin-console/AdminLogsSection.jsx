@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import { RefreshCw, Search, Filter, Download, Trash2, AlertTriangle, Info, AlertCircle, XCircle } from 'lucide-react'
 import { useTranslation } from "../../contexts/LanguageContext";
 

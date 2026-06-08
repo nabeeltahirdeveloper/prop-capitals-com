@@ -39,7 +39,6 @@ export default function AdminViolations() {
     refetchInterval: 30000,
   });
 
-  const violationsData = response?.data || [];
   const totalPages = response?.totalPages || 1;
   const totalCount = response?.total || 0;
 

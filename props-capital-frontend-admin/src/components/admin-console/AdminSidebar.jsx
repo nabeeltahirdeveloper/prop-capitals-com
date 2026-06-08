@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { createPageUrl } from '@/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '../../contexts/LanguageContext';

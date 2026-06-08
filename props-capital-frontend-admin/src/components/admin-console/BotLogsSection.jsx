@@ -1,8 +1,8 @@
-﻿import React, { useState, useEffect, useCallback, useRef } from 'react'
+﻿import { useState, useEffect, useCallback, useRef } from 'react'
 import { io } from 'socket.io-client'
 import { 
   RefreshCw, Search, Filter, Download, Trash2, 
-  AlertTriangle, Info, AlertCircle, XCircle, Bug,
+  AlertTriangle, Info, XCircle, Bug,
   Wifi, WifiOff, ChevronDown, ChevronRight
 } from 'lucide-react'
 import { useTranslation } from "../../contexts/LanguageContext";
