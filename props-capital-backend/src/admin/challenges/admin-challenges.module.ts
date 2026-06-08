@@ -8,14 +8,10 @@ import { AdminChallengesController } from './admin-challenges.controller';
 import { AdminChallengesService } from './admin-challenges.service';
 
 @Module({
-
   imports: [PrismaModule, NotificationsModule],
 
   controllers: [AdminChallengesController],
 
   providers: [AdminChallengesService],
-
 })
-
 export class AdminChallengesModule {}
-

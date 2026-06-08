@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
 import { useTranslation } from "../../contexts/LanguageContext";
 

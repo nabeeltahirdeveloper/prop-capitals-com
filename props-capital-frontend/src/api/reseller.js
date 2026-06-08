@@ -26,7 +26,9 @@ resellerAxios.interceptors.response.use(
     if (error.response?.status === 401) {
       try {
         localStorage.removeItem(RESELLER_TOKEN_KEY);
-      } catch (_e) {}
+      } catch (_e) {
+        /* intentionally ignored: localStorage may be unavailable (e.g. private mode) */
+      }
       if (
         typeof window !== "undefined" &&
         window.location.pathname.startsWith("/reseller")
@@ -69,7 +71,9 @@ export const resellerApi = {
       if (res?.token) {
         try {
           localStorage.setItem(RESELLER_TOKEN_KEY, res.token);
-        } catch (_e) {}
+        } catch (_e) {
+          /* intentionally ignored: localStorage may be unavailable (e.g. private mode) */
+        }
       }
       return res?.reseller;
     },
@@ -80,7 +84,9 @@ export const resellerApi = {
     logout() {
       try {
         localStorage.removeItem(RESELLER_TOKEN_KEY);
-      } catch (_e) {}
+      } catch (_e) {
+        /* intentionally ignored: localStorage may be unavailable (e.g. private mode) */
+      }
     },
     getToken() {
       try {

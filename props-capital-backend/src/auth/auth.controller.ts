@@ -1,4 +1,13 @@
-import { Controller, Post, Body, Get, UseGuards, Req, Param, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseGuards,
+  Req,
+  Param,
+  BadRequestException,
+} from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
@@ -10,10 +19,8 @@ import { AuthPayload } from './auth-payload.decorator';
 import { JwtPayload } from './types';
 
 @Controller('auth')
-
 export class AuthController {
-
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Post('register')
   register(@Body() body: any) {
@@ -70,7 +77,6 @@ export class AuthController {
     );
   }
 
-
   @Post('account/:accountId/reset-password')
   @UseGuards(JwtAuthGuard)
   resetPlatformPassword(
@@ -80,28 +86,23 @@ export class AuthController {
     return this.authService.resetPlatformPassword(user, accountId);
   }
 
-
   @UseGuards(JwtAuthGuard)
-
   @Get('me')
-
   async me(@Req() req: any) {
-
     // Return full user data including profile
     const user = await this.authService.getCurrentUser(req.user.userId);
 
     return user;
-
   }
 
   @UseGuards(JwtAuthGuard)
-
   @Post('change-password')
-
   async changePassword(@Req() req: any, @Body() body: ChangePasswordDto) {
-
-    return this.authService.changePassword(req.user.userId, body.currentPassword, body.newPassword);
-
+    return this.authService.changePassword(
+      req.user.userId,
+      body.currentPassword,
+      body.newPassword,
+    );
   }
   @Post('forgot-password')
   async forgotPassword(@Body('email') email: string) {
@@ -109,7 +110,9 @@ export class AuthController {
   }
 
   @Post('reset-password')
-  async resetPassword(@Body() body: { email: string; otp: string; newPassword: string }) {
+  async resetPassword(
+    @Body() body: { email: string; otp: string; newPassword: string },
+  ) {
     const { email, otp, newPassword } = body;
     return this.authService.verifyOtpAndResetPassword(email, otp, newPassword);
   }
@@ -123,5 +126,4 @@ export class AuthController {
   async submitSetPassword(@Body() body: { token: string; password: string }) {
     return this.authService.setPasswordWithToken(body?.token, body?.password);
   }
-
 }

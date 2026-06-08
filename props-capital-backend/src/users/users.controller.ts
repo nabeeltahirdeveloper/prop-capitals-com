@@ -6,7 +6,7 @@ import { UpdateNotificationPreferencesDto } from './dto/update-notification-pref
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('me/profile')
@@ -28,8 +28,14 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('me/notification-preferences')
-  async updateNotificationPreferences(@Req() req: any, @Body() body: UpdateNotificationPreferencesDto) {
-    return this.usersService.updateNotificationPreferences(req.user.userId, body);
+  async updateNotificationPreferences(
+    @Req() req: any,
+    @Body() body: UpdateNotificationPreferencesDto,
+  ) {
+    return this.usersService.updateNotificationPreferences(
+      req.user.userId,
+      body,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -40,11 +46,14 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('me/verification-documents')
-  async uploadVerificationDocument(@Req() req: any, @Body() body: { documentType: string; fileUrl: string }) {
+  async uploadVerificationDocument(
+    @Req() req: any,
+    @Body() body: { documentType: string; fileUrl: string },
+  ) {
     return this.usersService.uploadVerificationDocument(
       req.user.userId,
       body.documentType as 'GOVERNMENT_ID' | 'PROOF_OF_ADDRESS',
-      body.fileUrl
+      body.fileUrl,
     );
   }
 }

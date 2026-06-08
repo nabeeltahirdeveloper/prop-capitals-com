@@ -15,7 +15,9 @@ import { PrismaModule } from '../prisma/prisma.module';
       useFactory: (configService: ConfigService) => {
         const secret = configService.get<string>('JWT_SECRET');
         if (!secret) {
-          throw new Error('JWT_SECRET environment variable is not set (required by WebsocketModule)');
+          throw new Error(
+            'JWT_SECRET environment variable is not set (required by WebsocketModule)',
+          );
         }
         return {
           secret,

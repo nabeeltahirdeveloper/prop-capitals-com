@@ -47,7 +47,7 @@ export class PricesController {
    * POST /prices/clear-cache
    */
   @Post('clear-cache')
-  async clearCache() {
+  clearCache() {
     this.pricesService.clearCache();
     return { message: 'Cache cleared successfully' };
   }

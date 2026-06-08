@@ -18,10 +18,7 @@ import { JwtAuthGuard } from '../auth/jwt.guard';
 import { AdminRoleGuard } from '../auth/admin-role.guard';
 import { CreateLeadCrmDto } from './dto/create-lead.dto';
 import { UpdateLeadCrmDto } from './dto/update-lead.dto';
-import {
-  LeadStatus,
-  LeadActivityType,
-} from '@prisma/client';
+import { LeadStatus, LeadActivityType } from '@prisma/client';
 
 @Controller('crm/leads')
 @UseGuards(JwtAuthGuard, AdminRoleGuard)

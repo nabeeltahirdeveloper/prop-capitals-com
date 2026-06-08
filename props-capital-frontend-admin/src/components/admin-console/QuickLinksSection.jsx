@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
 import QuickLinkModal from './QuickLinkModal';
 

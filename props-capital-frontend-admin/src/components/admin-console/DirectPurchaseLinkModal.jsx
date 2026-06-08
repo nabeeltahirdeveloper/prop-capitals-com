@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
 import { apiGet } from '@/lib/api';
 import { useTranslation } from '../../contexts/LanguageContext';
@@ -171,7 +171,8 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
     try {
       if (isEdit) {
         // Brand can't be changed on edit (would break existing analytics)
-        const { brand_id, ...editPayload } = payload;
+        const editPayload = { ...payload };
+        delete editPayload.brand_id;
         await adminConsoleApi.directPurchaseLinks.update(link.id, editPayload);
       } else {
         await adminConsoleApi.directPurchaseLinks.create(payload);

@@ -37,10 +37,11 @@ export class VisitTrackingMiddleware implements NestMiddleware {
     }
 
     const xff = (req.headers['x-forwarded-for'] || '') as string;
-    const ip = xff.split(',')[0].trim() || req.ip || req.socket?.remoteAddress || '';
+    const ip =
+      xff.split(',')[0].trim() || req.ip || req.socket?.remoteAddress || '';
     if (!ip) return next();
 
-    const userAgent = (req.headers['user-agent'] || '') as string;
+    const userAgent = req.headers['user-agent'] || '';
 
     // Fire and forget — do not await
     void this.svc.trackVisit({ ip, userAgent });

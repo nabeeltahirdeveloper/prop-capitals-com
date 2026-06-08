@@ -19,7 +19,7 @@ export class BrandJwtStrategy extends PassportStrategy(Strategy, 'brand-jwt') {
     });
   }
 
-  async validate(payload: any) {
+  validate(payload: any) {
     if (payload?.kind !== 'brand') return null;
     return {
       brandId: payload.sub,

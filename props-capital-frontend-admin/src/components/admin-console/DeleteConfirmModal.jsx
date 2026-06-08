@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTranslation } from "../../contexts/LanguageContext";
 
 export default function DeleteConfirmModal({ title, message, onConfirm, onCancel, loading }) {

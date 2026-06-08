@@ -51,17 +51,20 @@ export class TradingEventsGateway
 
   constructor(private jwtService: JwtService) {}
 
-  afterInit(server: Server) {
+  afterInit(_server: Server) {
     this.logger.log('🔌 Trading WebSocket Gateway initialized');
   }
 
-  async handleConnection(client: Socket, ...args: any[]) {
+  async handleConnection(client: Socket) {
     try {
       // Extract token from handshake auth or query
-      const token = client.handshake.auth?.token || client.handshake.query?.token;
+      const token =
+        client.handshake.auth?.token || client.handshake.query?.token;
 
       if (!token) {
-        this.logger.warn(`❌ Client ${client.id} connection rejected: No token provided`);
+        this.logger.warn(
+          `❌ Client ${client.id} connection rejected: No token provided`,
+        );
         client.disconnect();
         return;
       }
@@ -72,7 +75,9 @@ export class TradingEventsGateway
       // JWT payload uses 'sub' for user ID (standard JWT claim)
       const userId = payload.sub || payload.userId;
       if (!payload || !userId) {
-        this.logger.warn(`❌ Client ${client.id} connection rejected: Invalid token`);
+        this.logger.warn(
+          `❌ Client ${client.id} connection rejected: Invalid token`,
+        );
         client.disconnect();
         return;
       }
@@ -81,16 +86,22 @@ export class TradingEventsGateway
       client.data.userId = userId;
       client.data.email = payload.email;
 
-      this.logger.log(`✅ Client connected: ${client.id} (User: ${payload.email})`);
+      this.logger.log(
+        `✅ Client connected: ${client.id} (User: ${payload.email})`,
+      );
     } catch (error) {
-      this.logger.error(`❌ Client ${client.id} connection error: ${error.message}`);
+      this.logger.error(
+        `❌ Client ${client.id} connection error: ${error.message}`,
+      );
       client.disconnect();
     }
   }
 
   handleDisconnect(client: Socket) {
     const userId = client.data?.userId;
-    this.logger.log(`🔌 Client disconnected: ${client.id} (User: ${userId || 'unknown'})`);
+    this.logger.log(
+      `🔌 Client disconnected: ${client.id} (User: ${userId || 'unknown'})`,
+    );
   }
 
   /**
@@ -99,17 +110,19 @@ export class TradingEventsGateway
   @SubscribeMessage('subscribe:account')
   handleSubscribeToAccount(client: Socket, payload: { accountId: string }) {
     const { accountId } = payload;
-    
+
     if (!accountId) {
-      this.logger.warn(`⚠️ Client ${client.id} attempted to subscribe without accountId`);
+      this.logger.warn(
+        `⚠️ Client ${client.id} attempted to subscribe without accountId`,
+      );
       return;
     }
 
     const roomName = `account:${accountId}`;
     client.join(roomName);
-    
+
     this.logger.log(`📡 Client ${client.id} subscribed to ${roomName}`);
-    
+
     // Send confirmation to client
     client.emit('subscription:confirmed', { accountId, room: roomName });
   }
@@ -120,14 +133,14 @@ export class TradingEventsGateway
   @SubscribeMessage('unsubscribe:account')
   handleUnsubscribeFromAccount(client: Socket, payload: { accountId: string }) {
     const { accountId } = payload;
-    
+
     if (!accountId) {
       return;
     }
 
     const roomName = `account:${accountId}`;
     client.leave(roomName);
-    
+
     this.logger.log(`📡 Client ${client.id} unsubscribed from ${roomName}`);
   }
 
@@ -136,7 +149,7 @@ export class TradingEventsGateway
    */
   emitPositionClosed(accountId: string, event: PositionClosedEvent) {
     const roomName = `account:${accountId}`;
-    
+
     this.logger.log(
       `📤 Emitting position:closed to ${roomName} - ${event.symbol} ${event.type} (${event.closeReason})`,
     );
@@ -152,7 +165,7 @@ export class TradingEventsGateway
     event: { status: string; reason?: string; timestamp: string },
   ) {
     const roomName = `account:${accountId}`;
-    
+
     this.logger.log(
       `📤 Emitting account:status-changed to ${roomName} - Status: ${event.status}`,
     );
@@ -175,7 +188,7 @@ export class TradingEventsGateway
     },
   ) {
     const roomName = `account:${accountId}`;
-    
+
     this.logger.log(
       `📤 Emitting trade:executed to ${roomName} - ${event.symbol} ${event.type}`,
     );
@@ -189,7 +202,7 @@ export class TradingEventsGateway
    */
   emitAccountUpdate(accountId: string, event: AccountUpdateEvent) {
     const roomName = `account:${accountId}`;
-    
+
     this.logger.log(
       `📤 Emitting account:update to ${roomName} - Trading Days: ${event.tradingDaysCount ?? 'N/A'}`,
     );

@@ -5,7 +5,7 @@ import { createPageUrl } from '../utils';
 
 export default function ProtectedRoute({ allowedRoles = [] }) {
   const location = useLocation();
-  const { status, user, isAdmin } = useAuth();
+  const { status, user } = useAuth();
   const { t } = useTranslation();
 
   // Block ALL rendering until auth status is resolved

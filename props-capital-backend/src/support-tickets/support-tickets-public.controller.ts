@@ -30,7 +30,10 @@ export class SupportTicketsPublicController {
 
   @Post('tickets')
   @UseGuards(OptionalJwtAuthGuard)
-  async createPublicTicket(@Req() req: any, @Body() dto: CreatePublicTicketDto) {
+  async createPublicTicket(
+    @Req() req: any,
+    @Body() dto: CreatePublicTicketDto,
+  ) {
     const ip = getClientIp(req);
     const now = Date.now();
     const timestamps = (rateLimitMap.get(ip) || []).filter(

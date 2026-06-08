@@ -1,4 +1,13 @@
-import { IsString, IsOptional, IsInt, IsEnum, MinLength, MaxLength, Min, Max } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsInt,
+  IsEnum,
+  MinLength,
+  MaxLength,
+  Min,
+  Max,
+} from 'class-validator';
 import { ChallengePlatform } from '@prisma/client';
 
 export class CreateBrokerServerDto {

@@ -445,7 +445,7 @@ const TraderPanelLayoutInner = () => {
 
         {/* Main Content */}
         <main
-          className={`h-screen flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? "lg:ml-20" : "lg:ml-64"} ml-0`}
+          className={`h-screen flex-1 min-w-0 flex flex-col transition-all duration-300 ${sidebarCollapsed ? "lg:ml-20" : "lg:ml-64"} ml-0`}
         >
           {/* Top Header */}
           <header

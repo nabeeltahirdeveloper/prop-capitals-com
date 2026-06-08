@@ -8,5 +8,3 @@ import { EmailService } from './email.service';
   exports: [EmailService],
 })
 export class EmailModule {}
-
-

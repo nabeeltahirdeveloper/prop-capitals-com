@@ -8,4 +8,4 @@ import { KnowledgeBaseService } from './knowledge-base.service';
   providers: [ChatbotService, KnowledgeBaseService],
   exports: [ChatbotService],
 })
-export class ChatbotModule { }
+export class ChatbotModule {}

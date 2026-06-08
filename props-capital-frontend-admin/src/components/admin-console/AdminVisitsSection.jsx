@@ -1,15 +1,15 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
 import { useTranslation } from "../../contexts/LanguageContext";
 
 export default function AdminVisitsSection() {
   const { t } = useTranslation();
-  const [visits, setVisits] = useState([]);
+  const [, setVisits] = useState([]);
   const [stats, setStats] = useState({ total_visits: 0, total_clicks: 0 });
   const [links, setLinks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [meta, setMeta] = useState({ total: 0, pages: 1 });
+  const [page] = useState(1);
+  const [, setMeta] = useState({ total: 0, pages: 1 });
   const [days, setDays] = useState(30);
   const [success, setSuccess] = useState('');
 

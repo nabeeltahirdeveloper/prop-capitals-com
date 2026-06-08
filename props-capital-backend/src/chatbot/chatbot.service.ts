@@ -27,21 +27,21 @@ export class ChatbotService {
     private readonly prisma: PrismaService,
     private readonly knowledgeBaseService: KnowledgeBaseService,
   ) {
-
     this.openai = new OpenAI({
       apiKey: this.configService.getOrThrow<string>('OPENAI_API_KEY'),
     });
 
     this.model = this.configService.get('CHATBOT_MODEL', 'gpt-4o-mini');
-    this.maxTokens = parseInt(this.configService.get('CHATBOT_MAX_TOKENS', '500'), 10);
+    this.maxTokens = parseInt(
+      this.configService.get('CHATBOT_MAX_TOKENS', '500'),
+      10,
+    );
   }
-
 
   async sendMessage(
     userId: string | null,
     dto: SendMessageDto,
   ): Promise<SendMessageResponseDto> {
-
     // Anonymous (not logged in): answer general FAQ-type questions statelessly.
     // No session is persisted because there is no user to attach it to.
     if (!userId) {
@@ -64,10 +64,11 @@ export class ChatbotService {
 
     const orderedMessages = recentMessages.reverse();
 
-    const chatMessages: OpenAI.Chat.ChatCompletionMessageParam[] = orderedMessages.map((m) => ({
-      role: m.role as 'user' | 'assistant',
-      content: m.content,
-    }));
+    const chatMessages: OpenAI.Chat.ChatCompletionMessageParam[] =
+      orderedMessages.map((m) => ({
+        role: m.role as 'user' | 'assistant',
+        content: m.content,
+      }));
 
     let reply: string;
     let tokensUsed: number;
@@ -82,9 +83,10 @@ export class ChatbotService {
         ],
       });
 
-      reply = response.choices[0]?.message?.content ?? 'I could not generate a response. Please try again.';
-      tokensUsed = (response.usage?.total_tokens) ?? 0;
-
+      reply =
+        response.choices[0]?.message?.content ??
+        'I could not generate a response. Please try again.';
+      tokensUsed = response.usage?.total_tokens ?? 0;
     } catch (error) {
       this.logger.error('OpenAI API error', error);
       throw new InternalServerErrorException(
@@ -93,7 +95,12 @@ export class ChatbotService {
     }
 
     await this.prisma.chatMessage.create({
-      data: { sessionId: session.id, role: 'assistant', content: reply, tokensUsed },
+      data: {
+        sessionId: session.id,
+        role: 'assistant',
+        content: reply,
+        tokensUsed,
+      },
     });
 
     await this.prisma.chatSession.update({
@@ -130,7 +137,10 @@ export class ChatbotService {
   // -------------------------------------------------------
   // GET a single session's messages
   // -------------------------------------------------------
-  async getSessionMessages(sessionId: string, userId: string): Promise<ChatSessionDto> {
+  async getSessionMessages(
+    sessionId: string,
+    userId: string,
+  ): Promise<ChatSessionDto> {
     const session = await this.getExistingSession(sessionId, userId);
     const messages = await this.prisma.chatMessage.findMany({
       where: { sessionId: session.id },

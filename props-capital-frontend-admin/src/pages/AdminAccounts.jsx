@@ -48,9 +48,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
-  PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
@@ -164,22 +162,6 @@ export default function AdminAccounts() {
   const handleCloseDetails = () => {
     setIsDetailsDialogOpen(false);
     setSelectedAccountId(null);
-  };
-
-  const handleUpdateStatus = (account, newStatus) => {
-    // Map frontend status to backend status enum
-    const statusMap = {
-      active: "ACTIVE",
-      paused: "PAUSED",
-      closed: "CLOSED",
-      daily_locked: "DAILY_LOCKED",
-      disqualified: "DISQUALIFIED",
-    };
-    const backendStatus = statusMap[newStatus] || newStatus.toUpperCase();
-    updateStatusMutation.mutate({
-      id: account.id,
-      status: backendStatus,
-    });
   };
 
   const handlePause = (account) => {

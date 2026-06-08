@@ -236,7 +236,7 @@ export default function AdminPayouts() {
           if (!row.created_date) return "-";
           const date = new Date(row.created_date);
           return isNaN(date.getTime()) ? "-" : format(date, "MMM d, HH:mm");
-        } catch (error) {
+        } catch {
           return "-";
         }
       },
@@ -293,7 +293,7 @@ export default function AdminPayouts() {
                     try {
                       const date = new Date(row.processed_date);
                       return isNaN(date.getTime()) ? "" : format(date, "MMM d");
-                    } catch (error) {
+                    } catch {
                       return "";
                     }
                   })()}

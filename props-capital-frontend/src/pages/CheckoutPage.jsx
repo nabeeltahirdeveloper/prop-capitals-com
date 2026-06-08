@@ -107,7 +107,9 @@ export const persistBrandAttribution = (brandSlug, linkSlug) => {
         expiresAt: Date.now() + BRAND_ATTRIBUTION_TTL_MS,
       }),
     );
-  } catch (_e) {}
+  } catch (_e) {
+    /* intentionally ignored: localStorage may be unavailable (private mode/quota) */
+  }
 };
 
 export const readBrandAttribution = () => {

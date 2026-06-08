@@ -37,8 +37,10 @@ export class SupportEventsGateway
     private prisma: PrismaService,
   ) {}
 
-  afterInit(server: Server) {
-    this.logger.log('Support WebSocket Gateway initialized — namespace /support');
+  afterInit(_server: Server) {
+    this.logger.log(
+      'Support WebSocket Gateway initialized — namespace /support',
+    );
   }
 
   async handleConnection(client: Socket) {
@@ -47,9 +49,7 @@ export class SupportEventsGateway
         client.handshake.auth?.token || client.handshake.query?.token;
 
       if (!token) {
-        this.logger.warn(
-          `Client ${client.id} rejected: No token`,
-        );
+        this.logger.warn(`Client ${client.id} rejected: No token`);
         client.disconnect();
         return;
       }
@@ -60,9 +60,7 @@ export class SupportEventsGateway
 
       const userId = payload.sub || payload.userId;
       if (!userId) {
-        this.logger.warn(
-          `Client ${client.id} rejected: Invalid token`,
-        );
+        this.logger.warn(`Client ${client.id} rejected: Invalid token`);
         client.disconnect();
         return;
       }
@@ -95,15 +93,10 @@ export class SupportEventsGateway
   }
 
   @SubscribeMessage('subscribe:ticket')
-  async handleSubscribeTicket(
-    client: Socket,
-    payload: { ticketId: string },
-  ) {
+  async handleSubscribeTicket(client: Socket, payload: { ticketId: string }) {
     const { ticketId } = payload;
     if (!ticketId) {
-      this.logger.warn(
-        `Client ${client.id} subscribe:ticket without ticketId`,
-      );
+      this.logger.warn(`Client ${client.id} subscribe:ticket without ticketId`);
       return;
     }
 
@@ -132,10 +125,7 @@ export class SupportEventsGateway
   }
 
   @SubscribeMessage('unsubscribe:ticket')
-  handleUnsubscribeTicket(
-    client: Socket,
-    payload: { ticketId: string },
-  ) {
+  handleUnsubscribeTicket(client: Socket, payload: { ticketId: string }) {
     const { ticketId } = payload;
     if (!ticketId) return;
 
@@ -164,9 +154,7 @@ export class SupportEventsGateway
     this.logger.log(
       `Emitting ticket:statusChanged to ${roomName} (status: ${status})`,
     );
-    this.server
-      .to(roomName)
-      .emit('ticket:statusChanged', { ticketId, status });
+    this.server.to(roomName).emit('ticket:statusChanged', { ticketId, status });
   }
 
   emitTicketsUpdated() {

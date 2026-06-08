@@ -5,9 +5,9 @@ import { CrmService } from './crm.service';
 import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
-    imports: [PrismaModule],
-    controllers: [CrmController, CrmMeetingsController],
-    providers: [CrmService],
-    exports: [CrmService],
+  imports: [PrismaModule],
+  controllers: [CrmController, CrmMeetingsController],
+  providers: [CrmService],
+  exports: [CrmService],
 })
-export class CrmModule { }
+export class CrmModule {}

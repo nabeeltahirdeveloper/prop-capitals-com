@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
 import IPAttemptHistoryModal from './IPAttemptHistoryModal';
 import { useTranslation } from "../../contexts/LanguageContext";
@@ -31,7 +31,7 @@ export default function BlockedIPDetailModal({ ip, onClose, onSuccess, loading: 
     if (!dateStr) return t("adminConsole.blockedIpModal.notAvailable", { defaultValue: "N/A" });
     try {
       return new Date(dateStr).toLocaleString();
-    } catch (e) {
+    } catch {
       return t("adminConsole.blockedIpModal.notAvailable", { defaultValue: "N/A" });
     }
   };

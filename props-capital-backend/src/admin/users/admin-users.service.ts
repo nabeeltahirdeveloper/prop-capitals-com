@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 
 import { PrismaService } from '../../prisma/prisma.service';
 
@@ -37,7 +41,17 @@ export class AdminUsersService {
 
   // List all users (paginated)
 
-  async getAllUsers({ page, limit, search, role }: { page: number; limit: number; search?: string; role?: string }) {
+  async getAllUsers({
+    page,
+    limit,
+    search,
+    role,
+  }: {
+    page: number;
+    limit: number;
+    search?: string;
+    role?: string;
+  }) {
     const skip = (page - 1) * limit;
 
     const where: any = {};
@@ -54,19 +68,20 @@ export class AdminUsersService {
 
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-    const [data, total, traderCount, adminCount, newThisWeek] = await Promise.all([
-      this.prisma.user.findMany({
-        skip,
-        take: limit,
-        where,
-        orderBy: { createdAt: 'desc' },
-        include: { profile: true },
-      }),
-      this.prisma.user.count({ where }),
-      this.prisma.user.count({ where: { role: UserRole.TRADER } }),
-      this.prisma.user.count({ where: { role: UserRole.ADMIN } }),
-      this.prisma.user.count({ where: { createdAt: { gte: oneWeekAgo } } }),
-    ]);
+    const [data, total, traderCount, adminCount, newThisWeek] =
+      await Promise.all([
+        this.prisma.user.findMany({
+          skip,
+          take: limit,
+          where,
+          orderBy: { createdAt: 'desc' },
+          include: { profile: true },
+        }),
+        this.prisma.user.count({ where }),
+        this.prisma.user.count({ where: { role: UserRole.TRADER } }),
+        this.prisma.user.count({ where: { role: UserRole.ADMIN } }),
+        this.prisma.user.count({ where: { createdAt: { gte: oneWeekAgo } } }),
+      ]);
 
     return {
       data,

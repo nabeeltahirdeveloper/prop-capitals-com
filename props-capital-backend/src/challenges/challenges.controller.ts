@@ -1,16 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 
 import { ChallengesService } from './challenges.service';
 
 @Controller('challenges')
-
 export class ChallengesController {
-
-  constructor(private readonly challengesService: ChallengesService) { }
+  constructor(private readonly challengesService: ChallengesService) {}
 
   @Post()
-  create(@Body() body: any) {
-  }
+  create() {}
 
   @Get()
   findAll() {
@@ -22,7 +27,6 @@ export class ChallengesController {
     return this.challengesService.findBySlug(slug);
   }
 
- 
   @Post('brand-link/:slug/track-click')
   trackBrandLinkClick(@Param('slug') slug: string) {
     return this.challengesService.trackBrandLinkClick(slug);
@@ -42,5 +46,4 @@ export class ChallengesController {
   remove(@Param('id') id: string) {
     return this.challengesService.remove(id);
   }
-
 }

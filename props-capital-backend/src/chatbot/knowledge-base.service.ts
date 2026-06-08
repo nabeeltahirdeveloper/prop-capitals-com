@@ -24,18 +24,28 @@ export class KnowledgeBaseService implements OnModuleInit {
 
   reload(): { message: string; lastLoaded: Date } {
     this.load();
-    return { message: 'Knowledge base reloaded successfully', lastLoaded: this.lastLoaded! };
+    return {
+      message: 'Knowledge base reloaded successfully',
+      lastLoaded: this.lastLoaded!,
+    };
   }
 
   private load(): void {
     try {
       this.cachedContent = fs.readFileSync(this.KB_PATH, 'utf-8');
       this.lastLoaded = new Date();
-      this.logger.log(`Knowledge base loaded — ${this.cachedContent.length} chars`);
+      this.logger.log(
+        `Knowledge base loaded — ${this.cachedContent.length} chars`,
+      );
     } catch (err) {
-      this.logger.error(`Cannot load knowledge base from: ${this.KB_PATH}`);
+      this.logger.error(
+        `Cannot load knowledge base from: ${this.KB_PATH}`,
+        err instanceof Error ? err.stack : String(err),
+      );
       if (!this.cachedContent) {
-        throw new Error('Knowledge base missing. Check KB_PATH in knowledge-base.service.ts');
+        throw new Error(
+          'Knowledge base missing. Check KB_PATH in knowledge-base.service.ts',
+        );
       }
     }
   }

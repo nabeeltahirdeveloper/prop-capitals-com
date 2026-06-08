@@ -108,11 +108,11 @@ export class AdminConsoleController {
   }
 
   @Get('package-prices/:id')
-  getPackagePrices(@Param('id') _id: string) {
+  getPackagePrices() {
     return { prices: [] };
   }
   @Put('package-prices/:id')
-  updatePackagePrices(@Param('id') _id: string) {
+  updatePackagePrices() {
     return { prices: [] };
   }
 
@@ -166,7 +166,10 @@ export class AdminConsoleController {
     return this.svc.createPaymentGatewayMapping(body);
   }
   @Put('payment-gateway-mappings/:countryCode')
-  updatePaymentGatewayMapping(@Param('countryCode') c: string, @Body() body: any) {
+  updatePaymentGatewayMapping(
+    @Param('countryCode') c: string,
+    @Body() body: any,
+  ) {
     return this.svc.updatePaymentGatewayMapping(c, body);
   }
   @Delete('payment-gateway-mappings/:countryCode')
@@ -180,7 +183,10 @@ export class AdminConsoleController {
 
   /* ---- Brands (live: Brand) ---- */
   @Get('brands/pending')
-  listPendingBrands(@Query('page') page?: string, @Query('pageSize') pageSize?: string) {
+  listPendingBrands(
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+  ) {
     return this.svc.listPendingBrands({
       page: page ? Number(page) : undefined,
       pageSize: pageSize ? Number(pageSize) : undefined,
@@ -303,10 +309,7 @@ export class AdminConsoleController {
 
   /* ---- Quick Links (admin-assisted one-shot payment URLs) ---- */
   @Get('quick-links')
-  listQuickLinks(
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
-  ) {
+  listQuickLinks(@Query('page') page?: string, @Query('limit') limit?: string) {
     return this.svc.listQuickLinks({
       page: page ? Number(page) : undefined,
       limit: limit ? Number(limit) : undefined,
@@ -359,7 +362,7 @@ export class AdminConsoleController {
     return { order: null };
   }
   @Patch('orders/:id')
-  updateOrder(@Param('id') _id: string) {
+  updateOrder() {
     return { order: null };
   }
   @Delete('orders/:id')

@@ -1,41 +1,32 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
-
 export class AdminPaymentsService {
-
   constructor(private prisma: PrismaService) {}
 
   async getAll() {
-
     return this.prisma.payment.findMany({
-
       orderBy: { createdAt: 'desc' },
 
       include: {
-
         user: {
-
           select: {
-
             id: true,
 
             email: true,
-
           },
-
         },
-
       },
-
     });
-
   }
 
   async getStatistics() {
-
     const now = new Date();
     const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -78,12 +69,15 @@ export class AdminPaymentsService {
     ]);
 
     // Calculate percentage change
-    const revenueChangePercent = lastMonthRevenue._sum.amount && lastMonthRevenue._sum.amount > 0
-      ? ((Number(currentMonthRevenue._sum.amount || 0) - Number(lastMonthRevenue._sum.amount)) / Number(lastMonthRevenue._sum.amount)) * 100
-      : 0;
+    const revenueChangePercent =
+      lastMonthRevenue._sum.amount && lastMonthRevenue._sum.amount > 0
+        ? ((Number(currentMonthRevenue._sum.amount || 0) -
+            Number(lastMonthRevenue._sum.amount)) /
+            Number(lastMonthRevenue._sum.amount)) *
+          100
+        : 0;
 
     return {
-
       totalRevenue: Number(succeededAgg._sum.amount || 0),
 
       revenueChangePercent: Math.round(revenueChangePercent * 10) / 10,
@@ -93,44 +87,30 @@ export class AdminPaymentsService {
       pendingAmount: Number(pendingAgg._sum.amount || 0),
 
       refundedAmount: Number(refundedAgg._sum.amount || 0),
-
     };
-
   }
 
   async refundPayment(id: string, reason?: string) {
-
     const payment = await this.prisma.payment.findUnique({
-
       where: { id },
-
     });
 
     if (!payment) throw new NotFoundException('Payment not found');
 
     if (payment.status !== 'succeeded') {
-
       throw new BadRequestException('Only succeeded payments can be refunded');
-
     }
 
     return this.prisma.payment.update({
-
       where: { id },
 
       data: {
-
         status: 'refunded',
 
         refundedAt: new Date(),
 
         refundReason: reason || null,
-
       },
-
     });
-
   }
-
 }
-

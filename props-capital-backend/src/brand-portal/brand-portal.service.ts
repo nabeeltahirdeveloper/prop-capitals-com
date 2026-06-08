@@ -320,7 +320,7 @@ export class BrandPortalService {
             include: linkInclude,
           });
         }
-      } catch (_e) {
+      } catch {
         // Never block the read on a provisioning failure
       }
     }
@@ -516,7 +516,6 @@ export class BrandPortalService {
         },
       });
     } catch (err: any) {
-      // eslint-disable-next-line no-console
       console.error('[BrandPortal] listAllTransactions failed:', err?.message);
       data = [];
     }
@@ -637,7 +636,8 @@ export class BrandPortalService {
     };
   }
 
-  async listChildTransactions(_brandId: string) {
+  listChildTransactions(brandId: string) {
+    void brandId;
     return {
       transactions: [],
       stats: this.emptyTransactionsStats(),
@@ -645,7 +645,8 @@ export class BrandPortalService {
     };
   }
 
-  async listNetworkTransactions(_brandId: string) {
+  listNetworkTransactions(brandId: string) {
+    void brandId;
     // A plain Brand has no child brands (only Resellers do), so the network
     // view is empty. The shape still needs to include `stats` and `child_brands`
     // so the visionscope-ported section can destructure without crashing.

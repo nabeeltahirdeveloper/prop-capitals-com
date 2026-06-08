@@ -9,13 +9,10 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { WebsocketModule } from '../websocket/websocket.module';
 
 @Module({
-
   imports: [PrismaModule, WebsocketModule],
 
   controllers: [SupportTicketsController, SupportTicketsPublicController],
 
   providers: [SupportTicketsService],
-
 })
-
 export class SupportTicketsModule {}

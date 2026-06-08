@@ -26,4 +26,3 @@ export interface TradingAccountListDto {
   tradingDaysCount: number;
   lastViolationMessage: string | null;
 }
-

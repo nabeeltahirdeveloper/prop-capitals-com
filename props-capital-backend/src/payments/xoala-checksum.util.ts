@@ -12,7 +12,12 @@ export function buildXoalaRequestChecksum(args: {
   amount: string;
 }): string {
   return md5(
-    [args.memberId, args.secureKey, args.merchantTransactionId, args.amount].join('|'),
+    [
+      args.memberId,
+      args.secureKey,
+      args.merchantTransactionId,
+      args.amount,
+    ].join('|'),
   );
 }
 

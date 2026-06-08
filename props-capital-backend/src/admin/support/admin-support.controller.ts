@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Param, Patch, Body, Query, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Patch,
+  Body,
+  Query,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { AdminSupportService } from './admin-support.service';
 import { UpdateTicketStatusDto } from './dto/update-ticket-status.dto';
 import { AddMessageDto } from './dto/add-message.dto';
@@ -22,11 +32,16 @@ export class AdminSupportController {
     const limitNum = limit ? parseInt(limit, 10) : NaN;
 
     const p = Math.max(1, Number.isNaN(pageNum) ? 1 : pageNum);
-    const l = Math.min(100, Math.max(1, Number.isNaN(limitNum) ? 20 : limitNum));
+    const l = Math.min(
+      100,
+      Math.max(1, Number.isNaN(limitNum) ? 20 : limitNum),
+    );
 
-    const validStatus = status && Object.values(TicketStatus).includes(status.toUpperCase() as TicketStatus)
-      ? (status.toUpperCase() as TicketStatus)
-      : undefined;
+    const validStatus =
+      status &&
+      Object.values(TicketStatus).includes(status.toUpperCase() as TicketStatus)
+        ? (status.toUpperCase() as TicketStatus)
+        : undefined;
 
     return this.service.getAll(p, l, search?.trim(), validStatus);
   }

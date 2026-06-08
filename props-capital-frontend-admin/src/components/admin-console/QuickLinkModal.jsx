@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
 import { apiGet } from '@/lib/api';
 import { COUNTRIES } from '@/constants/countries';
@@ -61,7 +61,9 @@ export default function QuickLinkModal({ onClose, onSaved }) {
         setChallenges(data.challenges);
         return;
       }
-    } catch (_e) {}
+    } catch {
+      /* intentionally ignored: fall back to the public /challenges endpoint below */
+    }
     try {
       const raw = await apiGet('/challenges');
       const list = Array.isArray(raw) ? raw : raw?.challenges || [];

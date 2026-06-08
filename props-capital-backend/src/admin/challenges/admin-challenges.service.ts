@@ -1,14 +1,21 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 
 import { PrismaService } from '../../prisma/prisma.service';
 import { NotificationsService } from '../../notifications/notifications.service';
 
-import { ChallengePlatform, NotificationType, NotificationCategory, UserRole } from '@prisma/client';
+import {
+  ChallengePlatform,
+  NotificationType,
+  NotificationCategory,
+  UserRole,
+} from '@prisma/client';
 
 @Injectable()
-
 export class AdminChallengesService {
-
   constructor(
     private prisma: PrismaService,
     private notificationsService: NotificationsService,
@@ -17,25 +24,19 @@ export class AdminChallengesService {
   // Get all challenges
 
   getAll() {
-
     return this.prisma.challenge.findMany({
-
       orderBy: { createdAt: 'desc' },
-
     });
-
   }
 
   // Get one challenge
 
   async getOne(id: string) {
-
     const challenge = await this.prisma.challenge.findUnique({ where: { id } });
 
     if (!challenge) throw new NotFoundException('Challenge not found');
 
     return challenge;
-
   }
 
   // Create a challenge
@@ -61,22 +62,46 @@ export class AdminChallengesService {
       description: data.description || null,
       accountSize: parseInt(String(accountSize)),
       price: parseInt(String(price)),
-      platform: (data.platform && ['MT5', 'MT4', 'CTRADER', 'DXTRADE', 'BYBIT', 'PT5', 'TRADELOCKER'].includes(data.platform.toUpperCase()) 
-        ? data.platform.toUpperCase() 
+      platform: (data.platform &&
+      [
+        'MT5',
+        'MT4',
+        'CTRADER',
+        'DXTRADE',
+        'BYBIT',
+        'PT5',
+        'TRADELOCKER',
+      ].includes(data.platform.toUpperCase())
+        ? data.platform.toUpperCase()
         : 'MT5') as ChallengePlatform, // Validate and normalize platform value
       challengeType: data.challengeType || data.challenge_type || 'two_phase',
-      phase1TargetPercent: data.phase1TargetPercent || data.phase1_profit_target || 8.0,
-      phase2TargetPercent: data.phase2TargetPercent || data.phase2_profit_target || 5.0,
-      dailyDrawdownPercent: data.dailyDrawdownPercent || data.max_daily_drawdown || 5.0,
-      overallDrawdownPercent: data.overallDrawdownPercent || data.max_overall_drawdown || 10.0,
+      phase1TargetPercent:
+        data.phase1TargetPercent || data.phase1_profit_target || 8.0,
+      phase2TargetPercent:
+        data.phase2TargetPercent || data.phase2_profit_target || 5.0,
+      dailyDrawdownPercent:
+        data.dailyDrawdownPercent || data.max_daily_drawdown || 5.0,
+      overallDrawdownPercent:
+        data.overallDrawdownPercent || data.max_overall_drawdown || 10.0,
       minTradingDays: data.minTradingDays || data.min_trading_days || 5,
-      maxTradingDays: data.maxTradingDays || data.max_trading_days ? parseInt(String(data.maxTradingDays || data.max_trading_days)) : null,
-      profitSplit: parseFloat(String(data.profitSplit ?? data.profit_split ?? 80.0)),
+      maxTradingDays:
+        data.maxTradingDays || data.max_trading_days
+          ? parseInt(String(data.maxTradingDays || data.max_trading_days))
+          : null,
+      profitSplit: parseFloat(
+        String(data.profitSplit ?? data.profit_split ?? 80.0),
+      ),
       isActive: Boolean(data.isActive ?? data.is_active ?? true),
-      newsTradingAllowed: Boolean(data.newsTradingAllowed ?? data.news_trading_allowed ?? true),
-      weekendHoldingAllowed: Boolean(data.weekendHoldingAllowed ?? data.weekend_holding_allowed ?? true),
+      newsTradingAllowed: Boolean(
+        data.newsTradingAllowed ?? data.news_trading_allowed ?? true,
+      ),
+      weekendHoldingAllowed: Boolean(
+        data.weekendHoldingAllowed ?? data.weekend_holding_allowed ?? true,
+      ),
       eaAllowed: Boolean(data.eaAllowed ?? data.ea_allowed ?? true),
-      scalingEnabled: Boolean(data.scalingEnabled ?? data.scaling_enabled ?? false),
+      scalingEnabled: Boolean(
+        data.scalingEnabled ?? data.scaling_enabled ?? false,
+      ),
     };
 
     const challenge = await this.prisma.challenge.create({
@@ -96,18 +121,18 @@ export class AdminChallengesService {
       });
 
       // Create notification for each trader
-      const notificationPromises = traders.map(trader =>
+      const notificationPromises = traders.map((trader) =>
         this.notificationsService.create(
           trader.id,
           'New Challenge Available',
           `Check out our new ${challenge.name} challenge - ${challenge.accountSize.toLocaleString()} account size on ${challenge.platform}! Get started now.`,
           NotificationType.INFO,
           NotificationCategory.SYSTEM,
-        )
+        ),
       );
 
       // Send notifications in parallel (don't wait for all to complete)
-      Promise.all(notificationPromises).catch(error => {
+      Promise.all(notificationPromises).catch((error) => {
         console.error('Error sending new challenge notifications:', error);
         // Don't throw - challenge creation should succeed even if notifications fail
       });
@@ -125,7 +150,8 @@ export class AdminChallengesService {
     const updateData: any = {};
 
     if (data.name !== undefined) updateData.name = data.name;
-    if (data.description !== undefined) updateData.description = data.description || null;
+    if (data.description !== undefined)
+      updateData.description = data.description || null;
     if (data.accountSize !== undefined || data.account_size !== undefined) {
       updateData.accountSize = parseInt(data.accountSize || data.account_size);
     }
@@ -134,49 +160,117 @@ export class AdminChallengesService {
     }
     if (data.platform !== undefined) {
       // Validate and normalize platform value
-      const normalizedPlatform = data.platform && ['MT5', 'MT4', 'CTRADER', 'DXTRADE', 'BYBIT', 'PT5', 'TRADELOCKER'].includes(data.platform.toUpperCase())
-        ? data.platform.toUpperCase()
-        : 'MT5';
+      const normalizedPlatform =
+        data.platform &&
+        [
+          'MT5',
+          'MT4',
+          'CTRADER',
+          'DXTRADE',
+          'BYBIT',
+          'PT5',
+          'TRADELOCKER',
+        ].includes(data.platform.toUpperCase())
+          ? data.platform.toUpperCase()
+          : 'MT5';
       updateData.platform = normalizedPlatform as ChallengePlatform;
     }
-    if (data.phase1TargetPercent !== undefined || data.phase1_profit_target !== undefined) {
-      updateData.phase1TargetPercent = parseFloat(data.phase1TargetPercent || data.phase1_profit_target);
+    if (
+      data.phase1TargetPercent !== undefined ||
+      data.phase1_profit_target !== undefined
+    ) {
+      updateData.phase1TargetPercent = parseFloat(
+        data.phase1TargetPercent || data.phase1_profit_target,
+      );
     }
-    if (data.phase2TargetPercent !== undefined || data.phase2_profit_target !== undefined) {
-      updateData.phase2TargetPercent = parseFloat(data.phase2TargetPercent || data.phase2_profit_target);
+    if (
+      data.phase2TargetPercent !== undefined ||
+      data.phase2_profit_target !== undefined
+    ) {
+      updateData.phase2TargetPercent = parseFloat(
+        data.phase2TargetPercent || data.phase2_profit_target,
+      );
     }
-    if (data.dailyDrawdownPercent !== undefined || data.max_daily_drawdown !== undefined) {
-      updateData.dailyDrawdownPercent = parseFloat(data.dailyDrawdownPercent || data.max_daily_drawdown);
+    if (
+      data.dailyDrawdownPercent !== undefined ||
+      data.max_daily_drawdown !== undefined
+    ) {
+      updateData.dailyDrawdownPercent = parseFloat(
+        data.dailyDrawdownPercent || data.max_daily_drawdown,
+      );
     }
-    if (data.overallDrawdownPercent !== undefined || data.max_overall_drawdown !== undefined) {
-      updateData.overallDrawdownPercent = parseFloat(data.overallDrawdownPercent || data.max_overall_drawdown);
+    if (
+      data.overallDrawdownPercent !== undefined ||
+      data.max_overall_drawdown !== undefined
+    ) {
+      updateData.overallDrawdownPercent = parseFloat(
+        data.overallDrawdownPercent || data.max_overall_drawdown,
+      );
     }
-    if (data.minTradingDays !== undefined || data.min_trading_days !== undefined) {
-      updateData.minTradingDays = parseInt(data.minTradingDays || data.min_trading_days);
+    if (
+      data.minTradingDays !== undefined ||
+      data.min_trading_days !== undefined
+    ) {
+      updateData.minTradingDays = parseInt(
+        data.minTradingDays || data.min_trading_days,
+      );
     }
-    if (data.maxTradingDays !== undefined || data.max_trading_days !== undefined) {
-      updateData.maxTradingDays = data.maxTradingDays || data.max_trading_days ? parseInt(data.maxTradingDays || data.max_trading_days) : null;
+    if (
+      data.maxTradingDays !== undefined ||
+      data.max_trading_days !== undefined
+    ) {
+      updateData.maxTradingDays =
+        data.maxTradingDays || data.max_trading_days
+          ? parseInt(data.maxTradingDays || data.max_trading_days)
+          : null;
     }
     if (data.challengeType !== undefined || data.challenge_type !== undefined) {
       updateData.challengeType = data.challengeType || data.challenge_type;
     }
     if (data.profitSplit !== undefined || data.profit_split !== undefined) {
-      updateData.profitSplit = parseFloat(String(data.profitSplit || data.profit_split));
+      updateData.profitSplit = parseFloat(
+        String(data.profitSplit || data.profit_split),
+      );
     }
     if (data.isActive !== undefined || data.is_active !== undefined) {
-      updateData.isActive = Boolean(data.isActive !== undefined ? data.isActive : data.is_active);
+      updateData.isActive = Boolean(
+        data.isActive !== undefined ? data.isActive : data.is_active,
+      );
     }
-    if (data.newsTradingAllowed !== undefined || data.news_trading_allowed !== undefined) {
-      updateData.newsTradingAllowed = Boolean(data.newsTradingAllowed !== undefined ? data.newsTradingAllowed : data.news_trading_allowed);
+    if (
+      data.newsTradingAllowed !== undefined ||
+      data.news_trading_allowed !== undefined
+    ) {
+      updateData.newsTradingAllowed = Boolean(
+        data.newsTradingAllowed !== undefined
+          ? data.newsTradingAllowed
+          : data.news_trading_allowed,
+      );
     }
-    if (data.weekendHoldingAllowed !== undefined || data.weekend_holding_allowed !== undefined) {
-      updateData.weekendHoldingAllowed = Boolean(data.weekendHoldingAllowed !== undefined ? data.weekendHoldingAllowed : data.weekend_holding_allowed);
+    if (
+      data.weekendHoldingAllowed !== undefined ||
+      data.weekend_holding_allowed !== undefined
+    ) {
+      updateData.weekendHoldingAllowed = Boolean(
+        data.weekendHoldingAllowed !== undefined
+          ? data.weekendHoldingAllowed
+          : data.weekend_holding_allowed,
+      );
     }
     if (data.eaAllowed !== undefined || data.ea_allowed !== undefined) {
-      updateData.eaAllowed = Boolean(data.eaAllowed !== undefined ? data.eaAllowed : data.ea_allowed);
+      updateData.eaAllowed = Boolean(
+        data.eaAllowed !== undefined ? data.eaAllowed : data.ea_allowed,
+      );
     }
-    if (data.scalingEnabled !== undefined || data.scaling_enabled !== undefined) {
-      updateData.scalingEnabled = Boolean(data.scalingEnabled !== undefined ? data.scalingEnabled : data.scaling_enabled);
+    if (
+      data.scalingEnabled !== undefined ||
+      data.scaling_enabled !== undefined
+    ) {
+      updateData.scalingEnabled = Boolean(
+        data.scalingEnabled !== undefined
+          ? data.scalingEnabled
+          : data.scaling_enabled,
+      );
     }
 
     return this.prisma.challenge.update({
@@ -188,26 +282,16 @@ export class AdminChallengesService {
   // Delete a challenge
 
   async delete(id: string) {
-
     const linkedAccounts = await this.prisma.tradingAccount.count({
-
       where: { challengeId: id },
-
     });
 
     if (linkedAccounts > 0) {
-
       throw new BadRequestException(
-
-        'Challenge cannot be deleted because it is linked to existing trading accounts.'
-
+        'Challenge cannot be deleted because it is linked to existing trading accounts.',
       );
-
     }
 
     return this.prisma.challenge.delete({ where: { id } });
-
   }
-
 }
-

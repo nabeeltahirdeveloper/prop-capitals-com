@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SupportEventsGateway } from '../../websocket/support-events.gateway';
 import { TicketStatus, SenderType } from '@prisma/client';
@@ -31,8 +35,16 @@ export class AdminSupportService {
         { guestEmail: { contains: search, mode: 'insensitive' } },
         { guestName: { contains: search, mode: 'insensitive' } },
         { user: { email: { contains: search, mode: 'insensitive' } } },
-        { user: { profile: { firstName: { contains: search, mode: 'insensitive' } } } },
-        { user: { profile: { lastName: { contains: search, mode: 'insensitive' } } } },
+        {
+          user: {
+            profile: { firstName: { contains: search, mode: 'insensitive' } },
+          },
+        },
+        {
+          user: {
+            profile: { lastName: { contains: search, mode: 'insensitive' } },
+          },
+        },
       ];
     }
 
@@ -56,7 +68,11 @@ export class AdminSupportService {
 
   async getStatistics() {
     const now = new Date();
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const todayStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
 
     const [
       openCount,
@@ -68,12 +84,24 @@ export class AdminSupportService {
       todayCount,
     ] = await Promise.all([
       this.prisma.supportTicket.count({ where: { status: TicketStatus.OPEN } }),
-      this.prisma.supportTicket.count({ where: { status: TicketStatus.IN_PROGRESS } }),
-      this.prisma.supportTicket.count({ where: { status: TicketStatus.RESOLVED } }),
-      this.prisma.supportTicket.count({ where: { status: TicketStatus.CLOSED } }),
-      this.prisma.supportTicket.count({ where: { status: TicketStatus.WAITING_FOR_ADMIN } }),
-      this.prisma.supportTicket.count({ where: { status: TicketStatus.WAITING_FOR_TRADER } }),
-      this.prisma.supportTicket.count({ where: { createdAt: { gte: todayStart } } }),
+      this.prisma.supportTicket.count({
+        where: { status: TicketStatus.IN_PROGRESS },
+      }),
+      this.prisma.supportTicket.count({
+        where: { status: TicketStatus.RESOLVED },
+      }),
+      this.prisma.supportTicket.count({
+        where: { status: TicketStatus.CLOSED },
+      }),
+      this.prisma.supportTicket.count({
+        where: { status: TicketStatus.WAITING_FOR_ADMIN },
+      }),
+      this.prisma.supportTicket.count({
+        where: { status: TicketStatus.WAITING_FOR_TRADER },
+      }),
+      this.prisma.supportTicket.count({
+        where: { createdAt: { gte: todayStart } },
+      }),
     ]);
 
     return {
@@ -87,12 +115,21 @@ export class AdminSupportService {
     };
   }
 
-  async updateStatus(id: string, status: string, adminReply?: string, adminId?: string) {
-    const ticket = await this.prisma.supportTicket.findUnique({ where: { id } });
+  async updateStatus(
+    id: string,
+    status: string,
+    adminReply?: string,
+    adminId?: string,
+  ) {
+    const ticket = await this.prisma.supportTicket.findUnique({
+      where: { id },
+    });
     if (!ticket) throw new NotFoundException('Support ticket not found');
 
     const normalizedStatus = status?.toUpperCase();
-    if (!Object.values(TicketStatus).includes(normalizedStatus as TicketStatus)) {
+    if (
+      !Object.values(TicketStatus).includes(normalizedStatus as TicketStatus)
+    ) {
       throw new BadRequestException('Invalid ticket status');
     }
 
@@ -123,7 +160,10 @@ export class AdminSupportService {
         });
 
         this.supportGateway.emitNewMessage(id, result.msg);
-        this.supportGateway.emitStatusChanged(id, TicketStatus.WAITING_FOR_TRADER);
+        this.supportGateway.emitStatusChanged(
+          id,
+          TicketStatus.WAITING_FOR_TRADER,
+        );
         this.supportGateway.emitTicketsUpdated();
         return result.updated;
       }
@@ -155,7 +195,9 @@ export class AdminSupportService {
   }
 
   async getMessages(ticketId: string) {
-    const ticket = await this.prisma.supportTicket.findUnique({ where: { id: ticketId } });
+    const ticket = await this.prisma.supportTicket.findUnique({
+      where: { id: ticketId },
+    });
     if (!ticket) throw new NotFoundException('Support ticket not found');
 
     return this.prisma.supportTicketMessage.findMany({
@@ -165,7 +207,9 @@ export class AdminSupportService {
   }
 
   async addAdminMessage(ticketId: string, adminId: string, message: string) {
-    const ticket = await this.prisma.supportTicket.findUnique({ where: { id: ticketId } });
+    const ticket = await this.prisma.supportTicket.findUnique({
+      where: { id: ticketId },
+    });
     if (!ticket) throw new NotFoundException('Support ticket not found');
 
     const msg = await this.prisma.$transaction(async (tx) => {
@@ -189,7 +233,10 @@ export class AdminSupportService {
     });
 
     this.supportGateway.emitNewMessage(ticketId, msg);
-    this.supportGateway.emitStatusChanged(ticketId, TicketStatus.WAITING_FOR_TRADER);
+    this.supportGateway.emitStatusChanged(
+      ticketId,
+      TicketStatus.WAITING_FOR_TRADER,
+    );
     this.supportGateway.emitTicketsUpdated();
     return msg;
   }

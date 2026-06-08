@@ -11,6 +11,15 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  security-scan:
+    name: Malicious-code scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan for obfuscated / injected code
+        run: bash scripts/scan-malicious-code.sh
+
   build:
     name: Build gate
     runs-on: ubuntu-latest
@@ -31,9 +40,38 @@ jobs:
       - name: Build trader frontend
         run: npm run build -w props-capital-frontend
 
+  lint-and-test:
+    name: Lint & test (informational)
+    runs-on: ubuntu-latest
+    # Reports status but does NOT gate the deploy yet: backend has pre-existing
+    # ESLint errors and known failing Jest tests. To make these a hard gate once
+    # fixed, add `lint-and-test` to the deploy job's `needs:` list below.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm i
+
+      - name: Generate Prisma client
+        run: npm run db:generate -w props-capital-backend
+
+      - name: Lint backend
+        run: npm run lint -w props-capital-backend
+
+      - name: Lint trader frontend
+        run: npm run lint -w props-capital-frontend
+
+      - name: Test backend
+        run: npm test -w props-capital-backend
+
   deploy:
     name: Deploy to server
-    needs: build
+    needs: [security-scan, build]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     steps:

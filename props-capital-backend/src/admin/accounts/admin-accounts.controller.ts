@@ -1,4 +1,14 @@
-import { Controller, Get, Param, Patch, Body, UseGuards, Query, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Body,
+  UseGuards,
+  Query,
+  ParseIntPipe,
+  DefaultValuePipe,
+} from '@nestjs/common';
 
 import { AdminAccountsService } from './admin-accounts.service';
 import { JwtAuthGuard } from '../../auth/jwt.guard';
@@ -21,7 +31,13 @@ export class AdminAccountsController {
     @Query('status') status?: string,
     @Query('phase') phase?: string,
   ) {
-    return this.adminAccountsService.getAll({ page, limit, search, status, phase });
+    return this.adminAccountsService.getAll({
+      page,
+      limit,
+      search,
+      status,
+      phase,
+    });
   }
 
   // Get one account
@@ -44,7 +60,10 @@ export class AdminAccountsController {
   // Update account phase
 
   @Patch(':id/phase')
-  async updatePhase(@Param('id') id: string, @Body() body: UpdateAccountPhaseDto) {
+  async updatePhase(
+    @Param('id') id: string,
+    @Body() body: UpdateAccountPhaseDto,
+  ) {
     return this.adminAccountsService.updatePhase(id, body.phase);
   }
 }

@@ -1,6 +1,10 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ALLOWED_KEYS, SENSITIVE_KEYS, SettingsGroup } from './dto/bulk-update-settings.dto';
+import {
+  ALLOWED_KEYS,
+  SENSITIVE_KEYS,
+  SettingsGroup,
+} from './dto/bulk-update-settings.dto';
 
 @Injectable()
 export class AdminSettingsService {
@@ -113,7 +117,8 @@ export class AdminSettingsService {
         continue;
       }
 
-      const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
+      const stringValue =
+        typeof value === 'string' ? value : JSON.stringify(value);
 
       const result = await this.prisma.platformSettings.upsert({
         where: { key: fullKey },

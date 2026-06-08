@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+#
+# Pre-commit guard: block commits that introduce obfuscated / injected code.
+# Activated automatically by the root package.json "prepare" script, which sets
+#   git config core.hooksPath .githooks
+# To run manually: bash scripts/scan-malicious-code.sh
+#
+set -u
+
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+
+# Only scan staged code files (added/copied/modified).
+STAGED="$(git diff --cached --name-only --diff-filter=ACM -- '*.js' '*.jsx' '*.ts' '*.tsx' '*.mjs' '*.cjs')"
+
+if [ -z "$STAGED" ]; then
+  exit 0
+fi
+
+# shellcheck disable=SC2086
+if ! bash "$ROOT/scripts/scan-malicious-code.sh" $STAGED; then
+  echo ""
+  echo "✖ Commit blocked: staged changes look like injected/obfuscated code."
+  echo "  Review the lines above. To override after confirming it is safe:"
+  echo "      git commit --no-verify"
+  exit 1
+fi
+
+exit 0

@@ -208,7 +208,8 @@ export class TradingAccountsService {
 
     // ✅ Calculate overall drawdown percent - MONOTONIC using minEquityOverall (matches ChallengeRulesService)
     // Uses initialBalance as base (industry standard for prop firms)
-    const minEquityOverall = (account as any).minEquityOverall ?? initialBalance;
+    const minEquityOverall =
+      (account as any).minEquityOverall ?? initialBalance;
     const overallDrawdownPercent =
       initialBalance > 0 && minEquityOverall < initialBalance
         ? ((initialBalance - minEquityOverall) / initialBalance) * 100
@@ -217,7 +218,8 @@ export class TradingAccountsService {
     // ✅ Calculate daily drawdown percent - MONOTONIC using minEquityToday (matches ChallengeRulesService)
     // Uses todayStartEquity as base (resets at midnight)
     // CRITICAL: Fall back to initialBalance (not equity) - equity already includes losses
-    const todayStartEquity = (account as any).todayStartEquity ?? initialBalance;
+    const todayStartEquity =
+      (account as any).todayStartEquity ?? initialBalance;
     const minEquityToday = (account as any).minEquityToday ?? initialBalance;
     const dailyDrawdownPercent =
       todayStartEquity > 0 && minEquityToday < todayStartEquity
@@ -246,12 +248,16 @@ export class TradingAccountsService {
     let marginUsed = 0;
 
     for (const trade of openTrades) {
-      const tradeLeverage = Number((trade as any).leverage) > 0 ? Number((trade as any).leverage) : 100;
+      const tradeLeverage =
+        Number((trade as any).leverage) > 0
+          ? Number((trade as any).leverage)
+          : 100;
       const isCrypto = /BTC|ETH|SOL|XRP|ADA|DOGE/.test(trade.symbol);
       const isXAU = /XAU/i.test(trade.symbol);
       const isXAG = /XAG/i.test(trade.symbol);
       const contractSize = isXAU ? 100 : isXAG ? 5000 : isCrypto ? 1 : 100000;
-      const positionMargin = (trade.volume * contractSize * trade.openPrice) / tradeLeverage;
+      const positionMargin =
+        (trade.volume * contractSize * trade.openPrice) / tradeLeverage;
 
       marginUsed += positionMargin;
     }
@@ -504,7 +510,8 @@ export class TradingAccountsService {
     // ✅ Overall DD % - Use minEquityOverall for monotonic drawdown (never falls back)
     // ✅ Use initialBalance as base (industry standard for prop firms)
     // This matches ChallengeRulesService calculation
-    const minEquityOverall = (account as any).minEquityOverall ?? initialBalance;
+    const minEquityOverall =
+      (account as any).minEquityOverall ?? initialBalance;
     const overallDrawdownPercent =
       initialBalance > 0 && minEquityOverall < initialBalance
         ? ((initialBalance - minEquityOverall) / initialBalance) * 100
@@ -513,7 +520,8 @@ export class TradingAccountsService {
     // ✅ Daily DD % - Use minEquityToday for monotonic drawdown (never falls back during the day)
     // Backend tracks minimum equity reached today, ensuring drawdown can only increase
     // CRITICAL: Fall back to initialBalance (not equity) - equity already includes losses
-    const todayStartEquity = (account as any).todayStartEquity ?? initialBalance;
+    const todayStartEquity =
+      (account as any).todayStartEquity ?? initialBalance;
     const minEquityToday = (account as any).minEquityToday ?? initialBalance;
 
     // Daily drawdown is from today's start equity to minimum equity reached today
@@ -601,8 +609,10 @@ export class TradingAccountsService {
         phasePassed,
 
         // Peak values for monotonic progress bars (never decrease)
-        peakDailyDrawdownPercent: (account as any).peakDailyDrawdownPercent ?? 0,
-        peakOverallDrawdownPercent: (account as any).peakOverallDrawdownPercent ?? 0,
+        peakDailyDrawdownPercent:
+          (account as any).peakDailyDrawdownPercent ?? 0,
+        peakOverallDrawdownPercent:
+          (account as any).peakOverallDrawdownPercent ?? 0,
         peakProfitPercent: (account as any).peakProfitPercent ?? 0,
       },
 
@@ -744,7 +754,6 @@ export class TradingAccountsService {
 
       if (daySnapshots.length > 0) {
         const maxEquity = Math.max(...daySnapshots.map((s) => s.equity));
-        const minEquity = Math.min(...daySnapshots.map((s) => s.equity));
         const lastEquity = daySnapshots[daySnapshots.length - 1].equity;
 
         // Daily drawdown: from max equity of the day to last equity of the day
@@ -827,8 +836,14 @@ export class TradingAccountsService {
 
     // Keep equity consistent after all positions are closed.
     // If no open trades remain, equity should always match balance.
-    const hasOpenPositions = account.trades.some((trade) => trade.closePrice === null);
-    if (!hasOpenPositions && Number.isFinite(account.balance) && Number.isFinite(account.equity)) {
+    const hasOpenPositions = account.trades.some(
+      (trade) => trade.closePrice === null,
+    );
+    if (
+      !hasOpenPositions &&
+      Number.isFinite(account.balance) &&
+      Number.isFinite(account.equity)
+    ) {
       const normalizedBalance = Number(account.balance);
       const normalizedEquity = Number(account.equity);
       if (Math.abs(normalizedEquity - normalizedBalance) > 1e-8) {

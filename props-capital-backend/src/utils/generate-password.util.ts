@@ -3,10 +3,10 @@ import { randomBytes } from 'node:crypto';
 export function generatePassword(length: number = 8): string {
   // Define the allowed characters
   const chars =
-    'abcdefghijklmnopqrstuvwxyz'
-    + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    + '0123456789'
-    + '!@#$%^&*()-_=+[]{};:,.?/';
+    'abcdefghijklmnopqrstuvwxyz' +
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+    '0123456789' +
+    '!@#$%^&*()-_=+[]{};:,.?/';
   const max = chars.length;
 
   // Build password by mapping random bytes to indices in the chars set

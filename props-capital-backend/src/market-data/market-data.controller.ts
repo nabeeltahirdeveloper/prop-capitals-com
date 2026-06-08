@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Query,
-  BadRequestException,
-} from '@nestjs/common';
+import { Controller, Get, Query, BadRequestException } from '@nestjs/common';
 import { MarketDataService } from './market-data.service';
 import { Candlestick } from './market-data.service';
 import { BinanceWebSocketService } from '../prices/binance-websocket.service';
@@ -16,7 +10,7 @@ export class MarketDataController {
     private readonly marketDataService: MarketDataService,
     private readonly binanceWebSocketService: BinanceWebSocketService,
     private readonly massiveWebSocketService: MassiveWebSocketService,
-  ) { }
+  ) {}
 
   /**
    * Test endpoint to verify controller is working
@@ -101,7 +95,17 @@ export class MarketDataController {
     }
 
     const limitNum = Math.min(parseInt(limit, 10) || 100, 5000); // Cap at 5000
-    const validTimeframes = ['M1', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1', 'W1', 'MN'];
+    const validTimeframes = [
+      'M1',
+      'M5',
+      'M15',
+      'M30',
+      'H1',
+      'H4',
+      'D1',
+      'W1',
+      'MN',
+    ];
     const tf = validTimeframes.includes(timeframe) ? timeframe : 'M5';
 
     return this.marketDataService.getHistory(symbol, tf, limitNum);
@@ -171,8 +175,12 @@ export class MarketDataController {
     return {
       prices,
       source: {
-        crypto: this.binanceWebSocketService.isWSConnected() ? 'websocket' : 'rest',
-        forex: this.massiveWebSocketService.isWSConnected() ? 'websocket' : 'mock',
+        crypto: this.binanceWebSocketService.isWSConnected()
+          ? 'websocket'
+          : 'rest',
+        forex: this.massiveWebSocketService.isWSConnected()
+          ? 'websocket'
+          : 'mock',
       },
       timestamp: Date.now(),
     };

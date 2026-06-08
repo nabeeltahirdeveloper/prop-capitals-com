@@ -5,19 +5,15 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
-
 export class UsersService {
-
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   async createUser(data: Prisma.UserCreateInput) {
     return this.prisma.user.create({ data });
   }
 
   async findByEmail(email: string) {
-
     return this.prisma.user.findUnique({
-
       where: { email },
 
       include: {
@@ -27,9 +23,7 @@ export class UsersService {
           orderBy: { uploadedAt: 'desc' },
         },
       },
-
     });
-
   }
 
   async findById(id: string) {
@@ -47,7 +41,7 @@ export class UsersService {
 
   // Get user profile with full details
   async getUserProfile(userId: string) {
-    const user = await this.findById(userId)
+    const user = await this.findById(userId);
     if (!user) throw new NotFoundException('User not found');
     return {
       id: user.id,
@@ -59,23 +53,24 @@ export class UsersService {
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
-
   }
 
   // Update user profile
-  async updateProfile(userId: string, data: {
-    firstName?: string;
-    lastName?: string;
-    phone?: string;
-    address?: string;
-    city?: string;
-    country?: string;
-    timezone?: string;
-    lotSize?: number | string;
-    leverage?: string;
-    theme?: string;
-  }) {
-
+  async updateProfile(
+    userId: string,
+    data: {
+      firstName?: string;
+      lastName?: string;
+      phone?: string;
+      address?: string;
+      city?: string;
+      country?: string;
+      timezone?: string;
+      lotSize?: number | string;
+      leverage?: string;
+      theme?: string;
+    },
+  ) {
     const updateData: any = { ...data };
 
     if (data.lotSize) {
@@ -96,36 +91,31 @@ export class UsersService {
 
   // Get notification preferences
   async getNotificationPreferences(userId: string) {
-
     let prefs = await this.prisma.notificationPreference.findUnique({
-
       where: { userId },
-
     });
 
     if (!prefs) {
-
       prefs = await this.prisma.notificationPreference.create({
-
         data: { userId }, // Creates with defaults
-
       });
-
     }
 
     return prefs;
-
   }
 
   // Update notification preferences
-  async updateNotificationPreferences(userId: string, data: {
-    tradeNotifications?: boolean;
-    accountAlerts?: boolean;
-    payoutUpdates?: boolean;
-    challengeUpdates?: boolean;
-    marketingEmails?: boolean;
-    emailNotifications?: boolean;
-  }) {
+  async updateNotificationPreferences(
+    userId: string,
+    data: {
+      tradeNotifications?: boolean;
+      accountAlerts?: boolean;
+      payoutUpdates?: boolean;
+      challengeUpdates?: boolean;
+      marketingEmails?: boolean;
+      emailNotifications?: boolean;
+    },
+  ) {
     return this.prisma.notificationPreference.upsert({
       where: { userId },
       update: data,
@@ -138,39 +128,30 @@ export class UsersService {
 
   // Get verification documents
   async getVerificationDocuments(userId: string) {
-
     return this.prisma.verificationDocument.findMany({
-
       where: { userId },
 
       orderBy: { uploadedAt: 'desc' },
-
     });
-
   }
 
   // Create/update verification document
   async uploadVerificationDocument(
     userId: string,
     documentType: 'GOVERNMENT_ID' | 'PROOF_OF_ADDRESS',
-    fileUrl: string
+    fileUrl: string,
   ) {
-
     // Check if document of this type already exists
     const existing = await this.prisma.verificationDocument.findFirst({
-
       where: {
         userId,
         documentType,
       },
-
     });
 
     if (existing) {
-
       // Update existing document
       return this.prisma.verificationDocument.update({
-
         where: { id: existing.id },
 
         data: {
@@ -178,35 +159,25 @@ export class UsersService {
           status: 'PENDING',
           uploadedAt: new Date(),
         },
-
       });
-
     }
 
     // Create new document
     return this.prisma.verificationDocument.create({
-
       data: {
         userId,
         documentType,
         fileUrl,
         status: 'PENDING',
       },
-
     });
-
   }
 
   async updatePassword(userId: string, hashedPassword: string) {
-
     return this.prisma.user.update({
-
       where: { id: userId },
 
       data: { password: hashedPassword },
-
     });
-
   }
-
 }

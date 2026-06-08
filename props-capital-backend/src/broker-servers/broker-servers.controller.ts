@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { AdminRoleGuard } from '../auth/admin-role.guard';
 import { BrokerServersService } from './broker-servers.service';
@@ -29,7 +38,10 @@ export class BrokerServersController {
 
   // Update a broker server
   @Patch(':id')
-  update(@Param('id') id: string, @Body() data: Partial<CreateBrokerServerDto>) {
+  update(
+    @Param('id') id: string,
+    @Body() data: Partial<CreateBrokerServerDto>,
+  ) {
     return this.brokerServersService.update(id, data);
   }
 
@@ -47,7 +59,10 @@ export class BrokerServersController {
 
   // Update connection status
   @Patch(':id/connection-status')
-  updateConnectionStatus(@Param('id') id: string, @Body() data: { status: string }) {
+  updateConnectionStatus(
+    @Param('id') id: string,
+    @Body() data: { status: string },
+  ) {
     return this.brokerServersService.updateConnectionStatus(id, data.status);
   }
 }

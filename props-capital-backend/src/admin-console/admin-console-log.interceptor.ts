@@ -26,21 +26,24 @@ export class AdminConsoleLogInterceptor implements NestInterceptor {
   intercept(ctx: ExecutionContext, next: CallHandler): Observable<any> {
     const start = Date.now();
     const req = ctx.switchToHttp().getRequest();
-    const route: string = req?.route?.path ?? req?.originalUrl ?? req?.url ?? '';
+    const route: string =
+      req?.route?.path ?? req?.originalUrl ?? req?.url ?? '';
 
     // Skip log-fetching endpoints to avoid recursive log noise
-    if (route.includes('/admin-console/logs') || route.includes('/admin-console/bot-logs')) {
+    if (
+      route.includes('/admin-console/logs') ||
+      route.includes('/admin-console/bot-logs')
+    ) {
       return next.handle();
     }
 
     const httpMethod: string = req?.method ?? 'GET';
     const userEmail: string | undefined = req?.user?.email;
     const userId: string | undefined = req?.user?.userId ?? req?.user?.sub;
-    const queryParams = req?.query && Object.keys(req.query).length ? req.query : null;
+    const queryParams =
+      req?.query && Object.keys(req.query).length ? req.query : null;
     const requestBody =
-      httpMethod === 'GET'
-        ? null
-        : redactSensitive(req?.body);
+      httpMethod === 'GET' ? null : redactSensitive(req?.body);
 
     const category = deriveCategory(route);
     const action = `${httpMethod} ${route}`;

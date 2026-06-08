@@ -51,8 +51,7 @@ export class SupportTicketsService {
 
   async createPublic(userId: string | null, dto: CreatePublicTicketDto) {
     const category = dto.category || TicketCategory.OTHER;
-    const categoryLabel =
-      category.charAt(0) + category.slice(1).toLowerCase();
+    const categoryLabel = category.charAt(0) + category.slice(1).toLowerCase();
     const subject = `Support Request - ${categoryLabel}`;
 
     if (!userId && !dto.email) {
@@ -117,7 +116,11 @@ export class SupportTicketsService {
     return ticket;
   }
 
-  async getOneForUser(id: string, requesterUserId: string, requesterRole: UserRole) {
+  async getOneForUser(
+    id: string,
+    requesterUserId: string,
+    requesterRole: UserRole,
+  ) {
     const where =
       requesterRole === UserRole.ADMIN
         ? { id }
@@ -136,9 +139,7 @@ export class SupportTicketsService {
 
   async getMessages(ticketId: string, userId: string, role: UserRole) {
     const where =
-      role === UserRole.ADMIN
-        ? { id: ticketId }
-        : { id: ticketId, userId };
+      role === UserRole.ADMIN ? { id: ticketId } : { id: ticketId, userId };
 
     const ticket = await this.prisma.supportTicket.findFirst({ where });
     if (!ticket) throw new NotFoundException('Support ticket not found');
@@ -176,7 +177,10 @@ export class SupportTicketsService {
     });
 
     this.supportGateway.emitNewMessage(ticketId, msg);
-    this.supportGateway.emitStatusChanged(ticketId, TicketStatus.WAITING_FOR_ADMIN);
+    this.supportGateway.emitStatusChanged(
+      ticketId,
+      TicketStatus.WAITING_FOR_ADMIN,
+    );
     return msg;
   }
 

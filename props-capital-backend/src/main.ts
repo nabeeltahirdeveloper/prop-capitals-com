@@ -275,7 +275,9 @@ async function bootstrap() {
     }
   });
 
-  console.log('[Socket.IO] Namespaces registered: / (candles), /trading, /support');
+  console.log(
+    '[Socket.IO] Namespaces registered: / (candles), /trading, /support',
+  );
 
   const port = process.env.PORT || 5101;
   await app.listen(port);

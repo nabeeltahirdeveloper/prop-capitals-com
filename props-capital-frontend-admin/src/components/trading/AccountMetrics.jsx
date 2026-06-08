@@ -78,7 +78,7 @@ export default function AccountMetrics({
 
   // Update refs from sessionStorage if available (use namespaced keys)
   // Also check for breach snapshot values from trades if available
-  useEffect(() => {
+  React.useEffect(() => {
     if (accountId) {
       const dailyDD = getFrozenDrawdown(
         `violation:${accountId}:daily_dd`,
@@ -111,7 +111,7 @@ export default function AccountMetrics({
   }, [accountId, displayDailyDrawdown, displayOverallDrawdown, account?.status]);
 
   // Real-time updates for all metrics - updates every 1 second for responsiveness
-  useEffect(() => {
+  React.useEffect(() => {
     // Equity from backend (settled equity – updated when trades close)
     const currentEquity = account?.equity;
     const currentFloatingPnL = account?.floatingPnL || 0;

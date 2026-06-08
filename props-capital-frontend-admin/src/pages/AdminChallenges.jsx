@@ -31,7 +31,6 @@ import {
   Pencil,
   Trash2,
   Award,
-  DollarSign,
   AlertTriangle,
   AlertCircle,
 } from "lucide-react";

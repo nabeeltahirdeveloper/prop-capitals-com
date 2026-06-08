@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import BrandModal from './BrandModal';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import { adminConsoleApi } from '@/api/adminConsole';

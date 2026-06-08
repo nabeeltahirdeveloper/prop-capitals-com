@@ -80,7 +80,7 @@ export function useSupportSocket({ ticketId } = {}) {
       });
     };
 
-    const onStatusChanged = ({ ticketId: tid, status }) => {
+    const onStatusChanged = ({ ticketId: tid }) => {
       if (!tid) return;
       queryClient.invalidateQueries({ queryKey: ['admin-ticket', tid] });
       queryClient.invalidateQueries({

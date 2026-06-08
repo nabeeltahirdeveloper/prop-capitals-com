@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { adminConsoleApi } from '@/api/adminConsole';
 import BlockedIPDetailModal from './BlockedIPDetailModal';
 import { useTranslation } from "../../contexts/LanguageContext";
@@ -81,7 +81,7 @@ export default function BlockedIPsSection() {
     if (!dateStr) return t("adminConsole.blockedIps.notAvailable", { defaultValue: "N/A" });
     try {
       return new Date(dateStr).toLocaleString();
-    } catch (e) {
+    } catch {
       return t("adminConsole.blockedIps.notAvailable", { defaultValue: "N/A" });
     }
   };

@@ -9,7 +9,9 @@ describe('TradingAccountsController', () => {
       controllers: [TradingAccountsController],
     }).compile();
 
-    controller = module.get<TradingAccountsController>(TradingAccountsController);
+    controller = module.get<TradingAccountsController>(
+      TradingAccountsController,
+    );
   });
 
   it('should be defined', () => {

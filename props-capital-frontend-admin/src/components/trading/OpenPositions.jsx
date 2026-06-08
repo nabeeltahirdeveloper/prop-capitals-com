@@ -733,12 +733,6 @@ export default function OpenPositions({
   useEffect(() => {
     const interval = setInterval(() => {
       forceUpdate((t) => t + 1);
-
-      const newColors = {};
-      positionsWithPnL.forEach((pos) => {
-        newColors[pos.id] = pos.pnl >= 0 ? 'text-emerald-400' : 'text-red-400';
-      });
-      setPositionColors(newColors);
     }, 1000);
 
     return () => clearInterval(interval);

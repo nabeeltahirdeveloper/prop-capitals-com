@@ -22,7 +22,9 @@ export default function ResellerLogin() {
       if (t && (t === localStorage.getItem('brand_token') || t === localStorage.getItem('reseller_token'))) {
         localStorage.removeItem('token');
       }
-    } catch (_e) {}
+    } catch (_e) {
+      /* intentionally ignored: localStorage may be unavailable (e.g. private mode) */
+    }
   }, []);
 
   const onSubmit = async (e) => {

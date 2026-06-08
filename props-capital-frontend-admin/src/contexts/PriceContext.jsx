@@ -275,7 +275,7 @@ export function PriceProvider({ children, currentPathname = null }) {
         return (
           localStorage.getItem("token") || localStorage.getItem("authToken")
         );
-      } catch (error) {
+      } catch {
         return null;
       }
     };

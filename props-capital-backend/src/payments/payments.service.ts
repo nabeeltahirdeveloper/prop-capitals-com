@@ -1151,7 +1151,7 @@ export class PaymentsService {
           where: { slug: payment.linkSlug },
           select: { id: true, active: true },
         });
-      } catch (_e) {
+      } catch {
         quickLink = null;
       }
     }
@@ -1514,9 +1514,7 @@ export class PaymentsService {
 
     // Expose the gateway so the /q/ page knows whether to collect the card
     // (Xoala S2S) or send the customer to WorldCard's hosted page.
-    const provider = link.provider
-      ? String(link.provider).toUpperCase()
-      : null;
+    const provider = link.provider ? String(link.provider).toUpperCase() : null;
 
     return {
       slug: link.slug,
@@ -1535,9 +1533,7 @@ export class PaymentsService {
     });
     if (!link) throw new NotFoundException('Payment link not found');
     if (!link.active) {
-      throw new BadRequestException(
-        'This payment link is no longer active.',
-      );
+      throw new BadRequestException('This payment link is no longer active.');
     }
     if (!link.challengeId) {
       throw new BadRequestException(
@@ -1592,7 +1588,9 @@ export class PaymentsService {
       }
     }
 
-    const rawCurrency = String(link.currency || link.challenge?.currency || 'EUR').toUpperCase();
+    const rawCurrency = String(
+      link.currency || link.challenge?.currency || 'EUR',
+    ).toUpperCase();
     const currency = rawCurrency === 'GBP' ? 'GBP' : 'EUR';
 
     this.logger.log(
@@ -1615,7 +1613,9 @@ export class PaymentsService {
     // The QuickLink's own amount overrides the challenge default so the
     // charged total matches the /q/ summary the customer saw.
     const amountOverride =
-      link.amount != null && Number(link.amount) > 0 ? Number(link.amount) : null;
+      link.amount != null && Number(link.amount) > 0
+        ? Number(link.amount)
+        : null;
 
     const chargeInput: any = {
       challengeId: link.challengeId,

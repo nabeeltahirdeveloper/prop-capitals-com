@@ -1,10 +1,15 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 /**
  * Admin Role Guard
  * Ensures only users with 'ADMIN' role can access admin endpoints
- * 
+ *
  * Usage: @UseGuards(JwtAuthGuard, AdminRoleGuard)
  */
 @Injectable()

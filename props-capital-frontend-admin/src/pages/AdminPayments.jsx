@@ -229,7 +229,7 @@ export default function AdminPayments() {
           return isNaN(date.getTime())
             ? "-"
             : format(date, "MMM d, yyyy HH:mm");
-        } catch (error) {
+        } catch {
           return "-";
         }
       },
