@@ -10,7 +10,8 @@ export default [
     files: ['**/*.{js,jsx}'],
     languageOptions: {
       ecmaVersion: 2020,
-      globals: globals.browser,
+      // `process` is replaced by Vite at build time (e.g. process.env.NODE_ENV).
+      globals: { ...globals.browser, process: 'readonly' },
       parserOptions: {
         ecmaVersion: 'latest',
         ecmaFeatures: { jsx: true },
@@ -34,10 +35,34 @@ export default [
 
       'react/jsx-no-target-blank': 'off',
       'react/prop-types': 'off',
+      // Purely cosmetic in JSX text; React renders these entities fine.
+      'react/no-unescaped-entities': 'off',
+      // Allow valid styled-jsx / SVG / shadcn (cmdk, toast) attributes while
+      // still catching genuine typos.
+      'react/no-unknown-property': [
+        'error',
+        {
+          ignore: [
+            'jsx',
+            'global',
+            'clip-rule',
+            'fill',
+            'cmdk-input-wrapper',
+            'toast-close',
+          ],
+        },
+      ],
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
       ],
+    },
+  },
+  {
+    // Build/config files run in Node, not the browser.
+    files: ['**/*.config.{js,cjs,mjs}', 'tailwind.config.js', 'vite.config.js', 'postcss.config.js'],
+    languageOptions: {
+      globals: { ...globals.node },
     },
   },
 ]
