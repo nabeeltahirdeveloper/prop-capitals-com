@@ -1941,16 +1941,15 @@ export class AdminConsoleService {
     };
   }
 
-  // Required-field guard for QuickLink create. Lists every Xoala-required
-  // field up-front so we fail fast with a useful error instead of letting
-  // the gateway 400 with an inscrutable message.
+  // Required-field guard for QuickLink create. The admin may choose an
+  // existing challenge, or CUSTOM with a manual amount that we map to the
+  // closest active challenge for provisioning after payment.
   private validateQuickLinkBody(body: any) {
     // Admin-supplied identity + commerce. Name + city + address + postal
     // are collected from the customer on the /q/<slug> page, so they're
     // NOT required here.
     const required: Array<[string, any]> = [
       ['brand_id', body.brand_id],
-      ['challenge_id', body.challenge_id],
       ['customer_email', body.customer_email],
       ['customer_country', body.customer_country],
     ];
@@ -1975,10 +1974,29 @@ export class AdminConsoleService {
     });
     if (!brand) throw new Error('Brand not found');
 
-    const challenge = await this.db.challenge.findUnique({
-      where: { id: body.challenge_id },
-    });
-    if (!challenge) throw new Error('Challenge not found');
+    let challenge: any = null;
+    const amount =
+      body.amount != null && body.amount !== ''
+        ? Number(body.amount)
+        : null;
+    if (amount != null && (!Number.isFinite(amount) || amount <= 0)) {
+      throw new Error('Amount must be greater than 0');
+    }
+
+    if (body.challenge_id) {
+      challenge = await this.db.challenge.findUnique({
+        where: { id: body.challenge_id },
+      });
+      if (!challenge) throw new Error('Challenge not found');
+    } else {
+      if (amount == null) {
+        throw new Error('Amount is required for CUSTOM quick links');
+      }
+      challenge = await this.findClosestChallengeForAmount(amount);
+      if (!challenge) {
+        throw new Error('No active challenges available for CUSTOM quick links');
+      }
+    }
 
     const providerInput = this.normalizeProviderInput(body.provider);
     const platformInput = this.normalizeLinkPlatformInput(body.platform);
@@ -1987,18 +2005,13 @@ export class AdminConsoleService {
     // Payment is bound to the same trader if they ever sign up later.
     const customerUserId = await this.resolveQuickLinkUser(customerEmail);
 
-    const amount =
-      body.amount != null && body.amount !== ''
-        ? Number(body.amount)
-        : (challenge.price ?? 0);
-
     const link = await this.db.quickLink.create({
       data: {
         slug: this.quickLinkSlug(),
         name: body.name?.trim() || null,
         brandId: brand.id,
         challengeId: challenge.id,
-        amount,
+        amount: amount ?? (challenge.price ?? 0),
         currency: (body.currency || challenge.currency || 'EUR').toUpperCase(),
         ...(providerInput !== undefined ? { provider: providerInput } : {}),
         ...(platformInput !== null ? { platform: platformInput } : {}),

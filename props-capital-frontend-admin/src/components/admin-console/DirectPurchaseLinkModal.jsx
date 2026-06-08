@@ -3,6 +3,8 @@ import { adminConsoleApi } from '@/api/adminConsole';
 import { apiGet } from '@/lib/api';
 import { useTranslation } from '../../contexts/LanguageContext';
 
+const CUSTOM_CHALLENGE_VALUE = '__custom__';
+
 const formatAccountSize = (size) => {
   if (!size) return '';
   if (size >= 1_000_000) return `${size / 1_000_000}M`;
@@ -22,6 +24,7 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
       : 'custom'
     : 'custom';
   const [mode, setMode] = useState(initialMode);
+  const [isCustomChallenge, setIsCustomChallenge] = useState(false);
 
   const [formData, setFormData] = useState({
     brand_id: link?.brand_id || '',
@@ -90,8 +93,11 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
   };
 
   const selectedChallenge = useMemo(
-    () => challenges.find((c) => c.id === formData.challenge_id),
-    [challenges, formData.challenge_id],
+    () =>
+      isCustomChallenge
+        ? null
+        : challenges.find((c) => c.id === formData.challenge_id),
+    [challenges, formData.challenge_id, isCustomChallenge],
   );
 
   useEffect(() => {
@@ -130,13 +136,20 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
       return;
     }
 
-    if (mode === 'challenge' && !formData.challenge_id) {
+    if (mode === 'challenge' && !isCustomChallenge && !formData.challenge_id) {
       setError(
         t('adminConsole.directLinks.modal.challengeRequired', {
           defaultValue: 'Please select a challenge',
         }),
       );
       return;
+    }
+    if (mode === 'challenge' && isCustomChallenge) {
+      const amount = Number(formData.amount);
+      if (!Number.isFinite(amount) || amount <= 0) {
+        setError('Amount is required for CUSTOM challenge links');
+        return;
+      }
     }
 
     const payload = {
@@ -145,7 +158,10 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
       currency: formData.currency,
       active: formData.active,
       amount: formData.amount !== '' ? Number(formData.amount) : null,
-      challenge_id: mode === 'challenge' ? formData.challenge_id : null,
+      challenge_id:
+        mode === 'challenge' && !isCustomChallenge
+          ? formData.challenge_id
+          : null,
       custom_url: mode === 'custom' ? formData.custom_url.trim() : '',
       provider: formData.provider || null,
       platform: formData.platform || null,   // ← new
@@ -306,10 +322,24 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
                 <span className="text-red-400">*</span>
               </label>
               <select
-                value={formData.challenge_id}
-                onChange={(e) =>
-                  setFormData({ ...formData, challenge_id: e.target.value })
-                }
+                value={isCustomChallenge ? CUSTOM_CHALLENGE_VALUE : formData.challenge_id}
+                onChange={(e) => {
+                  if (e.target.value === CUSTOM_CHALLENGE_VALUE) {
+                    setIsCustomChallenge(true);
+                    setFormData({
+                      ...formData,
+                      challenge_id: '',
+                      name: formData.name || 'CUSTOM',
+                    });
+                    return;
+                  }
+                  setIsCustomChallenge(false);
+                  setFormData({
+                    ...formData,
+                    challenge_id: e.target.value,
+                    amount: '',
+                  });
+                }}
                 className="search-input p-3 rounded-lg w-full"
                 required
               >
@@ -317,6 +347,9 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
                   {t('adminConsole.directLinks.modal.selectChallenge', {
                     defaultValue: 'Select a challenge…',
                   })}
+                </option>
+                <option value={CUSTOM_CHALLENGE_VALUE}>
+                  CUSTOM - enter amount manually
                 </option>
                 {challenges.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -401,7 +434,8 @@ export default function DirectPurchaseLinkModal({ link, brands, onClose, onSaved
                   setFormData({ ...formData, amount: e.target.value })
                 }
                 className="search-input p-3 rounded-lg w-full"
-                placeholder="0.00"
+                placeholder={isCustomChallenge ? 'Required for CUSTOM' : '0.00'}
+                required={mode === 'challenge' && isCustomChallenge}
               />
             </div>
             <div>

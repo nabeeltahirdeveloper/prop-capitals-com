@@ -3,6 +3,8 @@ import { adminConsoleApi } from '@/api/adminConsole';
 import { apiGet } from '@/lib/api';
 import { COUNTRIES } from '@/constants/countries';
 
+const CUSTOM_CHALLENGE_VALUE = '__custom__';
+
 /**
  * QuickLinkModal
  * ──────────────
@@ -32,6 +34,7 @@ export default function QuickLinkModal({ onClose, onSaved }) {
 
   const [brands, setBrands] = useState([]);
   const [challenges, setChallenges] = useState([]);
+  const [isCustomChallenge, setIsCustomChallenge] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [savedLink, setSavedLink] = useState(null);
@@ -81,7 +84,7 @@ export default function QuickLinkModal({ onClose, onSaved }) {
   };
 
   const selectedChallenge = challenges.find(
-    (c) => c.id === formData.challenge_id,
+    (c) => !isCustomChallenge && c.id === formData.challenge_id,
   );
   useEffect(() => {
     if (!selectedChallenge) return;
@@ -102,10 +105,12 @@ export default function QuickLinkModal({ onClose, onSaved }) {
 
     const required = [
       ['brand_id', 'Brand'],
-      ['challenge_id', 'Challenge'],
       ['customer_email', 'Customer email'],
       ['customer_country', 'Country'],
     ];
+    if (!isCustomChallenge) {
+      required.splice(1, 0, ['challenge_id', 'Challenge']);
+    }
     for (const [key, label] of required) {
       if (!String(formData[key] ?? '').trim()) {
         setError(`${label} is required`);
@@ -116,10 +121,17 @@ export default function QuickLinkModal({ onClose, onSaved }) {
       setError('Customer email is invalid');
       return;
     }
+    if (isCustomChallenge) {
+      const amount = Number(formData.amount);
+      if (!Number.isFinite(amount) || amount <= 0) {
+        setError('Amount is required for CUSTOM challenge links');
+        return;
+      }
+    }
 
     const payload = {
       brand_id: formData.brand_id,
-      challenge_id: formData.challenge_id,
+      challenge_id: isCustomChallenge ? null : formData.challenge_id,
       name: formData.name?.trim() || null,
       amount: formData.amount !== '' ? Number(formData.amount) : null,
       currency: (formData.currency || 'EUR').toUpperCase(),
@@ -223,13 +235,20 @@ export default function QuickLinkModal({ onClose, onSaved }) {
           <div>
             <label className="block text-xs text-gray-400 mb-1">Challenge</label>
             <select
-              value={formData.challenge_id}
-              onChange={(e) =>
-                setFormData({ ...formData, challenge_id: e.target.value })
-              }
+              value={isCustomChallenge ? CUSTOM_CHALLENGE_VALUE : formData.challenge_id}
+              onChange={(e) => {
+                if (e.target.value === CUSTOM_CHALLENGE_VALUE) {
+                  setIsCustomChallenge(true);
+                  setFormData({ ...formData, challenge_id: '', name: formData.name || 'CUSTOM' });
+                  return;
+                }
+                setIsCustomChallenge(false);
+                setFormData({ ...formData, challenge_id: e.target.value, amount: '' });
+              }}
               className="search-input p-3 rounded-lg w-full"
             >
               <option value="">Select challenge…</option>
+              <option value={CUSTOM_CHALLENGE_VALUE}>CUSTOM — enter amount manually</option>
               {challenges.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
@@ -251,7 +270,12 @@ export default function QuickLinkModal({ onClose, onSaved }) {
                 setFormData({ ...formData, amount: e.target.value })
               }
               className="search-input p-3 rounded-lg w-full"
+              placeholder={isCustomChallenge ? 'Required' : ''}
+              required={isCustomChallenge}
             />
+            {isCustomChallenge && (
+              <p className="text-[11px] text-gray-500 mt-1">Required for CUSTOM</p>
+            )}
           </div>
           <div>
             <label className="block text-xs text-gray-400 mb-1">Currency</label>

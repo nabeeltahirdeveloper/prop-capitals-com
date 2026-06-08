@@ -205,6 +205,22 @@ export const challengeTypes = [
       "200K": 799,
     },
   },
+  {
+    id: "custom",
+    name: "CUSTOM Challenge",
+    badge: "Tailored",
+    description:
+      "Need a different account size or challenge setup? Our team can build a custom offer for you.",
+    phases: "Custom",
+    profitTarget: "Custom",
+    dailyDrawdown: "Custom",
+    maxDrawdown: "Custom",
+    profitSplit: "Up to 90%",
+    leverage: "Custom",
+    popular: false,
+    isCustom: true,
+    prices: {},
+  },
 ];
 
 export const accountSizes = [

@@ -49,8 +49,8 @@ const ChallengesSection = () => {
           </div>
         </div>
 
-        {/* Challenge Cards - 2 columns centered */}
-        <div className="grid sm:grid-cols-2 gap-6 lg:gap-8 max-w-3xl mx-auto">
+        {/* Challenge Cards */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
           {challengeTypes.map((challenge) => (
             <div 
               key={challenge.id}
@@ -83,15 +83,26 @@ const ChallengesSection = () => {
               </div>
 
               {/* Price */}
-              <div className={`text-center mb-5 py-4 rounded-2xl ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
-                <div className={`text-xs sm:text-sm line-through mb-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                  {formatFee(getFullPrice(challenge.id, accountSizes[selectedSize].key, challenge.prices[accountSizes[selectedSize].key]))}
+              {challenge.isCustom ? (
+                <div className={`text-center mb-5 py-4 rounded-2xl ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
+                  <div className="text-amber-500 text-2xl sm:text-3xl font-black">
+                    Custom quote
+                  </div>
+                  <div className="text-emerald-500 text-xs sm:text-sm font-semibold mt-1">
+                    Manual amount available
+                  </div>
                 </div>
-                <div className="text-amber-500 text-3xl sm:text-4xl font-black">
-                  {formatFee(challenge.prices[accountSizes[selectedSize].key])}
+              ) : (
+                <div className={`text-center mb-5 py-4 rounded-2xl ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
+                  <div className={`text-xs sm:text-sm line-through mb-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
+                    {formatFee(getFullPrice(challenge.id, accountSizes[selectedSize].key, challenge.prices[accountSizes[selectedSize].key]))}
+                  </div>
+                  <div className="text-amber-500 text-3xl sm:text-4xl font-black">
+                    {formatFee(challenge.prices[accountSizes[selectedSize].key])}
+                  </div>
+                  <div className="text-emerald-500 text-xs sm:text-sm font-semibold mt-1">70% OFF</div>
                 </div>
-                <div className="text-emerald-500 text-xs sm:text-sm font-semibold mt-1">70% OFF</div>
-              </div>
+              )}
 
               {/* Stats */}
               <div className="space-y-2 sm:space-y-3 mb-5">
@@ -146,7 +157,7 @@ const ChallengesSection = () => {
               </div>
 
               {/* CTA Button */}
-              <Link to={user ? "/dashboard" : "/signup"} className="block">
+              <Link to={challenge.isCustom ? "/Contact" : user ? "/dashboard" : "/signup"} className="block">
                 <Button 
                   className={`w-full rounded-full py-5 sm:py-6 h-auto text-sm sm:text-base font-bold transition-all group ${
                     challenge.popular 
@@ -154,7 +165,7 @@ const ChallengesSection = () => {
                       : isDark ? 'bg-white hover:bg-gray-100 text-[#0a0d12]' : 'bg-slate-900 hover:bg-slate-800 text-white'
                   }`}
                 >
-                  Get Started
+                  {challenge.isCustom ? 'Request Custom Challenge' : 'Get Started'}
                   <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
