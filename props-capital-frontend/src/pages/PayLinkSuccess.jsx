@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { CheckCircle2, Loader2, AlertTriangle, Mail } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -93,7 +93,7 @@ const PayLinkSuccess = () => {
           </div>
         </div>
 
-        <div className={`rounded-xl p-5 mb-6 text-left flex items-start gap-3 ${isDark ? 'bg-amber-500/5 border border-amber-500/20' : 'bg-amber-50 border border-amber-200'}`}>
+        <div className={`rounded-xl p-5 text-left flex items-start gap-3 ${isDark ? 'bg-amber-500/5 border border-amber-500/20' : 'bg-amber-50 border border-amber-200'}`}>
           <Mail className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
           <div className="text-sm">
             <p className={`font-semibold ${textClass}`}>Check your email</p>
@@ -104,12 +104,6 @@ const PayLinkSuccess = () => {
           </div>
         </div>
 
-        <Link
-          to="/SignIn"
-          className="inline-block px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold rounded-xl"
-        >
-          Go to Sign In
-        </Link>
       </Wrapper>
     );
   }
