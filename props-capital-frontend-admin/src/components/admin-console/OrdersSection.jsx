@@ -8,6 +8,8 @@ export default function OrdersSection() {
   const { t } = useTranslation();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [brands, setBrands] = useState([]);
+  const [packages, setPackages] = useState([]);
 
   // Load saved date filters from localStorage on mount
   const loadSavedDateFilters = () => {
@@ -35,8 +37,11 @@ export default function OrdersSection() {
     q: '',
     status: 'all',
     pkg: '',
+    brand: 'all',
     fromDate: savedFilters.fromDate,
-    toDate: savedFilters.toDate
+    toDate: savedFilters.toDate,
+    sortBy: 'created_at',
+    sortDir: 'desc'
   });
   const [searchQuery, setSearchQuery] = useState(''); // Local search input value (debounced to state.q)
   const [meta, setMeta] = useState({ page: 1, pages: 1, total: 0 });
@@ -64,6 +69,22 @@ export default function OrdersSection() {
     }
   }, [state.fromDate, state.toDate]);
 
+  useEffect(() => {
+    const loadBrands = async () => {
+      try {
+        const [brandsData, packagesData] = await Promise.all([
+          adminConsoleApi.brands.list({ page: '1', pageSize: '200' }),
+          adminConsoleApi.packages.list(),
+        ]);
+        setBrands(brandsData.brands || []);
+        setPackages(packagesData.packages || []);
+      } catch (error) {
+        console.error('Failed to load order filter data:', error);
+      }
+    };
+    loadBrands();
+  }, []);
+
   // Debounced search - triggers 400ms after user stops typing
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -79,7 +100,7 @@ export default function OrdersSection() {
   // Handle all filter changes - date filters will be disabled during loading
   useEffect(() => {
     loadOrders();
-  }, [state.page, state.q, state.status, state.pkg, state.fromDate, state.toDate]);
+  }, [state.page, state.q, state.status, state.pkg, state.brand, state.fromDate, state.toDate, state.sortBy, state.sortDir]);
 
   const formatDateForAPI = (dateStr, isEndOfDay = false) => {
     if (!dateStr) return '';
@@ -119,8 +140,11 @@ export default function OrdersSection() {
         ...(state.q ? { q: state.q } : {}),
         ...(state.status && state.status !== 'all' ? { status: state.status } : {}),
         ...(state.pkg ? { package: state.pkg } : {}),
+        ...(state.brand && state.brand !== 'all' ? { brand: state.brand } : {}),
         ...(state.fromDate ? { from: formatDateForAPI(state.fromDate, false) } : {}),
-        ...(state.toDate ? { to: formatDateForAPI(state.toDate, true) } : {})
+        ...(state.toDate ? { to: formatDateForAPI(state.toDate, true) } : {}),
+        sortBy: state.sortBy,
+        sortDir: state.sortDir
       };
 
       console.log('[OrdersSection] Loading orders with params:', params);
@@ -130,7 +154,7 @@ export default function OrdersSection() {
       console.log('[OrdersSection] Received orders:', data.orders?.length || 0, 'Total:', data.meta?.total || 0);
 
       setOrders(data.orders || []);
-      setMeta(data.meta || { page: 1, pages: 1, total: 0 });
+      setMeta(data.meta || data.pagination || { page: 1, pages: 1, total: 0 });
       setStatusCounts(data.statusCounts || { approved: 0, unpaid: 0, declined: 0 });
       setState(prev => ({ ...prev, total: data.meta?.total || 0 }));
 
@@ -157,8 +181,9 @@ export default function OrdersSection() {
 
   const getStatusBadge = (status) => {
     const s = (status || '').toLowerCase();
-    if (s === 'paid') return 'status-active';
+    if (s === 'paid' || s === 'succeeded') return 'status-active';
     if (s === 'pending') return 'status-pending';
+    if (s === 'refunded' || s === 'refund') return 'status-pending';
     return 'status-inactive';
   };
 
@@ -169,6 +194,8 @@ export default function OrdersSection() {
     }
 
     const s = (order.payment_status || '').toLowerCase();
+    if (s === 'succeeded') return t("adminConsole.orders.statusSucceeded", { defaultValue: "Succeeded" });
+    if (s === 'refunded') return t("adminConsole.orders.statusRefunded", { defaultValue: "Refunded" });
     if (s === 'unpaid') return t("adminConsole.orders.statusUnpaid", { defaultValue: "Unpaid" });
     if (s === 'pending') return t("adminConsole.orders.statusPending", { defaultValue: "Pending" });
     if (s === 'cancelled' || s === 'failed' || s === 'rejected') return t("adminConsole.orders.statusDeclined", { defaultValue: "Declined" });
@@ -251,6 +278,20 @@ export default function OrdersSection() {
     loadOrders();
   };
 
+  const handleSort = (sortBy) => {
+    setState(prev => ({
+      ...prev,
+      sortBy,
+      sortDir: prev.sortBy === sortBy && prev.sortDir === 'asc' ? 'desc' : 'asc',
+      page: 1
+    }));
+  };
+
+  const sortIndicator = (sortBy) => {
+    if (state.sortBy !== sortBy) return '';
+    return state.sortDir === 'asc' ? ' ↑' : ' ↓';
+  };
+
   const approvedCount = statusCounts.approved;
   const unpaidCount = statusCounts.unpaid;
   const declineCount = statusCounts.declined;
@@ -330,24 +371,38 @@ export default function OrdersSection() {
             onChange={(e) => setState(prev => ({ ...prev, status: e.target.value, page: 1 }))}
           >
             <option value="all">{t("adminConsole.orders.filterAllStatus", { defaultValue: "All Status" })}</option>
-            <option value="paid">{t("adminConsole.orders.statusApproved", { defaultValue: "Approved" })}</option>
-            <option value="unpaid">{t("adminConsole.orders.statusUnpaid", { defaultValue: "Unpaid" })}</option>
+            <option value="succeeded">{t("adminConsole.orders.statusSucceeded", { defaultValue: "Succeeded" })}</option>
             <option value="pending">{t("adminConsole.orders.statusPending", { defaultValue: "Pending" })}</option>
-            <option value="cancelled">{t("adminConsole.orders.statusCancelled", { defaultValue: "Cancelled" })}</option>
+            <option value="failed">{t("adminConsole.orders.statusFailed", { defaultValue: "Failed" })}</option>
+            <option value="refunded">{t("adminConsole.orders.statusRefunded", { defaultValue: "Refunded" })}</option>
           </select>
         </div>
 
-        {/* Row 2: Package + Date Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Row 2: Brand + Package + Date Filters */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <select
+            className="search-input p-3 rounded-lg"
+            value={state.brand}
+            onChange={(e) => setState(prev => ({ ...prev, brand: e.target.value, page: 1 }))}
+          >
+            <option value="all">{t("adminConsole.orders.allBrands", { defaultValue: "All Brands" })}</option>
+            {brands.map(brand => (
+              <option key={brand.id} value={brand.id}>
+                {brand.name || brand.email || brand.id}
+              </option>
+            ))}
+          </select>
           <select
             className="search-input p-3 rounded-lg"
             value={state.pkg}
             onChange={(e) => setState(prev => ({ ...prev, pkg: e.target.value, page: 1 }))}
           >
             <option value="">{t("adminConsole.orders.allPackages", { defaultValue: "All Packages" })}</option>
-            <option value="starter">{t("adminConsole.orders.packageStarter", { defaultValue: "Starter" })}</option>
-            <option value="professional">{t("adminConsole.orders.packageProfessional", { defaultValue: "Professional" })}</option>
-            <option value="expert">{t("adminConsole.orders.packageExpert", { defaultValue: "Expert" })}</option>
+            {packages.map(pkg => (
+              <option key={pkg.id} value={pkg.id}>
+                {pkg.name}
+              </option>
+            ))}
           </select>
           <input
             type="date"
@@ -368,6 +423,48 @@ export default function OrdersSection() {
             style={{ opacity: loading ? 0.6 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
           />
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <select
+            className="search-input p-3 rounded-lg"
+            value={state.sortBy}
+            onChange={(e) => setState(prev => ({ ...prev, sortBy: e.target.value, page: 1 }))}
+          >
+            <option value="created_at">{t("adminConsole.orders.sortCreatedAt", { defaultValue: "Sort by Date" })}</option>
+            <option value="email">{t("adminConsole.orders.sortEmail", { defaultValue: "Sort by Email" })}</option>
+            <option value="total_amount">{t("adminConsole.orders.sortAmount", { defaultValue: "Sort by Amount" })}</option>
+            <option value="payment_status">{t("adminConsole.orders.sortStatus", { defaultValue: "Sort by Status" })}</option>
+            <option value="provider">{t("adminConsole.orders.sortProvider", { defaultValue: "Sort by Payment Method" })}</option>
+          </select>
+          <select
+            className="search-input p-3 rounded-lg"
+            value={state.sortDir}
+            onChange={(e) => setState(prev => ({ ...prev, sortDir: e.target.value, page: 1 }))}
+          >
+            <option value="desc">{t("adminConsole.orders.sortDescending", { defaultValue: "Descending" })}</option>
+            <option value="asc">{t("adminConsole.orders.sortAscending", { defaultValue: "Ascending" })}</option>
+          </select>
+          <button
+            className="action-btn btn-secondary"
+            onClick={() => {
+              setSearchQuery('');
+              setState(prev => ({
+                ...prev,
+                page: 1,
+                q: '',
+                status: 'all',
+                pkg: '',
+                brand: 'all',
+                fromDate: '',
+                toDate: '',
+                sortBy: 'created_at',
+                sortDir: 'desc'
+              }));
+            }}
+          >
+            <i className="fas fa-times mr-2"></i>{t("adminConsole.orders.clearFilters", { defaultValue: "Clear Filters" })}
+          </button>
+        </div>
       </div>
 
       {/* Orders Table */}
@@ -385,14 +482,14 @@ export default function OrdersSection() {
               <table className="w-full min-w-[900px]">
                 <thead className="border-b border-gray-700">
                   <tr>
-                    <th className="text-left p-4">{t("adminConsole.orders.colCustomerEmail", { defaultValue: "Customer Email" })}</th>
+                    <th className="text-left p-4 cursor-pointer" onClick={() => handleSort('email')}>{t("adminConsole.orders.colCustomerEmail", { defaultValue: "Customer Email" })}{sortIndicator('email')}</th>
                     <th className="text-left p-4">{t("adminConsole.orders.colFullName", { defaultValue: "Full Name" })}</th>
                     <th className="text-left p-4">{t("adminConsole.orders.colBrandName", { defaultValue: "Brand Name" })}</th>
                     <th className="text-left p-4">{t("adminConsole.orders.colResellerName", { defaultValue: "Reseller Name" })}</th>
                     <th className="text-left p-4">{t("adminConsole.orders.colPackage", { defaultValue: "Package" })}</th>
-                    <th className="text-left p-4">{t("adminConsole.orders.colAmount", { defaultValue: "Amount" })}</th>
-                    <th className="text-left p-4">{t("adminConsole.orders.colStatus", { defaultValue: "Status" })}</th>
-                    <th className="text-left p-4">{t("adminConsole.orders.colDate", { defaultValue: "Date" })}</th>
+                    <th className="text-left p-4 cursor-pointer" onClick={() => handleSort('total_amount')}>{t("adminConsole.orders.colAmount", { defaultValue: "Amount" })}{sortIndicator('total_amount')}</th>
+                    <th className="text-left p-4 cursor-pointer" onClick={() => handleSort('payment_status')}>{t("adminConsole.orders.colStatus", { defaultValue: "Status" })}{sortIndicator('payment_status')}</th>
+                    <th className="text-left p-4 cursor-pointer" onClick={() => handleSort('created_at')}>{t("adminConsole.orders.colDate", { defaultValue: "Date" })}{sortIndicator('created_at')}</th>
                     <th className="text-left p-4">{t("adminConsole.orders.colActions", { defaultValue: "Actions" })}</th>
                   </tr>
                 </thead>

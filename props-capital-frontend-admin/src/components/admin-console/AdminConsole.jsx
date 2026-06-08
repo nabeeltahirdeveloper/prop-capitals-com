@@ -4,7 +4,7 @@ import { adminConsoleApi } from '@/api/adminConsole';
 import { useTranslation } from "../../contexts/LanguageContext";
 // Imports kept for the temporarily-disabled sections so they can be re-enabled easily.
 // import DashboardSection from './DashboardSection';
-// import OrdersSection from './OrdersSection';
+import OrdersSection from './OrdersSection';
 // import UsersSection from './UsersSection';
 // import PackagesSection from './PackagesSection';
 // import PaymentGatewayGeoSection from './PaymentGatewayGeoSection';
@@ -29,7 +29,6 @@ import './AdminConsole.css';
 // Sections currently disabled — visiting their URLs will render a small notice instead.
 const DISABLED_SECTIONS = new Set([
   'dashboard',
-  'orders',
   'users',
   'packages',
   'payment-gateway-geo',
@@ -78,7 +77,7 @@ export default function AdminConsole() {
       <div className="main-content">
         {/* Temporarily disabled sections — uncomment to restore */}
         {/* {activeSection === 'dashboard' && <DashboardSection />} */}
-        {/* {activeSection === 'orders' && <OrdersSection />} */}
+        {activeSection === 'orders' && <OrdersSection />}
         {/* {activeSection === 'users' && <UsersSection />} */}
         {/* {activeSection === 'packages' && <PackagesSection />} */}
         {/* {activeSection === 'payment-gateway-geo' && <PaymentGatewayGeoSection />} */}

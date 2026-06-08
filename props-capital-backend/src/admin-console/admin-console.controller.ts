@@ -339,14 +339,31 @@ export class AdminConsoleController {
   listOrders(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
+    @Query('pageSize') pageSize?: string,
     @Query('search') search?: string,
+    @Query('q') q?: string,
     @Query('status') status?: string,
+    @Query('brand') brand?: string,
+    @Query('brandId') brandId?: string,
+    @Query('package') pkg?: string,
+    @Query('from') from?: string,
+    @Query('to') to?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortDir') sortDir?: string,
   ) {
     return this.svc.listOrders({
       page: page ? Number(page) : undefined,
+      pageSize: pageSize ? Number(pageSize) : undefined,
       limit: limit ? Number(limit) : undefined,
       search,
+      q,
       status,
+      brand: brand ?? brandId,
+      package: pkg,
+      from,
+      to,
+      sortBy,
+      sortDir,
     });
   }
   @Get('orders/:id')
@@ -354,16 +371,16 @@ export class AdminConsoleController {
     return this.svc.getOrder(id);
   }
   @Post('orders')
-  createOrder() {
-    return { order: null };
+  createOrder(@Body() body: any) {
+    return this.svc.createManualOrder(body);
   }
   @Post('orders/manual')
-  createManualOrder() {
-    return { order: null };
+  createManualOrder(@Body() body: any) {
+    return this.svc.createManualOrder(body);
   }
   @Patch('orders/:id')
-  updateOrder() {
-    return { order: null };
+  updateOrder(@Param('id') id: string, @Body() body: any) {
+    return this.svc.updateOrder(id, body);
   }
   @Delete('orders/:id')
   deleteOrder(@Param('id') id: string) {
@@ -390,8 +407,16 @@ export class AdminConsoleController {
     @Query('to') to?: string,
     @Query('status') status?: string,
     @Query('search') search?: string,
+    @Query('brand') brand?: string,
+    @Query('brandId') brandId?: string,
   ) {
-    return this.svc.listAllTransactions({ from, to, status, search });
+    return this.svc.listAllTransactions({
+      from,
+      to,
+      status,
+      search,
+      brand: brand ?? brandId,
+    });
   }
 
   /* ---- Payouts (live: Payout table) ---- */

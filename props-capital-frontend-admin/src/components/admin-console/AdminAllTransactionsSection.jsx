@@ -38,6 +38,29 @@ const formatTransactionDate = (dateString) => {
   }
 };
 
+const PAYMENT_STATUS_OPTIONS = [
+  { value: 'pending', label: 'Pending' },
+  { value: 'succeeded', label: 'Succeeded' },
+  { value: 'failed', label: 'Failed' },
+  { value: 'refunded', label: 'Refunded' },
+  { value: 'chargeback', label: 'Chargeback' },
+];
+
+const getStatusBadgeClass = (status) => {
+  const normalized = (status || '').toLowerCase();
+  if (normalized === 'succeeded' || normalized === 'completed') {
+    return 'bg-green-500/20 text-green-400';
+  }
+  if (normalized === 'pending') return 'bg-orange-500/20 text-orange-400';
+  if (normalized === 'refunded' || normalized === 'refund') {
+    return 'bg-pink-500/20 text-pink-400';
+  }
+  if (normalized === 'chargeback') return 'bg-yellow-500/20 text-yellow-400';
+  return 'bg-red-500/20 text-red-400';
+};
+
+const getStatusLabel = (status) => (status || 'unknown').toUpperCase();
+
 export default function AdminAllTransactionsSection() {
   const { t } = useTranslation();
   // Load saved date filters from localStorage on mount
@@ -66,7 +89,11 @@ export default function AdminAllTransactionsSection() {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedTx, setSelectedTx] = useState(null);
   const [editingPaymentMethod, setEditingPaymentMethod] = useState(false);
+  const [editingStatus, setEditingStatus] = useState(false);
+  const [editingBrand, setEditingBrand] = useState(false);
   const [newPaymentMethod, setNewPaymentMethod] = useState('');
+  const [newStatus, setNewStatus] = useState('');
+  const [newBrandId, setNewBrandId] = useState('');
   
   // Filters
   const [fromDate, setFromDate] = useState(savedFilters.fromDate);
@@ -162,6 +189,7 @@ export default function AdminAllTransactionsSection() {
       if (toDate) params.to = formatDateForAPI(toDate, true);
       if (statusFilter && statusFilter !== 'all') params.status = statusFilter;
       if (brandFilter && brandFilter !== 'all') params.brand = brandFilter;
+      if (searchQuery.trim()) params.search = searchQuery.trim();
       
       const result = await adminConsoleApi.transactions.list(params);
       const txs = result.transactions || [];
@@ -189,7 +217,7 @@ export default function AdminAllTransactionsSection() {
         setLoading(false);
       }
     }
-  }, [fromDate, toDate, statusFilter, brandFilter]);
+  }, [fromDate, toDate, statusFilter, brandFilter, searchQuery]);
 
   useEffect(() => {
     loadData();
@@ -318,48 +346,105 @@ export default function AdminAllTransactionsSection() {
     const normalized = (method || 'card').toLowerCase();
     if (normalized === 'applepay') return t("adminConsole.transactions.applePay", { defaultValue: "Apple Pay" });
     if (normalized === 'googlepay') return t("adminConsole.transactions.googlePay", { defaultValue: "Google Pay" });
-    return t("adminConsole.transactions.card", { defaultValue: "Card" });
+    if (normalized === 'card') return t("adminConsole.transactions.card", { defaultValue: "Card" });
+    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
   };
 
   const getPaymentMethodIcon = (method) => {
     const normalized = (method || 'card').toLowerCase();
     if (normalized === 'applepay') return '🍎';
     if (normalized === 'googlepay') return '🔵';
+    if (normalized === 'xoala' || normalized === 'worldcard') return '🏦';
+    if (normalized === 'manual' || normalized === 'internal') return '🧾';
     return '💳';
+  };
+
+  const getOrderItems = (items) => {
+    if (!items) return [];
+    if (Array.isArray(items)) return items;
+    try {
+      const parsed = JSON.parse(items);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
   };
 
   const handleUpdatePaymentMethod = async () => {
     if (!selectedTx || !newPaymentMethod) return;
     
+    await handleUpdateTransaction(
+      { payment_method: newPaymentMethod },
+      {
+        payment_method: newPaymentMethod,
+        provider: newPaymentMethod,
+      },
+    );
+    setEditingPaymentMethod(false);
+    setNewPaymentMethod('');
+  };
+
+  const handleUpdateTransaction = async (payload, localFallback = {}) => {
+    if (!selectedTx) return;
+
     try {
       const response = await adminConsoleApi.orders.update(selectedTx.id, {
-        payment_method: newPaymentMethod
+        ...payload,
       });
-      
-      if (response.order) {
-        // Update the transaction in the list
-        setTransactions(prev => prev.map(tx => 
-          tx.id === selectedTx.id ? { ...tx, payment_method: newPaymentMethod } : tx
-        ));
-        // Update selected transaction
-        setSelectedTx({ ...selectedTx, payment_method: newPaymentMethod });
-        setEditingPaymentMethod(false);
-        setNewPaymentMethod('');
-      }
+
+      const updated = response.order
+        ? {
+            ...selectedTx,
+            ...localFallback,
+            ...response.order,
+            order_id: response.order.reference || response.order.order_id || selectedTx.order_id,
+            amount: response.order.total_amount ?? selectedTx.amount,
+            brand_id: response.order.brand_id ?? null,
+            brand_name: response.order.brand_name ?? null,
+            payment_status: response.order.payment_status ?? selectedTx.payment_status,
+            payment_method: response.order.payment_method ?? response.order.provider ?? selectedTx.payment_method,
+          }
+        : { ...selectedTx, ...localFallback };
+
+      setTransactions(prev => prev.map(tx => (tx.id === selectedTx.id ? { ...tx, ...updated } : tx)));
+      setSelectedTx(updated);
     } catch (error) {
-      console.error('Failed to update payment method:', error);
-      alert(t("adminConsole.transactions.alertFailedUpdatePaymentMethod", { defaultValue: "Failed to update payment method. Please try again." }));
+      console.error('Failed to update transaction:', error);
+      alert(t("adminConsole.transactions.alertFailedUpdateTransaction", { defaultValue: "Failed to update transaction. Please try again." }));
     }
+  };
+
+  const handleUpdateStatus = async () => {
+    if (!newStatus) return;
+    await handleUpdateTransaction(
+      { payment_status: newStatus },
+      { payment_status: newStatus, status: newStatus },
+    );
+    setEditingStatus(false);
+    setNewStatus('');
+  };
+
+  const handleUpdateBrand = async () => {
+    const brand = brands.find(b => String(b.id) === String(newBrandId));
+    await handleUpdateTransaction(
+      { brand_id: newBrandId || null },
+      {
+        brand_id: newBrandId || null,
+        brand_name: brand?.name || null,
+      },
+    );
+    setEditingBrand(false);
+    setNewBrandId('');
   };
 
   // Calculate statistics (using corrected USD amounts for totals)
   // Use totalTransactions from API for accurate count, but calculate other stats from loaded transactions
   const stats = {
     total: totalTransactions, // Use total count from database via API
-    totalRevenue: transactions.filter(tx => tx.payment_status === 'unpaid').reduce((sum, tx) => sum + getCorrectUSDAmount(tx), 0),
-    totalCommission: transactions.filter(tx => tx.payment_status === 'paid' || tx.payment_status === 'unpaid').reduce((sum, tx) => sum + getCommissionAmount(tx), 0),
-    unpaid: transactions.filter(tx => tx.payment_status === 'unpaid').length,
-    paid: transactions.filter(tx => tx.payment_status === 'paid').length,
+    totalRevenue: transactions.filter(tx => tx.payment_status === 'succeeded').reduce((sum, tx) => sum + getCorrectUSDAmount(tx), 0),
+    totalCommission: transactions.filter(tx => tx.payment_status === 'succeeded').reduce((sum, tx) => sum + getCommissionAmount(tx), 0),
+    unpaid: transactions.filter(tx => tx.payment_status === 'succeeded' && !tx.brand_paid_out).length,
+    paid: transactions.filter(tx => tx.payment_status === 'succeeded' && tx.brand_paid_out).length,
     pending: transactions.filter(tx => tx.payment_status === 'pending').length,
   };
 
@@ -539,12 +624,11 @@ export default function AdminAllTransactionsSection() {
               className="search-input p-3 rounded-lg w-full"
             >
               <option value="all">{t("adminConsole.transactions.statusAll", { defaultValue: "All Status" })}</option>
-              <option value="paid">{t("adminConsole.transactions.statusPaid", { defaultValue: "Paid" })}</option>
-              <option value="unpaid">{t("adminConsole.transactions.statusUnpaid", { defaultValue: "Unpaid" })}</option>
-              <option value="pending">{t("adminConsole.transactions.statusPending", { defaultValue: "Pending" })}</option>
-              <option value="failed">{t("adminConsole.transactions.statusFailed", { defaultValue: "Failed" })}</option>
-              <option value="chargeback">{t("adminConsole.transactions.statusChargeback", { defaultValue: "Chargeback" })}</option>
-              <option value="refund">{t("adminConsole.transactions.statusRefund", { defaultValue: "Refund" })}</option>
+              {PAYMENT_STATUS_OPTIONS.map(option => (
+                <option key={option.value} value={option.value}>
+                  {t(`adminConsole.transactions.status.${option.value}`, { defaultValue: option.label })}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -697,20 +781,8 @@ export default function AdminAllTransactionsSection() {
                       </span>
                     </td>
                     <td className="py-3 px-4 text-center" data-label="Status">
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                        tx.payment_status === 'paid'
-                          ? 'bg-green-500/20 text-green-400'
-                          : tx.payment_status === 'unpaid'
-                          ? 'bg-blue-500/20 text-blue-400'
-                          : tx.payment_status === 'pending'
-                          ? 'bg-orange-500/20 text-orange-400'
-                          : tx.payment_status === 'chargeback'
-                          ? 'bg-yellow-500/20 text-yellow-400'
-                          : tx.payment_status === 'refund'
-                          ? 'bg-pink-500/20 text-pink-400'
-                          : 'bg-red-500/20 text-red-400'
-                      }`}>
-                        {tx.payment_status?.toUpperCase() || t("adminConsole.transactions.statusUnknown", { defaultValue: "UNKNOWN" })}
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeClass(tx.payment_status)}`}>
+                        {getStatusLabel(tx.payment_status)}
                       </span>
                     </td>
                     <td className="py-3 px-4" data-label="Date">
@@ -740,7 +812,11 @@ export default function AdminAllTransactionsSection() {
           onClick={() => {
             setSelectedTx(null);
             setEditingPaymentMethod(false);
+            setEditingStatus(false);
+            setEditingBrand(false);
             setNewPaymentMethod('');
+            setNewStatus('');
+            setNewBrandId('');
           }}
         >
           <div
@@ -753,7 +829,11 @@ export default function AdminAllTransactionsSection() {
                 onClick={() => {
                   setSelectedTx(null);
                   setEditingPaymentMethod(false);
+                  setEditingStatus(false);
+                  setEditingBrand(false);
                   setNewPaymentMethod('');
+                  setNewStatus('');
+                  setNewBrandId('');
                 }}
                 className="text-gray-400 hover:text-white transition-colors"
               >
@@ -819,25 +899,110 @@ export default function AdminAllTransactionsSection() {
                               
               {/* Status */}
               <div className="pt-4 border-t border-gray-700">
-                <label className="text-sm text-gray-400">{t("adminConsole.transactions.paymentStatus", { defaultValue: "Payment Status" })}</label>
-                <p>
-                  <span className={`inline-block px-4 py-2 rounded-lg text-sm font-medium mt-2 ${
-                    selectedTx.payment_status === 'paid'
-                      ? 'bg-green-500/20 text-green-400'
-                      : selectedTx.payment_status === 'unpaid'
-                      ? 'bg-blue-500/20 text-blue-400'
-                      : selectedTx.payment_status === 'pending'
-                      ? 'bg-orange-500/20 text-orange-400'
-                      : selectedTx.payment_status === 'chargeback'
-                      ? 'bg-yellow-500/20 text-yellow-400'
-                      : selectedTx.payment_status === 'refund'
-                      ? 'bg-pink-500/20 text-pink-400'
-                      : 'bg-red-500/20 text-red-400'
-                  }`}>
-                    {selectedTx.payment_status?.toUpperCase() || t("adminConsole.transactions.statusUnknown", { defaultValue: "UNKNOWN" })}
-                                  </span>
-                                </p>
-                              </div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm text-gray-400">{t("adminConsole.transactions.paymentStatus", { defaultValue: "Payment Status" })}</label>
+                  {!editingStatus && (
+                    <button
+                      onClick={() => {
+                        setEditingStatus(true);
+                        setNewStatus(selectedTx.payment_status || 'pending');
+                      }}
+                      className="text-cyan-400 hover:text-cyan-300 transition-colors text-sm"
+                    >
+                      <i className="fas fa-edit mr-1"></i>{t("adminConsole.transactions.edit", { defaultValue: "Edit" })}
+                    </button>
+                  )}
+                </div>
+                {editingStatus ? (
+                  <div className="space-y-3">
+                    <select
+                      value={newStatus}
+                      onChange={(e) => setNewStatus(e.target.value)}
+                      className="w-full px-4 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                    >
+                      {PAYMENT_STATUS_OPTIONS.map(option => (
+                        <option key={option.value} value={option.value}>
+                          {t(`adminConsole.transactions.status.${option.value}`, { defaultValue: option.label })}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleUpdateStatus}
+                        className="flex-1 px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg transition-colors"
+                      >
+                        <i className="fas fa-check mr-2"></i>{t("adminConsole.transactions.save", { defaultValue: "Save" })}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingStatus(false);
+                          setNewStatus('');
+                        }}
+                        className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                      >
+                        <i className="fas fa-times mr-2"></i>{t("adminConsole.transactions.cancel", { defaultValue: "Cancel" })}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <span className={`inline-block px-4 py-2 rounded-lg text-sm font-medium mt-2 ${getStatusBadgeClass(selectedTx.payment_status)}`}>
+                    {getStatusLabel(selectedTx.payment_status)}
+                  </span>
+                )}
+              </div>
+
+              {/* Brand Assignment */}
+              <div className="pt-4 border-t border-gray-700">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm text-gray-400">{t("adminConsole.transactions.brandAssignment", { defaultValue: "Brand Assignment" })}</label>
+                  {!editingBrand && (
+                    <button
+                      onClick={() => {
+                        setEditingBrand(true);
+                        setNewBrandId(selectedTx.brand_id || '');
+                      }}
+                      className="text-cyan-400 hover:text-cyan-300 transition-colors text-sm"
+                    >
+                      <i className="fas fa-random mr-1"></i>{t("adminConsole.transactions.reassign", { defaultValue: "Reassign" })}
+                    </button>
+                  )}
+                </div>
+                {editingBrand ? (
+                  <div className="space-y-3">
+                    <select
+                      value={newBrandId}
+                      onChange={(e) => setNewBrandId(e.target.value)}
+                      className="w-full px-4 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                    >
+                      <option value="">{t("adminConsole.transactions.noBrandDirectSale", { defaultValue: "No Brand (Direct Sale)" })}</option>
+                      {brands.map(brand => (
+                        <option key={brand.id} value={brand.id}>
+                          {brand.name || brand.email || brand.id}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleUpdateBrand}
+                        className="flex-1 px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg transition-colors"
+                      >
+                        <i className="fas fa-check mr-2"></i>{t("adminConsole.transactions.save", { defaultValue: "Save" })}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingBrand(false);
+                          setNewBrandId('');
+                        }}
+                        className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                      >
+                        <i className="fas fa-times mr-2"></i>{t("adminConsole.transactions.cancel", { defaultValue: "Cancel" })}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-white text-lg">{getBrandName(selectedTx.brand_id)}</p>
+                )}
+              </div>
 
               {/* Payment Method */}
               <div className="pt-4 border-t border-gray-700">
@@ -897,7 +1062,7 @@ export default function AdminAllTransactionsSection() {
                 <div className="pt-4 border-t border-gray-700">
                   <label className="text-sm text-gray-400 mb-3 block">{t("adminConsole.transactions.orderItems", { defaultValue: "Order Items" })}</label>
                   <div className="space-y-2">
-                    {(typeof selectedTx.items === 'string' ? JSON.parse(selectedTx.items) : selectedTx.items).map((item, idx) => (
+                    {getOrderItems(selectedTx.items).map((item, idx) => (
                       <div key={idx} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                               <div>
                           <p className="text-white font-medium">{item.name || item.title || t("adminConsole.transactions.item", { defaultValue: "Item" })}</p>
