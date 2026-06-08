@@ -1,0 +1,66 @@
+name: Deploy to production
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+# Never interrupt an in-flight deploy; queue subsequent runs instead.
+concurrency:
+  group: deploy-master
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm i
+
+      - name: Build backend
+        run: npm run build -w props-capital-backend
+
+      - name: Build trader frontend
+        run: npm run build -w props-capital-frontend
+
+  deploy:
+    name: Deploy to server
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@2ead5e36573f08b82fbfce1504f1a4b05a647c6f # v1.2.2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          command_timeout: 30m
+          script: |
+            set -euo pipefail
+            cd /var/www/prop-capitals-prod/prop-capitals-com
+
+            git fetch origin master
+            git reset --hard origin/master
+
+            npm i
+
+            # Prisma: live DB is the source of truth — introspect, then regenerate the client.
+            npm run db:pull -w props-capital-backend
+            npm run db:generate -w props-capital-backend
+
+            npm run build -w props-capital-backend
+            npm run build -w props-capital-frontend
+
+            pm2 restart prop-Cs-prod-be
+            pm2 restart prop-capitals-frontend
+            pm2 save
