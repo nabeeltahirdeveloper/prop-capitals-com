@@ -384,66 +384,218 @@ export class AdminConsoleService {
    */
 
   private mapPaymentToOrder(p: any) {
+    const meta = p.metadata && typeof p.metadata === 'object' ? p.metadata : {};
+    const billing =
+      meta.billingDetails && typeof meta.billingDetails === 'object'
+        ? meta.billingDetails
+        : {};
+    const items = Array.isArray(meta.orderItems)
+      ? meta.orderItems
+      : p.challenge?.name
+        ? [
+            {
+              type: 'package',
+              id: p.challengeId,
+              name: p.challenge.name,
+              price: (p.amount ?? 0) / 100,
+              quantity: 1,
+              currency: p.currency === 'EUR' ? '€' : '$',
+            },
+          ]
+        : [];
+    const firstName =
+      p.billingFirstName ?? p.user?.profile?.firstName ?? billing.firstName;
+    const lastName =
+      p.billingLastName ?? p.user?.profile?.lastName ?? billing.lastName;
+
     return {
       id: p.id,
       order_id: p.id,
-      email: p.user?.email ?? null,
-      full_name:
-        [p.user?.profile?.firstName, p.user?.profile?.lastName]
-          .filter(Boolean)
-          .join(' ') || null,
+      email: p.billingEmail ?? p.user?.email ?? billing.email ?? null,
+      full_name: [firstName, lastName].filter(Boolean).join(' ') || null,
       total_amount: p.amount / 100,
       original_amount: p.originalAmount != null ? p.originalAmount / 100 : null,
       discount_amount: p.discountAmount != null ? p.discountAmount / 100 : 0,
       currency: p.currency,
       provider: p.provider,
+      payment_method: p.provider,
       status: p.status,
       payment_status: p.status,
+      order_status: p.orderStatus,
       reference: p.reference,
       package_name: p.challenge?.name ?? null,
       package_id: p.challengeId,
+      items,
+      brand_id: p.brandId ?? null,
+      brand_name: p.brand?.name ?? null,
+      brand_slug: p.brand?.slug ?? null,
+      reseller_name: p.brand?.parentBrand?.name ?? null,
+      brand_commission: (p.brandCommission ?? 0) / 100,
+      brand_paid_out: !!p.brandPaidOut,
       coupon_code: p.couponCode,
+      card_holder_name:
+        p.cardholderName ??
+        billing.cardHolderName ??
+        ([firstName, lastName].filter(Boolean).join(' ') || null),
+      phone: p.billingPhone ?? p.user?.profile?.phone ?? billing.phone ?? null,
+      billing_country:
+        p.billingCountry ?? p.user?.profile?.country ?? billing.country ?? null,
+      payment_message: p.failureReason ?? null,
       created_at: p.createdAt,
       updated_at: p.updatedAt,
       refunded_at: p.refundedAt,
     };
   }
 
+  private paymentInclude() {
+    return {
+      user: { include: { profile: true } },
+      challenge: { select: { id: true, name: true } },
+      brand: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          commissionRate: true,
+          parentBrand: { select: { id: true, name: true } },
+        },
+      },
+    };
+  }
+
+  private normalizePaymentStatus(status: any): string | undefined {
+    if (status === undefined || status === null || status === '') return undefined;
+    const s = String(status).trim().toLowerCase();
+    const aliases: Record<string, string> = {
+      completed: 'succeeded',
+      success: 'succeeded',
+      successful: 'succeeded',
+      approved: 'succeeded',
+      cancelled: 'failed',
+      canceled: 'failed',
+      decline: 'failed',
+      declined: 'failed',
+      refund: 'refunded',
+    };
+    return aliases[s] ?? s;
+  }
+
+  private async calculateBrandCommissionCents(
+    brandId: string | null | undefined,
+    amountCents: number,
+  ) {
+    if (!brandId) return 0;
+    const brand = await this.db.brand.findUnique({
+      where: { id: brandId },
+      select: { commissionRate: true },
+    });
+    if (!brand) throw new Error('Brand not found');
+    return Math.round((amountCents * Number(brand.commissionRate ?? 0)) / 100);
+  }
+
   async listOrders(params: {
     page?: number;
+    pageSize?: number;
     limit?: number;
     search?: string;
+    q?: string;
     status?: string;
+    brand?: string;
+    package?: string;
+    from?: string;
+    to?: string;
+    sortBy?: string;
+    sortDir?: string;
   }) {
     const page = Math.max(1, Number(params.page) || 1);
-    const limit = Math.min(200, Math.max(1, Number(params.limit) || 50));
+    const limit = Math.min(
+      200,
+      Math.max(1, Number(params.pageSize ?? params.limit) || 50),
+    );
     const skip = (page - 1) * limit;
+    const search = params.search ?? params.q;
 
     const where: any = {};
-    if (params.status && params.status !== 'all') where.status = params.status;
-    if (params.search) {
+    if (params.status && params.status !== 'all') {
+      where.status = this.normalizePaymentStatus(params.status);
+    }
+    if (params.brand && params.brand !== 'all') where.brandId = params.brand;
+    if (params.package) where.challengeId = params.package;
+    if (params.from || params.to) {
+      where.createdAt = {};
+      if (params.from) where.createdAt.gte = new Date(params.from);
+      if (params.to) where.createdAt.lte = new Date(params.to);
+    }
+    if (search) {
       where.OR = [
-        { reference: { contains: params.search, mode: 'insensitive' } },
-        { user: { email: { contains: params.search, mode: 'insensitive' } } },
+        { id: { contains: search, mode: 'insensitive' } },
+        { reference: { contains: search, mode: 'insensitive' } },
+        { provider: { contains: search, mode: 'insensitive' } },
+        { currency: { contains: search, mode: 'insensitive' } },
+        { failureReason: { contains: search, mode: 'insensitive' } },
+        { billingEmail: { contains: search, mode: 'insensitive' } },
+        { billingFirstName: { contains: search, mode: 'insensitive' } },
+        { billingLastName: { contains: search, mode: 'insensitive' } },
+        { billingPhone: { contains: search, mode: 'insensitive' } },
+        { billingCountry: { contains: search, mode: 'insensitive' } },
+        { cardholderName: { contains: search, mode: 'insensitive' } },
+        { user: { email: { contains: search, mode: 'insensitive' } } },
+        { challenge: { name: { contains: search, mode: 'insensitive' } } },
+        { brand: { name: { contains: search, mode: 'insensitive' } } },
       ];
     }
+
+    const sortMap: Record<string, any> = {
+      order_id: { id: params.sortDir === 'asc' ? 'asc' : 'desc' },
+      email: { billingEmail: params.sortDir === 'asc' ? 'asc' : 'desc' },
+      total_amount: { amount: params.sortDir === 'asc' ? 'asc' : 'desc' },
+      amount: { amount: params.sortDir === 'asc' ? 'asc' : 'desc' },
+      status: { status: params.sortDir === 'asc' ? 'asc' : 'desc' },
+      payment_status: { status: params.sortDir === 'asc' ? 'asc' : 'desc' },
+      created_at: { createdAt: params.sortDir === 'asc' ? 'asc' : 'desc' },
+      date: { createdAt: params.sortDir === 'asc' ? 'asc' : 'desc' },
+      provider: { provider: params.sortDir === 'asc' ? 'asc' : 'desc' },
+      currency: { currency: params.sortDir === 'asc' ? 'asc' : 'desc' },
+    };
+    const orderBy = sortMap[params.sortBy ?? 'created_at'] ?? {
+      createdAt: 'desc',
+    };
 
     const [data, total] = await Promise.all([
       this.prisma.payment.findMany({
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          user: { include: { profile: true } },
-          challenge: { select: { name: true } },
-        },
+        orderBy,
+        include: this.paymentInclude(),
       }),
       this.prisma.payment.count({ where }),
     ]);
 
+    const [succeeded, pending, failed, refunded] = await Promise.all([
+      this.prisma.payment.count({ where: { ...where, status: 'succeeded' } }),
+      this.prisma.payment.count({ where: { ...where, status: 'pending' } }),
+      this.prisma.payment.count({ where: { ...where, status: 'failed' } }),
+      this.prisma.payment.count({ where: { ...where, status: 'refunded' } }),
+    ]);
+
     return {
       orders: data.map((p) => this.mapPaymentToOrder(p)),
+      statusCounts: {
+        approved: succeeded,
+        succeeded,
+        pending,
+        unpaid: succeeded,
+        declined: failed,
+        failed,
+        refunded,
+      },
+      meta: {
+        total,
+        page,
+        pageSize: limit,
+        pages: Math.max(1, Math.ceil(total / limit)),
+      },
       pagination: {
         total,
         page,
@@ -456,12 +608,144 @@ export class AdminConsoleService {
     const p = await this.prisma.payment.findUnique({
       where: { id },
       include: {
-        user: { include: { profile: true } },
-        challenge: { select: { name: true } },
+        ...this.paymentInclude(),
       },
     });
     if (!p) return { order: null };
     return { order: this.mapPaymentToOrder(p) };
+  }
+
+  async createManualOrder(data: any) {
+    const email = String(data.email ?? '').trim().toLowerCase();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new Error('A valid customer email is required');
+    }
+
+    const bcrypt = await import('bcrypt');
+    const user = await this.db.user.upsert({
+      where: { email },
+      create: {
+        email,
+        password: await bcrypt.hash(crypto.randomBytes(24).toString('hex'), 10),
+        passwordSet: false,
+        role: 'TRADER',
+      },
+      update: {},
+    });
+
+    const amountCents = Math.round(Number(data.total_amount ?? 0) * 100);
+    if (!Number.isFinite(amountCents) || amountCents < 0) {
+      throw new Error('Invalid total_amount');
+    }
+
+    const brandId = data.brand_id || null;
+    const brandCommission = await this.calculateBrandCommissionCents(
+      brandId,
+      amountCents,
+    );
+
+    const created = await this.db.payment.create({
+      data: {
+        userId: user.id,
+        amount: amountCents,
+        originalAmount: amountCents,
+        currency: data.currency || 'USD',
+        provider: data.payment_method || data.provider || 'manual',
+        status: this.normalizePaymentStatus(data.payment_status) ?? 'pending',
+        reference: `manual_${crypto.randomBytes(8).toString('hex')}`,
+        brandId,
+        brandCommission,
+        billingEmail: email,
+        billingFirstName: data.first_name ?? null,
+        billingLastName: data.last_name ?? null,
+        billingPhone: data.phone ?? null,
+        billingCountry: data.billing_country ?? null,
+        cardholderName: data.card_holder_name ?? null,
+        failureReason: data.payment_message ?? null,
+        metadata: {
+          manual: true,
+          orderItems: Array.isArray(data.items) ? data.items : [],
+        },
+        ...(data.created_at ? { createdAt: new Date(data.created_at) } : {}),
+      },
+      include: this.paymentInclude(),
+    });
+
+    return { order: this.mapPaymentToOrder(created) };
+  }
+
+  async updateOrder(id: string, body: any) {
+    const existing = await this.db.payment.findUnique({ where: { id } });
+    if (!existing) throw new Error('Order not found');
+
+    const data: any = {};
+    const nextAmountCents =
+      body.total_amount !== undefined || body.amount !== undefined
+        ? Math.round(Number(body.total_amount ?? body.amount) * 100)
+        : existing.amount;
+
+    if (!Number.isFinite(nextAmountCents) || nextAmountCents < 0) {
+      throw new Error('Invalid total amount');
+    }
+
+    if (body.total_amount !== undefined || body.amount !== undefined) {
+      data.amount = nextAmountCents;
+    }
+    if (body.payment_status !== undefined || body.status !== undefined) {
+      const status = this.normalizePaymentStatus(
+        body.payment_status ?? body.status,
+      );
+      if (status) data.status = status;
+      if (status === 'refunded' && !existing.refundedAt) {
+        data.refundedAt = new Date();
+      }
+    }
+    if (body.payment_method !== undefined || body.provider !== undefined) {
+      data.provider = String((body.payment_method ?? body.provider) || 'manual');
+    }
+    if (body.email !== undefined) data.billingEmail = body.email || null;
+    if (body.first_name !== undefined) data.billingFirstName = body.first_name || null;
+    if (body.last_name !== undefined) data.billingLastName = body.last_name || null;
+    if (body.phone !== undefined) data.billingPhone = body.phone || null;
+    if (body.billing_country !== undefined)
+      data.billingCountry = body.billing_country || null;
+    if (body.card_holder_name !== undefined)
+      data.cardholderName = body.card_holder_name || null;
+    if (body.payment_message !== undefined)
+      data.failureReason = body.payment_message || null;
+
+    let nextBrandId = existing.brandId;
+    if (body.brand_id !== undefined) {
+      nextBrandId = body.brand_id || null;
+      data.brandId = nextBrandId;
+      data.brandPaidOut = false;
+    }
+    if (body.items !== undefined) {
+      const metadata =
+        existing.metadata && typeof existing.metadata === 'object'
+          ? { ...(existing.metadata as Record<string, any>) }
+          : {};
+      metadata.orderItems = Array.isArray(body.items) ? body.items : [];
+      data.metadata = metadata;
+    }
+    if (
+      body.brand_id !== undefined ||
+      body.total_amount !== undefined ||
+      body.amount !== undefined
+    ) {
+      data.brandCommission = await this.calculateBrandCommissionCents(
+        nextBrandId,
+        nextAmountCents,
+      );
+    }
+
+    const updated = await this.db.payment.update({
+      where: { id },
+      data,
+      include: this.paymentInclude(),
+    });
+
+    return { order: this.mapPaymentToOrder(updated) };
   }
 
   async deleteOrder(id: string) {
@@ -476,9 +760,13 @@ export class AdminConsoleService {
     to?: string;
     status?: string;
     search?: string;
+    brand?: string;
   }) {
     const where: any = {};
-    if (params.status && params.status !== 'all') where.status = params.status;
+    if (params.status && params.status !== 'all') {
+      where.status = this.normalizePaymentStatus(params.status);
+    }
+    if (params.brand && params.brand !== 'all') where.brandId = params.brand;
     if (params.from || params.to) {
       where.createdAt = {};
       if (params.from) where.createdAt.gte = new Date(params.from);
@@ -487,7 +775,13 @@ export class AdminConsoleService {
     if (params.search) {
       where.OR = [
         { reference: { contains: params.search, mode: 'insensitive' } },
+        { id: { contains: params.search, mode: 'insensitive' } },
+        { billingEmail: { contains: params.search, mode: 'insensitive' } },
+        { billingFirstName: { contains: params.search, mode: 'insensitive' } },
+        { billingLastName: { contains: params.search, mode: 'insensitive' } },
         { user: { email: { contains: params.search, mode: 'insensitive' } } },
+        { brand: { name: { contains: params.search, mode: 'insensitive' } } },
+        { challenge: { name: { contains: params.search, mode: 'insensitive' } } },
       ];
     }
 
@@ -502,7 +796,9 @@ export class AdminConsoleService {
           challenge: { select: { id: true, name: true } },
           // Brand inverse — needed so the admin table can show the brand the
           // sale was attributed to instead of "Unknown Brand" everywhere.
-          brand: { select: { id: true, name: true, slug: true } },
+          brand: {
+            select: { id: true, name: true, slug: true, commissionRate: true },
+          },
         },
       });
     } catch (err: any) {
@@ -524,10 +820,32 @@ export class AdminConsoleService {
             ? meta.billingDetails
             : {};
         const firstName =
-          p.user?.profile?.firstName ?? billing.firstName ?? null;
-        const lastName = p.user?.profile?.lastName ?? billing.lastName ?? null;
-        const country = p.user?.profile?.country ?? billing.country ?? null;
+          p.billingFirstName ??
+          p.user?.profile?.firstName ??
+          billing.firstName ??
+          null;
+        const lastName =
+          p.billingLastName ??
+          p.user?.profile?.lastName ??
+          billing.lastName ??
+          null;
+        const country =
+          p.billingCountry ?? p.user?.profile?.country ?? billing.country ?? null;
         const amountDollars = (p.amount ?? 0) / 100;
+        const items = Array.isArray(meta.orderItems)
+          ? meta.orderItems
+          : p.challenge?.name
+            ? [
+                {
+                  type: 'package',
+                  id: p.challengeId,
+                  name: p.challenge.name,
+                  price: amountDollars,
+                  quantity: 1,
+                  currency: p.currency === 'EUR' ? '€' : '$',
+                },
+              ]
+            : [];
 
         return {
           id: p.id,
@@ -546,11 +864,11 @@ export class AdminConsoleService {
           customer_name:
             [firstName, lastName].filter(Boolean).join(' ') || null,
           cardholder_name:
-            billing.cardHolderName ||
-            [firstName, lastName].filter(Boolean).join(' ') ||
-            null,
-          email: p.user?.email ?? null,
-          phone: p.user?.profile?.phone ?? billing.phone ?? null,
+            p.cardholderName ??
+            billing.cardHolderName ??
+            ([firstName, lastName].filter(Boolean).join(' ') || null),
+          email: p.billingEmail ?? p.user?.email ?? billing.email ?? null,
+          phone: p.billingPhone ?? p.user?.profile?.phone ?? billing.phone ?? null,
           // Geo
           country,
           billing_country: country,
@@ -568,7 +886,7 @@ export class AdminConsoleService {
           commission: (p.brandCommission ?? 0) / 100,
           commission_amount: (p.brandCommission ?? 0) / 100,
           brand_commission: (p.brandCommission ?? 0) / 100,
-          commission_rate: 0,
+          commission_rate: p.brand?.commissionRate ?? 0,
           brand_paid_out: !!p.brandPaidOut,
           // Status / payment method
           payment_method: p.provider,
@@ -577,7 +895,7 @@ export class AdminConsoleService {
           status: p.status,
           payment_message: p.failureReason ?? null,
           // Package
-          items: p.challenge?.name ? [p.challenge.name] : [],
+          items,
           package_id: p.challengeId,
           package_name: p.challenge?.name ?? null,
           coupon_code: p.couponCode,

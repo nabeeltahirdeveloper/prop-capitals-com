@@ -248,7 +248,11 @@ export default function Layout({ children, currentPageName }) {
         }),
         icon: ShoppingCart,
         children: [
-          // { name: "Orders", icon: ShoppingCart, section: "orders" },
+          {
+            name: t("nav.orders", { defaultValue: "Orders" }),
+            icon: ShoppingCart,
+            section: "orders",
+          },
           {
             name: t("nav.allTransactions", { defaultValue: "All Transactions" }),
             icon: List,

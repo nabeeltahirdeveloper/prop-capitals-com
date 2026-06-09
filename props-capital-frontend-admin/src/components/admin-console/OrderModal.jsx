@@ -8,7 +8,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
     orderId: '',
     email: '',
     totalAmount: 0,
-    status: 'unpaid',
+    status: 'pending',
     items: [],
     brandId: null,
     cardHolderName: '',
@@ -63,7 +63,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
   // Calculate commission when brand or amount changes
   useEffect(() => {
     if (formData.brandId && formData.totalAmount) {
-      const brand = brands.find(b => b.id === Number(formData.brandId));
+      const brand = brands.find(b => String(b.id) === String(formData.brandId));
       if (brand) {
         setSelectedBrand(brand);
         const rate = Number(brand.commission_rate || 10) / 100;
@@ -93,8 +93,8 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
     const newStatusLower = newStatus.toLowerCase();
     
     // Show warning if changing to refund or chargeback
-    if ((newStatusLower === 'refund' || newStatusLower === 'chargeback') && 
-        currentStatus !== 'refund' && currentStatus !== 'chargeback') {
+    if ((newStatusLower === 'refunded' || newStatusLower === 'chargeback') &&
+        currentStatus !== 'refunded' && currentStatus !== 'chargeback') {
       setShowStatusWarning(true);
       setFormData({ ...formData, status: newStatus });
     } else {
@@ -112,9 +112,9 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
     }
 
     // Confirmation for refund/chargeback
-    if (mode === 'edit' && (formData.status.toLowerCase() === 'refund' || formData.status.toLowerCase() === 'chargeback')) {
+    if (mode === 'edit' && (formData.status.toLowerCase() === 'refunded' || formData.status.toLowerCase() === 'chargeback')) {
       const originalStatus = order?.payment_status?.toLowerCase() || '';
-      if (originalStatus !== 'refund' && originalStatus !== 'chargeback') {
+      if (originalStatus !== 'refunded' && originalStatus !== 'chargeback') {
         if (!confirm(t("adminConsole.orderModal.statusChangeConfirm", {
               status: formData.status.toUpperCase(),
               defaultValue: "⚠️ WARNING: Changing status to {{status}} will:\n\n" +
@@ -137,7 +137,10 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
           total_amount: Number(formData.totalAmount),
           payment_status: formData.status,
           items: formData.items,
-          brand_id: formData.brandId || null
+          brand_id: formData.brandId || null,
+          card_holder_name: formData.cardHolderName || undefined,
+          phone: formData.phone || undefined,
+          payment_message: formData.paymentMessage || undefined,
         };
         await adminConsoleApi.orders.update(formData.orderId, payload);
       } else if (mode === 'create') {
@@ -147,7 +150,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
           items: formData.items,
           total_amount: Number(formData.totalAmount),
           payment_status: formData.status,
-          brand_id: formData.brandId ? Number(formData.brandId) : undefined,
+          brand_id: formData.brandId || undefined,
           card_holder_name: formData.cardHolderName || undefined,
           phone: formData.phone || undefined,
           payment_message: formData.paymentMessage || undefined,
@@ -329,7 +332,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                     </div>
                   </div>
                 )}
-                {mode === 'edit' && order?.brand_id && Number(formData.brandId) !== Number(order.brand_id) && (
+                {mode === 'edit' && order?.brand_id && String(formData.brandId || '') !== String(order.brand_id || '') && (
                   <div className="mt-2 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
                     <div className="text-sm text-yellow-300">
                       <i className="fas fa-exclamation-triangle mr-2"></i>
@@ -365,7 +368,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                 />
               </div>
 
-              {mode === 'create' && (
+              {mode !== 'view' && (
                 <div>
                   <label className="text-sm text-gray-300 block mb-2">
                     {t("adminConsole.orderModal.cardholderName", { defaultValue: "Cardholder Name (Optional)" })}
@@ -381,7 +384,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
               )}
             </div>
 
-            {mode === 'create' && (
+            {mode !== 'view' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm text-gray-300 block mb-2">
@@ -395,34 +398,36 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                     placeholder="+1234567890"
                   />
                 </div>
-                <div>
-                  <label className="text-sm text-gray-300 block mb-2">
-                    {t("adminConsole.orderModal.transactionDate", { defaultValue: "Transaction Date" })}
-                  </label>
-                  <input
-                    type="date"
-                    className="search-input p-3 rounded-lg w-full"
-                    value={formData.createdAt}
-                    onChange={(e) => setFormData({ ...formData, createdAt: e.target.value })}
-                  />
-                </div>
+                {mode === 'create' && (
+                  <div>
+                    <label className="text-sm text-gray-300 block mb-2">
+                      {t("adminConsole.orderModal.transactionDate", { defaultValue: "Transaction Date" })}
+                    </label>
+                    <input
+                      type="date"
+                      className="search-input p-3 rounded-lg w-full"
+                      value={formData.createdAt}
+                      onChange={(e) => setFormData({ ...formData, createdAt: e.target.value })}
+                    />
+                  </div>
+                )}
               </div>
             )}
 
             {/* Decline Reason / Payment Message */}
             {mode === 'view' && order?.payment_message && (
               <div className={`glass-card p-4 rounded-lg border ${
-                ['failed', 'refund', 'chargeback'].includes(formData.status?.toLowerCase()) 
+                ['failed', 'refunded', 'chargeback'].includes(formData.status?.toLowerCase())
                   ? 'border-red-500/30 bg-red-500/10' 
                   : 'border-blue-500/30 bg-blue-500/10'
               }`}>
                 <label className={`text-sm font-semibold block mb-2 ${
-                  ['failed', 'refund', 'chargeback'].includes(formData.status?.toLowerCase())
+                  ['failed', 'refunded', 'chargeback'].includes(formData.status?.toLowerCase())
                     ? 'text-red-400'
                     : 'text-blue-400'
                 }`}>
                   <i className={`fas ${
-                    ['failed', 'refund', 'chargeback'].includes(formData.status?.toLowerCase())
+                    ['failed', 'refunded', 'chargeback'].includes(formData.status?.toLowerCase())
                       ? 'fa-exclamation-triangle'
                       : 'fa-info-circle'
                   } mr-2`}></i>{t("adminConsole.orderModal.paymentMessage", { defaultValue: "Payment Message" })}
@@ -433,7 +438,7 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
               </div>
             )}
 
-            {mode === 'create' && (
+            {mode !== 'view' && (
               <div>
                 <label className="text-sm text-gray-300 block mb-2">
                   {t("adminConsole.orderModal.paymentMessageNotes", { defaultValue: "Payment Message / Notes (Optional)" })}
@@ -472,11 +477,10 @@ export default function OrderModal({ order, mode, onClose, onSuccess, loading: o
                   onChange={(e) => handleStatusChange(e.target.value)}
                   disabled={isReadOnly}
                 >
+                  <option value="succeeded">{t("adminConsole.orderModal.statusSucceeded", { defaultValue: "Succeeded" })}</option>
                   <option value="pending">{t("adminConsole.orderModal.statusPending", { defaultValue: "Pending" })}</option>
-                  <option value="unpaid">{t("adminConsole.orderModal.statusUnpaid", { defaultValue: "Unpaid (Customer Paid)" })}</option>
-                  <option value="paid">{t("adminConsole.orderModal.statusPaid", { defaultValue: "Paid (Brand Paid)" })}</option>
                   <option value="failed">{t("adminConsole.orderModal.statusFailed", { defaultValue: "Failed / Declined" })}</option>
-                  <option value="refund">{t("adminConsole.orderModal.statusRefund", { defaultValue: "Refund" })}</option>
+                  <option value="refunded">{t("adminConsole.orderModal.statusRefunded", { defaultValue: "Refunded" })}</option>
                   <option value="chargeback">{t("adminConsole.orderModal.statusChargeback", { defaultValue: "Chargeback" })}</option>
                 </select>
               </div>
