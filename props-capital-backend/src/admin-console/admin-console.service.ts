@@ -76,7 +76,7 @@ export class AdminConsoleService {
           select: { id: true, name: true, accountSize: true, price: true },
         })
       : [];
-    const cmap = new Map(challenges.map((c) => [c.id, c]));
+    const cmap = new Map<string, any>(challenges.map((c: any) => [c.id, c]));
 
     return {
       days,
