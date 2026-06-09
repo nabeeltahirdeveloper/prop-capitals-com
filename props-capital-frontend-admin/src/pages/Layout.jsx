@@ -852,10 +852,10 @@ export default function Layout({ children, currentPageName }) {
                 <DropdownMenuSeparator className="bg-border" />
 
                 <DropdownMenuItem
-                  className="cursor-pointer text-red-500 data-[highlighted]:bg-accent"
+                  className="cursor-pointer text-foreground focus:bg-primary/10 focus:text-foreground data-[highlighted]:bg-primary/10 data-[highlighted]:text-foreground"
                   onClick={logout}
                 >
-                  <LogOut className="w-4 h-4 mr-2" />
+                  <LogOut className="w-4 h-4 mr-2 text-muted-foreground" />
                   {t("nav.logout")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
