@@ -436,7 +436,7 @@ export default function Layout({ children, currentPageName }) {
 
   // Protected layout (responsive + collapsible sidebar)
   return (
-    <div className="min-h-screen bg-background flex w-full overflow-x-hidden">
+    <div className="admin-panel-surface min-h-screen bg-background flex w-full overflow-x-hidden">
       {/* Sidebar — group for hover-to-show toggle */}
       <aside
         className={`group fixed inset-y-0 left-0 z-50 bg-sidebar border-r border-sidebar-border transform transition-[width,transform] duration-300 ease-in-out
@@ -706,7 +706,7 @@ export default function Layout({ children, currentPageName }) {
         className={`flex-1 min-w-0 transition-all duration-300 ${sidebarCollapsed ? "lg:pl-20" : "lg:pl-72"}`}
       >
         {/* Top Bar */}
-        <header className="sticky top-0 z-40 h-16 bg-card/90 backdrop-blur-xl border-b border-border flex items-center justify-between px-4 lg:px-8">
+        <header className="sticky top-0 z-40 h-16 bg-card/90 backdrop-blur-xl border-b border-border flex items-center justify-between gap-2 px-3 sm:px-4 lg:px-8">
           <button
             onClick={() => setSidebarOpen(true)}
             className="lg:hidden flex items-center justify-center w-10 h-10 -ml-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500/50"
@@ -717,7 +717,7 @@ export default function Layout({ children, currentPageName }) {
 
           <div className="flex-1" />
 
-          <div className="flex items-center gap-4">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-4">
             <button
               onClick={toggleTheme}
               className="flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
@@ -812,7 +812,7 @@ export default function Layout({ children, currentPageName }) {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="flex items-center gap-2 text-foreground hover:bg-accent"
+                  className="flex h-9 items-center gap-2 px-2 text-foreground hover:bg-accent"
                 >
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-[#0a0d12] font-bold text-sm">
                     {currentUser?.profile?.firstName?.[0] ||

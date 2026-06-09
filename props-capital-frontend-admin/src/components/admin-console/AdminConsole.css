@@ -30,7 +30,7 @@
   --ac-success: #10B981;
   --ac-warning: #F59E0B;
   --ac-error: #EF4444;
-  --ac-info: #3B82F6;
+  --ac-info: #D97706;
 
   background: var(--ac-bg);
   min-height: 100vh;
@@ -393,6 +393,16 @@
   color: var(--ac-text);
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-console-wrapper select {
+  accent-color: var(--ac-accent);
+  color-scheme: light;
+}
+
+.admin-console-wrapper option {
+  background: white;
+  color: var(--ac-text);
 }
 
 .admin-console-wrapper .search-input:focus,
