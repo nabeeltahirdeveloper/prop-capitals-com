@@ -76,7 +76,7 @@ export class AdminConsoleService {
           select: { id: true, name: true, accountSize: true, price: true },
         })
       : [];
-    const cmap = new Map(challenges.map((c) => [c.id, c]));
+    const cmap = new Map<string, any>(challenges.map((c: any) => [c.id, c]));
 
     return {
       days,
@@ -430,6 +430,8 @@ export class AdminConsoleService {
       brand_name: p.brand?.name ?? null,
       brand_slug: p.brand?.slug ?? null,
       reseller_name: p.brand?.parentBrand?.name ?? null,
+      commission_amount: (p.brandCommission ?? 0) / 100,
+      commission_rate: p.brand?.commissionRate ?? 0,
       brand_commission: (p.brandCommission ?? 0) / 100,
       brand_paid_out: !!p.brandPaidOut,
       coupon_code: p.couponCode,
@@ -484,12 +486,31 @@ export class AdminConsoleService {
     brandId: string | null | undefined,
     amountCents: number,
   ) {
-    if (!brandId) return 0;
+    const brand = await this.getBrandForAttribution(brandId);
+    return this.calculateCommissionForBrand(brand, amountCents);
+  }
+
+  private normalizeBrandId(value: any): string | null {
+    if (value === undefined || value === null) return null;
+    const id = String(value).trim();
+    return id ? id : null;
+  }
+
+  private async getBrandForAttribution(brandId: string | null | undefined) {
+    if (!brandId) return null;
     const brand = await this.db.brand.findUnique({
       where: { id: brandId },
-      select: { commissionRate: true },
+      select: { id: true, slug: true, commissionRate: true },
     });
     if (!brand) throw new Error('Brand not found');
+    return brand;
+  }
+
+  private calculateCommissionForBrand(
+    brand: { commissionRate?: number | null } | null,
+    amountCents: number,
+  ) {
+    if (!brand) return 0;
     return Math.round((amountCents * Number(brand.commissionRate ?? 0)) / 100);
   }
 
@@ -638,11 +659,9 @@ export class AdminConsoleService {
       throw new Error('Invalid total_amount');
     }
 
-    const brandId = data.brand_id || null;
-    const brandCommission = await this.calculateBrandCommissionCents(
-      brandId,
-      amountCents,
-    );
+    const brandId = this.normalizeBrandId(data.brand_id ?? data.brandId);
+    const brand = await this.getBrandForAttribution(brandId);
+    const brandCommission = this.calculateCommissionForBrand(brand, amountCents);
 
     const created = await this.db.payment.create({
       data: {
@@ -654,6 +673,7 @@ export class AdminConsoleService {
         status: this.normalizePaymentStatus(data.payment_status) ?? 'pending',
         reference: `manual_${crypto.randomBytes(8).toString('hex')}`,
         brandId,
+        brandSlug: brand?.slug ?? null,
         brandCommission,
         billingEmail: email,
         billingFirstName: data.first_name ?? null,
@@ -714,10 +734,21 @@ export class AdminConsoleService {
     if (body.payment_message !== undefined)
       data.failureReason = body.payment_message || null;
 
+    const brandInput =
+      body.brand_id !== undefined ? body.brand_id : body.brandId;
+    const isBrandUpdate =
+      body.brand_id !== undefined || body.brandId !== undefined;
     let nextBrandId = existing.brandId;
-    if (body.brand_id !== undefined) {
-      nextBrandId = body.brand_id || null;
+    let nextBrand:
+      | { id: string; slug?: string | null; commissionRate?: number | null }
+      | null
+      | undefined;
+
+    if (isBrandUpdate) {
+      nextBrandId = this.normalizeBrandId(brandInput);
+      nextBrand = await this.getBrandForAttribution(nextBrandId);
       data.brandId = nextBrandId;
+      data.brandSlug = nextBrand?.slug ?? null;
       data.brandPaidOut = false;
     }
     if (body.items !== undefined) {
@@ -729,12 +760,16 @@ export class AdminConsoleService {
       data.metadata = metadata;
     }
     if (
-      body.brand_id !== undefined ||
+      isBrandUpdate ||
       body.total_amount !== undefined ||
       body.amount !== undefined
     ) {
-      data.brandCommission = await this.calculateBrandCommissionCents(
-        nextBrandId,
+      const brand =
+        nextBrand !== undefined
+          ? nextBrand
+          : await this.getBrandForAttribution(nextBrandId);
+      data.brandCommission = this.calculateCommissionForBrand(
+        brand,
         nextAmountCents,
       );
     }
