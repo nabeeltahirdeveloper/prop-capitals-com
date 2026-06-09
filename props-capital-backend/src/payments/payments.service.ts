@@ -27,6 +27,10 @@ import { EmailService } from 'src/email/email.service';
 import { XoalaAuthService } from './xoala-auth.service';
 import { WorldCardService } from './worldcard.service';
 import { buildXoalaRequestChecksum } from './xoala-checksum.util';
+import {
+  getXoalaRedirectMethod,
+  getXoalaRedirectParams,
+} from './xoala-redirect.util';
 
 @Injectable()
 export class PaymentsService {
@@ -1022,10 +1026,8 @@ export class PaymentsService {
         reference: orderNumber,
         paymentId: payment.id,
         redirectUrl,
-        redirectMethod: (redirect?.method || 'GET').toUpperCase(),
-        redirectParams: Array.isArray(redirect?.parameters)
-          ? redirect.parameters
-          : null,
+        redirectMethod: getXoalaRedirectMethod(redirect),
+        redirectParams: getXoalaRedirectParams(redirect),
       };
     }
 
