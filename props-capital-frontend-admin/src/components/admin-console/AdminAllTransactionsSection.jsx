@@ -753,8 +753,10 @@ export default function AdminAllTransactionsSection() {
                       <span className="text-sm text-cyan-400 font-mono">{tx.order_id}</span>
                     </td>
                     <td className="py-3 px-4" data-label="Brand">
-                      <div className="flex items-center gap-2 min-w-[160px]">
-                        <span className="text-sm text-white">{getBrandName(tx.brand_id)}</span>
+                      <div className="flex flex-col items-start gap-1 min-w-[220px]">
+                        <span className="text-sm text-white leading-5 whitespace-normal break-words">
+                          {getBrandName(tx.brand_id)}
+                        </span>
                         <button
                           type="button"
                           onClick={() => startBrandEdit(tx)}
