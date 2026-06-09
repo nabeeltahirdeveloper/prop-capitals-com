@@ -48,6 +48,17 @@ export class CandlesGateway
   // Candle update interval (1 second for real-time updates)
   private candleUpdateInterval: NodeJS.Timeout | null = null;
 
+  // Re-entrancy guard: emitCandleUpdates() is async and awaits DB work
+  // (processPendingOrdersForSymbol) per symbol. With a sub-second interval a
+  // slow run could otherwise overlap the next tick, double-processing pending
+  // orders. This flag ensures only one emit cycle is ever in flight.
+  private isEmittingCandles = false;
+
+  // Round-robin counter to throttle the priceUpdate broadcast (watchlist table
+  // feed) to ~every other candle cycle (~500ms), so the table stays live
+  // without flooding the socket at the full candle cadence.
+  private priceEmitCounter = 0;
+
   // Track OHLC state per symbol+timeframe so WS candles have real bodies
   private candleStateMap = new Map<
     string,
@@ -225,10 +236,17 @@ export class CandlesGateway
     }
 
     this.candleUpdateInterval = setInterval(() => {
-      this.emitCandleUpdates();
-    }, 1000); // Emit every 1 second for real-time updates
+      // Skip this tick if the previous emit cycle is still running. Prevents
+      // overlapping async runs (and double-processing of pending orders) when a
+      // cycle takes longer than the interval.
+      if (this.isEmittingCandles) return;
+      this.isEmittingCandles = true;
+      this.emitCandleUpdates().finally(() => {
+        this.isEmittingCandles = false;
+      });
+    }, 250); // Emit ~4x/sec so the live candle tracks price near-instantly (was 1000ms, which looked laggy)
 
-    this.logger.log('📊 Candle emitter started (1s interval)');
+    this.logger.log('📊 Candle emitter started (250ms interval)');
   }
 
   /**
@@ -307,6 +325,14 @@ export class CandlesGateway
       return;
     }
 
+    // Broadcast live prices to the watchlist table. The SDK's TradingContext
+    // already listens for 'priceUpdate' but the backend only ever pushed
+    // 'candleUpdate', so SDK tables were frozen after their initial load.
+    // Reuse the prices we just fetched; throttle to ~every other cycle.
+    if (this.priceEmitCounter++ % 2 === 0) {
+      this.emitPriceUpdates(allPrices);
+    }
+
     // Step 1: collect unique symbols from all subscriptions
     const uniqueSymbols = new Set<string>();
 
@@ -359,6 +385,30 @@ export class CandlesGateway
     });
 
     await Promise.allSettled(promises);
+  }
+
+  /**
+   * Broadcast current prices to every connected client so the watchlist table
+   * updates in real time. Emits the { symbol, bid, ask, change } shape the
+   * SDK's TradingContext already expects on its 'priceUpdate' handler (which
+   * also drives live open-order P/L). Forex here is the mock feed locally;
+   * crypto/metals are live Binance prices.
+   */
+  private emitPriceUpdates(allPrices: any) {
+    if (!this.server) return;
+    const groups = [allPrices?.forex, allPrices?.crypto, allPrices?.metals];
+    for (const group of groups) {
+      if (!Array.isArray(group)) continue;
+      for (const p of group) {
+        if (!p?.symbol) continue;
+        this.server.emit('priceUpdate', {
+          symbol: p.symbol,
+          bid: p.bid,
+          ask: p.ask,
+          change: p.change,
+        });
+      }
+    }
   }
 
   /**
@@ -487,8 +537,9 @@ export class CandlesGateway
       },
     };
 
-    // Log every emit for debugging (can be reduced later)
-    this.logger.log(
+    // Debug-level: at the 250ms cadence an info-level log here floods the
+    // console and the synchronous write can stall the event loop.
+    this.logger.debug(
       `📤 [CANDLES] Emitting candleUpdate to ${clientId}: ${symbol}@${timeframe}`,
       {
         time: candle.time,
