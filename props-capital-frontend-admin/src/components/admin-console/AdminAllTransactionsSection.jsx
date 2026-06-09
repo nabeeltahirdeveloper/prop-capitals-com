@@ -384,6 +384,16 @@ export default function AdminAllTransactionsSection() {
     setNewPaymentMethod('');
   };
 
+  const startBrandEdit = (tx) => {
+    setSelectedTx(tx);
+    setEditingPaymentMethod(false);
+    setEditingStatus(false);
+    setEditingBrand(true);
+    setNewPaymentMethod('');
+    setNewStatus('');
+    setNewBrandId(tx.brand_id || '');
+  };
+
   const handleUpdateTransaction = async (payload, localFallback = {}) => {
     if (!selectedTx) return;
 
@@ -401,6 +411,9 @@ export default function AdminAllTransactionsSection() {
             amount: response.order.total_amount ?? selectedTx.amount,
             brand_id: response.order.brand_id ?? null,
             brand_name: response.order.brand_name ?? null,
+            brand_slug: response.order.brand_slug ?? null,
+            commission_amount: response.order.commission_amount ?? response.order.brand_commission ?? selectedTx.commission_amount,
+            commission_rate: response.order.commission_rate ?? selectedTx.commission_rate,
             payment_status: response.order.payment_status ?? selectedTx.payment_status,
             payment_method: response.order.payment_method ?? response.order.provider ?? selectedTx.payment_method,
           }
@@ -431,6 +444,8 @@ export default function AdminAllTransactionsSection() {
       {
         brand_id: newBrandId || null,
         brand_name: brand?.name || null,
+        brand_slug: brand?.slug || null,
+        commission_rate: brand?.commission_rate || 0,
       },
     );
     setEditingBrand(false);
@@ -738,7 +753,20 @@ export default function AdminAllTransactionsSection() {
                       <span className="text-sm text-cyan-400 font-mono">{tx.order_id}</span>
                     </td>
                     <td className="py-3 px-4" data-label="Brand">
-                      <span className="text-sm text-white">{getBrandName(tx.brand_id)}</span>
+                      <div className="flex items-center gap-2 min-w-[160px]">
+                        <span className="text-sm text-white">{getBrandName(tx.brand_id)}</span>
+                        <button
+                          type="button"
+                          onClick={() => startBrandEdit(tx)}
+                          className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                          title={t("adminConsole.transactions.assignBrand", { defaultValue: "Assign or change brand" })}
+                        >
+                          <i className="fas fa-edit mr-1"></i>
+                          {tx.brand_id
+                            ? t("adminConsole.transactions.changeBrand", { defaultValue: "Change" })
+                            : t("adminConsole.transactions.assignBrandShort", { defaultValue: "Assign" })}
+                        </button>
+                      </div>
                     </td>
                     <td className="py-3 px-4" data-label="Customer Name">
                       <span className="text-sm text-gray-300">{getClientName(tx)}</span>
