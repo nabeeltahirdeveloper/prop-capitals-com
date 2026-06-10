@@ -134,19 +134,41 @@ export class SupportEventsGateway
     this.logger.log(`Client ${client.id} unsubscribed from ${roomName}`);
   }
 
+  // Real-time delivery is a best-effort side effect. Callers (ticket creation,
+  // admin replies, status changes) commit to the DB first and only then emit, so
+  // a throw here would turn an already-persisted ticket into an HTTP 500 for the
+  // user. Guard against an uninitialized server and swallow any socket error.
+  private safeEmit(label: string, fn: () => void) {
+    if (!this.server) {
+      this.logger.warn(
+        `WebSocket server not initialized — skipping emit (${label})`,
+      );
+      return;
+    }
+    try {
+      fn();
+    } catch (err) {
+      this.logger.warn(
+        `Failed to emit ${label}: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
+  }
+
   emitNewMessage(ticketId: string, message: SupportMessagePayload) {
     const roomName = `ticket:${ticketId}`;
     this.logger.log(
       `Emitting ticket:newMessage to ${roomName} (msgId: ${message.id})`,
     );
-    this.server.to(roomName).emit('ticket:newMessage', {
-      id: message.id,
-      ticketId: message.ticketId,
-      senderType: message.senderType,
-      senderId: message.senderId,
-      message: message.message,
-      createdAt: message.createdAt,
-    });
+    this.safeEmit('ticket:newMessage', () =>
+      this.server.to(roomName).emit('ticket:newMessage', {
+        id: message.id,
+        ticketId: message.ticketId,
+        senderType: message.senderType,
+        senderId: message.senderId,
+        message: message.message,
+        createdAt: message.createdAt,
+      }),
+    );
   }
 
   emitStatusChanged(ticketId: string, status: string) {
@@ -154,11 +176,17 @@ export class SupportEventsGateway
     this.logger.log(
       `Emitting ticket:statusChanged to ${roomName} (status: ${status})`,
     );
-    this.server.to(roomName).emit('ticket:statusChanged', { ticketId, status });
+    this.safeEmit('ticket:statusChanged', () =>
+      this.server
+        .to(roomName)
+        .emit('ticket:statusChanged', { ticketId, status }),
+    );
   }
 
   emitTicketsUpdated() {
     this.logger.log('Emitting tickets:updated to admin:tickets room');
-    this.server.to('admin:tickets').emit('tickets:updated');
+    this.safeEmit('tickets:updated', () =>
+      this.server.to('admin:tickets').emit('tickets:updated'),
+    );
   }
 }

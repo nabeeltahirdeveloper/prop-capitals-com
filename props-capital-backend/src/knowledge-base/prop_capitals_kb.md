@@ -75,6 +75,35 @@ Allows traders to grow their account up to **$5,000,000**. Every time a trader r
 
 ---
 
+## 3.5 How to Purchase a Challenge
+Buying a challenge is quick and fully online:
+1. **Create an account or log in** on the Prop Capitals website.
+2. **Go to the Challenges page** (`/challenges`) to compare programs.
+3. **Choose your challenge type:** 1-Step (most popular, fastest) or 2-Step (best profit split).
+4. **Select your account size:** $5,000, $10,000, $25,000, $50,000, $100,000, or $200,000.
+5. **Review the price** for your chosen program and size:
+   - **1-Step:** $5K ($55), $10K ($99), $25K ($189), $50K ($299), $100K ($499), $200K ($949)
+   - **2-Step:** $5K ($45), $10K ($79), $25K ($159), $50K ($249), $100K ($449), $200K ($849)
+   - A 70% OFF promotion may apply at checkout when available.
+6. **Pay at checkout** using any supported method: Stripe (card), PayPal, Skrill, Neteller, Binance Pay, Coinbase, or Wire/Bank Transfer.
+7. **Receive your login credentials** and start your evaluation. There is no time limit, and your challenge fee is 100% refunded with your first payout.
+
+For help purchasing, contact support@prop-capitals.com or visit `/contact`.
+
+---
+
+## 3.6 Getting Started as a New Trader
+1. **Sign up** for a Prop Capitals account and complete any identity verification (KYC) required.
+2. **Pick your challenge** — 1-Step or 2-Step — and **purchase** it (see "How to Purchase a Challenge" above).
+3. **Download your trading platform:** MetaTrader 4 (MT4), MetaTrader 5 (MT5), cTrader, TradeLocker, MatchTrader, or DXTrade.
+4. **Log in to the platform** using the credentials provided after purchase.
+5. **Begin your evaluation** and trade toward the profit target while respecting the daily and overall drawdown limits.
+6. **Pass and get funded** — once you clear the evaluation you trade Prop Capitals' capital and keep up to 90% of the profits, with payouts in under 90 minutes.
+
+Need a hand getting set up? Reach support 24/7 at support@prop-capitals.com (average response under 60 seconds) or via `/contact`.
+
+---
+
 ## 4. Trading Rules & Features
 Prop Capitals offers highly flexible trading conditions:
 - **Expert Advisors (EAs):** Allowed. Any automated trading bot or EA is accepted.

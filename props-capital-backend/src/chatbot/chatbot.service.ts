@@ -3,6 +3,9 @@ import {
   Logger,
   NotFoundException,
   InternalServerErrorException,
+  ServiceUnavailableException,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
@@ -29,6 +32,17 @@ export class ChatbotService {
   ) {
     this.openai = new OpenAI({
       apiKey: this.configService.getOrThrow<string>('OPENAI_API_KEY'),
+      // Don't let a slow/hung OpenAI request hold a chat connection open for the
+      // SDK default (10 min). Retry transient failures (timeouts, 429, 5xx) a
+      // few times with the SDK's built-in exponential backoff before giving up.
+      timeout: parseInt(
+        this.configService.get('CHATBOT_TIMEOUT_MS', '30000'),
+        10,
+      ),
+      maxRetries: parseInt(
+        this.configService.get('CHATBOT_MAX_RETRIES', '3'),
+        10,
+      ),
     });
 
     this.model = this.configService.get('CHATBOT_MODEL', 'gpt-4o-mini');
@@ -88,10 +102,7 @@ export class ChatbotService {
         'I could not generate a response. Please try again.';
       tokensUsed = response.usage?.total_tokens ?? 0;
     } catch (error) {
-      this.logger.error('OpenAI API error', error);
-      throw new InternalServerErrorException(
-        'The AI service is temporarily unavailable. Please try again shortly.',
-      );
+      throw this.toClientError(error);
     }
 
     await this.prisma.chatMessage.create({
@@ -198,11 +209,47 @@ export class ChatbotService {
 
       return { reply, sessionId: null, tokensUsed };
     } catch (error) {
-      this.logger.error('OpenAI API error', error);
-      throw new InternalServerErrorException(
-        'The AI service is temporarily unavailable. Please try again shortly.',
-      );
+      throw this.toClientError(error);
     }
+  }
+
+  /**
+   * Translate an OpenAI failure into the right HTTP response so the widget can
+   * tell a transient "try again" hiccup (rate limit / upstream outage / timeout)
+   * apart from a misconfiguration that won't fix itself on retry.
+   */
+  private toClientError(error: unknown): HttpException {
+    this.logger.error(
+      'OpenAI API error',
+      error instanceof Error ? error.stack : String(error),
+    );
+
+    if (error instanceof OpenAI.APIError) {
+      const status = error.status;
+      if (status === 429) {
+        return new HttpException(
+          'The assistant is busy right now. Please try again in a moment.',
+          HttpStatus.TOO_MANY_REQUESTS,
+        );
+      }
+      if (status === 401 || status === 403) {
+        // Bad/expired API key or quota disabled — retrying won't help.
+        return new InternalServerErrorException(
+          'The AI assistant is misconfigured. Please contact support@prop-capitals.com.',
+        );
+      }
+      if (typeof status === 'number' && status >= 500) {
+        return new ServiceUnavailableException(
+          'The AI service is temporarily unavailable. Please try again shortly.',
+        );
+      }
+    }
+
+    // Network errors, timeouts (APIConnectionTimeoutError) and anything else are
+    // treated as transient.
+    return new ServiceUnavailableException(
+      'The AI service is temporarily unavailable. Please try again shortly.',
+    );
   }
 
   private async createSession(userId: string) {

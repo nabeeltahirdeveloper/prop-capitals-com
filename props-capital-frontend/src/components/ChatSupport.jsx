@@ -124,9 +124,25 @@ const ChatSupport = () => {
         })
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       setIsTyping(false);
+
+      // Surface real server errors (500/429/etc.) instead of silently showing
+      // the generic "I could not generate a response." fallback, which made
+      // transient failures look like the bot simply had nothing to say.
+      if (!response.ok) {
+        const serverMsg = data?.message || "Something went wrong on our end.";
+        const canRetry = response.status >= 500 || response.status === 429;
+        setMessages(prev => [...prev, {
+          type: 'bot',
+          text: canRetry
+            ? `${serverMsg} Please try again in a moment, or use the Human Support button below.`
+            : `${serverMsg} Please use the Human Support button below or email support@prop-capitals.com.`,
+          timestamp: new Date()
+        }]);
+        return;
+      }
 
       if (data.sessionId && !sessionId) {
         setSessionId(data.sessionId);
