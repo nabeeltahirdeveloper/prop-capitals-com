@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Phone, MessageCircle, Globe } from 'lucide-react';
 import { format } from 'date-fns';
 
-export default function LeadsListView({ leads, onLeadClick, getStatusColor, getPriorityColor, maskPhone }) {
+export default function LeadsListView({ leads, onLeadClick, onAction, getStatusColor, getPriorityColor, maskPhone }) {
     const { t } = useTranslation();
 
     return (
@@ -70,10 +70,10 @@ export default function LeadsListView({ leads, onLeadClick, getStatusColor, getP
                             </td>
                             <td className="py-3 px-4">
                                 <div className="flex items-center gap-2">
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-green-500 hover:text-green-600 hover:bg-green-500/10" title={t('crm.leads.call', { defaultValue: 'Call' })} aria-label={t('crm.leads.call', { defaultValue: 'Call' })} onClick={(e) => { e.stopPropagation(); }}>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-green-500 hover:text-green-600 hover:bg-green-500/10" title={t('crm.leads.call', { defaultValue: 'Call' })} aria-label={t('crm.leads.call', { defaultValue: 'Call' })} disabled={!lead.phone} onClick={(e) => { e.stopPropagation(); onAction?.(lead, 'CALL'); }}>
                                         <Phone className="w-4 h-4" />
                                     </Button>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:text-primary/80 hover:bg-primary/10" title={t('crm.leads.message', { defaultValue: 'Message' })} aria-label={t('crm.leads.message', { defaultValue: 'Message' })} onClick={(e) => { e.stopPropagation(); }}>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:text-primary/80 hover:bg-primary/10" title={t('crm.leads.message', { defaultValue: 'Message' })} aria-label={t('crm.leads.message', { defaultValue: 'Message' })} disabled={!lead.email} onClick={(e) => { e.stopPropagation(); onAction?.(lead, 'EMAIL'); }}>
                                         <MessageCircle className="w-4 h-4" />
                                     </Button>
                                 </div>
