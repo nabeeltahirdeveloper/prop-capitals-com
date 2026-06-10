@@ -1,7 +1,15 @@
 import axios from 'axios';
-import { PaymentsService } from './payments.service';
 
 jest.mock('axios');
+jest.mock(
+  'src/utils/generate-password.util',
+  () => ({
+    generatePassword: jest.fn(() => 'generated-password'),
+  }),
+  { virtual: true },
+);
+
+const { PaymentsService } = jest.requireActual('./payments.service');
 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
