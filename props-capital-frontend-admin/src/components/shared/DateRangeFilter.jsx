@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,18 @@ export default function DateRangeFilter({
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const [isCompact, setIsCompact] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 640 : false,
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    const mediaQuery = window.matchMedia("(max-width: 639px)");
+    const handleChange = (event) => setIsCompact(event.matches);
+    setIsCompact(mediaQuery.matches);
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
 
   const range = {
     from: toDateObj(fromDate),
@@ -88,12 +100,16 @@ export default function DateRangeFilter({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="end">
+      <PopoverContent
+        className="w-auto max-w-[calc(100vw-1rem)] overflow-x-auto p-0"
+        align="end"
+        collisionPadding={8}
+      >
         <CalendarComponent
           mode="range"
           selected={range}
           onSelect={handleSelect}
-          numberOfMonths={2}
+          numberOfMonths={isCompact ? 1 : 2}
           initialFocus
         />
         {range.from && (
