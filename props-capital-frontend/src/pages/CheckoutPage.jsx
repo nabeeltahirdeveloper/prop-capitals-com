@@ -156,16 +156,16 @@ const CheckoutPage = () => {
 
   // Capture brand attribution from URL on mount and persist it for the rest
   // of the checkout session (and any later navigation to /pay/<slug>).
+  const brandSlugFromQuery = searchParams.get('brand') || '';
+  const linkSlugFromQuery = searchParams.get('link') || '';
   useEffect(() => {
-    const brandSlug = searchParams.get('brand');
-    const linkSlug = searchParams.get('link');
-    if (brandSlug || linkSlug) {
-      persistBrandAttribution(brandSlug, linkSlug);
+    if (brandSlugFromQuery || linkSlugFromQuery) {
+      persistBrandAttribution(brandSlugFromQuery, linkSlugFromQuery);
     }
-    if (linkSlug) {
-      apiPost(`/challenges/brand-link/${encodeURIComponent(linkSlug)}/track-click`).catch(() => {});
+    if (linkSlugFromQuery) {
+      apiPost(`/challenges/brand-link/${encodeURIComponent(linkSlugFromQuery)}/track-click`).catch(() => {});
     }
-  }, [searchParams]);
+  }, [brandSlugFromQuery, linkSlugFromQuery]);
 
   const challengeType = normalizeChallengeType(searchParams.get('type'));
   const rawSize = searchParams.get('size') || '50K';
@@ -289,6 +289,8 @@ const CheckoutPage = () => {
     // PayLink picks it up via readBrandAttribution.
     const params = new URLSearchParams();
     if (selectedPlatform) params.set('platform', selectedPlatform);
+    if (brandSlugFromQuery) params.set('brand', brandSlugFromQuery);
+    if (linkSlugFromQuery) params.set('link', linkSlugFromQuery);
     // Carry the custom price through so PayLink can show the right total in
     // its order summary. The actual charge amount is still resolved
     // server-side from the link record — this param is display only.
@@ -309,9 +311,19 @@ const CheckoutPage = () => {
     didAutoRedirect.current = true;
     const params = new URLSearchParams();
     params.set('platform', effectivePlatform);
+    if (brandSlugFromQuery) params.set('brand', brandSlugFromQuery);
+    if (linkSlugFromQuery) params.set('link', linkSlugFromQuery);
     if (customPrice != null) params.set('customPrice', String(customPrice));
     navigate(`/pay/${identifier}?${params.toString()}`, { replace: true });
-  }, [challengesLoading, matchedChallenge, effectivePlatform, customPrice, navigate]);
+  }, [
+    challengesLoading,
+    matchedChallenge,
+    effectivePlatform,
+    brandSlugFromQuery,
+    linkSlugFromQuery,
+    customPrice,
+    navigate,
+  ]);
 
   // While we're loading challenges or about to redirect, show a lightweight
   // spinner instead of flashing the (now-skipped) platform picker. We only
