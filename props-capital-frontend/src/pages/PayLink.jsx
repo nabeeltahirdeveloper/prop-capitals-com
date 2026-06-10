@@ -28,6 +28,7 @@ import {
   chargeWorldCardCard,
   createWorldCardSession,
   resolvePaymentProvider,
+  submitPaymentRedirect,
 } from '@/api/payments';
 import { readBrandAttribution } from '@/pages/CheckoutPage';
 import { COUNTRIES } from '@/constants/countries';
@@ -262,25 +263,7 @@ const PayLink = () => {
         navigate(`/pay/success?reference=${data.reference}`);
       } else if (data?.status === 'requires_action' && data?.redirectUrl) {
         toast.info('Verifying with your bank…');
-        // Xoala 3DS uses a POST redirect with parameters (e.g. TermUrl, MD).
-        // For POST we build a hidden form and submit it; for GET we just
-        // change location.
-        if (data.redirectMethod === 'POST' && Array.isArray(data.redirectParams)) {
-          const formEl = document.createElement('form');
-          formEl.method = 'POST';
-          formEl.action = data.redirectUrl;
-          data.redirectParams.forEach(({ name, value }) => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = String(name);
-            input.value = value == null ? '' : String(value);
-            formEl.appendChild(input);
-          });
-          document.body.appendChild(formEl);
-          formEl.submit();
-        } else {
-          window.location.href = data.redirectUrl;
-        }
+        submitPaymentRedirect(data);
       } else if (data?.status === 'failed') {
         toast.error(data.message || 'Payment was declined. Please try a different card.');
       } else {
@@ -323,25 +306,7 @@ const PayLink = () => {
         navigate(`/pay/success?reference=${data.reference}`);
       } else if (data?.status === 'requires_action' && data?.redirectUrl) {
         toast.info('Verifying with your bank…');
-        if (
-          String(data.redirectMethod || 'GET').toUpperCase() === 'POST' &&
-          Array.isArray(data.redirectParams)
-        ) {
-          const formEl = document.createElement('form');
-          formEl.method = 'POST';
-          formEl.action = data.redirectUrl;
-          data.redirectParams.forEach(({ name, value }) => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = String(name);
-            input.value = value == null ? '' : String(value);
-            formEl.appendChild(input);
-          });
-          document.body.appendChild(formEl);
-          formEl.submit();
-        } else {
-          window.location.href = data.redirectUrl;
-        }
+        submitPaymentRedirect(data);
       } else if (data?.status === 'pending') {
         toast.info('Payment received — confirming with the bank…');
         navigate(`/pay/success?reference=${data.reference}`);

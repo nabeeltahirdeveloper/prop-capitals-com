@@ -3,7 +3,11 @@ import { useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { toast, Toaster } from 'sonner';
 import { Loader2, Lock, AlertTriangle } from 'lucide-react';
-import { getQuickLinkSummary, chargeQuickLink } from '@/api/payments';
+import {
+  getQuickLinkSummary,
+  chargeQuickLink,
+  submitPaymentRedirect,
+} from '@/api/payments';
 
 // QuickLinkCheckout
 // ─────────────────
@@ -121,7 +125,7 @@ export default function QuickLinkCheckout() {
           window.location.href = `/pay/success${ref}`;
         }, 1200);
       } else if (res?.status === 'requires_action' && res.redirectUrl) {
-        window.location.href = res.redirectUrl;
+        submitPaymentRedirect(res);
       } else {
         toast.error(res?.message || 'Payment was not completed.');
       }

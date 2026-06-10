@@ -51,6 +51,38 @@ export const submitXoalaCheckout = ({ checkoutUrl, fields }) => {
   form.submit();
 };
 
+export const submitPaymentRedirect = ({
+  redirectUrl,
+  redirectMethod,
+  redirectParams,
+}) => {
+  if (!redirectUrl) return;
+
+  if (String(redirectMethod || 'GET').toUpperCase() !== 'POST') {
+    window.location.href = redirectUrl;
+    return;
+  }
+
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = redirectUrl;
+
+  const params = Array.isArray(redirectParams) ? redirectParams : [];
+  params.forEach(({ name, value }) => {
+    if (name === undefined || name === null || String(name).trim() === '') {
+      return;
+    }
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = String(name);
+    input.value = value == null ? '' : String(value);
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+};
+
 // WorldCard hosted-page session (default flow).
 // We never see PAN/CVV — backend POSTs to WorldCard and returns a
 // redirect_url; the customer's browser follows it and enters card data
