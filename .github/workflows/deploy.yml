@@ -92,6 +92,14 @@ jobs:
 
             npm i
 
+            # Defense-in-depth: the obfuscated backdoor has historically been
+            # re-injected into the Tailwind configs (see scripts/scan-malicious-code.sh).
+            # Restore the clean committed configs to strip any payload re-introduced
+            # after checkout/install, then hard-fail the deploy if the scanner still
+            # finds the signature anywhere before we build and ship.
+            git checkout -- props-capital-frontend/tailwind.config.js props-capital-frontend-admin/tailwind.config.js
+            bash scripts/scan-malicious-code.sh
+
             # Prisma: live DB is the source of truth — introspect, then regenerate the client.
             npm run db:pull -w props-capital-backend
             npm run db:generate -w props-capital-backend
