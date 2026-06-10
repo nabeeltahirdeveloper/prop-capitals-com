@@ -540,6 +540,7 @@ export class PaymentsService {
       linkSlug,
       card,
       currency: requestedCurrencyRaw,
+      amountOverride,
       authUserId,
     } = data || {};
 
@@ -672,6 +673,10 @@ export class PaymentsService {
       Number(brandLink.amount) > 0
         ? Number(brandLink.amount)
         : null;
+    const quickLinkPriceOverride: number | null =
+      amountOverride != null && Number(amountOverride) > 0
+        ? Number(amountOverride)
+        : null;
     // Custom-URL links may not be tied to a challenge in the DB. Fall back
     // to the link's stored amount + accountSize hint so the charge can still
     // proceed for "Custom $X" links the admin creates.
@@ -716,15 +721,20 @@ export class PaymentsService {
     });
 
     const { amount, amountCents } = this.computeChargeAmount(
-      // For brand links with a custom amount, charge that instead of
-      // challenge.price. Currency conversion still runs on top so EUR/GBP
-      // display matches the gateway charge.
-      linkPriceOverride != null
+      // QuickLink and DirectPurchaseLink amounts are trusted server-side
+      // overrides. Currency conversion still runs on top so EUR/GBP display
+      // matches the gateway charge.
+      quickLinkPriceOverride != null
         ? {
-            price: linkPriceOverride,
-            currency: brandLink?.currency ?? challenge.currency,
+            price: quickLinkPriceOverride,
+            currency: requestedCurrency,
           }
-        : challenge,
+        : linkPriceOverride != null
+          ? {
+              price: linkPriceOverride,
+              currency: brandLink?.currency ?? challenge.currency,
+            }
+          : challenge,
       requestedCurrency,
     );
     // Admin-pinned DirectPurchaseLink.platform always wins over whatever the
