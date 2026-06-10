@@ -186,6 +186,8 @@ const PayLink = () => {
   // Forwarded from /checkout when the user picked a platform in that wizard.
   // If not set, the backend falls back to challenge.platform.
   const platformFromQuery = searchParams.get('platform') || undefined;
+  const brandSlugFromQuery = searchParams.get('brand') || undefined;
+  const linkSlugFromQuery = searchParams.get('link') || undefined;
   const customPriceFromQuery = (() => {
     const v = searchParams.get('customPrice');
     if (!v) return null;
@@ -218,7 +220,7 @@ const PayLink = () => {
   useEffect(() => {
     let cancelled = false;
     const attribution = readBrandAttribution();
-    const linkSlug = attribution?.linkSlug || slug;
+    const linkSlug = linkSlugFromQuery || attribution?.linkSlug || slug;
     resolvePaymentProvider({ linkSlug, challengeSlug: slug })
       .then((res) => {
         if (cancelled) return;
@@ -230,7 +232,7 @@ const PayLink = () => {
         if (!cancelled) setProviderResolved(true);
       });
     return () => { cancelled = true; };
-  }, [slug]);
+  }, [slug, linkSlugFromQuery]);
 
   // Pre-fill name + email from the logged-in user once we have them.
   useEffect(() => {
@@ -404,6 +406,8 @@ const PayLink = () => {
     }
 
     const attribution = readBrandAttribution();
+    const effectiveBrandSlug = brandSlugFromQuery || attribution?.brandSlug;
+    const effectiveLinkSlug = linkSlugFromQuery || attribution?.linkSlug || slug;
     const cardDigits = form.cardNumber.replace(/\D/g, '');
     const [mm, yy] = form.expiry.split('/');
 
@@ -420,8 +424,8 @@ const PayLink = () => {
       city: form.city.trim(),
       state: form.state.trim() || undefined,
       postalCode: form.postalCode.trim(),
-      ...(attribution?.brandSlug ? { brandSlug: attribution.brandSlug } : {}),
-      ...(attribution?.linkSlug ? { linkSlug: attribution.linkSlug } : {}),
+      ...(effectiveBrandSlug ? { brandSlug: effectiveBrandSlug } : {}),
+      ...(effectiveLinkSlug ? { linkSlug: effectiveLinkSlug } : {}),
     };
 
     if (provider === 'worldcard' && worldCardFlow === 'hosted') {
@@ -508,6 +512,7 @@ const PayLink = () => {
   }
 
   const submitting = chargeMutation.isPending || worldCardMutation.isPending || worldCardSessionMutation.isPending;
+  const displayPrice = customPriceFromQuery ?? challenge.price;
 
   return (
     <div className={`min-h-screen pt-20 pb-12 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
@@ -897,7 +902,7 @@ const PayLink = () => {
                 ) : (
                   <>
                     <CreditCard className="w-5 h-5 mr-2" />
-                    Pay {formatFee(challenge.price)}
+                    Pay {formatFee(displayPrice)}
                   </>
                 )}
               </Button>
@@ -945,7 +950,7 @@ const PayLink = () => {
               <div className={`mt-4 pt-4 border-t flex justify-between items-center ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
                 <span className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Total</span>
                 <span className="text-3xl font-black text-amber-500">
-                  {formatFee(customPriceFromQuery ?? challenge.price)}
+                  {formatFee(displayPrice)}
                 </span>
               </div>
 
