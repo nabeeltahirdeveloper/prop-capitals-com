@@ -921,64 +921,66 @@ const CommonTerminalWrapper = ({
   };
 
   return (
-    <div className="space-y-3 sm:space-y-6 p-2 sm:p-6">
-      {/* ==================== CHALLENGE ACTIVE BANNER ==================== */}
-      <ChallengeActiveBanner
-        challenge={selectedChallenge}
-        phaseLabel={phaseLabel}
-      />
+    <div className="space-y-0 lg:space-y-6 p-0 lg:p-6 h-full flex flex-col">
+      <div className="hidden lg:block space-y-3 lg:space-y-6 mb-6">
+        {/* ==================== CHALLENGE ACTIVE BANNER ==================== */}
+        <ChallengeActiveBanner
+          challenge={selectedChallenge}
+          phaseLabel={phaseLabel}
+        />
 
-      {/* ==================== PHASE PROGRESSION ==================== */}
-      <PhaseProgressionCards
-        challenge={(() => {
-          const effectiveProfit = hasTradeHistory
-            ? Math.max(
-                0,
-                profitBarPeakRef.current,
-                Number(summaryMetrics?.profitPercent) || 0,
-              )
-            : 0;
-          const tradingDaysCompleted = summaryMetrics?.tradingDaysCompleted;
-          if (
-            !Number.isFinite(effectiveProfit) &&
-            !Number.isFinite(tradingDaysCompleted)
-          )
-            return selectedChallenge;
-          return {
-            ...selectedChallenge,
-            stats: {
-              ...selectedChallenge.stats,
-              ...(Number.isFinite(effectiveProfit) && {
-                currentProfit: Math.max(0, effectiveProfit),
-              }),
-            },
-            tradingDays: {
-              ...selectedChallenge.tradingDays,
-              ...(Number.isFinite(tradingDaysCompleted) && {
-                current: tradingDaysCompleted,
-              }),
-              required:
-                selectedChallenge?.tradingDays?.required ||
-                rules.minTradingDays ||
-                5,
-            },
-          };
-        })()}
-      />
+        {/* ==================== PHASE PROGRESSION ==================== */}
+        <PhaseProgressionCards
+          challenge={(() => {
+            const effectiveProfit = hasTradeHistory
+              ? Math.max(
+                  0,
+                  profitBarPeakRef.current,
+                  Number(summaryMetrics?.profitPercent) || 0,
+                )
+              : 0;
+            const tradingDaysCompleted = summaryMetrics?.tradingDaysCompleted;
+            if (
+              !Number.isFinite(effectiveProfit) &&
+              !Number.isFinite(tradingDaysCompleted)
+            )
+              return selectedChallenge;
+            return {
+              ...selectedChallenge,
+              stats: {
+                ...selectedChallenge.stats,
+                ...(Number.isFinite(effectiveProfit) && {
+                  currentProfit: Math.max(0, effectiveProfit),
+                }),
+              },
+              tradingDays: {
+                ...selectedChallenge.tradingDays,
+                ...(Number.isFinite(tradingDaysCompleted) && {
+                  current: tradingDaysCompleted,
+                }),
+                required:
+                  selectedChallenge?.tradingDays?.required ||
+                  rules.minTradingDays ||
+                  5,
+              },
+            };
+          })()}
+        />
 
-      {/* ==================== BALANCE STATS ROW ==================== */}
-      <BalanceStatsRow
-        balance={availableBalance}
-        equity={equity}
-        floatingPL={floatingPL}
-        profitPercent={profitPercent}
-      />
+        {/* ==================== BALANCE STATS ROW ==================== */}
+        <BalanceStatsRow
+          balance={availableBalance}
+          equity={equity}
+          floatingPL={floatingPL}
+          profitPercent={profitPercent}
+        />
 
-      {/* ==================== COMPLIANCE METRICS ==================== */}
-      <ComplianceMetrics
-        compliance={compliance}
-        challenge={selectedChallenge}
-      />
+        {/* ==================== COMPLIANCE METRICS ==================== */}
+        <ComplianceMetrics
+          compliance={compliance}
+          challenge={selectedChallenge}
+        />
+      </div>
 
       {statusLockBanner && (
         <div
@@ -1005,7 +1007,7 @@ const CommonTerminalWrapper = ({
       )}
 
       {/* ==================== PLATFORM-SPECIFIC TRADING AREA ==================== */}
-      <div className="my-6">
+      <div className="sm:my-6 flex-1 min-h-0">
         {React.Children.map(children, (child) =>
           React.isValidElement(child)
             ? React.cloneElement(child, {

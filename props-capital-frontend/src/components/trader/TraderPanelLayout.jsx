@@ -974,7 +974,13 @@ const TraderPanelLayoutInner = () => {
           </header>
 
           {/* Page Content */}
-          <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6">
+          <div
+            className={`flex-1 ${
+              location.pathname === "/traderdashboard/trading"
+                ? "overflow-hidden sm:overflow-y-auto p-0 sm:p-4 md:p-6"
+                : "overflow-y-auto p-3 sm:p-4 md:p-6"
+            }`}
+          >
             <Outlet />
           </div>
         </main>
