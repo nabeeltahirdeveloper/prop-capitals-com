@@ -35,6 +35,12 @@ const parseSizeWithCustomPrice = (raw) => {
   };
 };
 
+const parseCustomPriceParam = (raw) => {
+  if (raw == null) return null;
+  const priceNum = Number(raw);
+  return Number.isFinite(priceNum) && priceNum > 0 ? priceNum : null;
+};
+
 // Map UI challengeType ("one-step" / "two-step") to schema values.
 const challengeTypeMatches = (dbType, uiType) => {
   const db = String(dbType || '').toLowerCase();
@@ -163,7 +169,9 @@ const CheckoutPage = () => {
 
   const challengeType = normalizeChallengeType(searchParams.get('type'));
   const rawSize = searchParams.get('size') || '50K';
-  const { baseSize: accountSize, customPrice } = parseSizeWithCustomPrice(rawSize);
+  const { baseSize: accountSize, customPrice: customPriceFromSize } =
+    parseSizeWithCustomPrice(rawSize);
+  const customPrice = parseCustomPriceParam(searchParams.get('customPrice')) ?? customPriceFromSize;
 
   // Resolve the matching DB challenge so we know what to redirect to AND so
   // the prices/name shown here match the dashboard + Challenges page (which
