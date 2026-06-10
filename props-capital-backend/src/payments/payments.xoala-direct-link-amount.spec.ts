@@ -8,6 +8,13 @@ jest.mock(
   }),
   { virtual: true },
 );
+jest.mock(
+  'src/email/email.service',
+  () => ({
+    EmailService: class {},
+  }),
+  { virtual: true },
+);
 
 const { PaymentsService } = jest.requireActual('./payments.service');
 
