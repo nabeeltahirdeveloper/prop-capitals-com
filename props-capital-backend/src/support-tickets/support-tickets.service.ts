@@ -54,16 +54,30 @@ export class SupportTicketsService {
     const categoryLabel = category.charAt(0) + category.slice(1).toLowerCase();
     const subject = `Support Request - ${categoryLabel}`;
 
-    if (!userId && !dto.email) {
+    // A request can carry a valid-but-stale JWT whose user no longer exists in
+    // THIS database (token minted against another environment, a reseeded DB, a
+    // deleted account). SupportTicket.userId is a foreign key, so blindly
+    // inserting that id throws a Prisma FK violation → unhandled 500. Verify the
+    // user actually exists and otherwise fall back to a guest submission.
+    let effectiveUserId: string | null = null;
+    if (userId) {
+      const existing = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true },
+      });
+      effectiveUserId = existing?.id ?? null;
+    }
+
+    if (!effectiveUserId && !dto.email) {
       throw new BadRequestException('Email is required for guest submissions');
     }
 
     const { ticket, msg } = await this.prisma.$transaction(async (tx) => {
       const ticket = await tx.supportTicket.create({
         data: {
-          userId: userId || null,
-          guestName: userId ? null : dto.name || null,
-          guestEmail: userId ? null : dto.email || null,
+          userId: effectiveUserId,
+          guestName: effectiveUserId ? null : dto.name || null,
+          guestEmail: effectiveUserId ? null : dto.email || null,
           subject,
           message: dto.message,
           category,
@@ -75,7 +89,7 @@ export class SupportTicketsService {
         data: {
           ticketId: ticket.id,
           senderType: SenderType.TRADER,
-          senderId: userId || null,
+          senderId: effectiveUserId,
           message: dto.message,
         },
       });
