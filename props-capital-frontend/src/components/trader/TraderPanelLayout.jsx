@@ -455,7 +455,7 @@ const TraderPanelLayoutInner = () => {
                 : "bg-white border-slate-200"
             }`}
           >
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setMobileMenuOpen(true)}
@@ -684,7 +684,7 @@ const TraderPanelLayoutInner = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-1.5 sm:gap-4 shrink-0">
               {/* <span className={`hidden md:block text-xs sm:text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
                 Last Updated: {lastRefresh.toLocaleString()}
               </span> */}
@@ -865,13 +865,13 @@ const TraderPanelLayoutInner = () => {
               </div>
 
               <div
-                className={`relative flex items-center gap-3 pl-4 border-l ${isDark ? "border-white/10" : "border-slate-200"}`}
+                className={`relative flex items-center gap-3 pl-0 sm:pl-4 sm:border-l shrink-0 ${isDark ? "border-white/10" : "border-slate-200"}`}
               >
                 <button
                   onClick={() => setShowProfileMenu(!showProfileMenu)}
-                  className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-all"
+                  className="flex items-center gap-2 sm:gap-3 cursor-pointer hover:opacity-80 transition-all"
                 >
-                  <div className="w-9 h-9 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center text-[#0a0d12] font-bold text-sm">
+                  <div className="w-9 h-9 shrink-0 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center text-[#0a0d12] font-bold text-sm">
                     {userState.fullname.charAt(0) || "U"}
                   </div>
                   <div className="hidden sm:block text-left max-w-[120px]">
@@ -887,7 +887,7 @@ const TraderPanelLayoutInner = () => {
                     </p>
                   </div>
                   <ChevronDown
-                    className={`w-4 h-4 transition-transform ${showProfileMenu ? "rotate-180" : ""} ${isDark ? "text-gray-400" : "text-slate-400"}`}
+                    className={`hidden sm:block w-4 h-4 transition-transform ${showProfileMenu ? "rotate-180" : ""} ${isDark ? "text-gray-400" : "text-slate-400"}`}
                   />
                 </button>
 
