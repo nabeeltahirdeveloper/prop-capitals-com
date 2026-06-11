@@ -1,13 +1,13 @@
-name: Deploy to production
+name: Deploy to dev
 
 on:
   push:
-    branches: [master]
+    branches: [dev]
   workflow_dispatch:
 
 # Never interrupt an in-flight deploy; queue subsequent runs instead.
 concurrency:
-  group: deploy-master
+  group: deploy-dev
   cancel-in-progress: false
 
 jobs:
@@ -37,9 +37,6 @@ jobs:
       - name: Build backend
         run: npm run build -w props-capital-backend
 
-      - name: Build trader frontend
-        run: npm run build -w props-capital-frontend
-
   lint-and-test:
     name: Lint & test (informational)
     runs-on: ubuntu-latest
@@ -63,17 +60,14 @@ jobs:
       - name: Lint backend
         run: npm run lint -w props-capital-backend
 
-      - name: Lint trader frontend
-        run: npm run lint -w props-capital-frontend
-
       - name: Test backend
         run: npm test -w props-capital-backend
 
   deploy:
-    name: Deploy to server
+    name: Deploy backend to server
     needs: [security-scan, build]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/dev'
     steps:
       - name: Deploy over SSH
         uses: appleboy/ssh-action@2ead5e36573f08b82fbfce1504f1a4b05a647c6f # v1.2.2
@@ -85,10 +79,10 @@ jobs:
           command_timeout: 30m
           script: |
             set -euo pipefail
-            cd /var/www/prop-capitals-prod/prop-capitals-com
+            cd /var/www/prop-capitals-dev
 
-            git fetch origin master
-            git reset --hard origin/master
+            git fetch origin dev
+            git reset --hard origin/dev
 
             npm i
 
@@ -104,8 +98,6 @@ jobs:
             npm run db:generate -w props-capital-backend
 
             npm run build -w props-capital-backend
-            npm run build -w props-capital-frontend
 
-            pm2 restart prop-Cs-prod-be
-            pm2 restart prop-capitals-frontend
+            pm2 restart Prop-Capitals-Dev-New
             pm2 save
