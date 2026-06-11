@@ -6,7 +6,6 @@ import React, {
   useEffect,
 } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useMediaQuery } from "usehooks-ts";
 import { Loader2, ChevronDown, ArrowDown, ArrowUp, Search } from "lucide-react";
 import { useTrading } from "@/contexts/TradingContext";
 import { usePrices } from "@/contexts/PriceContext";
@@ -329,8 +328,6 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   const { isDark } = useTraderTheme();
   const C = isDark ? DARK_COLORS : LIGHT_COLORS;
 
-  const isMobileOrTablet = useMediaQuery("(max-width: 1023px)");
-
   /* ── State ── */
   const [orderType, setOrderType] = useState("market");
   const [orderSide, setOrderSide] = useState("buy");
@@ -343,13 +340,6 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   const [obTab, setObTab] = useState("book");
   const [obMode, setObMode] = useState("both");
   const [chartTab, setChartTab] = useState("chart");
-
-  useEffect(() => {
-    if (!isMobileOrTablet && chartTab === "trade") {
-      setChartTab("chart");
-    }
-  }, [isMobileOrTablet, chartTab]);
-
   // Partial close state
   const [partialCloseId, setPartialCloseId] = useState(null);
   const [partialCloseQty, setPartialCloseQty] = useState("");
@@ -1413,27 +1403,24 @@ const BybitTradingArea = ({ selectedChallenge }) => {
           { key: "chart", label: "Chart" },
           { key: "overview", label: "Overview" },
           { key: "data", label: "Data" },
-          { key: "trade", label: "Trade", mobileOnly: true },
-        ]
-          .filter((tab) => !tab.mobileOnly || isMobileOrTablet)
-          .map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setChartTab(tab.key)}
-              className="px-3 py-2"
-              style={{
-                fontSize: 12,
-                color: chartTab === tab.key ? C.textP : C.textS,
-                fontWeight: chartTab === tab.key ? 600 : 400,
-                borderBottom:
-                  chartTab === tab.key
-                    ? `2px solid ${C.yellow}`
-                    : "2px solid transparent",
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setChartTab(tab.key)}
+            className="px-3 py-2"
+            style={{
+              fontSize: 12,
+              color: chartTab === tab.key ? C.textP : C.textS,
+              fontWeight: chartTab === tab.key ? 600 : 400,
+              borderBottom:
+                chartTab === tab.key
+                  ? `2px solid ${C.yellow}`
+                  : "2px solid transparent",
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
         <div className="flex-1" />
       </div>
 
@@ -1444,9 +1431,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
       >
         {/* ── LEFT: CHART / OVERVIEW / DATA ── */}
         <div
-          className={`flex-1 min-w-0 flex flex-col ${
-            isMobileOrTablet ? (chartTab === "trade" ? "hidden" : "h-full") : "min-h-[350px] lg:min-h-[300px]"
-          }`}
+          className="flex-1 min-w-0 min-h-[350px] lg:min-h-[300px] flex flex-col"
           style={{ background: C.panel }}
         >
           {chartTab === "chart" && (
@@ -2770,9 +2755,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         {/* ── RIGHT: TRADE PANEL ── */}
         <SectionErrorBoundary label="Trade Panel">
           <div
-            className={`w-full lg:w-[280px] lg:max-h-none shrink-0 flex flex-col border-t lg:border-t-0 lg:border-l overflow-y-auto ${
-              isMobileOrTablet ? (chartTab === "trade" ? "flex h-full" : "hidden") : "flex"
-            }`}
+            className="w-full lg:w-[280px] lg:max-h-none shrink-0 flex flex-col border-t lg:border-t-0 lg:border-l overflow-y-auto"
             style={{ background: C.panel, borderColor: C.border }}
           >
             {/* Trade header */}
