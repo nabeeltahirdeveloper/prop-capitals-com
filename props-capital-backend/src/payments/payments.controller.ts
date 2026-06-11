@@ -70,6 +70,7 @@ export class PaymentsController {
     const safeBody = this.stripClientPriceFields(body);
     return this.paymentsService.createXoalaCharge({
       ...safeBody,
+      currency: body?.currency,
       authUserId: authUser?.userId,
       ...(authUser
         ? {

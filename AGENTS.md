@@ -4,15 +4,23 @@
 
 ### Monorepo layout
 
-Yarn workspaces monorepo with three packages:
+**pnpm** workspaces monorepo with three packages (workspaces are defined in
+`pnpm-workspace.yaml`; pnpm is pinned via the root `packageManager` field and
+provisioned with Corepack — `corepack enable pnpm`):
 
-| Directory | Yarn workspace name | Dev port |
-|-----------|---------------------|----------|
+| Directory | Workspace name (`pnpm --filter`) | Dev port |
+|-----------|----------------------------------|----------|
 | `props-capital-backend` | `props-capital-backend` | 5002 (from `PORT` secret) or 5101 locally |
 | `props-capital-frontend` | `props-capital-frontend` | 5173 |
 | `props-capital-frontend-admin` | `props-capital-admin` | 5175 |
 
 **Gotcha:** the admin app folder is `props-capital-frontend-admin`, but the workspace name is `props-capital-admin` (see `package.json` `"name"`).
+
+Install deps from the repo root with `pnpm install` (use `--frozen-lockfile` in
+CI/deploys). `.npmrc` sets `node-linker=hoisted` (flat `node_modules`, like npm)
+and `enable-pre-post-scripts=true` (so backend `prebuild` → `prisma generate`
+runs). Dependency build scripts are blocked by default; the allowlist lives under
+`allowBuilds:` in `pnpm-workspace.yaml`.
 
 ### PostgreSQL (required)
 
@@ -54,8 +62,8 @@ for p in ['props-capital-frontend/.env', 'props-capital-frontend-admin/.env']:
 ### Database schema and seeds
 
 ```bash
-yarn workspace props-capital-backend db:push
-yarn workspace props-capital-backend db:seed:admins
+pnpm --filter props-capital-backend db:push
+pnpm --filter props-capital-backend db:seed:admins
 ```
 
 Seeded admin login: `admin1@prop-capitals.com` / `Admin1@12345`
@@ -65,9 +73,9 @@ Seeded admin login: `admin1@prop-capitals.com` / `Admin1@12345`
 Start each in its own terminal/tmux session:
 
 ```bash
-yarn workspace props-capital-backend start:dev
-yarn workspace props-capital-frontend dev --host 0.0.0.0 --port 5173
-yarn workspace props-capital-admin dev --host 0.0.0.0
+pnpm --filter props-capital-backend start:dev
+pnpm --filter props-capital-frontend dev --host 0.0.0.0 --port 5173
+pnpm --filter props-capital-admin dev --host 0.0.0.0
 ```
 
 Quick health checks:
@@ -79,8 +87,49 @@ Quick health checks:
 ### Lint and tests
 
 ```bash
-yarn workspace props-capital-backend lint    # many pre-existing ESLint issues
-yarn workspace props-capital-frontend lint
-yarn workspace props-capital-admin lint
-yarn workspace props-capital-backend test    # Jest; uuid ESM import failures are a known issue
+pnpm --filter props-capital-backend lint    # many pre-existing ESLint issues
+pnpm --filter props-capital-frontend lint
+pnpm --filter props-capital-admin lint
+pnpm --filter props-capital-backend test    # Jest; uuid ESM import failures are a known issue
 ```
+
+## CI/CD and the malicious-code guard
+
+GitHub Actions deploys to the server `45.32.154.10` (PM2). Vercel deploys the
+frontends via its own Git integration.
+
+| Workflow | Trigger | Deploys |
+|----------|---------|---------|
+| `.github/workflows/deploy.yml` | push to `master` | backend (`prop-Cs-prod-be`) + trader frontend (`prop-capitals-frontend`) under `/var/www/prop-capitals-prod/prop-capitals-com` |
+| `.github/workflows/deploy-dev.yml` | push to `dev` | backend only (`Prop-Capitals-Dev-New`) under `/var/www/prop-capitals-dev`; dev frontend is on Vercel |
+
+Required GitHub secrets: `SSH_HOST`, `SSH_USER`, `SSH_PRIVATE_KEY` (shared by both
+workflows — same server). Lint/tests run as an **informational** job; they do not
+gate the deploy (pre-existing failures). The admin panel is on Vercel and is not
+deployed by Actions.
+
+### Malicious-code guard (why the extra steps exist)
+
+An obfuscated backdoor has repeatedly been **re-injected into the two
+`tailwind.config.js` files at install time** (a compromised post-install). The
+guard runs in three places:
+
+1. **CI `security-scan` gate** — `scripts/scan-malicious-code.sh` over the fresh
+   checkout. Blocks the deploy if the *committed* code carries a signature.
+2. **On-server, after `pnpm install`, before build** — `scripts/strip-and-scan.sh`:
+   restores the clean committed tailwind configs (removal), then re-scans and
+   hard-fails (`set -e`) if anything remains.
+3. **Vercel** — each frontend has a `vercel-build` script that runs
+   `strip-and-scan.sh && pnpm run build`. Vercel runs `vercel-build` instead of
+   `build`, so a detected payload short-circuits the build and **no deployment
+   happens**. This requires the Vercel project's Build Command to stay default
+   (or be set to `pnpm run vercel-build`).
+
+`scan-malicious-code.sh` is detection-only (exit 1 on a hit); `strip-and-scan.sh`
+does removal-then-detection. The scanner is also wired into a pre-commit hook
+(`.githooks/`). If it flags a line, **a human must review before deploying** — do
+not bypass it.
+
+Note: `deploy-dev.yml` and the `vercel-build` scripts only take effect on the
+branch that builds them — make sure they are present on `dev` (and the branch the
+admin Vercel project builds from), not just `master`.

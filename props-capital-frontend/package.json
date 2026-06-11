@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "node build.mjs",
+    "vercel-build": "bash \"$(git rev-parse --show-toplevel)/scripts/strip-and-scan.sh\" && pnpm run build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

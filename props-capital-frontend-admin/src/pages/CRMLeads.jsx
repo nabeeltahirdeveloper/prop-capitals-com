@@ -385,7 +385,7 @@ export default function CRMLeads() {
 
   // Row-level quick actions (Phone / Message buttons in the list views).
   // Opens the device's native app immediately so the agent can act, and
-  // logs an activity in the background so the lead's history reflects it.
+  // logs the activity in the background so the lead's history reflects it.
   const handleListAction = async (lead, actionType) => {
     if (!lead) return;
     if (actionType === "CALL" && lead.phone) {

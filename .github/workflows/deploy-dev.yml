@@ -1,13 +1,13 @@
-name: Deploy to production
+name: Deploy to dev
 
 on:
   push:
-    branches: [master]
+    branches: [dev]
   workflow_dispatch:
 
 # Never interrupt an in-flight deploy; queue subsequent runs instead.
 concurrency:
-  group: deploy-master
+  group: deploy-dev
   cancel-in-progress: false
 
 jobs:
@@ -39,9 +39,6 @@ jobs:
       - name: Build backend
         run: pnpm --filter props-capital-backend build
 
-      - name: Build trader frontend
-        run: pnpm --filter props-capital-frontend build
-
   lint-and-test:
     name: Lint & test (informational)
     runs-on: ubuntu-latest
@@ -67,17 +64,14 @@ jobs:
       - name: Lint backend
         run: pnpm --filter props-capital-backend lint
 
-      - name: Lint trader frontend
-        run: pnpm --filter props-capital-frontend lint
-
       - name: Test backend
         run: pnpm --filter props-capital-backend test
 
   deploy:
-    name: Deploy to server
+    name: Deploy backend to server
     needs: [security-scan, build]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/dev'
     steps:
       - name: Deploy over SSH
         uses: appleboy/ssh-action@2ead5e36573f08b82fbfce1504f1a4b05a647c6f # v1.2.2
@@ -89,10 +83,10 @@ jobs:
           command_timeout: 30m
           script: |
             set -euo pipefail
-            cd /var/www/prop-capitals-prod/prop-capitals-com
+            cd /var/www/prop-capitals-dev
 
-            git fetch origin master
-            git reset --hard origin/master
+            git fetch origin dev
+            git reset --hard origin/dev
 
             # Provision pnpm via Corepack (bundled with the server's Node),
             # pinned by the repo's packageManager field.
@@ -112,8 +106,6 @@ jobs:
             pnpm --filter props-capital-backend db:generate
 
             pnpm --filter props-capital-backend build
-            pnpm --filter props-capital-frontend build
 
-            pm2 restart prop-Cs-prod-be
-            pm2 restart prop-capitals-frontend
+            pm2 restart Prop-Capitals-Dev-New
             pm2 save

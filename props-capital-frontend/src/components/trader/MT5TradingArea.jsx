@@ -417,9 +417,7 @@ const MT5TradingArea = ({
     }
   };
 
-  // Treat anything below desktop (lg: 1024px) as mobile so tablets get the
-  // chart-fills-viewport layout. Matches BybitTerminal + PT5Terminal breakpoint.
-  const isMobile = useMediaQuery("(max-width: 1023px)");
+  const isMobile = useMediaQuery("(max-width: 767px)");
   const [mobileTab, setMobileTab] = useState("chart"); // "chart" | "quotes" | "positions"
 
   const isLight = theme === "light";
@@ -589,7 +587,7 @@ const MT5TradingArea = ({
     return (
       <>
         <div
-          className={`h-full flex flex-col overflow-hidden ${isLight ? "bg-slate-100 text-slate-900" : "bg-slate-950 text-slate-100"}`}
+          className={`h-[100dvh] flex flex-col overflow-hidden ${isLight ? "bg-slate-100 text-slate-900" : "bg-slate-950 text-slate-100"}`}
         >
           {/* Single content area — tabs are absolute panels inside */}
           <div className="flex-1 relative overflow-hidden">
