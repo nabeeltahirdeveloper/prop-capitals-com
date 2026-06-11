@@ -26,19 +26,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@a15d269cd4658e1107c09f1fabf4cbd7bd1f308a # v4.4.0
+
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: npm
+          cache: pnpm
 
       - name: Install dependencies
-        run: npm i
+        run: pnpm install --frozen-lockfile
 
       - name: Build backend
-        run: npm run build -w props-capital-backend
+        run: pnpm --filter props-capital-backend build
 
       - name: Build trader frontend
-        run: npm run build -w props-capital-frontend
+        run: pnpm --filter props-capital-frontend build
 
   lint-and-test:
     name: Lint & test (informational)
@@ -49,25 +51,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@a15d269cd4658e1107c09f1fabf4cbd7bd1f308a # v4.4.0
+
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: npm
+          cache: pnpm
 
       - name: Install dependencies
-        run: npm i
+        run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma client
-        run: npm run db:generate -w props-capital-backend
+        run: pnpm --filter props-capital-backend db:generate
 
       - name: Lint backend
-        run: npm run lint -w props-capital-backend
+        run: pnpm --filter props-capital-backend lint
 
       - name: Lint trader frontend
-        run: npm run lint -w props-capital-frontend
+        run: pnpm --filter props-capital-frontend lint
 
       - name: Test backend
-        run: npm test -w props-capital-backend
+        run: pnpm --filter props-capital-backend test
 
   deploy:
     name: Deploy to server
@@ -90,21 +94,25 @@ jobs:
             git fetch origin master
             git reset --hard origin/master
 
-            npm i
+            # Provision pnpm via Corepack (bundled with the server's Node),
+            # pinned by the repo's packageManager field.
+            export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+            corepack enable pnpm
+            pnpm install --frozen-lockfile
 
             # Defense-in-depth: the obfuscated backdoor has historically been
-            # re-injected into the Tailwind configs at `npm i` time. Strip any
+            # re-injected into the Tailwind configs at install time. Strip any
             # re-introduced payload (restore clean committed configs), then
             # hard-fail the deploy if the scanner still finds a signature
             # anywhere before we build and ship.
             bash scripts/strip-and-scan.sh
 
             # Prisma: live DB is the source of truth — introspect, then regenerate the client.
-            npm run db:pull -w props-capital-backend
-            npm run db:generate -w props-capital-backend
+            pnpm --filter props-capital-backend db:pull
+            pnpm --filter props-capital-backend db:generate
 
-            npm run build -w props-capital-backend
-            npm run build -w props-capital-frontend
+            pnpm --filter props-capital-backend build
+            pnpm --filter props-capital-frontend build
 
             pm2 restart prop-Cs-prod-be
             pm2 restart prop-capitals-frontend

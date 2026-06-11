@@ -1,0 +1,16 @@
+packages:
+  - props-capital-frontend
+  - props-capital-frontend-admin
+  - props-capital-backend
+
+# pnpm blocks dependency build scripts by default. Allow only the ones we need to
+# run their install scripts: bcrypt (native addon), esbuild (binary used by
+# Vite), prisma engines, and unrs-resolver (native binary for the ESLint import
+# resolver). Everything else stays blocked.
+allowBuilds:
+  bcrypt: true
+  esbuild: true
+  prisma: true
+  '@prisma/client': true
+  '@prisma/engines': true
+  unrs-resolver: true

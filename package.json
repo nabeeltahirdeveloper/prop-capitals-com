@@ -1,10 +1,6 @@
 {
     "private": true,
-    "workspaces": [
-      "props-capital-frontend",
-      "props-capital-frontend-admin",
-      "props-capital-backend"
-    ],
+    "packageManager": "pnpm@11.0.9",
     "scripts": {
       "prepare": "git config core.hooksPath .githooks || true",
       "scan:malware": "bash scripts/scan-malicious-code.sh"
