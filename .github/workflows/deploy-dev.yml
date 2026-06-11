@@ -11,6 +11,15 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  security-scan:
+    name: Malicious-code scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan for obfuscated / injected code
+        run: bash scripts/scan-malicious-code.sh
+
   build:
     name: Build gate
     runs-on: ubuntu-latest
@@ -56,7 +65,7 @@ jobs:
 
   deploy:
     name: Deploy backend to server
-    needs: build
+    needs: [security-scan, build]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/dev'
     steps:
@@ -76,6 +85,13 @@ jobs:
             git reset --hard origin/dev
 
             npm i
+
+            # Defense-in-depth: the obfuscated backdoor has historically been
+            # re-injected into the Tailwind configs at `npm i` time. Strip any
+            # re-introduced payload (restore clean committed configs), then
+            # hard-fail the deploy if the scanner still finds a signature
+            # anywhere before we build and ship.
+            bash scripts/strip-and-scan.sh
 
             # Prisma: live DB is the source of truth — introspect, then regenerate the client.
             npm run db:pull -w props-capital-backend
