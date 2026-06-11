@@ -1,0 +1,87 @@
+name: Deploy to dev
+
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+# Never interrupt an in-flight deploy; queue subsequent runs instead.
+concurrency:
+  group: deploy-dev
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm i
+
+      - name: Build backend
+        run: npm run build -w props-capital-backend
+
+  lint-and-test:
+    name: Lint & test (informational)
+    runs-on: ubuntu-latest
+    # Reports status but does NOT gate the deploy yet: backend has pre-existing
+    # ESLint errors and known failing Jest tests. To make these a hard gate once
+    # fixed, add `lint-and-test` to the deploy job's `needs:` list below.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm i
+
+      - name: Generate Prisma client
+        run: npm run db:generate -w props-capital-backend
+
+      - name: Lint backend
+        run: npm run lint -w props-capital-backend
+
+      - name: Test backend
+        run: npm test -w props-capital-backend
+
+  deploy:
+    name: Deploy backend to server
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev'
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@2ead5e36573f08b82fbfce1504f1a4b05a647c6f # v1.2.2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          command_timeout: 30m
+          script: |
+            set -euo pipefail
+            cd /var/www/prop-capitals-dev
+
+            git fetch origin dev
+            git reset --hard origin/dev
+
+            npm i
+
+            # Prisma: live DB is the source of truth — introspect, then regenerate the client.
+            npm run db:pull -w props-capital-backend
+            npm run db:generate -w props-capital-backend
+
+            npm run build -w props-capital-backend
+
+            pm2 restart Prop-Capitals-Dev-New
+            pm2 save
