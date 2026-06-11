@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --port=5175",
     "build": "vite build",
-    "vercel-build": "bash \"$(git rev-parse --show-toplevel)/scripts/strip-and-scan.sh\" && npm run build",
+    "vercel-build": "bash \"$(git rev-parse --show-toplevel)/scripts/strip-and-scan.sh\" && pnpm run build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
