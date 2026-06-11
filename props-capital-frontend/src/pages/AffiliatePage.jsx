@@ -201,17 +201,16 @@ const AffiliatePage = () => {
 
       {/* Signup Modal */}
       {showSignupForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-sm">
-          <div className={`relative w-full max-w-lg max-h-[90dvh] rounded-2xl shadow-2xl overflow-hidden flex flex-col ${isDark ? 'bg-[#12161d]' : 'bg-white'}`}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className={`relative w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden ${isDark ? 'bg-[#12161d]' : 'bg-white'}`}>
             {/* Close button */}
-            <button
+            <button 
               onClick={() => { setShowSignupForm(false); setIsSubmitted(false); }}
-              className={`absolute top-4 right-4 z-10 p-2 rounded-full ${isDark ? 'hover:bg-white/10 text-gray-400' : 'hover:bg-slate-100 text-slate-500'}`}
+              className={`absolute top-4 right-4 p-2 rounded-full ${isDark ? 'hover:bg-white/10 text-gray-400' : 'hover:bg-slate-100 text-slate-500'}`}
             >
-              <span className="text-2xl leading-none">&times;</span>
+              <span className="text-2xl">&times;</span>
             </button>
 
-            <div className="overflow-y-auto overscroll-contain">
             {!isSubmitted ? (
               <>
                 {/* Header */}
@@ -393,7 +392,6 @@ const AffiliatePage = () => {
                 </Button>
               </div>
             )}
-            </div>
           </div>
         </div>
       )}

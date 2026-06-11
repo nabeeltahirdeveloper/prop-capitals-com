@@ -383,32 +383,6 @@ export default function CRMLeads() {
     }
   };
 
-  // Row-level quick actions (Phone / Message buttons in the list views).
-  // Opens the device's native app immediately so the agent can act, and
-  // logs an activity in the background so the lead's history reflects it.
-  const handleListAction = async (lead, actionType) => {
-    if (!lead) return;
-    if (actionType === "CALL" && lead.phone) {
-      window.location.href = `tel:${lead.phone}`;
-    } else if (actionType === "EMAIL" && lead.email) {
-      window.location.href = `mailto:${lead.email}`;
-    }
-    try {
-      await apiPost(`/crm/leads/${lead.id}/activities`, {
-        activityType: actionType,
-        notes:
-          actionType === "CALL"
-            ? "Call attempt made (quick action)"
-            : actionType === "EMAIL"
-              ? "Email opened (quick action)"
-              : undefined,
-      });
-      await fetchStats();
-    } catch (error) {
-      console.error("Error logging quick action:", error);
-    }
-  };
-
   // Handle CSV import
   const handleCSVImport = async () => {
     if (!selectedFile) return;
@@ -749,7 +723,6 @@ export default function CRMLeads() {
               <LeadsCardsView
                 leads={filteredLeads}
                 onLeadClick={handleLeadClick}
-                onAction={handleListAction}
                 getStatusColor={getStatusColor}
                 maskPhone={maskPhone}
               />
@@ -758,7 +731,6 @@ export default function CRMLeads() {
               <LeadsListView
                 leads={filteredLeads}
                 onLeadClick={handleLeadClick}
-                onAction={handleListAction}
                 getStatusColor={getStatusColor}
                 getPriorityColor={getPriorityColor}
                 maskPhone={maskPhone}
@@ -768,7 +740,6 @@ export default function CRMLeads() {
               <LeadsCompactView
                 leads={filteredLeads}
                 onLeadClick={handleLeadClick}
-                onAction={handleListAction}
                 getStatusColor={getStatusColor}
                 getPriorityColor={getPriorityColor}
                 maskPhone={maskPhone}
