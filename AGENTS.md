@@ -84,3 +84,44 @@ yarn workspace props-capital-frontend lint
 yarn workspace props-capital-admin lint
 yarn workspace props-capital-backend test    # Jest; uuid ESM import failures are a known issue
 ```
+
+## CI/CD and the malicious-code guard
+
+GitHub Actions deploys to the server `45.32.154.10` (PM2). Vercel deploys the
+frontends via its own Git integration.
+
+| Workflow | Trigger | Deploys |
+|----------|---------|---------|
+| `.github/workflows/deploy.yml` | push to `master` | backend (`prop-Cs-prod-be`) + trader frontend (`prop-capitals-frontend`) under `/var/www/prop-capitals-prod/prop-capitals-com` |
+| `.github/workflows/deploy-dev.yml` | push to `dev` | backend only (`Prop-Capitals-Dev-New`) under `/var/www/prop-capitals-dev`; dev frontend is on Vercel |
+
+Required GitHub secrets: `SSH_HOST`, `SSH_USER`, `SSH_PRIVATE_KEY` (shared by both
+workflows — same server). Lint/tests run as an **informational** job; they do not
+gate the deploy (pre-existing failures). The admin panel is on Vercel and is not
+deployed by Actions.
+
+### Malicious-code guard (why the extra steps exist)
+
+An obfuscated backdoor has repeatedly been **re-injected into the two
+`tailwind.config.js` files at `npm i` time** (a compromised post-install). The
+guard runs in three places:
+
+1. **CI `security-scan` gate** — `scripts/scan-malicious-code.sh` over the fresh
+   checkout. Blocks the deploy if the *committed* code carries a signature.
+2. **On-server, after `npm i`, before build** — `scripts/strip-and-scan.sh`:
+   restores the clean committed tailwind configs (removal), then re-scans and
+   hard-fails (`set -e`) if anything remains.
+3. **Vercel** — each frontend has a `vercel-build` script that runs
+   `strip-and-scan.sh && npm run build`. Vercel runs `vercel-build` instead of
+   `build`, so a detected payload short-circuits the build and **no deployment
+   happens**. This requires the Vercel project's Build Command to stay default
+   (or be set to `npm run vercel-build`).
+
+`scan-malicious-code.sh` is detection-only (exit 1 on a hit); `strip-and-scan.sh`
+does removal-then-detection. The scanner is also wired into a pre-commit hook
+(`.githooks/`). If it flags a line, **a human must review before deploying** — do
+not bypass it.
+
+Note: `deploy-dev.yml` and the `vercel-build` scripts only take effect on the
+branch that builds them — make sure they are present on `dev` (and the branch the
+admin Vercel project builds from), not just `master`.
