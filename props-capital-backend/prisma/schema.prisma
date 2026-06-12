@@ -111,8 +111,8 @@ model Challenge {
   currency               String               @default("USD")
   slug                   String?              @unique
   directPurchaseLinks    DirectPurchaseLink[]
-  quickLinks             QuickLink[]
   payments               Payment[]
+  quickLinks             QuickLink[]
   accounts               TradingAccount[]
 }
 
@@ -545,8 +545,8 @@ model Brand {
   childBrands            Brand[]              @relation("BrandHierarchy")
   brandPayouts           BrandPayout[]
   directPurchaseLinks    DirectPurchaseLink[]
-  quickLinks             QuickLink[]
   payments               Payment[]
+  quickLinks             QuickLink[]
 
   @@index([approvalStatus])
 }
@@ -736,46 +736,33 @@ model DirectPurchaseLink {
   @@index([brandId])
 }
 
-// QuickLink — admin-assisted one-shot payment URL.
-//
-// Lives separately from DirectPurchaseLink. Admin enters EVERY field the
-// gateway requires (full billing snapshot + customer email), so the
-// customer-facing /q/<slug> page only asks for raw card data. No emails or
-// notifications are sent on success; the link auto-deactivates after one
-// successful charge.
 model QuickLink {
-  id             String     @id @default(cuid())
-  slug           String     @unique
-  // Linkage — same as DirectPurchaseLink
-  brandId        String?
-  challengeId    String?
-  brand          Brand?     @relation(fields: [brandId], references: [id])
-  challenge      Challenge? @relation(fields: [challengeId], references: [id])
-  // Charge config
-  name           String?
-  amount         Float?
-  currency       String     @default("EUR")
-  provider       String?
-  platform       String?
-  // Pre-filled customer details. Admin always supplies email + phone +
-  // country (identity). Name + city + address + postal are collected from
-  // the customer on the /q/<slug> page itself, so they're nullable here.
-  customerUserId  String?
-  customerEmail   String
-  customerFirstName String?
-  customerLastName  String?
-  customerPhone     String?
-  customerCountry   String
-  customerState     String?
-  customerCity      String?
-  customerAddress   String?
+  id                 String     @id @default(cuid())
+  slug               String     @unique
+  brandId            String?
+  challengeId        String?
+  name               String?
+  amount             Float?
+  currency           String     @default("EUR")
+  provider           String?
+  platform           String?
+  customerUserId     String?
+  customerEmail      String
+  customerFirstName  String?
+  customerLastName   String?
+  customerPhone      String?
+  customerCountry    String
+  customerState      String?
+  customerCity       String?
+  customerAddress    String?
   customerPostalCode String?
-  // Lifecycle
-  active        Boolean   @default(true)
-  clicks        Int       @default(0)
-  conversions   Int       @default(0)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  active             Boolean    @default(true)
+  clicks             Int        @default(0)
+  conversions        Int        @default(0)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  brand              Brand?     @relation(fields: [brandId], references: [id])
+  challenge          Challenge? @relation(fields: [challengeId], references: [id])
 
   @@index([brandId])
   @@index([customerEmail])
