@@ -532,37 +532,7 @@ export default function AdminAllTransactionsSection() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-6">
-        <div className="glass-panel p-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between mb-3 gap-2">
-            <div className="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center">
-              <i className="fas fa-list text-cyan-400 text-sm"></i>
-            </div>
-            <span className="text-xs text-gray-400 sm:text-right">{t("adminConsole.transactions.statTotalTransactions", { defaultValue: "Total Transactions" })}</span>
-          </div>
-          <p className="text-xl sm:text-2xl font-bold text-white">{stats.total}</p>
-        </div>
-
-        <div className="glass-panel p-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between mb-3 gap-2">
-            <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-              <i className="fas fa-dollar-sign text-green-400 text-sm"></i>
-            </div>
-            <span className="text-xs text-gray-400 sm:text-right">{t("adminConsole.transactions.statTotalRevenue", { defaultValue: "Total Revenue" })}</span>
-          </div>
-          <p className="text-xl sm:text-2xl font-bold text-green-400">{formatCurrency(stats.totalRevenue)}</p>
-        </div>
-
-        <div className="glass-panel p-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between mb-3 gap-2">
-            <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
-              <i className="fas fa-percent text-purple-400 text-sm"></i>
-            </div>
-            <span className="text-xs text-gray-400 sm:text-right">{t("adminConsole.transactions.statTotalCommission", { defaultValue: "Total Commission" })}</span>
-          </div>
-          <p className="text-xl sm:text-2xl font-bold text-purple-400">{formatCurrency(stats.totalCommission)}</p>
-        </div>
-
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3 md:gap-4 mb-6">
         <div className="glass-panel p-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between mb-3 gap-2">
             <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
