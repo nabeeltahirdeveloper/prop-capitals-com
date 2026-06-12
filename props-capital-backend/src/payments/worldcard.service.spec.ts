@@ -1,8 +1,22 @@
 import * as crypto from 'crypto';
-import {
-  normalizeWorldCardPaymentStatus,
-  WorldCardWebhookService,
-} from './worldcard.service';
+
+jest.mock(
+  'src/utils/generate-password.util',
+  () => ({
+    generatePassword: jest.fn(() => 'generated-password'),
+  }),
+  { virtual: true },
+);
+jest.mock(
+  'src/email/email.service',
+  () => ({
+    EmailService: class {},
+  }),
+  { virtual: true },
+);
+
+const { normalizeWorldCardPaymentStatus, WorldCardWebhookService } =
+  jest.requireActual('./worldcard.service');
 
 const reverseString = (value: string) => value.split('').reverse().join('');
 
