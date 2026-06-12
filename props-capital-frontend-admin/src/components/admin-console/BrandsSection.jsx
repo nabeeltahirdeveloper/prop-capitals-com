@@ -165,10 +165,7 @@ export default function BrandsSection() {
           )}
           <button
             onClick={toggleSelectMode}
-            style={selectMode
-              ? { background: '#dc2626', color: '#fff', padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 600 }
-              : { background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.3)', cursor: 'pointer', fontWeight: 600 }
-            }
+            className={`action-btn ${selectMode ? 'btn-danger' : 'btn-secondary'}`}
           >
             <i className={`fas ${selectMode ? 'fa-times' : 'fa-check-double'} mr-2`}></i>
             {selectMode ? t("adminConsole.brands.cancelSelection", { defaultValue: "Cancel Selection" }) : t("adminConsole.brands.select", { defaultValue: "Select" })}
