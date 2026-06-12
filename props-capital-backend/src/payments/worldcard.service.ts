@@ -78,6 +78,57 @@ interface WorldCardChargeInput {
   payerIp?: string;
 }
 
+const WORLDCARD_SUCCESS_STATUSES = new Set([
+  'APPROVED',
+  'AUTHORISED',
+  'AUTHORIZED',
+  'CAPTURE_SUCCESS',
+  'CAPTURED',
+  'CAPTURESUCCESS',
+  'COMPLETED',
+  'PAID',
+  'SETTLED',
+  'SUCCESS',
+]);
+
+const WORLDCARD_FAILED_STATUSES = new Set([
+  'CANCELED',
+  'CANCELLED',
+  'DECLINED',
+  'ERROR',
+  'EXPIRED',
+  'FAIL',
+  'FAILED',
+  'REVERSED',
+  'VOIDED',
+]);
+
+export function normalizeWorldCardPaymentStatus(
+  result: string,
+  status: string,
+): 'pending' | 'failed' | 'succeeded' {
+  const r = String(result || '')
+    .trim()
+    .toUpperCase();
+  const s = String(status || '')
+    .trim()
+    .toUpperCase();
+
+  if (WORLDCARD_FAILED_STATUSES.has(r) || WORLDCARD_FAILED_STATUSES.has(s)) {
+    return 'failed';
+  }
+
+  if (WORLDCARD_SUCCESS_STATUSES.has(s)) {
+    return 'succeeded';
+  }
+
+  if (WORLDCARD_SUCCESS_STATUSES.has(r) && !s) {
+    return 'succeeded';
+  }
+
+  return 'pending';
+}
+
 @Injectable()
 export class WorldCardService {
   private readonly logger = new Logger(WorldCardService.name);
@@ -1195,8 +1246,13 @@ export class WorldCardService {
       };
     }
 
-    const result = String(wcResponse?.result ?? '').toUpperCase();
-    const txStatus = String(wcResponse?.status ?? '').toUpperCase();
+    const result = String(wcResponse?.result ?? '')
+      .trim()
+      .toUpperCase();
+    const txStatus = String(wcResponse?.status ?? '')
+      .trim()
+      .toUpperCase();
+    const normalizedStatus = normalizeWorldCardPaymentStatus(result, txStatus);
     const providerPaymentId = wcResponse?.trans_id
       ? String(wcResponse.trans_id)
       : null;
@@ -1242,18 +1298,18 @@ export class WorldCardService {
       };
     }
 
-    // ── Branch 2: SUCCESS / SETTLED ─────────────────────────────────
+    // ── Branch 2: gateway-approved / still-capturing success variants ─
     if (
-      result === 'SUCCESS' &&
-      (txStatus === 'SETTLED' || txStatus === 'PENDING')
+      normalizedStatus === 'succeeded' ||
+      (result === 'SUCCESS' && txStatus === 'PENDING')
     ) {
-      const succeeded = txStatus === 'SETTLED';
+      const succeeded = normalizedStatus === 'succeeded';
       await (this.prisma.payment as any).update({
         where: { id: payment.id },
         data: {
           status: succeeded ? 'succeeded' : 'pending',
           providerPaymentId,
-          orderStatus: txStatus,
+          orderStatus: txStatus || result,
           callbackPayload: wcResponse,
         },
       });
@@ -1474,20 +1530,6 @@ export class WorldCardWebhookService {
     throw new BadRequestException('Invalid callback hash');
   }
 
-  private normalizeStatus(
-    result: string,
-    status: string,
-  ): 'pending' | 'failed' | 'succeeded' {
-    const r = String(result || '').toUpperCase();
-    const s = String(status || '').toUpperCase();
-    if (r === 'SUCCESS' && (s === 'SETTLED' || s === 'SUCCESS'))
-      return 'succeeded';
-    if (r === 'DECLINED' || r === 'FAIL' || r === 'FAILED' || r === 'ERROR')
-      return 'failed';
-    if (s === 'DECLINED' || s === 'FAIL') return 'failed';
-    return 'pending';
-  }
-
   async handleCallback(payload: any) {
     const orderId = this.requireString(payload.order_id, 'order_id');
     const result = this.requireString(payload.result, 'result');
@@ -1530,7 +1572,7 @@ export class WorldCardWebhookService {
     const providerPaymentId = payload.trans_id
       ? String(payload.trans_id)
       : null;
-    const nextStatus = this.normalizeStatus(result, status);
+    const nextStatus = normalizeWorldCardPaymentStatus(result, status);
 
     // Never downgrade a succeeded payment.
     if (payment.status === 'succeeded') {
