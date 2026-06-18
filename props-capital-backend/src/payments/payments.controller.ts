@@ -153,10 +153,7 @@ export class PaymentsController {
     });
   }
 
-  // ─── WorldCard: Server-to-Server SALE charge ────────────────────────
-  // Mirrors /payments/xoala/charge but routes the request through the
-  // WorldCard S2S APM protocol. Body must include `card` details; the
-  // backend re-derives brand and never persists PAN/CVV.
+  
   @Post('worldcard/charge')
   @UseGuards(OptionalJwtAuthGuard)
   async worldCardCharge(@Body() body: any, @Req() req: Request) {
@@ -164,10 +161,8 @@ export class PaymentsController {
       userId: string;
       email: string;
     } | null;
-    // Pull the cardholder IP — WorldCard requires it. Prefer the
-    // express-resolved req.ip (honors trust-proxy when configured),
-    // fall back to the X-Forwarded-For header for environments where
-    // trust-proxy isn't set.
+
+
     const xff = String(req.headers['x-forwarded-for'] || '')
       .split(',')[0]
       ?.trim();

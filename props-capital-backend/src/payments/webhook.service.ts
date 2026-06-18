@@ -9,6 +9,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { PaymentsService } from './payments.service';
+import { TradingAccountStatus } from '@prisma/client';
 import * as crypto from 'crypto';
 
 // Handles the Xoala server-to-server notification/callback.
@@ -120,6 +121,22 @@ export class XoalaWebhookService {
     return 'pending';
   }
 
+  // Post-payment reversal events Xoala may push to the same callback URL:
+  // a chargeback (card-network dispute) or a refund/reversal. These arrive
+  // AFTER a payment already succeeded, so they must be allowed to override
+  // an already-`succeeded` payment (see handleReversal). Returns the terminal
+  // status to set, or null for a normal forward payment result.
+  private reversalStatus(raw: string): 'chargedback' | 'refunded' | null {
+    const s = String(raw || '')
+      .trim()
+      .toLowerCase();
+    if (['chargeback', 'chargedback', 'charge_back'].includes(s))
+      return 'chargedback';
+    if (['refund', 'refunded', 'reversal', 'reversed'].includes(s))
+      return 'refunded';
+    return null;
+  }
+
   async handleCallback(payload: any) {
     const merchantTransactionId = this.requireString(
       payload.merchantTransactionId,
@@ -154,15 +171,32 @@ export class XoalaWebhookService {
       );
     }
 
+    // A chargeback/refund arrives after the original payment, so it may carry
+    // a partial (refund) or full (chargeback) amount — don't enforce strict
+    // equality for those, only for forward payment results.
+    const reversal = this.reversalStatus(statusRaw);
+
     const callbackAmountCents = Math.round(Number(amountRaw) * 100);
     if (Number.isNaN(callbackAmountCents)) {
       throw new BadRequestException('Invalid amount');
     }
-    if (payment.amount !== callbackAmountCents) {
+    if (!reversal && payment.amount !== callbackAmountCents) {
       this.logger.warn(
         `Amount mismatch: stored=${payment.amount}c, callback=${callbackAmountCents}c (raw="${amountRaw}")`,
       );
       throw new BadRequestException('Payment amount mismatch');
+    }
+
+    // Chargeback / refund: override the payment status even if it was already
+    // `succeeded`, and disable the provisioned challenge account.
+    if (reversal) {
+      return this.handleReversal(
+        payment,
+        reversal,
+        statusRaw,
+        providerPaymentId,
+        payload,
+      );
     }
 
     const nextStatus = this.normalizeStatus(statusRaw);
@@ -234,6 +268,63 @@ export class XoalaWebhookService {
     return {
       ok: true,
       message: 'Callback processed successfully',
+      paymentStatus: updatedPayment.status,
+    };
+  }
+
+  // Handles a chargeback/refund callback. Unlike a normal result, this is
+  // allowed to override an already-`succeeded` payment and revokes the
+  // provisioned challenge account so the customer can't keep an account they
+  // charged back / had refunded.
+  private async handleReversal(
+    payment: any,
+    reversal: 'chargedback' | 'refunded',
+    statusRaw: string,
+    providerPaymentId: string,
+    payload: any,
+  ) {
+    const updatedPayment = await this.prisma.payment.update({
+      where: { id: payment.id },
+      data: {
+        providerPaymentId,
+        orderStatus: statusRaw,
+        callbackPayload: payload,
+        failureReason: payload.resultDescription
+          ? String(payload.resultDescription)
+          : `Payment ${reversal} (status="${statusRaw}")`,
+        status: reversal,
+      },
+    });
+
+    this.logger.warn(
+      `Xoala ${reversal} callback: ref=${updatedPayment.reference}, payment marked "${reversal}"`,
+    );
+
+    // Disable the provisioned trading account, if any.
+    if (payment.tradingAccountId) {
+      try {
+        await this.prisma.tradingAccount.update({
+          where: { id: payment.tradingAccountId },
+          data: { status: TradingAccountStatus.DISQUALIFIED },
+        });
+        this.logger.warn(
+          `Disabled trading account ${payment.tradingAccountId} due to ${reversal} on ref=${updatedPayment.reference}`,
+        );
+      } catch (err: any) {
+        this.logger.error(
+          `Failed to disable trading account ${payment.tradingAccountId} for ${reversal} ref=${updatedPayment.reference}: ${err?.message}`,
+          err?.stack,
+        );
+      }
+    } else {
+      this.logger.warn(
+        `No trading account linked to ref=${updatedPayment.reference}; nothing to disable for ${reversal}`,
+      );
+    }
+
+    return {
+      ok: true,
+      message: `Payment ${reversal}; account disabled`,
       paymentStatus: updatedPayment.status,
     };
   }

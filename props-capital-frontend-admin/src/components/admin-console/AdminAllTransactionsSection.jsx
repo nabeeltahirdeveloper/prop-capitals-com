@@ -463,14 +463,22 @@ export default function AdminAllTransactionsSection() {
     pending: transactions.filter(tx => tx.payment_status === 'pending').length,
   };
 
-  // Filter transactions by search query and payment method
+  // Filter transactions by search query, payment method, and brand
   const filteredTransactions = transactions.filter(tx => {
-    // Payment method filter
+    // Payment method filter — match against either field so worldcard /
+    // xoala (stored in provider) and any payment_method values both work.
     if (paymentMethodFilter !== 'all') {
-      const txMethod = (tx.payment_method || 'card').toLowerCase();
-      if (txMethod !== paymentMethodFilter) return false;
+      const provider = String(tx.provider || '').toLowerCase();
+      const method = String(tx.payment_method || '').toLowerCase();
+      if (provider !== paymentMethodFilter && method !== paymentMethodFilter) return false;
     }
-    
+
+    // Brand filter — client-side guarantee even if the backend doesn't
+    // honor the `brand` query param.
+    if (brandFilter !== 'all') {
+      if (String(tx.brand_id ?? '') !== String(brandFilter)) return false;
+    }
+
     // Search query filter
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
@@ -628,9 +636,8 @@ export default function AdminAllTransactionsSection() {
               className="search-input p-3 rounded-lg w-full"
             >
               <option value="all">{t("adminConsole.transactions.allMethods", { defaultValue: "All Methods" })}</option>
-              <option value="card">💳 {t("adminConsole.transactions.card", { defaultValue: "Card" })}</option>
-              <option value="applepay">🍎 {t("adminConsole.transactions.applePay", { defaultValue: "Apple Pay" })}</option>
-              <option value="googlepay">🔵 {t("adminConsole.transactions.googlePay", { defaultValue: "Google Pay" })}</option>
+              <option value="worldcard">{t("adminConsole.transactions.worldcard", { defaultValue: "WorldCard" })}</option>
+              <option value="xoala">{t("adminConsole.transactions.xoala", { defaultValue: "Xoala" })}</option>
             </select>
           </div>
           </div>
