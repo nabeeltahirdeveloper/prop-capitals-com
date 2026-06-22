@@ -94,7 +94,8 @@ export class MarketDataController {
       throw new BadRequestException('Symbol parameter is required');
     }
 
-    const limitNum = Math.min(parseInt(limit, 10) || 100, 5000); // Cap at 5000
+    // instead of being truncated to a short window.
+    const limitNum = Math.min(parseInt(limit, 10) || 100, 50000);
     const validTimeframes = [
       'M1',
       'M5',
@@ -136,7 +137,9 @@ export class MarketDataController {
     if (!symbol) {
       throw new BadRequestException('Symbol parameter is required');
     }
-    const limitNum = Math.min(parseInt(limit, 10) || 500, 1000);
+    // Cap at 30000. Binance returns max 1000/request; the service paginates
+    // backwards to fill deeper history for higher/intraday timeframes.
+    const limitNum = Math.min(parseInt(limit, 10) || 500, 30000);
     return this.marketDataService.getCryptoCandles(symbol, timeframe, limitNum);
   }
 

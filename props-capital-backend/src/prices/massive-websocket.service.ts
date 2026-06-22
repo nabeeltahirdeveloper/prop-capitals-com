@@ -71,6 +71,11 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
   private readonly HISTORY_TIMEOUT_MS = 10000;
   private readonly HISTORY_MAX_RETRIES = 2;
   private readonly HISTORY_RETRY_DELAY_MS = 1000;
+  // Massive paginates aggregates via a `next_url` cursor (~890 bars/page at the
+  // max page limit). Follow it up to this many pages so higher/intraday
+  // timeframes get deep history (~30 × 890 ≈ 26k bars ≈ 2.5y of H1) instead of
+  // one page. Results are cached, so the page-walk cost is paid once per TF.
+  private readonly HISTORY_MAX_PAGES = 30;
 
   constructor(private configService: ConfigService) {
     this.apiKey = this.configService.get<string>('MASSIVE_API_KEY') || '';
@@ -432,10 +437,70 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
     // Calculate date range based on limit
     const { from, to } = this.calculateDateRange(limit, multiplier, timespan);
 
-    // Build API URL
-    const url = `https://api.massive.com/v2/aggs/ticker/${massiveTicker}/range/${multiplier}/${timespan}/${from}/${to}?adjusted=true&sort=desc&limit=${limit}`;
+    // Build the first page URL. sort=desc returns newest bars first; we then
+    // follow `next_url` (cursor pagination) backwards in time until we have
+    // enough bars or hit the page cap.
+    //
+    // Quirk: Massive's per-page size scales with the `limit` query param
+    // (≈ limit/57 bars per page). So we always request the max page limit
+    // (50000 → ~890 bars/page) for the fewest round-trips, and stop once we've
+    // collected the caller's target count. Using the caller's (smaller) limit
+    // here would yield tiny pages and truncate higher/intraday timeframes.
+    const PAGE_LIMIT = 50000;
+    let url:
+      | string
+      | null = `https://api.massive.com/v2/aggs/ticker/${massiveTicker}/range/${multiplier}/${timespan}/${from}/${to}?adjusted=true&sort=desc&limit=${PAGE_LIMIT}`;
 
-    // Make request with timeout
+    const rawBars: any[] = [];
+    let page = 0;
+
+    while (url && page < this.HISTORY_MAX_PAGES && rawBars.length < limit) {
+      const data = await this.fetchAggregatePage(url, symbol);
+
+      if (data.status !== 'OK' || !data.results || data.results.length === 0) {
+        // Normal "no data" / end of history — stop paginating.
+        break;
+      }
+
+      rawBars.push(...data.results);
+      page++;
+
+      // `next_url` carries the cursor + query params (but not auth). Follow it
+      // to get older bars; stop once Massive has no more pages.
+      url = data.next_url || null;
+    }
+
+    if (rawBars.length === 0) {
+      return [];
+    }
+
+    // Pages arrive newest→oldest (sort=desc). Keep the newest `limit` bars,
+    // then reverse to ascending order for lightweight-charts.
+    const trimmed =
+      rawBars.length > limit ? rawBars.slice(0, limit) : rawBars;
+
+    const candles: Candlestick[] = trimmed
+      .map((bar: any) => ({
+        time: Math.floor(bar.t / 1000), // ✅ seconds (lightweight-charts standard)
+        open: bar.o,
+        high: bar.h,
+        low: bar.l,
+        close: bar.c,
+        volume: bar.v || 0,
+      }))
+      .reverse();
+
+    this.logger.debug(
+      `[Massive REST] Fetched ${candles.length} candles for ${symbol} ${timeframe} across ${page} page(s)`,
+    );
+    return candles;
+  }
+
+  /**
+   * Fetch a single aggregates page (initial URL or a `next_url` cursor) with
+   * timeout + abort handling. Returns the parsed JSON body.
+   */
+  private async fetchAggregatePage(url: string, symbol: string): Promise<any> {
     const controller = new AbortController();
     const timeoutId = setTimeout(
       () => controller.abort(),
@@ -459,39 +524,7 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
         );
       }
 
-      const data = await response.json();
-
-      if (data.status !== 'OK' || !data.results || data.results.length === 0) {
-        // This is a normal "no data" response, not an error
-        return [];
-      }
-
-      // Convert to Candlestick format
-      // const candles: Candlestick[] = data.results.map((bar: any) => ({
-      //   time: bar.t,
-      //   open: bar.o,
-      //   high: bar.h,
-      //   low: bar.l,
-      //   close: bar.c,
-      //   volume: bar.v || 0,
-      // }));
-      // API returns desc order (newest first) so we get today's candles within the limit
-      // Reverse to ascending for the chart
-      const candles: Candlestick[] = data.results
-        .map((bar: any) => ({
-          time: Math.floor(bar.t / 1000), // ✅ seconds (lightweight-charts standard)
-          open: bar.o,
-          high: bar.h,
-          low: bar.l,
-          close: bar.c,
-          volume: bar.v || 0,
-        }))
-        .reverse();
-
-      this.logger.debug(
-        `[Massive REST] Fetched ${candles.length} candles for ${symbol} ${timeframe}`,
-      );
-      return candles;
+      return await response.json();
     } catch (error) {
       clearTimeout(timeoutId);
 
