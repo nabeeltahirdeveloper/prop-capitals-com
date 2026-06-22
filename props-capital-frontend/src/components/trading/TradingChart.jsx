@@ -24,16 +24,19 @@ import { useTraderTheme } from "../trader/TraderPanelLayout";
 import BuySellPanel from "../trader/BuySellPanel";
 import MarketExecutionModal from "../trader/MarketExecutionModal";
 
-// MT5/TradingView-style: default history (days) per timeframe for dynamic range
+// MT5/TradingView-style: default history (days) per timeframe for dynamic range.
+// The backend paginates Massive's `next_url` cursor (up to ~25 pages of ~880
+// bars) to fetch deep history, so these windows are sized for useful depth vs.
+// page-walking cost: full 10y on D1/W1/MN, multi-year on H1/H4, months intraday.
 const TIMEFRAME_DEFAULT_DAYS = {
-  M1: 3,
-  M5: 7,
-  M15: 14,
-  M30: 30,
-  H1: 90,
-  H4: 180,
-  D1: 1095, // 3 years
-  W1: 1825, // 5 years
+  M1: 7, // ~1 week  (~10k bars)
+  M5: 30, // ~1 month
+  M15: 90, // ~3 months
+  M30: 180, // ~6 months
+  H1: 730, // 2 years
+  H4: 1825, // 5 years
+  D1: 3650, // 10 years
+  W1: 3650, // 10 years
   MN: 3650, // 10 years
 };
 
@@ -62,7 +65,10 @@ function getLimitForTimeframe(timeframe, daysBack) {
   const needed = Math.ceil(
     days * (typeof barsPerDay === "number" ? barsPerDay : 96),
   );
-  return Math.min(Math.max(needed, 500), 5000);
+  // Cap at 20000 bars. The backend derives the from→to window from this limit
+  // and paginates Massive's cursor to fill it; 20k keeps page-walking bounded
+  // (~25 pages) while still giving years of intraday history.
+  return Math.min(Math.max(needed, 500), 20000);
 }
 
 /**

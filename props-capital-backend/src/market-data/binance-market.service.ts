@@ -6,6 +6,10 @@ import { ResilientHttpService } from 'src/common/resilient-http.service';
 export class BinanceMarketService {
   private readonly logger = new Logger(BinanceMarketService.name);
   private readonly BINANCE_API = 'https://api.binance.com/api/v3';
+  // Binance returns at most 1000 klines/request; walk backwards with `endTime`
+  // up to this many pages so higher timeframes get deep history (30k candles).
+  private readonly BINANCE_MAX_PER_REQUEST = 1000;
+  private readonly BINANCE_MAX_PAGES = 30;
 
   constructor(private readonly httpService: ResilientHttpService) {}
 
@@ -103,8 +107,14 @@ export class BinanceMarketService {
     binanceSymbol: string,
     binanceInterval: string,
     limit: number = 500,
+    endTime?: number,
   ): Promise<Candlestick[]> {
-    const url = `${this.BINANCE_API}/klines?symbol=${binanceSymbol}&interval=${binanceInterval}&limit=${limit}`;
+    // Binance caps `limit` at 1000 per request. `endTime` (ms) lets us walk
+    // backwards in time for deep history (see fetchCandlesPaginated).
+    let url = `${this.BINANCE_API}/klines?symbol=${binanceSymbol}&interval=${binanceInterval}&limit=${Math.min(limit, 1000)}`;
+    if (endTime) {
+      url += `&endTime=${endTime}`;
+    }
 
     this.logger.debug(`[Binance] Fetching candles: ${url}`);
 
@@ -168,6 +178,59 @@ export class BinanceMarketService {
   }
 
   /**
+   * Fetch deep history by paginating Binance klines backwards via `endTime`.
+   * Binance caps each request at 1000 candles; we keep requesting older pages
+   * until we have `targetLimit` candles, a page comes back short (no more
+   * history), or we hit the page cap. Returns ascending, deduped candles.
+   */
+  private async fetchCandlesPaginated(
+    binanceSymbol: string,
+    binanceInterval: string,
+    targetLimit: number,
+  ): Promise<Candlestick[]> {
+    const perReq = this.BINANCE_MAX_PER_REQUEST;
+
+    // Fast path: a single request covers it.
+    if (targetLimit <= perReq) {
+      return this.fetchCandlesFromBinance(
+        binanceSymbol,
+        binanceInterval,
+        targetLimit,
+      );
+    }
+
+    const byTime = new Map<number, Candlestick>();
+    let endTime: number | undefined = undefined; // ms; undefined = most recent
+    let page = 0;
+
+    while (byTime.size < targetLimit && page < this.BINANCE_MAX_PAGES) {
+      const batch = await this.fetchCandlesFromBinance(
+        binanceSymbol,
+        binanceInterval,
+        perReq,
+        endTime,
+      );
+      if (batch.length === 0) break;
+
+      // Binance returns ascending (oldest first); dedupe overlaps by time.
+      for (const c of batch) byTime.set(c.time, c);
+      page++;
+
+      // Short page => no older history available.
+      if (batch.length < perReq) break;
+
+      // Next page ends just before this batch's oldest candle.
+      endTime = batch[0].time * 1000 - 1;
+    }
+
+    const sorted = Array.from(byTime.values()).sort((a, b) => a.time - b.time);
+    this.logger.debug(
+      `[Binance] Paginated ${sorted.length} candles for ${binanceSymbol} ${binanceInterval} across ${page} page(s)`,
+    );
+    return sorted.length > targetLimit ? sorted.slice(-targetLimit) : sorted;
+  }
+
+  /**
    * Get crypto candles from Binance (with caching)
    */
   async getCryptoCandles(
@@ -183,20 +246,22 @@ export class BinanceMarketService {
     const cacheKey = `binance:candles:${binanceSymbol}:${binanceInterval}`;
     const cacheTTL = this.CACHE_TTL[timeframe] || 60000;
 
-    // Check cache
+    // Check cache. Only serve it if it holds at least as many candles as
+    // requested (cache key has no limit, so a small earlier fetch must not
+    // starve a later deeper request).
     const cached = this.candlesCache.get(cacheKey);
-    if (cached && this.isCacheValid(cached)) {
+    if (cached && this.isCacheValid(cached) && cached.data.length >= limit) {
       this.logger.debug(
         `[Binance] Cache hit for ${symbol} ${timeframe} (${cached.data.length} candles)`,
       );
       return cached.data.slice(-limit);
     }
 
-    // Fetch from Binance
+    // Fetch from Binance (paginated for deep history beyond the 1000/req cap)
     this.logger.log(
       `[Binance] Fetching fresh candles for ${symbol} (${binanceSymbol}) ${timeframe} (${binanceInterval})`,
     );
-    const candles = await this.fetchCandlesFromBinance(
+    const candles = await this.fetchCandlesPaginated(
       binanceSymbol,
       binanceInterval,
       limit,
