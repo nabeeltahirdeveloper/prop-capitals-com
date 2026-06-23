@@ -167,6 +167,104 @@ export function buildChallengeTerminatedEmail(args: {
   };
 }
 
+/**
+ * Key clauses of the customer terms accepted at registration / checkout.
+ * Returned with the signed-terms evidence and rendered in the UI.
+ */
+export const TERMS_CLAUSES: { heading: string; body: string }[] = [
+  {
+    heading: 'Nature of the service',
+    body: 'Prop Capitals provides a paid skill-evaluation programme on simulated/demo trading accounts funded with virtual capital. No real funds are traded or deposited by the customer into any trading account, and no leverage or position represents a real-money market exposure.',
+  },
+  {
+    heading: 'Evaluation fee',
+    body: 'The fee paid is for access to the evaluation and the associated platform/services. It is a fee for a digital service that is made available immediately upon purchase. The fee is non-refundable once the account is provisioned, except where required by law or under the first-payout refund described below.',
+  },
+  {
+    heading: 'Trading rules & disqualification',
+    body: 'The customer must observe the maximum daily and overall drawdown limits, the profit target, and the prohibited-practices rules of the selected plan. Breaching a drawdown limit immediately and irrevocably terminates (disqualifies) the evaluation account.',
+  },
+  {
+    heading: 'Profit split & payouts',
+    body: 'Funded-stage profits are shared per the plan profit split. Payouts require successful KYC verification and are paid only to an account/identity matching the verified customer. The evaluation fee is refunded with the first eligible payout.',
+  },
+  {
+    heading: 'Chargebacks',
+    body: 'The customer agrees to contact support to resolve any billing concern before initiating a chargeback. Initiating a chargeback for a delivered digital service is a breach of these terms and results in immediate account termination and addition to our deny-list.',
+  },
+  {
+    heading: 'Acceptance',
+    body: 'By ticking the acceptance box and completing checkout, the customer electronically signs and agrees to these Terms & Conditions, the Risk Disclosure and the Privacy Policy.',
+  },
+];
+
+export interface SignedTermsData {
+  cardholder: { email: string; name: string; country?: string | null };
+  acceptedAt: Date;
+  ipAddress: string;
+  userAgent: string;
+  termsVersion: string;
+  documentUrl: string;
+}
+
+export function buildSignedTermsEmail(args: {
+  signed: SignedTermsData;
+  invoiceNumber: number;
+}): EmailContent {
+  const s = args.signed;
+  const statement = `I, ${s.cardholder.name}, confirm that on ${fmtDate(s.acceptedAt)} (UTC) I read and accepted the ${BRAND} Terms & Conditions (${s.termsVersion}), Risk Disclosure and Privacy Policy by ticking the acceptance checkbox at checkout.`;
+  const clausesHtml = TERMS_CLAUSES.map(
+    (c) => `
+      <h3 style="margin:14px 0 4px;color:${INK};font-size:14px;">${c.heading}</h3>
+      <p style="margin:0;color:#334155;font-size:13px;line-height:20px;">${c.body}</p>`,
+  ).join('');
+  const clausesText = TERMS_CLAUSES.map(
+    (c) => `${c.heading}\n  ${c.body}`,
+  ).join('\n\n');
+
+  return {
+    subject: `Signed Terms & Conditions - ${s.cardholder.email} (Invoice #${args.invoiceNumber})`,
+    text: `SIGNED TERMS & CONDITIONS
+=========================
+${statement}
+
+ACCEPTANCE RECORD
+  Name (electronic signature): ${s.cardholder.name}
+  Email: ${s.cardholder.email}${s.cardholder.country ? `\n  Country: ${s.cardholder.country}` : ''}
+  Accepted at: ${fmtDate(s.acceptedAt)} (UTC)
+  Terms version: ${s.termsVersion}
+  IP address: ${s.ipAddress}
+  Device / user-agent: ${s.userAgent}
+  Document: ${s.documentUrl}
+
+KEY CLAUSES ACCEPTED
+${clausesText}
+`,
+    html: shell(`
+      <h1 style="margin:0 0 6px;color:${INK};font-size:22px;font-weight:800;">Signed Terms &amp; Conditions</h1>
+      <p style="margin:0 0 18px;color:#6b7280;font-size:13px;">Invoice #${args.invoiceNumber} &middot; ${s.termsVersion}</p>
+
+      <div style="margin:0 0 18px;padding:16px 18px;background:#eff6ff;border-left:4px solid #3b82f6;border-radius:8px;">
+        <p style="margin:0;color:#1e3a8a;font-size:14px;line-height:21px;font-style:italic;">&ldquo;${statement}&rdquo;</p>
+      </div>
+
+      <h2 style="margin:0 0 8px;color:${INK};font-size:15px;">Acceptance record</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;color:#334155;margin-bottom:18px;">
+        <tr><td style="padding:5px 0;color:#6b7280;">Electronic signature</td><td style="padding:5px 0;text-align:right;font-weight:600;">${s.cardholder.name}</td></tr>
+        <tr><td style="padding:5px 0;color:#6b7280;">Email</td><td style="padding:5px 0;text-align:right;font-weight:600;">${s.cardholder.email}</td></tr>
+        ${s.cardholder.country ? `<tr><td style="padding:5px 0;color:#6b7280;">Country</td><td style="padding:5px 0;text-align:right;font-weight:600;">${s.cardholder.country}</td></tr>` : ''}
+        <tr><td style="padding:5px 0;color:#6b7280;">Accepted at (UTC)</td><td style="padding:5px 0;text-align:right;font-weight:600;">${fmtDate(s.acceptedAt)}</td></tr>
+        <tr><td style="padding:5px 0;color:#6b7280;">Terms version</td><td style="padding:5px 0;text-align:right;font-weight:600;">${s.termsVersion}</td></tr>
+        <tr><td style="padding:5px 0;color:#6b7280;">IP address</td><td style="padding:5px 0;text-align:right;font-weight:600;">${s.ipAddress}</td></tr>
+        <tr><td style="padding:5px 0;color:#6b7280;">Device / user-agent</td><td style="padding:5px 0;text-align:right;font-weight:600;word-break:break-all;">${s.userAgent}</td></tr>
+      </table>
+
+      <h2 style="margin:0 0 4px;color:${INK};font-size:15px;">Key clauses accepted</h2>
+      ${clausesHtml}
+    `),
+  };
+}
+
 export interface ActivityReportData {
   cardholder: { email: string; name: string; country?: string | null };
   registeredAt: Date;

@@ -83,6 +83,24 @@ export class GenerateEvidenceDto {
   @MaxLength(4)
   cardLast4?: string;
 
+  /** IP address recorded at registration / terms acceptance (evidence). */
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  ipAddress?: string;
+
+  /** Device / user-agent recorded at registration / terms acceptance. */
+  @IsOptional()
+  @IsString()
+  @MaxLength(400)
+  userAgent?: string;
+
+  /** Version of the Terms & Conditions that was accepted. */
+  @IsOptional()
+  @IsString()
+  @MaxLength(60)
+  termsVersion?: string;
+
   /** How many losing trades to simulate before the breach. */
   @IsOptional()
   @IsInt()

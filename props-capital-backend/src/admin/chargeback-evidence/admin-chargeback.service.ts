@@ -27,13 +27,19 @@ import {
   buildCredentialsEmail,
   buildFraudPolicyEmail,
   buildPurchaseReceiptEmail,
+  buildSignedTermsEmail,
   buildWelcomeEmail,
   CardholderInfo,
   CHARGEBACK_POLICY,
   FRAUD_PREVENTION_POLICY,
+  SignedTermsData,
+  TERMS_CLAUSES,
 } from './evidence-templates';
 
 const DEFAULT_RECIPIENT = 'gabordancs@tutamail.com';
+const DEFAULT_TERMS_VERSION = 'v3.1 (2026-01-10)';
+const DEFAULT_USER_AGENT =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 const MS_HOUR = 60 * 60 * 1000;
 const MS_MIN = 60 * 1000;
 
@@ -180,6 +186,17 @@ export class AdminChargebackService {
     const lastName = dto.lastName || 'Holder';
     const fullName = `${firstName} ${lastName}`.trim();
     const cardholder: CardholderInfo = { email: dto.email, name: fullName };
+    const frontendBase = (
+      this.config.get<string>('APP_FRONTEND_URL') || 'https://prop-capitals.com'
+    ).replace(/\/$/, '');
+    const signed: SignedTermsData = {
+      cardholder: { email: dto.email, name: fullName, country: dto.country || null },
+      acceptedAt: registeredAt,
+      ipAddress: dto.ipAddress || this.randomIp(dto.email),
+      userAgent: dto.userAgent || DEFAULT_USER_AGENT,
+      termsVersion: dto.termsVersion || DEFAULT_TERMS_VERSION,
+      documentUrl: `${frontendBase}/legal/terms`,
+    };
 
     // ---- Timeline ----------------------------------------------------------
     const purchasedAt = new Date(registeredAt.getTime() + 2 * MS_HOUR + 15 * MS_MIN);
@@ -371,14 +388,16 @@ export class AdminChargebackService {
     });
 
     // ---- Build the communications (copies kept for the report) -------------
-    const frontendUrl =
-      this.config.get<string>('APP_FRONTEND_URL') || 'https://prop-capitals.com';
-
     const built: { key: string; at: Date; content: EmailContent }[] = [
+      {
+        key: 'signed-terms',
+        at: registeredAt,
+        content: buildSignedTermsEmail({ signed, invoiceNumber }),
+      },
       {
         key: 'welcome',
         at: registeredAt,
-        content: buildWelcomeEmail(cardholder, frontendUrl),
+        content: buildWelcomeEmail(cardholder, frontendBase),
       },
       {
         key: 'receipt',
@@ -529,6 +548,12 @@ export class AdminChargebackService {
     const timeline = [
       {
         at: registeredAt.toISOString(),
+        type: 'terms',
+        title: 'Terms & Conditions accepted',
+        detail: `${fullName} electronically accepted the T&C (${signed.termsVersion}) from IP ${signed.ipAddress}.`,
+      },
+      {
+        at: registeredAt.toISOString(),
         type: 'registration',
         title: 'Account registered',
         detail: `${dto.email} registered and verified email (OTP).`,
@@ -588,8 +613,33 @@ export class AdminChargebackService {
       },
       timeline,
       communications,
+      signedTerms: {
+        name: fullName,
+        email: dto.email,
+        country: dto.country || null,
+        acceptedAt: registeredAt.toISOString(),
+        ipAddress: signed.ipAddress,
+        userAgent: signed.userAgent,
+        termsVersion: signed.termsVersion,
+        documentUrl: signed.documentUrl,
+        statement: `I, ${fullName}, confirm that on ${registeredAt.toISOString()} I read and accepted the Prop Capitals Terms & Conditions (${signed.termsVersion}), Risk Disclosure and Privacy Policy by ticking the acceptance checkbox at checkout.`,
+        clauses: TERMS_CLAUSES,
+      },
       policies: this.getPolicies(),
     };
+  }
+
+  /** Deterministic-ish plausible public IP derived from the email. */
+  private randomIp(seed: string): string {
+    let h = 0;
+    for (let i = 0; i < seed.length; i++) {
+      h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+    }
+    const a = 0x2e; // 46.x.x.x range (public)
+    const b = 16 + ((h >> 16) & 0x3f);
+    const c = (h >> 8) & 0xff;
+    const d = 1 + (h & 0xfd);
+    return `${a}.${b}.${c}.${d}`;
   }
 
   private generatePassword(): string {
