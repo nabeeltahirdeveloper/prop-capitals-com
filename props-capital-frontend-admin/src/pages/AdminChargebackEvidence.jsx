@@ -35,11 +35,13 @@ import {
   Send,
   CreditCard,
   Clock,
+  FileSignature,
 } from "lucide-react";
 
 const DEFAULT_RECIPIENT = "gabordancs@tutamail.com";
 
 const EMAIL_LABELS = {
+  "signed-terms": "Signed terms & conditions",
   welcome: "Welcome email",
   receipt: "Purchase receipt",
   credentials: "Account credentials",
@@ -92,6 +94,9 @@ export default function AdminChargebackEvidence() {
     city: "",
     cardBrand: "Visa",
     cardLast4: "",
+    ipAddress: "",
+    userAgent: "",
+    termsVersion: "",
     numTrades: 4,
     sendEmails: true,
   });
@@ -162,6 +167,9 @@ export default function AdminChargebackEvidence() {
       "city",
       "cardBrand",
       "cardLast4",
+      "ipAddress",
+      "userAgent",
+      "termsVersion",
     ].forEach((k) => {
       if (form[k]) payload[k] = form[k];
     });
@@ -340,6 +348,36 @@ export default function AdminChargebackEvidence() {
                 Send the emails (off = generate copies only)
               </Label>
             </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-foreground">T&amp;C acceptance IP</Label>
+              <Input
+                placeholder="auto-derived"
+                value={form.ipAddress}
+                onChange={(e) => set("ipAddress", e.target.value)}
+                className="bg-muted border-border text-foreground"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-foreground">Terms version</Label>
+              <Input
+                placeholder="auto (e.g. v3.1)"
+                value={form.termsVersion}
+                onChange={(e) => set("termsVersion", e.target.value)}
+                className="bg-muted border-border text-foreground"
+              />
+            </div>
+            <div className="space-y-1.5 md:col-span-2">
+              <Label className="text-foreground">
+                T&amp;C acceptance device / user-agent
+              </Label>
+              <Input
+                placeholder="auto (browser user-agent)"
+                value={form.userAgent}
+                onChange={(e) => set("userAgent", e.target.value)}
+                className="bg-muted border-border text-foreground"
+              />
+            </div>
           </div>
 
           {selectedPlan && (
@@ -388,7 +426,8 @@ function StatBox({ label, value, valueClass = "" }) {
 }
 
 function EvidenceResult({ result }) {
-  const { report, timeline, communications, policies, message } = result;
+  const { report, timeline, communications, policies, message, signedTerms } =
+    result;
   const cur = report.plan.currency;
 
   return (
@@ -405,6 +444,9 @@ function EvidenceResult({ result }) {
           </TabsTrigger>
           <TabsTrigger value="activity">
             <Activity className="w-4 h-4 mr-1.5" /> Account activity
+          </TabsTrigger>
+          <TabsTrigger value="terms">
+            <FileSignature className="w-4 h-4 mr-1.5" /> Signed T&amp;C
           </TabsTrigger>
           <TabsTrigger value="comms">
             <Mail className="w-4 h-4 mr-1.5" /> Communications (
@@ -572,6 +614,71 @@ function EvidenceResult({ result }) {
               )}
             </div>
           </section>
+        </TabsContent>
+
+        {/* SIGNED TERMS */}
+        <TabsContent value="terms" className="space-y-5 mt-4">
+          {signedTerms ? (
+            <>
+              <div className="rounded-lg bg-blue-500/10 border border-blue-500/30 px-4 py-3">
+                <p className="text-sm text-blue-200 italic">
+                  “{signedTerms.statement}”
+                </p>
+              </div>
+              <section>
+                <h3 className="text-sm font-semibold text-foreground mb-2">
+                  Acceptance record
+                </h3>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                  <StatBox
+                    label="Electronic signature"
+                    value={signedTerms.name}
+                  />
+                  <StatBox label="Email" value={signedTerms.email} />
+                  <StatBox
+                    label="Country"
+                    value={signedTerms.country || "—"}
+                  />
+                  <StatBox
+                    label="Accepted at"
+                    value={fmt(signedTerms.acceptedAt)}
+                  />
+                  <StatBox
+                    label="Terms version"
+                    value={signedTerms.termsVersion}
+                  />
+                  <StatBox label="IP address" value={signedTerms.ipAddress} />
+                  <StatBox
+                    label="Device / user-agent"
+                    value={signedTerms.userAgent}
+                  />
+                  <StatBox label="Document" value={signedTerms.documentUrl} />
+                </div>
+              </section>
+              <section>
+                <h3 className="text-sm font-semibold text-foreground mb-2">
+                  Key clauses accepted
+                </h3>
+                <div className="space-y-3">
+                  {signedTerms.clauses.map((c, i) => (
+                    <div
+                      key={i}
+                      className="rounded-lg border border-border bg-muted/30 p-3"
+                    >
+                      <h4 className="text-sm font-medium text-amber-400 mb-1">
+                        {c.heading}
+                      </h4>
+                      <p className="text-sm text-muted-foreground">{c.body}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No signed terms record.
+            </p>
+          )}
         </TabsContent>
 
         {/* COMMUNICATIONS */}
