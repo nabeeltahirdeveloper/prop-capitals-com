@@ -31,6 +31,7 @@ import { AdminCouponsModule } from './admin/coupons/admin-coupons.module';
 import { AdminSettingsModule } from './admin/settings/admin-settings.module';
 import { AdminDashboardModule } from './admin/dashboard/admin-dashboard.module';
 import { AdminSupportModule } from './admin/support/admin-support.module';
+import { AdminChargebackModule } from './admin/chargeback-evidence/admin-chargeback.module';
 import { AdminConsoleModule } from './admin-console/admin-console.module';
 import { BrandPortalModule } from './brand-portal/brand-portal.module';
 import { ResellerPortalModule } from './reseller-portal/reseller-portal.module';
@@ -110,6 +111,8 @@ import { ChatbotModule } from './chatbot/chatbot.module';
     AdminDashboardModule,
 
     AdminSupportModule,
+
+    AdminChargebackModule,
 
     AdminConsoleModule,
 
