@@ -369,3 +369,18 @@ export const adminTestBrokerServerConnection = async (id) => {
 export const adminUpdateBrokerServerConnectionStatus = async (id, status) => {
   return apiPatch(`/admin/broker-servers/${id}/connection-status`, { status });
 };
+
+// ============================================================================
+// Admin Chargeback Evidence
+// ============================================================================
+export const adminGetChargebackPlans = async () => {
+  return apiGet("/admin/chargeback-evidence/plans");
+};
+
+export const adminGetChargebackPolicies = async () => {
+  return apiGet("/admin/chargeback-evidence/policies");
+};
+
+export const adminGenerateChargebackEvidence = async (data) => {
+  return apiPost("/admin/chargeback-evidence/generate", data);
+};

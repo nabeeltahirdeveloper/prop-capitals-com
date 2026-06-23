@@ -10,6 +10,17 @@ export interface EmailResult {
   errorCode?: string;
 }
 
+/**
+ * A fully-rendered email (subject + bodies) without recipient/sender info.
+ * Used by features that need to both send an email AND keep a copy of the
+ * exact content that was sent (e.g. chargeback-evidence packs).
+ */
+export interface EmailContent {
+  subject: string;
+  text: string;
+  html: string;
+}
+
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
@@ -563,6 +574,26 @@ Thank you for choosing us.`,
           </div>
         </div>
       `,
+    });
+  }
+
+  /**
+   * Send a pre-rendered email ({ subject, text, html }) to an arbitrary
+   * recipient. Used by features that build their own templates and need to
+   * keep a verbatim copy of what was sent.
+   */
+  async sendBuiltEmail(
+    to: string,
+    content: EmailContent,
+    replyTo?: string,
+  ): Promise<EmailResult> {
+    return this.sendWithTimeout({
+      to,
+      from: this.fromEmail,
+      ...(replyTo ? { replyTo } : {}),
+      subject: content.subject,
+      text: content.text,
+      html: content.html,
     });
   }
 
