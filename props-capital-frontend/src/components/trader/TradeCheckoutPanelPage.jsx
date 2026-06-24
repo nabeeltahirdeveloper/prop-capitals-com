@@ -1227,16 +1227,25 @@ const TradeCheckoutPanelPage = () => {
   );
 
   // Restrict the platform picker to the platforms the admin enabled for this
-  // challenge. Empty/absent => no restriction (show all).
+  // challenge. Empty/absent => no restriction (show all). "Coming soon"
+  // platforms (e.g. TradeLocker) are always shown as a locked tile regardless
+  // of the enabled list, so traders see what's on the way.
   const enabledPlatformEnums = matchingBackendChallenge?.platforms?.length
     ? matchingBackendChallenge.platforms
     : null;
   const visiblePlatforms = enabledPlatformEnums
-    ? platforms.filter((pl) => enabledPlatformEnums.includes(PLATFORM_ID_TO_ENUM[pl.id]))
+    ? platforms.filter(
+        (pl) =>
+          pl.comingSoon ||
+          enabledPlatformEnums.includes(PLATFORM_ID_TO_ENUM[pl.id]),
+      )
     : platforms;
-  const effectivePlatform = visiblePlatforms.some((pl) => pl.id === selectedPlatform)
+  // The default/selected platform must be a real (selectable) one — never a
+  // coming-soon placeholder.
+  const selectablePlatforms = visiblePlatforms.filter((pl) => !pl.comingSoon);
+  const effectivePlatform = selectablePlatforms.some((pl) => pl.id === selectedPlatform)
     ? selectedPlatform
-    : visiblePlatforms[0]?.id;
+    : selectablePlatforms[0]?.id;
 
   const handlePlatformSelect = (platformId) => {
     if (platformId === 'tradelocker') {
