@@ -188,11 +188,12 @@ const CheckoutPage = () => {
     queryFn: getChallenges,
   });
   const accountSizeInt = parseSizeToInt(accountSize);
+  // The list endpoint already returns only active challenges, so no isActive
+  // filter is needed here (and the canonical DTO no longer exposes it).
   const matchedChallenge = dbChallenges.find(
     (c) =>
       c.accountSize === accountSizeInt &&
-      challengeTypeMatches(c.challengeType, challengeType) &&
-      c.isActive !== false,
+      challengeTypeMatches(c.challengeType, challengeType),
   );
   const fallbackData = CHALLENGE_DATA[challengeType];
   const challengeName = matchedChallenge?.name || fallbackData?.name || 'Challenge';
@@ -272,7 +273,6 @@ const CheckoutPage = () => {
           slug: c.slug,
           accountSize: c.accountSize,
           challengeType: c.challengeType,
-          isActive: c.isActive,
         })),
       });
       alert(

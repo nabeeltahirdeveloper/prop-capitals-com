@@ -1,53 +1,96 @@
 import React, { useState, useMemo } from 'react';
 import { Calculator, TrendingUp, DollarSign } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
-import { accountSizes } from './data/mockData';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useChallenges } from '@/hooks/useChallenges';
+import { groupChallengesByType } from '@/lib/challenges';
 
 const ProfitCalculatorSection = () => {
   const { isDark } = useTheme();
   const { formatAmount, formatSize } = useCurrency();
-  const [accountSizeIndex, setAccountSizeIndex] = useState(3); // Default to $50K
+  const [accountSizeIndex, setAccountSizeIndex] = useState(3); // Default to mid-range size
   const [profitRate, setProfitRate] = useState(5.7);
-  
-  const selectedAccount = accountSizes[accountSizeIndex];
-  
+
+  const { data: rawChallenges = [], isLoading, isError } = useChallenges();
+  const { accountSizes } = useMemo(
+    () => groupChallengesByType(rawChallenges),
+    [rawChallenges],
+  );
+
+  const safeIndex = Math.min(accountSizeIndex, Math.max(accountSizes.length - 1, 0));
+  const selectedAccount = accountSizes[safeIndex];
+
   const calculations = useMemo(() => {
+    if (!selectedAccount) return { monthly: '', yearly: '' };
     const monthlyProfit = selectedAccount.value * (profitRate / 100);
     const yearlyProfit = monthlyProfit * 12;
     return {
       monthly: formatAmount(monthlyProfit),
-      yearly: formatAmount(yearlyProfit)
+      yearly: formatAmount(yearlyProfit),
     };
   }, [selectedAccount, profitRate, formatAmount]);
 
-  return (
-    <section className={`py-20 transition-colors duration-300 ${
-      isDark 
-        ? 'bg-gradient-to-b from-[#0d1117] to-[#0a0d12]' 
-        : 'bg-gradient-to-b from-white to-slate-50'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <div className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-4 ${
-            isDark ? 'bg-amber-500/10 border border-amber-500/20' : 'bg-amber-50 border border-amber-200'
-          }`}>
-            <Calculator className={`w-4 h-4 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} />
-            <span className={`text-sm font-medium ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>Profit Calculator</span>
+  const sectionClass = `py-20 transition-colors duration-300 ${
+    isDark
+      ? 'bg-gradient-to-b from-[#0d1117] to-[#0a0d12]'
+      : 'bg-gradient-to-b from-white to-slate-50'
+  }`;
+  const heading = (
+    <div className="text-center mb-12">
+      <div className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-4 ${
+        isDark ? 'bg-amber-500/10 border border-amber-500/20' : 'bg-amber-50 border border-amber-200'
+      }`}>
+        <Calculator className={`w-4 h-4 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} />
+        <span className={`text-sm font-medium ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>Profit Calculator</span>
+      </div>
+      <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+        Calculate Your <span className="text-amber-500">Earning Potential</span>
+      </h2>
+      <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
+        Based on statistics from our funded traders, the average monthly profit rate is 5.72%.
+      </p>
+    </div>
+  );
+
+  // Account sizes come from the live catalog — show a skeleton while loading and
+  // an explicit message if it's unavailable (no hardcoded fallback).
+  if (isLoading) {
+    return (
+      <section className={sectionClass}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {heading}
+          <div className="max-w-4xl mx-auto">
+            <Skeleton className="h-72 w-full rounded-3xl" />
           </div>
-          <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Calculate Your <span className="text-amber-500">Earning Potential</span>
-          </h2>
-          <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-            Based on statistics from our funded traders, the average monthly profit rate is 5.72%.
-          </p>
         </div>
+      </section>
+    );
+  }
+
+  if (isError || !selectedAccount) {
+    return (
+      <section className={sectionClass}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {heading}
+          <div className={`max-w-lg mx-auto text-center rounded-3xl p-8 border ${isDark ? 'bg-[#12161d] border-white/10 text-gray-300' : 'bg-white border-slate-200 text-slate-600'}`}>
+            The calculator is temporarily unavailable. Please try again shortly.
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className={sectionClass}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {heading}
 
         <div className="max-w-4xl mx-auto">
           <div className={`rounded-3xl p-6 lg:p-10 border shadow-2xl ${
-            isDark 
-              ? 'bg-[#12161d] border-white/10 shadow-black/20' 
+            isDark
+              ? 'bg-[#12161d] border-white/10 shadow-black/20'
               : 'bg-white border-slate-200 shadow-slate-200/50'
           }`}>
             <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
@@ -63,14 +106,14 @@ const ProfitCalculatorSection = () => {
                       <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>Account Size</span>
                     </div>
                     <span className={`text-sm ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>
-                      Step {accountSizeIndex + 1}/{accountSizes.length}
+                      Step {safeIndex + 1}/{accountSizes.length}
                     </span>
                   </div>
                   <div className={`text-4xl font-black mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                     {formatSize(selectedAccount.key)}
                   </div>
                   <Slider
-                    value={[accountSizeIndex]}
+                    value={[safeIndex]}
                     onValueChange={(value) => setAccountSizeIndex(value[0])}
                     max={accountSizes.length - 1}
                     step={1}
@@ -78,11 +121,11 @@ const ProfitCalculatorSection = () => {
                   />
                   <div className="flex justify-between text-xs">
                     {accountSizes.map((size, index) => (
-                      <span 
-                        key={index} 
+                      <span
+                        key={size.value}
                         className={`transition-colors cursor-pointer ${
-                          index === accountSizeIndex 
-                            ? 'text-amber-500 font-semibold' 
+                          index === safeIndex
+                            ? 'text-amber-500 font-semibold'
                             : isDark ? 'text-gray-600' : 'text-slate-400'
                         }`}
                         onClick={() => setAccountSizeIndex(index)}
@@ -132,7 +175,7 @@ const ProfitCalculatorSection = () => {
                   </div>
                   <div className="text-4xl lg:text-5xl font-black text-amber-500">{calculations.monthly}</div>
                 </div>
-                
+
                 <div className={`rounded-2xl p-6 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
                   <div className="flex items-center gap-2 mb-3">
                     <span className="w-3 h-3 bg-emerald-400 rounded-full"></span>

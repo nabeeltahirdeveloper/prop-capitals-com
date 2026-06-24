@@ -32,6 +32,8 @@ import AdminRiskMonitor from "./AdminRiskMonitor";
 
 import AdminScaling from "./AdminScaling";
 
+import AdminChargebackEvidence from "./AdminChargebackEvidence";
+
 import Notifications from "./Notifications";
 
 import SignIn from "./SignIn";
@@ -86,6 +88,8 @@ const PAGES = {
   AdminRiskMonitor: AdminRiskMonitor,
 
   AdminScaling: AdminScaling,
+
+  AdminChargebackEvidence: AdminChargebackEvidence,
 
   Notifications: Notifications,
 
@@ -172,6 +176,10 @@ function PagesContent() {
               />
               <Route path="/AdminRiskMonitor" element={<AdminRiskMonitor />} />
               <Route path="/AdminScaling" element={<AdminScaling />} />
+              <Route
+                path="/AdminChargebackEvidence"
+                element={<AdminChargebackEvidence />}
+              />
               <Route path="/AdminProfile" element={<AdminProfile />} />
               <Route path="/CRMLeads" element={<CRMLeads />} />
               <Route path="/CRMPipeline" element={<CRMPipeline />} />
