@@ -97,7 +97,7 @@ export default function AdminChargebackEvidence() {
     ipAddress: "",
     userAgent: "",
     termsVersion: "",
-    numTrades: 4,
+    numTrades: 6,
     sendEmails: true,
   });
   const [result, setResult] = useState(null);
@@ -521,6 +521,30 @@ function EvidenceResult({ result }) {
                 value={`${report.account.overallDrawdownPercent.toFixed(2)}%`}
                 valueClass="text-red-400"
               />
+              <StatBox
+                label="Max drawdown limit"
+                value={
+                  report.plan.overallDrawdownLimit != null
+                    ? `${report.plan.overallDrawdownLimit}%`
+                    : "—"
+                }
+              />
+              <StatBox
+                label="Daily drawdown limit"
+                value={
+                  report.plan.dailyDrawdownLimit != null
+                    ? `${report.plan.dailyDrawdownLimit}%`
+                    : "—"
+                }
+              />
+              <StatBox
+                label="Worst single day"
+                value={
+                  report.account.peakDailyDrawdownPercent != null
+                    ? `${report.account.peakDailyDrawdownPercent.toFixed(2)}%`
+                    : "—"
+                }
+              />
               <StatBox label="Started" value={fmt(report.account.startedAt)} />
               <StatBox
                 label="Terminated"
@@ -532,6 +556,15 @@ function EvidenceResult({ result }) {
                 valueClass="text-red-400"
               />
             </div>
+            {report.account.breachReason && (
+              <p className="text-xs text-muted-foreground mt-2">
+                Terminated:{" "}
+                {report.account.breachType === "DAILY_DRAWDOWN"
+                  ? "daily"
+                  : "maximum (overall)"}{" "}
+                drawdown breach — {report.account.breachReason}.
+              </p>
+            )}
           </section>
         </TabsContent>
 
@@ -587,7 +620,11 @@ function EvidenceResult({ result }) {
                       <td className="p-2.5 text-right text-foreground">
                         {t.closePrice}
                       </td>
-                      <td className="p-2.5 text-right text-red-400">
+                      <td
+                        className={`p-2.5 text-right ${
+                          t.profit < 0 ? "text-red-400" : "text-emerald-400"
+                        }`}
+                      >
                         {money(t.profit, cur)}
                       </td>
                     </tr>

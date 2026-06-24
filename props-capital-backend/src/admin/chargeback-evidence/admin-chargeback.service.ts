@@ -43,20 +43,23 @@ const DEFAULT_USER_AGENT =
 const MS_HOUR = 60 * 60 * 1000;
 const MS_MIN = 60 * 1000;
 
-// Plausible instruments for the simulated losing trades.
+// Plausible instruments for the simulated trades.
 interface SymbolInfo {
   symbol: string;
   price: number;
   contractSize: number; // units per 1.0 lot
   decimals: number;
-  volume: number;
+  volStep: number; // volume granularity (lots)
+  volMin: number;
+  volMax: number;
 }
 const SYMBOLS: SymbolInfo[] = [
-  { symbol: 'EURUSD', price: 1.085, contractSize: 100000, decimals: 5, volume: 1.0 },
-  { symbol: 'XAUUSD', price: 2350.0, contractSize: 100, decimals: 2, volume: 1.5 },
-  { symbol: 'GBPUSD', price: 1.27, contractSize: 100000, decimals: 5, volume: 1.0 },
-  { symbol: 'US30', price: 39000.0, contractSize: 1, decimals: 1, volume: 2.0 },
-  { symbol: 'BTCUSD', price: 65000.0, contractSize: 1, decimals: 1, volume: 0.5 },
+  { symbol: 'EURUSD', price: 1.0852, contractSize: 100000, decimals: 5, volStep: 0.01, volMin: 0.3, volMax: 2.5 },
+  { symbol: 'XAUUSD', price: 2348.5, contractSize: 100, decimals: 2, volStep: 0.01, volMin: 0.2, volMax: 1.8 },
+  { symbol: 'GBPUSD', price: 1.2715, contractSize: 100000, decimals: 5, volStep: 0.01, volMin: 0.3, volMax: 2.2 },
+  { symbol: 'US30', price: 38975.0, contractSize: 1, decimals: 1, volStep: 0.1, volMin: 0.5, volMax: 3.0 },
+  { symbol: 'USDJPY', price: 157.32, contractSize: 100000, decimals: 3, volStep: 0.01, volMin: 0.3, volMax: 2.0 },
+  { symbol: 'NAS100', price: 18420.0, contractSize: 1, decimals: 1, volStep: 0.1, volMin: 0.5, volMax: 3.0 },
 ];
 
 interface SimTrade {
@@ -71,6 +74,19 @@ interface SimTrade {
   leverage: number;
   commission: number;
   isBreach: boolean;
+  balanceAfter: number;
+  dayStartEquity: number;
+}
+
+interface SimResult {
+  trades: SimTrade[];
+  breachType: 'OVERALL_DRAWDOWN' | 'DAILY_DRAWDOWN';
+  finalBalance: number;
+  overallDrawdownPercent: number;
+  peakDailyDrawdownPercent: number;
+  lastDayStartEquity: number;
+  lastDailyReset: Date;
+  terminatedAt: Date;
 }
 
 @Injectable()
@@ -115,53 +131,234 @@ export class AdminChargebackService {
     return Math.round(n * f) / f;
   }
 
+  private rnd(min: number, max: number): number {
+    return min + Math.random() * (max - min);
+  }
+
+  private rndInt(min: number, max: number): number {
+    return Math.floor(this.rnd(min, max + 1));
+  }
+
+  /** Round a volume to the instrument's step (and to 2 dp to avoid FP noise). */
+  private roundVol(v: number, step: number): number {
+    return Math.max(step, this.round(Math.round(v / step) * step, 2));
+  }
+
   /**
-   * Build the sequence of losing trades whose cumulative loss exceeds the
-   * overall-drawdown budget — the breach is recorded on the final trade.
+   * Build a realistic, randomized losing streak that terminates the account at
+   * the plan's *actual* configured drawdown limits.
+   *
+   * Trades are spread over several trading days. Each day's net loss is kept
+   * below the daily-drawdown limit (so a single day never trips the daily rule
+   * prematurely) and the cumulative loss bleeds down to just past the overall
+   * (MAX) drawdown limit — the final trade is the one that breaches it, which
+   * disqualifies the account. Times, volumes, prices and P/L are all randomized
+   * (with the occasional small winner) so the activity looks like real trading.
    */
   private buildTrades(
     challenge: Challenge,
-    numTrades: number,
-    tradingStart: Date,
-  ): SimTrade[] {
-    const lossBudget =
-      (challenge.accountSize * challenge.overallDrawdownPercent) / 100;
-    // Cumulative loss after the first (n-1) trades stays safely under budget;
-    // the final trade pushes total loss just past the limit -> termination.
-    const preBreachTotal = numTrades > 1 ? lossBudget * 0.8 : 0;
-    const finalLoss = lossBudget * 1.06 - preBreachTotal;
-    const perPre = numTrades > 1 ? preBreachTotal / (numTrades - 1) : 0;
+    numTradesHint: number,
+    registeredAt: Date,
+  ): SimResult {
+    const size = challenge.accountSize;
+    const overallPct = challenge.overallDrawdownPercent;
+    const dailyPct = challenge.dailyDrawdownPercent;
+
+    // Final loss lands just past the overall limit (small, randomized overshoot).
+    const targetOverallPct = overallPct + this.rnd(0.05, 0.45);
+    const targetLoss = (size * targetOverallPct) / 100;
+
+    // Keep each day comfortably below the daily limit.
+    const dailyLimitLoss = (size * dailyPct) / 100;
+    const maxDayLoss = dailyLimitLoss * this.rnd(0.55, 0.78);
+    const days = Math.max(2, Math.ceil(targetLoss / maxDayLoss));
+
+    // Split the target loss across the days (each day < daily limit).
+    const dayLosses = this.splitRandom(targetLoss, days, dailyLimitLoss * 0.92);
+
+    // Distribute the total trade count across the days (>=1 each).
+    const totalTrades = Math.min(12, Math.max(days, numTradesHint));
+    const tradesPerDay = this.distributeCount(totalTrades, days);
 
     const trades: SimTrade[] = [];
-    for (let i = 0; i < numTrades; i++) {
-      const isLast = i === numTrades - 1;
-      const loss = isLast ? finalLoss : perPre;
-      const sym = SYMBOLS[i % SYMBOLS.length];
-      const type = i % 2 === 0 ? TradeType.BUY : TradeType.SELL;
-      const unitMove = loss / (sym.volume * sym.contractSize); // positive magnitude
-      // Loss => BUY closes lower, SELL closes higher.
-      const closePrice =
-        type === TradeType.BUY
-          ? this.round(sym.price - unitMove, sym.decimals)
-          : this.round(sym.price + unitMove, sym.decimals);
-      const profit = this.round(-loss, 2);
-      const openedAt = new Date(tradingStart.getTime() + i * 90 * MS_MIN);
-      const closedAt = new Date(openedAt.getTime() + 45 * MS_MIN);
-      trades.push({
-        symbol: sym.symbol,
-        type,
-        volume: sym.volume,
-        openPrice: sym.price,
-        closePrice,
-        profit,
-        openedAt,
-        closedAt,
-        leverage: 100,
-        commission: 0,
-        isBreach: isLast,
-      });
+    // First trading day is the day after registration.
+    const baseDay = new Date(registeredAt.getTime());
+    baseDay.setUTCHours(0, 0, 0, 0);
+
+    for (let d = 0; d < days; d++) {
+      const dayNet = dayLosses[d];
+      const k = tradesPerDay[d];
+      const isLastDay = d === days - 1;
+      // Per-trade signed P/L summing exactly to -dayNet (mostly losses,
+      // occasionally one small winner on a non-final day).
+      const profits = this.splitDayProfits(dayNet, k, isLastDay);
+
+      // Random session start within market hours.
+      let cursor = new Date(baseDay.getTime() + (d + 1) * 24 * MS_HOUR);
+      cursor = new Date(
+        cursor.getTime() +
+          this.rndInt(7, 13) * MS_HOUR +
+          this.rndInt(0, 59) * MS_MIN +
+          this.rndInt(0, 59) * 1000,
+      );
+
+      for (let j = 0; j < k; j++) {
+        const sym = SYMBOLS[this.rndInt(0, SYMBOLS.length - 1)];
+        const type = Math.random() < 0.5 ? TradeType.BUY : TradeType.SELL;
+        const volume = this.roundVol(this.rnd(sym.volMin, sym.volMax), sym.volStep);
+        // Small random entry offset from the reference price.
+        const openPrice = this.round(
+          sym.price * (1 + this.rnd(-0.012, 0.012)),
+          sym.decimals,
+        );
+        const profit = this.round(profits[j], 2);
+        const unitMove = profit / (volume * sym.contractSize); // signed
+        // BUY: profit>0 => close above open. SELL: inverted.
+        const closePrice = this.round(
+          type === TradeType.BUY ? openPrice + unitMove : openPrice - unitMove,
+          sym.decimals,
+        );
+        const duration = this.rndInt(6, 95) * MS_MIN + this.rndInt(0, 59) * 1000;
+        const openedAt = new Date(cursor.getTime());
+        const closedAt = new Date(openedAt.getTime() + duration);
+        trades.push({
+          symbol: sym.symbol,
+          type,
+          volume,
+          openPrice,
+          closePrice,
+          profit,
+          openedAt,
+          closedAt,
+          leverage: 100,
+          commission: 0,
+          isBreach: false,
+          balanceAfter: 0,
+          dayStartEquity: 0,
+        });
+        // Gap before the next trade.
+        cursor = new Date(
+          closedAt.getTime() +
+            this.rndInt(11, 140) * MS_MIN +
+            this.rndInt(0, 59) * 1000,
+        );
+      }
     }
-    return trades;
+
+    // Simulate chronologically to find the first real breach (daily or overall).
+    let running = size;
+    let dayStart = size;
+    let curDayKey = '';
+    let peakDaily = 0;
+    let breachIndex = trades.length - 1;
+    let breachType: SimResult['breachType'] = 'OVERALL_DRAWDOWN';
+    let lastDayStartEquity = size;
+
+    for (let i = 0; i < trades.length; i++) {
+      const t = trades[i];
+      const dayKey = t.openedAt.toISOString().slice(0, 10);
+      if (dayKey !== curDayKey) {
+        curDayKey = dayKey;
+        dayStart = running;
+      }
+      t.dayStartEquity = dayStart;
+      running = this.round(running + t.profit, 2);
+      t.balanceAfter = running;
+      const dailyLoss = ((dayStart - running) / dayStart) * 100;
+      const overallLoss = ((size - running) / size) * 100;
+      if (dailyLoss > peakDaily) peakDaily = dailyLoss;
+      lastDayStartEquity = dayStart;
+      if (overallLoss >= overallPct || dailyLoss >= dailyPct) {
+        breachIndex = i;
+        breachType =
+          overallLoss >= overallPct ? 'OVERALL_DRAWDOWN' : 'DAILY_DRAWDOWN';
+        break;
+      }
+    }
+
+    const finalTrades = trades.slice(0, breachIndex + 1);
+    finalTrades[finalTrades.length - 1].isBreach = true;
+    const finalBalance = finalTrades[finalTrades.length - 1].balanceAfter;
+    const terminatedAt = finalTrades[finalTrades.length - 1].closedAt;
+    const overallDrawdownPercent = ((size - finalBalance) / size) * 100;
+    const lastDailyReset = new Date(terminatedAt.getTime());
+    lastDailyReset.setUTCHours(0, 0, 0, 0);
+
+    return {
+      trades: finalTrades,
+      breachType,
+      finalBalance,
+      overallDrawdownPercent,
+      peakDailyDrawdownPercent: this.round(peakDaily, 2),
+      lastDayStartEquity,
+      lastDailyReset,
+      terminatedAt,
+    };
+  }
+
+  /** Split `total` into `n` positive parts, each <= cap, with randomness. */
+  private splitRandom(total: number, n: number, cap: number): number[] {
+    const weights = Array.from({ length: n }, () => this.rnd(0.6, 1.4));
+    const sum = weights.reduce((a, b) => a + b, 0);
+    let parts = weights.map((w) => (w / sum) * total);
+    // Clamp to cap and redistribute any overflow.
+    for (let iter = 0; iter < 5; iter++) {
+      let overflow = 0;
+      parts = parts.map((p) => {
+        if (p > cap) {
+          overflow += p - cap;
+          return cap;
+        }
+        return p;
+      });
+      if (overflow <= 0.0001) break;
+      const room = parts.map((p) => Math.max(0, cap - p));
+      const roomSum = room.reduce((a, b) => a + b, 0) || 1;
+      parts = parts.map((p, i) => p + (room[i] / roomSum) * overflow);
+    }
+    return parts;
+  }
+
+  /** Distribute `count` items into `bins`, at least 1 each, randomized. */
+  private distributeCount(count: number, bins: number): number[] {
+    const out = Array.from({ length: bins }, () => 1);
+    let remaining = count - bins;
+    while (remaining > 0) {
+      out[this.rndInt(0, bins - 1)] += 1;
+      remaining--;
+    }
+    return out;
+  }
+
+  /**
+   * Produce `k` signed P/L values summing to `-net` (a net loss). Most are
+   * losses with varied magnitudes; non-final days may include one small winner.
+   * The final day's largest loss is placed last so it is the breach trade.
+   */
+  private splitDayProfits(net: number, k: number, isLastDay: boolean): number[] {
+    const mags = Array.from({ length: k }, () => this.rnd(0.5, 1.6));
+    const signs = mags.map(() => -1);
+    if (!isLastDay && k >= 3 && Math.random() < 0.5) {
+      // one small winner
+      const w = this.rndInt(0, k - 1);
+      signs[w] = 1;
+      mags[w] *= 0.45;
+    }
+    const signed = mags.map((m, i) => m * signs[i]);
+    const s = signed.reduce((a, b) => a + b, 0); // negative
+    const scale = s !== 0 ? -net / s : 0; // makes sum === -net
+    let values = signed.map((v) => v * scale);
+    // Fix rounding drift on a loser.
+    const rounded = values.map((v) => this.round(v, 2));
+    const drift = this.round(-net - rounded.reduce((a, b) => a + b, 0), 2);
+    const loserIdx = rounded.findIndex((v) => v < 0);
+    if (loserIdx >= 0) rounded[loserIdx] = this.round(rounded[loserIdx] + drift, 2);
+    values = rounded;
+    if (isLastDay) {
+      // Largest loss last (this trade breaches the overall limit).
+      values.sort((a, b) => b - a); // ascending loss magnitude -> most negative last
+    }
+    return values;
   }
 
   async generateEvidence(dto: GenerateEvidenceDto) {
@@ -180,7 +377,7 @@ export class AdminChargebackService {
     const amountPaid = Math.round(
       dto.amountPaid != null ? dto.amountPaid : challenge.price,
     );
-    const numTrades = dto.numTrades ?? 4;
+    const numTrades = dto.numTrades ?? 6;
     const platform = challenge.platform;
     const firstName = dto.firstName || 'Card';
     const lastName = dto.lastName || 'Holder';
@@ -198,17 +395,32 @@ export class AdminChargebackService {
       documentUrl: `${frontendBase}/legal/terms`,
     };
 
-    // ---- Timeline ----------------------------------------------------------
-    const purchasedAt = new Date(registeredAt.getTime() + 2 * MS_HOUR + 15 * MS_MIN);
-    const accountCreatedAt = new Date(registeredAt.getTime() + 2 * MS_HOUR + 30 * MS_MIN);
-    const tradingStart = new Date(registeredAt.getTime() + 24 * MS_HOUR + 8 * MS_HOUR);
-    const trades = this.buildTrades(challenge, numTrades, tradingStart);
-    const terminatedAt = trades[trades.length - 1].closedAt;
+    // ---- Timeline (slightly randomized, realistic) -------------------------
+    const purchasedAt = new Date(
+      registeredAt.getTime() +
+        this.rndInt(20, 200) * MS_MIN +
+        this.rndInt(0, 59) * 1000,
+    );
+    const accountCreatedAt = new Date(
+      purchasedAt.getTime() + this.rndInt(3, 25) * MS_MIN + this.rndInt(0, 59) * 1000,
+    );
 
-    const totalLoss = trades.reduce((s, t) => s + t.profit, 0);
-    const finalBalance = this.round(challenge.accountSize + totalLoss, 2);
-    const overallDrawdownPercent =
-      ((challenge.accountSize - finalBalance) / challenge.accountSize) * 100;
+    const sim = this.buildTrades(challenge, numTrades, registeredAt);
+    const trades = sim.trades;
+    const terminatedAt = sim.terminatedAt;
+    const totalLoss = this.round(trades.reduce((s, t) => s + t.profit, 0), 2);
+    const finalBalance = sim.finalBalance;
+    const overallDrawdownPercent = sim.overallDrawdownPercent;
+    const breachIsDaily = sim.breachType === 'DAILY_DRAWDOWN';
+    const breachLimitPct = breachIsDaily
+      ? challenge.dailyDrawdownPercent
+      : challenge.overallDrawdownPercent;
+    const breachReachedPct = breachIsDaily
+      ? sim.peakDailyDrawdownPercent
+      : overallDrawdownPercent;
+    const breachLabel = breachIsDaily
+      ? `daily drawdown limit of ${challenge.dailyDrawdownPercent}%`
+      : `maximum (overall) drawdown limit of ${challenge.overallDrawdownPercent}%`;
 
     const invoiceNumber = 100000 + (await this.prisma.payment.count());
     const reference = `EVID-${Date.now().toString(36).toUpperCase()}`;
@@ -288,12 +500,13 @@ export class AdminChargebackService {
           platformEmail: dto.email,
           createdAt: accountCreatedAt,
           maxEquityToDate: challenge.accountSize,
-          todayStartEquity: challenge.accountSize,
+          todayStartEquity: sim.lastDayStartEquity,
           minEquityToday: finalBalance,
           minEquityOverall: finalBalance,
-          lastDailyReset: tradingStart,
-          dailyLossViolated: false,
-          drawdownViolated: true,
+          lastDailyReset: sim.lastDailyReset,
+          dailyLossViolated: breachIsDaily,
+          drawdownViolated: !breachIsDaily,
+          peakDailyDrawdownPercent: sim.peakDailyDrawdownPercent,
           peakOverallDrawdownPercent: this.round(overallDrawdownPercent, 2),
           peakProfitPercent: 0,
         },
@@ -305,19 +518,19 @@ export class AdminChargebackService {
       });
 
       // 4) Trades + equity snapshots
-      let runningBalance = challenge.accountSize;
       await tx.equitySnapshot.create({
         data: {
           tradingAccountId: account.id,
-          equity: runningBalance,
-          balance: runningBalance,
-          timestamp: tradingStart,
+          equity: challenge.accountSize,
+          balance: challenge.accountSize,
+          timestamp: new Date(trades[0].openedAt.getTime() - 5 * MS_MIN),
         },
       });
       for (const t of trades) {
-        runningBalance = this.round(runningBalance + t.profit, 2);
-        const breachOverall =
-          ((challenge.accountSize - runningBalance) / challenge.accountSize) *
+        const dailyLossPct =
+          ((t.dayStartEquity - t.balanceAfter) / t.dayStartEquity) * 100;
+        const overallLossPct =
+          ((challenge.accountSize - t.balanceAfter) / challenge.accountSize) *
           100;
         await tx.trade.create({
           data: {
@@ -334,30 +547,35 @@ export class AdminChargebackService {
             commission: t.commission,
             closeReason: t.isBreach ? 'RISK_AUTO_CLOSE' : 'USER_CLOSE',
             breachTriggered: t.isBreach,
-            breachType: t.isBreach ? 'OVERALL_DRAWDOWN' : null,
+            breachType: t.isBreach ? sim.breachType : null,
             breachAt: t.isBreach ? t.closedAt : null,
-            breachEquity: t.isBreach ? runningBalance : null,
+            breachEquity: t.isBreach ? t.balanceAfter : null,
+            breachDrawdownPercentDaily: t.isBreach
+              ? this.round(dailyLossPct, 2)
+              : null,
             breachDrawdownPercentOverall: t.isBreach
-              ? this.round(breachOverall, 2)
+              ? this.round(overallLossPct, 2)
               : null,
           },
         });
         await tx.equitySnapshot.create({
           data: {
             tradingAccountId: account.id,
-            equity: runningBalance,
-            balance: runningBalance,
+            equity: t.balanceAfter,
+            balance: t.balanceAfter,
             timestamp: t.closedAt,
           },
         });
       }
 
-      // 5) Violation (overall drawdown breach => terminated)
+      // 5) Violation (drawdown breach => terminated)
       await tx.violation.create({
         data: {
           tradingAccountId: account.id,
-          type: ViolationType.OVERALL_DRAWDOWN,
-          message: `Overall drawdown limit of ${challenge.overallDrawdownPercent}% breached (reached ${overallDrawdownPercent.toFixed(2)}%). Account disqualified.`,
+          type: breachIsDaily
+            ? ViolationType.DAILY_DRAWDOWN
+            : ViolationType.OVERALL_DRAWDOWN,
+          message: `The ${breachLabel} was breached (reached ${breachReachedPct.toFixed(2)}%). Account disqualified.`,
           createdAt: terminatedAt,
         },
       });
@@ -376,7 +594,7 @@ export class AdminChargebackService {
           {
             userId: user.id,
             title: 'Challenge Failed',
-            body: `Your ${challenge.name} evaluation was terminated after breaching the overall drawdown limit.`,
+            body: `Your ${challenge.name} evaluation was terminated after breaching the ${breachLabel}.`,
             type: NotificationType.ERROR,
             category: NotificationCategory.CHALLENGE,
             createdAt: terminatedAt,
@@ -429,9 +647,9 @@ export class AdminChargebackService {
         content: buildChallengeTerminatedEmail({
           cardholder,
           challengeName: challenge.name,
-          reason: `Overall drawdown limit of ${challenge.overallDrawdownPercent}% breached`,
-          drawdownPercent: overallDrawdownPercent,
-          limitPercent: challenge.overallDrawdownPercent,
+          reason: `The ${breachLabel} was breached`,
+          drawdownPercent: breachReachedPct,
+          limitPercent: breachLimitPct,
           finalBalance,
           initialBalance: challenge.accountSize,
           currency,
@@ -453,6 +671,8 @@ export class AdminChargebackService {
         challengeType: challenge.challengeType,
         platform: String(platform),
         currency,
+        dailyDrawdownLimit: challenge.dailyDrawdownPercent,
+        overallDrawdownLimit: challenge.overallDrawdownPercent,
       },
       payment: {
         invoiceNumber,
@@ -472,6 +692,9 @@ export class AdminChargebackService {
         initialBalance: challenge.accountSize,
         finalBalance,
         overallDrawdownPercent,
+        peakDailyDrawdownPercent: sim.peakDailyDrawdownPercent,
+        breachType: sim.breachType,
+        breachReason: breachLabel,
         startedAt: accountCreatedAt,
         terminatedAt,
       },
@@ -580,7 +803,7 @@ export class AdminChargebackService {
         at: terminatedAt.toISOString(),
         type: 'termination',
         title: 'Challenge terminated',
-        detail: `Overall drawdown limit (${challenge.overallDrawdownPercent}%) breached at ${overallDrawdownPercent.toFixed(2)}%. Account disqualified.`,
+        detail: `The ${breachLabel} was breached (reached ${breachReachedPct.toFixed(2)}%). Account disqualified.`,
       },
     ];
 
