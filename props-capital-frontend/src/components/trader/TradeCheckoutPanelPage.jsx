@@ -1121,7 +1121,7 @@
 
 // ─── New active version (v3): Step 1 select package + Step 2 billing form (mirrors /pay/:slug) ───
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   ShoppingCart,
   Check,
@@ -1144,7 +1144,9 @@ import { toast } from 'sonner';
 import { useTraderTheme } from './TraderPanelLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
-import { getChallenges } from '@/api/challenges';
+import { useChallenges } from '@/hooks/useChallenges';
+import { groupChallengesByType } from '@/lib/challenges';
+import CustomChallengeCard from '@/components/challenges/CustomChallengeCard';
 import { useNavigate } from 'react-router-dom';
 import { getFullPrice } from '@/utils/fullPrice';
 
@@ -1163,48 +1165,9 @@ const formatCurrency = (amount, currency) => {
   }
 };
 
-const accountSizes = [
-  { label: '€5K', key: '5K', value: 5000 },
-  { label: '€10K', key: '10K', value: 10000 },
-  { label: '€20K', key: '20K', value: 20000 },
-  { label: '€30K', key: '30K', value: 30000 },
-  { label: '€50K', key: '50K', value: 50000 },
-  { label: '€100K', key: '100K', value: 100000 },
-  { label: '€200K', key: '200K', value: 200000 },
-];
-
-const challengeTypes = [
-  {
-    id: '1-step',
-    name: '1-Step Challenge',
-    badge: 'Most Popular',
-    description: 'Quick evaluation with achievable targets',
-    phases: 1,
-    profitTarget: '10%',
-    dailyDrawdown: '4%',
-    maxDrawdown: '8%',
-    profitSplit: '85%',
-    leverage: '1:30',
-    minDays: 'None',
-    popular: true,
-    prices: { '5K': 69, '10K': 99, '20K': 159, '30K': 219, '50K': 349, '100K': 599, '200K': 999 },
-  },
-  {
-    id: '2-step',
-    name: '2-Step Challenge',
-    badge: 'Best Split',
-    description: 'Traditional evaluation with highest profit split',
-    phases: 2,
-    profitTarget: '8% / 5%',
-    dailyDrawdown: '5%',
-    maxDrawdown: '10%',
-    profitSplit: '90%',
-    leverage: '1:50',
-    minDays: 'None',
-    popular: false,
-    prices: { '5K': 59, '10K': 79, '20K': 129, '30K': 179, '50K': 299, '100K': 499, '200K': 799 },
-  },
-];
+// Account sizes and challenge types are derived from the live catalog via the
+// shared useChallenges() + groupChallengesByType() — same source as /challenges
+// and Home. No hardcoded catalog here.
 
 const platforms = [
   { id: 'mt5', name: 'MetaTrader 5', desc: 'Most popular platform' },
@@ -1217,57 +1180,40 @@ const platforms = [
 const TradeCheckoutPanelPage = () => {
   const { isDark } = useTraderTheme();
   const { user } = useAuth();
-  const { formatFee, formatSize } = useCurrency();
+  const { formatFee, formatSize, symbol } = useCurrency();
   const navigate = useNavigate();
 
-  const [selectedType, setSelectedType] = useState('1-step');
+  const [selectedType, setSelectedType] = useState('one_phase');
   const [selectedSizeIndex, setSelectedSizeIndex] = useState(4);
   const [selectedPlatform, setSelectedPlatform] = useState('mt5');
   const [tradeLockerAlert, setTradeLockerAlert] = useState(false);
 
-  const [backendChallenges, setBackendChallenges] = useState([]);
-  const [loadingChallenges, setLoadingChallenges] = useState(true);
+  // Live catalog — same shared hook/transform as /challenges and Home.
+  const { data: backendChallenges = [], isLoading: loadingChallenges } = useChallenges();
+  const { accountSizes, challengeTypes } = useMemo(
+    () => groupChallengesByType(backendChallenges),
+    [backendChallenges],
+  );
 
-  useEffect(() => {
-    const fetchChallenges = async () => {
-      try {
-        setLoadingChallenges(true);
-        const data = await getChallenges();
-        if (Array.isArray(data)) setBackendChallenges(data);
-      } catch (err) {
-        console.warn('Could not fetch challenges from backend:', err);
-      } finally {
-        setLoadingChallenges(false);
-      }
-    };
-    fetchChallenges();
-  }, []);
+  const isCustomSelected = selectedSizeIndex === 'custom';
+  const safeIndex = isCustomSelected
+    ? 0
+    : Math.min(selectedSizeIndex, Math.max(accountSizes.length - 1, 0));
+  const selectedSizeKey = accountSizes[safeIndex]?.key;
+  const selectedSizeValue = accountSizes[safeIndex]?.value;
 
+  // Only show the phase types that actually exist at the selected size, and keep
+  // the selection valid when switching to a size that offers only one type.
+  const visibleTypes = challengeTypes.filter((t) => t.prices[selectedSizeKey] != null);
+  const effectiveType = visibleTypes.some((t) => t.id === selectedType)
+    ? selectedType
+    : visibleTypes[0]?.id;
 
-
-  const selectedChallenge = challengeTypes.find((c) => c.id === selectedType);
-  const selectedSizeKey = accountSizes[selectedSizeIndex].key;
-  const finalPrice = selectedChallenge?.prices[selectedSizeKey] || 299;
-
-  // Find the backend challenge that matches a given (typeId, sizeIndex) pair.
-  // Lets each card render its real backend price + currency, so when the user
-  // updates challenges in the DB (e.g. swapping USD → EUR) the UI follows.
-  const findBackendChallenge = (typeId, sizeIndex) =>
-    backendChallenges.find((bc) => {
-      const sizeMatch = bc.accountSize === accountSizes[sizeIndex].value;
-      const typeMatch = typeId === '1-step'
-        ? bc.challengeType === 'one_phase' || bc.challengeType === '1-step'
-        : bc.challengeType === 'two_phase' || bc.challengeType === '2-step';
-      return sizeMatch && typeMatch;
-    });
-
-  const matchingBackendChallenge = findBackendChallenge(selectedType, selectedSizeIndex);
-
-  // Currency-aware derived values for the selected challenge. Falls back to the
-  // hardcoded EUR price (used by the visual cards) until backend data loads.
-  const matchedCurrency = matchingBackendChallenge?.currency || 'EUR';
-  const matchedPrice = matchingBackendChallenge?.price ?? finalPrice;
-  const matchedFormatted = formatFee(matchedPrice);
+  // The real backend row for (effectiveType, selectedSize) — drives the price
+  // and the /pay/:id hand-off.
+  const matchingBackendChallenge = backendChallenges.find(
+    (c) => c.challengeType === effectiveType && c.accountSize === selectedSizeValue,
+  );
 
   const handlePlatformSelect = (platformId) => {
     if (platformId === 'tradelocker') {
@@ -1319,7 +1265,7 @@ const TradeCheckoutPanelPage = () => {
             <button
               key={size.value}
               onClick={() => setSelectedSizeIndex(index)}
-              className={`px-2 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${selectedSizeIndex === index
+              className={`px-2 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${!isCustomSelected && safeIndex === index
                 ? 'bg-amber-500 text-black'
                 : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                 }`}
@@ -1327,16 +1273,37 @@ const TradeCheckoutPanelPage = () => {
               {formatSize(size.key)}
             </button>
           ))}
+          <button
+            onClick={() => setSelectedSizeIndex('custom')}
+            className={`px-2 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${isCustomSelected
+              ? 'bg-amber-500 text-black'
+              : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
+              }`}
+          >
+            Custom {symbol}
+          </button>
         </div>
       </div>
 
+      {isCustomSelected ? (
+        <CustomChallengeCard className="max-w-lg mx-auto" />
+      ) : loadingChallenges ? (
+        <div className="flex justify-center py-16">
+          <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+        </div>
+      ) : visibleTypes.length === 0 ? (
+        <div className={`${cardClass} p-8 text-center ${mutedClass}`}>
+          No challenges are available at this size right now.
+        </div>
+      ) : (
+      <>
       {/* Challenge Cards */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {challengeTypes.map((challenge) => (
+      <div className={`grid gap-6 ${visibleTypes.length === 1 ? 'max-w-lg mx-auto' : 'md:grid-cols-2'}`}>
+        {visibleTypes.map((challenge) => (
           <button
             key={challenge.id}
             onClick={() => setSelectedType(challenge.id)}
-            className={`relative text-left rounded-2xl p-6 border-2 transition-all ${selectedType === challenge.id
+            className={`relative text-left rounded-2xl p-6 border-2 transition-all ${effectiveType === challenge.id
               ? 'border-amber-500 shadow-[0_0_30px_rgba(251,191,36,0.15)]'
               : isDark ? 'border-white/10 hover:border-white/20' : 'border-slate-200 hover:border-slate-300'
               } ${isDark ? 'bg-[#12161d]' : 'bg-white'}`}
@@ -1355,11 +1322,11 @@ const TradeCheckoutPanelPage = () => {
             </div>
 
             {/* Selection indicator */}
-            <div className={`absolute top-4 right-4 w-6 h-6 rounded-full border-2 flex items-center justify-center ${selectedType === challenge.id
+            <div className={`absolute top-4 right-4 w-6 h-6 rounded-full border-2 flex items-center justify-center ${effectiveType === challenge.id
               ? 'border-amber-500 bg-amber-500'
               : isDark ? 'border-white/20' : 'border-slate-300'
               }`}>
-              {selectedType === challenge.id && <Check className="w-4 h-4 text-black" />}
+              {effectiveType === challenge.id && <Check className="w-4 h-4 text-black" />}
             </div>
 
             {/* Header */}
@@ -1370,9 +1337,7 @@ const TradeCheckoutPanelPage = () => {
 
             {/* Price — pulled from backend so trader-card matches PayCheckout exactly */}
             {(() => {
-              const cardMatch = findBackendChallenge(challenge.id, selectedSizeIndex);
-              const cardCurrency = cardMatch?.currency || 'EUR';
-              const cardPrice = cardMatch?.price ?? challenge.prices[selectedSizeKey];
+              const cardPrice = challenge.prices[selectedSizeKey];
               return (
                 <div className={`text-center mb-4 py-4 rounded-xl ${isDark ? 'bg-black/30' : 'bg-slate-50'}`}>
                   <div className={`text-sm line-through mb-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
@@ -1485,6 +1450,8 @@ const TradeCheckoutPanelPage = () => {
           Continue to Payment
         </button>
       </div>
+      </>
+      )}
     </div >
   );
 };
