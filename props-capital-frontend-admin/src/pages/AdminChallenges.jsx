@@ -33,18 +33,20 @@ import {
   Award,
   AlertTriangle,
   AlertCircle,
+  Lock,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Platforms an admin can enable for a challenge. Values match the backend
-// ChallengePlatform enum; labels are display-only.
+// ChallengePlatform enum; labels are display-only. `comingSoon` platforms can't
+// be enabled yet — they render as a locked "Coming soon" tile.
 const PLATFORM_OPTIONS = [
   { value: "MT5", label: "MT5" },
   { value: "MT4", label: "MT4" },
   { value: "CTRADER", label: "cTrader" },
   { value: "DXTRADE", label: "DXTrade" },
-  { value: "TRADELOCKER", label: "TradeLocker" },
+  { value: "TRADELOCKER", label: "TradeLocker", comingSoon: true },
   { value: "PT5", label: "PT5" },
   { value: "BYBIT", label: "Bybit" },
 ];
@@ -161,6 +163,7 @@ export default function AdminChallenges() {
       account_size: "",
       price: "",
       platform: "MT5",
+      platforms: ["MT5"],
       challenge_type: "two_phase",
       phase1_profit_target: 8,
       phase2_profit_target: 5,
@@ -179,7 +182,10 @@ export default function AdminChallenges() {
 
   // Toggle a platform on/off, keeping the single `platform` column in sync with
   // the first enabled platform (it's required + used for backward compatibility).
+  // Coming-soon platforms can't be toggled.
   const togglePlatform = (value) => {
+    const opt = PLATFORM_OPTIONS.find((o) => o.value === value);
+    if (opt?.comingSoon) return;
     setFormData((prev) => {
       const current = prev.platforms || [];
       const next = current.includes(value)
@@ -254,6 +260,20 @@ export default function AdminChallenges() {
   };
 
   const handleSubmit = () => {
+    // Never persist a "coming soon" platform (e.g. TradeLocker), even if a stale
+    // row carried one — the admin can't enable them.
+    const comingSoonValues = PLATFORM_OPTIONS.filter((o) => o.comingSoon).map(
+      (o) => o.value,
+    );
+    const selectablePlatforms = (
+      Array.isArray(formData.platforms) && formData.platforms.length
+        ? formData.platforms
+        : [formData.platform || "MT5"]
+    ).filter((p) => !comingSoonValues.includes(p));
+    const safePlatforms = selectablePlatforms.length
+      ? selectablePlatforms
+      : ["MT5"];
+
     const data = {
       name: formData.name,
       description: formData.description || null,
@@ -261,11 +281,8 @@ export default function AdminChallenges() {
         ? parseInt(formData.account_size)
         : undefined,
       price: formData.price ? parseInt(formData.price) : undefined,
-      platform: formData.platform || "MT5",
-      platforms:
-        Array.isArray(formData.platforms) && formData.platforms.length
-          ? formData.platforms
-          : [formData.platform || "MT5"],
+      platform: safePlatforms[0],
+      platforms: safePlatforms,
       challengeType: formData.challenge_type || "two_phase",
       phase1TargetPercent: formData.phase1_profit_target || 8,
       phase2TargetPercent: formData.phase2_profit_target || 5,
@@ -451,6 +468,29 @@ export default function AdminChallenges() {
                 </Label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {PLATFORM_OPTIONS.map((opt) => {
+                    if (opt.comingSoon) {
+                      return (
+                        <div
+                          key={opt.value}
+                          aria-disabled="true"
+                          title="Coming soon"
+                          className="relative flex items-center gap-2 rounded-md border border-border bg-muted px-3 py-2 text-sm opacity-60 cursor-not-allowed select-none"
+                        >
+                          <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                          <span className="flex flex-col leading-tight min-w-0">
+                            <span className="text-foreground truncate">
+                              {opt.label}
+                            </span>
+                            <span className="text-[10px] font-medium text-[#d97706]">
+                              Coming soon
+                            </span>
+                          </span>
+                          <span className="absolute -top-2 -right-2 rounded-full bg-[#d97706] px-2 py-0.5 text-[10px] font-bold text-[#0a0d12]">
+                            SOON
+                          </span>
+                        </div>
+                      );
+                    }
                     const checked = (formData.platforms || []).includes(opt.value);
                     return (
                       <button
