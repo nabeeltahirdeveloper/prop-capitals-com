@@ -161,80 +161,11 @@ export const comparisonData = [
   },
 ];
 
-export const challengeTypes = [
-  {
-    id: "one-step",
-    name: "1-Step Challenge",
-    badge: "Most Popular",
-    description:
-      "Quick evaluation with achievable targets and best value for traders",
-    phases: 1,
-    profitTarget: "10%",
-    dailyDrawdown: "4%",
-    maxDrawdown: "8%",
-    profitSplit: "85%",
-    leverage: "1:30",
-    popular: true,
-    prices: {
-      "5K": 79,
-      "10K": 99,
-      "20K": 159,
-      "30K": 219,
-      "50K": 299,
-      "100K": 499,
-      "200K": 899,
-    },
-  },
-  {
-    id: "two-step",
-    name: "2-Step Challenge",
-    badge: "Best Split",
-    description:
-      "Traditional evaluation with highest profit split potential up to 90%",
-    phases: 2,
-    profitTarget: "8% / 5%",
-    dailyDrawdown: "5%",
-    maxDrawdown: "10%",
-    profitSplit: "90%",
-    leverage: "1:50",
-    popular: false,
-    prices: {
-      "5K": 59,
-      "10K": 79,
-      "20K": 129,
-      "30K": 179,
-      "50K": 249,
-      "100K": 399,
-      "200K": 699,
-    },
-  },
-  {
-    id: "custom",
-    name: "CUSTOM Challenge",
-    badge: "Tailored",
-    description:
-      "Need a different account size or challenge setup? Our team can build a custom offer for you.",
-    phases: "Custom",
-    profitTarget: "Custom",
-    dailyDrawdown: "Custom",
-    maxDrawdown: "Custom",
-    profitSplit: "Up to 90%",
-    leverage: "Custom",
-    popular: false,
-    isCustom: true,
-    prices: {},
-  },
-];
-
-export const accountSizes = [
-  { value: 5000, key: "5K" },
-  { value: 10000, key: "10K" },
-  { value: 20000, key: "20K" },
-  { value: 30000, key: "30K" },
-  { value: 50000, key: "50K" },
-  { value: 100000, key: "100K" },
-  { value: 200000, key: "200K" },
-];
+// NOTE: The buyable challenge catalog (challenge types, account sizes, prices)
+// is no longer hardcoded here. It is fetched from the `/challenges` API via
+// `useChallenges()` and shaped by `groupChallengesByType()` in src/lib/challenges.js,
+// so every surface (public /challenges, Home, Buy Challenge) renders the same
+// admin-managed source of truth.
 
 export const tradingPlatforms = [
   {

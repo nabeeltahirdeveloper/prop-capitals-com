@@ -5,6 +5,11 @@ const prisma = new PrismaClient();
 const accountSizes = [5000, 10000, 20000, 30000, 50000, 100000, 200000];
 const challengeTypes = ['one_phase', 'two_phase'] as const;
 
+// Platforms enabled for every challenge. The trader picks one of these at
+// checkout; the single `platform` column stays = the first entry for backward
+// compatibility. TradeLocker is intentionally omitted (shown as "coming soon").
+const enabledPlatforms = ['MT5', 'PT5', 'BYBIT'] as const;
+
 // Discounted (charged) price per (type, size). The struck-through "full" price
 // shown on the site is derived as price * 3 client-side (utils/fullPrice.js),
 // with a single override for 2-step:20K (397). Keep these in sync with the
@@ -64,6 +69,8 @@ async function seedChallenges() {
             price,
             currency: 'EUR',
             isActive: true,
+            platform: enabledPlatforms[0] as any,
+            platforms: enabledPlatforms as any,
           },
         });
         console.log(`✓ Activated: ${updated.name} (€${updated.price}) [id=${updated.id}]`);
@@ -77,7 +84,8 @@ async function seedChallenges() {
           accountSize: size,
           price,
           currency: 'EUR',
-          platform: 'MT5',
+          platform: enabledPlatforms[0] as any,
+          platforms: enabledPlatforms as any,
           challengeType: type,
           phase1TargetPercent: type === 'one_phase' ? 10.0 : 8.0,
           phase2TargetPercent: type === 'one_phase' ? 0 : 5.0,

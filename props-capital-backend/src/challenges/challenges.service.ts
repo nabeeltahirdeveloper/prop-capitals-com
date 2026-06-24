@@ -4,6 +4,8 @@ import { PrismaService } from '../prisma/prisma.service';
 
 import { Prisma } from '@prisma/client';
 
+import { toChallengeDto } from './dto/challenge.dto';
+
 @Injectable()
 export class ChallengesService {
   constructor(private prisma: PrismaService) {}
@@ -13,10 +15,11 @@ export class ChallengesService {
   }
 
   async findAll() {
-    return this.prisma.challenge.findMany({
+    const challenges = await this.prisma.challenge.findMany({
       where: { isActive: true },
       orderBy: { createdAt: 'desc' },
     });
+    return challenges.map(toChallengeDto);
   }
 
   async findOne(id: string) {
@@ -24,7 +27,7 @@ export class ChallengesService {
       where: { id },
     });
     if (!challenge) throw new NotFoundException('Challenge not found');
-    return challenge;
+    return toChallengeDto(challenge);
   }
 
   async findBySlug(slug: string) {
@@ -68,23 +71,9 @@ export class ChallengesService {
     if (!challenge || !challenge.isActive) {
       throw new NotFoundException('Challenge not found');
     }
-    return {
-      id: challenge.id,
-      slug: challenge.slug,
-      name: challenge.name,
-      description: challenge.description,
-      accountSize: challenge.accountSize,
-      price: challenge.price,
-      currency: challenge.currency,
-      challengeType: challenge.challengeType,
-      phase1TargetPercent: challenge.phase1TargetPercent,
-      phase2TargetPercent: challenge.phase2TargetPercent,
-      dailyDrawdownPercent: challenge.dailyDrawdownPercent,
-      overallDrawdownPercent: challenge.overallDrawdownPercent,
-      profitSplit: challenge.profitSplit,
-      platform: challenge.platform,
-      brand: brandAttribution,
-    };
+    // Same canonical shape as the list endpoint, plus optional brand
+    // attribution when the challenge was reached via a DirectPurchaseLink.
+    return { ...toChallengeDto(challenge), brand: brandAttribution };
   }
 
   async update(id: string, data: Prisma.ChallengeUpdateInput) {

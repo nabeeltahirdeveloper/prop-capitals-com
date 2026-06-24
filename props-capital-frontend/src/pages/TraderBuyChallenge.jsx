@@ -3,8 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getCurrentUser } from '@/api/auth';
-import { getChallenges } from '@/api/challenges';
 import { purchaseChallenge, validateCoupon } from '@/api/payments';
+import { useChallenges } from '@/hooks/useChallenges';
+import CustomChallengeCard from '@/components/challenges/CustomChallengeCard';
 import { toast } from '@/components/ui/use-toast';
 import { useTranslation } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
@@ -50,11 +51,8 @@ export default function TraderBuyChallenge() {
     retry: false,
   });
 
-  // Get challenges from backend
-  const { data: challenges = [], isLoading: challengesLoading } = useQuery({
-    queryKey: ['challenges'],
-    queryFn: getChallenges,
-  });
+  // Get challenges from backend (shared hook — one cache shared with every surface)
+  const { data: challenges = [], isLoading: challengesLoading } = useChallenges();
 
   // Map backend challenges to frontend format
   const mappedChallenges = challenges.map((challenge) => ({
@@ -415,6 +413,9 @@ export default function TraderBuyChallenge() {
                     </div>
                   </Card>
                 ))}
+
+                {/* Custom € — shared card, identical behavior to /challenges + Home */}
+                <CustomChallengeCard />
               </div>
             )}
 
