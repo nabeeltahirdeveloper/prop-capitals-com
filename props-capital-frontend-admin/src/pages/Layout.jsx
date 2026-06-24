@@ -47,6 +47,7 @@ import {
   Bot,
   BarChart3,
   Wrench,
+  ShieldAlert,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -175,6 +176,7 @@ export default function Layout({ children, currentPageName }) {
     "AdminBrokerServers",
     "AdminRiskMonitor",
     "AdminScaling",
+    "AdminChargebackEvidence",
     "AdminProfile",
     "CRMLeads",
     "CRMPipeline",
@@ -224,6 +226,13 @@ export default function Layout({ children, currentPageName }) {
       },
       { name: t("nav.coupons"), icon: Zap, page: "AdminCoupons" },
       { name: t("nav.violations"), icon: Shield, page: "AdminViolations" },
+      {
+        name: t("nav.chargebackEvidence", {
+          defaultValue: "Chargeback Evidence",
+        }),
+        icon: ShieldAlert,
+        page: "AdminChargebackEvidence",
+      },
       {
         name: t("nav.support"),
         icon: HelpCircle,
