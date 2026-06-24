@@ -14,6 +14,34 @@ import {
   UserRole,
 } from '@prisma/client';
 
+const VALID_PLATFORMS = [
+  'MT5',
+  'MT4',
+  'CTRADER',
+  'DXTRADE',
+  'BYBIT',
+  'PT5',
+  'TRADELOCKER',
+];
+
+/** Return the normalized (uppercased, valid) platform, or null. */
+function normalizePlatform(value: any): string | null {
+  if (!value) return null;
+  const v = String(value).toUpperCase();
+  return VALID_PLATFORMS.includes(v) ? v : null;
+}
+
+/** Normalize an array of platforms to the valid, de-duplicated enum values. */
+function normalizePlatforms(value: any): string[] {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set<string>();
+  for (const p of value) {
+    const n = normalizePlatform(p);
+    if (n) seen.add(n);
+  }
+  return Array.from(seen);
+}
+
 @Injectable()
 export class AdminChallengesService {
   constructor(
@@ -57,23 +85,19 @@ export class AdminChallengesService {
       throw new BadRequestException('Price is required');
     }
 
+    // Normalize platforms: the admin enables one or more platforms; the trader
+    // picks one at purchase. `platform` (single) stays populated for the
+    // NOT-NULL column + backward compatibility (= first enabled platform).
+    const platforms = normalizePlatforms(data.platforms);
+    const platform = normalizePlatform(data.platform) || platforms[0] || 'MT5';
+
     const challengeData: any = {
       name: data.name || data.challengeName,
       description: data.description || null,
       accountSize: parseInt(String(accountSize)),
       price: parseInt(String(price)),
-      platform: (data.platform &&
-      [
-        'MT5',
-        'MT4',
-        'CTRADER',
-        'DXTRADE',
-        'BYBIT',
-        'PT5',
-        'TRADELOCKER',
-      ].includes(data.platform.toUpperCase())
-        ? data.platform.toUpperCase()
-        : 'MT5') as ChallengePlatform, // Validate and normalize platform value
+      platform: platform as ChallengePlatform,
+      platforms: platforms as ChallengePlatform[],
       challengeType: data.challengeType || data.challenge_type || 'two_phase',
       phase1TargetPercent:
         data.phase1TargetPercent || data.phase1_profit_target || 8.0,
@@ -158,22 +182,17 @@ export class AdminChallengesService {
     if (data.price !== undefined) {
       updateData.price = parseInt(data.price);
     }
+    if (data.platforms !== undefined) {
+      const platforms = normalizePlatforms(data.platforms);
+      updateData.platforms = platforms as ChallengePlatform[];
+      // Keep the single `platform` column in sync with the first enabled one.
+      if (platforms.length > 0 && data.platform === undefined) {
+        updateData.platform = platforms[0] as ChallengePlatform;
+      }
+    }
     if (data.platform !== undefined) {
-      // Validate and normalize platform value
-      const normalizedPlatform =
-        data.platform &&
-        [
-          'MT5',
-          'MT4',
-          'CTRADER',
-          'DXTRADE',
-          'BYBIT',
-          'PT5',
-          'TRADELOCKER',
-        ].includes(data.platform.toUpperCase())
-          ? data.platform.toUpperCase()
-          : 'MT5';
-      updateData.platform = normalizedPlatform as ChallengePlatform;
+      updateData.platform = (normalizePlatform(data.platform) ||
+        'MT5') as ChallengePlatform;
     }
     if (
       data.phase1TargetPercent !== undefined ||

@@ -38,6 +38,7 @@ describe('toChallengeDto', () => {
       price: 79,
       currency: 'EUR',
       platform: 'MT5',
+      platforms: ['MT5'],
       challengeType: 'one_phase',
       phase1TargetPercent: 10,
       phase2TargetPercent: 0,
@@ -65,5 +66,11 @@ describe('toChallengeDto', () => {
     expect(dto.slug).toBeNull();
     expect(dto.description).toBeNull();
     expect(dto.maxTradingDays).toBeNull();
+  });
+
+  it('uses explicit platforms when present, else falls back to [platform]', () => {
+    expect(toChallengeDto({ ...raw, platforms: ['MT5', 'BYBIT'] }).platforms).toEqual(['MT5', 'BYBIT']);
+    expect(toChallengeDto({ ...raw, platforms: [] }).platforms).toEqual(['MT5']);
+    expect(toChallengeDto({ ...raw, platforms: undefined }).platforms).toEqual(['MT5']);
   });
 });

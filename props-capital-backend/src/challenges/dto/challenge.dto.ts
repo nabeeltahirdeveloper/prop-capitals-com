@@ -14,6 +14,7 @@ export interface ChallengeDto {
   price: number;
   currency: string;
   platform: string;
+  platforms: string[];
   challengeType: string;
   phase1TargetPercent: number;
   phase2TargetPercent: number;
@@ -39,6 +40,12 @@ export function toChallengeDto(c: any): ChallengeDto {
     price: c.price,
     currency: c.currency,
     platform: c.platform,
+    platforms:
+      Array.isArray(c.platforms) && c.platforms.length > 0
+        ? c.platforms
+        : c.platform
+          ? [c.platform]
+          : [],
     challengeType: c.challengeType,
     phase1TargetPercent: c.phase1TargetPercent,
     phase2TargetPercent: c.phase2TargetPercent,

@@ -1176,6 +1176,17 @@ const platforms = [
   { id: 'pt5', name: 'PT5', desc: 'Advanced trading' },
 ];
 
+// Map a picker id to the backend ChallengePlatform enum value.
+const PLATFORM_ID_TO_ENUM = {
+  mt5: 'MT5',
+  mt4: 'MT4',
+  ctrader: 'CTRADER',
+  dxtrade: 'DXTRADE',
+  bybit: 'BYBIT',
+  pt5: 'PT5',
+  tradelocker: 'TRADELOCKER',
+};
+
 
 const TradeCheckoutPanelPage = () => {
   const { isDark } = useTraderTheme();
@@ -1214,6 +1225,18 @@ const TradeCheckoutPanelPage = () => {
   const matchingBackendChallenge = backendChallenges.find(
     (c) => c.challengeType === effectiveType && c.accountSize === selectedSizeValue,
   );
+
+  // Restrict the platform picker to the platforms the admin enabled for this
+  // challenge. Empty/absent => no restriction (show all).
+  const enabledPlatformEnums = matchingBackendChallenge?.platforms?.length
+    ? matchingBackendChallenge.platforms
+    : null;
+  const visiblePlatforms = enabledPlatformEnums
+    ? platforms.filter((pl) => enabledPlatformEnums.includes(PLATFORM_ID_TO_ENUM[pl.id]))
+    : platforms;
+  const effectivePlatform = visiblePlatforms.some((pl) => pl.id === selectedPlatform)
+    ? selectedPlatform
+    : visiblePlatforms[0]?.id;
 
   const handlePlatformSelect = (platformId) => {
     if (platformId === 'tradelocker') {
@@ -1392,13 +1415,13 @@ const TradeCheckoutPanelPage = () => {
       <div className={`${cardClass} p-6`}>
         <h3 className={`font-bold mb-4 ${textClass}`}>Select Trading Platform</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {platforms.map((platform) => (
+          {visiblePlatforms.map((platform) => (
             <button
               key={platform.id}
               onClick={() => handlePlatformSelect(platform.id)}
               className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border transition-all ${platform.comingSoon
                 ? isDark ? 'border-white/5 opacity-60' : 'border-slate-100 opacity-60'
-                : selectedPlatform === platform.id
+                : effectivePlatform === platform.id
                   ? 'border-amber-500 bg-amber-500/10'
                   : isDark ? 'border-white/10 hover:border-white/20' : 'border-slate-200 hover:border-slate-300'
                 }`}
@@ -1406,7 +1429,7 @@ const TradeCheckoutPanelPage = () => {
               {platform.comingSoon ? (
                 <Lock className={`w-6 h-6 ${mutedClass}`} />
               ) : (
-                <Zap className={`w-6 h-6 ${selectedPlatform === platform.id ? 'text-amber-500' : mutedClass}`} />
+                <Zap className={`w-6 h-6 ${effectivePlatform === platform.id ? 'text-amber-500' : mutedClass}`} />
               )}
               <span className={`font-semibold text-sm ${textClass}`}>{platform.name}</span>
               <span className={`text-xs ${platform.comingSoon ? 'text-amber-500 font-medium' : mutedClass}`}>{platform.desc}</span>

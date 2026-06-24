@@ -37,6 +37,18 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Platforms an admin can enable for a challenge. Values match the backend
+// ChallengePlatform enum; labels are display-only.
+const PLATFORM_OPTIONS = [
+  { value: "MT5", label: "MT5" },
+  { value: "MT4", label: "MT4" },
+  { value: "CTRADER", label: "cTrader" },
+  { value: "DXTRADE", label: "DXTrade" },
+  { value: "TRADELOCKER", label: "TradeLocker" },
+  { value: "PT5", label: "PT5" },
+  { value: "BYBIT", label: "Bybit" },
+];
+
 export default function AdminChallenges() {
   const { t } = useTranslation();
   const { toast } = useToast();
@@ -52,6 +64,7 @@ export default function AdminChallenges() {
     account_size: "",
     price: "",
     platform: "MT5",
+    platforms: ["MT5"],
     challenge_type: "two_phase",
     phase1_profit_target: 8,
     phase2_profit_target: 5,
@@ -164,6 +177,18 @@ export default function AdminChallenges() {
     });
   };
 
+  // Toggle a platform on/off, keeping the single `platform` column in sync with
+  // the first enabled platform (it's required + used for backward compatibility).
+  const togglePlatform = (value) => {
+    setFormData((prev) => {
+      const current = prev.platforms || [];
+      const next = current.includes(value)
+        ? current.filter((p) => p !== value)
+        : [...current, value];
+      return { ...prev, platforms: next, platform: next[0] || prev.platform };
+    });
+  };
+
   const handleEdit = (challenge) => {
     setEditingChallenge(challenge);
 
@@ -174,6 +199,10 @@ export default function AdminChallenges() {
         (challenge.accountSize || challenge.account_size)?.toString() || "",
       price: challenge.price?.toString() || "",
       platform: challenge.platform || "MT5",
+      platforms:
+        Array.isArray(challenge.platforms) && challenge.platforms.length
+          ? challenge.platforms
+          : [challenge.platform || "MT5"],
       challenge_type:
         challenge.challengeType || challenge.challenge_type || "two_phase",
       phase1_profit_target:
@@ -233,6 +262,10 @@ export default function AdminChallenges() {
         : undefined,
       price: formData.price ? parseInt(formData.price) : undefined,
       platform: formData.platform || "MT5",
+      platforms:
+        Array.isArray(formData.platforms) && formData.platforms.length
+          ? formData.platforms
+          : [formData.platform || "MT5"],
       challengeType: formData.challenge_type || "two_phase",
       phase1TargetPercent: formData.phase1_profit_target || 8,
       phase2TargetPercent: formData.phase2_profit_target || 5,
@@ -414,41 +447,40 @@ export default function AdminChallenges() {
 
               <div className="space-y-1.5 sm:space-y-2">
                 <Label className="text-muted-foreground text-xs sm:text-sm">
-                  {t("admin.challenges.form.platform") || "Platform"}
+                  {t("admin.challenges.form.platform") || "Platforms"}
                 </Label>
-                <Select
-                  value={formData.platform}
-                  onValueChange={(v) =>
-                    setFormData({ ...formData, platform: v })
-                  }
-                >
-                  <SelectTrigger className="bg-muted border-border text-foreground text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-card border-border text-foreground">
-                    <SelectItem value="MT5" className="text-foreground">
-                      MT5
-                    </SelectItem>
-                    <SelectItem value="MT4" className="text-foreground">
-                      MT4
-                    </SelectItem>
-                    <SelectItem value="CTRADER" className="text-foreground">
-                      cTrader
-                    </SelectItem>
-                    <SelectItem value="DXTRADE" className="text-foreground">
-                      DXTrade
-                    </SelectItem>
-                    <SelectItem value="TRADELOCKER" className="text-foreground">
-                      TradeLocker
-                    </SelectItem>
-                    <SelectItem value="PT5" className="text-foreground">
-                      PT5
-                    </SelectItem>
-                    <SelectItem value="BYBIT" className="text-foreground">
-                      Bybit
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {PLATFORM_OPTIONS.map((opt) => {
+                    const checked = (formData.platforms || []).includes(opt.value);
+                    return (
+                      <button
+                        type="button"
+                        key={opt.value}
+                        onClick={() => togglePlatform(opt.value)}
+                        className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors ${
+                          checked
+                            ? "border-primary bg-primary/10 text-foreground"
+                            : "border-border bg-muted text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        <span
+                          className={`flex h-4 w-4 items-center justify-center rounded border text-[10px] leading-none ${
+                            checked
+                              ? "bg-primary border-primary text-primary-foreground"
+                              : "border-border"
+                          }`}
+                        >
+                          {checked ? "✓" : ""}
+                        </span>
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Traders can only choose the platforms enabled here when buying
+                  this challenge.
+                </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
