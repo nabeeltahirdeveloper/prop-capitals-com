@@ -1,15 +1,16 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Check, ArrowRight, Star, Shield, Zap, Clock, TrendingUp, Award, User } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
-import { useQuery } from '@tanstack/react-query';
-import { getChallenges } from '@/api/challenges';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getFullPrice } from '@/utils/fullPrice';
 import { persistBrandAttribution } from '@/pages/CheckoutPage';
 import { apiPost } from '@/lib/api';
+import { useChallenges } from '@/hooks/useChallenges';
+import { groupChallengesByType } from '@/lib/challenges';
+import CustomChallengeCard from '@/components/challenges/CustomChallengeCard';
 
 const features = [
   { icon: Zap, title: "No Time Limit", description: "Complete the challenge at your own pace" },
@@ -18,18 +19,11 @@ const features = [
   { icon: Clock, title: "Fast Payouts", description: "Under 90 minutes average" }
 ];
 
-function formatAccountSize(size) {
-  if (size >= 1000) return `${size / 1000}K`;
-  return String(size);
-}
-
 const ChallengesPage = () => {
   const { isDark } = useTheme();
-  const { formatFee, formatAmount, formatSize, cur, symbol } = useCurrency();
+  const { formatFee, formatSize, cur, symbol } = useCurrency();
   const [selectedSize, setSelectedSize] = useState(3);
-  const [customPrice, setCustomPrice] = useState('50');
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const brandSlug = searchParams.get('brand');
@@ -42,67 +36,14 @@ const ChallengesPage = () => {
     }
   }, [searchParams]);
 
-  const { data: rawChallenges = [], isLoading } = useQuery({
-    queryKey: ['challenges'],
-    queryFn: getChallenges,
-  });
+  const { data: rawChallenges = [], isLoading } = useChallenges();
 
   // Group challenges by type and build account size / price structure
-  const { accountSizes, challengeTypes } = useMemo(() => {
-    if (!rawChallenges.length) return { accountSizes: [], challengeTypes: [] };
-
-    // Collect unique account sizes across all challenges
-    const sizeSet = new Set();
-    rawChallenges.forEach(c => sizeSet.add(c.accountSize));
-    const sizes = Array.from(sizeSet).sort((a, b) => a - b).map(value => ({
-      label: formatSize(formatAccountSize(value)),
-      key: formatAccountSize(value),
-      value,
-    }));
-
-    // Group by challengeType
-    const grouped = {};
-    rawChallenges.forEach(c => {
-      const type = c.challengeType || 'two_phase';
-      if (!grouped[type]) grouped[type] = [];
-      grouped[type].push(c);
-    });
-
-    const typeConfig = {
-      one_phase: { name: '1-Step Challenge', badge: 'Most Popular', description: 'Quick evaluation with achievable targets and best value for traders', phases: 1, popular: true },
-      two_phase: { name: '2-Step Challenge', badge: 'Best Split', description: 'Traditional evaluation with highest profit split potential', phases: 2, popular: false },
-      instant_funding: { name: 'Instant Funding', badge: 'No Evaluation', description: 'Skip the evaluation and start trading immediately', phases: 0, popular: false },
-    };
-
-    const types = Object.entries(grouped).map(([type, challenges]) => {
-      const config = typeConfig[type] || { name: type.replace(/_/g, ' '), badge: '', description: '', phases: 1, popular: false };
-      const first = challenges[0];
-      // Build price map keyed by size label
-      const prices = {};
-      challenges.forEach(c => {
-        prices[formatAccountSize(c.accountSize)] = c.price;
-      });
-
-      const profitTarget = first.phase1TargetPercent && first.phase2TargetPercent && config.phases === 2
-        ? `${first.phase1TargetPercent}% / ${first.phase2TargetPercent}%`
-        : `${first.phase1TargetPercent}%`;
-
-      return {
-        id: type,
-        ...config,
-        profitTarget,
-        dailyDrawdown: `${first.dailyDrawdownPercent}%`,
-        maxDrawdown: `${first.overallDrawdownPercent}%`,
-        profitSplit: `${first.profitSplit}%`,
-        minDays: first.minTradingDays ? `${first.minTradingDays} days` : 'None',
-        prices,
-        // Keep raw values for comparison table
-        _raw: first,
-      };
-    });
-
-    return { accountSizes: sizes, challengeTypes: types };
-  }, [rawChallenges, formatSize]);
+  // (shared transform — same shape consumed by Home + Buy Challenge).
+  const { accountSizes, challengeTypes } = useMemo(
+    () => groupChallengesByType(rawChallenges),
+    [rawChallenges],
+  );
 
   // Build comparison rows from fetched data
   const comparisonRows = useMemo(() => {
@@ -125,20 +66,10 @@ const ChallengesPage = () => {
   const safeSelectedSize = isCustomSelected
     ? 0
     : Math.min(selectedSize, Math.max(accountSizes.length - 1, 0));
-  const customPriceNumber = Number(customPrice);
-  const isCustomPriceValid =
-    Number.isFinite(customPriceNumber) && customPriceNumber >= 1 && customPriceNumber <= 1000;
-  const customAccountSize = isCustomPriceValid ? Math.round(customPriceNumber * 100) : 0;
-
-  const handleStartCustomChallenge = () => {
-    if (!isCustomPriceValid) return;
-    const params = new URLSearchParams({
-      subject: 'custom-challenge',
-      price: String(customPriceNumber),
-      accountSize: String(customAccountSize),
-    });
-    navigate(`/Contact?${params.toString()}`);
-  };
+  const selectedSizeKey = accountSizes[safeSelectedSize]?.key;
+  // Only render a phase-type card if a challenge of that type exists at the
+  // selected size — a size may legitimately offer only 1-Step or only 2-Step.
+  const visibleTypes = challengeTypes.filter((t) => t.prices[selectedSizeKey] != null);
 
   return (
     <div className={`min-h-screen pt-20 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
@@ -187,7 +118,7 @@ const ChallengesPage = () => {
                           : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                       }`}
                     >
-                      {size.label}
+                      {formatSize(size.key)}
                     </button>
                   ))}
                   <button
@@ -205,85 +136,11 @@ const ChallengesPage = () => {
 
               {/* Challenge Cards */}
               {isCustomSelected ? (
-                <div
-                  className={`relative rounded-3xl p-6 lg:p-8 border transition-all duration-300 max-w-lg mx-auto border-amber-400 shadow-[0_0_40px_rgba(251,191,36,0.15)] ${
-                    isDark
-                      ? 'bg-gradient-to-br from-[#12161d] to-[#0d1117]'
-                      : 'bg-white shadow-xl shadow-amber-500/10'
-                  }`}
-                >
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <div className="px-4 py-1 rounded-full text-sm font-bold bg-gradient-to-r from-amber-400 to-amber-500 text-[#0a0d12] whitespace-nowrap">
-                      Custom Pricing
-                    </div>
-                  </div>
-
-                  <div className="text-center mb-6 pt-4">
-                    <h3 className={`text-xl lg:text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                      Build Your Own
-                    </h3>
-                    <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                      Pick any price between {formatFee(1)} and {formatFee(1000)}. Your account size = price x 100.
-                    </p>
-                  </div>
-
-                  <div className={`mb-6 rounded-2xl p-5 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
-                    <label className={`text-sm font-semibold mb-2 block ${isDark ? 'text-gray-300' : 'text-slate-600'}`}>
-                      Challenge Price ({symbol})
-                    </label>
-                    <input
-                      type="number"
-                      min="1"
-                      max="1000"
-                      step="1"
-                      value={customPrice}
-                      onChange={(e) => setCustomPrice(e.target.value)}
-                      className={`w-full rounded-xl px-4 py-4 text-xl font-bold outline-none transition-colors ${
-                        isDark
-                          ? 'bg-[#12161d] border border-white/10 text-white focus:border-amber-500/60'
-                          : 'bg-white border border-slate-200 text-slate-900 focus:border-amber-500/60'
-                      }`}
-                    />
-                    <p className={`text-sm mt-3 ${isCustomPriceValid ? (isDark ? 'text-gray-300' : 'text-slate-600') : 'text-red-400'}`}>
-                      {isCustomPriceValid
-                        ? <>For <span className="text-amber-500 font-bold">{formatFee(customPriceNumber)}</span> you get a <span className="text-amber-500 font-bold">{formatAmount(customAccountSize)}</span> account.</>
-                        : `Enter a price from ${formatFee(1)} to ${formatFee(1000)}.`}
-                    </p>
-                  </div>
-
-                  <div className="space-y-3 mb-8">
-                    {[
-                      { label: 'Phases', value: '1 Phase' },
-                      { label: 'Profit Target', value: '10%' },
-                      { label: 'Daily Drawdown', value: '4%' },
-                      { label: 'Max Drawdown', value: '8%' },
-                      { label: 'Min Trading Days', value: 'None', highlight: true },
-                      { label: 'Profit Split', value: '85%', highlight: 'amber', large: true }
-                    ].map((item, index) => (
-                      <div key={index} className={`flex items-center justify-between py-2 ${index < 5 ? isDark ? 'border-b border-white/5' : 'border-b border-slate-100' : ''}`}>
-                        <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>{item.label}</span>
-                        <span className={`font-semibold ${
-                          item.highlight === 'amber' ? 'text-amber-500 text-xl font-bold' :
-                          item.highlight ? 'text-emerald-400' :
-                          isDark ? 'text-white' : 'text-slate-900'
-                        }`}>{item.value}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <Button
-                    onClick={handleStartCustomChallenge}
-                    disabled={!isCustomPriceValid}
-                    className="w-full rounded-full py-6 h-auto text-base font-bold transition-all group bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] shadow-lg shadow-amber-500/25 disabled:opacity-60 disabled:cursor-not-allowed"
-                  >
-                    Start Custom Challenge
-                    <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
-                  </Button>
-                </div>
+                <CustomChallengeCard className="max-w-lg mx-auto" />
               ) : (
-              <div className={`grid gap-6 lg:gap-8 max-w-4xl mx-auto ${challengeTypes.length === 1 ? 'max-w-lg' : 'md:grid-cols-2'}`}>
-                {challengeTypes.map((challenge) => {
-                  const sizeKey = accountSizes[safeSelectedSize]?.key;
+              <div className={`grid gap-6 lg:gap-8 max-w-4xl mx-auto ${visibleTypes.length === 1 ? 'max-w-lg' : 'md:grid-cols-2'}`}>
+                {visibleTypes.map((challenge) => {
+                  const sizeKey = selectedSizeKey;
                   const price = challenge.prices[sizeKey];
                   const fullPrice = getFullPrice(challenge.id, sizeKey, price);
                   return (
