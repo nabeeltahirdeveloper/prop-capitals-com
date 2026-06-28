@@ -5,6 +5,7 @@ import {
   IsInt,
   IsNumber,
   IsBoolean,
+  IsObject,
   Min,
   Max,
   MaxLength,
@@ -112,4 +113,13 @@ export class GenerateEvidenceDto {
   @IsOptional()
   @IsBoolean()
   sendEmails?: boolean;
+
+  /**
+   * Verbatim transaction record from an uploaded CSV/XLSX (processor export).
+   * Stored on the payment and surfaced in the evidence so the report matches
+   * the real transaction exactly.
+   */
+  @IsOptional()
+  @IsObject()
+  transaction?: Record<string, string>;
 }
