@@ -384,3 +384,11 @@ export const adminGetChargebackPolicies = async () => {
 export const adminGenerateChargebackEvidence = async (data) => {
   return apiPost("/admin/chargeback-evidence/generate", data);
 };
+
+export const adminParseChargebackUpload = async (file) => {
+  const form = new FormData();
+  form.append("file", file);
+  return apiPost("/admin/chargeback-evidence/parse-upload", form, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};

@@ -35,6 +35,7 @@ import {
   SignedTermsData,
   TERMS_CLAUSES,
 } from './evidence-templates';
+import { mapUpload } from './upload-mapping';
 
 const DEFAULT_RECIPIENT = 'gabordancs@tutamail.com';
 const DEFAULT_TERMS_VERSION = 'v3.1 (2026-01-10)';
@@ -116,6 +117,50 @@ export class AdminChargebackService {
         dailyDrawdownPercent: true,
       },
     });
+  }
+
+  /**
+   * Parse an uploaded transaction export (CSV/XLSX), map it to the evidence
+   * form fields, and match the purchased plan against the Challenge table.
+   */
+  async parseUpload(file: Express.Multer.File) {
+    if (!file || !file.buffer) {
+      throw new BadRequestException('No file uploaded');
+    }
+    const mapped = mapUpload(file.buffer, file.originalname, file.mimetype);
+    const warnings = [...mapped.warnings];
+
+    let challengeId: string | null = null;
+    let planName: string | null = null;
+    const { challengeType, accountSize } = mapped.planHint;
+
+    if (accountSize != null) {
+      const where: { accountSize: number; isActive: boolean; challengeType?: string } =
+        { accountSize, isActive: true };
+      if (challengeType) where.challengeType = challengeType;
+      const challenge =
+        (await this.prisma.challenge.findFirst({ where })) ||
+        (await this.prisma.challenge.findFirst({
+          where: { accountSize, isActive: true },
+        }));
+      if (challenge) {
+        challengeId = challenge.id;
+        planName = challenge.name;
+      } else {
+        warnings.push(
+          `No active plan found for ${challengeType ?? 'challenge'} with account size ${accountSize.toLocaleString()}`,
+        );
+      }
+    }
+
+    return {
+      matched: !!challengeId,
+      challengeId,
+      planName,
+      fields: mapped.fields,
+      transaction: mapped.transaction,
+      warnings,
+    };
   }
 
   /** Static policies (also surfaced in the UI without generating a pack). */
@@ -383,6 +428,43 @@ export class AdminChargebackService {
     const lastName = dto.lastName || 'Holder';
     const fullName = `${firstName} ${lastName}`.trim();
     const cardholder: CardholderInfo = { email: dto.email, name: fullName };
+    const uploadTx = dto.transaction || null;
+    const cardBrand = dto.cardBrand || uploadTx?.paymentBrand || null;
+    const cardLast4 = dto.cardLast4 || uploadTx?.lastFour || null;
+    const cardBin = uploadTx?.firstSix || null;
+    const processor = uploadTx
+      ? {
+          merchant: uploadTx.merchant || null,
+          orderId: uploadTx.orderId || null,
+          orderDescription: uploadTx.orderDescription || null,
+          paymentId: uploadTx.paymentId || null,
+          trackingId: uploadTx.trackingId || null,
+          uuid: uploadTx.uuid || null,
+          rrn: uploadTx.rrn || null,
+          arn: uploadTx.arn || null,
+          authCode: uploadTx.authCode || null,
+          acquirerBank: uploadTx.acquirerBank || null,
+          processingBank: uploadTx.processingBank || null,
+          issuingBank: uploadTx.issuingBank || null,
+          aliasName: uploadTx.aliasName || null,
+          terminalId: uploadTx.terminalId || null,
+          paymentMode: uploadTx.paymentMode || null,
+          paymentBrand: uploadTx.paymentBrand || null,
+          transactionMode: uploadTx.transactionMode || null,
+          binCardCategory: uploadTx.binCardCategory || null,
+          binCardType: uploadTx.binCardType || null,
+          firstSix: uploadTx.firstSix || null,
+          lastFour: uploadTx.lastFour || null,
+          isoCountry: uploadTx.isoCountry || null,
+          transactionCountry: uploadTx.transactionCountry || null,
+          status: uploadTx.status || null,
+          remark: uploadTx.remark || null,
+          authAmount: uploadTx.authAmount || null,
+          capturedAmount: uploadTx.capturedAmount || null,
+          successTimeStamp: uploadTx.successTimeStamp || null,
+          transactionDate: uploadTx.transactionDate || null,
+        }
+      : null;
     const frontendBase = (
       this.config.get<string>('APP_FRONTEND_URL') || 'https://prop-capitals.com'
     ).replace(/\/$/, '');
@@ -481,8 +563,12 @@ export class AdminChargebackService {
           billingAddress: dto.address || null,
           billingPhone: dto.phone || null,
           cardholderName: fullName,
-          cardBrand: dto.cardBrand || null,
-          cardLast4: dto.cardLast4 || null,
+          cardBrand,
+          cardLast4,
+          cardBin,
+          metadata: uploadTx
+            ? { source: 'transaction-upload', transaction: uploadTx }
+            : undefined,
         },
       });
 
@@ -626,8 +712,8 @@ export class AdminChargebackService {
           amount: amountPaid,
           currency,
           invoiceNumber,
-          cardBrand: dto.cardBrand,
-          cardLast4: dto.cardLast4,
+          cardBrand,
+          cardLast4,
           paidAt: purchasedAt,
         }),
       },
@@ -681,9 +767,11 @@ export class AdminChargebackService {
         currency,
         status: 'succeeded',
         provider: 'card',
-        cardBrand: dto.cardBrand || null,
-        cardLast4: dto.cardLast4 || null,
+        cardBrand,
+        cardLast4,
+        cardBin,
         paidAt: purchasedAt,
+        processor,
       },
       account: {
         id: result.account.id,

@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   adminGetChargebackPlans,
   adminGenerateChargebackEvidence,
+  adminParseChargebackUpload,
 } from "@/api/admin";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,9 +37,42 @@ import {
   CreditCard,
   Clock,
   FileSignature,
+  Upload,
+  FileSpreadsheet,
 } from "lucide-react";
 
 const DEFAULT_RECIPIENT = "gabordancs@tutamail.com";
+
+// [transactionKey, label] pairs rendered in the Overview processor section.
+const PROCESSOR_FIELDS = [
+  ["merchant", "Merchant"],
+  ["orderId", "Order ID"],
+  ["orderDescription", "Order description"],
+  ["paymentId", "Payment ID"],
+  ["trackingId", "Tracking ID"],
+  ["uuid", "UUID"],
+  ["authCode", "Authorization code"],
+  ["rrn", "RRN"],
+  ["arn", "ARN"],
+  ["transactionMode", "3-D Secure / mode"],
+  ["paymentMode", "Payment mode"],
+  ["paymentBrand", "Card scheme"],
+  ["binCardType", "Card type"],
+  ["binCardCategory", "Card category"],
+  ["issuingBank", "Issuing bank"],
+  ["acquirerBank", "Acquirer"],
+  ["processingBank", "Processing bank"],
+  ["aliasName", "Acquirer alias"],
+  ["terminalId", "Terminal ID"],
+  ["isoCountry", "Issuing country"],
+  ["transactionCountry", "Transaction country"],
+  ["authAmount", "Authorized amount"],
+  ["capturedAmount", "Captured amount"],
+  ["status", "Status"],
+  ["remark", "Remark"],
+  ["successTimeStamp", "Auth/capture time"],
+  ["transactionDate", "Transaction date"],
+];
 
 const EMAIL_LABELS = {
   "signed-terms": "Signed terms & conditions",
@@ -101,6 +135,9 @@ export default function AdminChargebackEvidence() {
     sendEmails: true,
   });
   const [result, setResult] = useState(null);
+  const [transaction, setTransaction] = useState(null);
+  const [uploadInfo, setUploadInfo] = useState(null); // { fileName, planName, warnings }
+  const fileInputRef = useRef(null);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -122,6 +159,56 @@ export default function AdminChargebackEvidence() {
       amountPaid: plan ? String(plan.price) : f.amountPaid,
       currency: plan ? plan.currency : f.currency,
     }));
+  };
+
+  const uploadMutation = useMutation({
+    mutationFn: (file) => adminParseChargebackUpload(file),
+    onSuccess: (data, file) => {
+      const f = data.fields || {};
+      setForm((prev) => ({
+        ...prev,
+        email: f.email || prev.email,
+        challengeId: data.challengeId || prev.challengeId,
+        registrationDate: f.registrationDate || prev.registrationDate,
+        amountPaid: f.amountPaid != null ? String(f.amountPaid) : prev.amountPaid,
+        currency: f.currency || prev.currency,
+        firstName: f.firstName || prev.firstName,
+        lastName: f.lastName || prev.lastName,
+        country: f.country || prev.country,
+        cardBrand: f.cardBrand || prev.cardBrand,
+        cardLast4: f.cardLast4 || prev.cardLast4,
+        ipAddress: f.ipAddress || prev.ipAddress,
+      }));
+      setTransaction(data.transaction || null);
+      setUploadInfo({
+        fileName: file?.name,
+        planName: data.planName,
+        matched: data.matched,
+        warnings: data.warnings || [],
+      });
+      toast({
+        title: "File parsed",
+        description: data.matched
+          ? `Auto-filled from ${file?.name}. Matched plan: ${data.planName}.`
+          : `Auto-filled from ${file?.name}. No plan matched — pick one manually.`,
+      });
+    },
+    onError: (err) => {
+      toast({
+        variant: "destructive",
+        title: "Could not parse file",
+        description:
+          err?.response?.data?.message?.toString() ||
+          err?.message ||
+          "Unsupported or invalid file.",
+      });
+    },
+  });
+
+  const handleFile = (e) => {
+    const file = e.target.files?.[0];
+    if (file) uploadMutation.mutate(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const mutation = useMutation({
@@ -173,6 +260,7 @@ export default function AdminChargebackEvidence() {
     ].forEach((k) => {
       if (form[k]) payload[k] = form[k];
     });
+    if (transaction) payload.transaction = transaction;
     mutation.mutate(payload);
   };
 
@@ -198,6 +286,73 @@ export default function AdminChargebackEvidence() {
       {/* Form */}
       <Card className="bg-card border-border p-4 sm:p-6">
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* CSV / XLSX upload */}
+          <div className="rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
+              <div className="flex items-start gap-3">
+                <FileSpreadsheet className="w-5 h-5 text-amber-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-foreground">
+                    Auto-fill from transaction file
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Upload a processor export (CSV or XLSX). The plan, cardholder,
+                    amount, card and transaction details are filled automatically.
+                  </p>
+                </div>
+              </div>
+              <div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  onChange={handleFile}
+                  className="hidden"
+                  id="tx-upload"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-amber-500/40 text-foreground hover:bg-amber-500/10"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadMutation.isPending}
+                >
+                  {uploadMutation.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Parsing…
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4 mr-2" /> Upload CSV / XLSX
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+            {uploadInfo && (
+              <div className="mt-3 text-xs">
+                <p className="text-foreground">
+                  Loaded <span className="font-medium">{uploadInfo.fileName}</span>
+                  {uploadInfo.matched ? (
+                    <span className="text-emerald-400">
+                      {" "}
+                      · matched plan: {uploadInfo.planName}
+                    </span>
+                  ) : (
+                    <span className="text-amber-400"> · no plan matched</span>
+                  )}
+                </p>
+                {uploadInfo.warnings?.length > 0 && (
+                  <ul className="mt-1 list-disc pl-5 text-amber-400">
+                    {uploadInfo.warnings.map((w, i) => (
+                      <li key={i}>{w}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label className="text-foreground">Cardholder email *</Label>
@@ -494,8 +649,29 @@ function EvidenceResult({ result }) {
               <StatBox label="Reference" value={report.payment.reference} />
               <StatBox label="Provider" value={report.payment.provider} />
               <StatBox label="Paid at" value={fmt(report.payment.paidAt)} />
+              {report.payment.cardBin && (
+                <StatBox label="Card BIN" value={report.payment.cardBin} />
+              )}
             </div>
           </section>
+          {report.payment.processor && (
+            <section>
+              <h3 className="text-sm font-semibold text-foreground mb-2">
+                Payment processor details
+              </h3>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {PROCESSOR_FIELDS.filter(
+                  ([k]) => report.payment.processor[k],
+                ).map(([k, label]) => (
+                  <StatBox
+                    key={k}
+                    label={label}
+                    value={report.payment.processor[k]}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
           <section>
             <h3 className="text-sm font-semibold text-foreground mb-2">
               Trading account
