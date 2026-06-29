@@ -77,6 +77,7 @@ import {
   useLocation,
   Navigate,
 } from "react-router-dom";
+import { basenameForPath } from '@/lib/localeUrl';
 import ProtectedRoute, {
   DashboardRedirect,
   PublicOnlyRoute,
@@ -310,8 +311,10 @@ function PagesContent() {
 }
 
 export default function Pages() {
+  const basename =
+    typeof window !== 'undefined' ? basenameForPath(window.location.pathname) : '';
   return (
-    <Router>
+    <Router basename={basename}>
       <PagesContent />
     </Router>
   );
