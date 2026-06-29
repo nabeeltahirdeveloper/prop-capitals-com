@@ -9,9 +9,17 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const KycPolicyPage = () => {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
+
+  const requiredInfoItems = t('kycPolicy.requiredInfo.items', { returnObjects: true });
+  const identityItems = t('kycPolicy.identity.items', { returnObjects: true });
+  const addressItems = t('kycPolicy.address.items', { returnObjects: true });
+  const fundsItems = t('kycPolicy.funds.items', { returnObjects: true });
+  const refusalItems = t('kycPolicy.refusal.items', { returnObjects: true });
 
   return (
     <div className={`min-h-screen pt-20 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
@@ -26,10 +34,10 @@ const KycPolicyPage = () => {
                 isDark ? 'text-white' : 'text-slate-900'
               }`}
             >
-              Know Your Customer (KYC) Policy
+              {t('kycPolicy.title')}
             </h1>
             <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>
-              How we verify client identities and comply with AML requirements
+              {t('kycPolicy.subtitle')}
             </p>
           </div>
 
@@ -45,16 +53,12 @@ const KycPolicyPage = () => {
                 }`}
               >
                 <FileText className="w-5 h-5 text-amber-500" />
-                1. Purpose
+                {t('kycPolicy.purpose.heading')}
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                This Know Your Customer (&quot;KYC&quot;) Policy outlines the procedures implemented by
-                the Company to verify the identity of its Clients, prevent fraud, and comply with
-                applicable Anti-Money Laundering (AML) and regulatory requirements. Completion of
-                KYC verification is mandatory for access to certain services, including funded
-                trading and withdrawals.
+                {t('kycPolicy.purpose.body')}
               </p>
-              
+
             </section>
 
             <section>
@@ -64,17 +68,15 @@ const KycPolicyPage = () => {
                 }`}
               >
                 <User className="w-5 h-5 text-amber-500" />
-                2. Required Client Information
+                {t('kycPolicy.requiredInfo.heading')}
               </h2>
               <p className={`leading-relaxed mb-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                To satisfy KYC requirements, each Client may be required to provide accurate,
-                current, and complete information, including but not limited to:
+                {t('kycPolicy.requiredInfo.intro')}
               </p>
               <ul className="space-y-2 list-disc list-inside">
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>Full legal name</li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>Date of birth</li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>Nationality</li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>Residential address</li>
+                {requiredInfoItems.map((item, index) => (
+                  <li key={index} className={isDark ? 'text-gray-400' : 'text-slate-600'}>{item}</li>
+                ))}
               </ul>
             </section>
 
@@ -85,20 +87,18 @@ const KycPolicyPage = () => {
                 }`}
               >
                 <FileText className="w-5 h-5 text-amber-500" />
-                3. Identity Verification
+                {t('kycPolicy.identity.heading')}
               </h2>
               <p className={`leading-relaxed mb-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Clients must submit a valid, government-issued photo identification document, which
-                may include:
+                {t('kycPolicy.identity.intro')}
               </p>
               <ul className="space-y-2 list-disc list-inside mb-4">
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>Passport</li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>National identity card</li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>Driver’s license</li>
+                {identityItems.map((item, index) => (
+                  <li key={index} className={isDark ? 'text-gray-400' : 'text-slate-600'}>{item}</li>
+                ))}
               </ul>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                The submitted identification must be clear, legible, unexpired, and issued by a
-                recognized governmental authority.
+                {t('kycPolicy.identity.note')}
               </p>
             </section>
 
@@ -109,21 +109,18 @@ const KycPolicyPage = () => {
                 }`}
               >
                 <FileText className="w-5 h-5 text-amber-500" />
-                4. Proof of Address
+                {t('kycPolicy.address.heading')}
               </h2>
               <p className={`leading-relaxed mb-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Clients may be required to submit proof of residential address, dated within the
-                last three (3) months, such as:
+                {t('kycPolicy.address.intro')}
               </p>
               <ul className="space-y-2 list-disc list-inside mb-4">
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>Utility bill</li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>Bank statement</li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>
-                  Official government correspondence
-                </li>
+                {addressItems.map((item, index) => (
+                  <li key={index} className={isDark ? 'text-gray-400' : 'text-slate-600'}>{item}</li>
+                ))}
               </ul>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                The document must clearly display the Client’s full name and residential address.
+                {t('kycPolicy.address.note')}
               </p>
             </section>
 
@@ -134,22 +131,18 @@ const KycPolicyPage = () => {
                 }`}
               >
                 <Search className="w-5 h-5 text-amber-500" />
-                5. Proof of Funds
+                {t('kycPolicy.funds.heading')}
               </h2>
               <p className={`leading-relaxed mb-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Clients may be required to provide proof of funds to demonstrate the lawful origin
-                of capital used in connection with the Company’s services. Acceptable documentation
-                may include, but is not limited to:
+                {t('kycPolicy.funds.intro')}
               </p>
               <ul className="space-y-2 list-disc list-inside mb-4">
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>Recent bank statements</li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>Salary slips or income statements</li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>
-                  Investment or trading account statements
-                </li>
+                {fundsItems.map((item, index) => (
+                  <li key={index} className={isDark ? 'text-gray-400' : 'text-slate-600'}>{item}</li>
+                ))}
               </ul>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                The Company reserves the right to request additional documentation where necessary.
+                {t('kycPolicy.funds.note')}
               </p>
             </section>
 
@@ -160,16 +153,13 @@ const KycPolicyPage = () => {
                 }`}
               >
                 <CheckCircle2 className="w-5 h-5 text-amber-500" />
-                6. Verification and Review
+                {t('kycPolicy.verification.heading')}
               </h2>
               <p className={`leading-relaxed mb-2 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                6.1. All submitted KYC information and documentation are subject to verification and
-                review.
+                {t('kycPolicy.verification.clause1')}
               </p>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                6.2. The Company reserves the right to reject, suspend, or restrict access to
-                services if the Client fails to provide satisfactory documentation or if submitted
-                information is incomplete, inaccurate, or misleading.
+                {t('kycPolicy.verification.clause2')}
               </p>
             </section>
 
@@ -180,11 +170,10 @@ const KycPolicyPage = () => {
                 }`}
               >
                 <Search className="w-5 h-5 text-amber-500" />
-                7. Ongoing Monitoring
+                {t('kycPolicy.monitoring.heading')}
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                The Company may conduct periodic reviews and re-verification of Client information
-                to ensure continued compliance with regulatory requirements.
+                {t('kycPolicy.monitoring.body')}
               </p>
             </section>
 
@@ -195,12 +184,10 @@ const KycPolicyPage = () => {
                 }`}
               >
                 <Lock className="w-5 h-5 text-amber-500" />
-                8. Data Protection
+                {t('kycPolicy.dataProtection.heading')}
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                All personal data collected under this Policy shall be processed in accordance with
-                the Company’s Privacy Policy and applicable data protection laws. Information will
-                be used solely for verification, compliance, and security purposes.
+                {t('kycPolicy.dataProtection.body')}
               </p>
             </section>
 
@@ -211,22 +198,15 @@ const KycPolicyPage = () => {
                 }`}
               >
                 <AlertTriangle className="w-5 h-5 text-amber-500" />
-                9. Refusal or Termination
+                {t('kycPolicy.refusal.heading')}
               </h2>
               <p className={`leading-relaxed mb-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Failure to comply with KYC requirements may result in:
+                {t('kycPolicy.refusal.intro')}
               </p>
               <ul className="space-y-2 list-disc list-inside">
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>Denial of account access</li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>
-                  Suspension of trading privileges
-                </li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>
-                  Delay or denial of withdrawals
-                </li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>
-                  Termination of the Client relationship
-                </li>
+                {refusalItems.map((item, index) => (
+                  <li key={index} className={isDark ? 'text-gray-400' : 'text-slate-600'}>{item}</li>
+                ))}
               </ul>
             </section>
 
@@ -237,12 +217,10 @@ const KycPolicyPage = () => {
                 }`}
               >
                 <FileText className="w-5 h-5 text-amber-500" />
-                10. Amendments
+                {t('kycPolicy.amendments.heading')}
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                The Company reserves the right to amend this KYC Policy at any time. Any changes
-                shall become effective upon publication on the Company’s website unless otherwise
-                stated.
+                {t('kycPolicy.amendments.body')}
               </p>
             </section>
 
@@ -253,11 +231,10 @@ const KycPolicyPage = () => {
                 }`}
               >
                 <Shield className="w-5 h-5 text-amber-500" />
-                11. Governing Law
+                {t('kycPolicy.governingLaw.heading')}
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                This Policy shall be governed by and construed in accordance with the laws
-                applicable to the Company’s jurisdiction of operation.
+                {t('kycPolicy.governingLaw.body')}
               </p>
             </section>
           </div>
@@ -268,4 +245,3 @@ const KycPolicyPage = () => {
 };
 
 export default KycPolicyPage;
-

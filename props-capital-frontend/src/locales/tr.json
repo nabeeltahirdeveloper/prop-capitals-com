@@ -3120,23 +3120,31 @@
     "heroImageAlt": "İşlem kuralları"
   },
   "terms": {
-    "title": "Kullanım Şartları",
-    "lastUpdated": "Son güncelleme: Ocak 2024",
+    "title": "Hizmet Şartları",
+    "lastUpdated": "Son güncelleme: 1 Ocak 2025",
     "acceptance": {
       "title": "1. Şartların kabulü",
       "content": "Prop Capitals hizmetlerine erişerek ve kullanarak bu Kullanım Şartları ile bağlı olmayı kabul edersiniz. Şartları kabul etmiyorsanız hizmetlerimizi kullanmayın."
     },
     "description": {
-      "title": "2. Hizmetin tanımı",
-      "content": "Prop Capitals, trader’ların işlem becerilerini kanıtlayabildiği özel bir işlem değerlendirme programı (“Meydan Okuma”) sunar. Meydan okumanın başarıyla tamamlanması, fonlanan işlem hesabına erişim sağlayabilir."
+      "title": "2. Hizmetin Tanımı",
+      "content": "Prop Capitals, katılımcıların işlem yapma yeteneklerini sergilemelerine olanak tanıyan simüle edilmiş işlem değerlendirme programları (\"Meydan Okumalar\") sunar. Başarılı katılımcılar, fonlanan işlem hesaplarına erişim elde edebilir. Değerlendirme aşamasındaki tüm işlem faaliyetleri simüle edilmiş bir ortamda gerçekleştirilir."
     },
     "eligibility": {
       "title": "3. Uygunluk",
-      "content": "Hizmetlerimizi kullanmak için 18 yaşında veya daha büyük olmalısınız. Prop Capitals’u kullanarak bu sözleşmeyi yapabilecek yasal ehliyete sahip olduğunuzu beyan edersiniz."
+      "content": "Hizmetimizi kullanabilmek için en az 18 yaşında olmanız ve kendi yargı bölgenizde bağlayıcı sözleşmeler yapmaya yasal olarak ehil olmanız gerekir. Hizmet'i kullanarak, bu gereklilikleri karşıladığınızı beyan ve taahhüt edersiniz."
     },
     "accountRegistration": {
-      "title": "4. Hesap kaydı",
-      "content": "Kayıt sırasında doğru, güncel ve eksiksiz bilgi sağlamayı kabul edersiniz. Hesap bilgilerinizin gizliliğini korumak sizin sorumluluğunuzdadır."
+      "title": "4. Hesap Kaydı",
+      "content": "Kayıt sırasında doğru, güncel ve eksiksiz bilgi sağlamayı kabul edersiniz. Hesap bilgilerinizin gizliliğini korumak sizin sorumluluğunuzdadır.",
+      "intro": "Hizmet'in belirli özelliklerine erişmek için bir hesap oluşturmanız gerekir. Aşağıdakileri kabul edersiniz:",
+      "items": [
+        "Doğru, güncel ve eksiksiz bilgi sağlamak",
+        "Bilgilerinizin doğru kalmasını sağlamak için bunları korumak ve güncellemek",
+        "Hesap kimlik bilgilerinizin güvenliğini sağlamak",
+        "Hesabınız altındaki tüm faaliyetlerin sorumluluğunu kabul etmek",
+        "Herhangi bir yetkisiz kullanım durumunda bizi derhal bilgilendirmek"
+      ]
     },
     "tradingRules": {
       "title": "5. İşlem kuralları",
@@ -3161,49 +3169,70 @@
       "content": "Fonlanan trader’lar, kâr paylaşımı anlaşmasına göre iki haftada bir kâr çekebilir. Prop Capitals, çekim işlemi öncesinde tüm işlem aktivitelerini inceleme hakkını saklı tutar."
     },
     "intellectualProperty": {
-      "title": "9. Fikri mülkiyet",
-      "content": "Prop Capitals platformundaki tüm içerik, ticari markalar ve fikri mülkiyet Prop Capitals’a aittir ve yürürlükteki yasalarla korunur."
+      "title": "7. Fikri Mülkiyet",
+      "content": "Hizmet ile özgün içeriği, özellikleri ve işlevselliği Prop Capitals'a aittir ve uluslararası telif hakkı, ticari marka ve diğer fikri mülkiyet yasalarıyla korunmaktadır."
     },
     "limitationOfLiability": {
-      "title": "10. Sorumluluğun sınırlandırılması",
-      "content": "Prop Capitals, hizmetlerimizin kullanımından doğan dolaylı, arızi veya sonuçsal zararlardan sorumlu değildir."
+      "title": "8. Sorumluluğun Sınırlandırılması",
+      "content": "Prop Capitals, Hizmet'i kullanmanızdan kaynaklanan dolaylı, arızi, özel, sonuçsal veya cezai hiçbir zarardan sorumlu olmayacaktır. Toplam sorumluluğumuz, talebin doğmasından önceki 12 ay içinde Hizmet için tarafınızca ödenen tutarı aşmayacaktır."
     },
     "modifications": {
       "title": "11. Değişiklikler",
       "content": "Prop Capitals, bu şartları herhangi bir zamanda değiştirme hakkını saklı tutar. Hizmeti kullanmaya devam etmeniz, güncellenmiş şartları kabul ettiğiniz anlamına gelir."
     },
     "contact": {
-      "title": "12. İletişim",
-      "content": "Bu şartlarla ilgili sorularınız için support@prop-capitals.com adresine yazabilirsiniz."
+      "title": "10. Bize Ulaşın",
+      "content": "Bu şartlarla ilgili sorularınız için support@prop-capitals.com adresine yazabilirsiniz.",
+      "intro": "Bu Şartlar hakkında herhangi bir sorunuz varsa, lütfen bizimle iletişime geçin:",
+      "emailLabel": "E-posta",
+      "addressLabel": "Adres"
+    },
+    "agreement": {
+      "title": "1. Şartların Kabulü",
+      "content": "prop-capitals.com adresindeki Prop Capitals web sitesine ve hizmetlerine (\"Hizmet\") erişerek veya bunları kullanarak, bu Hizmet Şartları (\"Şartlar\") ile bağlı olmayı kabul edersiniz. Bu şartların herhangi bir bölümünü kabul etmiyorsanız, Hizmet'e erişemezsiniz."
+    },
+    "challengeRules": {
+      "title": "5. Meydan Okuma Kuralları ve İşlem Koşulları",
+      "content": "Tüm işlem meydan okumaları; kâr hedefleri, düşüş limitleri ve işlem kısıtlamaları dahil olmak üzere belirli kurallara tabidir. Bu kurallar web sitemizde gösterilir ve bunlara uyulmalıdır. Meydan okuma kurallarının ihlali, para iadesi olmaksızın hesabın kapatılmasıyla sonuçlanabilir."
+    },
+    "payments": {
+      "title": "6. Ödemeler ve İadeler",
+      "content": "Meydan okuma ücretleri satın alma sırasında tahsil edilir. Fonlanan bir trader olarak ilk kâr ödemenizle birlikte %100 ücret iadesi sunuyoruz. Bu politikanın dışındaki iade talepleri İade Politikamıza tabidir. Tüm ödemeler, ödeme sağlayıcılarımız aracılığıyla güvenli bir şekilde işlenir."
+    },
+    "governingLaw": {
+      "title": "9. Geçerli Hukuk",
+      "content": "Bu Şartlar, kanunlar ihtilafı hükümleri dikkate alınmaksızın, İngiltere ve Galler yasalarına göre yönetilir ve yorumlanır."
     }
   },
   "privacy": {
     "title": "Gizlilik Politikası",
-    "lastUpdated": "Son güncelleme: Ocak 2024",
+    "lastUpdated": "Son güncelleme: 1 Ocak 2025",
     "informationWeCollect": {
-      "title": "1. Topladığımız bilgiler",
-      "intro": "Doğrudan sağladığınız bilgileri toplarız:",
+      "title": "Topladığımız Bilgiler",
+      "intro": "Doğrudan bize sağladığınız bilgileri toplarız; bunlar şunları içerir:",
       "items": [
-        "Kişisel tanımlayıcı bilgiler (ad, e-posta, telefon numarası)",
-        "Ödeme bilgileri (üçüncü taraf ödeme sağlayıcıları tarafından güvenle işlenir)",
-        "İşlem hesabı bilgileri ve aktiviteleri",
-        "Destek ekibiyle iletişim kayıtları",
-        "KYC belgeleri (kimlik, adres doğrulama)"
+        "Ad, e-posta adresi ve iletişim bilgileri",
+        "Ödeme ve fatura bilgileri",
+        "İşlem hesabı verileri ve performans ölçütleri",
+        "İletişim tercihleri",
+        "Sağlamayı seçtiğiniz diğer her türlü bilgi"
       ]
     },
     "howWeUse": {
-      "title": "2. Bilgileri nasıl kullanırız?",
+      "title": "Bilgilerinizi Nasıl Kullanırız",
       "items": [
-        "Hizmeti sağlamak ve sürdürmek",
-        "Ödemeleri işlemek ve ilgili bilgileri iletmek",
-        "İşlem aktivitelerini izlemek ve kuralları uygulamak",
-        "Güncellemeler ve promosyonlar hakkında iletişim kurmak",
-        "Dolandırıcılığı tespit etmek ve önlemek"
-      ]
+        "Hizmetlerimizi sunmak, sürdürmek ve geliştirmek",
+        "İşlemleri gerçekleştirmek ve ilgili bilgileri göndermek",
+        "Teknik bildirimler, güncellemeler ve destek mesajları göndermek",
+        "Yorumlarınıza, sorularınıza ve taleplerinize yanıt vermek",
+        "Eğilimleri, kullanımı ve etkinlikleri izlemek ve analiz etmek",
+        "Hileli işlemleri tespit etmek, araştırmak ve önlemek"
+      ],
+      "intro": "Topladığımız bilgileri şu amaçlarla kullanırız:"
     },
     "dataSecurity": {
-      "title": "3. Veri güvenliği",
-      "content": "Kişisel bilgileri şifreleme, güvenli sunucular ve düzenli güvenlik denetimleri gibi sektör standardı önlemlerle koruruz."
+      "title": "Veri Güvenliği",
+      "content": "Kişisel bilgilerinizi yetkisiz erişime, değiştirilmeye, ifşaya veya imhaya karşı korumak için uygun teknik ve organizasyonel önlemleri uygularız. Buna, aktarım sırasında ve beklemedeyken verilerin şifrelenmesi, düzenli güvenlik değerlendirmeleri ve sıkı erişim denetimleri dahildir."
     },
     "dataSharing": {
       "title": "4. Bilgi paylaşımı",
@@ -3216,35 +3245,40 @@
       ]
     },
     "yourRights": {
-      "title": "5. Haklarınız",
+      "title": "Haklarınız",
       "intro": "Şu haklara sahipsiniz:",
       "items": [
-        "Kişisel verilerinize erişim",
-        "Hatalı bilgilerin düzeltilmesini talep etme",
-        "Verilerin silinmesini talep etme (yasal gerekliliklere tabi)",
-        "Pazarlama iletişimlerini durdurma (opt-out)",
-        "Veri taşınabilirliği talebi"
+        "Kişisel verilerinize erişme ve bir kopyasını alma",
+        "Hatalı kişisel verileri düzelttirme",
+        "Kişisel verilerinizin silinmesini talep etme",
+        "Kişisel verilerinizin işlenmesine itiraz etme",
+        "İşlemenin kısıtlanmasını talep etme",
+        "Veri taşınabilirliği",
+        "Onayınızı dilediğiniz zaman geri çekme"
       ]
     },
     "cookies": {
-      "title": "6. Çerezler",
-      "content": "Deneyimi iyileştirmek, kullanım analizi yapmak ve içeriği optimize etmek için çerezler ve benzeri teknolojiler kullanırız. Tarayıcı ayarlarınızdan çerez tercihlerinizi yönetebilirsiniz."
+      "title": "Çerezler",
+      "content": "Tarama etkinlikleriniz hakkında bilgi toplamak ve izlemek için çerezler ve benzeri izleme teknolojileri kullanırız. Tarayıcınızı tüm çerezleri reddedecek veya bir çerez gönderildiğinde bunu belirtecek şekilde ayarlayabilirsiniz."
     },
     "dataRetention": {
       "title": "7. Veri saklama",
       "content": "Hesabınız aktif olduğu sürece veya hizmeti sunmak için gerekli olduğu müddetçe kişisel bilgileri saklarız. Yasal uyum ve uyuşmazlık çözümü için bazı bilgileri daha uzun süre tutabiliriz."
     },
     "internationalTransfers": {
-      "title": "8. Uluslararası aktarım",
-      "content": "Bilgileriniz, ikamet ettiğiniz ülke dışındaki ülkelere aktarılabilir ve orada işlenebilir. Uygun koruma önlemlerini uygularız."
+      "title": "Uluslararası Veri Aktarımları",
+      "content": "Bilgileriniz, kendi ülkeniz dışındaki ülkelere aktarılabilir ve buralarda işlenebilir. Bilgilerinizi bu Gizlilik Politikası'na uygun şekilde korumak için uygun güvencelerin mevcut olmasını sağlarız."
     },
     "childrensPrivacy": {
       "title": "9. Çocukların gizliliği",
       "content": "Hizmetlerimiz 18 yaş altını hedeflemez. Bilerek 18 yaş altından bilgi topladığımızı düşünmüyoruz."
     },
     "contactUs": {
-      "title": "10. Bize ulaşın",
-      "content": "Gizlilikle ilgili sorularınız için support@prop-capitals.com adresinden bize ulaşabilirsiniz."
+      "title": "Bize Ulaşın",
+      "content": "Gizlilikle ilgili sorularınız için support@prop-capitals.com adresinden bize ulaşabilirsiniz.",
+      "intro": "Bu Gizlilik Politikası hakkında herhangi bir sorunuz varsa, lütfen bizimle iletişime geçin:",
+      "emailLabel": "E-posta",
+      "addressLabel": "Adres"
     }
   },
   "layout": {},
@@ -5451,6 +5485,255 @@
       "fundedTraders": "Fonlanmış Yatırımcı",
       "capitalDeployed": "Dağıtılan Sermaye",
       "paidOut": "Ödenen"
+    }
+  },
+  "riskDisclosure": {
+    "pageTitle": "Risk Bildirimi",
+    "pageSubtitle": "İşlem riskleri hakkında önemli bilgiler",
+    "highRiskWarning": {
+      "heading": "Yüksek Risk Uyarısı",
+      "body": "İşlem yapmak önemli ölçüde zarar etme riski taşır ve tüm yatırımcılar için uygun olmayabilir. Katılmadan önce bu riskleri tam olarak anladığınızdan emin olun ve yalnızca kaybetmeyi göze alabileceğiniz parayla işlem yapın."
+    },
+    "generalInfo": {
+      "heading": "Genel Bilgiler ve Risk Bildirimi",
+      "body": "Risk Bildirimi: Prop Capitals tarafından yayımlanan ve dağıtılan tüm materyaller yalnızca genel bilgi olarak değerlendirilmelidir. Prop Capitals tarafından sağlanan veya burada yer alan bilgiler (a) yatırım tavsiyesi, (b) herhangi bir menkul kıymetin alımına veya satımına yönelik bir teklif ya da davet veya (c) herhangi bir menkul kıymet, şirket veya fonun tavsiyesi, onaylanması ya da desteklenmesi olarak hizmet etmeyi amaçlamaz. Prop Capitals'in web sitelerinde yer alan referanslar, diğer müşterilerin deneyimlerini yansıtmayabilir ve gelecekteki performansı veya başarıyı garanti etmez. Prop Capitals'in web sitelerindeki bilgileri kullanmak kendi sorumluluğunuzdadır. Prop Capitals; ortakları, temsilcileri, acenteleri, çalışanları ve yüklenicileriyle birlikte, bu tür bilgilerin kullanımı veya yanlış kullanımı için herhangi bir sorumluluk veya yükümlülük kabul etmez."
+    },
+    "tradingRisk": {
+      "heading": "İşlem Riski ve Uygunluk",
+      "body": "Kaldıraçlı enstrümanlarla işlem yapmak önemli ölçüde risk taşır ve tüm yatırımcılar için uygun değildir. Yatırımcılar başlangıç yatırımlarının tamamını veya daha fazlasını kaybedebilir. İşlemler için yalnızca risk sermayesi (kişinin mali güvenliğini veya yaşam tarzını etkilemeden kaybedilebilecek para) kullanılmalı ve yalnızca yeterli risk sermayesine sahip olanlar işlem yapmalıdır. Bu belge, vadeli işlem, opsiyon veya forex alım satımına yönelik bir davet ya da teklif değildir. Geçmiş performans, gelecekteki sonuçların mutlaka göstergesi değildir."
+    },
+    "hypotheticalPerformance": {
+      "heading": "Varsayımsal ve Simüle Edilmiş Performans",
+      "body": "Varsayımsal veya simüle edilmiş performans sonuçlarının doğası gereği sınırlamaları vardır. Gerçek bir performans kaydının aksine, simüle edilmiş sonuçlar gerçek işlemleri yansıtmaz. Ayrıca, bu işlemler fiilen gerçekleştirilmediğinden, sonuçlar likidite eksikliği gibi belirli piyasa faktörlerinin etkisini olduğundan az veya olduğundan fazla telafi etmiş olabilir. Simüle edilmiş işlem programları ayrıca genellikle geriye dönük bakışın avantajıyla tasarlanır. Herhangi bir hesabın, gösterilenlere benzer kâr veya zarar elde edeceğine dair hiçbir garanti yoktur."
+    },
+    "cfdAvailability": {
+      "heading": "CFD Kullanılabilirliği",
+      "body": "Prop Capitals, belirli kısıtlanmış yargı bölgelerinde ikamet edenlere Fark Sözleşmeleri (CFD) sunmaz. Kısıtlanmış bölgelerin tam listesi için lütfen Hizmet Şartlarımıza bakın."
+    },
+    "companyInfo": {
+      "heading": "Şirket Bilgileri",
+      "body": "Bu web sitesi, {{registrationNumber}} sicil numarası ve {{address}} adresindeki kayıtlı adresiyle {{entity}} tarafından sahiplenilmekte ve işletilmektedir."
+    },
+    "ownershipCopyright": {
+      "heading": "Mülkiyet ve Telif Hakkı",
+      "body": "© {{year}} {{entity}}. Tüm Hakları Saklıdır."
+    }
+  },
+  "refundPolicy": {
+    "pageTitle": "İade Politikası",
+    "pageSubtitle": "İade uygunluğu ve işlemleri için açık koşullar",
+    "section1Heading": "1. İade Uygunluğu",
+    "section1Para1": "1.1. Müşteriler, satın alınan değerlendirme veya hesapta herhangi bir alım satım işlemi başlatılmamış olması koşuluyla, satın alma tarihinden itibaren on dört (14) takvim günü içinde iade talebinde bulunabilir.",
+    "section1Para2": "1.2. İade uygunluğu süresi, işlem büyüklüğü, süresi veya sonucu ne olursa olsun, herhangi bir işlemin gerçekleştirilmesi üzerine otomatik olarak sona erer.",
+    "section2Heading": "2. İade Edilemeyen Durumlar",
+    "section2Para1": "2.1. Alım satım faaliyeti başladığında, değerlendirme aktif sayılır ve Müşteri, bu andan itibaren hiçbir iadenin yapılmayacağını açıkça kabul eder.",
+    "section2Para2": "2.2. Bu durum eşit şekilde şunlara uygulanır: Değerlendirme hesapları, Challenge programları ve fonlanmış veya simüle edilmiş herhangi bir alım satım ortamı.",
+    "section3Heading": "3. İadelerin Kapsamı",
+    "section3Para1": "3.1. Onaylanan iadeler, yalnızca değerlendirme veya program için ödenen ilk satın alma ücretine uygulanır.",
+    "section3Para2": "3.2. Yürürlükteki yasaların aksini gerektirmediği sürece, ek ücretler, üçüncü taraf masrafları veya hizmet maliyetleri iade edilemez.",
+    "section4Heading": "4. İade İşlemleri",
+    "section4Para1": "4.1. Onaylanan iadeler, mümkün olduğunda orijinal ödeme yöntemi kullanılarak işleme alınır.",
+    "section4Para2": "4.2. İşlem süreleri ödeme sağlayıcısına bağlı olarak değişebilir ve harici bankacılık veya ödeme sistemi gecikmelerine tabidir.",
+    "section5Heading": "5. Kötüye Kullanımın Önlenmesi",
+    "section5Para1": "5.1. Şirket, kötüye kullanım, dolandırıcılık veya platform kurallarını atlatma girişimlerinden şüphelenilen durumlarda iade taleplerini reddetme hakkını saklı tutar.",
+    "section5Para2": "5.2. Tekrarlanan iade talepleri veya kötüye kullanıma işaret eden hesap faaliyetleri, hesabın askıya alınması veya sonlandırılması ile sonuçlanabilir.",
+    "section6Heading": "6. Politika Değişiklikleri",
+    "section6Para1": "6.1. Şirket, bu İade Politikasını herhangi bir zamanda değiştirme hakkını saklı tutar.",
+    "section6Para2": "6.2. Aksi belirtilmediği sürece, her türlü değişiklik Şirket’in web sitesinde yayımlanması üzerine yürürlüğe girer.",
+    "section7Heading": "7. Geçerli Hukuk",
+    "section7Para1": "Bu İade Politikası, Şirket’in faaliyet gösterdiği yargı çevresinde geçerli olan yasalara tabi olacak ve bu yasalara göre yorumlanacaktır."
+  },
+  "withdrawalPolicy": {
+    "pageTitle": "Para Çekme (Ödeme) Politikası",
+    "pageSubtitle": "Fonlanmış hesaplar için kâr çekme işlemlerinin nasıl ve ne zaman gerçekleştirildiği",
+    "section1": {
+      "heading": "1. Genel Hükümler",
+      "p1": "Bu Para Çekme Politikası (\"Politika\"), uygun nitelikteki Müşterilerin fonlanmış işlem hesaplarından kâr çekme talebinde bulunabilecekleri ve bu kârları alabilecekleri koşulları düzenler. Müşteri, fonlanmış işlem programlarına katılarak bu Politika, Şartlar ve Koşullar ile ilgili tüm platform kurallarına bağlı kalmayı kabul eder."
+    },
+    "section2": {
+      "heading": "2. Ödeme Uygunluğu",
+      "p1": "2.1. Müşteri, tüm işlem kurallarına ve risk yönetimi gerekliliklerine eksiksiz olarak uyulması koşuluyla, on dört (14) ardışık takvim günü boyunca fonlanmış işlem faaliyetini tamamladıktan sonra para çekme talebinde bulunmaya hak kazanır.",
+      "p2": "2.2. Sonraki para çekme işlemlerine ilişkin uygunluk; işlem davranışı, risk limitleri ve hesap bütünlüğü dâhil ancak bunlarla sınırlı olmamak üzere tüm platform politikalarına sürekli uyuma tabidir."
+    },
+    "section3": {
+      "heading": "3. Ödeme Sıklığı",
+      "p1": "3.1. Para çekme talepleri, her on dört (14) takvim gününde bir kez olarak tanımlanan iki haftalık esasa göre iletilebilir.",
+      "p2": "3.2. Şirket, geçerli yasalarca gerekli görüldüğü hâllerde önceden bildirimde bulunmak kaydıyla, ödeme takvimlerini kendi takdirine göre değiştirme hakkını saklı tutar."
+    },
+    "section4": {
+      "heading": "4. Para Çekme Tutarları",
+      "p1": "4.1. Talep başına asgari para çekme tutarı 50 ABD doları (elli Amerika Birleşik Devletleri doları) tutarındadır.",
+      "p2": "4.2. Talep edilen tutarın platform kurallarına uygun olarak meşru biçimde kazanılmış kârları temsil etmesi koşuluyla, azami para çekme limiti bulunmamaktadır."
+    },
+    "section5": {
+      "heading": "5. İşlem Süresi",
+      "p1": "5.1. Onaylanan para çekme talepleri, talebin iletildiği andan itibaren yirmi dört (24) ila kırk sekiz (48) saat içinde işleme alınır.",
+      "p2": "5.2. İşlem süreleri; uyum incelemeleri, teknik sorunlar, ödeme sağlayıcısı gecikmeleri veya mücbir sebep olayları nedeniyle uzayabilir."
+    },
+    "section6": {
+      "heading": "6. Ücretler",
+      "p1": "6.1. Şirket herhangi bir para çekme ücreti tahsil etmez.",
+      "p2": "6.2. Bankalar, ödeme işlemcileri veya aracılar tarafından uygulanan herhangi bir üçüncü taraf ücreti, münhasıran Müşterinin sorumluluğundadır."
+    },
+    "section7": {
+      "heading": "7. Uyum ve Doğrulama",
+      "p1": "7.1. Tüm para çekme talepleri; standart Müşterini Tanı (KYC), Kara Para Aklamayı Önleme (AML) ve dolandırıcılık önleme kontrollerine tabidir.",
+      "p2": "7.2. Şirket, herhangi bir para çekme işlemini onaylamadan önce ek belge veya açıklama talep etme hakkını saklı tutar."
+    },
+    "section8": {
+      "heading": "8. İhlaller ve Alıkoyma",
+      "p1": "8.1. Şirket; kural ihlali, kötüye kullanıma yönelik işlem uygulamaları, manipülasyon veya sözleşmesel yükümlülüklerin ihlali şüphesi bulunan durumlarda para çekme işlemlerini geciktirme, askıya alma, azaltma veya reddetme hakkını saklı tutar.",
+      "p2": "8.2. Yasaklanmış veya kurallara aykırı işlem faaliyetlerinden elde edilen herhangi bir kâr, geçersiz ve çekilemez sayılır."
+    },
+    "section9": {
+      "heading": "9. Değişiklikler",
+      "p1": "9.1. Şirket bu Politikayı dilediği zaman değiştirebilir. Güncellenmiş sürümler, aksi belirtilmedikçe Şirketin web sitesinde yayımlanması üzerine yürürlüğe girer."
+    },
+    "section10": {
+      "heading": "10. Geçerli Hukuk",
+      "p1": "Bu Politika, kanunlar ihtilafı ilkeleri dikkate alınmaksızın, Şirketin faaliyet gösterdiği yargı çevresinde geçerli olan kanunlara tabi olacak ve bu kanunlara göre yorumlanacaktır."
+    }
+  },
+  "kycPolicy": {
+    "title": "Müşterini Tanı (KYC) Politikası",
+    "subtitle": "Müşteri kimliklerini nasıl doğruladığımız ve AML gerekliliklerine nasıl uyduğumuz",
+    "purpose": {
+      "heading": "1. Amaç",
+      "body": "Bu Müşterini Tanı (\"KYC\") Politikası, Şirket tarafından Müşterilerinin kimliğini doğrulamak, dolandırıcılığı önlemek ve yürürlükteki Kara Para Aklamayı Önleme (AML) ile düzenleyici gerekliliklere uymak amacıyla uygulanan prosedürleri ortaya koymaktadır. KYC doğrulamasının tamamlanması, fonlanmış işlem ve para çekme işlemleri de dahil olmak üzere belirli hizmetlere erişim için zorunludur."
+    },
+    "requiredInfo": {
+      "heading": "2. Gerekli Müşteri Bilgileri",
+      "intro": "KYC gerekliliklerini karşılamak için her Müşteriden, aşağıdakiler dahil ancak bunlarla sınırlı olmamak üzere doğru, güncel ve eksiksiz bilgi sağlaması istenebilir:",
+      "items": [
+        "Tam yasal ad",
+        "Doğum tarihi",
+        "Uyruk",
+        "İkamet adresi"
+      ]
+    },
+    "identity": {
+      "heading": "3. Kimlik Doğrulama",
+      "intro": "Müşteriler, aşağıdakileri içerebilecek geçerli, devlet tarafından verilmiş fotoğraflı bir kimlik belgesi sunmalıdır:",
+      "items": [
+        "Pasaport",
+        "Ulusal kimlik kartı",
+        "Sürücü belgesi"
+      ],
+      "note": "Sunulan kimlik belgesi net, okunaklı, süresi dolmamış ve tanınmış bir resmi devlet makamı tarafından verilmiş olmalıdır."
+    },
+    "address": {
+      "heading": "4. Adres Kanıtı",
+      "intro": "Müşterilerden, son üç (3) ay içinde tarihlenmiş, ikamet adreslerini kanıtlayan aşağıdakiler gibi belgeleri sunmaları istenebilir:",
+      "items": [
+        "Fatura",
+        "Banka hesap özeti",
+        "Resmi devlet yazışması"
+      ],
+      "note": "Belge, Müşterinin tam adını ve ikamet adresini açıkça göstermelidir."
+    },
+    "funds": {
+      "heading": "5. Fon Kanıtı",
+      "intro": "Müşterilerden, Şirketin hizmetleriyle bağlantılı olarak kullanılan sermayenin yasal kaynağını kanıtlamak için fon kanıtı sağlamaları istenebilir. Kabul edilebilir belgeler aşağıdakileri içerebilir, ancak bunlarla sınırlı değildir:",
+      "items": [
+        "Güncel banka hesap özetleri",
+        "Maaş bordroları veya gelir beyanları",
+        "Yatırım veya işlem hesabı özetleri"
+      ],
+      "note": "Şirket, gerekli görüldüğünde ek belge talep etme hakkını saklı tutar."
+    },
+    "verification": {
+      "heading": "6. Doğrulama ve İnceleme",
+      "clause1": "6.1. Sunulan tüm KYC bilgileri ve belgeleri doğrulama ve incelemeye tabidir.",
+      "clause2": "6.2. Müşterinin tatmin edici belge sunmaması veya sunulan bilgilerin eksik, yanlış ya da yanıltıcı olması durumunda, Şirket hizmetlere erişimi reddetme, askıya alma veya kısıtlama hakkını saklı tutar."
+    },
+    "monitoring": {
+      "heading": "7. Sürekli İzleme",
+      "body": "Şirket, düzenleyici gerekliliklere sürekli uyumu sağlamak amacıyla Müşteri bilgilerini periyodik olarak inceleyebilir ve yeniden doğrulayabilir."
+    },
+    "dataProtection": {
+      "heading": "8. Veri Koruma",
+      "body": "Bu Politika kapsamında toplanan tüm kişisel veriler, Şirketin Gizlilik Politikası ve yürürlükteki veri koruma yasalarına uygun olarak işlenecektir. Bilgiler yalnızca doğrulama, uyum ve güvenlik amaçlarıyla kullanılacaktır."
+    },
+    "refusal": {
+      "heading": "9. Reddetme veya Sonlandırma",
+      "intro": "KYC gerekliliklerine uyulmaması aşağıdakilerle sonuçlanabilir:",
+      "items": [
+        "Hesap erişiminin reddedilmesi",
+        "İşlem ayrıcalıklarının askıya alınması",
+        "Para çekme işlemlerinin geciktirilmesi veya reddedilmesi",
+        "Müşteri ilişkisinin sonlandırılması"
+      ]
+    },
+    "amendments": {
+      "heading": "10. Değişiklikler",
+      "body": "Şirket, bu KYC Politikasını dilediği zaman değiştirme hakkını saklı tutar. Aksi belirtilmedikçe, herhangi bir değişiklik Şirketin web sitesinde yayımlandığı anda yürürlüğe girecektir."
+    },
+    "governingLaw": {
+      "heading": "11. Geçerli Hukuk",
+      "body": "Bu Politika, Şirketin faaliyet gösterdiği yargı bölgesinde geçerli olan yasalara tabi olacak ve bu yasalara göre yorumlanacaktır."
+    }
+  },
+  "amlPolicy": {
+    "pageTitle": "Kara Para Aklamayı Önleme (AML) Politikası",
+    "pageSubtitle": "Kara para aklama ve terörün finansmanını önleme taahhüdümüz",
+    "purpose": {
+      "heading": "1. Amaç",
+      "body": "Bu Kara Para Aklamayı Önleme (\"AML\") Politikası, BLUEHAVEN MANAGEMENT LTD (\"Şirket\") tarafından kara para aklama, terörün finansmanı ve diğer mali suçları tespit etmek, önlemek ve raporlamak amacıyla yürürlükteki yasa ve yönetmeliklere uygun olarak benimsenen tedbir ve prosedürleri ortaya koymaktadır."
+    },
+    "scope": {
+      "heading": "2. Kapsam",
+      "body": "Bu Politika, Şirketin tüm yöneticilerine, görevlilerine, çalışanlarına, yüklenicilerine ve temsilcilerine uygulanır. Ayrıca Şirketin platformları ve hizmetleri aracılığıyla yürütülen tüm iş ilişkileri ve işlemler için de geçerlidir."
+    },
+    "riskAssessment": {
+      "heading": "3. Risk Değerlendirmesi",
+      "intro": "Şirket, kara para aklama ve terörün finansmanı risklerini belirlemek ve değerlendirmek için düzenli risk değerlendirmeleri gerçekleştirir. Dikkate alınan risk faktörleri aşağıdakileri içerir ancak bunlarla sınırlı değildir:",
+      "factors": [
+        "Müşteri risk profili ve coğrafi konum",
+        "Ürün ve hizmetlerin niteliği ve karmaşıklığı",
+        "İşlem örüntüleri ve hacimleri",
+        "Kullanılan dağıtım kanalları ve ödeme yöntemleri"
+      ]
+    },
+    "cdd": {
+      "heading": "4. Müşterini Tanı (CDD)",
+      "intro": "Şirket, bir iş ilişkisi kurmadan veya işlemleri gerçekleştirmeden önce Müşterini Tanı tedbirlerini uygular. CDD prosedürleri şunları içerir:",
+      "measures": [
+        "Müşterilerin kimliğinin güvenilir ve bağımsız belgeler kullanılarak doğrulanması",
+        "Uygulanabilir olduğu durumlarda gerçek faydalanıcıların belirlenmesi ve doğrulanması",
+        "İş ilişkisinin amacının ve amaçlanan niteliğinin anlaşılması",
+        "İşlemlerin ve faaliyetlerin sürekli olarak izlenmesi"
+      ],
+      "edd": "Daha yüksek risklerin belirlendiği durumlarda, siyasi açıdan nüfuz sahibi kişiler (PEP'ler) ve daha yüksek riskli yargı bölgelerinden gelen müşteriler de dâhil olmak üzere Geliştirilmiş Durum Tespiti (EDD) uygulanır."
+    },
+    "transactionMonitoring": {
+      "heading": "5. İşlem İzleme",
+      "body": "Şirket, olağandışı veya şüpheli faaliyetleri tespit etmek amacıyla müşteri işlemlerini sürekli olarak izler. İzleme, bir müşterinin bilinen profili, ticari faaliyetleri veya risk değerlendirmesiyle tutarsız işlemleri tespit etmek üzere tasarlanmış otomatik sistemleri ve manuel inceleme süreçlerini içerir."
+    },
+    "suspiciousActivity": {
+      "heading": "6. Şüpheli Faaliyet Bildirimi",
+      "intro": "Bir işlemin veya faaliyetin kara para aklama ya da terörün finansmanı ile ilişkili olabileceğinden şüphelenmek için makul gerekçelerin bulunduğu durumlarda, Şirket:",
+      "actions": [
+        "İlgili makamlara bir Şüpheli Faaliyet Raporu (SAR) sunar",
+        "Raporun varlığını müşteriye açıklamaktan kaçınır (tüyo verme)",
+        "Kolluk kuvvetleri ve düzenleyici kurumlarla tam olarak iş birliği yapar",
+        "Uygun olduğu durumlarda iş ilişkisini askıya alır veya sonlandırır"
+      ]
+    },
+    "recordKeeping": {
+      "heading": "7. Kayıt Tutma",
+      "body": "Şirket, tüm müşteri kimlik belgelerine, işlem kayıtlarına ve durum tespiti bilgilerine ilişkin kayıtları, işlem tarihinden veya iş ilişkisinin sona ermesinden hangisi daha sonra ise itibaren en az beş (5) yıllık bir süre boyunca, yürürlükteki yasal gerekliliklere uygun olarak muhafaza eder."
+    },
+    "staffTraining": {
+      "heading": "8. Personel Eğitimi",
+      "body": "İlgili tüm personel, AML politikaları, prosedürleri ve yükümlülükleri konusunda düzenli olarak eğitim alır. Eğitim, şüpheli faaliyetlerin tespitini, raporlama prosedürlerini ve yürürlükteki yasa ve yönetmeliklerdeki güncellemeleri kapsar."
+    },
+    "amendments": {
+      "heading": "9. Değişiklikler",
+      "body": "Şirket, bu AML Politikasını dilediği zaman değiştirme hakkını saklı tutar. Aksi belirtilmedikçe, herhangi bir değişiklik Şirketin web sitesinde yayımlanması üzerine yürürlüğe girer."
+    },
+    "governingLaw": {
+      "heading": "10. Geçerli Hukuk",
+      "body": "Bu Politika, Şirketin faaliyet gösterdiği yargı bölgesinde uygulanan İngiltere ve Galler yasalarına tabi olacak ve bu yasalara göre yorumlanacaktır."
     }
   }
 }
