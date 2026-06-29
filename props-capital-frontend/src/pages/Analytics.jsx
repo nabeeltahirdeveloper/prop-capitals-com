@@ -232,9 +232,7 @@ export default function Analytics() {
   if (isLoadingAnalytics && !analytics) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-slate-400">
-          {t("analytics.loading") || "Loading analytics..."}
-        </div>
+        <div className="text-slate-400">{t("analytics.loading")}</div>
       </div>
     );
   }
@@ -434,7 +432,7 @@ export default function Analytics() {
             </>
           ) : (
             <div className="h-[200px] flex items-center justify-center text-slate-400">
-              {t("analytics.noData") || "No symbol distribution data"}
+              {t("analytics.noData")}
             </div>
           )}
         </Card>

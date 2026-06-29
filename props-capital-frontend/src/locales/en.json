@@ -535,7 +535,7 @@
     "bestDay": "Best Day",
     "worstDay": "Worst Day",
     "noData": "No symbol distribution data",
-    "loading": "Loading..."
+    "loading": "Loading analytics..."
   },
   "payouts": {
     "title": "Payouts",
@@ -567,7 +567,7 @@
     "businessDaysOnly": "business days",
     "minimumAmount": "Minimum Amount",
     "payoutFee": "Payout Fee",
-    "free": "â¬0 (Free)",
+    "free": "€0 (Free)",
     "freeValue": "Free",
     "availablePaymentMethods": "Available Payment Methods",
     "bankTransfer": "Bank Transfer",
@@ -591,7 +591,14 @@
     "date": "Date",
     "method": "Method",
     "status": "Status",
-    "processed": "Processed"
+    "processed": "Processed",
+    "requestFailed": "Failed to request payout",
+    "loadingAvailable": "Loading available amount...",
+    "availableForPayout": "Available for payout",
+    "profitSplitLabel": "Profit split",
+    "minimumLabel": "Minimum",
+    "pendingPayoutWarning": "You already have a pending payout request for this account",
+    "belowMinimumWarning": "Available amount is below the minimum payout of {{amount}}"
   },
   "profile": {
     "title": "Profile",
@@ -670,15 +677,19 @@
     "personal": "Personal",
     "sec": "Security",
     "verify": "Verify",
-    "notif": "Notifications"
+    "notif": "Notifications",
+    "saveError": "Failed to save profile",
+    "notificationUpdateFailed": "Failed to update notification preferences",
+    "passwordChangeFailed": "Failed to change password",
+    "documentUploadFailed": "Failed to upload document"
   },
   "support": {
     "title": "Support",
     "subtitle": "Get help with your account and trading",
     "newTicket": "New Ticket",
     "createTicket": "Create Support Ticket",
-    "ticketCreated": "ticketCreated",
-    "ticketCreatedDesc": "ticketCreatedDesc",
+    "ticketCreated": "Ticket Created",
+    "ticketCreatedDesc": "Your support ticket has been submitted successfully.",
     "subject": "Subject",
     "subjectPlaceholder": "Brief description of your issue",
     "category": "Category",
@@ -716,7 +727,9 @@
     "faq3Q": "How long do payouts take?",
     "faq3A": "Payouts are processed within 24-48 hours after approval. Bank transfers may take additional 2-5 business days.",
     "faq4Q": "Can I trade during news events?",
-    "faq4A": "Yes, news trading is allowed on all challenge types. There are no restrictions on trading during high-impact news."
+    "faq4A": "Yes, news trading is allowed on all challenge types. There are no restrictions on trading during high-impact news.",
+    "error": "Error",
+    "ticketError": "Failed to create support ticket. Please try again."
   },
   "tradeHistory": {
     "title": "Trade History",
@@ -757,7 +770,10 @@
     "profit": "Profit",
     "status": "Status",
     "noAccounts": "No Trading Accounts",
-    "noAccountsDesc": "You need to create a trading account first to view trade history."
+    "noAccountsDesc": "You need to create a trading account first to view trade history.",
+    "csvLots": "Lots",
+    "openTime": "Open Time",
+    "closeTime": "Close Time"
   },
   "challengeProgress": {
     "title": "Challenge Progress",
@@ -783,7 +799,7 @@
     "maxOverallDD": "Max Overall DD",
     "fundedDesc": "Trade with our capital",
     "profitSplit80": "80% profit split",
-    "scalingDesc": "Grow to â¬2,000,000",
+    "scalingDesc": "Grow to {{amount}}",
     "profitSplit90": "Up to 90% profit split",
     "currentPhaseRequirements": "Current Phase Requirements",
     "profitSplit": "Profit Split",
@@ -800,7 +816,14 @@
     "readyToStartDesc": "Open your trading platform and work towards your profit target.",
     "viewTradingRules": "View Trading Rules",
     "failed": "Failed",
-    "noAccountsDesc": "Purchase a challenge to start tracking your progress."
+    "noAccountsDesc": "Purchase a challenge to start tracking your progress.",
+    "accountNumberLabel": "Account #{{number}}",
+    "dailyDD": "Daily DD",
+    "overallDD": "Overall DD",
+    "targetLabel": "Target: {{value}}",
+    "minDaysLabel": "Min: {{value}} days",
+    "maxLabel": "Max: {{value}}",
+    "progress": "Progress"
   },
   "phaseTimeline": {
     "challengeJourney": "Challenge Journey",
@@ -988,7 +1011,9 @@
       "limit": "Limit",
       "violationDetected": "Account Violation Detected",
       "violationMessage": "Your account has violated one or more trading rules. Please review your trading activity."
-    }
+    },
+    "hoursShort": "h",
+    "minutesShort": "m"
   },
   "notifications": {
     "title": "Notifications",
@@ -1034,22 +1059,25 @@
       "overallDrawdownWarning": "Your overall drawdown has reached {{overallPercent}}% on account #{{accountNumber}}. Maximum allowed is {{maxPercent}}%. Please manage your risk carefully.",
       "dailyDrawdownViolation": "Your daily drawdown has reached {{dailyPercent}}% on account #{{accountNumber}}. Maximum allowed is {{maxPercent}}%. Trading is locked until tomorrow.",
       "overallDrawdownViolation": "Your overall drawdown has reached {{overallPercent}}% on account #{{accountNumber}}. Maximum allowed is {{maxPercent}}%. Challenge disqualified.",
-      "payoutApproved": "Your payout request of â¬{{amount}} has been approved. Funds will be transferred within 24-48 hours.",
-      "payoutRejected": "Your payout request of â¬{{amount}} has been rejected. Please contact support for more information.",
-      "payoutProcessed": "Your payout of â¬{{amount}} has been processed and transferred to your account.",
-      "phase1Completed": "Congratulations! You have successfully completed Phase 1 of your â¬{{accountSize}} challenge. Proceed to Phase 2 to continue.",
-      "phase2Completed": "Congratulations! You have successfully completed Phase 2 of your â¬{{accountSize}} challenge. Your account is now funded!",
+      "payoutApproved": "Your payout request of €{{amount}} has been approved. Funds will be transferred within 24-48 hours.",
+      "payoutRejected": "Your payout request of €{{amount}} has been rejected. Please contact support for more information.",
+      "payoutProcessed": "Your payout of €{{amount}} has been processed and transferred to your account.",
+      "phase1Completed": "Congratulations! You have successfully completed Phase 1 of your €{{accountSize}} challenge. Proceed to Phase 2 to continue.",
+      "phase2Completed": "Congratulations! You have successfully completed Phase 2 of your €{{accountSize}} challenge. Your account is now funded!",
       "tradingDaysMilestoneMet": "You have completed {{tradingDays}} trading days on account #{{accountNumber}}. Minimum trading days requirement met!",
       "tradingDaysMilestone": "You have completed {{tradingDays}} trading days on account #{{accountNumber}}. Keep up the great work!",
-      "challengePurchased": "Your {{challengeName}} challenge has been purchased successfully. Your trading account #{{accountNumber}} is now active with a starting balance of â¬{{startingBalance}}.",
-      "accountScalingApproved": "Your scaling request for account #{{accountNumber}} has been approved. Account balance increased from â¬{{oldBalance}} to â¬{{newBalance}}.",
+      "challengePurchased": "Your {{challengeName}} challenge has been purchased successfully. Your trading account #{{accountNumber}} is now active with a starting balance of €{{startingBalance}}.",
+      "accountScalingApproved": "Your scaling request for account #{{accountNumber}} has been approved. Account balance increased from €{{oldBalance}} to €{{newBalance}}.",
       "accountScalingRejected": "Your scaling request for account #{{accountNumber}} has been rejected. Please contact support for more information.",
       "newChallengeAvailable": "Check out our new {{challengeName}} challenge - {{accountSize}} account size on {{platform}}! Get started now.",
       "accountViolationGeneric": "Account #{{accountNumber}} has violated trading rules{{violationPercent}}.",
       "accountPaused": "Your trading account #{{accountNumber}} has been paused. Trading is temporarily disabled.",
       "accountClosed": "Your trading account #{{accountNumber}} has been closed.",
       "accountResumed": "Your trading account #{{accountNumber}} has been resumed. Trading is now active."
-    }
+    },
+    "loadError": "Failed to load notifications",
+    "loadErrorHint": "Please refresh the page and try again.",
+    "deleteNotification": "Delete notification"
   },
   "buyChallenge": {
     "title": "Add New Challenge",
@@ -1095,7 +1123,7 @@
     "total": "Total",
     "processing": "Processing...",
     "pay": "Pay",
-    "payAmount": "Pay â¬{{amount}}",
+    "payAmount": "Pay {{symbol}}{{amount}}",
     "secureEncryption": "Secure 256-bit SSL encryption",
     "noChallenges": "No Challenges",
     "minTradingDays": "Min Trading Days",
@@ -1135,7 +1163,17 @@
         "name": "PayPal",
         "desc": "Pay with PayPal"
       }
-    }
+    },
+    "enterCouponPrompt": "Please enter a coupon code",
+    "invalidCouponCode": "Invalid coupon code",
+    "invalidCouponDesc": "The coupon code is invalid",
+    "couponValidationFailed": "Failed to validate coupon",
+    "couponValidationFailedDesc": "Failed to validate coupon. Please try again.",
+    "purchaseFailedRetry": "Purchase failed. Please try again.",
+    "authRequired": "Authentication Required",
+    "signInToPurchase": "Please sign in to purchase a challenge.",
+    "noChallengeSelected": "No Challenge Selected",
+    "selectChallengeToContinue": "Please select a challenge to continue."
   },
   "violationModal": {
     "dailyLossTitle": "Daily Drawdown Limit Reached",

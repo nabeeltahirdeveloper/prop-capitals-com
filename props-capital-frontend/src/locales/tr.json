@@ -473,8 +473,8 @@
     "balance": "Bakiye",
     "profit": "Kâr",
     "days": "Gün",
-    "dailyDD": "Günlük zarar",
-    "overallDD": "Toplam zarar",
+    "dailyDD": "Günlük düşüş",
+    "overallDD": "Toplam düşüş",
     "openDashboard": "İşlem panosunu aç",
     "progress": "İlerleme",
     "trades": "İşlemler",
@@ -533,7 +533,7 @@
     "bestDay": "En iyi gün",
     "worstDay": "En kötü gün",
     "noData": "Sembol dağılımı için veri yok",
-    "loading": "Yükleniyor..."
+    "loading": "Analizler yükleniyor..."
   },
   "payouts": {
     "title": "Ödemeler",
@@ -565,7 +565,7 @@
     "businessDaysOnly": "Sadece iş günleri",
     "minimumAmount": "Minimum tutar",
     "payoutFee": "Çekim ücreti",
-    "free": "â¬0 (Ücretsiz)",
+    "free": "€0 (Ücretsiz)",
     "freeValue": "Ücretsiz",
     "availablePaymentMethods": "Mevcut ödeme yöntemleri",
     "bankTransfer": "Banka havalesi",
@@ -589,7 +589,14 @@
     "date": "Tarih",
     "method": "Yöntem",
     "status": "Durum",
-    "processed": "İşlendi"
+    "processed": "İşlendi",
+    "requestFailed": "Ödeme talebi gönderilemedi",
+    "loadingAvailable": "Kullanılabilir tutar yükleniyor...",
+    "availableForPayout": "Ödemeye uygun tutar",
+    "profitSplitLabel": "Kâr paylaşımı",
+    "minimumLabel": "Minimum",
+    "pendingPayoutWarning": "Bu hesap için zaten bekleyen bir ödeme talebiniz var",
+    "belowMinimumWarning": "Kullanılabilir tutar, {{amount}} olan minimum ödeme tutarının altında"
   },
   "profile": {
     "title": "Profil",
@@ -664,7 +671,11 @@
     "challengeUpdates": "Meydan okuma güncellemeleri",
     "challengeUpdatesDesc": "İlerleme ve aşama değişiklikleriyle ilgili güncellemeler",
     "marketingEmails": "Pazarlama e-postaları",
-    "marketingEmailsDesc": "Haberler, promosyonlar ve özel teklifler"
+    "marketingEmailsDesc": "Haberler, promosyonlar ve özel teklifler",
+    "saveError": "Profil kaydedilemedi",
+    "notificationUpdateFailed": "Bildirim tercihleri güncellenemedi",
+    "passwordChangeFailed": "Şifre değiştirilemedi",
+    "documentUploadFailed": "Belge yüklenemedi"
   },
   "support": {
     "title": "Destek",
@@ -675,8 +686,8 @@
     "subjectPlaceholder": "Sorunun kısa açıklaması",
     "category": "Kategori",
     "select": "Seç",
-    "ticketCreated": "biletOluşturuldu",
-    "ticketCreatedDesc": "biletOluşturulmaAçıklaması",
+    "ticketCreated": "Talep oluşturuldu",
+    "ticketCreatedDesc": "Destek talebiniz başarıyla gönderildi.",
     "account": "Hesap",
     "payment": "Ödeme",
     "payout": "Çekim",
@@ -710,7 +721,9 @@
     "faq3Q": "Çekimler ne kadar sürede tamamlanır?",
     "faq3A": "Çekimler onaydan sonra 24–48 saat içinde işlenir. Banka transferleri 2–5 iş günü sürebilir",
     "faq4Q": "Haber zamanlarında işlem yapabilir miyim?",
-    "faq4A": "Evet. Haber işlemleri tüm meydan okumalarda serbesttir ve yüksek etkili haberler için kısıtlama yoktur"
+    "faq4A": "Evet. Haber işlemleri tüm meydan okumalarda serbesttir ve yüksek etkili haberler için kısıtlama yoktur",
+    "error": "Hata",
+    "ticketError": "Destek talebi oluşturulamadı. Lütfen tekrar deneyin."
   },
   "tradeHistory": {
     "title": "İşlem geçmişi",
@@ -751,7 +764,10 @@
     "profit": "Kâr",
     "status": "Durum",
     "noAccounts": "İşlem hesabı yok",
-    "noAccountsDesc": "İşlem geçmişini görmek için önce bir işlem hesabı oluşturmalısınız"
+    "noAccountsDesc": "İşlem geçmişini görmek için önce bir işlem hesabı oluşturmalısınız",
+    "csvLots": "Lot",
+    "openTime": "Açılış zamanı",
+    "closeTime": "Kapanış zamanı"
   },
   "challengeProgress": {
     "title": "Meydan okuma ilerlemesi",
@@ -770,14 +786,14 @@
     "phase2": "Aşama 2",
     "funded": "Fonlandı",
     "scaling": "Ölçekleme",
-    "reachTarget": "{{target}} kâr hedefini ulaş",
+    "reachTarget": "{{target}} kâr hedefine ulaşın",
     "profitTarget": "Kâr hedefi",
     "minTradingDays": "Minimum işlem günleri",
     "maxDailyDD": "Maksimum günlük DD",
     "maxOverallDD": "Maksimum toplam DD",
     "fundedDesc": "Şirket sermayesiyle işlem",
     "profitSplit80": "%80 kâr paylaşımı",
-    "scalingDesc": "â¬2.000.000’a kadar büyüme",
+    "scalingDesc": "{{amount}} tutarına kadar büyüme",
     "profitSplit90": "%90’a kadar kâr paylaşımı",
     "currentPhaseRequirements": "Mevcut aşama gereksinimleri",
     "profitSplit": "Kâr paylaşımı",
@@ -794,7 +810,14 @@
     "readyToStartDesc": "İşlem platformunu açın ve kâr hedefini yakalayın",
     "viewTradingRules": "İşlem kurallarını görüntüle",
     "failed": "Başarısız",
-    "noAccountsDesc": "Bir meydan okuma satın alarak ilerlemeyi takip etmeye başlayın"
+    "noAccountsDesc": "Bir meydan okuma satın alarak ilerlemeyi takip etmeye başlayın",
+    "accountNumberLabel": "Hesap #{{number}}",
+    "dailyDD": "Günlük DD",
+    "overallDD": "Toplam DD",
+    "targetLabel": "Hedef: {{value}}",
+    "minDaysLabel": "Min: {{value}} gün",
+    "maxLabel": "Maks: {{value}}",
+    "progress": "İlerleme"
   },
   "phaseTimeline": {
     "challengeJourney": "Meydan okuma yolculuğu",
@@ -830,7 +853,7 @@
     "selectAccount": "Hesap seç",
     "loading": "Yükleniyor...",
     "noAccounts": "İşlem hesabı yok",
-    "noAccountsDesc": "Bir meydan okuma satın alarak kural uyumunu kontrol edin",
+    "noAccountsDesc": "Kural uyumunu ve işlem kurallarını görüntülemek için bir meydan okuma satın alın.",
     "purchaseChallenge": "Meydan okuma satın al",
     "loadingCompliance": "Kural uyumu yükleniyor...",
     "loadError": "Hesap detayları yüklenemedi",
@@ -875,8 +898,8 @@
     "noComplianceHistory": "Uyum geçmişi yok",
     "noComplianceHistoryDesc": "İşlem yapmaya başladığınızda burada görünecektir",
     "importantInformation": "Önemli bilgiler",
-    "info1": "Günlük zarar, önceki gün kapanış bakiyesine göre hesaplanır",
-    "info2": "Toplam zarar, hesap özkaynağının en yüksek seviyesine göre hesaplanır",
+    "info1": "Günlük drawdown, bir önceki günün kapanış bakiyesine göre hesaplanır",
+    "info2": "Toplam drawdown, hesabınızın en yüksek bakiyesine (özkaynak zirvesi) göre hesaplanır",
     "info3": "Herhangi bir kural ihlali anında diskalifiye ile sonuçlanır",
     "info4": "Küçük ihlaller izlenir ancak anında diskalifiye edilmez",
     "info5": "Tüm hesaplamalar piyasa saatlerinde gerçek zamanlı yapılır"
@@ -982,7 +1005,9 @@
       "limit": "Limit",
       "violationDetected": "Kural ihlali tespit edildi",
       "violationMessage": "Hesabınız bir veya daha fazla işlem kuralını ihlal etti. Lütfen işlemlerinizi gözden geçirin"
-    }
+    },
+    "hoursShort": "sa",
+    "minutesShort": "dk"
   },
   "notifications": {
     "title": "Bildirimler",
@@ -1028,22 +1053,25 @@
       "overallDrawdownWarning": "Hesap #{{accountNumber}} için toplam drawdown {{overallPercent}}% seviyesine ulaştı. İzin verilen üst limit {{maxPercent}}%. Lütfen risk yönetimine dikkat edin",
       "dailyDrawdownViolation": "Hesap #{{accountNumber}} için günlük drawdown {{dailyPercent}}% seviyesine ulaştı. İzin verilen üst limit {{maxPercent}}%. İşlemler yarına kadar kilitlenecek",
       "overallDrawdownViolation": "Hesap #{{accountNumber}} için toplam drawdown {{overallPercent}}% seviyesine ulaştı. İzin verilen üst limit {{maxPercent}}%. Meydan okuma diskalifiye edildi",
-      "payoutApproved": "â¬{{amount}} tutarındaki çekim talebiniz onaylandı. 24–48 saat içinde gönderilecektir",
-      "payoutRejected": "â¬{{amount}} tutarındaki çekim talebiniz reddedildi. Detaylar için destekle iletişime geçin",
-      "payoutProcessed": "â¬{{amount}} tutarındaki çekiminiz işlendi ve transfer tamamlandı",
-      "phase1Completed": "Tebrikler! â¬{{accountSize}} meydan okumasında Aşama 1’i tamamladınız. Şimdi Aşama 2’ye devam edelim",
-      "phase2Completed": "Tebrikler! â¬{{accountSize}} meydan okumasında Aşama 2’yi tamamladınız. Hesabınız fonlandı!",
+      "payoutApproved": "€{{amount}} tutarındaki çekim talebiniz onaylandı. Tutar 24–48 saat içinde gönderilecektir.",
+      "payoutRejected": "€{{amount}} tutarındaki çekim talebiniz reddedildi. Daha fazla bilgi için destekle iletişime geçin.",
+      "payoutProcessed": "€{{amount}} tutarındaki çekiminiz işlendi ve hesabınıza transfer edildi.",
+      "phase1Completed": "Tebrikler! €{{accountSize}} meydan okumanızın Aşama 1'ini başarıyla tamamladınız. Devam etmek için Aşama 2'ye geçin.",
+      "phase2Completed": "Tebrikler! €{{accountSize}} meydan okumanızın Aşama 2'sini başarıyla tamamladınız. Hesabınız artık fonlandı!",
       "tradingDaysMilestoneMet": "Hesap #{{accountNumber}} üzerinde {{tradingDays}} işlem günü tamamlandı. Minimum işlem günü şartını karşıladınız!",
       "tradingDaysMilestone": "Hesap #{{accountNumber}} üzerinde {{tradingDays}} işlem günü tamamlandı. Harika iş!",
-      "challengePurchased": "{{challengeName}} meydan okuması satın alımı tamamlandı. İşlem hesabınız #{{accountNumber}} başlangıç bakiyesi â¬{{startingBalance}} ile hazır",
-      "accountScalingApproved": "Hesap #{{accountNumber}} için ölçekleme talebi onaylandı. Bakiye â¬{{oldBalance}}’dan â¬{{newBalance}}’a yükseldi",
+      "challengePurchased": "{{challengeName}} meydan okumanız başarıyla satın alındı. İşlem hesabınız #{{accountNumber}} artık €{{startingBalance}} başlangıç bakiyesiyle aktif.",
+      "accountScalingApproved": "Hesap #{{accountNumber}} için ölçekleme talebiniz onaylandı. Hesap bakiyesi €{{oldBalance}} seviyesinden €{{newBalance}} seviyesine yükseldi.",
       "accountScalingRejected": "Hesap #{{accountNumber}} için ölçekleme talebi reddedildi. Detaylar için destekle iletişime geçin",
       "newChallengeAvailable": "Yeni meydan okumaya göz atın: {{challengeName}}! {{platform}} üzerinde {{accountSize}} hesap boyutu. Hemen başlayın",
       "accountViolationGeneric": "Hesap #{{accountNumber}} işlem kurallarını ihlal etti{{violationPercent}}",
       "accountPaused": "İşlem hesabı #{{accountNumber}} duraklatıldı. İşlemler geçici olarak durduruldu",
       "accountClosed": "İşlem hesabı #{{accountNumber}} kapatıldı",
       "accountResumed": "İşlem hesabı #{{accountNumber}} yeniden başlatıldı. İşlemler artık aktif"
-    }
+    },
+    "loadError": "Bildirimler yüklenemedi",
+    "loadErrorHint": "Lütfen sayfayı yenileyip tekrar deneyin.",
+    "deleteNotification": "Bildirimi sil"
   },
   "buyChallenge": {
     "title": "Yeni meydan okuma ekle",
@@ -1079,7 +1107,7 @@
     "validating": "Doğrulanıyor...",
     "applied": "Uygulandı",
     "off": "İNDİRİM",
-    "discountApplied": "İndirim Uygulandı: -{{discount}}%",
+    "discountApplied": "%{{discount}} indirim uygulandı",
     "couponApplied": "{{code}} uygulandı - %{{discount}} indirim!",
     "couponSuccess": "Kupon uygulandı",
     "couponError": "Geçersiz kupon",
@@ -1090,7 +1118,7 @@
     "total": "Toplam",
     "processing": "İşleniyor...",
     "pay": "Öde",
-    "payAmount": "â¬{{amount}} öde",
+    "payAmount": "{{symbol}}{{amount}} öde",
     "secureEncryption": "Güvenli 256-bit SSL şifreleme",
     "minTradingDays": "Min işlem günü",
     "maxTradingDays": "Maks işlem günü",
@@ -1129,7 +1157,17 @@
         "name": "PayPal",
         "desc": "PayPal ile öde"
       }
-    }
+    },
+    "enterCouponPrompt": "Lütfen bir kupon kodu girin",
+    "invalidCouponCode": "Geçersiz kupon kodu",
+    "invalidCouponDesc": "Kupon kodu geçersiz",
+    "couponValidationFailed": "Kupon doğrulanamadı",
+    "couponValidationFailedDesc": "Kupon doğrulanamadı. Lütfen tekrar deneyin.",
+    "purchaseFailedRetry": "Satın alma başarısız oldu. Lütfen tekrar deneyin.",
+    "authRequired": "Giriş gerekli",
+    "signInToPurchase": "Meydan okuma satın almak için lütfen giriş yapın.",
+    "noChallengeSelected": "Meydan okuma seçilmedi",
+    "selectChallengeToContinue": "Devam etmek için lütfen bir meydan okuma seçin."
   },
   "violationModal": {
     "dailyLossTitle": "Günlük zarar limitine ulaşıldı",

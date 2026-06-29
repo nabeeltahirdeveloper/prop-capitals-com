@@ -186,8 +186,7 @@ export default function RuleCompliance() {
             {t("ruleCompliance.noAccounts")}
           </h3>
           <p className="text-slate-400 mb-6">
-            {t("ruleCompliance.noAccountsDesc") ||
-              "Purchase a challenge to view rule compliance and trading rules."}
+            {t("ruleCompliance.noAccountsDesc")}
           </p>
           <Link to={createPageUrl("TraderBuyChallenge")}>
             <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500">

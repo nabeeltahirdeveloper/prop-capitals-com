@@ -127,7 +127,7 @@ export default function Profile() {
     },
     onError: (error) => {
       console.error('Failed to change password:', error);
-      alert(error.response?.data?.message || 'Failed to change password');
+      alert(error.response?.data?.message || t('profile.passwordChangeFailed') || 'Failed to change password');
     },
   });
 
@@ -157,7 +157,7 @@ export default function Profile() {
     onError: (error) => {
       console.error('Failed to upload document:', error);
       setUploadingFile(null);
-      alert('Failed to upload document');
+      alert(t('profile.documentUploadFailed') || 'Failed to upload document');
     },
   });
 
