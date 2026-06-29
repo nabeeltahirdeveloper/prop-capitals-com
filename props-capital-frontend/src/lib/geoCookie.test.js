@@ -17,7 +17,7 @@ describe('readGeoCountry', () => {
   it('returns null for a malformed (non-2-letter) value', () => {
     expect(readGeoCountry('geo_country=TURKEY')).toBeNull();
   });
-  it('returns null when no cookie string and no document', () => {
+  it('returns null for an explicitly empty cookie string', () => {
     expect(readGeoCountry('')).toBeNull();
   });
 });

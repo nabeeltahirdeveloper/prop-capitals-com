@@ -16,12 +16,16 @@ const token = process.env.IPINFO_TOKEN;
 
 // Small in-memory cache so repeat visitors behind the same NAT IP don't re-hit ipinfo.
 const CACHE_TTL_MS = 6 * 60 * 60 * 1000;
+const IP_CACHE_MAX = 5000; // bound memory: evict the oldest entry past this many distinct IPs
 const ipCache = new Map(); // ip -> { code, exp }
 const getCached = (ip) => {
   const e = ipCache.get(ip);
   return e && e.exp > Date.now() ? e.code : undefined;
 };
-const setCached = (ip, code) => ipCache.set(ip, { code, exp: Date.now() + CACHE_TTL_MS });
+const setCached = (ip, code) => {
+  if (ipCache.size >= IP_CACHE_MAX) ipCache.delete(ipCache.keys().next().value);
+  ipCache.set(ip, { code, exp: Date.now() + CACHE_TTL_MS });
+};
 
 const app = express();
 app.set('trust proxy', true);

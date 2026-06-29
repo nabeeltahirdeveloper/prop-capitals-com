@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { migrateLocalePrefs } from './migrateLocalePrefs.js';
 
 function makeStorage(initial = {}) {
@@ -6,7 +6,6 @@ function makeStorage(initial = {}) {
   return {
     getItem: (k) => (k in data ? data[k] : null),
     setItem: (k, v) => { data[k] = String(v); },
-    _data: data,
   };
 }
 

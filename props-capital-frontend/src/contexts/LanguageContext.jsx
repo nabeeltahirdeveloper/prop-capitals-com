@@ -82,7 +82,7 @@ export const useTranslation = () => {
 export const LanguageProvider = ({ children }) => {
   const [language, setLanguageState] = useState(() => {
     if (typeof window === 'undefined') return 'en';
-    const saved = localStorage.getItem('language');
+    const saved = localStorage.getItem('language') || null;
     const manual = localStorage.getItem('langManuallySet') === '1';
     const geoValue = getDefaultsForCountry(readGeoCountry())?.language ?? null;
     return pickInitialValue({ saved, manual, geoValue, fallback: 'en' });
@@ -95,6 +95,9 @@ export const LanguageProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem('language', language);
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = language;
+    }
   }, [language]);
 
   const translations = useMemo(() => {

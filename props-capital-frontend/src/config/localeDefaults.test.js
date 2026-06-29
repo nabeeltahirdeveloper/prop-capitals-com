@@ -17,6 +17,6 @@ describe('getDefaultsForCountry', () => {
     expect(getDefaultsForCountry(undefined)).toBeNull();
   });
   it('exposes the raw map for extension', () => {
-    expect(COUNTRY_DEFAULTS.TR).toBeDefined();
+    expect(COUNTRY_DEFAULTS.TR).toEqual({ language: 'tr', currency: 'TRY' });
   });
 });

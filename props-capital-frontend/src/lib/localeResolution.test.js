@@ -14,7 +14,7 @@ describe('pickInitialValue', () => {
   it('falls back to default when nothing else', () => {
     expect(pickInitialValue({ saved: null, manual: false, geoValue: null, fallback: 'en' })).toBe('en');
   });
-  it('ignores geo when manual even if saved is null (uses fallback)', () => {
+  it('applies geo when manual but there is no saved value to lock', () => {
     expect(pickInitialValue({ saved: null, manual: true, geoValue: 'tr', fallback: 'en' })).toBe('tr');
   });
 });
