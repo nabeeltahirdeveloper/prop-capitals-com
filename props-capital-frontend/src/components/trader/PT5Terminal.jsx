@@ -7,6 +7,7 @@ import MarketWatchlist from "../trading/MarketWatchlist";
 import TradingPanel from "../trading/TradingPanel";
 import TradingChart from "../trading/TradingChart";
 import TopBar from "@/components/trading/Topbar";
+import { useTranslation } from "@/contexts/LanguageContext";
 import { Activity, LayoutGrid, Monitor } from "lucide-react";
 
 const PT5Terminal = ({
@@ -18,6 +19,7 @@ const PT5Terminal = ({
 }) => {
   const { isDark } = useTraderTheme();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const {
     selectedSymbol: selectedSymbolFromContext,
     setSelectedSymbol: setSelectedSymbolFromContext,
@@ -47,15 +49,15 @@ const PT5Terminal = ({
     async (tradeParams) => {
       if (!onExecuteTrade) {
         toast({
-          title: "Trade flow unavailable",
-          description: "Terminal wrapper trade handler is not connected.",
+          title: t("pt5Terminal.tradeFlowUnavailableTitle"),
+          description: t("pt5Terminal.tradeFlowUnavailableDescription"),
           variant: "destructive",
         });
         return;
       }
       await onExecuteTrade(tradeParams);
     },
-    [onExecuteTrade, toast],
+    [onExecuteTrade, toast, t],
   );
 
   const enrichedSelectedSymbol = useMemo(() => {
@@ -108,7 +110,7 @@ const PT5Terminal = ({
                 <span
                   className={`font-bold text-[11px] uppercase tracking-wider ${isDark ? "text-white" : "text-slate-900"}`}
                 >
-                  Watchlist
+                  {t("pt5Terminal.watchlist")}
                 </span>
               </div>
             )}
@@ -180,7 +182,7 @@ const PT5Terminal = ({
               <span
                 className={`font-bold text-[11px] uppercase tracking-wider ${isDark ? "text-white" : "text-slate-900"}`}
               >
-                Execution
+                {t("pt5Terminal.execution")}
               </span>
             </div>
           </div>

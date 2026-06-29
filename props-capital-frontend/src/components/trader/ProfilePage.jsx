@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getCurrentUser } from '@/api/auth';
 import {
@@ -27,6 +28,7 @@ import { useToast } from "@/components/ui/use-toast";
 const ProfilePage = () => {
   const { isDark } = useTraderTheme();
   const { formatAmount } = useCurrency();
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState({
     firstName: '',
@@ -90,14 +92,14 @@ const ProfilePage = () => {
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
       setIsEditing(false);
       toast({
-        title: 'Profile updated',
-        description: 'Your changes have been saved successfully.',
+        title: t('profilePanel.toastProfileUpdatedTitle'),
+        description: t('profilePanel.toastProfileUpdatedDesc'),
       });
     },
     onError: (error) => {
       toast({
-        title: "Failed to save profile",
-        description: error.message || "Failed to save profile",
+        title: t('profilePanel.toastSaveFailedTitle'),
+        description: error.message || t('profilePanel.toastSaveFailedTitle'),
         variant: "destructive",
       });
     },
@@ -134,8 +136,8 @@ const ProfilePage = () => {
 
     if (!file.type.startsWith('image/')) {
       toast({
-        title: 'Invalid file',
-        description: 'Please select an image file.',
+        title: t('profilePanel.toastInvalidFileTitle'),
+        description: t('profilePanel.toastInvalidFileDesc'),
         variant: 'destructive',
       });
       return;
@@ -144,8 +146,8 @@ const ProfilePage = () => {
     const maxSizeInBytes = 5 * 1024 * 1024;
     if (file.size > maxSizeInBytes) {
       toast({
-        title: 'File too large',
-        description: 'Please upload an image smaller than 5MB.',
+        title: t('profilePanel.toastFileTooLargeTitle'),
+        description: t('profilePanel.toastFileTooLargeDesc'),
         variant: 'destructive',
       });
       return;
@@ -164,8 +166,8 @@ const ProfilePage = () => {
       }
 
       toast({
-        title: 'Profile picture updated',
-        description: 'Your new profile picture is now visible.',
+        title: t('profilePanel.toastAvatarUpdatedTitle'),
+        description: t('profilePanel.toastAvatarUpdatedDesc'),
         variant: 'success',
       });
     };
@@ -176,10 +178,10 @@ const ProfilePage = () => {
   const isVerified = user?.verificationDocuments?.some((doc) => doc.status === 'APPROVED') ?? false;
 
   const stats = [
-    { label: 'Challenges Completed', value: user?.totalCompletedChallenges ?? 0, color: 'emerald' },
-    { label: 'Total Payouts', value: formatAmount(Number(user?.totalPayouts) || 0), color: 'amber' },
-    { label: 'Win Rate', value: `${user?.winRate ?? 0}%`, color: 'blue' },
-    { label: 'Member Since', value: user?.createdAt ? formatDate(user.createdAt) : '-', color: 'purple' },
+    { label: t('profilePanel.statChallengesCompleted'), value: user?.totalCompletedChallenges ?? 0, color: 'emerald' },
+    { label: t('profilePanel.statTotalPayouts'), value: formatAmount(Number(user?.totalPayouts) || 0), color: 'amber' },
+    { label: t('profilePanel.statWinRate'), value: `${user?.winRate ?? 0}%`, color: 'blue' },
+    { label: t('profilePanel.statMemberSince'), value: user?.createdAt ? formatDate(user.createdAt) : '-', color: 'purple' },
   ];
 
   if (isLoading) {
@@ -193,7 +195,7 @@ const ProfilePage = () => {
   if (error) {
     return (
       <div className={`rounded-2xl border p-6 text-center ${isDark ? 'bg-[#12161d] border-white/5 text-gray-400' : 'bg-white border-slate-200 text-slate-500'}`}>
-        Failed to load profile. Please refresh the page.
+        {t('profilePanel.errorLoadProfile')}
       </div>
     );
   }
@@ -209,7 +211,7 @@ const ProfilePage = () => {
               {profileImage ? (
                 <img
                   src={profileImage}
-                  alt="Profile"
+                  alt={t('profilePanel.avatarAlt')}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -236,12 +238,12 @@ const ProfilePage = () => {
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-1">
               <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {[profile.firstName, profile.lastName].filter(Boolean).join(' ') || 'Unknown User'}
+                {[profile.firstName, profile.lastName].filter(Boolean).join(' ') || t('profilePanel.unknownUser')}
               </h1>
               {isVerified && (
                 <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-xs font-medium rounded">
                   <CheckCircle className="w-3 h-3" />
-                  Verified
+                  {t('profilePanel.verifiedBadge')}
                 </span>
               )}
             </div>
@@ -256,7 +258,7 @@ const ProfilePage = () => {
               {profile.joinDate && (
                 <span className={`flex items-center gap-1 text-sm ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
                   <Calendar className="w-4 h-4" />
-                  Joined {profile.joinDate}
+                  {t('profilePanel.joinedLabel', { date: profile.joinDate })}
                 </span>
               )}
             </div>
@@ -273,7 +275,7 @@ const ProfilePage = () => {
               }`}
           >
             {isEditing ? <X className="w-4 h-4" /> : <Edit3 className="w-4 h-4" />}
-            {isEditing ? 'Cancel' : 'Edit Profile'}
+            {isEditing ? t('profilePanel.cancelButton') : t('profilePanel.editProfileButton')}
           </button>
         </div>
       </div>
@@ -302,13 +304,13 @@ const ProfilePage = () => {
         <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           <div className="flex items-center gap-2 mb-6">
             <User className={`w-5 h-5 ${isDark ? 'text-gray-400' : 'text-slate-500'}`} />
-            <h2 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Personal Information</h2>
+            <h2 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('profilePanel.personalInformation')}</h2>
           </div>
 
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className={`block text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>First Name</label>
+                <label className={`block text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('profilePanel.firstNameLabel')}</label>
                 {isEditing ? (
                   <input
                     type="text"
@@ -324,7 +326,7 @@ const ProfilePage = () => {
                 )}
               </div>
               <div>
-                <label className={`block text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Last Name</label>
+                <label className={`block text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('profilePanel.lastNameLabel')}</label>
                 {isEditing ? (
                   <input
                     type="text"
@@ -343,17 +345,17 @@ const ProfilePage = () => {
 
             <div>
               <label className={`block text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                <Mail className="w-4 h-4 inline mr-1" /> Email Address
+                <Mail className="w-4 h-4 inline mr-1" /> {t('profilePanel.emailAddressLabel')}
               </label>
               <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{profile.email || '-'}</p>
               <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                Email cannot be changed. Contact support if needed.
+                {t('profilePanel.emailHelperText')}
               </p>
             </div>
 
             <div>
               <label className={`block text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                <Phone className="w-4 h-4 inline mr-1" /> Phone Number
+                <Phone className="w-4 h-4 inline mr-1" /> {t('profilePanel.phoneNumberLabel')}
               </label>
               {isEditing ? (
                 <input
@@ -376,13 +378,13 @@ const ProfilePage = () => {
         <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           <div className="flex items-center gap-2 mb-6">
             <Globe className={`w-5 h-5 ${isDark ? 'text-gray-400' : 'text-slate-500'}`} />
-            <h2 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Location & Preferences</h2>
+            <h2 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('profilePanel.locationPreferences')}</h2>
           </div>
 
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className={`block text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Country</label>
+                <label className={`block text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('profilePanel.countryLabel')}</label>
                 {isEditing ? (
                   <input
                     type="text"
@@ -398,7 +400,7 @@ const ProfilePage = () => {
                 )}
               </div>
               <div>
-                <label className={`block text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>City</label>
+                <label className={`block text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('profilePanel.cityLabel')}</label>
                 {isEditing ? (
                   <input
                     type="text"
@@ -416,12 +418,12 @@ const ProfilePage = () => {
             </div>
 
             <div>
-              <label className={`block text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Timezone</label>
+              <label className={`block text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('profilePanel.timezoneLabel')}</label>
               {isEditing ? (
                 <input
                   type="text"
                   value={editedProfile.timezone}
-                  placeholder="e.g. UTC+5, America/New_York"
+                  placeholder={t('profilePanel.timezonePlaceholder')}
                   onChange={(e) => setEditedProfile({ ...editedProfile, timezone: e.target.value })}
                   className={`w-full px-4 py-2.5 rounded-xl border ${isDark
                     ? 'bg-white/5 border-white/10 text-white focus:border-amber-500'
@@ -458,7 +460,7 @@ const ProfilePage = () => {
               : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
           >
-            Cancel
+            {t('profilePanel.cancelButton')}
           </button>
           <button
             onClick={handleSave}
@@ -468,12 +470,12 @@ const ProfilePage = () => {
             {updateProfileMutation.isPending ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Saving...
+                {t('profilePanel.savingButton')}
               </>
             ) : (
               <>
                 <Save className="w-4 h-4" />
-                Save Changes
+                {t('profilePanel.saveChangesButton')}
               </>
             )}
           </button>

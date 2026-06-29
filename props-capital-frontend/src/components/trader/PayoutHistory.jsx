@@ -4,11 +4,13 @@ import { DollarSign, Clock, AlertCircle, TrendingUp, AlertTriangle } from 'lucid
 import { useTraderTheme } from './TraderPanelLayout';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useChallenges } from '@/contexts/ChallengesContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const PayoutHistory = () => {
   const { isDark } = useTraderTheme();
   const { formatAmount } = useCurrency();
   const { selectedChallenge } = useChallenges();
+  const { t } = useTranslation();
 
 
   // Calculate available balance from selected challenge
@@ -31,7 +33,7 @@ const PayoutHistory = () => {
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <h2 className={`text-xl sm:text-2xl font-bold ${textClass}`}>Payout History</h2>
+        <h2 className={`text-xl sm:text-2xl font-bold ${textClass}`}>{t('payoutHistoryPanel.title')}</h2>
         <button
           onClick={() => { }}
           disabled={!canRequestPayout}
@@ -42,7 +44,7 @@ const PayoutHistory = () => {
             }`}
         >
           <DollarSign className="w-4 h-4" />
-          Request Payout
+          {t('payoutHistoryPanel.requestPayout')}
         </button>
       </div>
 
@@ -51,9 +53,9 @@ const PayoutHistory = () => {
         <div className={`${cardClass} p-4 flex items-start gap-3`}>
           <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
           <div>
-            <p className={`font-medium ${textClass}`}>Payouts Available After Funding</p>
+            <p className={`font-medium ${textClass}`}>{t('payoutHistoryPanel.payoutsAfterFundingTitle')}</p>
             <p className={`text-sm ${mutedClass}`}>
-              Complete your challenge to unlock payout requests. You are currently in {selectedChallenge.phase === 1 ? 'Phase 1' : selectedChallenge.phase === 2 ? 'Phase 2' : 'evaluation'}.
+              {t('payoutHistoryPanel.payoutsAfterFundingDesc', { phase: selectedChallenge.phase === 1 ? t('payoutHistoryPanel.phase1') : selectedChallenge.phase === 2 ? t('payoutHistoryPanel.phase2') : t('payoutHistoryPanel.evaluation') })}
             </p>
           </div>
         </div>
@@ -63,21 +65,21 @@ const PayoutHistory = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <div className={cardClass + ' p-4 sm:p-5'}>
           <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <p className={`text-xs sm:text-sm ${mutedClass}`}>Total Paid Out</p>
+            <p className={`text-xs sm:text-sm ${mutedClass}`}>{t('payoutHistoryPanel.totalPaidOut')}</p>
             <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
           </div>
           <p className={`text-xl sm:text-2xl font-bold ${textClass}`}>{formatAmount(totalPaid)}</p>
         </div>
         <div className={cardClass + ' p-4 sm:p-5'}>
           <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <p className={`text-xs sm:text-sm ${mutedClass}`}>Pending</p>
+            <p className={`text-xs sm:text-sm ${mutedClass}`}>{t('payoutHistoryPanel.pending')}</p>
             <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
           </div>
           <p className="text-amber-500 text-xl sm:text-2xl font-bold">{formatAmount(pendingAmount)}</p>
         </div>
         <div className={cardClass + ' p-4 sm:p-5'}>
           <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <p className={`text-xs sm:text-sm ${mutedClass}`}>Available Balance</p>
+            <p className={`text-xs sm:text-sm ${mutedClass}`}>{t('payoutHistoryPanel.availableBalance')}</p>
             <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
           </div>
           <p className="text-emerald-500 text-xl sm:text-2xl font-bold">{formatAmount(availableBalance)}</p>
@@ -87,7 +89,7 @@ const PayoutHistory = () => {
       {/* Zero State (no backend yet) */}
       <div className={`${cardClass} p-8 text-center`}>
         <AlertCircle className="w-10 h-10 mx-auto mb-3 text-amber-500" />
-        <h3 className={`text-lg font-bold ${textClass}`}>No payout history yet</h3>
+        <h3 className={`text-lg font-bold ${textClass}`}>{t('payoutHistoryPanel.noHistoryYet')}</h3>
       </div>
     </div>
   );

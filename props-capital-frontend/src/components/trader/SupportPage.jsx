@@ -18,6 +18,7 @@ import { getUserTickets, createSupportTicket } from "@/api/support";
 import { useToast } from "@/components/ui/use-toast";
 import { formatDate } from "@/utils/dateFormating";
 import { useChatSupportStore } from "@/lib/stores/chat-support.store";
+import { useTranslation } from "@/contexts/LanguageContext";
 import {
   Select,
   SelectContent,
@@ -29,6 +30,7 @@ import {
 const SupportPage = () => {
   const { isDark } = useTraderTheme();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [ticketForm, setTicketForm] = useState({
     subject: "",
@@ -65,15 +67,15 @@ const SupportPage = () => {
       });
       setSubmitted(true);
       toast({
-        title: "Ticket Created",
-        description: "Your support ticket has been submitted successfully.",
+        title: t("supportPanel.toastCreatedTitle"),
+        description: t("supportPanel.toastCreatedDesc"),
         variant: "success",
       });
     },
     onError: (error) => {
       toast({
-        title: "Failed to create ticket",
-        description: error.message || "Failed to create ticket",
+        title: t("supportPanel.toastFailedTitle"),
+        description: error.message || t("supportPanel.toastFailedDesc"),
         variant: "destructive",
       });
     },
@@ -83,8 +85,8 @@ const SupportPage = () => {
     e.preventDefault();
     if (!authUserId) {
       toast({
-        title: "Not authenticated",
-        description: "Please sign in to submit a support ticket.",
+        title: t("supportPanel.toastNotAuthTitle"),
+        description: t("supportPanel.toastNotAuthDesc"),
         variant: "destructive",
       });
       return;
@@ -134,12 +136,21 @@ const SupportPage = () => {
   });
 
   const supportCategories = [
-    { value: "ACCOUNT", label: "Account" },
-    { value: "PAYMENT", label: "Payment" },
-    { value: "PAYOUT", label: "Payout" },
-    { value: "TECHNICAL", label: "Technical" },
-    { value: "OTHER", label: "Other" },
+    { value: "ACCOUNT", label: t("supportPanel.categoryAccount") },
+    { value: "PAYMENT", label: t("supportPanel.categoryPayment") },
+    { value: "PAYOUT", label: t("supportPanel.categoryPayout") },
+    { value: "TECHNICAL", label: t("supportPanel.categoryTechnical") },
+    { value: "OTHER", label: t("supportPanel.categoryOther") },
   ];
+
+  const statusLabels = {
+    open: t("supportPanel.statusOpen"),
+    in_progress: t("supportPanel.statusInProgress"),
+    resolved: t("supportPanel.statusResolved"),
+    closed: t("supportPanel.statusClosed"),
+    waiting_for_admin: t("supportPanel.statusWaitingForAdmin"),
+    waiting_for_trader: t("supportPanel.statusWaitingForTrader"),
+  };
 
   const isTicketSubmitting = createTicketMutation.isPending;
 
@@ -151,11 +162,11 @@ const SupportPage = () => {
         <div className="flex items-center gap-3 mb-2">
           <MessageSquare className="w-6 h-6 text-amber-500" />
           <h1 className={`text-2xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>
-            Support Center
+            {t("supportPanel.heading")}
           </h1>
         </div>
         <p className={`${isDark ? "text-gray-400" : "text-slate-500"}`}>
-          Need help? Our support team is available 24/7 to assist you.
+          {t("supportPanel.subheading")}
         </p>
       </div>
 
@@ -172,19 +183,19 @@ const SupportPage = () => {
               </div>
               <div>
                 <h3 className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
-                  Live Chat
+                  {t("supportPanel.liveChatTitle")}
                 </h3>
-                <span className="text-xs text-emerald-500 font-medium">Online</span>
+                <span className="text-xs text-emerald-500 font-medium">{t("supportPanel.online")}</span>
               </div>
             </div>
             <p className={`text-sm mb-4 ${isDark ? "text-gray-400" : "text-slate-500"}`}>
-              Get instant help from our AI assistant or connect with a live agent.
+              {t("supportPanel.liveChatDesc")}
             </p>
             <button
               onClick={openChat}
               className="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium rounded-xl transition-all"
             >
-              Start Chat
+              {t("supportPanel.startChat")}
             </button>
           </div>
 
@@ -199,10 +210,10 @@ const SupportPage = () => {
               </div>
               <div>
                 <h3 className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
-                  Email Support
+                  {t("supportPanel.emailSupportTitle")}
                 </h3>
                 <span className={`text-xs ${isDark ? "text-gray-500" : "text-slate-500"}`}>
-                  Response within 24h
+                  {t("supportPanel.emailResponseTime")}
                 </span>
               </div>
             </div>
@@ -225,19 +236,19 @@ const SupportPage = () => {
                 <Clock className="w-5 h-5 text-amber-500" />
               </div>
               <h3 className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
-                Business Hours
+                {t("supportPanel.businessHoursTitle")}
               </h3>
             </div>
             <div className={`space-y-2 text-sm ${isDark ? "text-gray-400" : "text-slate-500"}`}>
               <div className="flex justify-between">
-                <span>Monday - Friday</span>
-                <span className={isDark ? "text-white" : "text-slate-900"}>24 Hours</span>
+                <span>{t("supportPanel.mondayFriday")}</span>
+                <span className={isDark ? "text-white" : "text-slate-900"}>{t("supportPanel.twentyFourHours")}</span>
               </div>
               <div className="flex justify-between">
-                <span>Saturday - Sunday</span>
-                <span className={isDark ? "text-white" : "text-slate-900"}>24 Hours</span>
+                <span>{t("supportPanel.saturdaySunday")}</span>
+                <span className={isDark ? "text-white" : "text-slate-900"}>{t("supportPanel.twentyFourHours")}</span>
               </div>
-              <p className="text-xs pt-2 text-emerald-500">Support available in your timezone</p>
+              <p className="text-xs pt-2 text-emerald-500">{t("supportPanel.timezoneNote")}</p>
             </div>
           </div>
         </div>
@@ -248,7 +259,7 @@ const SupportPage = () => {
           <div className="flex items-center gap-2 mb-6">
             <FileText className={`w-5 h-5 ${isDark ? "text-gray-400" : "text-slate-500"}`} />
             <h2 className={`text-lg font-bold ${isDark ? "text-white" : "text-slate-900"}`}>
-              Submit a Support Ticket
+              {t("supportPanel.submitTicketHeading")}
             </h2>
           </div>
 
@@ -256,17 +267,17 @@ const SupportPage = () => {
             <div className="text-center py-12">
               <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
               <h3 className={`text-xl font-bold mb-2 ${isDark ? "text-white" : "text-slate-900"}`}>
-                Ticket Submitted!
+                {t("supportPanel.ticketSubmittedTitle")}
               </h3>
               <p className={isDark ? "text-gray-400" : "text-slate-500"}>
-                We will respond to your inquiry within 24 hours.
+                {t("supportPanel.ticketSubmittedDesc")}
               </p>
               <button
                 type="button"
                 onClick={() => setSubmitted(false)}
                 className="mt-4 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-[#0a0d12] font-semibold"
               >
-                Submit Another Ticket
+                {t("supportPanel.submitAnotherTicket")}
               </button>
             </div>
           ) : (
@@ -275,7 +286,7 @@ const SupportPage = () => {
                 <label
                   className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-slate-700"}`}
                 >
-                  Category
+                  {t("supportPanel.labelCategory")}
                 </label>
                 <Select
                   value={ticketForm.category}
@@ -306,13 +317,13 @@ const SupportPage = () => {
                 <label
                   className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-slate-700"}`}
                 >
-                  Subject
+                  {t("supportPanel.labelSubject")}
                 </label>
                 <input
                   type="text"
                   value={ticketForm.subject}
                   onChange={(e) => setTicketForm({ ...ticketForm, subject: e.target.value })}
-                  placeholder="Brief description of your issue"
+                  placeholder={t("supportPanel.subjectPlaceholder")}
                   required
                   className={`w-full px-4 py-3 rounded-xl border transition-all ${isDark ? "bg-white/5 border-white/10 text-white placeholder-gray-500 focus:border-amber-500" : "bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-amber-500"} focus:outline-none focus:ring-2 focus:ring-amber-500/20`}
                 />
@@ -322,12 +333,12 @@ const SupportPage = () => {
                 <label
                   className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-slate-700"}`}
                 >
-                  Message
+                  {t("supportPanel.labelMessage")}
                 </label>
                 <textarea
                   value={ticketForm.message}
                   onChange={(e) => setTicketForm({ ...ticketForm, message: e.target.value })}
-                  placeholder="Describe your issue in detail..."
+                  placeholder={t("supportPanel.messagePlaceholder")}
                   rows={5}
                   required
                   className={`w-full px-4 py-3 rounded-xl border transition-all resize-none ${isDark ? "bg-white/5 border-white/10 text-white placeholder-gray-500 focus:border-amber-500" : "bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-amber-500"} focus:outline-none focus:ring-2 focus:ring-amber-500/20`}
@@ -346,12 +357,12 @@ const SupportPage = () => {
                 {isTicketSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Submitting...
+                    {t("supportPanel.submitting")}
                   </>
                 ) : (
                   <>
                     <Send className="w-4 h-4" />
-                    Submit Ticket
+                    {t("supportPanel.submitTicketButton")}
                   </>
                 )}
               </button>
@@ -361,27 +372,27 @@ const SupportPage = () => {
           {!submitted && (
             <div className="mt-8">
               <h3 className={`text-sm font-semibold mb-3 ${isDark ? "text-gray-400" : "text-slate-500"}`}>
-                Recent Tickets
+                {t("supportPanel.recentTickets")}
               </h3>
               {isLoading ? (
                 <div
                   className={`p-3 rounded-xl flex items-center gap-2 ${isDark ? "bg-white/5 text-gray-300" : "bg-slate-50 text-slate-600"}`}
                 >
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Loading tickets...
+                  {t("supportPanel.loadingTickets")}
                 </div>
               ) : isTicketsError ? (
                 <div
                   className={`p-3 rounded-xl flex items-center gap-2 text-sm ${isDark ? "bg-red-500/10 text-red-400" : "bg-red-50 text-red-600"}`}
                 >
                   <AlertCircle className="w-4 h-4 shrink-0" />
-                  Failed to load tickets. Please refresh and try again.
+                  {t("supportPanel.ticketsLoadError")}
                 </div>
               ) : mappedTickets.length === 0 ? (
                 <div
                   className={`p-3 rounded-xl text-sm ${isDark ? "bg-white/5 text-gray-400" : "bg-slate-50 text-slate-500"}`}
                 >
-                  No tickets yet.
+                  {t("supportPanel.noTickets")}
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -413,10 +424,11 @@ const SupportPage = () => {
                             : "bg-amber-500/10 text-amber-500"
                           }`}
                         >
-                          {ticket.status
-                            .split("_")
-                            .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-                            .join(" ")}
+                          {statusLabels[ticket.status] ||
+                            ticket.status
+                              .split("_")
+                              .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+                              .join(" ")}
                         </span>
                       </div>
                     </div>

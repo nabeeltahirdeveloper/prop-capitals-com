@@ -827,7 +827,7 @@ export default function MarketExecutionModal({
                         <button
                             onClick={onClose}
                             className="text-slate-400 hover:text-white transition-colors p-1 rounded hover:bg-white/10"
-                            aria-label="Close modal"
+                            aria-label={t('terminal.tradingPanel.closeModal')}
                         >
                             <X className="w-5 h-5" />
                         </button>

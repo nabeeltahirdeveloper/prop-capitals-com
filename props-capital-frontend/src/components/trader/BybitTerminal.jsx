@@ -8,6 +8,7 @@ import React, {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, ChevronDown, ArrowDown, ArrowUp, Search } from "lucide-react";
 import { useTrading } from "@/contexts/TradingContext";
+import { useTranslation } from "@/contexts/LanguageContext";
 import { usePrices } from "@/contexts/PriceContext";
 import { useTradingWebSocket } from "@/hooks/useTradingWebSocket";
 import { useBinanceStream } from "@/hooks/useBinanceStream";
@@ -323,6 +324,7 @@ const deterministicQty = (base, i, side) => {
 /* ═══════════════════════════════════════════════════════════════════════ */
 
 const BybitTradingArea = ({ selectedChallenge }) => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { isDark } = useTraderTheme();
@@ -511,8 +513,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         event?.status === "DAILY_LOCKED"
       ) {
         toast({
-          title: "Account Status Changed",
-          description: `Account is now ${event.status}`,
+          title: t("bybitTerminal.toastAccountStatusChangedTitle"),
+          description: t("bybitTerminal.toastAccountStatusChangedDesc", {
+            status: event.status,
+          }),
           variant: "destructive",
         });
         dismissedModalAccountsRef.current.delete(accountId);
@@ -523,7 +527,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         });
       }
     },
-    [queryClient, accountId, toast],
+    [queryClient, accountId, toast, t],
   );
   const handleAccountUpdate = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["trades", accountId] });
@@ -854,7 +858,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
       queryClient.invalidateQueries({
         queryKey: ["accountSummary", accountId],
       });
-      toast({ title: "Order Placed" });
+      toast({ title: t("bybitTerminal.toastOrderPlaced") });
       setQuantity("");
       setLimitPrice("");
       setTpPrice("");
@@ -863,8 +867,11 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     },
     onError: (e) => {
       toast({
-        title: "Order Failed",
-        description: e?.response?.data?.message || e.message || "Failed",
+        title: t("bybitTerminal.toastOrderFailed"),
+        description:
+          e?.response?.data?.message ||
+          e.message ||
+          t("bybitTerminal.toastFailedGeneric"),
         variant: "destructive",
       });
     },
@@ -876,7 +883,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
       queryClient.invalidateQueries({
         queryKey: ["accountSummary", accountId],
       });
-      toast({ title: "Pending Order Created" });
+      toast({ title: t("bybitTerminal.toastPendingOrderCreated") });
       setQuantity("");
       setLimitPrice("");
       setTpPrice("");
@@ -885,8 +892,11 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     },
     onError: (e) => {
       toast({
-        title: "Order Failed",
-        description: e?.response?.data?.message || e.message || "Failed",
+        title: t("bybitTerminal.toastOrderFailed"),
+        description:
+          e?.response?.data?.message ||
+          e.message ||
+          t("bybitTerminal.toastFailedGeneric"),
         variant: "destructive",
       });
     },
@@ -902,12 +912,15 @@ const BybitTradingArea = ({ selectedChallenge }) => {
       });
       setPartialCloseId(null);
       setPartialCloseQty("");
-      toast({ title: "Position Closed" });
+      toast({ title: t("bybitTerminal.toastPositionClosed") });
     },
     onError: (e) => {
       toast({
-        title: "Close Failed",
-        description: e?.response?.data?.message || e.message || "Failed",
+        title: t("bybitTerminal.toastCloseFailed"),
+        description:
+          e?.response?.data?.message ||
+          e.message ||
+          t("bybitTerminal.toastFailedGeneric"),
         variant: "destructive",
       });
     },
@@ -958,22 +971,34 @@ const BybitTradingArea = ({ selectedChallenge }) => {
   /* ── Handlers ── */
   const handlePlaceOrder = async () => {
     if (isAccountLocked) {
-      toast({ title: "Account Locked", variant: "destructive" });
+      toast({
+        title: t("bybitTerminal.toastAccountLocked"),
+        variant: "destructive",
+      });
       return;
     }
     if (!accountId || !currentSymbolStr) {
-      toast({ title: "Select a symbol", variant: "destructive" });
+      toast({
+        title: t("bybitTerminal.toastSelectSymbol"),
+        variant: "destructive",
+      });
       return;
     }
     if (!quantity || parseFloat(quantity) <= 0) {
-      toast({ title: "Enter valid quantity", variant: "destructive" });
+      toast({
+        title: t("bybitTerminal.toastEnterValidQuantity"),
+        variant: "destructive",
+      });
       return;
     }
     if (
       (orderType === "limit" || orderType === "tp/sl") &&
       (!limitPrice || parseFloat(limitPrice) <= 0)
     ) {
-      toast({ title: "Enter valid price", variant: "destructive" });
+      toast({
+        title: t("bybitTerminal.toastEnterValidPrice"),
+        variant: "destructive",
+      });
       return;
     }
     // Margin check: reject if requested quantity exceeds available balance
@@ -991,8 +1016,11 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     const requestedQty = parseFloat(quantity);
     if (requestedQty > maxAllowedQty * 1.001) {
       toast({
-        title: "Insufficient Margin",
-        description: `Max allowed: ${maxAllowedQty.toFixed(isCrypto ? 6 : 4)} ${isCrypto ? symbolInfo.base : "Lots"}`,
+        title: t("bybitTerminal.toastInsufficientMargin"),
+        description: t("bybitTerminal.toastMaxAllowed", {
+          amount: maxAllowedQty.toFixed(isCrypto ? 6 : 4),
+          unit: isCrypto ? symbolInfo.base : t("bybitTerminal.unitLots"),
+        }),
         variant: "destructive",
       });
       return;
@@ -1002,7 +1030,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
       if (orderType === "market") {
         const openPrice = orderSide === "buy" ? currentAsk : currentBid;
         if (!openPrice) {
-          toast({ title: "No price available", variant: "destructive" });
+          toast({
+            title: t("bybitTerminal.toastNoPriceAvailable"),
+            variant: "destructive",
+          });
           return;
         }
         await createTradeMutation.mutateAsync({
@@ -1046,8 +1077,11 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         : 0;
     if (vol > maxAllowed * 1.001) {
       toast({
-        title: "Insufficient Margin",
-        description: `Max allowed: ${maxAllowed.toFixed(isCrypto ? 6 : 4)} ${isCrypto ? "" : "Lots"}`,
+        title: t("bybitTerminal.toastInsufficientMargin"),
+        description: t("bybitTerminal.toastMaxAllowed", {
+          amount: maxAllowed.toFixed(isCrypto ? 6 : 4),
+          unit: isCrypto ? "" : t("bybitTerminal.unitLots"),
+        }),
         variant: "destructive",
       });
       return;
@@ -1078,6 +1112,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     createTradeMutation,
     selectedLeverage,
     toast,
+    t,
   ]);
 
   const handleChartSell = useCallback(async () => {
@@ -1090,8 +1125,11 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         : 0;
     if (vol > maxAllowed * 1.001) {
       toast({
-        title: "Insufficient Margin",
-        description: `Max allowed: ${maxAllowed.toFixed(isCrypto ? 6 : 4)} ${isCrypto ? "" : "Lots"}`,
+        title: t("bybitTerminal.toastInsufficientMargin"),
+        description: t("bybitTerminal.toastMaxAllowed", {
+          amount: maxAllowed.toFixed(isCrypto ? 6 : 4),
+          unit: isCrypto ? "" : t("bybitTerminal.unitLots"),
+        }),
         variant: "destructive",
       });
       return;
@@ -1122,6 +1160,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
     createTradeMutation,
     selectedLeverage,
     toast,
+    t,
   ]);
 
   const timeframes = [
@@ -1153,13 +1192,12 @@ const BybitTradingArea = ({ selectedChallenge }) => {
           className="px-4 py-1.5 text-center"
         >
           <span style={{ color: C.red, fontSize: 12 }}>
-            Account{" "}
             {normalizedAccountStatus === "failed" ||
             normalizedAccountStatus === "disqualified"
-              ? "Failed - Trading Disabled"
+              ? t("bybitTerminal.bannerAccountFailed")
               : normalizedAccountStatus === "daily_locked"
-                ? "Daily Locked"
-                : "Inactive"}
+                ? t("bybitTerminal.bannerAccountDailyLocked")
+                : t("bybitTerminal.bannerAccountInactive")}
           </span>
         </div>
       )}
@@ -1193,7 +1231,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                 borderRadius: 3,
               }}
             >
-              Perpetual
+              {t("bybitTerminal.perpetual")}
             </span>
             <ChevronDown
               size={14}
@@ -1229,7 +1267,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     type="text"
                     value={symbolSearch}
                     onChange={(e) => setSymbolSearch(e.target.value)}
-                    placeholder="Search..."
+                    placeholder={t("bybitTerminal.searchPlaceholder")}
                     autoFocus
                     style={{
                       flex: 1,
@@ -1262,7 +1300,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                               letterSpacing: 1,
                             }}
                           >
-                            {s.type === "crypto" ? "Crypto" : "Forex & Metals"}
+                            {s.type === "crypto"
+                              ? t("bybitTerminal.groupCrypto")
+                              : t("bybitTerminal.groupForexMetals")}
                           </div>
                         )}
                         <button
@@ -1327,7 +1367,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         {/* 24h Stats from Binance ticker */}
         {[
           {
-            label: "24h Change",
+            label: t("bybitTerminal.stat24hChange"),
             value: ticker
               ? `${ticker.priceChangePercent >= 0 ? "+" : ""}${ticker.priceChangePercent.toFixed(2)}%`
               : "--",
@@ -1338,17 +1378,17 @@ const BybitTradingArea = ({ selectedChallenge }) => {
               : C.textS,
           },
           {
-            label: "24h High",
+            label: t("bybitTerminal.stat24hHigh"),
             value: ticker ? formatPrice(ticker.highPrice) : "--",
             color: C.textP,
           },
           {
-            label: "24h Low",
+            label: t("bybitTerminal.stat24hLow"),
             value: ticker ? formatPrice(ticker.lowPrice) : "--",
             color: C.textP,
           },
           {
-            label: "24H Turnover(USDT)",
+            label: t("bybitTerminal.stat24hTurnoverUsdt"),
             value: ticker ? formatVolume(ticker.quoteVolume) : "--",
             color: C.textP,
           },
@@ -1384,7 +1424,11 @@ const BybitTradingArea = ({ selectedChallenge }) => {
             }}
           />
           <span style={{ fontSize: 10, color: C.textT }}>
-            {isCrypto ? (binanceConnected ? "Live" : "Offline") : "Polling"}
+            {isCrypto
+              ? binanceConnected
+                ? t("bybitTerminal.connLive")
+                : t("bybitTerminal.connOffline")
+              : t("bybitTerminal.connPolling")}
           </span>
         </div>
       </div>
@@ -1400,9 +1444,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         className="flex items-center px-4 gap-1"
       >
         {[
-          { key: "chart", label: "Chart" },
-          { key: "overview", label: "Overview" },
-          { key: "data", label: "Data" },
+          { key: "chart", label: t("bybitTerminal.tabChart") },
+          { key: "overview", label: t("bybitTerminal.tabOverview") },
+          { key: "data", label: t("bybitTerminal.tabData") },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -1435,7 +1479,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
           style={{ background: C.panel }}
         >
           {chartTab === "chart" && (
-            <SectionErrorBoundary label="Chart">
+            <SectionErrorBoundary label={t("bybitTerminal.tabChart")}>
               {/* Timeframe bar */}
               <div
                 className={`flex flex-wrap items-center px-2 py-1 gap-0.5 border-b border-[${C.border}]`}
@@ -1478,7 +1522,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                         : C.textS,
                   }}
                 >
-                  Candles
+                  {t("bybitTerminal.chartCandles")}
                 </button>
                 <button
                   onClick={() => setChartType("line")}
@@ -1488,13 +1532,13 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     color: chartType === "line" ? C.textP : C.textS,
                   }}
                 >
-                  Line
+                  {t("bybitTerminal.chartLine")}
                 </button>
                 <div style={{ flex: 1 }} />
                 <button
                   onClick={() => chartRef.current?.fitContent()}
                   className="px-2 py-1"
-                  title="Reset chart view"
+                  title={t("bybitTerminal.resetChartView")}
                   style={{
                     fontSize: 11,
                     color: C.textS,
@@ -1514,7 +1558,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     <path d="M21 3H3v18h18V3z" />
                     <path d="M21 3L3 21M3 3l18 18" />
                   </svg>
-                  Fit
+                  {t("bybitTerminal.chartFit")}
                 </button>
               </div>
 
@@ -1562,10 +1606,10 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   </div>
                   <div style={{ fontSize: 12, color: C.textS }}>
                     {isCrypto
-                      ? "Perpetual Contract"
+                      ? t("bybitTerminal.perpetualContract")
                       : symbolInfo.type === "forex" && symbolInfo.base === "XAU"
-                        ? "Perpetual Metal"
-                        : "Forex Perpetual"}
+                        ? t("bybitTerminal.perpetualMetal")
+                        : t("bybitTerminal.forexPerpetual")}
                   </div>
                 </div>
               </div>
@@ -1589,14 +1633,14 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     marginBottom: 12,
                   }}
                 >
-                  Price Overview
+                  {t("bybitTerminal.priceOverview")}
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <div
                       style={{ fontSize: 10, color: C.textT, marginBottom: 2 }}
                     >
-                      Bid
+                      {t("bybitTerminal.bid")}
                     </div>
                     <div
                       style={{
@@ -1613,7 +1657,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     <div
                       style={{ fontSize: 10, color: C.textT, marginBottom: 2 }}
                     >
-                      Ask
+                      {t("bybitTerminal.ask")}
                     </div>
                     <div
                       style={{
@@ -1630,7 +1674,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     <div
                       style={{ fontSize: 10, color: C.textT, marginBottom: 2 }}
                     >
-                      Mid Price
+                      {t("bybitTerminal.midPrice")}
                     </div>
                     <div
                       style={{
@@ -1647,7 +1691,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     <div
                       style={{ fontSize: 10, color: C.textT, marginBottom: 2 }}
                     >
-                      Spread
+                      {t("bybitTerminal.spread")}
                     </div>
                     <div
                       style={{
@@ -1683,7 +1727,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       marginBottom: 12,
                     }}
                   >
-                    24h Statistics
+                    {t("bybitTerminal.statistics24h")}
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
@@ -1694,7 +1738,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           marginBottom: 2,
                         }}
                       >
-                        24h Change
+                        {t("bybitTerminal.stat24hChange")}
                       </div>
                       <div
                         style={{
@@ -1717,7 +1761,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           marginBottom: 2,
                         }}
                       >
-                        24h Volume
+                        {t("bybitTerminal.stat24hVolume")}
                       </div>
                       <div
                         style={{
@@ -1738,7 +1782,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           marginBottom: 2,
                         }}
                       >
-                        24h High
+                        {t("bybitTerminal.stat24hHigh")}
                       </div>
                       <div
                         style={{
@@ -1759,7 +1803,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           marginBottom: 2,
                         }}
                       >
-                        24h Low
+                        {t("bybitTerminal.stat24hLow")}
                       </div>
                       <div
                         style={{
@@ -1780,7 +1824,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           marginBottom: 2,
                         }}
                       >
-                        24h Turnover
+                        {t("bybitTerminal.stat24hTurnover")}
                       </div>
                       <div
                         style={{
@@ -1801,7 +1845,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           marginBottom: 2,
                         }}
                       >
-                        Last Price
+                        {t("bybitTerminal.lastPrice")}
                       </div>
                       <div
                         style={{
@@ -1837,25 +1881,36 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     marginBottom: 12,
                   }}
                 >
-                  Market Info
+                  {t("bybitTerminal.marketInfo")}
                 </div>
                 <div className="space-y-2">
                   {[
-                    { label: "Base Asset", value: symbolInfo.base },
-                    { label: "Quote Asset", value: symbolInfo.quote },
                     {
-                      label: "Market Type",
+                      label: t("bybitTerminal.baseAsset"),
+                      value: symbolInfo.base,
+                    },
+                    {
+                      label: t("bybitTerminal.quoteAsset"),
+                      value: symbolInfo.quote,
+                    },
+                    {
+                      label: t("bybitTerminal.marketType"),
                       value: isCrypto
-                        ? "Crypto Perpetual"
+                        ? t("bybitTerminal.cryptoPerpetual")
                         : symbolInfo.base === "XAU" || symbolInfo.base === "XAG"
-                          ? "Precious Metal"
-                          : "Forex",
+                          ? t("bybitTerminal.preciousMetal")
+                          : t("bybitTerminal.forex"),
                     },
                     {
-                      label: "Price Source",
-                      value: isCrypto ? "Binance WebSocket" : "REST Polling",
+                      label: t("bybitTerminal.priceSource"),
+                      value: isCrypto
+                        ? "Binance WebSocket"
+                        : t("bybitTerminal.restPolling"),
                     },
-                    { label: "Status", value: "Trading" },
+                    {
+                      label: t("bybitTerminal.statusLabel"),
+                      value: t("bybitTerminal.statusTrading"),
+                    },
                   ].map((row) => (
                     <div
                       key={row.label}
@@ -1890,16 +1945,22 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     marginBottom: 8,
                   }}
                 >
-                  About {symbolInfo.label}
+                  {t("bybitTerminal.about", { label: symbolInfo.label })}
                 </div>
                 <p style={{ fontSize: 12, color: C.textS, lineHeight: 1.6 }}>
                   {isCrypto
-                    ? `${symbolInfo.base} is traded against ${symbolInfo.quote} as a perpetual contract. This pair tracks the spot price of ${symbolInfo.base} and is one of the most liquid cryptocurrency trading pairs available.`
+                    ? t("bybitTerminal.aboutCrypto", {
+                        base: symbolInfo.base,
+                        quote: symbolInfo.quote,
+                      })
                     : symbolInfo.base === "XAU"
-                      ? "Gold (XAU) is a precious metal traded against the US Dollar. It is considered a safe-haven asset and is one of the most actively traded commodities worldwide."
+                      ? t("bybitTerminal.aboutGold")
                       : symbolInfo.base === "XAG"
-                        ? "Silver (XAG) is a precious metal traded against the US Dollar. It serves as both an industrial commodity and a store of value."
-                        : `The ${symbolInfo.base}/${symbolInfo.quote} pair represents the exchange rate between the ${symbolInfo.base} and ${symbolInfo.quote}. It is one of the major forex pairs traded in the global foreign exchange market.`}
+                        ? t("bybitTerminal.aboutSilver")
+                        : t("bybitTerminal.aboutForex", {
+                            base: symbolInfo.base,
+                            quote: symbolInfo.quote,
+                          })}
                 </p>
               </div>
             </div>
@@ -1926,25 +1987,38 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     marginBottom: 12,
                   }}
                 >
-                  {isCrypto ? "Contract Specifications" : "Pair Specifications"}
+                  {isCrypto
+                    ? t("bybitTerminal.contractSpecifications")
+                    : t("bybitTerminal.pairSpecifications")}
                 </div>
                 <div className="space-y-2">
                   {[
-                    { label: "Symbol", value: symbolInfo.label },
                     {
-                      label: "Type",
-                      value: isCrypto ? "USDT Perpetual" : "Perpetual",
+                      label: t("bybitTerminal.symbol"),
+                      value: symbolInfo.label,
                     },
-                    { label: "Base Currency", value: symbolInfo.base },
-                    { label: "Quote Currency", value: symbolInfo.quote },
                     {
-                      label: "Contract Size",
+                      label: t("bybitTerminal.type"),
+                      value: isCrypto
+                        ? "USDT Perpetual"
+                        : t("bybitTerminal.perpetual"),
+                    },
+                    {
+                      label: t("bybitTerminal.baseCurrency"),
+                      value: symbolInfo.base,
+                    },
+                    {
+                      label: t("bybitTerminal.quoteCurrency"),
+                      value: symbolInfo.quote,
+                    },
+                    {
+                      label: t("bybitTerminal.contractSize"),
                       value: isCrypto
                         ? `1 ${symbolInfo.base}`
-                        : "100,000 units",
+                        : t("bybitTerminal.unitsValue", { count: "100,000" }),
                     },
                     {
-                      label: "Tick Size",
+                      label: t("bybitTerminal.tickSize"),
                       value: isCrypto
                         ? currentMid >= 1000
                           ? "0.01"
@@ -1956,12 +2030,16 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           : "0.00001",
                     },
                     {
-                      label: "Margin",
-                      value: `Perpetual (${selectedLeverage}x Leverage)`,
+                      label: t("bybitTerminal.margin"),
+                      value: t("bybitTerminal.marginValue", {
+                        leverage: selectedLeverage,
+                      }),
                     },
                     {
-                      label: "Trading Hours",
-                      value: isCrypto ? "24/7" : "Mon-Fri, 00:00-24:00 UTC",
+                      label: t("bybitTerminal.tradingHours"),
+                      value: isCrypto
+                        ? t("bybitTerminal.tradingHours247")
+                        : t("bybitTerminal.tradingHoursForex"),
                     },
                   ].map((row) => (
                     <div
@@ -2012,7 +2090,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           marginBottom: 12,
                         }}
                       >
-                        My Position
+                        {t("bybitTerminal.myPosition")}
                       </div>
                       <p
                         style={{
@@ -2022,7 +2100,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           padding: "12px 0",
                         }}
                       >
-                        No open position for {symbolInfo.label}
+                        {t("bybitTerminal.noOpenPositionFor", {
+                          label: symbolInfo.label,
+                        })}
                       </p>
                     </div>
                   );
@@ -2045,7 +2125,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                         marginBottom: 12,
                       }}
                     >
-                      My Positions — {symbolInfo.label}
+                      {t("bybitTerminal.myPositionsFor", {
+                        label: symbolInfo.label,
+                      })}
                     </div>
                     {symbolPositions.map((pos) => {
                       const exitP =
@@ -2072,7 +2154,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                                 color: pos.type === "BUY" ? C.green : C.red,
                               }}
                             >
-                              {pos.type === "BUY" ? "Long" : "Short"}
+                              {pos.type === "BUY"
+                                ? t("bybitTerminal.long")
+                                : t("bybitTerminal.short")}
                             </span>
                             <span
                               style={{
@@ -2088,19 +2172,25 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           </div>
                           {[
                             {
-                              label: "Size",
-                              value: `${pos.volume?.toFixed(isCrypto ? 6 : 2)} ${isCrypto ? symbolInfo.base : "Lots"}`,
+                              label: t("bybitTerminal.size"),
+                              value: `${pos.volume?.toFixed(isCrypto ? 6 : 2)} ${isCrypto ? symbolInfo.base : t("bybitTerminal.unitLots")}`,
                             },
                             {
-                              label: "Entry Price",
+                              label: t("bybitTerminal.entryPrice"),
                               value: formatPrice(pos.openPrice),
                             },
-                            { label: "Mark Price", value: formatPrice(exitP) },
-                            { label: "Mode", value: "Perpetual" },
+                            {
+                              label: t("bybitTerminal.markPrice"),
+                              value: formatPrice(exitP),
+                            },
+                            {
+                              label: t("bybitTerminal.mode"),
+                              value: t("bybitTerminal.perpetual"),
+                            },
                             ...(pos.stopLoss
                               ? [
                                   {
-                                    label: "Stop Loss",
+                                    label: t("bybitTerminal.stopLoss"),
                                     value: formatPrice(pos.stopLoss),
                                   },
                                 ]
@@ -2108,7 +2198,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                             ...(pos.takeProfit
                               ? [
                                   {
-                                    label: "Take Profit",
+                                    label: t("bybitTerminal.takeProfit"),
                                     value: formatPrice(pos.takeProfit),
                                   },
                                 ]
@@ -2153,7 +2243,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                                 onChange={(e) =>
                                   setPartialCloseQty(e.target.value)
                                 }
-                                placeholder={`Max ${pos.volume}`}
+                                placeholder={t("bybitTerminal.maxVolume", {
+                                  volume: pos.volume,
+                                })}
                                 style={{
                                   flex: 1,
                                   background: C.inputBg,
@@ -2183,7 +2275,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                                   cursor: "pointer",
                                 }}
                               >
-                                Confirm
+                                {t("bybitTerminal.confirm")}
                               </button>
                               <button
                                 onClick={() => {
@@ -2200,7 +2292,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                                   cursor: "pointer",
                                 }}
                               >
-                                Cancel
+                                {t("bybitTerminal.cancel")}
                               </button>
                             </div>
                           )}
@@ -2222,7 +2314,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                                 cursor: "pointer",
                               }}
                             >
-                              Close All
+                              {t("bybitTerminal.closeAll")}
                             </button>
                             <button
                               onClick={() => {
@@ -2243,7 +2335,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                                 cursor: "pointer",
                               }}
                             >
-                              Partial Close
+                              {t("bybitTerminal.partialClose")}
                             </button>
                           </div>
                         </div>
@@ -2272,39 +2364,39 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     marginBottom: 12,
                   }}
                 >
-                  Price Reference
+                  {t("bybitTerminal.priceReference")}
                 </div>
                 <div className="space-y-2">
                   {[
                     {
-                      label: "Bid",
+                      label: t("bybitTerminal.bid"),
                       value: currentBid > 0 ? formatPrice(currentBid) : "--",
                       color: C.green,
                     },
                     {
-                      label: "Ask",
+                      label: t("bybitTerminal.ask"),
                       value: currentAsk > 0 ? formatPrice(currentAsk) : "--",
                       color: C.red,
                     },
                     {
-                      label: "Spread",
+                      label: t("bybitTerminal.spread"),
                       value: spread > 0 ? formatPrice(spread) : "--",
                       color: C.textP,
                     },
                     ...(isCrypto && ticker
                       ? [
                           {
-                            label: "24h High",
+                            label: t("bybitTerminal.stat24hHigh"),
                             value: formatPrice(ticker.highPrice),
                             color: C.textP,
                           },
                           {
-                            label: "24h Low",
+                            label: t("bybitTerminal.stat24hLow"),
                             value: formatPrice(ticker.lowPrice),
                             color: C.textP,
                           },
                           {
-                            label: "24h Volume",
+                            label: t("bybitTerminal.stat24hVolume"),
                             value: `${formatVolume(ticker.volume)} ${symbolInfo.base}`,
                             color: C.textP,
                           },
@@ -2350,22 +2442,29 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     marginBottom: 12,
                   }}
                 >
-                  Account Summary
+                  {t("bybitTerminal.accountSummary")}
                 </div>
                 <div className="space-y-2">
                   {[
-                    { label: "Balance", value: `${formatNum(balance)} USDT` },
                     {
-                      label: "Open Positions",
+                      label: t("bybitTerminal.balance"),
+                      value: `${formatNum(balance)} USDT`,
+                    },
+                    {
+                      label: t("bybitTerminal.openPositions"),
                       value: `${openPositions.length}`,
                     },
                     {
-                      label: `${symbolInfo.label} Positions`,
-                      value: `${openPositions.filter((t) => symbolsMatch(t.symbol, currentSymbolStr)).length}`,
+                      label: t("bybitTerminal.symbolPositions", {
+                        label: symbolInfo.label,
+                      }),
+                      value: `${openPositions.filter((tr) => symbolsMatch(tr.symbol, currentSymbolStr)).length}`,
                     },
                     {
-                      label: "Account Status",
-                      value: isAccountLocked ? "Locked" : "Active",
+                      label: t("bybitTerminal.accountStatus"),
+                      value: isAccountLocked
+                        ? t("bybitTerminal.locked")
+                        : t("bybitTerminal.active"),
                       color: isAccountLocked ? C.red : C.green,
                     },
                   ].map((row) => (
@@ -2393,7 +2492,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         </div>
 
         {/* ── MIDDLE: ORDER BOOK ── */}
-        <SectionErrorBoundary label="Order Book">
+        <SectionErrorBoundary label={t("bybitTerminal.orderBook")}>
           <div
             className="hidden lg:flex lg:w-[280px] lg:max-h-none shrink-0 flex-col lg:border-r overflow-hidden"
             style={{ background: C.panel, borderColor: C.border }}
@@ -2417,7 +2516,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                         : "2px solid transparent",
                   }}
                 >
-                  Order Book
+                  {t("bybitTerminal.orderBook")}
                 </button>
                 <button
                   onClick={() => setObTab("trades")}
@@ -2432,7 +2531,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                         : "2px solid transparent",
                   }}
                 >
-                  Recent Trades
+                  {t("bybitTerminal.recentTrades")}
                 </button>
               </div>
               <div
@@ -2497,9 +2596,13 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   className="grid grid-cols-3 px-3 py-1.5 shrink-0"
                   style={{ fontSize: 10, color: C.textT }}
                 >
-                  <span>Price({symbolInfo.quote})</span>
-                  <span className="text-right">Qty</span>
-                  <span className="text-right">Total</span>
+                  <span>
+                    {t("bybitTerminal.priceWithQuote", {
+                      quote: symbolInfo.quote,
+                    })}
+                  </span>
+                  <span className="text-right">{t("bybitTerminal.qty")}</span>
+                  <span className="text-right">{t("bybitTerminal.total")}</span>
                 </div>
 
                 {/* OB Content */}
@@ -2600,7 +2703,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                               flexShrink: 0,
                             }}
                           >
-                            Spread: {formatPrice(spread)}
+                            {t("bybitTerminal.spreadLabel", {
+                              value: formatPrice(spread),
+                            })}
                           </span>
                         )}
                       </>
@@ -2673,14 +2778,14 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     <span
                       style={{ fontSize: 10, color: C.green, marginRight: 4 }}
                     >
-                      B
+                      {t("bybitTerminal.buyShort")}
                     </span>
                     <div className="flex-1 flex h-1 rounded overflow-hidden">
                       <div style={{ width: "45%", background: C.green }} />
                       <div style={{ width: "55%", background: C.red }} />
                     </div>
                     <span style={{ fontSize: 10, color: C.red, marginLeft: 4 }}>
-                      S
+                      {t("bybitTerminal.sellShort")}
                     </span>
                   </div>
                 </div>
@@ -2692,7 +2797,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     className="text-center py-4"
                     style={{ fontSize: 12, color: C.textS }}
                   >
-                    No recent trades for {symbolInfo.label}
+                    {t("bybitTerminal.noRecentTradesFor", {
+                      label: symbolInfo.label,
+                    })}
                   </div>
                 ) : (
                   <>
@@ -2704,9 +2811,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                         background: C.panel,
                       }}
                     >
-                      <span>Price</span>
-                      <span className="text-right">Qty</span>
-                      <span className="text-right">Time</span>
+                      <span>{t("bybitTerminal.price")}</span>
+                      <span className="text-right">{t("bybitTerminal.qty")}</span>
+                      <span className="text-right">{t("bybitTerminal.time")}</span>
                     </div>
                     <div className="space-y-0.5">
                       {recentTrades.map((t) => (
@@ -2753,7 +2860,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
         </SectionErrorBoundary>
 
         {/* ── RIGHT: TRADE PANEL ── */}
-        <SectionErrorBoundary label="Trade Panel">
+        <SectionErrorBoundary label={t("bybitTerminal.tradePanel")}>
           <div
             className="w-full lg:w-[280px] lg:max-h-none shrink-0 flex flex-col border-t lg:border-t-0 lg:border-l overflow-y-auto"
             style={{ background: C.panel, borderColor: C.border }}
@@ -2764,7 +2871,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
               style={{ borderBottom: `1px solid ${C.border}` }}
             >
               <span style={{ fontSize: 14, fontWeight: 700, color: C.textP }}>
-                Trade
+                {t("bybitTerminal.trade")}
               </span>
             </div>
 
@@ -2822,7 +2929,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       marginBottom: 6,
                     }}
                   >
-                    Spot Trading
+                    {t("bybitTerminal.spotTrading")}
                   </div>
                   <p
                     style={{
@@ -2832,9 +2939,11 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       maxWidth: 200,
                     }}
                   >
-                    Buy and manage crypto assets from the{" "}
-                    <strong style={{ color: C.yellow }}>Wallet</strong> tab in
-                    the panel below.
+                    {t("bybitTerminal.spotTradingDescPrefix")}{" "}
+                    <strong style={{ color: C.yellow }}>
+                      {t("bybitTerminal.wallet")}
+                    </strong>{" "}
+                    {t("bybitTerminal.spotTradingDescSuffix")}
                   </p>
                 </div>
 
@@ -2848,9 +2957,18 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   }}
                 >
                   {[
-                    { label: "Mode", value: "Spot (No Leverage)" },
-                    { label: "Order Types", value: "Market & Limit" },
-                    { label: "Available", value: `${formatNum(balance)} USDT` },
+                    {
+                      label: t("bybitTerminal.mode"),
+                      value: t("bybitTerminal.spotNoLeverage"),
+                    },
+                    {
+                      label: t("bybitTerminal.orderTypes"),
+                      value: t("bybitTerminal.marketAndLimit"),
+                    },
+                    {
+                      label: t("bybitTerminal.available"),
+                      value: `${formatNum(balance)} USDT`,
+                    },
                   ].map((row) => (
                     <div
                       key={row.label}
@@ -2872,9 +2990,11 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     className="flex justify-between"
                     style={{ fontSize: 11 }}
                   >
-                    <span style={{ color: C.textS }}>Assets</span>
+                    <span style={{ color: C.textS }}>
+                      {t("bybitTerminal.assets")}
+                    </span>
                     <span style={{ color: C.textP, fontFamily: "monospace" }}>
-                      11 crypto pairs
+                      {t("bybitTerminal.cryptoPairsCount", { count: 11 })}
                     </span>
                   </div>
                 </div>
@@ -2887,11 +3007,11 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     lineHeight: 1.6,
                   }}
                 >
-                  Scroll down to the{" "}
+                  {t("bybitTerminal.scrollDownPrefix")}{" "}
                   <span style={{ color: C.yellow, fontWeight: 600 }}>
-                    Wallet
+                    {t("bybitTerminal.wallet")}
                   </span>{" "}
-                  tab to buy, sell, and track your spot positions.
+                  {t("bybitTerminal.scrollDownSuffix")}
                 </div>
               </div>
             )}
@@ -2913,7 +3033,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                         transition: "all .15s",
                       }}
                     >
-                      Buy
+                      {t("bybitTerminal.buy")}
                     </button>
                     <button
                       onClick={() => setOrderSide("sell")}
@@ -2926,31 +3046,33 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                         transition: "all .15s",
                       }}
                     >
-                      Sell
+                      {t("bybitTerminal.sell")}
                     </button>
                   </div>
 
                   {/* Limit / Market / TP/SL tabs */}
                   <div className="flex gap-0">
-                    {["limit", "market", "tp/sl"].map((t) => (
+                    {["limit", "market", "tp/sl"].map((ot) => (
                       <button
-                        key={t}
-                        onClick={() => setOrderType(t)}
+                        key={ot}
+                        onClick={() => setOrderType(ot)}
                         className="py-1.5 mr-4"
                         style={{
                           fontSize: 12,
-                          fontWeight: orderType === t ? 600 : 400,
-                          color: orderType === t ? C.textP : C.textS,
+                          fontWeight: orderType === ot ? 600 : 400,
+                          color: orderType === ot ? C.textP : C.textS,
                           borderBottom:
-                            orderType === t
+                            orderType === ot
                               ? `2px solid ${C.yellow}`
                               : "2px solid transparent",
                           textTransform: "capitalize",
                         }}
                       >
-                        {t === "tp/sl"
-                          ? "TP/SL"
-                          : t.charAt(0).toUpperCase() + t.slice(1)}
+                        {ot === "tp/sl"
+                          ? t("bybitTerminal.orderTypeTpSl")
+                          : ot === "limit"
+                            ? t("bybitTerminal.orderTypeLimit")
+                            : t("bybitTerminal.orderTypeMarket")}
                       </button>
                     ))}
                   </div>
@@ -2963,7 +3085,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     {/* "Balance" = available trading balance (decreases when trades open) */}
                     <div className="flex items-center justify-between">
                       <span style={{ fontSize: 11, color: C.textS }}>
-                        Balance
+                        {t("bybitTerminal.balance")}
                       </span>
                       <span
                         style={{
@@ -2978,7 +3100,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     </div>
                     <div className="flex items-center justify-between">
                       <span style={{ fontSize: 11, color: C.textS }}>
-                        Equity
+                        {t("bybitTerminal.equity")}
                       </span>
                       <span
                         style={{
@@ -2992,7 +3114,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     </div>
                     <div className="flex items-center justify-between">
                       <span style={{ fontSize: 11, color: C.textS }}>
-                        Acct. Balance
+                        {t("bybitTerminal.acctBalance")}
                       </span>
                       <span
                         style={{
@@ -3006,7 +3128,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     </div>
                     <div className="flex items-center justify-between">
                       <span style={{ fontSize: 11, color: C.textS }}>
-                        Used Margin
+                        {t("bybitTerminal.usedMargin")}
                       </span>
                       <span
                         style={{
@@ -3020,7 +3142,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                     </div>
                     <div className="flex items-center justify-between">
                       <span style={{ fontSize: 11, color: C.textS }}>
-                        Free Margin
+                        {t("bybitTerminal.freeMargin")}
                       </span>
                       <span
                         style={{
@@ -3052,7 +3174,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           flexShrink: 0,
                         }}
                       >
-                        Price
+                        {t("bybitTerminal.price")}
                       </span>
                       <input
                         type="text"
@@ -3094,7 +3216,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                         flexShrink: 0,
                       }}
                     >
-                      Quantity
+                      {t("bybitTerminal.quantity")}
                     </span>
                     <input
                       type="text"
@@ -3180,7 +3302,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
                       <span style={{ fontSize: 12, color: C.textS }}>
-                        Leverage
+                        {t("bybitTerminal.leverage")}
                       </span>
                       <span
                         style={{
@@ -3223,7 +3345,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   {orderType !== "tp/sl" && (
                     <div className="flex items-center justify-between">
                       <span style={{ fontSize: 12, color: C.textS }}>
-                        TP/SL
+                        {t("bybitTerminal.orderTypeTpSl")}
                       </span>
                       <button
                         onClick={() => setShowTpSl(!showTpSl)}
@@ -3274,7 +3396,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           type="text"
                           value={tpPrice}
                           onChange={(e) => setTpPrice(e.target.value)}
-                          placeholder="Take Profit"
+                          placeholder={t("bybitTerminal.takeProfit")}
                           style={{
                             flex: 1,
                             background: "transparent",
@@ -3302,7 +3424,7 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                           type="text"
                           value={slPrice}
                           onChange={(e) => setSlPrice(e.target.value)}
-                          placeholder="Stop Loss"
+                          placeholder={t("bybitTerminal.stopLoss")}
                           style={{
                             flex: 1,
                             background: "transparent",
@@ -3327,7 +3449,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       className="flex justify-between"
                       style={{ fontSize: 12 }}
                     >
-                      <span style={{ color: C.textS }}>Order Value</span>
+                      <span style={{ color: C.textS }}>
+                        {t("bybitTerminal.orderValue")}
+                      </span>
                       <span style={{ color: C.textP, fontFamily: "monospace" }}>
                         {orderValue > 0 ? formatNum(orderValue) : "--"} USDT
                       </span>
@@ -3336,7 +3460,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       className="flex justify-between"
                       style={{ fontSize: 12 }}
                     >
-                      <span style={{ color: C.textS }}>Margin</span>
+                      <span style={{ color: C.textS }}>
+                        {t("bybitTerminal.margin")}
+                      </span>
                       <span style={{ color: C.textP, fontFamily: "monospace" }}>
                         {orderValue > 0
                           ? formatNum(orderValue / selectedLeverage)
@@ -3348,7 +3474,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       className="flex justify-between"
                       style={{ fontSize: 12 }}
                     >
-                      <span style={{ color: C.textS }}>Commission</span>
+                      <span style={{ color: C.textS }}>
+                        {t("bybitTerminal.commission")}
+                      </span>
                       <span style={{ color: C.textS, fontFamily: "monospace" }}>
                         {qty > 0 ? `~${commission.toFixed(2)}` : "--"} USDT
                       </span>
@@ -3358,7 +3486,9 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                       style={{ fontSize: 12 }}
                     >
                       <span style={{ color: C.textS }}>
-                        Max. {orderSide === "buy" ? "buy" : "sell"} amount
+                        {orderSide === "buy"
+                          ? t("bybitTerminal.maxBuyAmount")
+                          : t("bybitTerminal.maxSellAmount")}
                       </span>
                       <span
                         style={{
@@ -3402,12 +3532,15 @@ const BybitTradingArea = ({ selectedChallenge }) => {
                   >
                     {isPlacingOrder ? (
                       <span className="flex items-center justify-center gap-2">
-                        <Loader2 className="w-4 h-4 animate-spin" /> Placing...
+                        <Loader2 className="w-4 h-4 animate-spin" />{" "}
+                        {t("bybitTerminal.placing")}
                       </span>
                     ) : isAccountLocked ? (
-                      "Account Locked"
+                      t("bybitTerminal.accountLocked")
+                    ) : orderSide === "buy" ? (
+                      t("bybitTerminal.buySymbol", { label: symbolInfo.label })
                     ) : (
-                      `${orderSide === "buy" ? "Buy" : "Sell"} ${symbolInfo.label}`
+                      t("bybitTerminal.sellSymbol", { label: symbolInfo.label })
                     )}
                   </button>
                 </div>

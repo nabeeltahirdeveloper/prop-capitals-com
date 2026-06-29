@@ -11,6 +11,7 @@ import {
 import { useTraderTheme } from './TraderPanelLayout';
 import { useTrading } from '@/contexts/TradingContext';
 import { useChallenges } from '@/contexts/ChallengesContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const formatDateTime = (dateStr) => {
   if (!dateStr) return '-';
@@ -34,16 +35,11 @@ const formatPrice = (price) => {
   return p >= 100 ? p.toFixed(2) : p.toFixed(5);
 };
 
-const CLOSE_REASON_LABELS = {
-  SL_HIT: 'SL Hit',
-  TP_HIT: 'TP Hit',
-  RISK_AUTO_CLOSE: 'Auto Close',
-  USER_CLOSE: 'Closed',
-};
-
-const getCloseLabel = (order) => {
-  if (order.status === 'OPEN') return 'Open';
-  return CLOSE_REASON_LABELS[order.closeReason] ?? 'Closed';
+const CLOSE_REASON_KEYS = {
+  SL_HIT: 'closeReasonSlHit',
+  TP_HIT: 'closeReasonTpHit',
+  RISK_AUTO_CLOSE: 'closeReasonAutoClose',
+  USER_CLOSE: 'closeReasonClosed',
 };
 
 const escapeCsv = (val) => `"${String(val ?? '').replace(/"/g, '""')}"`;
@@ -52,8 +48,15 @@ const OrdersPage = () => {
   const { isDark } = useTraderTheme();
   const { orders, ordersLoading, fetchOrders } = useTrading();
   const { selectedChallengeId } = useChallenges();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+
+  const getCloseLabel = (order) => {
+    if (order.status === 'OPEN') return t('ordersPage.open');
+    const key = CLOSE_REASON_KEYS[order.closeReason];
+    return key ? t(`ordersPage.${key}`) : t('ordersPage.closeReasonClosed');
+  };
 
   // Refresh orders when this page mounts or the account changes.
   // Only fetch once we have the account ID — avoids fetching the wrong account.
@@ -87,7 +90,17 @@ const OrdersPage = () => {
     : '0.0';
 
   const handleExport = () => {
-    const headers = ['Symbol', 'Type', 'Lots', 'Open Price', 'Close Price', 'Open Time', 'Close Time', 'P/L ($)', 'Status'];
+    const headers = [
+      t('ordersPage.colSymbol'),
+      t('ordersPage.colType'),
+      t('ordersPage.colLots'),
+      t('ordersPage.colOpenPrice'),
+      t('ordersPage.colClosePrice'),
+      t('ordersPage.colOpenTime'),
+      t('ordersPage.colCloseTime'),
+      t('ordersPage.csvProfitLoss'),
+      t('ordersPage.colStatus'),
+    ];
     const rows = filteredOrders.map(order => [
       escapeCsv(order.symbol),
       escapeCsv(order.type),
@@ -123,7 +136,7 @@ const OrdersPage = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <h2 className={`text-xl sm:text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Orders</h2>
+        <h2 className={`text-xl sm:text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('ordersPage.title')}</h2>
         <div className="flex items-center gap-2">
           <button
             onClick={handleRefresh}
@@ -131,7 +144,7 @@ const OrdersPage = () => {
             className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl transition-all ${isDark ? 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900'} disabled:opacity-50`}
           >
             <RefreshCw className={`w-4 h-4 ${ordersLoading ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline text-sm font-medium">Refresh</span>
+            <span className="hidden sm:inline text-sm font-medium">{t('ordersPage.refresh')}</span>
           </button>
           <button
             onClick={handleExport}
@@ -139,7 +152,7 @@ const OrdersPage = () => {
               }`}
           >
             <Download className="w-4 h-4" />
-            <span className="hidden sm:inline text-sm font-medium">Export</span>
+            <span className="hidden sm:inline text-sm font-medium">{t('ordersPage.export')}</span>
           </button>
         </div>
       </div>
@@ -147,23 +160,23 @@ const OrdersPage = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className={`rounded-2xl border p-3 sm:p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
-          <p className={`text-xs sm:text-sm mb-1 sm:mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Total Trades</p>
+          <p className={`text-xs sm:text-sm mb-1 sm:mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('ordersPage.totalTrades')}</p>
           <p className={`text-xl sm:text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{orders.length}</p>
         </div>
         <div className={`rounded-2xl border p-3 sm:p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
-          <p className={`text-xs sm:text-sm mb-1 sm:mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Closed P/L</p>
+          <p className={`text-xs sm:text-sm mb-1 sm:mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('ordersPage.closedPl')}</p>
           <p className={`text-xl sm:text-2xl font-bold ${totalProfit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
             {totalProfit >= 0 ? '+' : ''}${totalProfit.toFixed(2)}
           </p>
         </div>
         <div className={`rounded-2xl border p-3 sm:p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
-          <p className={`text-xs sm:text-sm mb-1 sm:mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Open P/L</p>
+          <p className={`text-xs sm:text-sm mb-1 sm:mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('ordersPage.openPl')}</p>
           <p className={`text-xl sm:text-2xl font-bold ${openProfit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
             {openProfit >= 0 ? '+' : ''}${openProfit.toFixed(2)}
           </p>
         </div>
         <div className={`rounded-2xl border p-3 sm:p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
-          <p className={`text-xs sm:text-sm mb-1 sm:mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Win Rate</p>
+          <p className={`text-xs sm:text-sm mb-1 sm:mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('ordersPage.winRate')}</p>
           <p className="text-amber-500 text-xl sm:text-2xl font-bold">{winRate}%</p>
         </div>
       </div>
@@ -174,9 +187,9 @@ const OrdersPage = () => {
           {/* Tabs */}
           <div className={`flex items-center gap-2 rounded-xl p-1.5 ${isDark ? 'bg-white/5' : 'bg-slate-100'}`}>
             {[
-              { key: 'all', label: 'All Orders', count: orders.length },
-              { key: 'open', label: 'Open', count: openOrders.length },
-              { key: 'closed', label: 'Closed', count: closedOrders.length },
+              { key: 'all', label: t('ordersPage.tabAllOrders'), count: orders.length },
+              { key: 'open', label: t('ordersPage.tabOpen'), count: openOrders.length },
+              { key: 'closed', label: t('ordersPage.tabClosed'), count: closedOrders.length },
             ].map((tab) => (
               <button
                 key={tab.key}
@@ -204,7 +217,7 @@ const OrdersPage = () => {
             <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
             <input
               type="text"
-              placeholder="Search symbol..."
+              placeholder={t('ordersPage.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className={`w-full sm:w-64 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-amber-500/50 ${isDark ? 'bg-white/5 border border-white/10 text-white' : 'bg-slate-50 border border-slate-200 text-slate-900'
@@ -220,15 +233,15 @@ const OrdersPage = () => {
           <table className="w-full min-w-[1024px]">
             <thead>
               <tr className={`border-b ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
-                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Symbol</th>
-                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Type</th>
-                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Lots</th>
-                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Open Price</th>
-                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Close Price</th>
-                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Open Time</th>
-                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Close Time</th>
-                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>P/L</th>
-                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Status</th>
+                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('ordersPage.colSymbol')}</th>
+                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('ordersPage.colType')}</th>
+                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('ordersPage.colLots')}</th>
+                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('ordersPage.colOpenPrice')}</th>
+                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('ordersPage.colClosePrice')}</th>
+                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('ordersPage.colOpenTime')}</th>
+                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('ordersPage.colCloseTime')}</th>
+                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('ordersPage.colPl')}</th>
+                <th className={`text-left text-xs font-semibold uppercase tracking-wider px-6 py-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('ordersPage.colStatus')}</th>
               </tr>
             </thead>
             <tbody>
@@ -282,7 +295,7 @@ const OrdersPage = () => {
 
         {filteredOrders.length === 0 && (
           <div className="text-center py-12">
-            <p className={isDark ? 'text-gray-500' : 'text-slate-500'}>No orders found</p>
+            <p className={isDark ? 'text-gray-500' : 'text-slate-500'}>{t('ordersPage.noOrdersFound')}</p>
           </div>
         )}
       </div>
