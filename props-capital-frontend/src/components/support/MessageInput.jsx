@@ -1,9 +1,11 @@
 import { useState, useRef, useCallback } from 'react';
 import { Send } from 'lucide-react';
 import { useTraderTheme } from '@/components/trader/TraderPanelLayout';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 export default function MessageInput({ onSend, disabled, isPending }) {
   const { isDark } = useTraderTheme();
+  const { t } = useTranslation();
   const [value, setValue] = useState('');
   const textareaRef = useRef(null);
 
@@ -33,7 +35,7 @@ export default function MessageInput({ onSend, disabled, isPending }) {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder={disabled ? 'This ticket is closed' : 'Type your message...'}
+        placeholder={disabled ? t('supportChat.placeholderClosed') : t('supportChat.placeholderType')}
         disabled={disabled}
         className={`min-h-[40px] max-h-[120px] resize-none text-sm flex-1 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500/50 ${
           isDark

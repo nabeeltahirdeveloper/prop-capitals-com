@@ -165,7 +165,33 @@
       "faq": "FAQ",
       "contact": "Contact",
       "terms": "Terms of Service",
-      "privacy": "Privacy Policy"
+      "privacy": "Privacy Policy",
+      "tagline": "Empowering traders worldwide with funded accounts and industry-leading conditions.",
+      "trading": "Trading",
+      "resources": "Resources",
+      "aboutUs": "About Us",
+      "careers": "Careers",
+      "blog": "Blog",
+      "oneStepChallenge": "1-Step Challenge",
+      "twoStepChallenge": "2-Step Challenge",
+      "pricing": "Pricing",
+      "platforms": "Platforms",
+      "faqs": "FAQs",
+      "tradingRules": "Trading Rules",
+      "affiliateProgram": "Affiliate Program",
+      "riskDisclosure": "Risk Disclosure",
+      "refundPolicy": "Refund Policy",
+      "withdrawalPolicy": "Withdrawal Policy",
+      "kycPolicy": "KYC Policy",
+      "amlPolicy": "AML Policy",
+      "riskDisclaimerLabel": "Risk Disclaimer:",
+      "riskDisclaimerText": "Trading in foreign exchange and other financial instruments involves substantial risk of loss and is not suitable for all investors. Past performance is not indicative of future results. Prop Capitals provides simulated trading accounts; we are not a broker, investment advisor, or financial institution. All trading activities during the evaluation phase are performed in a simulated environment. Please trade responsibly and only with capital you can afford to lose.",
+      "copyrightLine": "© 2026 Prop-Capitals.com. All rights reserved.",
+      "riskShort": "Risk",
+      "refundsShort": "Refunds",
+      "withdrawalsShort": "Withdrawals",
+      "kycShort": "KYC",
+      "amlShort": "AML"
     },
     "partners": {
       "title": "Trusted by traders using:"
@@ -456,7 +482,8 @@
         "warning": "WARNING",
         "safe": "SAFE"
       }
-    }
+    },
+    "pl": "P/L"
   },
   "myAccounts": {
     "title": "My Accounts",
@@ -681,7 +708,8 @@
     "saveError": "Failed to save profile",
     "notificationUpdateFailed": "Failed to update notification preferences",
     "passwordChangeFailed": "Failed to change password",
-    "documentUploadFailed": "Failed to upload document"
+    "documentUploadFailed": "Failed to upload document",
+    "preferencesSaved": "Preferences saved"
   },
   "support": {
     "title": "Support",
@@ -823,7 +851,11 @@
     "targetLabel": "Target: {{value}}",
     "minDaysLabel": "Min: {{value}} days",
     "maxLabel": "Max: {{value}}",
-    "progress": "Progress"
+    "progress": "Progress",
+    "passed": "Passed",
+    "challengeFailed": "Challenge Failed",
+    "failedDescription": "This challenge has been disqualified due to a rule violation.",
+    "startNewChallenge": "Start New Challenge"
   },
   "phaseTimeline": {
     "challengeJourney": "Challenge Journey",
@@ -1448,7 +1480,8 @@
       "pollingMode": "Polling Mode",
       "liveShort": "Live",
       "pollShort": "Poll"
-    }
+    },
+    "accountStatusChanged": "Account Status Changed"
   },
   "nav": {
     "home": "Home",
@@ -5326,5 +5359,128 @@
     "details": "Details",
     "iUnderstand": "I Understand",
     "continueTrading": "Continue Trading"
+  },
+  "chatSupport": {
+    "greeting": "Hi! I'm the Prop Capitals AI assistant. How can I help you today? Ask me about challenges, trading rules, payouts, or anything else!",
+    "online": "Online",
+    "thinking": "Thinking...",
+    "humanSupport": "Human Support",
+    "inputPlaceholder": "Type your message...",
+    "errors": {
+      "generic": "Something went wrong on our end.",
+      "retry": "{{message}} Please try again in a moment, or use the Human Support button below.",
+      "contactSupport": "{{message}} Please use the Human Support button below or email support@prop-capitals.com.",
+      "noResponse": "I could not generate a response.",
+      "connection": "I'm having trouble connecting right now. Please try again or contact support@prop-capitals.com directly."
+    },
+    "categories": {
+      "ACCOUNT": "Account",
+      "PAYMENT": "Payment",
+      "PAYOUT": "Payout",
+      "TECHNICAL": "Technical",
+      "OTHER": "Other"
+    },
+    "ticket": {
+      "created": "Thanks! Your support ticket has been created under {{category}}. Our team will reply as soon as possible.",
+      "continueFromTickets": "You can continue the conversation from your Support Tickets page.",
+      "submitIssue": "There was an issue submitting your request.",
+      "emailFallback": "{{message}} Please email us directly at support@prop-capitals.com.",
+      "submitFailed": "Failed to submit your request. Please email us directly at support@prop-capitals.com.",
+      "openTicket": "Open Ticket"
+    },
+    "form": {
+      "closeForm": "Close form",
+      "namePlaceholder": "Your Name",
+      "emailPlaceholder": "Your Email",
+      "messagePlaceholder": "Describe your issue...",
+      "cancel": "Cancel",
+      "submit": "Submit"
+    },
+    "quickReplies": {
+      "challenges": "Challenges",
+      "challengesPrompt": "What challenges do you offer?",
+      "payouts": "Payouts",
+      "payoutsPrompt": "How do payouts work?",
+      "rules": "Rules",
+      "rulesPrompt": "Trading rules?"
+    },
+    "login": {
+      "linkText": "Log in",
+      "suffix": "for account-specific help (balance, trades, payouts)."
+    }
+  },
+  "socialProof": {
+    "timeAgo": "{{minutes}} min ago",
+    "messages": {
+      "challengePassed": "{{name}} from {{city}} just passed their challenge!",
+      "gotFunded": "{{name}} from {{city}} just got funded ${{amount}}K!",
+      "payoutReceived": "{{name}} from {{city}} received a ${{amount}} payout!",
+      "challengeStarted": "{{name}} from {{city}} just started a challenge!"
+    }
+  },
+  "supportChat": {
+    "placeholderClosed": "This ticket is closed",
+    "placeholderType": "Type your message..."
+  },
+  "equityChart": {
+    "title": "Equity Curve",
+    "noData": "No equity data available"
+  },
+  "profitChart": {
+    "title": "Daily Profit"
+  },
+  "propTradingExplainer": {
+    "scenes": {
+      "intro": {
+        "title": "What is Prop Trading?",
+        "subtitle": "Trade with our capital, keep the profits"
+      },
+      "problem": {
+        "title": "The Challenge",
+        "subtitle": "Most traders lack sufficient capital to generate meaningful returns"
+      },
+      "solution": {
+        "title": "Our Solution",
+        "subtitle": "We provide the capital, you provide the skill"
+      },
+      "step1": {
+        "title": "Step 1: Choose Your Challenge",
+        "subtitle": "Select an account size from $10K to $200K"
+      },
+      "step2": {
+        "title": "Step 2: Prove Your Skills",
+        "subtitle": "Reach the profit target while managing risk"
+      },
+      "step3": {
+        "title": "Step 3: Get Funded",
+        "subtitle": "Pass the evaluation and receive real capital"
+      },
+      "profits": {
+        "title": "Keep Up to 90% Profits",
+        "subtitle": "Your skills, our capital, shared success"
+      },
+      "scale": {
+        "title": "Scale to $2 Million",
+        "subtitle": "Grow your account through consistent performance"
+      },
+      "cta": {
+        "title": "Start Your Journey Today",
+        "subtitle": "Join thousands of funded traders worldwide"
+      }
+    },
+    "labels": {
+      "yourSkills": "Your Skills",
+      "ourCapital": "Our Capital",
+      "success": "Success",
+      "firstStep": "First Step",
+      "evaluation": "Evaluation",
+      "profitTarget": "{{value}} Target",
+      "maxDrawdown": "{{value}} Max DD",
+      "getFunded": "Get Funded",
+      "yourShare": "Your Share",
+      "fundedTraders": "Funded Traders",
+      "capitalDeployed": "Capital Deployed",
+      "paidOut": "Paid Out"
+    }
   }
 }

@@ -11,6 +11,7 @@ import {
   Cell,
 } from 'recharts';
 import { format } from 'date-fns';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -27,7 +28,9 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-export default function ProfitChart({ data, title = 'Daily Profit' }) {
+export default function ProfitChart({ data, title }) {
+  const { t } = useTranslation();
+  const chartTitle = title ?? t('profitChart.title');
   const chartData = data?.map(item => ({
     date: format(new Date(item.date), 'MMM d'),
     profit: item.daily_profit || 0,
@@ -35,7 +38,7 @@ export default function ProfitChart({ data, title = 'Daily Profit' }) {
 
   return (
     <Card className="bg-slate-900 border-slate-800 p-6">
-      <h3 className="text-lg font-semibold text-white mb-4">{title}</h3>
+      <h3 className="text-lg font-semibold text-white mb-4">{chartTitle}</h3>
       <div className="h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData}>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { CheckCircle, TrendingUp, Award, DollarSign, X } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 // Sample data for notifications
 const firstNames = [
@@ -46,28 +47,28 @@ const CountryFlag = ({ code, className = "" }) => (
 const notificationTypes = [
   {
     type: 'challenge_passed',
-    getMessage: (name, location) => `${name} from ${location.city} just passed their challenge!`,
+    messageKey: 'socialProof.messages.challengePassed',
     icon: CheckCircle,
     iconColor: 'text-emerald-500',
     bgColor: 'bg-emerald-500/10',
   },
   {
     type: 'got_funded',
-    getMessage: (name, location, amount) => `${name} from ${location.city} just got funded $${amount}K!`,
+    messageKey: 'socialProof.messages.gotFunded',
     icon: TrendingUp,
     iconColor: 'text-blue-500',
     bgColor: 'bg-blue-500/10',
   },
   {
     type: 'payout_received',
-    getMessage: (name, location, amount) => `${name} from ${location.city} received a $${amount.toLocaleString()} payout!`,
+    messageKey: 'socialProof.messages.payoutReceived',
     icon: DollarSign,
     iconColor: 'text-amber-500',
     bgColor: 'bg-amber-500/10',
   },
   {
     type: 'challenge_started',
-    getMessage: (name, location) => `${name} from ${location.city} just started a challenge!`,
+    messageKey: 'socialProof.messages.challengeStarted',
     icon: Award,
     iconColor: 'text-purple-500',
     bgColor: 'bg-purple-500/10',
@@ -76,6 +77,7 @@ const notificationTypes = [
 
 const SocialProofNotification = () => {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
   const [notification, setNotification] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
@@ -102,7 +104,6 @@ const SocialProofNotification = () => {
       type,
       amount,
       timeAgo,
-      message: type.getMessage(name, location, amount),
     };
   }, []);
 
@@ -151,6 +152,14 @@ const SocialProofNotification = () => {
   if (!isVisible || !notification) return null;
 
   const IconComponent = notification.type.icon;
+  const message = t(notification.type.messageKey, {
+    name: notification.name,
+    city: notification.location.city,
+    amount:
+      notification.type.type === 'payout_received'
+        ? notification.amount.toLocaleString()
+        : notification.amount,
+  });
 
   return (
     <div
@@ -177,12 +186,12 @@ const SocialProofNotification = () => {
             {/* Content */}
             <div className="flex-1 min-w-0">
               <p className={`text-sm font-medium leading-snug ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {notification.message}
+                {message}
               </p>
               <div className="flex items-center gap-2 mt-1.5">
                 <CountryFlag code={notification.location.code} />
                 <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                  {notification.timeAgo} min ago
+                  {t('socialProof.timeAgo', { minutes: notification.timeAgo })}
                 </span>
               </div>
             </div>

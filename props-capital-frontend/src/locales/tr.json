@@ -165,7 +165,33 @@
       "faq": "SSS",
       "contact": "İletişim",
       "terms": "Kullanım şartları",
-      "privacy": "Gizlilik politikası"
+      "privacy": "Gizlilik politikası",
+      "tagline": "Fonlanmış hesaplar ve sektör lideri koşullarla dünya genelindeki trader'ları güçlendiriyoruz.",
+      "trading": "İşlem",
+      "resources": "Kaynaklar",
+      "aboutUs": "Hakkımızda",
+      "careers": "Kariyer",
+      "blog": "Blog",
+      "oneStepChallenge": "1 Aşamalı Challenge",
+      "twoStepChallenge": "2 Aşamalı Challenge",
+      "pricing": "Fiyatlandırma",
+      "platforms": "Platformlar",
+      "faqs": "SSS",
+      "tradingRules": "İşlem Kuralları",
+      "affiliateProgram": "Ortaklık Programı",
+      "riskDisclosure": "Risk Bildirimi",
+      "refundPolicy": "İade Politikası",
+      "withdrawalPolicy": "Para Çekme Politikası",
+      "kycPolicy": "KYC Politikası",
+      "amlPolicy": "AML Politikası",
+      "riskDisclaimerLabel": "Risk Uyarısı:",
+      "riskDisclaimerText": "Döviz ve diğer finansal araçlarda işlem yapmak önemli ölçüde zarar riski taşır ve tüm yatırımcılar için uygun değildir. Geçmiş performans, gelecekteki sonuçların göstergesi değildir. Prop Capitals simüle edilmiş işlem hesapları sunar; bir aracı kurum, yatırım danışmanı veya finans kuruluşu değiliz. Değerlendirme aşamasındaki tüm işlem faaliyetleri simüle edilmiş bir ortamda gerçekleştirilir. Lütfen sorumlu bir şekilde ve yalnızca kaybetmeyi göze alabileceğiniz sermaye ile işlem yapın.",
+      "copyrightLine": "© 2026 Prop-Capitals.com. Tüm hakları saklıdır.",
+      "riskShort": "Risk",
+      "refundsShort": "İadeler",
+      "withdrawalsShort": "Para Çekme",
+      "kycShort": "KYC",
+      "amlShort": "AML"
     },
     "partners": {
       "title": "Aşağıdaki platformları kullanan traderlar tarafından güvenilmektedir:"
@@ -456,7 +482,8 @@
         "safe": "Güvenli"
       },
       "days": "gün"
-    }
+    },
+    "pl": "K/Z"
   },
   "myAccounts": {
     "title": "Hesaplarım",
@@ -677,7 +704,12 @@
     "saveError": "Profil kaydedilemedi",
     "notificationUpdateFailed": "Bildirim tercihleri güncellenemedi",
     "passwordChangeFailed": "Şifre değiştirilemedi",
-    "documentUploadFailed": "Belge yüklenemedi"
+    "documentUploadFailed": "Belge yüklenemedi",
+    "preferencesSaved": "Tercihler kaydedildi",
+    "personal": "Kişisel",
+    "sec": "Güvenlik",
+    "verify": "Doğrulama",
+    "notif": "Bildirimler"
   },
   "support": {
     "title": "Destek",
@@ -819,7 +851,11 @@
     "targetLabel": "Hedef: {{value}}",
     "minDaysLabel": "Min: {{value}} gün",
     "maxLabel": "Maks: {{value}}",
-    "progress": "İlerleme"
+    "progress": "İlerleme",
+    "passed": "Geçti",
+    "challengeFailed": "Meydan Okuma Başarısız",
+    "failedDescription": "Bu meydan okuma, bir kural ihlali nedeniyle diskalifiye edildi.",
+    "startNewChallenge": "Yeni Meydan Okuma Başlat"
   },
   "phaseTimeline": {
     "challengeJourney": "Meydan okuma yolculuğu",
@@ -1441,7 +1477,8 @@
       "pollingMode": "Yoklama Modu",
       "liveShort": "Canlı",
       "pollShort": "Yokla"
-    }
+    },
+    "accountStatusChanged": "Hesap Durumu Değişti"
   },
   "nav": {
     "home": "Ana sayfa",
@@ -5292,5 +5329,128 @@
     "details": "Ayrıntılar",
     "iUnderstand": "Anladım",
     "continueTrading": "İşleme Devam Et"
+  },
+  "chatSupport": {
+    "greeting": "Merhaba! Ben Prop Capitals yapay zeka asistanıyım. Bugün size nasıl yardımcı olabilirim? Bana challenge'lar, işlem kuralları, ödemeler veya başka herhangi bir konuda soru sorabilirsiniz!",
+    "online": "Çevrimiçi",
+    "thinking": "Düşünüyor...",
+    "humanSupport": "Canlı Destek",
+    "inputPlaceholder": "Mesajınızı yazın...",
+    "errors": {
+      "generic": "Tarafımızda bir sorun oluştu.",
+      "retry": "{{message}} Lütfen birazdan tekrar deneyin veya aşağıdaki Canlı Destek düğmesini kullanın.",
+      "contactSupport": "{{message}} Lütfen aşağıdaki Canlı Destek düğmesini kullanın veya support@prop-capitals.com adresine e-posta gönderin.",
+      "noResponse": "Bir yanıt oluşturamadım.",
+      "connection": "Şu anda bağlantı sorunu yaşıyorum. Lütfen tekrar deneyin veya doğrudan support@prop-capitals.com adresinden bizimle iletişime geçin."
+    },
+    "categories": {
+      "ACCOUNT": "Hesap",
+      "PAYMENT": "Ödeme",
+      "PAYOUT": "Para Çekme",
+      "TECHNICAL": "Teknik",
+      "OTHER": "Diğer"
+    },
+    "ticket": {
+      "created": "Teşekkürler! Destek talebiniz {{category}} kategorisi altında oluşturuldu. Ekibimiz en kısa sürede yanıt verecektir.",
+      "continueFromTickets": "Görüşmeye Destek Talepleri sayfanızdan devam edebilirsiniz.",
+      "submitIssue": "Talebiniz gönderilirken bir sorun oluştu.",
+      "emailFallback": "{{message}} Lütfen doğrudan support@prop-capitals.com adresinden bize e-posta gönderin.",
+      "submitFailed": "Talebiniz gönderilemedi. Lütfen doğrudan support@prop-capitals.com adresinden bize e-posta gönderin.",
+      "openTicket": "Talebi Aç"
+    },
+    "form": {
+      "closeForm": "Formu kapat",
+      "namePlaceholder": "Adınız",
+      "emailPlaceholder": "E-posta Adresiniz",
+      "messagePlaceholder": "Sorununuzu açıklayın...",
+      "cancel": "İptal",
+      "submit": "Gönder"
+    },
+    "quickReplies": {
+      "challenges": "Challenge'lar",
+      "challengesPrompt": "Hangi challenge'ları sunuyorsunuz?",
+      "payouts": "Ödemeler",
+      "payoutsPrompt": "Ödemeler nasıl işliyor?",
+      "rules": "Kurallar",
+      "rulesPrompt": "İşlem kuralları nelerdir?"
+    },
+    "login": {
+      "linkText": "Giriş yapın",
+      "suffix": "hesaba özel yardım (bakiye, işlemler, ödemeler) için."
+    }
+  },
+  "socialProof": {
+    "timeAgo": "{{minutes}} dakika önce",
+    "messages": {
+      "challengePassed": "{{city}} şehrinden {{name}} az önce challenge'ını geçti!",
+      "gotFunded": "{{city}} şehrinden {{name}} az önce ${{amount}}K fon aldı!",
+      "payoutReceived": "{{city}} şehrinden {{name}} ${{amount}} ödeme aldı!",
+      "challengeStarted": "{{city}} şehrinden {{name}} az önce bir challenge başlattı!"
+    }
+  },
+  "supportChat": {
+    "placeholderClosed": "Bu talep kapatıldı",
+    "placeholderType": "Mesajınızı yazın..."
+  },
+  "equityChart": {
+    "title": "Sermaye Eğrisi",
+    "noData": "Sermaye verisi bulunmuyor"
+  },
+  "profitChart": {
+    "title": "Günlük Kâr"
+  },
+  "propTradingExplainer": {
+    "scenes": {
+      "intro": {
+        "title": "Prop Trading Nedir?",
+        "subtitle": "Sermayemizle işlem yapın, kârı siz alın"
+      },
+      "problem": {
+        "title": "Zorluk",
+        "subtitle": "Çoğu yatırımcının anlamlı getiriler elde edecek yeterli sermayesi yoktur"
+      },
+      "solution": {
+        "title": "Çözümümüz",
+        "subtitle": "Sermayeyi biz sağlıyoruz, beceriyi siz sunuyorsunuz"
+      },
+      "step1": {
+        "title": "1. Adım: Challenge'ınızı Seçin",
+        "subtitle": "$10K ile $200K arasında bir hesap büyüklüğü seçin"
+      },
+      "step2": {
+        "title": "2. Adım: Becerilerinizi Kanıtlayın",
+        "subtitle": "Riski yönetirken kâr hedefine ulaşın"
+      },
+      "step3": {
+        "title": "3. Adım: Fonlanın",
+        "subtitle": "Değerlendirmeyi geçin ve gerçek sermaye alın"
+      },
+      "profits": {
+        "title": "Kârın %90'ına Kadar Sizin",
+        "subtitle": "Becerileriniz, sermayemiz, ortak başarı"
+      },
+      "scale": {
+        "title": "$2 Milyona Kadar Ölçeklendirin",
+        "subtitle": "Tutarlı performansla hesabınızı büyütün"
+      },
+      "cta": {
+        "title": "Yolculuğunuza Bugün Başlayın",
+        "subtitle": "Dünya genelinde binlerce fonlanmış yatırımcıya katılın"
+      }
+    },
+    "labels": {
+      "yourSkills": "Becerileriniz",
+      "ourCapital": "Sermayemiz",
+      "success": "Başarı",
+      "firstStep": "İlk Adım",
+      "evaluation": "Değerlendirme",
+      "profitTarget": "{{value}} Hedef",
+      "maxDrawdown": "{{value}} Maks. DD",
+      "getFunded": "Fonlanın",
+      "yourShare": "Sizin Payınız",
+      "fundedTraders": "Fonlanmış Yatırımcı",
+      "capitalDeployed": "Dağıtılan Sermaye",
+      "paidOut": "Ödenen"
+    }
   }
 }
