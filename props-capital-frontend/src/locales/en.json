@@ -8,27 +8,42 @@
   },
   "home": {
     "hero": {
-      "badge": "Trusted by 15,000+ traders worldwide",
-      "title": "Trade With ",
-      "titleHighlight": "Our Capital",
-      "subtitle": "Prove your skills, get funded up to â¬200,000, and keep up to 90% of your profits. No risk to your own capital.",
-      "cta": "Start Your Challenge",
-      "howItWorks": "How It Works",
-      "verified": "Verified Company",
-      "secure": "Secure Payments",
-      "support": "24/7 Support",
-      "profitToday": "Profit Today",
-      "winRate": "Win Rate"
+      "trustpilotRating": "4.8 on Trustpilot",
+      "trustpilotCount": "(18,500+ traders)",
+      "promo": "Limited Time: 70% OFF All Challenges",
+      "title": "Trade Globally,",
+      "titleHighlight": "Earn Anywhere",
+      "subtitle": "Join 18,500+ traders worldwide who are already trading with Prop Capitals funding. Get funded up to {{amount}} and keep up to 90% of your profits.",
+      "getFunded": "Get Funded Now",
+      "watchDemo": "Watch Demo",
+      "traders": "traders",
+      "countries": "Countries",
+      "maxFunding": "Max Funding",
+      "liveTrading": "Live Trading Active",
+      "stats": {
+        "activeTraders": "Active Traders",
+        "totalPaidOut": "Total Paid Out",
+        "avgPayout": "Avg Payout"
+      }
     },
     "stats": {
       "fundedCapital": "Funded Capital",
       "activeTraders": "Active Traders",
       "paidToTraders": "Paid to Traders",
-      "trustScore": "Trust Score"
+      "trustScore": "Trust Score",
+      "totalPaidOut": "Total Paid Out",
+      "avgPayout": "Avg. Payout",
+      "payoutSpeed": "Payout Speed",
+      "trustpilot": "Trustpilot",
+      "successRate": "Success Rate",
+      "ctaTitle": "Ready to Get Funded?",
+      "ctaSubtitle": "Join thousands of successful traders who trust Prop Capitals. Get funded today and start your journey to financial freedom.",
+      "startTrading": "Start Trading NOW",
+      "viewAllPlans": "View All Plans"
     },
     "features": {
       "title": "Why Choose Us",
-      "subtitle": "Built for Serious Traders",
+      "subtitle": "No restrictions, no limitations. Use any strategy that works for you with complete trading freedom.",
       "description": "We've built the most trader-friendly prop firm with transparent rules, generous conditions, and real support.",
       "clearObjectives": {
         "title": "Clear Trading Objectives",
@@ -54,7 +69,39 @@
       "noTimeLimits": {
         "title": "No Time Limits",
         "description": "Take your time to reach your targets. No maximum trading period or rushing required."
-      }
+      },
+      "eyebrow": "Trading Freedom",
+      "headingLead": "Trade",
+      "headingHighlight": "Your Way",
+      "items": [
+        {
+          "title": "Expert Advisors",
+          "description": "Use any automated trading bot or EA"
+        },
+        {
+          "title": "News Trading",
+          "description": "Trade during high-impact economic events"
+        },
+        {
+          "title": "Weekend Holding",
+          "description": "Keep your positions open over weekends"
+        },
+        {
+          "title": "No Time Limit",
+          "description": "Complete challenges at your own pace"
+        },
+        {
+          "title": "Scalping Allowed",
+          "description": "No minimum holding time restrictions"
+        },
+        {
+          "title": "Copy Trading",
+          "description": "Use signal services and copy trading"
+        }
+      ],
+      "ctaTitle": "Ready to Trade Without Limits?",
+      "ctaSubtitle": "Join thousands of traders who enjoy complete freedom with Prop Capitals. No restrictions on how you trade.",
+      "ctaButton": "Get Started Now"
     },
     "howItWorks": {
       "label": "Getting Started",
@@ -87,9 +134,13 @@
     },
     "testimonials": {
       "label": "Testimonials",
-      "title": "Traders Love Us",
+      "title": "Hear From Our",
       "subtitle": "Join thousands of successful traders who have earned with Prop Capitals.",
-      "totalEarned": "Total Earned"
+      "totalEarned": "Total Earned",
+      "eyebrow": "Testimonials",
+      "titleHighlight": "Traders",
+      "fundedTrader": "Funded Trader",
+      "payout": "Payout"
     },
     "cta": {
       "title": "Ready to Start Your",
@@ -118,6 +169,183 @@
     },
     "partners": {
       "title": "Trusted by traders using:"
+    },
+    "challengesSection": {
+      "eyebrow": "Funding Programs",
+      "title": "Choose Your",
+      "titleHighlight": "Path",
+      "subtitle": "Select the funding program that matches your trading style. All programs include 100% fee refund.",
+      "errorState": "Our funding programs are temporarily unavailable. Please try again shortly.",
+      "emptyState": "No funding programs are available right now. Please check back soon.",
+      "viewAllChallenges": "View all challenges",
+      "customSize": "Custom {{symbol}}",
+      "discountBadge": "70% OFF",
+      "notAtThisSize": "Not at this size",
+      "pickAnotherSize": "Pick another account size",
+      "stats": {
+        "profitTarget": "Profit Target",
+        "dailyDrawdown": "Daily Drawdown",
+        "maxDrawdown": "Max Drawdown",
+        "leverage": "Leverage",
+        "profitSplit": "Profit Split"
+      },
+      "features": [
+        "No time limit",
+        "All strategies allowed",
+        "100% fee refund",
+        "Free education included"
+      ],
+      "getStarted": "Get Started"
+    },
+    "comparison": {
+      "eyebrow": "Why Choose Us",
+      "titleStart": "Prop Capitals vs.",
+      "titleOther": "\"Other\"",
+      "titleEnd": "Firms",
+      "subtitle": "See why thousands of traders are switching to Prop Capitals.",
+      "others": "Others",
+      "feature": "Feature",
+      "otherPropFirms": "Other Prop Firms"
+    },
+    "education": {
+      "badge": "Free Education",
+      "title": "Free Trading",
+      "titleHighlight": "Blueprint",
+      "subtitle": "When you purchase any challenge, you get instant access to our comprehensive trading course. Learn from professional traders and master the markets with proven strategies.",
+      "watchPreview": "Watch Preview",
+      "featureList": [
+        "50+ video lessons",
+        "Live trading sessions",
+        "Private Discord community",
+        "Weekly market analysis"
+      ],
+      "cards": [
+        {
+          "title": "Your Trading Setup Advantage",
+          "item1": "Learn trading secrets",
+          "item2": "Optimize your workspace",
+          "item3": "Create consistency in every trade"
+        },
+        {
+          "title": "Mapping High Timeframe Zones",
+          "item1": "Draw supply and demand zones",
+          "item2": "Identify optimal entries along zones",
+          "item3": "Use HTF zones to guide LTF trades"
+        },
+        {
+          "title": "Essential Trading Resources",
+          "item1": "Top news sources on social media",
+          "item2": "How to evaluate outside resources",
+          "item3": "Critical risk management tools"
+        },
+        {
+          "title": "Fibonacci Entries and Exits",
+          "item1": "Optimal ratios for entries and exits",
+          "item2": "Set precise targets with extensions",
+          "item3": "Catch pullbacks with confidence"
+        }
+      ]
+    },
+    "faqSection": {
+      "eyebrow": "Support",
+      "titlePrefix": "Frequently Asked",
+      "titleHighlight": "Questions",
+      "subtitle": "Everything you need to know about Prop Capitals funding programs.",
+      "stillHaveQuestions": "Still have questions?",
+      "contactSupport": "Contact our 24/7 support team"
+    },
+    "payoutsSection": {
+      "logoAlt": "Logo",
+      "logoDarkAlt": "Logo Dark",
+      "fundedTrading": "Funded Trading",
+      "checkNo": "Check No.",
+      "date": "DATE",
+      "payToTheOrderOf": "PAY TO THE ORDER OF",
+      "amountUsd": "AMOUNT (USD)",
+      "memo": "MEMO",
+      "memoValue": "Trading Profit Payout",
+      "authorized": "Authorized",
+      "verified": "VERIFIED",
+      "badge": "Real Trader Payouts",
+      "headingBefore": "Over",
+      "headingAfter": "Paid Out",
+      "subtitle": "Every check represents a real trader who achieved their goals with Prop Capitals."
+    },
+    "platforms": {
+      "eyebrow": "Trading Platforms",
+      "titlePrefix": "Trade on",
+      "titleHighlight": "Your Terms",
+      "subtitle": "Choose from industry-leading platforms with advanced charting, automated trading, and mobile access.",
+      "newBadge": "NEW",
+      "mt5": {
+        "description": "Industry-standard platform with powerful charting and automated trading.",
+        "features": [
+          "Expert Advisors",
+          "Advanced Charts",
+          "Mobile App"
+        ]
+      },
+      "tradeLocker": {
+        "description": "Modern platform with TradingView integration for seamless analysis.",
+        "features": [
+          "TradingView Charts",
+          "Web-Based",
+          "One-Click Trading"
+        ]
+      },
+      "bybit": {
+        "description": "Leading crypto exchange with advanced derivatives and spot trading.",
+        "features": [
+          "Crypto Futures",
+          "Copy Trading",
+          "Unified Account"
+        ]
+      },
+      "pt5": {
+        "description": "Our proprietary platform built for funded traders with exclusive features.",
+        "features": [
+          "Zero Latency",
+          "Built-in Risk Manager",
+          "Exclusive to PC"
+        ]
+      },
+      "highlights": {
+        "webPlatform": {
+          "label": "Web Platform",
+          "value": "Trade from any browser"
+        },
+        "instruments": {
+          "label": "100+ Instruments",
+          "value": "Forex, Crypto, Indices"
+        },
+        "spreads": {
+          "label": "0.0 Pip Spreads",
+          "value": "Institutional pricing"
+        }
+      }
+    },
+    "profitCalculator": {
+      "badge": "Profit Calculator",
+      "titlePrefix": "Calculate Your",
+      "titleHighlight": "Earning Potential",
+      "subtitle": "Based on statistics from our funded traders, the average monthly profit rate is 5.72%.",
+      "unavailable": "The calculator is temporarily unavailable. Please try again shortly.",
+      "accountSize": "Account Size",
+      "step": "Step {{current}}/{{total}}",
+      "monthlyProfitRate": "Monthly Profit Rate",
+      "average": "Avg: 5.72%",
+      "monthlyEarnings": "Monthly Earnings (90% split)",
+      "yearlyPotential": "Yearly Potential",
+      "disclaimer": "*Based on 90% profit split. Actual results may vary based on trading performance."
+    },
+    "trustpilot": {
+      "verified": "Verified",
+      "postedOn": "Posted on Trustpilot",
+      "basedOnReviews": "Based on 2,340+ reviews",
+      "headingBefore": "Trusted by",
+      "headingHighlight": "Thousands",
+      "headingAfter": "of Traders",
+      "subtitle": "Don't just take our word for it. See what real traders are saying about their experience with Prop Capitals."
     }
   },
   "dashboard": {
@@ -449,12 +677,10 @@
     "subtitle": "Get help with your account and trading",
     "newTicket": "New Ticket",
     "createTicket": "Create Support Ticket",
-    "ticketCreated":"ticketCreated",
-                     "ticketCreatedDesc":"ticketCreatedDesc",
-
+    "ticketCreated": "ticketCreated",
+    "ticketCreatedDesc": "ticketCreatedDesc",
     "subject": "Subject",
     "subjectPlaceholder": "Brief description of your issue",
-
     "category": "Category",
     "select": "Select",
     "account": "Account",
@@ -470,7 +696,6 @@
     "messagePlaceholder": "Describe your issue in detail...",
     "submitting": "Submitting...",
     "submitTicket": "Submit Ticket",
-
     "openTickets": "Open Tickets",
     "inProgress": "In Progress",
     "resolved": "Resolved",
@@ -1166,7 +1391,7 @@
     "rules": "Rules",
     "faq": "FAQ",
     "contact": "Contact",
-    "login": "Login",
+    "login": "Log in",
     "getStarted": "Get Started",
     "dashboard": "Dashboard",
     "tradingTerminal": "Trading Terminal",
@@ -1193,7 +1418,16 @@
     "website": "Website",
     "logout": "Logout",
     "user": "User",
-    "adminPanel": "Admin Panel"
+    "adminPanel": "Admin Panel",
+    "links": {
+      "home": "Home",
+      "howItWorks": "How It Works",
+      "challenges": "Challenges",
+      "faqs": "FAQs",
+      "about": "About"
+    },
+    "tagline": "FUNDED TRADING",
+    "getFunded": "Get Funded"
   },
   "status": {
     "active": "Active",
@@ -1405,9 +1639,8 @@
     },
     "riskMonitor": {
       "title": "Risk Monitor",
-      "subtitle": "Real-time monitoring of trading account risk levels",
+      "subtitle": "Real-time account risk monitoring",
       "refresh": "Refresh",
-      "searchPlaceholder": "Search by account number or trader ID...",
       "riskLevels": {
         "critical": "Critical Risk",
         "high": "High Risk",
@@ -1420,6 +1653,7 @@
         "medium": "Medium",
         "low": "Low"
       },
+      "searchPlaceholder": "Search by account number or trader...",
       "table": {
         "account": "Account",
         "balance": "Balance",
@@ -1429,18 +1663,18 @@
         "riskLevel": "Risk Level",
         "actions": "Actions"
       },
+      "confirmations": {
+        "emergencyClose": "Are you sure you want to close all positions for this account?",
+        "lockAccount": "Are you sure you want to lock this account?"
+      },
       "recentViolations": {
         "title": "Recent Violations",
-        "account": "Account",
-        "noViolations": "No recent violations"
+        "noViolations": "No recent violations",
+        "account": "Account"
       },
       "severity": {
         "fatal": "Fatal",
         "warning": "Warning"
-      },
-      "confirmations": {
-        "emergencyClose": "Are you sure you want to pause this account? This will prevent further trading.",
-        "lockAccount": "Are you sure you want to lock this account? This will pause all trading activity."
       }
     },
     "payouts": {
@@ -1747,46 +1981,6 @@
         "payoutApproved": "Payout Approved",
         "payoutApprovedDesc": "Sent when a payout is approved",
         "editTemplate": "Edit Template"
-      }
-    },
-    "riskMonitor": {
-      "title": "Risk Monitor",
-      "subtitle": "Real-time account risk monitoring",
-      "refresh": "Refresh",
-      "riskLevels": {
-        "critical": "Critical Risk",
-        "high": "High Risk",
-        "medium": "Medium Risk",
-        "low": "Low Risk"
-      },
-      "riskBadges": {
-        "critical": "Critical",
-        "high": "High",
-        "medium": "Medium",
-        "low": "Low"
-      },
-      "searchPlaceholder": "Search by account number or trader...",
-      "table": {
-        "account": "Account",
-        "balance": "Balance",
-        "equity": "Equity",
-        "dailyDD": "Daily DD",
-        "maxDD": "Max DD",
-        "riskLevel": "Risk Level",
-        "actions": "Actions"
-      },
-      "confirmations": {
-        "emergencyClose": "Are you sure you want to close all positions for this account?",
-        "lockAccount": "Are you sure you want to lock this account?"
-      },
-      "recentViolations": {
-        "title": "Recent Violations",
-        "noViolations": "No recent violations",
-        "account": "Account"
-      },
-      "severity": {
-        "fatal": "Fatal",
-        "warning": "Warning"
       }
     },
     "brokerServers": {
@@ -2338,6 +2532,50 @@
       "title": "Ready to Get Started?",
       "subtitle": "Join thousands of funded traders and start your journey today.",
       "viewChallenges": "View Challenges"
+    },
+    "hero": {
+      "badge": "How It Works",
+      "titleLead": "Your Path to",
+      "titleHighlight": "Funded Trading",
+      "subtitle": "Prop Capitals provides talented traders with the capital they need. Here's how you can start trading with up to {{amount}}."
+    },
+    "platform": {
+      "liveTrading": "Live Trading",
+      "tradingPlatform": "Trading Platform",
+      "accountBalance": "Account Balance",
+      "quickTrade": "Quick Trade",
+      "lotSize": "Lot Size",
+      "openPositions": "Open Positions"
+    },
+    "steps": {
+      "chooseChallenge": {
+        "title": "Choose Your Challenge",
+        "description": "Select between our 1-Step or 2-Step evaluation. Pick your account size from €5K to €200K."
+      },
+      "passEvaluation": {
+        "title": "Pass the Evaluation",
+        "description": "Hit the profit target while respecting drawdown limits. No time pressure - trade at your own pace."
+      },
+      "getFunded": {
+        "title": "Get Funded",
+        "description": "Once you pass, receive your funded account. Start trading with our capital immediately."
+      },
+      "earnWithdraw": {
+        "title": "Earn & Withdraw",
+        "description": "Keep up to 90% of your profits. Request payouts anytime - funds arrive in under 90 minutes."
+      }
+    },
+    "stepsSection": {
+      "titleLead": "4 Simple Steps to",
+      "titleHighlight": "Get Funded",
+      "subtitle": "From registration to your first payout in as little as a few days."
+    },
+    "ctaSection": {
+      "titleLead": "Ready to Start Your",
+      "titleHighlight": "Trading Journey",
+      "titleTail": "?",
+      "subtitle": "Join thousands of traders who have already proven their skills and are now trading with Prop Capitals funding.",
+      "button": "Get Funded Now"
     }
   },
   "challenges": {
@@ -2483,8 +2721,8 @@
         "desc": "Consistent rules throughout your journey"
       },
       "scaleTo2M": {
-        "title": "Scale to â¬2M",
-        "desc": "Grow your trading capital up to â¬2 million"
+        "title": "Scale to €2M",
+        "desc": "Grow your trading capital up to €2 million"
       },
       "automaticUpgrades": {
         "title": "Automatic Upgrades",
@@ -2509,7 +2747,7 @@
     },
     "roadmap": {
       "badge": "Roadmap",
-      "title": "Your Path to â¬2 Million",
+      "title": "Your Path to €2 Million",
       "subtitle": "See exactly how your account grows at each level.",
       "start": "START",
       "max": "MAX",
@@ -2544,10 +2782,11 @@
     "ctaSection": {
       "title": "Ready to Scale Your",
       "tradingCareer": "Trading Career?",
-      "subtitle": "Start with any challenge size and scale your way to â¬2 million in trading capital.",
+      "subtitle": "Start with any challenge size and scale your way to €2 million in trading capital.",
       "getStartedNow": "Get Started Now",
-      "footer": "Starting from just â¬99 • Scale up to â¬2M • Up to 90% profit split"
-    }
+      "footer": "Starting from just €99 • Scale up to €2M • Up to 90% profit split"
+    },
+    "heroImageAlt": "Scaling plan background"
   },
   "payoutsPage": {
     "badge": "Fast & Reliable Payouts",
@@ -2567,9 +2806,9 @@
       "profitSplit": "Profit Split",
       "best": "BEST",
       "tiers": {
-        "tier1": "â¬10K - â¬25K",
-        "tier2": "â¬50K",
-        "tier3": "â¬100K+",
+        "tier1": "€10K - €25K",
+        "tier2": "€50K",
+        "tier3": "€100K+",
         "tier4": "Scaled"
       }
     },
@@ -2614,12 +2853,16 @@
     "recentPayouts": {
       "badge": "Live Updates",
       "title": "Recent Payouts",
-      "subtitle": "Real payouts to real traders. Join our community of successful funded traders."
+      "subtitle": "Real payouts to real traders. Join our community of successful funded traders.",
+      "time": {
+        "hoursAgo": "{{count}} hours ago",
+        "dayAgo": "{{count}} day ago"
+      }
     },
     "payoutTerms": {
       "title": "Payout Terms",
       "biWeekly": "Bi-weekly payout schedule (every 14 days)",
-      "minimumAmount": "Minimum payout amount is â¬50",
+      "minimumAmount": "Minimum payout amount is €50",
       "noMaximum": "No maximum payout limit",
       "noFees": "No payout fees on any method",
       "firstPayout": "First payout after 14 days of funded trading",
@@ -2678,14 +2921,15 @@
         "title": "Daily Drawdown (5%)",
         "description": "The maximum you can lose in a single day, calculated from the day's starting balance. Resets at midnight server time.",
         "example": "Example:",
-        "exampleText": "With a â¬50,000 balance, your daily drawdown limit is â¬2,500."
+        "exampleText": "With a €50,000 balance, your daily drawdown limit is €2,500."
       },
       "maximumDrawdown": {
         "title": "Maximum Drawdown (10%)",
         "description": "The maximum total drawdown from your highest achieved balance. This is a trailing drawdown that follows your highest equity.",
         "example": "Example:",
-        "exampleText": "If your highest balance was â¬55,000, your max drawdown level is â¬49,500."
-      }
+        "exampleText": "If your highest balance was €55,000, your max drawdown level is €49,500."
+      },
+      "imageAlt": "Drawdown Chart"
     },
     "allowedActions": {
       "title": "Allowed Actions",
@@ -2753,7 +2997,7 @@
     },
     "scalingPlan": {
       "title": "Scaling Plan",
-      "subtitle": "Grow your account up to â¬2,000,000",
+      "subtitle": "Grow your account up to €2,000,000",
       "accountSize": "Account Size",
       "profitSplit": "Profit Split",
       "howItWorks": {
@@ -2774,7 +3018,7 @@
       },
       "minimum": {
         "label": "Minimum Payout",
-        "value": "â¬50"
+        "value": "€50"
       },
       "maximum": {
         "label": "Maximum Payout",
@@ -2786,12 +3030,13 @@
       },
       "fee": {
         "label": "Payout Fee",
-        "value": "â¬0 (Free)"
+        "value": "€0 (Free)"
       },
       "firstPayout": {
         "label": "First Payout",
         "value": "After 14 days of funded trading"
-      }
+      },
+      "imageAlt": "Payouts"
     },
     "cta": {
       "title": "Ready to Start Trading?",
@@ -2801,7 +3046,8 @@
     "important": "Important",
     "phase1": "Phase 1",
     "phase2": "Phase 2",
-    "funded": "Funded"
+    "funded": "Funded",
+    "heroImageAlt": "Trading Rules"
   },
   "terms": {
     "title": "Terms of Service",
@@ -2930,5 +3176,889 @@
       "title": "10. Contact Us",
       "content": "For privacy-related inquiries, please contact our Data Protection Officer at support@prop-capitals.com"
     }
+  },
+  "layout": {},
+  "faqPage": {
+    "eyebrow": "Support",
+    "titleLine1": "Frequently Asked",
+    "titleHighlight": "Questions",
+    "subtitle": "Find answers to common questions about Prop Capitals funding programs, trading rules, and payouts.",
+    "searchPlaceholder": "Search questions...",
+    "searchResultsPrefix": "Found",
+    "searchResultsSuffix": "results for \"{{query}}\"",
+    "categories": {
+      "general": "General",
+      "challenges": "Challenges",
+      "trading": "Trading Rules",
+      "payouts": "Payouts",
+      "platforms": "Platforms"
+    },
+    "questions": {
+      "general": [
+        {
+          "question": "What is Prop Capitals?",
+          "answer": "Prop Capitals is a proprietary trading firm that provides talented traders with funded accounts to trade with. We handle all the risk while you keep up to 90% of the profits you generate."
+        },
+        {
+          "question": "How does the funding work?",
+          "answer": "After you pass our evaluation challenge (1-Step or 2-Step), you receive a funded account with our capital. You trade normally and we split the profits - you keep up to 90%, we keep 10%."
+        },
+        {
+          "question": "Is Prop Capitals legitimate?",
+          "answer": "Yes, Prop Capitals is a legitimate proprietary trading firm with thousands of funded traders worldwide. We have paid out over $15 million to our traders and have a 4.8 rating on Trustpilot."
+        },
+        {
+          "question": "What countries do you accept traders from?",
+          "answer": "We accept traders from most countries worldwide. However, due to regulatory restrictions, we cannot accept traders from certain jurisdictions. Please check our terms of service for the complete list."
+        },
+        {
+          "question": "Do I need trading experience?",
+          "answer": "While we don't require specific credentials, prop trading is suited for traders with a solid understanding of the markets and risk management. We provide free education with every challenge purchase to help you succeed."
+        },
+        {
+          "question": "What is the minimum age requirement?",
+          "answer": "You must be at least 18 years old to participate in our funding programs."
+        },
+        {
+          "question": "Can I have multiple accounts?",
+          "answer": "Yes, you can have multiple funded accounts with us. Many of our successful traders manage several accounts simultaneously to maximize their earning potential."
+        },
+        {
+          "question": "Is there a time limit to pass the challenge?",
+          "answer": "No! Unlike many other prop firms, we have no time limit on our challenges. Take as long as you need to hit your profit targets."
+        }
+      ],
+      "challenges": [
+        {
+          "question": "What's the difference between 1-Step and 2-Step?",
+          "answer": "The 1-Step Challenge has one evaluation phase with a 10% profit target and offers an 85% profit split. The 2-Step Challenge has two phases (8% and 5% profit targets) but offers a higher 90% profit split."
+        },
+        {
+          "question": "What happens if I fail a challenge?",
+          "answer": "If you breach the rules during a challenge, you can retry with a new purchase. We offer discounts of up to 20% on retry accounts. Your trading data is saved for analysis to help you improve."
+        },
+        {
+          "question": "Is the challenge fee refundable?",
+          "answer": "Yes! We refund 100% of your challenge fee with your first payout once you become a funded trader. This effectively makes your evaluation free."
+        },
+        {
+          "question": "Can I upgrade my account size?",
+          "answer": "Yes, once funded, you can participate in our scaling program. Hit profit milestones and your account size can grow up to $5,000,000."
+        },
+        {
+          "question": "What account sizes are available?",
+          "answer": "We offer account sizes ranging from $5,000 to $200,000 for both 1-Step and 2-Step challenges. Choose the size that matches your trading style and risk tolerance."
+        },
+        {
+          "question": "Are there any minimum trading days?",
+          "answer": "No, there are no minimum trading days required. You can complete the challenge as quickly as your trading allows, though we encourage sustainable trading practices."
+        }
+      ],
+      "trading": [
+        {
+          "question": "What trading strategies are allowed?",
+          "answer": "We allow all legitimate trading strategies including scalping, swing trading, day trading, and position trading. Expert Advisors (EAs) and automated trading are also permitted."
+        },
+        {
+          "question": "Can I trade during news events?",
+          "answer": "Yes, news trading is fully allowed on our platform. You can trade during high-impact economic events without restrictions."
+        },
+        {
+          "question": "Can I hold positions overnight?",
+          "answer": "Yes, overnight holding is allowed. You can also hold positions over weekends with no restrictions."
+        },
+        {
+          "question": "What is the daily drawdown limit?",
+          "answer": "The daily drawdown limit is 4% for 1-Step and 5% for 2-Step challenges. This is calculated based on your previous day's closing balance."
+        },
+        {
+          "question": "What is the maximum drawdown?",
+          "answer": "The maximum drawdown is 8% for 1-Step and 10% for 2-Step challenges. This is the maximum your account can decline from its highest point."
+        },
+        {
+          "question": "Can I use copy trading services?",
+          "answer": "No, copy trading is not allowed. Each trader must execute their own trades independently. Sharing account credentials or using third-party copy trading services is strictly prohibited and may result in account termination."
+        },
+        {
+          "question": "What instruments can I trade?",
+          "answer": "You can trade Forex (50+ pairs), Metals (Gold, Silver), Indices (US30, NAS100, SPX500), and Cryptocurrencies (BTC, ETH). Over 100 instruments available."
+        }
+      ],
+      "payouts": [
+        {
+          "question": "How fast are payouts processed?",
+          "answer": "Our average payout processing time is under 90 minutes - one of the fastest in the industry. Most payouts are completed within a few hours of request."
+        },
+        {
+          "question": "What is the minimum payout amount?",
+          "answer": "The minimum payout amount is $100. You can request payouts as often as you like once you meet this threshold."
+        },
+        {
+          "question": "What payout methods are available?",
+          "answer": "We support multiple payout methods including bank wire transfer, cryptocurrency (BTC, ETH, USDT), and popular e-wallets like Wise and Payoneer."
+        },
+        {
+          "question": "Is there a payout schedule?",
+          "answer": "No fixed schedule - you can request payouts anytime once you have profits. Many traders request weekly or bi-weekly payouts."
+        },
+        {
+          "question": "What is the profit split?",
+          "answer": "The profit split is 85% for 1-Step funded traders and 90% for 2-Step funded traders. You keep the majority of every dollar you make."
+        }
+      ],
+      "platforms": [
+        {
+          "question": "What trading platforms do you offer?",
+          "answer": "We offer MetaTrader 5 (MT5), TradeLocker, MatchTrader, and cTrader. You can choose your preferred platform when starting your challenge."
+        },
+        {
+          "question": "Can I use Expert Advisors (EAs)?",
+          "answer": "Yes, EAs and automated trading systems are fully allowed on all our platforms. Use any strategy that works for you."
+        },
+        {
+          "question": "Is there a mobile trading app?",
+          "answer": "Yes, all our platforms have mobile apps available for iOS and Android, allowing you to trade on the go."
+        },
+        {
+          "question": "Can I change platforms after starting?",
+          "answer": "You can choose your platform when starting a new challenge or funded account. Contact support if you need to discuss platform changes for existing accounts."
+        }
+      ]
+    },
+    "contact": {
+      "title": "Still Have Questions?",
+      "subtitle": "Our support team is available 24/7 to help you with any questions or concerns.",
+      "liveChat": "Live Chat",
+      "contactForm": "Contact Form",
+      "emailSupport": "Email Support",
+      "responseTimeLabel": "Average response time:",
+      "responseTimeValue": "Under 60 seconds"
+    }
+  },
+  "contactPage": {
+    "eyebrow": "Contact Us",
+    "titleLead": "Get in",
+    "titleHighlight": "Touch",
+    "subtitle": "Have questions? Our support team is here to help you 24/7. Reach out through any of our channels.",
+    "email": {
+      "title": "Email Us",
+      "desc": "For general inquiries and support"
+    },
+    "liveChat": {
+      "title": "Live Chat",
+      "desc": "Average response time under 60 seconds",
+      "value": "Available 24/7"
+    },
+    "hours": {
+      "title": "Business Hours",
+      "desc": "Support available around the clock",
+      "value": "24 hours / 7 days a week"
+    },
+    "headquarters": {
+      "title": "Headquarters"
+    },
+    "form": {
+      "heading": "Send us a Message",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "John",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Doe",
+      "emailLabel": "Email",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "Select a topic",
+      "subjectGeneral": "General Inquiry",
+      "subjectSupport": "Technical Support",
+      "subjectBilling": "Billing Question",
+      "subjectPartnership": "Partnership",
+      "messageLabel": "Message",
+      "messagePlaceholder": "How can we help you?",
+      "submit": "Send Message"
+    }
+  },
+  "aboutPage": {
+    "hero": {
+      "badge": "About Us",
+      "titleLead": "Empowering Traders",
+      "titleHighlight": "Worldwide",
+      "subtitle": "Prop Capitals was founded with a simple mission: to give talented traders access to the capital they need to succeed. We believe that financial opportunity shouldn't be limited by your starting capital."
+    },
+    "stats": {
+      "labels": [
+        "Active Traders",
+        "Total Paid Out",
+        "Countries",
+        "Avg Payout Time"
+      ]
+    },
+    "mission": {
+      "badge": "Our Mission",
+      "titleLead": "Democratizing Access to",
+      "titleHighlight": "Trading Capital",
+      "paragraph1": "We believe that your trading ability shouldn't be limited by your bank account. Too many talented traders struggle to grow because they lack sufficient capital. Prop Capitals changes that.",
+      "paragraph2": "By providing funding to skilled traders, we create a win-win situation: traders get the capital they need, and we share in their success. It's a partnership built on trust, transparency, and mutual benefit.",
+      "checklist": [
+        "Funded accounts up to $200,000",
+        "Keep up to 90% of your profits",
+        "No risk to your personal capital"
+      ],
+      "tradersBadge": "+18,500 traders",
+      "quote": "\"Our goal is simple: if you can trade, we'll give you the capital to do it at scale.\"",
+      "quoteAuthor": "Alex Thompson",
+      "quoteRole": "CEO & Founder, Prop Capitals"
+    },
+    "values": {
+      "badge": "Our Values",
+      "titleLead": "What We",
+      "titleHighlight": "Stand For",
+      "items": [
+        {
+          "title": "Transparency",
+          "description": "Clear rules, no hidden conditions. What you see is what you get with our straightforward evaluation process."
+        },
+        {
+          "title": "Trader Success",
+          "description": "Your success is our success. We provide the tools, education, and capital to help you reach your trading goals."
+        },
+        {
+          "title": "Excellence",
+          "description": "We continuously improve our platform, services, and trading conditions to provide the best experience."
+        },
+        {
+          "title": "Speed",
+          "description": "From fast support responses to lightning-quick payouts, we value your time and act accordingly."
+        }
+      ]
+    },
+    "timeline": {
+      "badge": "Our Journey",
+      "titleLead": "From Startup to",
+      "titleHighlight": "Industry Leader",
+      "items": [
+        {
+          "title": "Founded",
+          "description": "Prop Capitals was founded with a mission to democratize prop trading."
+        },
+        {
+          "title": "Growth",
+          "description": "Reached 5,000 funded traders and $3M in payouts."
+        },
+        {
+          "title": "Expansion",
+          "description": "Expanded to 120+ countries with 15,000+ traders and $10M+ paid."
+        },
+        {
+          "title": "Today",
+          "description": "Industry leader with 18,500+ traders and $15.2M+ in total payouts."
+        }
+      ]
+    },
+    "team": {
+      "0": {
+        "name": "Alex Thompson",
+        "role": "CEO & Founder"
+      },
+      "1": {
+        "name": "Sarah Chen",
+        "role": "Head of Trading"
+      },
+      "2": {
+        "name": "Michael Roberts",
+        "role": "CTO"
+      },
+      "3": {
+        "name": "Emma Wilson",
+        "role": "Head of Support"
+      },
+      "badge": "Our Team",
+      "titleLead": "Meet the",
+      "titleHighlight": "Leadership"
+    },
+    "trustpilot": {
+      "score": "4.8 out of 5",
+      "reviews": "Based on 2,340+ reviews"
+    },
+    "cta": {
+      "titleLead": "Ready to Join Our",
+      "titleHighlight": "Community",
+      "titleTrail": "?",
+      "subtitle": "Become part of a global community of funded traders. Start your journey with Prop Capitals today.",
+      "button": "Get Started Now"
+    }
+  },
+  "challengesPage": {
+    "hero": {
+      "eyebrow": "Funding Programs",
+      "titlePrefix": "Choose Your",
+      "titleHighlight": "Challenge",
+      "subtitle": "Select the evaluation program that matches your trading style. All programs include free education and 100% fee refund."
+    },
+    "customSize": "Custom {{symbol}}",
+    "discountBadge": "70% OFF - Limited Time",
+    "stats": {
+      "phases": "Phases",
+      "phaseCount": "{{count}} Phase",
+      "profitTarget": "Profit Target",
+      "dailyDrawdown": "Daily Drawdown",
+      "maxDrawdown": "Max Drawdown",
+      "minTradingDays": "Min Trading Days",
+      "profitSplit": "Profit Split"
+    },
+    "cardFeatures": [
+      "No time limit",
+      "All strategies allowed",
+      "100% fee refund",
+      "Free trading course"
+    ],
+    "startChallenge": "Start Challenge",
+    "features": [
+      {
+        "title": "No Time Limit",
+        "description": "Complete the challenge at your own pace"
+      },
+      {
+        "title": "100% Fee Refund",
+        "description": "Get your fee back on first payout"
+      },
+      {
+        "title": "All Strategies",
+        "description": "EAs, scalping, news trading allowed"
+      },
+      {
+        "title": "Fast Payouts",
+        "description": "Under 90 minutes average"
+      }
+    ],
+    "whyChoose": {
+      "prefix": "Why Choose",
+      "suffix": "?"
+    },
+    "compare": {
+      "prefix": "Compare",
+      "highlight": "Challenges",
+      "featureColumn": "Feature",
+      "oneStep": "1-Step",
+      "twoStep": "2-Step"
+    },
+    "comparison": {
+      "phases": "Phases",
+      "profitTarget": "Profit Target",
+      "dailyDrawdown": "Daily Drawdown",
+      "maxDrawdown": "Max Drawdown",
+      "profitSplit": "Profit Split",
+      "minTradingDays": "Min Trading Days",
+      "timeLimit": "Time Limit",
+      "unlimited": "Unlimited"
+    },
+    "cta": {
+      "titlePrefix": "Ready to Get",
+      "titleHighlight": "Funded",
+      "titleSuffix": "?",
+      "subtitle": "Join thousands of successful traders. Start your challenge today and trade with up to {{amount}}.",
+      "button": "Start Trading Now"
+    }
+  },
+  "challengeCard": {
+    "badge": "Custom Pricing",
+    "title": "Build Your Own",
+    "subtitle": "Pick any price between {{min}} and {{max}}. Your account size = price x 100.",
+    "priceLabel": "Challenge Price ({{symbol}})",
+    "previewPrefix": "For",
+    "previewMiddle": "you get a",
+    "previewSuffix": "account.",
+    "invalidPrice": "Enter a price from {{min}} to {{max}}.",
+    "specs": {
+      "phases": "Phases",
+      "phasesValue": "1 Phase",
+      "profitTarget": "Profit Target",
+      "dailyDrawdown": "Daily Drawdown",
+      "maxDrawdown": "Max Drawdown",
+      "minTradingDays": "Min Trading Days",
+      "minTradingDaysValue": "None",
+      "profitSplit": "Profit Split"
+    },
+    "startButton": "Start Custom Challenge"
+  },
+  "careers": {
+    "eyebrow": "Careers",
+    "titleBefore": "Join the",
+    "titleAfter": "Team",
+    "subtitle": "Help us revolutionize the prop trading industry. We're looking for passionate individuals who want to make a difference.",
+    "whyWorkWithUs": "Why Work With Us",
+    "openPositions": "Open Positions",
+    "applyNow": "Apply Now",
+    "stats": [
+      {
+        "value": "50+",
+        "label": "Team Members"
+      },
+      {
+        "value": "15+",
+        "label": "Countries"
+      },
+      {
+        "value": "100%",
+        "label": "Remote Friendly"
+      },
+      {
+        "value": "4.8",
+        "label": "Glassdoor Rating"
+      }
+    ],
+    "benefits": [
+      {
+        "title": "Remote First",
+        "description": "Work from anywhere in the world"
+      },
+      {
+        "title": "Growth",
+        "description": "Fast-track your career progression"
+      },
+      {
+        "title": "Health",
+        "description": "Comprehensive health coverage"
+      },
+      {
+        "title": "Equipment",
+        "description": "Latest tools and technology"
+      }
+    ],
+    "openings": [
+      {
+        "title": "Senior Full-Stack Developer",
+        "department": "Engineering",
+        "location": "Remote",
+        "type": "Full-time"
+      },
+      {
+        "title": "Risk Analyst",
+        "department": "Trading",
+        "location": "Dubai, UAE",
+        "type": "Full-time"
+      },
+      {
+        "title": "Customer Success Manager",
+        "department": "Support",
+        "location": "Remote",
+        "type": "Full-time"
+      },
+      {
+        "title": "Marketing Manager",
+        "department": "Marketing",
+        "location": "Remote",
+        "type": "Full-time"
+      },
+      {
+        "title": "Compliance Officer",
+        "department": "Legal",
+        "location": "Dubai, UAE",
+        "type": "Full-time"
+      }
+    ]
+  },
+  "blog": {
+    "eyebrow": "Blog",
+    "headingPrefix": "Trading",
+    "headingHighlight": "Insights",
+    "subtitle": "Expert analysis, trading tips, and industry news to help you become a better trader.",
+    "readMore": "Read More",
+    "featured": {
+      "title": "How to Pass Your Prop Trading Challenge: A Complete Guide",
+      "excerpt": "Learn the strategies and mindset needed to successfully pass your prop trading evaluation and get funded.",
+      "author": "Trading Team",
+      "date": "Jan 28, 2025",
+      "readTime": "8 min read",
+      "category": "Trading Tips"
+    },
+    "posts": [
+      {
+        "title": "Risk Management: The Key to Long-Term Trading Success",
+        "excerpt": "Discover why proper risk management is more important than any trading strategy.",
+        "author": "Risk Team",
+        "date": "Jan 25, 2025",
+        "readTime": "5 min read",
+        "category": "Education"
+      },
+      {
+        "title": "Understanding Market Structure for Better Entries",
+        "excerpt": "Learn how to read market structure and improve your trade entries.",
+        "author": "Analysis Team",
+        "date": "Jan 22, 2025",
+        "readTime": "6 min read",
+        "category": "Analysis"
+      },
+      {
+        "title": "Top 5 Mistakes New Prop Traders Make",
+        "excerpt": "Avoid these common pitfalls that cause most traders to fail their challenges.",
+        "author": "Trading Team",
+        "date": "Jan 18, 2025",
+        "readTime": "4 min read",
+        "category": "Trading Tips"
+      },
+      {
+        "title": "Prop Capitals vs Traditional Trading: What's the Difference?",
+        "excerpt": "Compare prop trading with retail trading and understand the benefits.",
+        "author": "Content Team",
+        "date": "Jan 15, 2025",
+        "readTime": "7 min read",
+        "category": "Industry"
+      },
+      {
+        "title": "Building a Consistent Trading Routine",
+        "excerpt": "How successful traders structure their day for optimal performance.",
+        "author": "Trading Team",
+        "date": "Jan 12, 2025",
+        "readTime": "5 min read",
+        "category": "Lifestyle"
+      },
+      {
+        "title": "The Psychology of Profitable Trading",
+        "excerpt": "Master your emotions and develop the mindset of a professional trader.",
+        "author": "Psychology Team",
+        "date": "Jan 8, 2025",
+        "readTime": "6 min read",
+        "category": "Psychology"
+      }
+    ]
+  },
+  "affiliate": {
+    "eyebrow": "Affiliate Program",
+    "heroTitle": "Earn Up to",
+    "heroTitleHighlight": "15% Commission",
+    "heroSubtitle": "Join our affiliate program and earn passive income by referring traders to Prop Capitals. No limits on earnings!",
+    "becomeAffiliate": "Become an Affiliate",
+    "benefits": [
+      {
+        "title": "Up to 15% Commission",
+        "description": "Earn on every challenge purchase from your referrals"
+      },
+      {
+        "title": "Lifetime Referrals",
+        "description": "Get commissions on all future purchases from your referrals"
+      },
+      {
+        "title": "Monthly Bonuses",
+        "description": "Top affiliates receive additional performance bonuses"
+      },
+      {
+        "title": "Real-Time Tracking",
+        "description": "Monitor your earnings and referrals in real-time"
+      }
+    ],
+    "commissionTiers": "Commission Tiers",
+    "bestBadge": "BEST",
+    "tiers": [
+      {
+        "name": "Starter",
+        "requirements": "0-10 referrals"
+      },
+      {
+        "name": "Bronze",
+        "requirements": "11-50 referrals"
+      },
+      {
+        "name": "Silver",
+        "requirements": "51-100 referrals"
+      },
+      {
+        "name": "Gold",
+        "requirements": "100+ referrals"
+      }
+    ],
+    "howItWorks": "How It Works",
+    "steps": [
+      {
+        "title": "Sign Up",
+        "description": "Create your free affiliate account in minutes"
+      },
+      {
+        "title": "Get Your Link",
+        "description": "Receive your unique referral link and marketing materials"
+      },
+      {
+        "title": "Promote",
+        "description": "Share with your audience through any channel"
+      },
+      {
+        "title": "Earn",
+        "description": "Get paid monthly for every successful referral"
+      }
+    ],
+    "faqTitle": "Frequently Asked Questions",
+    "faqs": [
+      {
+        "q": "How much can I earn?",
+        "a": "There's no limit! Top affiliates earn $10,000+ per month. You earn commission on every challenge purchase made through your link."
+      },
+      {
+        "q": "When do I get paid?",
+        "a": "Payments are processed on the 1st of each month for the previous month's earnings. Minimum payout is $50."
+      },
+      {
+        "q": "What marketing materials do you provide?",
+        "a": "We provide banners, social media graphics, email templates, and video content you can use to promote."
+      },
+      {
+        "q": "Can I promote on social media?",
+        "a": "Yes! You can promote on any platform - YouTube, Instagram, TikTok, Twitter, blogs, email lists, etc."
+      }
+    ],
+    "ctaTitle": "Ready to Start Earning?",
+    "ctaSubtitle": "Join hundreds of affiliates already earning with Prop Capitals. It takes less than 2 minutes to sign up.",
+    "joinProgram": "Join Affiliate Program",
+    "modalTitle": "Become an Affiliate",
+    "modalSubtitle": "Fill out the form below to join our program",
+    "fullNameLabel": "Full Name *",
+    "fullNamePlaceholder": "John Doe",
+    "emailLabel": "Email Address *",
+    "websiteLabel": "Website/Blog (Optional)",
+    "socialMediaLabel": "Social Media Handle (Optional)",
+    "socialMediaPlaceholder": "@yourhandle",
+    "audienceLabel": "Estimated Audience Size *",
+    "audiencePlaceholder": "Select audience size",
+    "howHeardLabel": "How did you hear about us?",
+    "howHeardPlaceholder": "Select an option",
+    "howHeardSocial": "Social Media",
+    "howHeardSearch": "Search Engine",
+    "howHeardFriend": "Friend/Referral",
+    "howHeardAd": "Advertisement",
+    "howHeardOther": "Other",
+    "submitting": "Submitting...",
+    "submitApplication": "Submit Application",
+    "successTitle": "Application Submitted!",
+    "successMessage": "Thank you for applying! We'll review your application and get back to you within 24-48 hours.",
+    "referralLinkLabel": "Your referral link (demo):",
+    "close": "Close"
+  },
+  "tradingRules": {
+    "eyebrow": "Trading Rules",
+    "headingLead": "Challenge",
+    "headingHighlight": "Rules",
+    "subheading": "Clear, fair, and transparent rules designed to help you succeed. No hidden conditions or surprises.",
+    "tableHeaders": {
+      "rule": "Rule",
+      "oneStep": "1-Step Challenge",
+      "twoStep": "2-Step Challenge"
+    },
+    "criticalBadge": "CRITICAL",
+    "rules": [
+      {
+        "title": "Daily Drawdown Limit",
+        "description": "Your account equity must not fall below the daily drawdown limit at any point during the trading day.",
+        "oneStep": "4%",
+        "twoStep": "5%"
+      },
+      {
+        "title": "Maximum Drawdown",
+        "description": "The total account drawdown from the initial balance must not exceed this limit at any time.",
+        "oneStep": "8%",
+        "twoStep": "10%"
+      },
+      {
+        "title": "Profit Target",
+        "description": "Achieve this profit target to pass the challenge phase and move to the next stage.",
+        "oneStep": "10%",
+        "twoStep": "8% / 5%"
+      },
+      {
+        "title": "Minimum Trading Days",
+        "description": "Trade for at least this many days before you can request a payout or pass the challenge.",
+        "oneStep": "5 days",
+        "twoStep": "5 days"
+      },
+      {
+        "title": "Time Limit",
+        "description": "Complete the challenge within this timeframe. Take your time - there's no rush!",
+        "oneStep": "Unlimited",
+        "twoStep": "Unlimited"
+      }
+    ],
+    "allowedTitle": "What's Allowed",
+    "allowedActions": [
+      "Expert Advisors (EAs) and automated trading bots",
+      "News trading during high-impact events",
+      "Weekend holding of positions",
+      "Scalping with no minimum hold time",
+      "Copy trading and signal services",
+      "Hedging within the same account",
+      "Trading all available instruments"
+    ],
+    "prohibitedTitle": "What's Prohibited",
+    "prohibitedActions": [
+      "Account sharing or third-party trading",
+      "Exploiting platform errors or arbitrage",
+      "Using stolen or fraudulent payment methods",
+      "Coordinated trading with other accounts",
+      "High-frequency trading (HFT) exploitation"
+    ],
+    "noticeTitle": "Important Notice",
+    "noticeBody": "Violation of critical rules (Daily Drawdown or Maximum Drawdown) will result in immediate account termination. Please trade responsibly and always manage your risk. If you have questions about any rules, contact our support team."
+  },
+  "watchDemo": {
+    "hero": {
+      "badge": "Platform Demo",
+      "titleStart": "See Prop Capitals",
+      "titleHighlight": "In Action",
+      "subtitle": "Watch our comprehensive demo video to learn how you can start your funded trading journey with Prop Capitals."
+    },
+    "player": {
+      "unsupported": "Your browser does not support the video tag.",
+      "clickToPlay": "Click to play demo",
+      "label": "Prop Capitals Demo"
+    },
+    "stats": {
+      "averagePayout": "Average Payout",
+      "payoutSpeed": "Payout Speed",
+      "payoutSpeedValue": "<90 min",
+      "profitSplit": "Profit Split",
+      "profitSplitValue": "Up to 90%",
+      "fundedTraders": "Funded Traders"
+    },
+    "videoFeatures": [
+      "See how our evaluation process works",
+      "Watch real traders pass their challenges",
+      "Learn about our payout process",
+      "Understand our trading rules",
+      "Explore the PT5 trading platform",
+      "Get tips from successful funded traders"
+    ],
+    "learn": {
+      "badge": "In This Video",
+      "titleStart": "Everything You Need to",
+      "titleHighlight": "Get Started",
+      "subtitle": "Our comprehensive demo walks you through the entire process from signup to your first payout."
+    },
+    "cta": {
+      "titleStart": "Ready to Start Your",
+      "titleHighlight": "Funded Journey",
+      "titleEnd": "?",
+      "subtitle": "Join thousands of traders who have already transformed their trading careers with Prop Capitals.",
+      "startChallenge": "Start Challenge Now",
+      "learnMore": "Learn More"
+    }
+  },
+  "auth": {
+    "tabSignIn": "Sign In",
+    "tabSignUp": "Sign Up",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "trader@example.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "createPasswordPlaceholder": "Create a strong password",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "signInButton": "Sign In",
+    "signingIn": "Signing in...",
+    "firstNameLabel": "First Name",
+    "firstNamePlaceholder": "John",
+    "lastNameLabel": "Last Name",
+    "lastNamePlaceholder": "Doe",
+    "passwordRequirements": [
+      "8+ characters",
+      "One uppercase",
+      "One number",
+      "One special char"
+    ],
+    "agreePrefix": "I agree to the",
+    "agreeAnd": "and",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "confirmAgeLabel": "I confirm I am over 18 years old",
+    "createAccountButton": "Create Account",
+    "creatingAccount": "Creating account...",
+    "otpSentTo": "OTP sent to",
+    "enterOtp": "Enter OTP",
+    "verifyOtpButton": "Verify OTP",
+    "verifying": "Verifying...",
+    "changeEmail": "Change Email",
+    "resendCode": "Resend Code",
+    "resendIn": "Resend in {{seconds}}s",
+    "backToHome": "Back to Home",
+    "errors": {
+      "passwordsNotMatch": "Passwords do not match",
+      "agreeTerms": "Please agree to the Terms of Service and Privacy Policy",
+      "confirmAge": "Please confirm you are over 18 years old"
+    }
+  },
+  "forgotPassword": {
+    "back": "Back",
+    "backToSignIn": "Back to Sign In",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your.email@example.com",
+    "sendOtp": "Send OTP",
+    "verifyOtp": "Verify OTP",
+    "didntReceive": "Didn't receive the code?",
+    "resendIn": "Resend in {{seconds}}s",
+    "sending": "Sending...",
+    "resendOtp": "Resend OTP",
+    "newPasswordPlaceholder": "New Password",
+    "confirmPasswordPlaceholder": "Confirm Password",
+    "resetPassword": "Reset Password",
+    "imageAlt": "Trading",
+    "step1": {
+      "title": "Forgot Password",
+      "subtitle": "Enter your email to receive OTP"
+    },
+    "step2": {
+      "title": "Verify OTP",
+      "subtitle": "Enter the 6-digit OTP sent to your email"
+    },
+    "step3": {
+      "title": "Reset Password",
+      "subtitle": "Create a new password"
+    },
+    "requirements": {
+      "title": "Password must contain:",
+      "minLength": "At least 8 characters",
+      "uppercase": "One uppercase letter",
+      "lowercase": "One lowercase letter",
+      "number": "One number"
+    },
+    "validation": {
+      "minLength": "Password must be at least 8 characters",
+      "uppercase": "Password must contain at least one uppercase letter",
+      "lowercase": "Password must contain at least one lowercase letter",
+      "number": "Password must contain at least one number"
+    },
+    "errors": {
+      "emailRequired": "Email is required",
+      "invalidEmail": "Please enter a valid email address",
+      "sendOtpFailed": "Failed to send OTP. Please try again.",
+      "invalidOtp": "Please enter a valid 6-digit OTP",
+      "allFieldsRequired": "All fields are required",
+      "passwordsMismatch": "Passwords do not match",
+      "resetFailed": "Failed to reset password. The OTP may have expired."
+    },
+    "success": {
+      "otpSent": "OTP has been sent to your email. Please check your inbox.",
+      "passwordReset": "Password reset successfully! Redirecting to login..."
+    },
+    "sideCard": {
+      "title": "Secure Account Recovery",
+      "subtitle": "Your security is our priority"
+    }
+  },
+  "setPassword": {
+    "toastSuccess": "Password set successfully — welcome!",
+    "toastError": "Could not set password. Please try again.",
+    "missingTokenTitle": "Missing Token",
+    "missingTokenDescription": "This page requires a valid set-password link. Please use the link from your welcome email.",
+    "verifying": "Verifying your link...",
+    "invalidTokenTitle": "Link Invalid or Expired",
+    "invalidTokenDescription": "This set-password link is invalid or has expired.",
+    "contactPrefix": "Please contact",
+    "contactSuffix": "for help.",
+    "errorTooShort": "Password must be at least 8 characters",
+    "errorMismatch": "Passwords do not match",
+    "heading": "Set Your Password",
+    "descriptionPrefix": "Create a password for",
+    "descriptionSuffix": "to access your dashboard.",
+    "newPasswordLabel": "New Password",
+    "newPasswordPlaceholder": "At least 8 characters",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Repeat your password",
+    "submitting": "Setting password...",
+    "submit": "Set Password & Sign In"
   }
 }

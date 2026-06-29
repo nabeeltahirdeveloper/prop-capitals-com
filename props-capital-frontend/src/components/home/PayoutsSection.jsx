@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { CheckCircle2, Wallet } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 
 // Country flag components using SVG
@@ -125,6 +126,7 @@ const FlagIcon = ({ country }) => {
 
 const PayoutCheck = ({ payout }) => {
   const { cur } = useCurrency();
+  const { t } = useTranslation();
   return (
     <div className="flex-shrink-0 w-[320px] mx-3">
       <div className="relative bg-gradient-to-br from-[#fefce8] to-[#fef9c3] rounded-lg overflow-hidden shadow-xl border-2 border-amber-200">
@@ -132,16 +134,16 @@ const PayoutCheck = ({ payout }) => {
         <div className="bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-white rounded-full overflow-hidden flex items-center justify-center">
-              <img src="/assets/images/logo-light.png" alt="Logo" className="block dark:hidden w-full h-full object-contain" />
-              <img src="/assets/images/logo-dark.png" alt="Logo Dark" className="hidden dark:block w-full h-full object-contain" />
+              <img src="/assets/images/logo-light.png" alt={t('home.payoutsSection.logoAlt')} className="block dark:hidden w-full h-full object-contain" />
+              <img src="/assets/images/logo-dark.png" alt={t('home.payoutsSection.logoDarkAlt')} className="hidden dark:block w-full h-full object-contain" />
             </div>
             <div>
               <span className="text-white font-bold text-sm">PROP CAPITALS</span>
-              <p className="text-amber-100 text-[10px]">Funded Trading</p>
+              <p className="text-amber-100 text-[10px]">{t('home.payoutsSection.fundedTrading')}</p>
             </div>
           </div>
           <div className="text-right">
-            <span className="text-amber-100 text-[10px]">Check No.</span>
+            <span className="text-amber-100 text-[10px]">{t('home.payoutsSection.checkNo')}</span>
             <p className="text-white font-mono text-xs">{payout.checkNo}</p>
           </div>
         </div>
@@ -151,14 +153,14 @@ const PayoutCheck = ({ payout }) => {
           {/* Date */}
           <div className="flex justify-end mb-3">
             <div className="text-right">
-              <span className="text-amber-700 text-[10px]">DATE</span>
+              <span className="text-amber-700 text-[10px]">{t('home.payoutsSection.date')}</span>
               <p className="text-amber-900 font-semibold text-xs">{payout.date}</p>
             </div>
           </div>
 
           {/* Pay To */}
           <div className="mb-3">
-            <span className="text-amber-700 text-[10px]">PAY TO THE ORDER OF</span>
+            <span className="text-amber-700 text-[10px]">{t('home.payoutsSection.payToTheOrderOf')}</span>
             <div className="flex items-center gap-2 mt-1">
               <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
                 {payout.name.charAt(0)}
@@ -176,7 +178,7 @@ const PayoutCheck = ({ payout }) => {
           {/* Amount Box */}
           <div className="bg-white rounded-lg p-3 border-2 border-amber-300 mb-3 shadow-inner">
             <div className="flex items-center justify-between">
-              <span className="text-amber-600 text-xs font-medium">AMOUNT (USD)</span>
+              <span className="text-amber-600 text-xs font-medium">{t('home.payoutsSection.amountUsd')}</span>
               <CheckCircle2 className="w-5 h-5 text-emerald-500" />
             </div>
             <div className="text-amber-900 text-2xl font-black mt-1">
@@ -187,12 +189,12 @@ const PayoutCheck = ({ payout }) => {
           {/* Memo & Signature */}
           <div className="flex items-end justify-between">
             <div>
-              <span className="text-amber-700 text-[10px]">MEMO</span>
-              <p className="text-amber-800 text-xs">Trading Profit Payout</p>
+              <span className="text-amber-700 text-[10px]">{t('home.payoutsSection.memo')}</span>
+              <p className="text-amber-800 text-xs">{t('home.payoutsSection.memoValue')}</p>
             </div>
             <div className="text-right">
               <div className="border-t border-amber-400 pt-1 px-4">
-                <span className="text-amber-600 text-[10px] italic">Authorized</span>
+                <span className="text-amber-600 text-[10px] italic">{t('home.payoutsSection.authorized')}</span>
               </div>
             </div>
           </div>
@@ -201,7 +203,7 @@ const PayoutCheck = ({ payout }) => {
         {/* Verified Badge */}
         <div className="absolute top-12 right-3 rotate-12">
           <div className="bg-emerald-500 text-white text-[8px] font-bold px-2 py-1 rounded shadow-lg">
-            VERIFIED ✓
+            {t('home.payoutsSection.verified')} ✓
           </div>
         </div>
       </div>
@@ -212,6 +214,7 @@ const PayoutCheck = ({ payout }) => {
 const PayoutsSection = () => {
   const { isDark } = useTheme();
   const { cur } = useCurrency();
+  const { t } = useTranslation();
   const scrollRef1 = useRef(null);
   const scrollRef2 = useRef(null);
 
@@ -262,13 +265,13 @@ const PayoutsSection = () => {
             isDark ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-emerald-50 border border-emerald-200'
           }`}>
             <Wallet className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
-            <span className={`text-sm font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Real Trader Payouts</span>
+            <span className={`text-sm font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{t('home.payoutsSection.badge')}</span>
           </div>
           <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-black mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Over <span className="text-amber-500">{cur('$15.2M+')}</span> Paid Out
+            {t('home.payoutsSection.headingBefore')} <span className="text-amber-500">{cur('$15.2M+')}</span> {t('home.payoutsSection.headingAfter')}
           </h2>
           <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-            Every check represents a real trader who achieved their goals with Prop Capitals.
+            {t('home.payoutsSection.subtitle')}
           </p>
         </div>
       </div>

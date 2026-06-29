@@ -4,19 +4,21 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 import { stats } from './data/mockData';
 
 const StatsSection = () => {
   const { isDark } = useTheme();
   const { cur } = useCurrency();
+  const { t } = useTranslation();
 
   const statItems = [
-    { icon: Users, label: 'Active Traders', value: stats.tradersCount, color: 'text-blue-500', bg: isDark ? 'bg-blue-500/10' : 'bg-blue-100' },
-    { icon: DollarSign, label: 'Total Paid Out', value: stats.totalPaid, color: 'text-emerald-500', bg: isDark ? 'bg-emerald-500/10' : 'bg-emerald-100' },
-    { icon: TrendingUp, label: 'Avg. Payout', value: stats.avgPayout, color: 'text-amber-500', bg: isDark ? 'bg-amber-500/10' : 'bg-amber-100' },
-    { icon: Clock, label: 'Payout Speed', value: stats.payoutTime, color: 'text-purple-500', bg: isDark ? 'bg-purple-500/10' : 'bg-purple-100' },
-    { icon: Star, label: 'Trustpilot', value: stats.trustpilotRating, color: 'text-amber-500', bg: isDark ? 'bg-amber-500/10' : 'bg-amber-100' },
-    { icon: Award, label: 'Success Rate', value: stats.successRate, color: 'text-emerald-500', bg: isDark ? 'bg-emerald-500/10' : 'bg-emerald-100' }
+    { icon: Users, label: t('home.stats.activeTraders'), value: stats.tradersCount, color: 'text-blue-500', bg: isDark ? 'bg-blue-500/10' : 'bg-blue-100' },
+    { icon: DollarSign, label: t('home.stats.totalPaidOut'), value: stats.totalPaid, color: 'text-emerald-500', bg: isDark ? 'bg-emerald-500/10' : 'bg-emerald-100' },
+    { icon: TrendingUp, label: t('home.stats.avgPayout'), value: stats.avgPayout, color: 'text-amber-500', bg: isDark ? 'bg-amber-500/10' : 'bg-amber-100' },
+    { icon: Clock, label: t('home.stats.payoutSpeed'), value: stats.payoutTime, color: 'text-purple-500', bg: isDark ? 'bg-purple-500/10' : 'bg-purple-100' },
+    { icon: Star, label: t('home.stats.trustpilot'), value: stats.trustpilotRating, color: 'text-amber-500', bg: isDark ? 'bg-amber-500/10' : 'bg-amber-100' },
+    { icon: Award, label: t('home.stats.successRate'), value: stats.successRate, color: 'text-emerald-500', bg: isDark ? 'bg-emerald-500/10' : 'bg-emerald-100' }
   ];
 
   return (
@@ -50,26 +52,26 @@ const StatsSection = () => {
           
           <div className="relative z-10 p-8 lg:p-16 text-center">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0a0d12] mb-4">
-              Ready to Get Funded?
+              {t('home.stats.ctaTitle')}
             </h2>
             <p className="text-[#0a0d12]/80 text-lg max-w-2xl mx-auto mb-8">
-              Join thousands of successful traders who trust Prop Capitals. Get funded today and start your journey to financial freedom.
+              {t('home.stats.ctaSubtitle')}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/challenges">
                 <Button 
                   className="bg-[#0a0d12] hover:bg-[#12161d] text-white rounded-full px-8 py-6 h-auto text-lg font-bold transition-all hover:scale-105 group"
                 >
-                  Start Trading NOW
+                  {t('home.stats.startTrading')}
                   <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
               <Link to="/challenges">
-                <Button 
+                <Button
                   variant="outline"
                   className="bg-transparent border-[#0a0d12]/30 text-[#0a0d12] hover:bg-[#0a0d12]/10 rounded-full px-8 py-6 h-auto text-lg font-semibold"
                 >
-                  View All Plans
+                  {t('home.stats.viewAllPlans')}
                 </Button>
               </Link>
             </div>

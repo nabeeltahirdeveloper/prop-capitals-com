@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Star, ChevronLeft, ChevronRight, ExternalLink, Quote } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 import PartialStarRating from '@/components/PartialStarRating';
 
 const trustpilotReviews = [
@@ -174,6 +175,7 @@ const StarRating = ({ rating }) => (
 
 const ReviewCard = ({ review }) => {
   const { cur } = useCurrency();
+  const { t } = useTranslation();
   return (
   <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 h-full flex flex-col">
     {/* Header */}
@@ -187,7 +189,7 @@ const ReviewCard = ({ review }) => {
             <p className="font-semibold text-gray-900">{review.name}</p>
             {review.verified && (
               <span className="bg-[#00b67a]/10 text-[#00b67a] text-[10px] font-semibold px-2 py-0.5 rounded-full">
-                Verified
+                {t('home.trustpilot.verified')}
               </span>
             )}
           </div>
@@ -213,7 +215,7 @@ const ReviewCard = ({ review }) => {
         />
         <path fill="#005128" d="M22.3 18.2L21.1 15.9L15.5 19.2L22.3 18.2Z" />
       </svg>
-      <span className="text-gray-500 text-xs">Posted on Trustpilot</span>
+      <span className="text-gray-500 text-xs">{t('home.trustpilot.postedOn')}</span>
     </div>
   </div>
   );
@@ -221,6 +223,7 @@ const ReviewCard = ({ review }) => {
 
 const TrustpilotSection = () => {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
   const reviewsPerPage = 3;
   const totalPages = Math.ceil(trustpilotReviews.length / reviewsPerPage);
@@ -278,7 +281,7 @@ const TrustpilotSection = () => {
               <div className="flex flex-col items-start">
                 <PartialStarRating rating={4.8} size={24} />
                 <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                  Based on 2,340+ reviews
+                  {t('home.trustpilot.basedOnReviews')}
                 </span>
               </div>
             </div>
@@ -287,11 +290,12 @@ const TrustpilotSection = () => {
           <h2
             className={`text-3xl sm:text-4xl lg:text-5xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}
           >
-            Trusted by <span className="text-amber-500">Thousands</span> of Traders
+            {t('home.trustpilot.headingBefore')}{' '}
+            <span className="text-amber-500">{t('home.trustpilot.headingHighlight')}</span>{' '}
+            {t('home.trustpilot.headingAfter')}
           </h2>
           <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-            Don't just take our word for it. See what real traders are saying about their experience
-            with Prop Capitals.
+            {t('home.trustpilot.subtitle')}
           </p>
         </div>
 

@@ -62,7 +62,7 @@ export default function ScalingPlan() {
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=1920&h=1080&fit=crop"
-            alt="Scaling background"
+            alt={t('scalingPlan.heroImageAlt')}
             className="w-full h-full object-cover opacity-10"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-950/90 to-slate-950" />

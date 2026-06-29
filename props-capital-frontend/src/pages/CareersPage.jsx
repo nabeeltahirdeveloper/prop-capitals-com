@@ -3,24 +3,25 @@ import { Briefcase, Users, Globe, TrendingUp, Heart, Zap, ArrowRight } from 'luc
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const CareersPage = () => {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
 
-  const benefits = [
-    { icon: Globe, title: "Remote First", description: "Work from anywhere in the world" },
-    { icon: TrendingUp, title: "Growth", description: "Fast-track your career progression" },
-    { icon: Heart, title: "Health", description: "Comprehensive health coverage" },
-    { icon: Zap, title: "Equipment", description: "Latest tools and technology" }
-  ];
+  const benefitIcons = [Globe, TrendingUp, Heart, Zap];
+  const benefitsContent = t('careers.benefits', { returnObjects: true });
+  const benefits = (Array.isArray(benefitsContent) ? benefitsContent : []).map((benefit, i) => ({
+    icon: benefitIcons[i] || Briefcase,
+    title: benefit.title,
+    description: benefit.description,
+  }));
 
-  const openings = [
-    { title: "Senior Full-Stack Developer", department: "Engineering", location: "Remote", type: "Full-time" },
-    { title: "Risk Analyst", department: "Trading", location: "Dubai, UAE", type: "Full-time" },
-    { title: "Customer Success Manager", department: "Support", location: "Remote", type: "Full-time" },
-    { title: "Marketing Manager", department: "Marketing", location: "Remote", type: "Full-time" },
-    { title: "Compliance Officer", department: "Legal", location: "Dubai, UAE", type: "Full-time" }
-  ];
+  const openingsContent = t('careers.openings', { returnObjects: true });
+  const openings = Array.isArray(openingsContent) ? openingsContent : [];
+
+  const statsContent = t('careers.stats', { returnObjects: true });
+  const stats = Array.isArray(statsContent) ? statsContent : [];
 
   return (
     <div className={`min-h-screen pt-20 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
@@ -31,23 +32,18 @@ const CareersPage = () => {
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
-            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">Careers</span>
+            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">{t('careers.eyebrow')}</span>
             <h1 className={`text-3xl sm:text-4xl lg:text-5xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Join the <span className="text-amber-500">Prop Capitals</span> Team
+              {t('careers.titleBefore')} <span className="text-amber-500">Prop Capitals</span> {t('careers.titleAfter')}
             </h1>
             <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-              Help us revolutionize the prop trading industry. We're looking for passionate individuals who want to make a difference.
+              {t('careers.subtitle')}
             </p>
           </div>
 
           {/* Stats */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
-            {[
-              { value: "50+", label: "Team Members" },
-              { value: "15+", label: "Countries" },
-              { value: "100%", label: "Remote Friendly" },
-              { value: "4.8", label: "Glassdoor Rating" }
-            ].map((stat, i) => (
+            {stats.map((stat, i) => (
               <div key={i} className={`rounded-2xl p-6 border text-center ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`}>
                 <div className="text-amber-500 text-3xl font-black mb-1">{stat.value}</div>
                 <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{stat.label}</div>
@@ -57,7 +53,7 @@ const CareersPage = () => {
 
           {/* Benefits */}
           <div className="mb-16">
-            <h2 className={`text-2xl font-black text-center mb-8 ${isDark ? 'text-white' : 'text-slate-900'}`}>Why Work With Us</h2>
+            <h2 className={`text-2xl font-black text-center mb-8 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('careers.whyWorkWithUs')}</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {benefits.map((benefit, i) => (
                 <div key={i} className={`rounded-2xl p-6 border text-center ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`}>
@@ -73,7 +69,7 @@ const CareersPage = () => {
 
           {/* Open Positions */}
           <div>
-            <h2 className={`text-2xl font-black text-center mb-8 ${isDark ? 'text-white' : 'text-slate-900'}`}>Open Positions</h2>
+            <h2 className={`text-2xl font-black text-center mb-8 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('careers.openPositions')}</h2>
             <div className="space-y-4">
               {openings.map((job, i) => (
                 <div key={i} className={`rounded-2xl p-6 border flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-amber-500/30 transition-all ${
@@ -94,7 +90,7 @@ const CareersPage = () => {
                       ? 'border-amber-500/30 text-amber-400 hover:bg-amber-500/10' 
                       : 'border-amber-500/50 text-amber-600 hover:bg-amber-50'
                   }`}>
-                    Apply Now
+                    {t('careers.applyNow')}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </div>

@@ -4,10 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const WatchDemoPage = () => {
   const { isDark } = useTheme();
   const { cur } = useCurrency();
+  const { t } = useTranslation();
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -69,20 +71,13 @@ const WatchDemoPage = () => {
   };
 
   const tradingStats = [
-    { label: "Average Payout", value: "$3,850", icon: DollarSign },
-    { label: "Payout Speed", value: "<90 min", icon: Clock },
-    { label: "Profit Split", value: "Up to 90%", icon: TrendingUp },
-    { label: "Funded Traders", value: "18,500+", icon: Users }
+    { label: t('watchDemo.stats.averagePayout'), value: "$3,850", icon: DollarSign },
+    { label: t('watchDemo.stats.payoutSpeed'), value: t('watchDemo.stats.payoutSpeedValue'), icon: Clock },
+    { label: t('watchDemo.stats.profitSplit'), value: t('watchDemo.stats.profitSplitValue'), icon: TrendingUp },
+    { label: t('watchDemo.stats.fundedTraders'), value: "18,500+", icon: Users }
   ];
 
-  const videoFeatures = [
-    "See how our evaluation process works",
-    "Watch real traders pass their challenges",
-    "Learn about our payout process",
-    "Understand our trading rules",
-    "Explore the PT5 trading platform",
-    "Get tips from successful funded traders"
-  ];
+  const videoFeatures = t('watchDemo.videoFeatures', { returnObjects: true });
 
   return (
     <div className={`min-h-screen pt-20 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
@@ -95,12 +90,12 @@ const WatchDemoPage = () => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-8 sm:mb-12">
-            <span className="text-amber-500 text-xs sm:text-sm font-semibold tracking-wider uppercase mb-4 block">Platform Demo</span>
+            <span className="text-amber-500 text-xs sm:text-sm font-semibold tracking-wider uppercase mb-4 block">{t('watchDemo.hero.badge')}</span>
             <h1 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-4 px-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              See Prop Capitals <span className="bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">In Action</span>
+              {t('watchDemo.hero.titleStart')} <span className="bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">{t('watchDemo.hero.titleHighlight')}</span>
             </h1>
             <p className={`text-sm sm:text-base lg:text-lg max-w-2xl mx-auto px-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-              Watch our comprehensive demo video to learn how you can start your funded trading journey with Prop Capitals.
+              {t('watchDemo.hero.subtitle')}
             </p>
           </div>
 
@@ -126,7 +121,7 @@ const WatchDemoPage = () => {
                 >
                   {/* Demo video - using a sample trading video */}
                   <source src="/assets/videos/demo-video.mp4" type="video/mp4" />
-                  Your browser does not support the video tag.
+                  {t('watchDemo.player.unsupported')}
                 </video>
 
                 {/* Play Button Overlay (when paused) */}
@@ -140,7 +135,7 @@ const WatchDemoPage = () => {
                     </div>
                     <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
                       <span className="text-white text-sm sm:text-base font-medium bg-black/50 px-4 py-2 rounded-full">
-                        Click to play demo
+                        {t('watchDemo.player.clickToPlay')}
                       </span>
                     </div>
                   </div>
@@ -195,7 +190,7 @@ const WatchDemoPage = () => {
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-amber-400 text-xs sm:text-sm font-medium hidden sm:block">Prop Capitals Demo</span>
+                      <span className="text-amber-400 text-xs sm:text-sm font-medium hidden sm:block">{t('watchDemo.player.label')}</span>
                       <button 
                         onClick={handleFullscreen}
                         className="text-white hover:text-amber-400 transition-colors"
@@ -216,12 +211,12 @@ const WatchDemoPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 items-center">
             <div>
-              <span className="text-amber-500 text-xs sm:text-sm font-semibold tracking-wider uppercase mb-3 sm:mb-4 block">In This Video</span>
+              <span className="text-amber-500 text-xs sm:text-sm font-semibold tracking-wider uppercase mb-3 sm:mb-4 block">{t('watchDemo.learn.badge')}</span>
               <h2 className={`text-xl sm:text-2xl lg:text-3xl font-black mb-4 sm:mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                Everything You Need to <span className="text-amber-500">Get Started</span>
+                {t('watchDemo.learn.titleStart')} <span className="text-amber-500">{t('watchDemo.learn.titleHighlight')}</span>
               </h2>
               <p className={`text-sm sm:text-base mb-6 sm:mb-8 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Our comprehensive demo walks you through the entire process from signup to your first payout.
+                {t('watchDemo.learn.subtitle')}
               </p>
               <ul className="space-y-3 sm:space-y-4">
                 {videoFeatures.map((feature, index) => (
@@ -257,15 +252,15 @@ const WatchDemoPage = () => {
       <section className={`py-12 sm:py-16 lg:py-20 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className={`text-xl sm:text-2xl lg:text-3xl font-black mb-3 sm:mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Ready to Start Your <span className="text-amber-500">Funded Journey</span>?
+            {t('watchDemo.cta.titleStart')} <span className="text-amber-500">{t('watchDemo.cta.titleHighlight')}</span>{t('watchDemo.cta.titleEnd')}
           </h2>
           <p className={`text-sm sm:text-base mb-6 sm:mb-8 max-w-xl mx-auto px-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-            Join thousands of traders who have already transformed their trading careers with Prop Capitals.
+            {t('watchDemo.cta.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <Link to="/challenges">
               <Button className="w-full sm:w-auto bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-6 sm:px-10 py-5 sm:py-6 h-auto text-base sm:text-lg font-bold shadow-xl shadow-amber-500/25 group">
-                Start Challenge Now
+                {t('watchDemo.cta.startChallenge')}
                 <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
@@ -275,7 +270,7 @@ const WatchDemoPage = () => {
                   ? 'border-white/20 text-white hover:bg-white/5' 
                   : 'border-slate-300 text-slate-700 hover:bg-slate-100'
               }`}>
-                Learn More
+                {t('watchDemo.cta.learnMore')}
               </Button>
             </Link>
           </div>

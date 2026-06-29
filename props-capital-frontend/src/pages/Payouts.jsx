@@ -63,12 +63,12 @@ export default function Payouts() {
   ];
 
   const recentPayouts = [
-    { trader: 'Michael R.', amount: 12450, country: '🇺🇸', date: '2 hours ago', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face' },
-    { trader: 'Sarah C.', amount: 8320, country: '🇬🇧', date: '5 hours ago', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face' },
-    { trader: 'Ahmed H.', amount: 15680, country: '🇦🇪', date: '8 hours ago', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face' },
-    { trader: 'Sophie M.', amount: 6240, country: '🇩🇪', date: '12 hours ago', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face' },
-    { trader: 'Kenji T.', amount: 21500, country: '🇯🇵', date: '1 day ago', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face' },
-    { trader: 'Rosa L.', amount: 9870, country: '🇪🇸', date: '1 day ago', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face' },
+    { trader: 'Michael R.', amount: 12450, country: '🇺🇸', date: t('payoutsPage.recentPayouts.time.hoursAgo', { count: 2 }), image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face' },
+    { trader: 'Sarah C.', amount: 8320, country: '🇬🇧', date: t('payoutsPage.recentPayouts.time.hoursAgo', { count: 5 }), image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face' },
+    { trader: 'Ahmed H.', amount: 15680, country: '🇦🇪', date: t('payoutsPage.recentPayouts.time.hoursAgo', { count: 8 }), image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face' },
+    { trader: 'Sophie M.', amount: 6240, country: '🇩🇪', date: t('payoutsPage.recentPayouts.time.hoursAgo', { count: 12 }), image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face' },
+    { trader: 'Kenji T.', amount: 21500, country: '🇯🇵', date: t('payoutsPage.recentPayouts.time.dayAgo', { count: 1 }), image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face' },
+    { trader: 'Rosa L.', amount: 9870, country: '🇪🇸', date: t('payoutsPage.recentPayouts.time.dayAgo', { count: 1 }), image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face' },
   ];
 
   const stats = [

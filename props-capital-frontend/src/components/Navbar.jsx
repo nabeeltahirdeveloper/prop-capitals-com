@@ -4,7 +4,9 @@ import { Menu, X, ChevronDown, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 import CurrencySwitcher from '@/components/CurrencySwitcher';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -12,6 +14,7 @@ const Navbar = () => {
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,11 +28,11 @@ const Navbar = () => {
   const isActive = (path) => location.pathname === path;
 
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'How It Works', path: '/howitworks' },
-    { name: 'Challenges', path: '/challenges' },
-    { name: 'FAQs', path: '/faq ' },
-    { name: 'About', path: '/about' },
+    { name: t('nav.links.home'), path: '/' },
+    { name: t('nav.links.howItWorks'), path: '/howitworks' },
+    { name: t('nav.links.challenges'), path: '/challenges' },
+    { name: t('nav.links.faqs'), path: '/faq ' },
+    { name: t('nav.links.about'), path: '/about' },
     // { name: "Scaling", path: "/scalingplan"},
     // { name: "Rules", path: "/rules"},
     // { name: "Contact", path: "/contact"},
@@ -56,7 +59,7 @@ const Navbar = () => {
               <span className={`font-bold text-lg tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 PROP<span className="text-amber-500">CAPITALS</span>
               </span>
-              <span className={`text-[10px] ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>FUNDED TRADING</span>
+              <span className={`text-[10px] ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{t('nav.tagline')}</span>
             </div>
           </Link>
 
@@ -93,6 +96,8 @@ const Navbar = () => {
               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
 
+            <LanguageSwitcher />
+
             <CurrencySwitcher />
 
             <div className={`w-px h-6 ${isDark ? 'bg-white/10' : 'bg-slate-200'} mx-1`}></div>
@@ -106,12 +111,12 @@ const Navbar = () => {
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                     }`}
                 >
-                  Log in
+                  {t('nav.login')}
                 </Button>
               </Link>
             )}
             <Link to={user ? "/dashboard" : "/signup"}>
-              <Button className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-6 h-10 font-bold shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 transition-all">{user ? "Dashboard" : "Get Funded"}</Button>
+              <Button className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-6 h-10 font-bold shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 transition-all">{user ? t('nav.dashboard') : t('nav.getFunded')}</Button>
             </Link>
           </div>
 
@@ -168,6 +173,7 @@ const Navbar = () => {
             ))}
 
             <div className="flex items-center gap-2 px-2 py-3">
+              <LanguageSwitcher />
               <CurrencySwitcher />
             </div>
 
@@ -178,12 +184,12 @@ const Navbar = () => {
                   className={`justify-start px-4 py-3 h-auto w-full ${isDark ? 'text-gray-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
                     }`}
                 >
-                  Log in
+                  {t('nav.login')}
                 </Button>
               </Link>
             )}
             <Link to={user ? "/dashboard" : "/signup"} onClick={() => setIsMobileMenuOpen(false)}>
-              <Button className="bg-gradient-to-r from-amber-400 to-amber-500 text-[#0a0d12] rounded-full px-6 py-3 h-auto font-bold mt-2 w-full">{user ? "Dashboard" : "Get Funded"}</Button>
+              <Button className="bg-gradient-to-r from-amber-400 to-amber-500 text-[#0a0d12] rounded-full px-6 py-3 h-auto font-bold mt-2 w-full">{user ? t('nav.dashboard') : t('nav.getFunded')}</Button>
             </Link>
           </div>
         </div>

@@ -2,88 +2,48 @@ import React from 'react';
 import { Calendar, User, ArrowRight, Clock, Tag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const BlogPage = () => {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
 
   const featuredPost = {
-    title: "How to Pass Your Prop Trading Challenge: A Complete Guide",
-    excerpt: "Learn the strategies and mindset needed to successfully pass your prop trading evaluation and get funded.",
+    title: t('blog.featured.title'),
+    excerpt: t('blog.featured.excerpt'),
     image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop",
-    author: "Trading Team",
-    date: "Jan 28, 2025",
-    readTime: "8 min read",
-    category: "Trading Tips"
+    author: t('blog.featured.author'),
+    date: t('blog.featured.date'),
+    readTime: t('blog.featured.readTime'),
+    category: t('blog.featured.category')
   };
 
-  const posts = [
-    {
-      title: "Risk Management: The Key to Long-Term Trading Success",
-      excerpt: "Discover why proper risk management is more important than any trading strategy.",
-      image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=400&h=250&fit=crop",
-      author: "Risk Team",
-      date: "Jan 25, 2025",
-      readTime: "5 min read",
-      category: "Education"
-    },
-    {
-      title: "Understanding Market Structure for Better Entries",
-      excerpt: "Learn how to read market structure and improve your trade entries.",
-      image: "https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=400&h=250&fit=crop",
-      author: "Analysis Team",
-      date: "Jan 22, 2025",
-      readTime: "6 min read",
-      category: "Analysis"
-    },
-    {
-      title: "Top 5 Mistakes New Prop Traders Make",
-      excerpt: "Avoid these common pitfalls that cause most traders to fail their challenges.",
-      image: "https://images.unsplash.com/photo-1560472355-536de3962603?w=400&h=250&fit=crop",
-      author: "Trading Team",
-      date: "Jan 18, 2025",
-      readTime: "4 min read",
-      category: "Trading Tips"
-    },
-    {
-      title: "Prop Capitals vs Traditional Trading: What's the Difference?",
-      excerpt: "Compare prop trading with retail trading and understand the benefits.",
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop",
-      author: "Content Team",
-      date: "Jan 15, 2025",
-      readTime: "7 min read",
-      category: "Industry"
-    },
-    {
-      title: "Building a Consistent Trading Routine",
-      excerpt: "How successful traders structure their day for optimal performance.",
-      image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&h=250&fit=crop",
-      author: "Trading Team",
-      date: "Jan 12, 2025",
-      readTime: "5 min read",
-      category: "Lifestyle"
-    },
-    {
-      title: "The Psychology of Profitable Trading",
-      excerpt: "Master your emotions and develop the mindset of a professional trader.",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=250&fit=crop",
-      author: "Psychology Team",
-      date: "Jan 8, 2025",
-      readTime: "6 min read",
-      category: "Psychology"
-    }
+  const postImages = [
+    "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=400&h=250&fit=crop",
+    "https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=400&h=250&fit=crop",
+    "https://images.unsplash.com/photo-1560472355-536de3962603?w=400&h=250&fit=crop",
+    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop",
+    "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&h=250&fit=crop",
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=250&fit=crop"
   ];
+
+  const postsContent = t('blog.posts', { returnObjects: true });
+  const posts = (Array.isArray(postsContent) ? postsContent : []).map((post, i) => ({
+    ...post,
+    image: postImages[i]
+  }));
 
   return (
     <div className={`min-h-screen pt-20 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
       <section className="py-12 sm:py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">Blog</span>
+            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">{t('blog.eyebrow')}</span>
             <h1 className={`text-3xl sm:text-4xl lg:text-5xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Trading <span className="text-amber-500">Insights</span>
+              {t('blog.headingPrefix')} <span className="text-amber-500">{t('blog.headingHighlight')}</span>
             </h1>
             <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-              Expert analysis, trading tips, and industry news to help you become a better trader.
+              {t('blog.subtitle')}
             </p>
           </div>
 
@@ -117,7 +77,7 @@ const BlogPage = () => {
                       {featuredPost.date}
                     </div>
                     <span className="text-amber-500 font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
-                      Read More <ArrowRight className="w-4 h-4" />
+                      {t('blog.readMore')} <ArrowRight className="w-4 h-4" />
                     </span>
                   </div>
                 </div>
