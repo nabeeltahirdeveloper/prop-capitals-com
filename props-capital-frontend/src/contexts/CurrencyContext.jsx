@@ -1,4 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { getDefaultsForCountry } from '@/config/localeDefaults';
+import { readGeoCountry } from '@/lib/geoCookie';
+import { pickInitialValue } from '@/lib/localeResolution';
 
 // Display-only EUR -> GBP rate. Change this single constant to retune GBP pricing.
 export const EUR_TO_GBP_RATE = 0.85;
@@ -12,10 +15,20 @@ export const supportedCurrencies = [
 const CurrencyContext = createContext(null);
 
 export const CurrencyProvider = ({ children }) => {
-  const [currency, setCurrency] = useState(() => {
+  const [currency, setCurrencyState] = useState(() => {
+    if (typeof window === 'undefined') return 'EUR';
     const stored = localStorage.getItem('currency');
-    return supportedCurrencies.some((c) => c.code === stored) ? stored : 'EUR';
+    const saved = supportedCurrencies.some((c) => c.code === stored) ? stored : null;
+    const manual = localStorage.getItem('currencyManuallySet') === '1';
+    const geoRaw = getDefaultsForCountry(readGeoCountry())?.currency ?? null;
+    const geoValue = supportedCurrencies.some((c) => c.code === geoRaw) ? geoRaw : null;
+    return pickInitialValue({ saved, manual, geoValue, fallback: 'EUR' });
   });
+
+  const setCurrency = (code, { manual = false } = {}) => {
+    if (manual) localStorage.setItem('currencyManuallySet', '1');
+    setCurrencyState(code);
+  };
 
   useEffect(() => {
     localStorage.setItem('currency', currency);
