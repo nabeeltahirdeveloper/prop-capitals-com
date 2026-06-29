@@ -2,6 +2,7 @@ import express from 'express';
 import compression from 'compression';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import fs from 'node:fs';
 import {
   clientIpFromHeaders,
   lookupCountry,
@@ -12,7 +13,22 @@ const root = path.dirname(fileURLToPath(import.meta.url));
 const distDir = path.join(root, 'dist');
 const indexHtml = path.join(distDir, 'index.html');
 const port = Number(process.env.PORT) || 3006;
-const token = process.env.IPINFO_TOKEN;
+
+// IPINFO_TOKEN normally comes from the pm2 process env. If it isn't set there, fall back to
+// the (gitignored) .env file next to this server, so a fresh `pm2 start` still picks it up.
+// Process env wins — .env only fills the gap. Note: server.mjs is plain Node, so without
+// this it would NOT read .env at all (that file is otherwise Vite build-time VITE_* only).
+const readTokenFromEnvFile = () => {
+  try {
+    const m = fs
+      .readFileSync(path.join(root, '.env'), 'utf8')
+      .match(/^\s*IPINFO_TOKEN\s*=\s*(.*)\s*$/m);
+    return m ? m[1].trim().replace(/^["']|["']$/g, '') : undefined;
+  } catch {
+    return undefined;
+  }
+};
+const token = process.env.IPINFO_TOKEN || readTokenFromEnvFile();
 
 // Small in-memory cache so repeat visitors behind the same NAT IP don't re-hit ipinfo.
 const CACHE_TTL_MS = 6 * 60 * 60 * 1000;
