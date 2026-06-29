@@ -16,7 +16,7 @@ export default function LanguageSwitcher() {
   );
 
   return (
-    <Select value={language} onValueChange={setLanguage}>
+    <Select value={language} onValueChange={(code) => setLanguage(code, { manual: true })}>
       <SelectTrigger
         className={`w-[124px] rounded-full h-10 gap-1.5 ${
           isDark

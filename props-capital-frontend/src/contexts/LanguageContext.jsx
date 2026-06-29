@@ -7,6 +7,9 @@ import ruTranslations from '../locales/ru.json';
 import trTranslations from '../locales/tr.json';
 import krTranslations from '../locales/kr.json';
 import jaTranslations from '../locales/ja.json';
+import { getDefaultsForCountry } from '@/config/localeDefaults';
+import { readGeoCountry } from '@/lib/geoCookie';
+import { pickInitialValue } from '@/lib/localeResolution';
 
 // Helper function for nested value access
 const getNestedValue = (obj, path) => {
@@ -77,9 +80,18 @@ export const useTranslation = () => {
 };
 
 export const LanguageProvider = ({ children }) => {
-  const [language, setLanguage] = useState(() => {
-    return localStorage.getItem('language') || 'en';
+  const [language, setLanguageState] = useState(() => {
+    if (typeof window === 'undefined') return 'en';
+    const saved = localStorage.getItem('language');
+    const manual = localStorage.getItem('langManuallySet') === '1';
+    const geoValue = getDefaultsForCountry(readGeoCountry())?.language ?? null;
+    return pickInitialValue({ saved, manual, geoValue, fallback: 'en' });
   });
+
+  const setLanguage = (code, { manual = false } = {}) => {
+    if (manual) localStorage.setItem('langManuallySet', '1');
+    setLanguageState(code);
+  };
 
   useEffect(() => {
     localStorage.setItem('language', language);
