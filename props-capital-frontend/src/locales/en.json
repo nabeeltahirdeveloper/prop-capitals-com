@@ -442,7 +442,7 @@
       "hedging": "Hedging",
       "copyTrading": "Copy Trading",
       "leverage": "Leverage",
-      "maxLot": "Max {{lot}}",
+      "maxLot": "{{max}} {{lot}}",
       "lot": "lot",
       "profitSplit": "Profit Split",
       "target": "Target",
@@ -1319,7 +1319,14 @@
       "ask": "ASK",
       "spread": "Spread",
       "limit": "Limit",
-      "closeModal": "Close modal"
+      "closeModal": "Close modal",
+      "available": "Available",
+      "noAvailableBalance": "No Available Balance",
+      "selectSymbol": "Select a symbol",
+      "insufficientMargin": "Insufficient Margin",
+      "tradingDisabled": "Trading Disabled",
+      "lots": "LOTS",
+      "crypto": "CRYPTO"
     },
     "chart": {
       "lastUpdate": "Last updated",
@@ -1346,7 +1353,9 @@
       "ask": "Ask",
       "chg": "Chg%",
       "updated": "Updated",
-      "retry": "Retry"
+      "retry": "Retry",
+      "noResults": "No results found",
+      "toggleFavorite": "Toggle favorite"
     },
     "positions": {
       "title": "Open Positions",
@@ -1359,7 +1368,8 @@
       "closeAt": "Close @",
       "pips": "pips",
       "buy": "BUY",
-      "sell": "SELL"
+      "sell": "SELL",
+      "autoClosed": "Auto-closed"
     },
     "history": {
       "filterBySymbol": "Filter by symbol...",
@@ -5123,5 +5133,198 @@
     "tradeLockerComingSoonBody": "We are currently working on integrating TradeLocker. Please choose another trading platform.",
     "selectMt5Instead": "Select MetaTrader 5 instead",
     "continueToPayment": "Continue to Payment"
+  },
+  "accountSummaryCard": {
+    "balance": "Balance",
+    "equity": "Equity",
+    "profit": "Profit",
+    "tradingDays": "Trading Days",
+    "profitTarget": "Profit Target",
+    "dailyDrawdown": "Daily Drawdown",
+    "overallDrawdown": "Overall Drawdown"
+  },
+  "balanceStats": {
+    "available": "Available",
+    "equity": "Equity",
+    "floatingPL": "Floating P/L",
+    "profitPercent": "Profit %"
+  },
+  "challengeActiveBanner": {
+    "title": "Challenge Active",
+    "workingTowards": "Working towards {{phase}} completion",
+    "defaultPhase": "Phase 1"
+  },
+  "complianceMetrics": {
+    "profitTarget": "Profit Target",
+    "dailyLossLimit": "Daily Loss Limit",
+    "overallDrawdown": "Overall Drawdown",
+    "status": {
+      "passed": "PASSED",
+      "warning": "WARNING",
+      "violated": "VIOLATED",
+      "safe": "SAFE",
+      "inProgress": "IN PROGRESS"
+    }
+  },
+  "terminalSidebar": {
+    "tools": {
+      "menu": {
+        "name": "Menu",
+        "description": "Opens/closes navigation menu"
+      },
+      "crosshair": {
+        "name": "Crosshair",
+        "description": "Precise cursor positioning for measurement on chart"
+      },
+      "trendLine": {
+        "name": "Trend Line",
+        "description": "Draw trend line (drag from first point to second point)"
+      },
+      "parallelLines": {
+        "name": "Parallel Lines",
+        "description": "Draw two parallel trend lines (draw first line, then second)"
+      },
+      "fibonacci": {
+        "name": "Fibonacci",
+        "description": "Draw Fibonacci retracement levels"
+      },
+      "rectangle": {
+        "name": "Rectangle",
+        "description": "Draw support/resistance zone (drag from corner to corner)"
+      },
+      "priceLevel": {
+        "name": "Price Level",
+        "description": "Add horizontal price line (click on chart)"
+      },
+      "text": {
+        "name": "Text",
+        "description": "Add text label on chart (coming soon)"
+      },
+      "eye": {
+        "name": "Eye",
+        "description": "Show or hide all drawing objects on chart"
+      },
+      "lock": {
+        "name": "Lock",
+        "description": "Lock chart (disable pan and zoom)"
+      },
+      "delete": {
+        "name": "Delete",
+        "description": "Remove last drawn object from chart"
+      },
+      "grid": {
+        "name": "Grid",
+        "description": "Toggle grid display on/off for chart alignment"
+      },
+      "history": {
+        "name": "History",
+        "description": "Undo/redo actions and view action history"
+      },
+      "layout": {
+        "name": "Layout",
+        "description": "Manage chart layouts and panel arrangements"
+      }
+    },
+    "menu": {
+      "accounts": "Trading accounts",
+      "chart": "Chart settings",
+      "oneClickTrading": "One Click Trading",
+      "darkTheme": "Dark Theme",
+      "lightTheme": "Light Theme",
+      "colorTemplates": "Color Templates",
+      "language": "Language",
+      "shortcuts": "Shortcuts",
+      "contactUs": "Contact us",
+      "aboutProgram": "About program"
+    },
+    "submenu": {
+      "connectToAccount": "Connect to account",
+      "openDemoAccount": "Open Demo account",
+      "gridLines": "Grid",
+      "tradeOrders": "Trade Orders",
+      "tradePosition": "Trade Position",
+      "tradeHistory": "Trade History",
+      "slTpLevels": "SL/TP Levels",
+      "askPrice": "Ask Price",
+      "chartControls": "Chart Controls",
+      "tradeNotification": "Trade Notification",
+      "crosshairCursor": "Crosshair cursor",
+      "showOhlc": "Show OHLC",
+      "greenAndRed": "Green & Red",
+      "blueAndRed": "Blue & Red",
+      "blackAndWhite": "Black & White",
+      "neutral": "Neutral"
+    },
+    "languages": {
+      "english": "English",
+      "arabic": "Arabic",
+      "bulgarian": "Bulgarian",
+      "chineseSimplified": "Chinese Simplified",
+      "chineseTraditional": "Chinese Traditional",
+      "czech": "Czech",
+      "dutch": "Dutch",
+      "urdu": "Urdu"
+    },
+    "account": {
+      "demo": "Demo"
+    }
+  },
+  "phaseProgressionCards": {
+    "title": "Phase Progression",
+    "evaluation": "Evaluation",
+    "funded": "Funded",
+    "phase1": "Phase 1",
+    "phase2": "Phase 2",
+    "passEvaluationPhase": "Pass evaluation phase",
+    "receiveFundingAndTrade": "Receive funding & trade",
+    "completeFirstPhase": "Complete first phase",
+    "completeSecondPhase": "Complete second phase",
+    "profit": "Profit:",
+    "days": "Days:",
+    "completed": "Completed",
+    "locked": "Locked"
+  },
+  "terminalTopbar": {
+    "chartTypes": {
+      "bars": "Bars",
+      "candles": "Candles",
+      "line": "Line",
+      "area": "Area",
+      "volume": "Volume",
+      "volumeTicks": "Volume Ticks"
+    },
+    "newOrder": "New Order",
+    "showBuySellOnChart": "Show Buy/Sell on Chart",
+    "hideBuySellOnChart": "Hide Buy/Sell on Chart",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "openMarketWatch": "Open Market Watch",
+    "closeMarketWatch": "Close Market Watch",
+    "downloadChartPng": "Download chart as PNG",
+    "fullScreen": "Full screen ({{key}})"
+  },
+  "tradingChart": {
+    "chartNotReady": "Chart not ready",
+    "chartSavedAsPng": "Chart saved as PNG",
+    "screenshotFailed": "Screenshot failed. Try again."
+  },
+  "tradingStyleRules": {
+    "title": "Trading Style Rules",
+    "newsTrading": "News Trading",
+    "weekendHolding": "Weekend Holding",
+    "expertAdvisors": "Expert Advisors",
+    "hedging": "Hedging",
+    "copyTrading": "Copy Trading",
+    "allowed": "Allowed",
+    "notAllowed": "Not Allowed"
+  },
+  "violationPopup": {
+    "challengeFailed": "Challenge Failed",
+    "warning": "Warning",
+    "violationMessage": "A rule violation has been detected on your account.",
+    "warningMessage": "You are approaching a rule limit.",
+    "details": "Details",
+    "iUnderstand": "I Understand",
+    "continueTrading": "Continue Trading"
   }
 }

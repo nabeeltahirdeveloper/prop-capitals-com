@@ -3,7 +3,8 @@
     "loading": "Yükleniyor...",
     "url": "URL",
     "dismiss": "Kapat",
-    "allPlatforms": "Tüm platformlar"
+    "allPlatforms": "Tüm platformlar",
+    "remaining": "kalan"
   },
   "home": {
     "hero": {
@@ -432,7 +433,7 @@
       "dailyLossLimit": "Günlük zarar limiti",
       "overallDrawdown": "Toplam drawdown",
       "minTradingDays": "Minimum işlem günleri",
-      "daysRemaining": "Kalan günler",
+      "daysRemaining": "Maksimum gün",
       "tradingStyleRules": "İşlem stili kuralları",
       "newsTrading": "Haber işlemleri",
       "weekendHolding": "Hafta sonu taşıma",
@@ -453,7 +454,8 @@
         "danger": "Tehlike",
         "warning": "Uyarı",
         "safe": "Güvenli"
-      }
+      },
+      "days": "gün"
     }
   },
   "myAccounts": {
@@ -1313,7 +1315,14 @@
       "ask": "Ask",
       "spread": "Spread",
       "limit": "Limit",
-      "closeModal": "Pencereyi kapat"
+      "closeModal": "Pencereyi kapat",
+      "available": "Kullanılabilir",
+      "noAvailableBalance": "Kullanılabilir bakiye yok",
+      "selectSymbol": "Bir sembol seçin",
+      "insufficientMargin": "Yetersiz marjin",
+      "tradingDisabled": "İşlem devre dışı",
+      "lots": "LOT",
+      "crypto": "KRİPTO"
     },
     "chart": {
       "lastUpdate": "Son güncelleme",
@@ -1339,7 +1348,9 @@
       "ask": "Ask",
       "chg": "Chg%",
       "updated": "Güncellendi",
-      "retry": "Tekrar dene"
+      "retry": "Tekrar dene",
+      "noResults": "Sonuç bulunamadı",
+      "toggleFavorite": "Favorilere ekle/çıkar"
     },
     "positions": {
       "title": "Açık pozisyonlar",
@@ -1352,7 +1363,8 @@
       "closeAt": "Kapanış fiyatı",
       "pips": "pips",
       "buy": "Al",
-      "sell": "Sat"
+      "sell": "Sat",
+      "autoClosed": "Otomatik kapatıldı"
     },
     "history": {
       "filterBySymbol": "Sembole göre filtrele...",
@@ -5087,5 +5099,198 @@
     "tradeLockerComingSoonBody": "TradeLocker entegrasyonu üzerinde çalışıyoruz. Lütfen başka bir trading platformu seçin.",
     "selectMt5Instead": "Bunun yerine MetaTrader 5 seçin",
     "continueToPayment": "Ödemeye Devam Et"
+  },
+  "accountSummaryCard": {
+    "balance": "Bakiye",
+    "equity": "Özkaynak",
+    "profit": "Kâr",
+    "tradingDays": "İşlem Günleri",
+    "profitTarget": "Kâr Hedefi",
+    "dailyDrawdown": "Günlük Düşüş",
+    "overallDrawdown": "Genel Düşüş"
+  },
+  "balanceStats": {
+    "available": "Kullanılabilir",
+    "equity": "Özkaynak",
+    "floatingPL": "Değişken K/Z",
+    "profitPercent": "Kâr %"
+  },
+  "challengeActiveBanner": {
+    "title": "Challenge Aktif",
+    "workingTowards": "{{phase}} tamamlanması için çalışılıyor",
+    "defaultPhase": "Aşama 1"
+  },
+  "complianceMetrics": {
+    "profitTarget": "Kâr Hedefi",
+    "dailyLossLimit": "Günlük Zarar Limiti",
+    "overallDrawdown": "Genel Düşüş",
+    "status": {
+      "passed": "GEÇTİ",
+      "warning": "UYARI",
+      "violated": "İHLAL EDİLDİ",
+      "safe": "GÜVENLİ",
+      "inProgress": "DEVAM EDİYOR"
+    }
+  },
+  "terminalSidebar": {
+    "tools": {
+      "menu": {
+        "name": "Menü",
+        "description": "Gezinme menüsünü açar/kapatır"
+      },
+      "crosshair": {
+        "name": "Artı İmleç",
+        "description": "Grafikte ölçüm için hassas imleç konumlandırması"
+      },
+      "trendLine": {
+        "name": "Trend Çizgisi",
+        "description": "Trend çizgisi çizin (ilk noktadan ikinci noktaya sürükleyin)"
+      },
+      "parallelLines": {
+        "name": "Paralel Çizgiler",
+        "description": "İki paralel trend çizgisi çizin (önce ilk çizgiyi, sonra ikinciyi)"
+      },
+      "fibonacci": {
+        "name": "Fibonacci",
+        "description": "Fibonacci düzeltme seviyelerini çizin"
+      },
+      "rectangle": {
+        "name": "Dikdörtgen",
+        "description": "Destek/direnç bölgesi çizin (köşeden köşeye sürükleyin)"
+      },
+      "priceLevel": {
+        "name": "Fiyat Seviyesi",
+        "description": "Yatay fiyat çizgisi ekleyin (grafiğe tıklayın)"
+      },
+      "text": {
+        "name": "Metin",
+        "description": "Grafiğe metin etiketi ekleyin (yakında)"
+      },
+      "eye": {
+        "name": "Göz",
+        "description": "Grafikteki tüm çizim nesnelerini göster veya gizle"
+      },
+      "lock": {
+        "name": "Kilit",
+        "description": "Grafiği kilitle (kaydırma ve yakınlaştırmayı devre dışı bırak)"
+      },
+      "delete": {
+        "name": "Sil",
+        "description": "Grafikten son çizilen nesneyi kaldır"
+      },
+      "grid": {
+        "name": "Izgara",
+        "description": "Grafik hizalaması için ızgara görünümünü aç/kapat"
+      },
+      "history": {
+        "name": "Geçmiş",
+        "description": "İşlemleri geri al/yinele ve işlem geçmişini görüntüle"
+      },
+      "layout": {
+        "name": "Düzen",
+        "description": "Grafik düzenlerini ve panel yerleşimlerini yönet"
+      }
+    },
+    "menu": {
+      "accounts": "İşlem hesapları",
+      "chart": "Grafik ayarları",
+      "oneClickTrading": "Tek Tıkla İşlem",
+      "darkTheme": "Koyu Tema",
+      "lightTheme": "Açık Tema",
+      "colorTemplates": "Renk Şablonları",
+      "language": "Dil",
+      "shortcuts": "Kısayollar",
+      "contactUs": "Bize ulaşın",
+      "aboutProgram": "Program hakkında"
+    },
+    "submenu": {
+      "connectToAccount": "Hesaba bağlan",
+      "openDemoAccount": "Demo hesabı aç",
+      "gridLines": "Izgara",
+      "tradeOrders": "İşlem Emirleri",
+      "tradePosition": "İşlem Pozisyonu",
+      "tradeHistory": "İşlem Geçmişi",
+      "slTpLevels": "SL/TP Seviyeleri",
+      "askPrice": "Satış Fiyatı",
+      "chartControls": "Grafik Kontrolleri",
+      "tradeNotification": "İşlem Bildirimi",
+      "crosshairCursor": "Artı imleç",
+      "showOhlc": "OHLC Göster",
+      "greenAndRed": "Yeşil ve Kırmızı",
+      "blueAndRed": "Mavi ve Kırmızı",
+      "blackAndWhite": "Siyah ve Beyaz",
+      "neutral": "Nötr"
+    },
+    "languages": {
+      "english": "İngilizce",
+      "arabic": "Arapça",
+      "bulgarian": "Bulgarca",
+      "chineseSimplified": "Çince (Basitleştirilmiş)",
+      "chineseTraditional": "Çince (Geleneksel)",
+      "czech": "Çekçe",
+      "dutch": "Felemenkçe",
+      "urdu": "Urduca"
+    },
+    "account": {
+      "demo": "Demo"
+    }
+  },
+  "phaseProgressionCards": {
+    "title": "Aşama İlerlemesi",
+    "evaluation": "Değerlendirme",
+    "funded": "Fonlanmış",
+    "phase1": "1. Aşama",
+    "phase2": "2. Aşama",
+    "passEvaluationPhase": "Değerlendirme aşamasını geç",
+    "receiveFundingAndTrade": "Fon al ve işlem yap",
+    "completeFirstPhase": "Birinci aşamayı tamamla",
+    "completeSecondPhase": "İkinci aşamayı tamamla",
+    "profit": "Kâr:",
+    "days": "Gün:",
+    "completed": "Tamamlandı",
+    "locked": "Kilitli"
+  },
+  "terminalTopbar": {
+    "chartTypes": {
+      "bars": "Çubuklar",
+      "candles": "Mumlar",
+      "line": "Çizgi",
+      "area": "Alan",
+      "volume": "Hacim",
+      "volumeTicks": "Hacim Tikleri"
+    },
+    "newOrder": "Yeni Emir",
+    "showBuySellOnChart": "Grafikte Al/Sat'ı Göster",
+    "hideBuySellOnChart": "Grafikte Al/Sat'ı Gizle",
+    "zoomIn": "Yakınlaştır",
+    "zoomOut": "Uzaklaştır",
+    "openMarketWatch": "Piyasa İzlemeyi Aç",
+    "closeMarketWatch": "Piyasa İzlemeyi Kapat",
+    "downloadChartPng": "Grafiği PNG olarak indir",
+    "fullScreen": "Tam ekran ({{key}})"
+  },
+  "tradingChart": {
+    "chartNotReady": "Grafik hazır değil",
+    "chartSavedAsPng": "Grafik PNG olarak kaydedildi",
+    "screenshotFailed": "Ekran görüntüsü alınamadı. Tekrar deneyin."
+  },
+  "tradingStyleRules": {
+    "title": "İşlem Stili Kuralları",
+    "newsTrading": "Haber İşlemleri",
+    "weekendHolding": "Hafta Sonu Pozisyon Taşıma",
+    "expertAdvisors": "Uzman Danışmanlar (EA)",
+    "hedging": "Hedge İşlemleri",
+    "copyTrading": "Kopya İşlem",
+    "allowed": "İzin Veriliyor",
+    "notAllowed": "İzin Verilmiyor"
+  },
+  "violationPopup": {
+    "challengeFailed": "Challenge Başarısız",
+    "warning": "Uyarı",
+    "violationMessage": "Hesabınızda bir kural ihlali tespit edildi.",
+    "warningMessage": "Bir kural limitine yaklaşıyorsunuz.",
+    "details": "Ayrıntılar",
+    "iUnderstand": "Anladım",
+    "continueTrading": "İşleme Devam Et"
   }
 }

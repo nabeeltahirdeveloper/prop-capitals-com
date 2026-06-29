@@ -1,4 +1,5 @@
 import { useTrading } from "@/contexts/TradingContext";
+import { useTranslation } from "@/contexts/LanguageContext";
 import React, { useMemo, useRef, useState, useEffect } from "react";
 
 /**
@@ -25,6 +26,8 @@ const LeftSidebar = () => {
         theme,
         setTheme,
     } = useTrading();
+
+    const { t } = useTranslation();
 
     const [menuOpen, setMenuOpen] = useState(false);
     const [openSub, setOpenSub] = useState(null); // string key of submenu
@@ -77,7 +80,8 @@ const LeftSidebar = () => {
                     </div>
                 ),
                 label: "Menu",
-                description: "Opens/closes navigation menu",
+                name: t('terminalSidebar.tools.menu.name'),
+                description: t('terminalSidebar.tools.menu.description'),
             },
             {
                 icon: (
@@ -104,7 +108,8 @@ const LeftSidebar = () => {
                     </div>
                 ),
                 label: "Crosshair",
-                description: "Precise cursor positioning for measurement on chart",
+                name: t('terminalSidebar.tools.crosshair.name'),
+                description: t('terminalSidebar.tools.crosshair.description'),
             },
             {
                 icon: (
@@ -128,7 +133,8 @@ const LeftSidebar = () => {
                     </div>
                 ),
                 label: "Trend Line",
-                description: "Draw trend line (drag from first point to second point)",
+                name: t('terminalSidebar.tools.trendLine.name'),
+                description: t('terminalSidebar.tools.trendLine.description'),
             },
             {
                 icon: (
@@ -151,7 +157,8 @@ const LeftSidebar = () => {
                     </div>
                 ),
                 label: "Parallel Lines",
-                description: "Draw two parallel trend lines (draw first line, then second)",
+                name: t('terminalSidebar.tools.parallelLines.name'),
+                description: t('terminalSidebar.tools.parallelLines.description'),
             },
             {
                 icon: (
@@ -174,7 +181,8 @@ const LeftSidebar = () => {
                     </div>
                 ),
                 label: "Fibonacci",
-                description: "Draw Fibonacci retracement levels",
+                name: t('terminalSidebar.tools.fibonacci.name'),
+                description: t('terminalSidebar.tools.fibonacci.description'),
             },
             // {
             //     icon: (
@@ -223,7 +231,8 @@ const LeftSidebar = () => {
                     </>
                 ),
                 label: 'Rectangle',
-                description: 'Draw support/resistance zone (drag from corner to corner)',
+                name: t('terminalSidebar.tools.rectangle.name'),
+                description: t('terminalSidebar.tools.rectangle.description'),
             },
             {
                 icon: (
@@ -241,7 +250,8 @@ const LeftSidebar = () => {
                     </div>
                 ),
                 label: "Price Level",
-                description: "Add horizontal price line (click on chart)",
+                name: t('terminalSidebar.tools.priceLevel.name'),
+                description: t('terminalSidebar.tools.priceLevel.description'),
             },
             {
                 icon: (
@@ -259,7 +269,8 @@ const LeftSidebar = () => {
                     </div>
                 ),
                 label: "Text",
-                description: "Add text label on chart (coming soon)",
+                name: t('terminalSidebar.tools.text.name'),
+                description: t('terminalSidebar.tools.text.description'),
             },
             // 8. Eye – show/hide all drawings
             {
@@ -285,7 +296,8 @@ const LeftSidebar = () => {
                     </>
                 ),
                 label: 'Eye',
-                description: 'Show or hide all drawing objects on chart',
+                name: t('terminalSidebar.tools.eye.name'),
+                description: t('terminalSidebar.tools.eye.description'),
             },
             // 9. Lock – lock chart (disable pan and zoom)
             {
@@ -311,7 +323,8 @@ const LeftSidebar = () => {
                     </>
                 ),
                 label: 'Lock',
-                description: 'Lock chart (disable pan and zoom)',
+                name: t('terminalSidebar.tools.lock.name'),
+                description: t('terminalSidebar.tools.lock.description'),
             },
             {
                 icon: (
@@ -325,7 +338,8 @@ const LeftSidebar = () => {
                     </svg>
                 ),
                 label: "Delete",
-                description: "Remove last drawn object from chart",
+                name: t('terminalSidebar.tools.delete.name'),
+                description: t('terminalSidebar.tools.delete.description'),
             },
             // bottom trio
             {
@@ -335,7 +349,8 @@ const LeftSidebar = () => {
                     </svg>
                 ),
                 label: "Grid",
-                description: "Toggle grid display on/off for chart alignment",
+                name: t('terminalSidebar.tools.grid.name'),
+                description: t('terminalSidebar.tools.grid.description'),
             },
             {
                 icon: (
@@ -345,7 +360,8 @@ const LeftSidebar = () => {
                     </svg>
                 ),
                 label: "History",
-                description: "Undo/redo actions and view action history",
+                name: t('terminalSidebar.tools.history.name'),
+                description: t('terminalSidebar.tools.history.description'),
             },
             {
                 icon: (
@@ -357,10 +373,11 @@ const LeftSidebar = () => {
                     </svg>
                 ),
                 label: "Layout",
-                description: "Manage chart layouts and panel arrangements",
+                name: t('terminalSidebar.tools.layout.name'),
+                description: t('terminalSidebar.tools.layout.description'),
             },
         ],
-        []
+        [t]
     );
 
     const handleToolClick = (index) => {
@@ -421,7 +438,7 @@ const LeftSidebar = () => {
     const menu = [
         {
             key: "accounts",
-            label: "Trading accounts",
+            label: t('terminalSidebar.menu.accounts'),
             icon: (
                 <>
                     {/* <div className="item submenu svelte-cji72g icon"> */}
@@ -437,10 +454,11 @@ const LeftSidebar = () => {
                 </>
             ),
             submenu: [
-                { label: "Connect to account", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg> },
+                { label: "Connect to account", name: t('terminalSidebar.submenu.connectToAccount'), icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg> },
 
                 {
                     label: "Open Demo account",
+                    name: t('terminalSidebar.submenu.openDemoAccount'),
                     icon: (
                         <>
                             <div className="icon svelte-1qoe9jm" style={{
@@ -466,7 +484,7 @@ const LeftSidebar = () => {
         },
         {
             key: "chart",
-            label: "Chart settings",
+            label: t('terminalSidebar.menu.chart'),
             icon: (
                 <>
                     <div className="icon svelte-1qoe9jm" style={{
@@ -482,10 +500,11 @@ const LeftSidebar = () => {
                 </>
             ),
             submenu: [
-                { label: "Grid", icon: <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g clipPath="url(#a)"><path fillRule="evenodd" clip-rule="evenodd" d="M20 6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6zm-2 3V6h-3v3h3zm-4-3h-4v2.999h4V6zM9 6H6v3l3-.001V6zm-3 4v4l3-.001v-4H6zm0 5v3h3v-3.001H6zm4 3h4v-3.001h-4V18zm5 0h3v-3h-3v3zm3-4v-4h-3v4h3zm-8-.001v-4h4v4h-4z" fill="currentColor" /></g></svg> },
+                { label: "Grid", name: t('terminalSidebar.submenu.gridLines'), icon: <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g clipPath="url(#a)"><path fillRule="evenodd" clip-rule="evenodd" d="M20 6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6zm-2 3V6h-3v3h3zm-4-3h-4v2.999h4V6zM9 6H6v3l3-.001V6zm-3 4v4l3-.001v-4H6zm0 5v3h3v-3.001H6zm4 3h4v-3.001h-4V18zm5 0h3v-3h-3v3zm3-4v-4h-3v4h3zm-8-.001v-4h4v4h-4z" fill="currentColor" /></g></svg> },
 
                 {
                     label: "Trade Orders",
+                    name: t('terminalSidebar.submenu.tradeOrders'),
                     icon: (
                         <>
                             <div className="icon svelte-1qoe9jm" style={{
@@ -505,6 +524,7 @@ const LeftSidebar = () => {
                 },
                 {
                     label: "Trade Position",
+                    name: t('terminalSidebar.submenu.tradePosition'),
                     icon: (
                         <>
                             <div className="icon svelte-1qoe9jm" style={{
@@ -523,6 +543,7 @@ const LeftSidebar = () => {
                 },
                 {
                     label: "Trade History",
+                    name: t('terminalSidebar.submenu.tradeHistory'),
                     icon: (
                         <>
                             <div className="icon svelte-1qoe9jm" style={{
@@ -541,6 +562,7 @@ const LeftSidebar = () => {
                 },
                 {
                     label: "SL/TP Levels",
+                    name: t('terminalSidebar.submenu.slTpLevels'),
                     icon: (
                         <>
                             <div className="icon svelte-1qoe9jm" style={{
@@ -559,6 +581,7 @@ const LeftSidebar = () => {
                 },
                 {
                     label: "Ask Price",
+                    name: t('terminalSidebar.submenu.askPrice'),
                     icon: (
                         <>
                             <div className="icon svelte-1qoe9jm" style={{
@@ -575,6 +598,7 @@ const LeftSidebar = () => {
                 },
                 {
                     label: "Chart Controls",
+                    name: t('terminalSidebar.submenu.chartControls'),
                     icon: (
                         <>
                             <div className="icon svelte-1qoe9jm" style={{
@@ -592,16 +616,16 @@ const LeftSidebar = () => {
                     )
                 },
 
-                { label: "Trade Notification", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg> },
+                { label: "Trade Notification", name: t('terminalSidebar.submenu.tradeNotification'), icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg> },
 
-                { label: "Crosshair cursor", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0" stroke="currentColor" strokeWidth="2" /><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg> },
+                { label: "Crosshair cursor", name: t('terminalSidebar.submenu.crosshairCursor'), icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0" stroke="currentColor" strokeWidth="2" /><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg> },
 
-                { label: "Show OHLC", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 17V7M12 17v-6M17 17v-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg> },
+                { label: "Show OHLC", name: t('terminalSidebar.submenu.showOhlc'), icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 17V7M12 17v-6M17 17v-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg> },
             ],
         },
         {
             key: "oneclick",
-            label: "One Click Trading",
+            label: t('terminalSidebar.menu.oneClickTrading'),
             icon: (
                 <>
                     <div className="icon svelte-1qoe9jm" style={{
@@ -618,7 +642,7 @@ const LeftSidebar = () => {
         },
         {
             key: "theme",
-            label: theme === "light" ? "Dark Theme" : "Light Theme",
+            label: theme === "light" ? t('terminalSidebar.menu.darkTheme') : t('terminalSidebar.menu.lightTheme'),
             icon: (
                 <>
                     <div className="icon svelte-1qoe9jm" style={{
@@ -639,7 +663,7 @@ const LeftSidebar = () => {
         },
         {
             key: "colors",
-            label: "Color Templates",
+            label: t('terminalSidebar.menu.colorTemplates'),
             icon: (
                 <>
                     <div className="icon svelte-1qoe9jm" style={{
@@ -661,6 +685,7 @@ const LeftSidebar = () => {
 
                 {
                     label: "Green & Red",
+                    name: t('terminalSidebar.submenu.greenAndRed'),
                     icon: (
                         <>
                             <div className="icon svelte-1qoe9jm" style={{
@@ -679,6 +704,7 @@ const LeftSidebar = () => {
                 },
                 {
                     label: "Blue & Red",
+                    name: t('terminalSidebar.submenu.blueAndRed'),
                     icon: (
                         <>
                             <div className="icon svelte-1qoe9jm" style={{
@@ -697,6 +723,7 @@ const LeftSidebar = () => {
                 },
                 {
                     label: "Black & White",
+                    name: t('terminalSidebar.submenu.blackAndWhite'),
                     icon: (
                         <>
                             <div className="icon svelte-1qoe9jm" style={{
@@ -715,6 +742,7 @@ const LeftSidebar = () => {
                 },
                 {
                     label: "Neutral",
+                    name: t('terminalSidebar.submenu.neutral'),
                     icon: (
                         <>
                             <div className="icon svelte-1qoe9jm" style={{
@@ -735,7 +763,7 @@ const LeftSidebar = () => {
         },
         {
             key: "lang",
-            label: "Language",
+            label: t('terminalSidebar.menu.language'),
             rightText: "EN",
             icon: (
                 <>
@@ -752,19 +780,19 @@ const LeftSidebar = () => {
                 </>
             ),
             submenu: [
-                { label: "English", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg> },
-                { label: "Arabic", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg> },
-                { label: "Bulgarian", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /></svg> },
-                { label: "Chinese Simplified", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /></svg> },
-                { label: "Chinese Traditional", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /></svg> },
-                { label: "Czech", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /></svg> },
-                { label: "Dutch", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /></svg> },
-                { label: "Urdu", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /></svg> },
+                { label: "English", name: t('terminalSidebar.languages.english'), icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg> },
+                { label: "Arabic", name: t('terminalSidebar.languages.arabic'), icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg> },
+                { label: "Bulgarian", name: t('terminalSidebar.languages.bulgarian'), icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /></svg> },
+                { label: "Chinese Simplified", name: t('terminalSidebar.languages.chineseSimplified'), icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /></svg> },
+                { label: "Chinese Traditional", name: t('terminalSidebar.languages.chineseTraditional'), icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /></svg> },
+                { label: "Czech", name: t('terminalSidebar.languages.czech'), icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /></svg> },
+                { label: "Dutch", name: t('terminalSidebar.languages.dutch'), icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /></svg> },
+                { label: "Urdu", name: t('terminalSidebar.languages.urdu'), icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /></svg> },
             ],
         },
         {
             key: "shortcuts",
-            label: "Shortcuts",
+            label: t('terminalSidebar.menu.shortcuts'),
             icon: (
                 <>
                     <div className="icon svelte-1qoe9jm" style={{
@@ -781,7 +809,7 @@ const LeftSidebar = () => {
         },
         {
             key: "contact",
-            label: "Contact us",
+            label: t('terminalSidebar.menu.contactUs'),
             icon: (
                 <>
                     <div className="icon svelte-1qoe9jm" style={{
@@ -797,7 +825,7 @@ const LeftSidebar = () => {
         },
         {
             key: "about",
-            label: "About program",
+            label: t('terminalSidebar.menu.aboutProgram'),
             icon: (
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z" stroke="currentColor" strokeWidth="2" />
@@ -872,7 +900,7 @@ const LeftSidebar = () => {
                                         <span className={`w-5 h-5 flex shrink-0 items-center justify-center ${isLight ? "text-slate-500" : "text-slate-400"}`}>
                                             {s.icon || null}
                                         </span>
-                                        <span className="flex-1 min-w-0">{s.label}</span>
+                                        <span className="flex-1 min-w-0">{s.name || s.label}</span>
                                         {/* Tick on right when selected - bilkul MT5 jaisa */}
                                         {isSelected && (
                                             <span className="w-5 h-5 flex shrink-0 items-center justify-center text-emerald-400">
@@ -909,7 +937,7 @@ const LeftSidebar = () => {
                                         ? isLight ? "text-sky-600 bg-sky-100" : "text-sky-300 bg-slate-700"
                                         : isLight ? "text-slate-600 hover:text-slate-900 hover:bg-slate-100" : "text-slate-400 hover:text-slate-100 hover:bg-slate-700"
                                     }`}
-                                title={`${t.label}: ${t.description}`}
+                                title={`${t.name}: ${t.description}`}
                             >
                                 {t.icon}
                             </button>
@@ -936,7 +964,7 @@ const LeftSidebar = () => {
                                         ? isLight ? "text-sky-600 bg-sky-100" : "text-sky-300 bg-slate-700"
                                         : isLight ? "text-slate-600 hover:text-slate-900 hover:bg-slate-100" : "text-slate-400 hover:text-slate-100 hover:bg-slate-700"
                                     }`}
-                                title={`${t.label}: ${t.description}`}
+                                title={`${t.name}: ${t.description}`}
                             >
                                 {t.icon}
                             </button>
@@ -964,7 +992,7 @@ const LeftSidebar = () => {
                             {/* Demo tag - diagonal ribbon like MT5 (green, tilted top-right corner) */}
                             <span
                                 className="absolute top-0 right-0 inline-flex items-center justify-center  text-[11px] font-semibold uppercase tracking-wide text-white shadow-md"
-                                title="Demo"
+                                title={t('terminalSidebar.account.demo')}
                                 style={{
                                     backgroundColor: 'var(--color-fill-greenHover, #16a34a)',
                                     transform: 'rotate(45deg) translate(32%, -32%)',
@@ -972,7 +1000,7 @@ const LeftSidebar = () => {
                                     minWidth: '5rem',
                                 }}
                             >
-                                Demo
+                                {t('terminalSidebar.account.demo')}
                             </span>
                             <div className={`text-[16px] font-medium pr-12 ${isLight ? "text-slate-800" : "text-slate-100"}`}>Anjolie Macias</div>
                             <div className={`text-[12px] mt-0.5 ${isLight ? "text-slate-500" : "text-slate-400"}`}>5044488330 - MetaQuotes-Demo - Hedge</div>

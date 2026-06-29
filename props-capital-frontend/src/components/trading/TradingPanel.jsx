@@ -310,8 +310,9 @@ export default function TradingPanel({
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
               <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/70">
                 {isCrypto
-                  ? symbol?.symbol?.split("/")?.[0] || "CRYPTO"
-                  : "LOTS"}
+                  ? symbol?.symbol?.split("/")?.[0] ||
+                    t("terminal.tradingPanel.crypto")
+                  : t("terminal.tradingPanel.lots")}
               </span>
             </div>
           </div>
@@ -349,7 +350,7 @@ export default function TradingPanel({
           <label
             className={`text-[9px] font-black uppercase tracking-widest px-1 ${isDark ? "text-slate-500" : "text-slate-400"}`}
           >
-            Leverage
+            {t("terminal.tradingPanel.leverage")}
           </label>
           <div className="grid grid-cols-4 gap-0.5">
             {[1, 25, 50, 100].map((lev) => {
@@ -445,7 +446,7 @@ export default function TradingPanel({
 
           <div className="flex justify-between items-center">
             <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/70">
-              Available
+              {t("terminal.tradingPanel.available")}
             </span>
             <span className="text-[10px] font-mono font-black tabular-nums text-cyan-500">
               $
@@ -483,11 +484,11 @@ export default function TradingPanel({
         >
           {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
           {!hasAvailableBalance
-            ? "No Available Balance"
+            ? t("terminal.tradingPanel.noAvailableBalance")
             : !hasValidSymbol || !(referencePrice > 0)
-              ? "Select a symbol"
+              ? t("terminal.tradingPanel.selectSymbol")
               : exceedsAvailableBalance
-                ? "Insufficient Margin"
+                ? t("terminal.tradingPanel.insufficientMargin")
                 : disabled
                   ? t(
                       "terminal.tradingPanel.tradingDisabled",

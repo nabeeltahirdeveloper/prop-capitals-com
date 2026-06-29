@@ -268,6 +268,7 @@ import {
 } from 'lucide-react';
 import { calculatePositionsWithPnL, calculateTotalOpenPnL } from '@/utils/positionCalculations';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 export default function AccountSummaryCard({
   account,
@@ -276,6 +277,7 @@ export default function AccountSummaryCard({
   // baaki props agar zarurat na ho to remove kar sakte ho
 }) {
   const { symbol } = useCurrency();
+  const { t } = useTranslation();
   const profitTarget = account.current_phase === 'phase2' ? 5 : 8;
   const profitProgress = Math.min((account.current_profit_percent / profitTarget) * 100, 100);
   const dailyDDProgress = (account.daily_drawdown_percent / 5) * 100;
@@ -316,7 +318,7 @@ export default function AccountSummaryCard({
         <div className="bg-slate-800/50 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
             <DollarSign className="w-4 h-4 text-slate-400" />
-            <span className="text-xs text-slate-400">Balanceeee</span>
+            <span className="text-xs text-slate-400">{t('accountSummaryCard.balance')}</span>
           </div>
           <p className="text-lg font-bold text-white">
             {symbol}{account.current_balance?.toLocaleString() || '—'}
@@ -326,7 +328,7 @@ export default function AccountSummaryCard({
         <div className="bg-slate-800/50 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
             <DollarSign className="w-4 h-4 text-slate-400" />
-            <span className="text-xs text-slate-400">Equity</span>
+            <span className="text-xs text-slate-400">{t('accountSummaryCard.equity')}</span>
           </div>
           <p className="text-lg font-bold text-white">
             {symbol}{equityDisplay.toLocaleString() || '—'}
@@ -340,7 +342,7 @@ export default function AccountSummaryCard({
             ) : (
               <TrendingDown className="w-4 h-4 text-red-400" />
             )}
-            <span className="text-xs text-slate-400">Profit</span>
+            <span className="text-xs text-slate-400">{t('accountSummaryCard.profit')}</span>
           </div>
           <p
             className={`text-lg font-bold ${
@@ -355,7 +357,7 @@ export default function AccountSummaryCard({
         <div className="bg-slate-800/50 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
             <Calendar className="w-4 h-4 text-slate-400" />
-            <span className="text-xs text-slate-400">Trading Days</span>
+            <span className="text-xs text-slate-400">{t('accountSummaryCard.tradingDays')}</span>
           </div>
           <p className="text-lg font-bold text-white">
             {account.trading_days_count || 0}/4
@@ -370,7 +372,7 @@ export default function AccountSummaryCard({
           <div className="flex items-center justify-between text-sm mb-2">
             <div className="flex items-center gap-2">
               <Target className="w-4 h-4 text-emerald-400" />
-              <span className="text-slate-300">Profit Target</span>
+              <span className="text-slate-300">{t('accountSummaryCard.profitTarget')}</span>
             </div>
             <span className="text-emerald-400 font-medium">
               {account.current_profit_percent?.toFixed(2) || '0.00'}% / {profitTarget}%
@@ -388,7 +390,7 @@ export default function AccountSummaryCard({
                   dailyDDProgress > 80 ? 'text-amber-400' : 'text-slate-400'
                 }`}
               />
-              <span className="text-slate-300">Daily Drawdown</span>
+              <span className="text-slate-300">{t('accountSummaryCard.dailyDrawdown')}</span>
             </div>
             <span className={dailyDDProgress > 80 ? 'text-amber-400' : 'text-white'}>
               {account.daily_drawdown_percent?.toFixed(2) || '0.00'}% / 5%
@@ -411,7 +413,7 @@ export default function AccountSummaryCard({
                   overallDDProgress > 80 ? 'text-red-400' : 'text-slate-400'
                 }`}
               />
-              <span className="text-slate-300">Overall Drawdown</span>
+              <span className="text-slate-300">{t('accountSummaryCard.overallDrawdown')}</span>
             </div>
             <span className={overallDDProgress > 80 ? 'text-red-400' : 'text-white'}>
               {account.overall_drawdown_percent?.toFixed(2) || '0.00'}% / 10%

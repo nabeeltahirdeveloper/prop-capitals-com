@@ -329,7 +329,9 @@ export default function MarketWatchlist({
                     : "bg-red-500",
                 ].join(" ")}
               />
-              {connectionStatus === "connected" ? "LIVE" : "OFFLINE"}
+              {connectionStatus === "connected"
+                ? t("terminal.watchlist.live")
+                : t("terminal.watchlist.offline")}
             </span>
 
             {lastUpdate && (
@@ -398,10 +400,10 @@ export default function MarketWatchlist({
               </div>
               <div className="flex gap-2 pr-1">
                 <div className="w-14 text-right text-[9px] font-black uppercase tracking-widest text-muted-foreground/70">
-                  BID
+                  {t("terminal.watchlist.bid")}
                 </div>
                 <div className="w-14 text-right text-[9px] font-black uppercase tracking-widest text-muted-foreground/70">
-                  ASK
+                  {t("terminal.watchlist.ask")}
                 </div>
               </div>
             </div>
@@ -434,7 +436,7 @@ export default function MarketWatchlist({
                           toggleFavorite(item.symbol);
                         }}
                         className="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity"
-                        aria-label="favorite"
+                        aria-label={t("terminal.watchlist.toggleFavorite")}
                       >
                         <Star
                           className={[
@@ -491,7 +493,7 @@ export default function MarketWatchlist({
 
               {filteredSymbols.length === 0 && (
                 <div className="py-10 text-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
-                  No results found
+                  {t("terminal.watchlist.noResults")}
                 </div>
               )}
             </div>

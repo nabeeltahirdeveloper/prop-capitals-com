@@ -1,9 +1,11 @@
 import React from "react";
 import { Target, AlertTriangle, Shield } from "lucide-react";
 import { useTraderTheme } from "../trader/TraderPanelLayout";
+import { useTranslation } from "@/contexts/LanguageContext";
 
 const ComplianceMetrics = ({ compliance, challenge }) => {
   const { isDark } = useTraderTheme();
+  const { t } = useTranslation();
 
   if (!compliance || !challenge) return null;
 
@@ -15,7 +17,7 @@ const ComplianceMetrics = ({ compliance, challenge }) => {
     {
       id: "profitTarget",
       icon: Target,
-      label: "Profit Target",
+      label: t("complianceMetrics.profitTarget"),
       current: compliance.profitTarget?.current || 0,
       target:
         compliance.profitTarget?.target || challenge.rules?.profitTarget || 0,
@@ -27,7 +29,7 @@ const ComplianceMetrics = ({ compliance, challenge }) => {
     {
       id: "dailyLoss",
       icon: AlertTriangle,
-      label: "Daily Loss Limit",
+      label: t("complianceMetrics.dailyLossLimit"),
       current: compliance.dailyLoss?.current || 0,
       target: compliance.dailyLoss?.limit || challenge.rules?.maxDailyLoss || 5,
       percentage: compliance.dailyLoss?.percentage || 0,
@@ -38,7 +40,7 @@ const ComplianceMetrics = ({ compliance, challenge }) => {
     {
       id: "totalDrawdown",
       icon: Shield,
-      label: "Overall Drawdown",
+      label: t("complianceMetrics.overallDrawdown"),
       current: compliance.totalDrawdown?.current || 0,
       target:
         compliance.totalDrawdown?.limit ||
@@ -70,16 +72,16 @@ const ComplianceMetrics = ({ compliance, challenge }) => {
   const getStatusLabel = (status) => {
     switch (status) {
       case "passed":
-        return "PASSED";
+        return t("complianceMetrics.status.passed");
       case "warning":
-        return "WARNING";
+        return t("complianceMetrics.status.warning");
       case "violated":
-        return "VIOLATED";
+        return t("complianceMetrics.status.violated");
       case "safe":
-        return "SAFE";
+        return t("complianceMetrics.status.safe");
       case "in-progress":
       default:
-        return "IN PROGRESS";
+        return t("complianceMetrics.status.inProgress");
     }
   };
 
