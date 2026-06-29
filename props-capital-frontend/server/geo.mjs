@@ -47,3 +47,30 @@ export async function lookupCountry(ip, { token, fetchImpl = fetch, timeoutMs = 
     clearTimeout(timer);
   }
 }
+
+export function countryToLanguage(country) {
+  return country === 'TR' ? 'tr' : 'en';
+}
+
+export function isLocaleAgnosticPath(path) {
+  const p = path || '/';
+  return /^\/(q|pay)(\/|$)/.test(p) || /^\/set-password(\/|$)/.test(p);
+}
+
+export function parseLocaleCookie(cookieHeader) {
+  const m = (cookieHeader || '').match(/(?:^|;\s*)locale=([^;]*)/);
+  if (!m) return null;
+  const v = decodeURIComponent(m[1]).trim().toLowerCase();
+  return v === 'tr' || v === 'en' ? v : null;
+}
+
+// Returns a redirect target (e.g. '/tr/Challenges') for an unprefixed Turkish visitor,
+// or null to serve the request as-is. Never redirects /tr paths or locale-agnostic paths.
+export function decideLanguageRedirect({ path, localeCookie, country }) {
+  const p = path || '/';
+  if (/^\/tr(\/|$)/.test(p)) return null;
+  if (isLocaleAgnosticPath(p)) return null;
+  const locale = localeCookie || countryToLanguage(country || '');
+  if (locale !== 'tr') return null;
+  return p === '/' ? '/tr' : '/tr' + p;
+}
