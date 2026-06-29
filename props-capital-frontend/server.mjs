@@ -7,6 +7,8 @@ import {
   clientIpFromHeaders,
   lookupCountry,
   buildGeoCookie,
+  parseLocaleCookie,
+  decideLanguageRedirect,
 } from './server/geo.mjs';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
@@ -60,25 +62,47 @@ app.use(
   }),
 );
 
-// HTML document requests (and SPA fallback): stamp geo_country, serve index.html.
+// HTML document requests: (1) redirect unprefixed Turkish-IP visitors to /tr,
+// (2) otherwise serve index.html and keep stamping the geo_country cookie (currency).
 app.get('/{*path}', async (req, res) => {
-  const hasCookie = (req.headers.cookie || '').includes('geo_country=');
-  if (!hasCookie) {
+  const reqPath = req.path || '/';
+  const cookieHeader = req.headers.cookie || '';
+  const localeCookie = parseLocaleCookie(cookieHeader);
+  const hasGeoCookie = cookieHeader.includes('geo_country=');
+  const isTrPath = /^\/tr(\/|$)/.test(reqPath);
+
+  // One country lookup, reused for the redirect decision AND the geo_country cookie.
+  // Needed when a redirect is possible (unprefixed, no locale cookie) or to stamp the cookie.
+  let country = '';
+  const mayRedirect = !isTrPath && !localeCookie;
+  if (mayRedirect || !hasGeoCookie) {
     const ip = clientIpFromHeaders({
       xForwardedFor: req.headers['x-forwarded-for'],
       xRealIp: req.headers['x-real-ip'],
       remoteAddress: req.socket?.remoteAddress,
     });
-    let code = getCached(ip);
-    if (code === undefined) {
-      code = await lookupCountry(ip, { token });
-      setCached(ip, code);
+    let c = getCached(ip);
+    if (c === undefined) {
+      c = await lookupCountry(ip, { token });
+      setCached(ip, c);
     }
+    country = c || '';
+  }
+
+  // Language redirect (unprefixed Turkish visitors -> /tr), preserving the query string.
+  const target = decideLanguageRedirect({ path: reqPath, localeCookie, country });
+  if (target) {
+    const qs = req.url.slice(reqPath.length); // querystring; hash never reaches the server
+    res.redirect(302, target + qs);
+    return;
+  }
+
+  // Serve index.html. Stamp geo_country for the (unchanged) currency system when absent.
+  if (!hasGeoCookie) {
     const secure =
       req.headers['x-forwarded-proto'] === 'https' || process.env.NODE_ENV === 'production';
-    res.setHeader('Set-Cookie', buildGeoCookie(code, { secure }));
+    res.setHeader('Set-Cookie', buildGeoCookie(country, { secure }));
   }
-  // Never cache the per-user HTML response (would leak one visitor's cookie to others).
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(indexHtml);
 });
