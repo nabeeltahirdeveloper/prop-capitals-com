@@ -6,6 +6,7 @@ export const EUR_TO_GBP_RATE = 0.85;
 export const supportedCurrencies = [
   { code: 'EUR', symbol: '€', name: 'Euro' },
   { code: 'GBP', symbol: '£', name: 'British Pound' },
+  { code: 'TRY', symbol: '₺', name: 'Turkish Lira' },
 ];
 
 const CurrencyContext = createContext(null);
@@ -13,7 +14,7 @@ const CurrencyContext = createContext(null);
 export const CurrencyProvider = ({ children }) => {
   const [currency, setCurrency] = useState(() => {
     const stored = localStorage.getItem('currency');
-    return stored === 'GBP' ? 'GBP' : 'EUR';
+    return supportedCurrencies.some((c) => c.code === stored) ? stored : 'EUR';
   });
 
   useEffect(() => {
@@ -21,7 +22,7 @@ export const CurrencyProvider = ({ children }) => {
   }, [currency]);
 
   const value = useMemo(() => {
-    const symbol = currency === 'GBP' ? '£' : '€';
+    const symbol = supportedCurrencies.find((c) => c.code === currency)?.symbol ?? '€';
 
     // Amounts are FIXED across currencies: switching the currency selector only
     // swaps the symbol (€ <-> £), never the number. Prices like £299 stay 299
@@ -76,7 +77,7 @@ export const CurrencyProvider = ({ children }) => {
         return `${symbol}${n.toLocaleString('en-US')}`;
       }
       const replaced = String(val).replace(
-        /[$€£](\d[\d,]*(?:\.\d+)?)([KMB]?)/gi,
+        /[$€£₺](\d[\d,]*(?:\.\d+)?)([KMB]?)/gi,
         (match, numStr, unit) => {
           const n = parseFloat(numStr.replace(/,/g, ''));
           if (!Number.isFinite(n)) return match;
@@ -96,7 +97,7 @@ export const CurrencyProvider = ({ children }) => {
           return `${symbol}${formatted}${unitUpper}`;
         },
       );
-      return replaced.replace(/[$€£]/g, symbol);
+      return replaced.replace(/[$€£₺]/g, symbol);
     };
 
     return { currency, setCurrency, symbol, formatFee, formatAmount, formatSize, cur };

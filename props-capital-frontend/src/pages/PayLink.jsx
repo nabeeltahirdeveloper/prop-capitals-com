@@ -179,7 +179,7 @@ const FieldError = ({ name, error }) =>
 
 const PayLink = () => {
   const { isDark } = useTheme();
-  const { currency, formatFee, cur, formatAmount } = useCurrency();
+  const { currency, setCurrency, formatFee, cur, formatAmount } = useCurrency();
   const { slug } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -355,6 +355,10 @@ const PayLink = () => {
   // inputs (see JSX below).
   const CARD_FIELDS = ['cardholderName', 'cardNumber', 'expiry', 'cvv'];
   const isHostedWorldCard = provider === 'worldcard' && worldCardFlow === 'hosted';
+  // Turkish Lira is display-only for now: the page shows ₺ prices, but no
+  // payment provider can settle TRY yet, so the Pay button is disabled until a
+  // Turkish provider is wired up. Users must switch to EUR/GBP to check out.
+  const isTry = currency === 'TRY';
 
   const validateAll = () => {
     const next = {};
@@ -379,6 +383,10 @@ const PayLink = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (isTry) {
+      toast.error('Turkish Lira payments are coming soon. Please switch to EUR or GBP to complete your purchase.');
+      return;
+    }
     const { firstError, firstErrorField } = validateAll();
     if (firstError) {
       toast.error(firstError);
@@ -446,7 +454,9 @@ const PayLink = () => {
         },
       });
     } else {
-      // Xoala S2S — also needs the EUR/GBP display currency.
+      // Xoala S2S — also needs the EUR/GBP display currency. TRY is blocked at
+      // the Pay button (and rejected server-side), so currency is only ever
+      // EUR or GBP here.
       chargeMutation.mutate({
         ...baseBody,
         currency,
@@ -891,7 +901,7 @@ const PayLink = () => {
 
               <Button
                 type="submit"
-                disabled={submitting || !agreedTerms || !confirmedAge}
+                disabled={submitting || !agreedTerms || !confirmedAge || isTry}
                 className="w-full mt-6 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-6 py-6 h-auto font-bold text-base disabled:opacity-50"
               >
                 {submitting ? (
@@ -906,6 +916,21 @@ const PayLink = () => {
                   </>
                 )}
               </Button>
+              {isTry && (
+                <div className="mt-3 text-center">
+                  <p className="text-xs text-amber-500">
+                    Turkish Lira payments are coming soon. Choose EUR or GBP to
+                    complete your purchase.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setCurrency('EUR')}
+                    className="mt-2 text-xs font-semibold text-amber-500 underline hover:text-amber-400"
+                  >
+                    Switch to EUR and continue
+                  </button>
+                </div>
+              )}
               {submitting && (
                 <p className={`text-xs text-center mt-3 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
                   Please don&apos;t close or refresh this window.
