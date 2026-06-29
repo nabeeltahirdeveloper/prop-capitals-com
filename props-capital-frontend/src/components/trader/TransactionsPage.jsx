@@ -13,25 +13,27 @@ import { Link } from 'react-router-dom';
 import { useTraderTheme } from './TraderPanelLayout';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 import { getUserPayments } from '@/api/payments';
 
 const STATUS_CONFIG = {
-  succeeded: { label: 'Succeeded', icon: CheckCircle2, color: 'emerald' },
-  pending: { label: 'Pending', icon: Clock, color: 'amber' },
-  failed: { label: 'Failed', icon: XCircle, color: 'red' },
+  succeeded: { labelKey: 'transactionsPanel.status.succeeded', icon: CheckCircle2, color: 'emerald' },
+  pending: { labelKey: 'transactionsPanel.status.pending', icon: Clock, color: 'amber' },
+  failed: { labelKey: 'transactionsPanel.status.failed', icon: XCircle, color: 'red' },
 };
 
 const TABS = [
-  { key: 'all', label: 'All' },
-  { key: 'succeeded', label: 'Succeeded' },
-  { key: 'pending', label: 'Pending' },
-  { key: 'failed', label: 'Failed' },
+  { key: 'all', labelKey: 'transactionsPanel.tabs.all' },
+  { key: 'succeeded', labelKey: 'transactionsPanel.tabs.succeeded' },
+  { key: 'pending', labelKey: 'transactionsPanel.tabs.pending' },
+  { key: 'failed', labelKey: 'transactionsPanel.tabs.failed' },
 ];
 
 const TransactionsPage = () => {
   const { isDark } = useTraderTheme();
   const { symbol, currency, formatAmount: formatAmountContext } = useCurrency();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('all');
   const [search, setSearch] = useState('');
 
@@ -96,7 +98,7 @@ const TransactionsPage = () => {
         ${cfg.color === 'red' ? 'bg-red-500/10 text-red-500' : ''}
       `}>
         <Icon className="w-3 h-3" />
-        {cfg.label}
+        {t(cfg.labelKey)}
       </span>
     );
   };
@@ -105,25 +107,25 @@ const TransactionsPage = () => {
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <h2 className={`text-xl sm:text-2xl font-bold ${textClass}`}>Transactions</h2>
+        <h2 className={`text-xl sm:text-2xl font-bold ${textClass}`}>{t('transactionsPanel.title')}</h2>
         <button
           onClick={() => refetch()}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold transition-all ${isDark ? 'bg-white/5 text-white hover:bg-white/10' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
         >
           <RefreshCw className="w-4 h-4" />
-          Refresh
+          {t('transactionsPanel.refresh')}
         </button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         {[
-          { label: 'Total', value: stats.total, icon: Receipt, color: 'text-blue-500' },
-          { label: 'Succeeded', value: stats.succeeded, icon: CheckCircle2, color: 'text-emerald-500' },
-          { label: 'Pending', value: stats.pending, icon: Clock, color: 'text-amber-500' },
-          { label: 'Failed', value: stats.failed, icon: XCircle, color: 'text-red-500' },
+          { key: 'total', label: t('transactionsPanel.stats.total'), value: stats.total, icon: Receipt, color: 'text-blue-500' },
+          { key: 'succeeded', label: t('transactionsPanel.stats.succeeded'), value: stats.succeeded, icon: CheckCircle2, color: 'text-emerald-500' },
+          { key: 'pending', label: t('transactionsPanel.stats.pending'), value: stats.pending, icon: Clock, color: 'text-amber-500' },
+          { key: 'failed', label: t('transactionsPanel.stats.failed'), value: stats.failed, icon: XCircle, color: 'text-red-500' },
         ].map((s) => (
-          <div key={s.label} className={cardClass + ' p-4 sm:p-5'}>
+          <div key={s.key} className={cardClass + ' p-4 sm:p-5'}>
             <div className="flex items-center justify-between mb-2 sm:mb-3">
               <p className={`text-xs sm:text-sm ${mutedClass}`}>{s.label}</p>
               <s.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${s.color}`} />
@@ -150,7 +152,7 @@ const TransactionsPage = () => {
                       : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                   }`}
                 >
-                  {tab.label}
+                  {t(tab.labelKey)}
                   <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
                     activeTab === tab.key
                       ? 'bg-black/20 text-black'
@@ -168,7 +170,7 @@ const TransactionsPage = () => {
             <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${mutedClass}`} />
             <input
               type="text"
-              placeholder="Search by reference or challenge..."
+              placeholder={t('transactionsPanel.searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className={`w-full pl-10 pr-4 py-2 rounded-xl text-sm border focus:outline-none focus:border-amber-500/50 ${
@@ -184,23 +186,23 @@ const TransactionsPage = () => {
         {isLoading ? (
           <div className="p-12 text-center">
             <RefreshCw className={`w-8 h-8 mx-auto mb-3 animate-spin ${mutedClass}`} />
-            <p className={mutedClass}>Loading transactions...</p>
+            <p className={mutedClass}>{t('transactionsPanel.loading')}</p>
           </div>
         ) : isError ? (
           <div className="p-12 text-center">
             <XCircle className="w-8 h-8 mx-auto mb-3 text-red-500" />
-            <p className={textClass}>Failed to load transactions</p>
+            <p className={textClass}>{t('transactionsPanel.loadError')}</p>
             <button onClick={() => refetch()} className="mt-3 text-amber-500 text-sm font-semibold hover:underline">
-              Try again
+              {t('transactionsPanel.tryAgain')}
             </button>
           </div>
         ) : filtered.length === 0 ? (
           <div className="p-12 text-center">
             <Receipt className={`w-8 h-8 mx-auto mb-3 ${mutedClass}`} />
-            <p className={textClass}>No transactions found</p>
+            <p className={textClass}>{t('transactionsPanel.empty')}</p>
             {activeTab !== 'all' && (
               <button onClick={() => setActiveTab('all')} className="mt-2 text-amber-500 text-sm font-semibold hover:underline">
-                Show all transactions
+                {t('transactionsPanel.showAll')}
               </button>
             )}
           </div>
@@ -209,9 +211,17 @@ const TransactionsPage = () => {
             <table className="w-full min-w-[700px]">
               <thead>
                 <tr className={isDark ? 'border-b border-white/5' : 'border-b border-slate-100'}>
-                  {['Reference', 'Challenge', 'Amount', 'Provider', 'Status', 'Date', ''].map((h) => (
-                    <th key={h} className={`text-left text-xs font-semibold uppercase tracking-wider px-4 py-3 ${mutedClass}`}>
-                      {h}
+                  {[
+                    { key: 'reference', label: t('transactionsPanel.columns.reference') },
+                    { key: 'challenge', label: t('transactionsPanel.columns.challenge') },
+                    { key: 'amount', label: t('transactionsPanel.columns.amount') },
+                    { key: 'provider', label: t('transactionsPanel.columns.provider') },
+                    { key: 'status', label: t('transactionsPanel.columns.status') },
+                    { key: 'date', label: t('transactionsPanel.columns.date') },
+                    { key: 'actions', label: '' },
+                  ].map((h) => (
+                    <th key={h.key} className={`text-left text-xs font-semibold uppercase tracking-wider px-4 py-3 ${mutedClass}`}>
+                      {h.label}
                     </th>
                   ))}
                 </tr>
@@ -237,11 +247,11 @@ const TransactionsPage = () => {
                     <td className={`px-4 py-3.5 font-semibold ${textClass}`}>
                       {formatAmount(p.amount)}
                       {p.discountAmount > 0 && (
-                        <span className="block text-xs text-emerald-500">-{formatAmount(p.discountAmount)} off</span>
+                        <span className="block text-xs text-emerald-500">{t('transactionsPanel.discountOff', { amount: formatAmount(p.discountAmount) })}</span>
                       )}
                     </td>
                     <td className={`px-4 py-3.5 text-sm ${mutedClass}`}>
-                      {p.provider === 'internal' ? 'Internal' : 'Card'}
+                      {p.provider === 'internal' ? t('transactionsPanel.provider.internal') : t('transactionsPanel.provider.card')}
                     </td>
                     <td className="px-4 py-3.5">
                       <StatusBadge status={p.status} />
@@ -254,7 +264,7 @@ const TransactionsPage = () => {
                         <Link
                           to="/traderdashboard"
                           className="text-amber-500 hover:text-amber-400 transition-colors"
-                          title="View account"
+                          title={t('transactionsPanel.viewAccount')}
                         >
                           <ExternalLink className="w-4 h-4" />
                         </Link>
@@ -263,7 +273,7 @@ const TransactionsPage = () => {
                         <Link
                           to={`/traderdashboard/checkout/success?reference=${p.reference}`}
                           className="text-amber-500 hover:text-amber-400 transition-colors"
-                          title="Check status"
+                          title={t('transactionsPanel.checkStatus')}
                         >
                           <ExternalLink className="w-4 h-4" />
                         </Link>

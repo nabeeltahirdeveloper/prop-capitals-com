@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { SiX, SiInstagram, SiYoutube, SiDiscord } from 'react-icons/si';
 import { Mail } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 import CompanyInfo from '@/components/CompanyInfo';
 import { PaymentLogos } from '@/components/PaymentLogos';
 
@@ -16,6 +17,7 @@ const socialLinks = [
 
 const Footer = () => {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <footer className={`border-t transition-colors duration-300 ${
@@ -40,7 +42,7 @@ const Footer = () => {
               </div>
             </Link>
             <p className={`text-sm mb-4 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-              Empowering traders worldwide with funded accounts and industry-leading conditions.
+              {t('home.footer.tagline')}
             </p>
             <div className="mb-4">
               <CompanyInfo isDark={isDark} />
@@ -65,13 +67,13 @@ const Footer = () => {
 
           {/* Company */}
           <div>
-            <h4 className={`font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Company</h4>
+            <h4 className={`font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('home.footer.company')}</h4>
             <ul className="space-y-3">
               {[
-                { name: 'About Us', path: '/about' },
-                { name: 'Careers', path: '/careers' },
-                { name: 'Contact', path: '/contact' },
-                { name: 'Blog', path: '/blog' }
+                { name: t('home.footer.aboutUs'), path: '/about' },
+                { name: t('home.footer.careers'), path: '/careers' },
+                { name: t('home.footer.contact'), path: '/contact' },
+                { name: t('home.footer.blog'), path: '/blog' }
               ].map((item) => (
                 <li key={item.path}>
                   <Link
@@ -89,13 +91,13 @@ const Footer = () => {
 
           {/* Trading */}
           <div>
-            <h4 className={`font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Trading</h4>
+            <h4 className={`font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('home.footer.trading')}</h4>
             <ul className="space-y-3">
               {[
-                { name: '1-Step Challenge', path: '/challenges' },
-                { name: '2-Step Challenge', path: '/challenges' },
-                { name: 'Pricing', path: '/challenges' },
-                { name: 'Platforms', path: '/watch-demo' }
+                { name: t('home.footer.oneStepChallenge'), path: '/challenges' },
+                { name: t('home.footer.twoStepChallenge'), path: '/challenges' },
+                { name: t('home.footer.pricing'), path: '/challenges' },
+                { name: t('home.footer.platforms'), path: '/watch-demo' }
               ].map((item, i) => (
                 <li key={i}>
                   <Link
@@ -113,13 +115,13 @@ const Footer = () => {
 
           {/* Resources */}
           <div>
-            <h4 className={`font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Resources</h4>
+            <h4 className={`font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('home.footer.resources')}</h4>
             <ul className="space-y-3">
               {[
-                { name: 'FAQs', path: '/faq' },
-                { name: 'Trading Rules', path: '/trading-rules' },
-                { name: 'How It Works', path: '/HowItWorks' },
-                { name: 'Affiliate Program', path: '/affiliate' }
+                { name: t('home.footer.faqs'), path: '/faq' },
+                { name: t('home.footer.tradingRules'), path: '/trading-rules' },
+                { name: t('home.footer.howItWorks'), path: '/HowItWorks' },
+                { name: t('home.footer.affiliateProgram'), path: '/affiliate' }
               ].map((item) => (
                 <li key={item.path}>
                   <Link
@@ -137,16 +139,16 @@ const Footer = () => {
 
           {/* Legal */}
           <div>
-            <h4 className={`font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Legal</h4>
+            <h4 className={`font-semibold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('home.footer.legal')}</h4>
             <ul className="space-y-3">
               {[
-                { name: 'Terms of Service', path: '/terms' },
-                { name: 'Privacy Policy', path: '/privacy' },
-                { name: 'Risk Disclosure', path: '/risk-disclosure' },
-                { name: 'Refund Policy', path: '/refund-policy' },
-                { name: 'Withdrawal Policy', path: '/withdrawal-policy' },
-                { name: 'KYC Policy', path: '/kyc-policy' },
-                { name: 'AML Policy', path: '/aml-policy' }
+                { name: t('home.footer.terms'), path: '/terms' },
+                { name: t('home.footer.privacy'), path: '/privacy' },
+                { name: t('home.footer.riskDisclosure'), path: '/risk-disclosure' },
+                { name: t('home.footer.refundPolicy'), path: '/refund-policy' },
+                { name: t('home.footer.withdrawalPolicy'), path: '/withdrawal-policy' },
+                { name: t('home.footer.kycPolicy'), path: '/kyc-policy' },
+                { name: t('home.footer.amlPolicy'), path: '/aml-policy' }
               ].map((item) => (
                 <li key={item.path}>
                   <Link
@@ -167,7 +169,7 @@ const Footer = () => {
         <div className={`border-t pt-8 ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
           <div className={`rounded-xl p-4 mb-8 ${isDark ? 'bg-[#12161d]' : 'bg-white border border-slate-200'}`}>
             <p className={`text-xs leading-relaxed ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-              <strong className={isDark ? 'text-gray-400' : 'text-slate-600'}>Risk Disclaimer:</strong> Trading in foreign exchange and other financial instruments involves substantial risk of loss and is not suitable for all investors. Past performance is not indicative of future results. Prop Capitals provides simulated trading accounts; we are not a broker, investment advisor, or financial institution. All trading activities during the evaluation phase are performed in a simulated environment. Please trade responsibly and only with capital you can afford to lose.
+              <strong className={isDark ? 'text-gray-400' : 'text-slate-600'}>{t('home.footer.riskDisclaimerLabel')}</strong> {t('home.footer.riskDisclaimerText')}
             </p>
           </div>
 
@@ -175,19 +177,19 @@ const Footer = () => {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex flex-col sm:flex-row items-center gap-4">
               <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                © 2026 Prop-Capitals.com. All rights reserved.
+                {t('home.footer.copyrightLine')}
               </p>
               <PaymentLogos />
             </div>
             <div className="flex items-center gap-4 flex-wrap justify-center">
               {[
-                { name: 'Terms', path: '/terms' },
-                { name: 'Privacy', path: '/privacy' },
-                { name: 'Risk', path: '/risk-disclosure' },
-                { name: 'Refunds', path: '/refund-policy' },
-                { name: 'Withdrawals', path: '/withdrawal-policy' },
-                { name: 'KYC', path: '/kyc-policy' },
-                { name: 'AML', path: '/aml-policy' }
+                { name: t('home.footer.terms'), path: '/terms' },
+                { name: t('home.footer.privacy'), path: '/privacy' },
+                { name: t('home.footer.riskShort'), path: '/risk-disclosure' },
+                { name: t('home.footer.refundsShort'), path: '/refund-policy' },
+                { name: t('home.footer.withdrawalsShort'), path: '/withdrawal-policy' },
+                { name: t('home.footer.kycShort'), path: '/kyc-policy' },
+                { name: t('home.footer.amlShort'), path: '/aml-policy' }
               ].map((item) => (
                 <Link
                   key={item.path}

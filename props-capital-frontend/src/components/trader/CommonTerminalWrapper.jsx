@@ -110,6 +110,7 @@ const CommonTerminalWrapper = ({
   selectedChallenge: selectedChallengeProp = null,
 }) => {
   const { isDark } = useTraderTheme();
+  const { t } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { prices } = usePrices();
@@ -372,8 +373,10 @@ const CommonTerminalWrapper = ({
               queryKey: ["pendingOrders", accountId],
             });
             toast({
-              title: "Account Status Changed",
-              description: `Limit breached. ${response.positionsClosed || 0} positions auto-closed.`,
+              title: t("commonTerminal.toast.accountStatusChangedTitle"),
+              description: t("commonTerminal.toast.accountStatusChangedDesc", {
+                count: response.positionsClosed || 0,
+              }),
               variant: "destructive",
             });
             const type = response?.violationType || response?.accountStatus;
@@ -389,7 +392,7 @@ const CommonTerminalWrapper = ({
         })
         .catch(() => {});
     });
-  }, [openPositions, accountId, prices, tradingEngine, queryClient, toast]);
+  }, [openPositions, accountId, prices, tradingEngine, queryClient, toast, t]);
 
   useEffect(() => {
     if (!accountId || openPositions.length === 0) return;
@@ -529,11 +532,11 @@ const CommonTerminalWrapper = ({
       queryClient.invalidateQueries({
         queryKey: ["accountSummary", accountId],
       });
-      toast({ title: "Position Closed" });
+      toast({ title: t("commonTerminal.toast.positionClosed") });
     },
     onError: (e) => {
       toast({
-        title: "Close Failed",
+        title: t("commonTerminal.toast.closeFailed"),
         description: e?.response?.data?.message || e.message,
         variant: "destructive",
       });
@@ -544,14 +547,14 @@ const CommonTerminalWrapper = ({
       modifyPosition(tradeId, { stopLoss, takeProfit }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trades", accountId] });
-      toast({ title: "TP/SL updated" });
+      toast({ title: t("commonTerminal.toast.tpSlUpdated") });
       setModifyTPSLTrade(null);
       setModifyTP("");
       setModifySL("");
     },
     onError: (e) => {
       toast({
-        title: "Modify failed",
+        title: t("commonTerminal.toast.modifyFailed"),
         description: e?.response?.data?.message || e.message,
         variant: "destructive",
       });
@@ -562,11 +565,11 @@ const CommonTerminalWrapper = ({
     mutationFn: cancelPendingOrder,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pendingOrders", accountId] });
-      toast({ title: "Order Cancelled" });
+      toast({ title: t("commonTerminal.toast.orderCancelled") });
     },
     onError: (e) => {
       toast({
-        title: "Cancel Failed",
+        title: t("commonTerminal.toast.cancelFailed"),
         description: e?.response?.data?.message || e.message,
         variant: "destructive",
       });
@@ -576,13 +579,16 @@ const CommonTerminalWrapper = ({
   const handleExecuteTrade = useCallback(
     async (trade) => {
       if (!accountId) {
-        toast({ title: "No account selected", variant: "destructive" });
+        toast({
+          title: t("commonTerminal.toast.noAccountSelected"),
+          variant: "destructive",
+        });
         return;
       }
       if (isChallengeLocked) {
         toast({
-          title: "Trading locked",
-          description: "Account is not active for trading.",
+          title: t("commonTerminal.toast.tradingLockedTitle"),
+          description: t("commonTerminal.toast.tradingLockedDesc"),
           variant: "destructive",
         });
         return;
@@ -602,8 +608,8 @@ const CommonTerminalWrapper = ({
         volume <= 0
       ) {
         toast({
-          title: "Invalid trade",
-          description: "Missing symbol, type, or valid volume.",
+          title: t("commonTerminal.toast.invalidTradeTitle"),
+          description: t("commonTerminal.toast.invalidTradeMissingFields"),
           variant: "destructive",
         });
         return;
@@ -611,8 +617,8 @@ const CommonTerminalWrapper = ({
 
       if (!isPendingOrder && (!Number.isFinite(openPrice) || openPrice <= 0)) {
         toast({
-          title: "Invalid trade",
-          description: "Missing or invalid execution price.",
+          title: t("commonTerminal.toast.invalidTradeTitle"),
+          description: t("commonTerminal.toast.invalidTradeExecutionPrice"),
           variant: "destructive",
         });
         return;
@@ -632,8 +638,8 @@ const CommonTerminalWrapper = ({
         executionPriceForMargin <= 0
       ) {
         toast({
-          title: "Invalid trade",
-          description: "Missing or invalid price for margin calculation.",
+          title: t("commonTerminal.toast.invalidTradeTitle"),
+          description: t("commonTerminal.toast.invalidTradeMarginPrice"),
           variant: "destructive",
         });
         return;
@@ -662,8 +668,11 @@ const CommonTerminalWrapper = ({
 
       if (requiredMargin > availableMargin) {
         toast({
-          title: "Insufficient margin",
-          description: `Required $${requiredMargin.toFixed(2)}, available $${availableMargin.toFixed(2)}.`,
+          title: t("commonTerminal.toast.insufficientMarginTitle"),
+          description: t("commonTerminal.toast.insufficientMarginDesc", {
+            required: requiredMargin.toFixed(2),
+            available: availableMargin.toFixed(2),
+          }),
           variant: "destructive",
         });
         return;
@@ -672,8 +681,8 @@ const CommonTerminalWrapper = ({
         if (isPendingOrder) {
           if (!Number.isFinite(pendingPrice) || pendingPrice <= 0) {
             toast({
-              title: "Invalid order",
-              description: "Missing or invalid pending order price.",
+              title: t("commonTerminal.toast.invalidOrderTitle"),
+              description: t("commonTerminal.toast.invalidOrderPendingPrice"),
               variant: "destructive",
             });
             return;
@@ -724,11 +733,13 @@ const CommonTerminalWrapper = ({
           queryKey: ["pendingOrders", accountId],
         });
         toast({
-          title: isPendingOrder ? "Pending order created" : "Trade executed",
+          title: isPendingOrder
+            ? t("commonTerminal.toast.pendingOrderCreated")
+            : t("commonTerminal.toast.tradeExecuted"),
         });
       } catch (e) {
         toast({
-          title: "Trade failed",
+          title: t("commonTerminal.toast.tradeFailed"),
           description: e?.response?.data?.message || e.message,
           variant: "destructive",
         });
@@ -744,6 +755,7 @@ const CommonTerminalWrapper = ({
       selectedChallenge,
       queryClient,
       toast,
+      t,
     ],
   );
 
@@ -753,7 +765,7 @@ const CommonTerminalWrapper = ({
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
           <p className={isDark ? "text-gray-400" : "text-slate-500"}>
-            Loading challenges...
+            {t("commonTerminal.loadingChallenges")}
           </p>
         </div>
       </div>
@@ -774,16 +786,16 @@ const CommonTerminalWrapper = ({
           <p
             className={`font-medium ${isDark ? "text-white" : "text-slate-900"} mb-2`}
           >
-            No Active Challenges
+            {t("commonTerminal.noActiveChallenges")}
           </p>
           <p className={isDark ? "text-gray-400" : "text-slate-500"}>
-            Purchase a challenge to start trading
+            {t("commonTerminal.purchaseToStart")}
           </p>
           <a
             href="/traderdashboard/checkout"
             className="inline-block mt-4 px-6 py-2 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl transition-colors"
           >
-            Buy Challenge
+            {t("commonTerminal.buyChallenge")}
           </a>
         </div>
       </div>
@@ -852,16 +864,14 @@ const CommonTerminalWrapper = ({
     if (violationType === "DAILY_LOCKED") {
       return {
         type: "warning",
-        title: "Daily Loss Limit Reached",
-        message:
-          "Trading is locked until tomorrow. Open positions are being force-closed.",
+        title: t("commonTerminal.banner.dailyLossTitle"),
+        message: t("commonTerminal.banner.dailyLossMessage"),
       };
     }
     return {
       type: "error",
-      title: "Challenge Disqualified",
-      message:
-        "Maximum drawdown was exceeded. Trading is disabled and positions are being force-closed.",
+      title: t("commonTerminal.banner.disqualifiedTitle"),
+      message: t("commonTerminal.banner.disqualifiedMessage"),
     };
   })();
 
@@ -901,9 +911,21 @@ const CommonTerminalWrapper = ({
   // WALLET FEATURE DISABLED - 2026-02-16
   // const spotPositionsCount = openPositions.filter((t) => t.positionType === 'SPOT').length;
   const tabs = [
-    { id: "positions", label: "Positions", count: openPositions.length },
-    { id: "pending", label: "Pending", count: activePendingOrders.length },
-    { id: "history", label: "History", count: closedTrades.length },
+    {
+      id: "positions",
+      label: t("commonTerminal.tabs.positions"),
+      count: openPositions.length,
+    },
+    {
+      id: "pending",
+      label: t("commonTerminal.tabs.pending"),
+      count: activePendingOrders.length,
+    },
+    {
+      id: "history",
+      label: t("commonTerminal.tabs.history"),
+      count: closedTrades.length,
+    },
     // { id: 'wallet', label: 'Wallet', count: spotPositionsCount }, // WALLET FEATURE DISABLED
   ];
 
@@ -1057,7 +1079,9 @@ const CommonTerminalWrapper = ({
           {isDataLoading && (
             <div className="flex items-center justify-center py-8">
               <Loader2 className={`w-5 h-5 animate-spin ${mutedClass}`} />
-              <span className={`ml-2 text-sm ${mutedClass}`}>Loading...</span>
+              <span className={`ml-2 text-sm ${mutedClass}`}>
+                {t("commonTerminal.loading")}
+              </span>
             </div>
           )}
 
@@ -1072,10 +1096,10 @@ const CommonTerminalWrapper = ({
                   <TrendingUp className={`w-6 h-6 ${mutedClass}`} />
                 </div>
                 <p className={`font-medium text-sm ${textClass}`}>
-                  No Open Positions
+                  {t("commonTerminal.empty.noOpenPositionsTitle")}
                 </p>
                 <p className={`text-xs mt-1 ${mutedClass}`}>
-                  Place a trade to see your positions here
+                  {t("commonTerminal.empty.noOpenPositionsDesc")}
                 </p>
               </div>
             ) : (
@@ -1087,49 +1111,49 @@ const CommonTerminalWrapper = ({
                         style={{ ...thStyle, textAlign: "left" }}
                         className={mutedClass}
                       >
-                        Symbol
+                        {t("commonTerminal.columns.symbol")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "left" }}
                         className={mutedClass}
                       >
-                        Side
+                        {t("commonTerminal.columns.side")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "right" }}
                         className={mutedClass}
                       >
-                        Qty
+                        {t("commonTerminal.columns.qty")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "right" }}
                         className={mutedClass}
                       >
-                        Entry
+                        {t("commonTerminal.columns.entry")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "right" }}
                         className={mutedClass}
                       >
-                        Current
+                        {t("commonTerminal.columns.current")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "right" }}
                         className={mutedClass}
                       >
-                        PnL
+                        {t("commonTerminal.columns.pnl")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "right" }}
                         className={mutedClass}
                       >
-                        SL
+                        {t("commonTerminal.columns.sl")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "right" }}
                         className={mutedClass}
                       >
-                        TP
+                        {t("commonTerminal.columns.tp")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "center" }}
@@ -1157,7 +1181,9 @@ const CommonTerminalWrapper = ({
                             color: trade.type === "BUY" ? green : red,
                           }}
                         >
-                          {trade.type === "BUY" ? "Long" : "Short"}
+                          {trade.type === "BUY"
+                            ? t("commonTerminal.side.long")
+                            : t("commonTerminal.side.short")}
                         </td>
                         <td
                           style={{ ...tdStyle, textAlign: "right" }}
@@ -1219,7 +1245,7 @@ const CommonTerminalWrapper = ({
                                 );
                               }}
                               disabled={isAccountLocked}
-                              title="Modify TP/SL"
+                              title={t("commonTerminal.actions.modifyTpSl")}
                               className={`p-1 rounded transition-colors disabled:opacity-50 ${
                                 isDark
                                   ? "text-gray-400 hover:text-amber-400"
@@ -1240,7 +1266,7 @@ const CommonTerminalWrapper = ({
                                   : "border-slate-300 text-slate-500 hover:text-slate-900 hover:border-slate-400"
                               }`}
                             >
-                              Close
+                              {t("commonTerminal.actions.close")}
                             </button>
                           </div>
                         </td>
@@ -1262,10 +1288,10 @@ const CommonTerminalWrapper = ({
                   <TrendingUp className={`w-6 h-6 ${mutedClass}`} />
                 </div>
                 <p className={`font-medium text-sm ${textClass}`}>
-                  No Pending Orders
+                  {t("commonTerminal.empty.noPendingOrdersTitle")}
                 </p>
                 <p className={`text-xs mt-1 ${mutedClass}`}>
-                  Create pending orders to see them here
+                  {t("commonTerminal.empty.noPendingOrdersDesc")}
                 </p>
               </div>
             ) : (
@@ -1277,43 +1303,43 @@ const CommonTerminalWrapper = ({
                         style={{ ...thStyle, textAlign: "left" }}
                         className={mutedClass}
                       >
-                        Symbol
+                        {t("commonTerminal.columns.symbol")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "left" }}
                         className={mutedClass}
                       >
-                        Type
+                        {t("commonTerminal.columns.type")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "left" }}
                         className={mutedClass}
                       >
-                        Side
+                        {t("commonTerminal.columns.side")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "right" }}
                         className={mutedClass}
                       >
-                        Qty
+                        {t("commonTerminal.columns.qty")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "right" }}
                         className={mutedClass}
                       >
-                        Price
+                        {t("commonTerminal.columns.price")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "right" }}
                         className={mutedClass}
                       >
-                        SL
+                        {t("commonTerminal.columns.sl")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "right" }}
                         className={mutedClass}
                       >
-                        TP
+                        {t("commonTerminal.columns.tp")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "center" }}
@@ -1347,7 +1373,9 @@ const CommonTerminalWrapper = ({
                             color: order.type === "BUY" ? green : red,
                           }}
                         >
-                          {order.type === "BUY" ? "Long" : "Short"}
+                          {order.type === "BUY"
+                            ? t("commonTerminal.side.long")
+                            : t("commonTerminal.side.short")}
                         </td>
                         <td
                           style={{ ...tdStyle, textAlign: "right" }}
@@ -1381,7 +1409,7 @@ const CommonTerminalWrapper = ({
                             disabled={cancelOrderMutation.isPending}
                             className="text-xs px-3 py-1 rounded border border-red-500/30 text-red-500 hover:bg-red-500/10 transition-colors disabled:opacity-50"
                           >
-                            Cancel
+                            {t("commonTerminal.actions.cancel")}
                           </button>
                         </td>
                       </tr>
@@ -1402,10 +1430,10 @@ const CommonTerminalWrapper = ({
                   <TrendingUp className={`w-6 h-6 ${mutedClass}`} />
                 </div>
                 <p className={`font-medium text-sm ${textClass}`}>
-                  No Trade History
+                  {t("commonTerminal.empty.noHistoryTitle")}
                 </p>
                 <p className={`text-xs mt-1 ${mutedClass}`}>
-                  Your closed trades will appear here
+                  {t("commonTerminal.empty.noHistoryDesc")}
                 </p>
               </div>
             ) : (
@@ -1417,43 +1445,43 @@ const CommonTerminalWrapper = ({
                         style={{ ...thStyle, textAlign: "left" }}
                         className={mutedClass}
                       >
-                        Symbol
+                        {t("commonTerminal.columns.symbol")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "left" }}
                         className={mutedClass}
                       >
-                        Side
+                        {t("commonTerminal.columns.side")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "right" }}
                         className={mutedClass}
                       >
-                        Qty
+                        {t("commonTerminal.columns.qty")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "right" }}
                         className={mutedClass}
                       >
-                        Entry
+                        {t("commonTerminal.columns.entry")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "right" }}
                         className={mutedClass}
                       >
-                        Close
+                        {t("commonTerminal.columns.close")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "right" }}
                         className={mutedClass}
                       >
-                        PnL
+                        {t("commonTerminal.columns.pnl")}
                       </th>
                       <th
                         style={{ ...thStyle, textAlign: "right" }}
                         className={mutedClass}
                       >
-                        Reason
+                        {t("commonTerminal.columns.reason")}
                       </th>
                     </tr>
                   </thead>
@@ -1477,7 +1505,9 @@ const CommonTerminalWrapper = ({
                             color: trade.type === "BUY" ? green : red,
                           }}
                         >
-                          {trade.type === "BUY" ? "Long" : "Short"}
+                          {trade.type === "BUY"
+                            ? t("commonTerminal.side.long")
+                            : t("commonTerminal.side.short")}
                         </td>
                         <td
                           style={{ ...tdStyle, textAlign: "right" }}
@@ -1558,11 +1588,14 @@ const CommonTerminalWrapper = ({
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className={`text-lg font-bold mb-1 ${textClass}`}>
-              Modify TP / SL
+              {t("commonTerminal.modifyDialog.title")}
             </h3>
             <p className={`text-sm ${mutedClass} mb-4`}>
               {modifyTPSLTrade.symbol} ·{" "}
-              {modifyTPSLTrade.type === "BUY" ? "Long" : "Short"} · Entry{" "}
+              {modifyTPSLTrade.type === "BUY"
+                ? t("commonTerminal.side.long")
+                : t("commonTerminal.side.short")}{" "}
+              · {t("commonTerminal.modifyDialog.entry")}{" "}
               {formatPrice(modifyTPSLTrade.openPrice)}
             </p>
             <div className="space-y-3 mb-5">
@@ -1570,13 +1603,13 @@ const CommonTerminalWrapper = ({
                 <label
                   className={`text-xs font-medium ${mutedClass} mb-1 block`}
                 >
-                  Take Profit
+                  {t("commonTerminal.modifyDialog.takeProfit")}
                 </label>
                 <input
                   type="number"
                   min="0"
                   step="any"
-                  placeholder="Leave blank to remove"
+                  placeholder={t("commonTerminal.modifyDialog.leaveBlank")}
                   value={modifyTP}
                   onChange={(e) => setModifyTP(e.target.value)}
                   className={`w-full px-3 py-2 rounded-lg border text-sm focus:outline-none focus:ring-1 focus:ring-amber-500 ${isDark ? "bg-[#0a0d12] border-white/10 text-white placeholder-gray-600" : "bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400"}`}
@@ -1586,13 +1619,13 @@ const CommonTerminalWrapper = ({
                 <label
                   className={`text-xs font-medium ${mutedClass} mb-1 block`}
                 >
-                  Stop Loss
+                  {t("commonTerminal.modifyDialog.stopLoss")}
                 </label>
                 <input
                   type="number"
                   min="0"
                   step="any"
-                  placeholder="Leave blank to remove"
+                  placeholder={t("commonTerminal.modifyDialog.leaveBlank")}
                   value={modifySL}
                   onChange={(e) => setModifySL(e.target.value)}
                   className={`w-full px-3 py-2 rounded-lg border text-sm focus:outline-none focus:ring-1 focus:ring-amber-500 ${isDark ? "bg-[#0a0d12] border-white/10 text-white placeholder-gray-600" : "bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400"}`}
@@ -1608,7 +1641,7 @@ const CommonTerminalWrapper = ({
                 }}
                 className={`flex-1 py-2.5 rounded-xl border text-sm font-medium transition-colors ${isDark ? "border-white/10 text-gray-400 hover:text-white" : "border-slate-200 text-slate-500 hover:text-slate-900"}`}
               >
-                Cancel
+                {t("commonTerminal.actions.cancel")}
               </button>
               <button
                 onClick={() => {
@@ -1623,7 +1656,9 @@ const CommonTerminalWrapper = ({
                 disabled={modifyTPSLMutation.isPending}
                 className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black text-sm font-bold transition-colors"
               >
-                {modifyTPSLMutation.isPending ? "Saving..." : "Save"}
+                {modifyTPSLMutation.isPending
+                  ? t("commonTerminal.actions.saving")
+                  : t("commonTerminal.actions.save")}
               </button>
             </div>
           </div>
@@ -1641,38 +1676,50 @@ const CommonTerminalWrapper = ({
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className={`text-lg font-bold mb-4 ${textClass}`}>
-              Close Position?
+              {t("commonTerminal.closeDialog.title")}
             </h3>
             <div className="space-y-2 mb-6">
               <div className="flex justify-between text-sm">
-                <span className={mutedClass}>Symbol</span>
+                <span className={mutedClass}>
+                  {t("commonTerminal.columns.symbol")}
+                </span>
                 <span className={textClass}>{closeConfirmTrade.symbol}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className={mutedClass}>Side</span>
+                <span className={mutedClass}>
+                  {t("commonTerminal.columns.side")}
+                </span>
                 <span
                   style={{
                     color: closeConfirmTrade.type === "BUY" ? green : red,
                     fontWeight: 600,
                   }}
                 >
-                  {closeConfirmTrade.type === "BUY" ? "Long" : "Short"}
+                  {closeConfirmTrade.type === "BUY"
+                    ? t("commonTerminal.side.long")
+                    : t("commonTerminal.side.short")}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className={mutedClass}>Qty</span>
+                <span className={mutedClass}>
+                  {t("commonTerminal.columns.qty")}
+                </span>
                 <span className={textClass}>
                   {closeConfirmTrade.volume?.toFixed(3)}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className={mutedClass}>Entry Price</span>
+                <span className={mutedClass}>
+                  {t("commonTerminal.closeDialog.entryPrice")}
+                </span>
                 <span className={textClass}>
                   {formatPrice(closeConfirmTrade.openPrice)}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className={mutedClass}>Close Price</span>
+                <span className={mutedClass}>
+                  {t("commonTerminal.closeDialog.closePrice")}
+                </span>
                 <span className={textClass}>
                   {formatPrice(
                     closeConfirmTrade.currentPrice ||
@@ -1683,7 +1730,9 @@ const CommonTerminalWrapper = ({
               <div
                 className={`flex justify-between text-sm pt-2 border-t ${borderColor}`}
               >
-                <span className={mutedClass}>Est. PnL</span>
+                <span className={mutedClass}>
+                  {t("commonTerminal.closeDialog.estPnl")}
+                </span>
                 <span
                   style={{
                     fontWeight: 700,
@@ -1704,7 +1753,7 @@ const CommonTerminalWrapper = ({
                     : "border-slate-300 text-slate-500 hover:text-slate-900"
                 }`}
               >
-                Cancel
+                {t("commonTerminal.actions.cancel")}
               </button>
               <button
                 onClick={() => {
@@ -1721,8 +1770,8 @@ const CommonTerminalWrapper = ({
                 className="flex-1 py-2 rounded-xl text-sm font-bold bg-red-500 hover:bg-red-600 text-white transition-colors disabled:opacity-50"
               >
                 {closePositionMutation.isPending
-                  ? "Closing..."
-                  : "Confirm Close"}
+                  ? t("commonTerminal.actions.closing")
+                  : t("commonTerminal.actions.confirmClose")}
               </button>
             </div>
           </div>

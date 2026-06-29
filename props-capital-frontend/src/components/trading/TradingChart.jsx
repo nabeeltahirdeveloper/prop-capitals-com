@@ -20,6 +20,7 @@ import {
 import { isForexSymbol } from "../../config/symbolConfig";
 import { useTrading } from "@/contexts/TradingContext";
 import { usePrices } from "@/contexts/PriceContext";
+import { useTranslation } from "@/contexts/LanguageContext";
 import { useTraderTheme } from "../trader/TraderPanelLayout";
 import BuySellPanel from "../trader/BuySellPanel";
 import MarketExecutionModal from "../trader/MarketExecutionModal";
@@ -287,6 +288,7 @@ const ChartArea = forwardRef(function ChartArea(
     chartLocked,
   } = useTrading();
   const { isDark } = useTraderTheme();
+  const { t } = useTranslation();
 
   const selectedSymbolStr =
     typeof selectedSymbol === "string"
@@ -445,7 +447,7 @@ const ChartArea = forwardRef(function ChartArea(
         const container = containerRef.current;
         if (!container) {
           if (typeof window.notify === "function")
-            window.notify("Chart not ready", "error");
+            window.notify(t("tradingChart.chartNotReady"), "error");
           return;
         }
         const canvases = container.querySelectorAll("canvas");
@@ -476,7 +478,7 @@ const ChartArea = forwardRef(function ChartArea(
             link.href = off.toDataURL("image/png");
             link.click();
             if (typeof window.notify === "function")
-              window.notify("Chart saved as PNG", "success");
+              window.notify(t("tradingChart.chartSavedAsPng"), "success");
             return;
           } catch (e) {
             console.warn("Canvas export failed, trying html2canvas", e);
@@ -495,12 +497,12 @@ const ChartArea = forwardRef(function ChartArea(
             link.href = canvas.toDataURL("image/png");
             link.click();
             if (typeof window.notify === "function")
-              window.notify("Chart saved as PNG", "success");
+              window.notify(t("tradingChart.chartSavedAsPng"), "success");
           })
           .catch((err) => {
             console.error("Chart screenshot failed", err);
             if (typeof window.notify === "function")
-              window.notify("Screenshot failed. Try again.", "error");
+              window.notify(t("tradingChart.screenshotFailed"), "error");
           });
       },
     }),

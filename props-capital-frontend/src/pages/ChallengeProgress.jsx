@@ -150,8 +150,7 @@ export default function ChallengeProgress() {
             {t("accountDetails.noAccounts")}
           </h3>
           <p className="text-slate-400 mb-6">
-            {t("challengeProgress.noAccountsDesc") ||
-              "Purchase a challenge to start tracking your progress."}
+            {t("challengeProgress.noAccountsDesc")}
           </p>
           <Link to={createPageUrl("TraderBuyChallenge")}>
             <Button className="bg-gradient-to-r from-emerald-500 to-cyan-500">
@@ -234,7 +233,9 @@ export default function ChallengeProgress() {
             : currentPhase === "failed"
               ? "failed"
               : "pending",
-      description: `${phase1Target}% profit target`,
+      description: t("challengeProgress.reachTarget", {
+        target: `${phase1Target}%`,
+      }),
       badge: null,
       requirements:
         currentPhase === "phase1" || currentPhase === "failed"
@@ -301,7 +302,9 @@ export default function ChallengeProgress() {
           : currentPhase === "funded"
             ? "completed"
             : "locked",
-      description: `${phase2Target}% profit target`,
+      description: t("challengeProgress.reachTarget", {
+        target: `${phase2Target}%`,
+      }),
       badge: null,
       requirements:
         currentPhase === "phase2" || currentPhase === "funded"
@@ -365,15 +368,15 @@ export default function ChallengeProgress() {
       status: currentPhase === "funded" ? "active" : "locked",
       description:
         t("challengeProgress.fundedDesc") || "Trade with our capital",
-      badge: "80% profit split",
+      badge: t("challengeProgress.profitSplit80"),
     },
     {
       id: "scaling",
       name: t("challengeProgress.scaling") || "Scaling",
       icon: Zap,
       status: "locked",
-      description: t("challengeProgress.scalingDesc") || "Grow to $2,000,000",
-      badge: "Up to 90% profit split",
+      description: t("challengeProgress.scalingDesc", { amount: `${symbol}2,000,000` }),
+      badge: t("challengeProgress.profitSplit90"),
     },
   ];
 
@@ -542,7 +545,10 @@ export default function ChallengeProgress() {
                   {challengeName}
                 </h2>
                 <p className="text-slate-400 text-sm">
-                  Account #{accountNumber} • {platform}
+                  {t("challengeProgress.accountNumberLabel", {
+                    number: accountNumber,
+                  })}{" "}
+                  • {platform}
                 </p>
               </div>
             </div>
@@ -554,7 +560,7 @@ export default function ChallengeProgress() {
             {/* Profit */}
             <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
               <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">
-                Profit
+                {t("challengeProgress.profit")}
               </p>
               <p
                 className={`text-2xl font-bold ${profitPercent >= 0 ? "text-emerald-400" : "text-red-400"}`}
@@ -563,47 +569,53 @@ export default function ChallengeProgress() {
                 {profitPercent?.toFixed(2)}%
               </p>
               <p className="text-xs text-slate-500">
-                Target: {currentProfitTarget}%
+                {t("challengeProgress.targetLabel", {
+                  value: `${currentProfitTarget}%`,
+                })}
               </p>
             </div>
 
             {/* Trading Days */}
             <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
               <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">
-                Trading Days
+                {t("challengeProgress.tradingDays")}
               </p>
               <p className="text-2xl font-bold text-white">
                 {tradingDaysCount}
               </p>
               <p className="text-xs text-slate-500">
-                Min: {minTradingDays} days
+                {t("challengeProgress.minDaysLabel", { value: minTradingDays })}
               </p>
             </div>
 
             {/* Daily DD */}
             <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
               <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">
-                Daily DD
+                {t("challengeProgress.dailyDD")}
               </p>
               <p
                 className={`text-2xl font-bold ${dailyDrawdownPercent > maxDailyDD * 0.8 ? "text-amber-400" : "text-white"}`}
               >
                 {dailyDrawdownPercent?.toFixed(2)}%
               </p>
-              <p className="text-xs text-slate-500">Max: {maxDailyDD}%</p>
+              <p className="text-xs text-slate-500">
+                {t("challengeProgress.maxLabel", { value: `${maxDailyDD}%` })}
+              </p>
             </div>
 
             {/* Overall DD */}
             <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
               <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">
-                Overall DD
+                {t("challengeProgress.overallDD")}
               </p>
               <p
                 className={`text-2xl font-bold ${overallDrawdownPercent > maxOverallDD * 0.8 ? "text-amber-400" : "text-white"}`}
               >
                 {overallDrawdownPercent?.toFixed(2)}%
               </p>
-              <p className="text-xs text-slate-500">Max: {maxOverallDD}%</p>
+              <p className="text-xs text-slate-500">
+                {t("challengeProgress.maxLabel", { value: `${maxOverallDD}%` })}
+              </p>
             </div>
           </div>
         </div>
@@ -705,7 +717,9 @@ export default function ChallengeProgress() {
         {/* Progress Bar */}
         <div className="mt-6 pt-4 border-t border-slate-800">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-slate-400">Progress</span>
+            <span className="text-xs text-slate-400">
+              {t("challengeProgress.progress")}
+            </span>
             <span className="text-xs text-slate-400">
               {getPhaseProgress()}%
             </span>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { IoMdSearch } from 'react-icons/io'
 import { useTraderTheme } from './TraderPanelLayout'
+import { useTranslation } from '@/contexts/LanguageContext'
 
 const MarketWatch = ({
     symbols = [],
@@ -12,6 +13,7 @@ const MarketWatch = ({
 
     // ✅ FIX 1: hook call
     const { isDark } = useTraderTheme()
+    const { t } = useTranslation()
 
     const [searchQuery, setSearchQuery] = useState('')
 
@@ -42,7 +44,7 @@ const MarketWatch = ({
                 <IoMdSearch className={`text-xl ${isDark ? 'text-slate-300' : 'text-slate-600'}`} />
                 <input
                     type="text"
-                    placeholder="Search symbol"
+                    placeholder={t('marketWatch.searchPlaceholder')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className={`w-full px-3 py-1.5 rounded text-sm focus:outline-none
@@ -58,7 +60,7 @@ const MarketWatch = ({
                 {symbolsLoading ? (
                     <div className="flex items-center justify-center h-full">
                         <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>
-                            Loading symbols...
+                            {t('marketWatch.loadingSymbols')}
                         </span>
                     </div>
                 ) : (
@@ -67,13 +69,18 @@ const MarketWatch = ({
               ${isDark ? 'bg-[#0d1117]' : 'bg-slate-100'}
             `}>
                             <tr>
-                                {['Symbol', 'Bid', 'Ask', 'Change'].map(h => (
-                                    <th key={h}
+                                {[
+                                    { key: 'symbol', label: t('marketWatch.columns.symbol') },
+                                    { key: 'bid', label: t('marketWatch.columns.bid') },
+                                    { key: 'ask', label: t('marketWatch.columns.ask') },
+                                    { key: 'change', label: t('marketWatch.columns.change') }
+                                ].map(h => (
+                                    <th key={h.key}
                                         className={`px-3 py-2 text-left font-medium
                       ${isDark ? 'text-slate-400' : 'text-slate-600'}
                     `}
                                     >
-                                        {h}
+                                        {h.label}
                                     </th>
                                 ))}
                             </tr>
@@ -87,7 +94,7 @@ const MarketWatch = ({
                       ${isDark ? 'text-sky-400' : 'text-sky-600'}
                     `}
                                     >
-                                        FOREX
+                                        {t('marketWatch.forex')}
                                     </td>
                                 </tr>
                             )}

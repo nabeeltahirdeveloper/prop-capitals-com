@@ -92,7 +92,7 @@ export default function TraderBuyChallenge() {
 
   const applyCoupon = async () => {
     if (!couponCode.trim()) {
-      setCouponError('Please enter a coupon code');
+      setCouponError(t('buyChallenge.enterCouponPrompt'));
       setCouponApplied(null);
       return;
     }
@@ -117,20 +117,20 @@ export default function TraderBuyChallenge() {
         });
       } else {
         setCouponApplied(null);
-        setCouponError(result.message || 'Invalid coupon code');
+        setCouponError(result.message || t('buyChallenge.invalidCouponCode'));
         toast({
           title: t('buyChallenge.couponError') || 'Invalid Coupon',
-          description: result.message || 'The coupon code is invalid',
+          description: result.message || t('buyChallenge.invalidCouponDesc'),
           variant: 'destructive',
         });
       }
     } catch (error) {
       console.error('Coupon validation error:', error);
       setCouponApplied(null);
-      setCouponError('Failed to validate coupon');
+      setCouponError(t('buyChallenge.couponValidationFailed'));
       toast({
         title: t('buyChallenge.couponError') || 'Error',
-        description: 'Failed to validate coupon. Please try again.',
+        description: t('buyChallenge.couponValidationFailedDesc'),
         variant: 'destructive',
       });
     } finally {
@@ -181,7 +181,7 @@ export default function TraderBuyChallenge() {
     },
     onError: (error) => {
       console.error('Purchase failed:', error);
-      const errorMessage = error?.response?.data?.message || error?.message || 'Purchase failed. Please try again.';
+      const errorMessage = error?.response?.data?.message || error?.message || t('buyChallenge.purchaseFailedRetry');
       setPurchaseError(errorMessage);
       toast({
         title: t('buyChallenge.purchaseError') || 'Purchase Failed',
@@ -204,8 +204,8 @@ export default function TraderBuyChallenge() {
     if (!user || !user.userId) {
       console.error('❌ User not logged in');
       toast({
-        title: 'Authentication Required',
-        description: 'Please sign in to purchase a challenge.',
+        title: t('buyChallenge.authRequired'),
+        description: t('buyChallenge.signInToPurchase'),
         variant: 'destructive',
       });
       navigate(createPageUrl('SignIn'));
@@ -215,8 +215,8 @@ export default function TraderBuyChallenge() {
     if (!selectedChallenge) {
       console.error('❌ No challenge selected');
       toast({
-        title: 'No Challenge Selected',
-        description: 'Please select a challenge to continue.',
+        title: t('buyChallenge.noChallengeSelected'),
+        description: t('buyChallenge.selectChallengeToContinue'),
         variant: 'destructive',
       });
       return;
@@ -621,7 +621,7 @@ export default function TraderBuyChallenge() {
                   ) : (
                     <>
                       <Lock className="w-5 h-5 mr-2" />
-                      {t('buyChallenge.payAmount', { amount: calculateTotal() })}
+                      {t('buyChallenge.payAmount', { symbol, amount: calculateTotal() })}
                     </>
                   )}
                 </Button>

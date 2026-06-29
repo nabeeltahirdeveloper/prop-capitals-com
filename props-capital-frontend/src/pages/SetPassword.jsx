@@ -5,10 +5,12 @@ import { toast } from 'sonner';
 import { Lock, Loader2, AlertTriangle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 import { verifySetPasswordToken, submitSetPassword } from '@/api/auth';
 
 const SetPassword = () => {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
@@ -35,11 +37,11 @@ const SetPassword = () => {
       if (data?.accessToken) {
         localStorage.setItem('token', data.accessToken);
       }
-      toast.success('Password set successfully — welcome!');
+      toast.success(t('setPassword.toastSuccess'));
       navigate('/traderdashboard');
     },
     onError: (err) => {
-      toast.error(err?.message || 'Could not set password. Please try again.');
+      toast.error(err?.message || t('setPassword.toastError'));
     },
   });
 
@@ -63,9 +65,9 @@ const SetPassword = () => {
       <Wrapper>
         <div className="text-center">
           <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-          <h2 className={`text-xl font-bold mb-2 ${textClass}`}>Missing Token</h2>
+          <h2 className={`text-xl font-bold mb-2 ${textClass}`}>{t('setPassword.missingTokenTitle')}</h2>
           <p className={mutedClass}>
-            This page requires a valid set-password link. Please use the link from your welcome email.
+            {t('setPassword.missingTokenDescription')}
           </p>
         </div>
       </Wrapper>
@@ -77,7 +79,7 @@ const SetPassword = () => {
       <Wrapper>
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-amber-500 animate-spin mx-auto mb-4" />
-          <p className={mutedClass}>Verifying your link...</p>
+          <p className={mutedClass}>{t('setPassword.verifying')}</p>
         </div>
       </Wrapper>
     );
@@ -88,12 +90,12 @@ const SetPassword = () => {
       <Wrapper>
         <div className="text-center">
           <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className={`text-xl font-bold mb-2 ${textClass}`}>Link Invalid or Expired</h2>
+          <h2 className={`text-xl font-bold mb-2 ${textClass}`}>{t('setPassword.invalidTokenTitle')}</h2>
           <p className={mutedClass}>
-            {verifyError?.message || 'This set-password link is invalid or has expired.'}
+            {verifyError?.message || t('setPassword.invalidTokenDescription')}
           </p>
           <p className={`text-sm mt-4 ${mutedClass}`}>
-            Please contact <a href="mailto:support@prop-capitals.com" className="text-amber-500 hover:underline">support@prop-capitals.com</a> for help.
+            {t('setPassword.contactPrefix')} <a href="mailto:support@prop-capitals.com" className="text-amber-500 hover:underline">support@prop-capitals.com</a> {t('setPassword.contactSuffix')}
           </p>
         </div>
       </Wrapper>
@@ -103,11 +105,11 @@ const SetPassword = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (password.length < 8) {
-      toast.error('Password must be at least 8 characters');
+      toast.error(t('setPassword.errorTooShort'));
       return;
     }
     if (password !== confirm) {
-      toast.error('Passwords do not match');
+      toast.error(t('setPassword.errorMismatch'));
       return;
     }
     submitMutation.mutate({ token, password });
@@ -121,15 +123,15 @@ const SetPassword = () => {
         <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
           <CheckCircle2 className="w-8 h-8 text-emerald-500" />
         </div>
-        <h2 className={`text-2xl font-bold mb-2 ${textClass}`}>Set Your Password</h2>
+        <h2 className={`text-2xl font-bold mb-2 ${textClass}`}>{t('setPassword.heading')}</h2>
         <p className={mutedClass}>
-          Create a password for <span className={`font-medium ${textClass}`}>{verification.email}</span> to access your dashboard.
+          {t('setPassword.descriptionPrefix')} <span className={`font-medium ${textClass}`}>{verification.email}</span> {t('setPassword.descriptionSuffix')}
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className={`text-sm mb-2 block ${mutedClass}`}>New Password</label>
+          <label className={`text-sm mb-2 block ${mutedClass}`}>{t('setPassword.newPasswordLabel')}</label>
           <div className="relative">
             <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
             <input
@@ -137,7 +139,7 @@ const SetPassword = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className={`w-full rounded-xl pl-12 pr-12 py-3 focus:outline-none ${inputClass}`}
-              placeholder="At least 8 characters"
+              placeholder={t('setPassword.newPasswordPlaceholder')}
               autoComplete="new-password"
               required
               minLength={8}
@@ -153,7 +155,7 @@ const SetPassword = () => {
         </div>
 
         <div>
-          <label className={`text-sm mb-2 block ${mutedClass}`}>Confirm Password</label>
+          <label className={`text-sm mb-2 block ${mutedClass}`}>{t('setPassword.confirmPasswordLabel')}</label>
           <div className="relative">
             <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
             <input
@@ -161,7 +163,7 @@ const SetPassword = () => {
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
-              placeholder="Repeat your password"
+              placeholder={t('setPassword.confirmPasswordPlaceholder')}
               autoComplete="new-password"
               required
               minLength={8}
@@ -177,10 +179,10 @@ const SetPassword = () => {
           {submitting ? (
             <>
               <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              Setting password...
+              {t('setPassword.submitting')}
             </>
           ) : (
-            'Set Password & Sign In'
+            t('setPassword.submit')
           )}
         </Button>
       </form>

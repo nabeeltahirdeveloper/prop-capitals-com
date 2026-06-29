@@ -37,6 +37,7 @@ import { getAccountSummary, getUserAccounts } from "@/api/accounts";
 import { getAccountTrades, updateTrade, modifyPosition } from "@/api/trades";
 import { mt5Engine } from "@/trading/engines/mt5Engine";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "@/contexts/LanguageContext";
 
 const MT5TradingArea = ({
   selectedChallenge,
@@ -66,6 +67,7 @@ const MT5TradingArea = ({
     theme,
   } = useTrading();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -99,11 +101,11 @@ const MT5TradingArea = ({
       queryClient.invalidateQueries({
         queryKey: ["accountSummary", accountId],
       });
-      toast({ title: "Position closed" });
+      toast({ title: t("mt5TradingArea.toast.positionClosed") });
     },
     onError: (e) =>
       toast({
-        title: "Close failed",
+        title: t("mt5TradingArea.toast.closeFailed"),
         description: e?.response?.data?.message || e.message,
         variant: "destructive",
       }),
@@ -115,11 +117,11 @@ const MT5TradingArea = ({
       modifyPosition(tradeId, { stopLoss, takeProfit }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trades", accountId] });
-      toast({ title: "Position modified" });
+      toast({ title: t("mt5TradingArea.toast.positionModified") });
     },
     onError: (e) =>
       toast({
-        title: "Modify failed",
+        title: t("mt5TradingArea.toast.modifyFailed"),
         description: e?.response?.data?.message || e.message,
         variant: "destructive",
       }),
@@ -160,7 +162,7 @@ const MT5TradingArea = ({
   // Handle MT5 platform login
   const handlePlatformLogin = async (email, password) => {
     if (!accountId) {
-      toast({ title: "No account selected", variant: "destructive" });
+      toast({ title: t("mt5TradingArea.toast.noAccountSelected"), variant: "destructive" });
       return;
     }
     setIsLoggingIn(true);
@@ -168,11 +170,11 @@ const MT5TradingArea = ({
       const response = await processPlatformLogin(accountId, email, password);
       if (response?.platformToken) {
         setPlatformToken(accountId, response.platformToken);
-        toast({ title: "Successfully connected to MT5" });
+        toast({ title: t("mt5TradingArea.toast.connectedToMt5") });
       }
     } catch (error) {
       toast({
-        title: "Login failed",
+        title: t("mt5TradingArea.toast.loginFailed"),
         description: error.response?.data?.message || error.message,
         variant: "destructive",
       });
@@ -184,16 +186,16 @@ const MT5TradingArea = ({
   // Handle password reset
   const handlePasswordReset = async () => {
     if (!accountId) {
-      toast({ title: "No account selected", variant: "destructive" });
+      toast({ title: t("mt5TradingArea.toast.noAccountSelected"), variant: "destructive" });
       return;
     }
     setIsResettingPassword(true);
     try {
       await resetPlatformPassword(accountId);
-      toast({ title: "Password reset email sent" });
+      toast({ title: t("mt5TradingArea.toast.passwordResetEmailSent") });
     } catch (error) {
       toast({
-        title: "Reset failed",
+        title: t("mt5TradingArea.toast.resetFailed"),
         description: error.response?.data?.message || error.message,
         variant: "destructive",
       });
@@ -444,7 +446,7 @@ const MT5TradingArea = ({
           ? Number(live?.bid || pos.currentPrice || pos.openPrice)
           : Number(live?.ask || pos.currentPrice || pos.openPrice);
       if (!closePrice || closePrice <= 0) {
-        toast({ title: "No price available to close", variant: "destructive" });
+        toast({ title: t("mt5TradingArea.toast.noPriceToClose"), variant: "destructive" });
         return;
       }
       closePositionMutation.mutate({ tradeId, closePrice });
@@ -750,9 +752,9 @@ const MT5TradingArea = ({
             style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
           >
             {[
-              { key: "chart", label: "Chart" },
-              { key: "quotes", label: "Quotes" },
-              { key: "positions", label: "Positions" },
+              { key: "chart", label: t("mt5TradingArea.mobileTabs.chart") },
+              { key: "quotes", label: t("mt5TradingArea.mobileTabs.quotes") },
+              { key: "positions", label: t("mt5TradingArea.mobileTabs.positions") },
             ].map(({ key, label }) => (
               <button
                 key={key}

@@ -10,6 +10,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createTrade, updateTrade } from '@/api/trades';
 import { createPendingOrder } from '@/api/pending-orders';
 import { useToast } from '@/components/ui/use-toast';
+import { useTranslation } from '@/contexts/LanguageContext';
 import {
   Select,
   SelectContent,
@@ -86,6 +87,7 @@ export default function WalletPanel({
   onTradeExecuted,
 }) {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   // ── Panel tab ────────────────────────────────────────────────────────────────
@@ -162,9 +164,9 @@ export default function WalletPanel({
     mutationFn: async () => {
       const qty = parseFloat(orderQty);
       const price = orderType === 'MARKET' ? currentMarkPrice : parseFloat(limitPrice);
-      if (!qty || qty <= 0) throw new Error('Enter a valid quantity.');
-      if (!price || price <= 0) throw new Error('Price is unavailable. Try again.');
-      if (orderCost > availableBalance) throw new Error(`Insufficient balance. Required $${orderCost.toFixed(2)}, available $${availableBalance.toFixed(2)}.`);
+      if (!qty || qty <= 0) throw new Error(t('walletPanel.errorInvalidQuantity'));
+      if (!price || price <= 0) throw new Error(t('walletPanel.errorPriceUnavailableRetry'));
+      if (orderCost > availableBalance) throw new Error(t('walletPanel.errorInsufficientBalanceDetail', { required: orderCost.toFixed(2), available: availableBalance.toFixed(2) }));
       if (orderType === 'MARKET') {
         return createTrade({ accountId, symbol: orderSymbol, type: 'BUY', volume: qty, openPrice: price, leverage: 1, positionType: 'SPOT' });
       }
@@ -174,13 +176,13 @@ export default function WalletPanel({
       queryClient.invalidateQueries({ queryKey: ['trades', accountId] });
       queryClient.invalidateQueries({ queryKey: ['accountSummary', accountId] });
       queryClient.invalidateQueries({ queryKey: ['pendingOrders', accountId] });
-      toast({ title: orderType === 'MARKET' ? 'Spot buy executed' : 'Spot limit order placed' });
+      toast({ title: orderType === 'MARKET' ? t('walletPanel.toastSpotBuyExecuted') : t('walletPanel.toastSpotLimitPlaced') });
       setOrderQty('');
       setLimitPrice('');
       onTradeExecuted?.();
     },
     onError: (e) => {
-      toast({ title: 'Buy failed', description: e?.response?.data?.message || e.message, variant: 'destructive' });
+      toast({ title: t('walletPanel.toastBuyFailed'), description: e?.response?.data?.message || e.message, variant: 'destructive' });
     },
   });
 
@@ -193,13 +195,13 @@ export default function WalletPanel({
       onTradeExecuted?.();
     },
     onError: (e) => {
-      toast({ title: 'Sell failed', description: e?.response?.data?.message || e.message, variant: 'destructive' });
+      toast({ title: t('walletPanel.toastSellFailed'), description: e?.response?.data?.message || e.message, variant: 'destructive' });
     },
   });
 
   // Close trades greedily (oldest first) until qty is covered
   const executeSell = (holding, qtyToSell, price) => {
-    if (!price) { toast({ title: 'Price unavailable', variant: 'destructive' }); return; }
+    if (!price) { toast({ title: t('walletPanel.toastPriceUnavailable'), variant: 'destructive' }); return; }
     let remaining = qtyToSell;
     const tradesToClose = [];
     for (const t of holding.trades) {
@@ -214,12 +216,12 @@ export default function WalletPanel({
     ).then(() => {
       queryClient.invalidateQueries({ queryKey: ['trades', accountId] });
       queryClient.invalidateQueries({ queryKey: ['accountSummary', accountId] });
-      toast({ title: `${holding.asset} sold` });
+      toast({ title: t('walletPanel.toastAssetSold', { asset: holding.asset }) });
       setConfirmSell(null);
       setSellQty('');
       onTradeExecuted?.();
     }).catch((e) => {
-      toast({ title: 'Sell failed', description: e?.response?.data?.message || e.message, variant: 'destructive' });
+      toast({ title: t('walletPanel.toastSellFailed'), description: e?.response?.data?.message || e.message, variant: 'destructive' });
     });
   };
 
@@ -242,17 +244,17 @@ export default function WalletPanel({
       {/* ── Summary Cards ───────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <div className={`rounded-xl border ${border} ${bg} p-3`}>
-          <p className={`text-xs ${muted} mb-1`}>Total Holdings</p>
+          <p className={`text-xs ${muted} mb-1`}>{t('walletPanel.totalHoldings')}</p>
           <p className={`text-base font-bold ${text}`}>{formatUsd(totalHoldingsValue)}</p>
         </div>
         <div className={`rounded-xl border ${border} ${bg} p-3`}>
-          <p className={`text-xs ${muted} mb-1`}>Unrealized PnL</p>
+          <p className={`text-xs ${muted} mb-1`}>{t('walletPanel.unrealizedPnl')}</p>
           <p className="text-base font-bold" style={{ color: totalUnrealizedPnl >= 0 ? green : red }}>
             {totalUnrealizedPnl >= 0 ? '+' : ''}{formatUsd(totalUnrealizedPnl)}
           </p>
         </div>
         <div className={`rounded-xl border ${border} ${bg} p-3`}>
-          <p className={`text-xs ${muted} mb-1`}>Available Balance</p>
+          <p className={`text-xs ${muted} mb-1`}>{t('walletPanel.availableBalance')}</p>
           <p className={`text-base font-bold ${text}`}>{formatUsd(availableBalance)}</p>
         </div>
       </div>
@@ -268,14 +270,14 @@ export default function WalletPanel({
               className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-semibold transition-colors ${formTab === 'buy' ? 'bg-amber-500/10 text-amber-500 border-b-2 border-amber-500' : `${muted} hover:${text}`}`}
             >
               <ShoppingCart className="w-3.5 h-3.5" />
-              Buy
+              {t('walletPanel.buy')}
             </button>
             <button
               onClick={() => setFormTab('sell')}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-semibold transition-colors ${formTab === 'sell' ? 'bg-red-500/10 text-red-400 border-b-2 border-red-400' : `${muted} hover:${text}`}`}
             >
               <Wallet className="w-3.5 h-3.5" />
-              Sell
+              {t('walletPanel.sell')}
             </button>
           </div>
 
@@ -285,20 +287,20 @@ export default function WalletPanel({
               <>
                 {/* Order type toggle */}
                 <div className={`flex rounded-lg overflow-hidden border ${border}`}>
-                  {['MARKET', 'LIMIT'].map((t) => (
+                  {['MARKET', 'LIMIT'].map((ot) => (
                     <button
-                      key={t}
-                      onClick={() => setOrderType(t)}
-                      className={`flex-1 py-1.5 text-xs font-medium transition-colors ${orderType === t ? 'bg-amber-500 text-black' : `${bg2} ${muted}`}`}
+                      key={ot}
+                      onClick={() => setOrderType(ot)}
+                      className={`flex-1 py-1.5 text-xs font-medium transition-colors ${orderType === ot ? 'bg-amber-500 text-black' : `${bg2} ${muted}`}`}
                     >
-                      {t}
+                      {ot === 'MARKET' ? t('walletPanel.orderTypeMarket') : t('walletPanel.orderTypeLimit')}
                     </button>
                   ))}
                 </div>
 
                 {/* Asset */}
                 <div>
-                  <label className={`text-xs ${muted} mb-1 block`}>Asset</label>
+                  <label className={`text-xs ${muted} mb-1 block`}>{t('walletPanel.asset')}</label>
                   <Select value={orderSymbol} onValueChange={setOrderSymbol}>
                     <SelectTrigger className={`h-auto py-2 px-3 rounded-lg border text-sm pr-8 focus:ring-1 focus:ring-amber-500 focus:outline-none ${isDark ? 'bg-[#0a0d12] border-white/10 text-white data-[state=open]:border-amber-500/50' : 'bg-slate-50 border-slate-200 text-slate-900'}`}>
                       <SelectValue />
@@ -314,25 +316,25 @@ export default function WalletPanel({
                 </div>
 
                 <div className={`text-xs ${muted}`}>
-                  Mark price: <span className={`font-mono ${text}`}>{currentMarkPrice > 0 ? formatPrice(currentMarkPrice) : '--'}</span>
+                  {t('walletPanel.markPriceLabel')} <span className={`font-mono ${text}`}>{currentMarkPrice > 0 ? formatPrice(currentMarkPrice) : '--'}</span>
                 </div>
 
                 {orderType === 'LIMIT' && (
                   <div>
-                    <label className={`text-xs ${muted} mb-1 block`}>Limit Price (USD)</label>
+                    <label className={`text-xs ${muted} mb-1 block`}>{t('walletPanel.limitPriceUsd')}</label>
                     <input type="number" min="0" step="any" placeholder="0.00" value={limitPrice} onChange={(e) => setLimitPrice(e.target.value)} className={inputClass} />
                   </div>
                 )}
 
                 <div>
-                  <label className={`text-xs ${muted} mb-1 block`}>Quantity ({orderSymbol.replace('USDT', '')})</label>
+                  <label className={`text-xs ${muted} mb-1 block`}>{t('walletPanel.quantity', { asset: orderSymbol.replace('USDT', '') })}</label>
                   <input type="number" min="0" step="any" placeholder="0.00" value={orderQty} onChange={(e) => setOrderQty(e.target.value)} className={inputClass} />
                 </div>
 
                 {orderCost > 0 && (
                   <p className={`text-xs ${muted}`}>
-                    Est. cost: <span className={`font-mono ${text}`}>{formatUsd(orderCost)}</span>
-                    {orderCost > availableBalance && <span style={{ color: red }}> — insufficient balance</span>}
+                    {t('walletPanel.estCost')} <span className={`font-mono ${text}`}>{formatUsd(orderCost)}</span>
+                    {orderCost > availableBalance && <span style={{ color: red }}> {t('walletPanel.insufficientBalanceInline')}</span>}
                   </p>
                 )}
 
@@ -341,7 +343,7 @@ export default function WalletPanel({
                   disabled={buyMutation.isPending || isAccountLocked || !orderQty}
                   className="w-full py-2 rounded-lg bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black text-sm font-bold transition-colors"
                 >
-                  {buyMutation.isPending ? 'Placing...' : orderType === 'MARKET' ? 'Buy Now' : 'Place Limit Order'}
+                  {buyMutation.isPending ? t('walletPanel.placing') : orderType === 'MARKET' ? t('walletPanel.buyNow') : t('walletPanel.placeLimitOrder')}
                 </button>
               </>
             )}
@@ -350,19 +352,19 @@ export default function WalletPanel({
             {formTab === 'sell' && (
               <>
                 {holdings.length === 0 ? (
-                  <p className={`text-xs ${muted} text-center py-4`}>No holdings to sell.<br />Buy crypto from the Buy tab.</p>
+                  <p className={`text-xs ${muted} text-center py-4`}>{t('walletPanel.noHoldingsToSell')}<br />{t('walletPanel.buyCryptoFromBuyTab')}</p>
                 ) : (
                   <>
                     <div>
-                      <label className={`text-xs ${muted} mb-1 block`}>Asset</label>
+                      <label className={`text-xs ${muted} mb-1 block`}>{t('walletPanel.asset')}</label>
                       <Select value={sellAsset} onValueChange={(val) => { setSellAsset(val); setSellQty(''); }}>
                         <SelectTrigger className={`h-auto py-2 px-3 rounded-lg border text-sm pr-8 focus:ring-1 focus:ring-amber-500 focus:outline-none ${isDark ? 'bg-[#0a0d12] border-white/10 text-white data-[state=open]:border-amber-500/50' : 'bg-slate-50 border-slate-200 text-slate-900'}`}>
-                          <SelectValue placeholder="— Select asset —" />
+                          <SelectValue placeholder={t('walletPanel.selectAssetPlaceholder')} />
                         </SelectTrigger>
                         <SelectContent className={isDark ? 'bg-[#1a1f2a] border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'}>
                           {holdings.map((h) => (
                             <SelectItem key={h.asset} value={h.asset} className={isDark ? 'text-white focus:bg-amber-500/20 focus:text-amber-400' : 'text-slate-900 focus:bg-amber-50 focus:text-amber-700'}>
-                              {h.asset} — {h.totalQty.toFixed(6)} available
+                              {h.asset} — {t('walletPanel.qtyAvailable', { qty: h.totalQty.toFixed(6) })}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -373,44 +375,44 @@ export default function WalletPanel({
                       <>
                         <div className={`rounded-lg p-2 space-y-1 ${bg2} border ${border}`}>
                           <div className="flex justify-between text-xs">
-                            <span className={muted}>Mark Price</span>
+                            <span className={muted}>{t('walletPanel.markPrice')}</span>
                             <span className={`font-mono ${text}`}>{sellMarkPrice > 0 ? formatPrice(sellMarkPrice) : '--'}</span>
                           </div>
                           <div className="flex justify-between text-xs">
-                            <span className={muted}>Holdings</span>
+                            <span className={muted}>{t('walletPanel.holdings')}</span>
                             <span className={`font-mono ${text}`}>{sellHolding.totalQty.toFixed(6)} {sellHolding.asset}</span>
                           </div>
                           <div className="flex justify-between text-xs">
-                            <span className={muted}>Avg Cost</span>
+                            <span className={muted}>{t('walletPanel.avgCost')}</span>
                             <span className={`font-mono ${muted}`}>{formatPrice(sellHolding.avgCost)}</span>
                           </div>
                         </div>
 
                         <div>
                           <div className="flex items-center justify-between mb-1">
-                            <label className={`text-xs ${muted}`}>Quantity ({sellHolding.asset})</label>
-                            <button onClick={() => setSellQty(sellHolding.totalQty.toString())} className="text-xs text-amber-500 hover:text-amber-400">Max</button>
+                            <label className={`text-xs ${muted}`}>{t('walletPanel.quantity', { asset: sellHolding.asset })}</label>
+                            <button onClick={() => setSellQty(sellHolding.totalQty.toString())} className="text-xs text-amber-500 hover:text-amber-400">{t('walletPanel.max')}</button>
                           </div>
                           <input type="number" min="0" max={sellHolding.totalQty} step="any" placeholder="0.00" value={sellQty} onChange={(e) => setSellQty(e.target.value)} className={inputClass} />
                         </div>
 
                         {sellEstValue > 0 && (
                           <p className={`text-xs ${muted}`}>
-                            Est. value: <span className={`font-mono ${text}`}>{formatUsd(sellEstValue)}</span>
+                            {t('walletPanel.estValue')} <span className={`font-mono ${text}`}>{formatUsd(sellEstValue)}</span>
                           </p>
                         )}
 
                         <button
                           onClick={() => {
-                            if (!sellQty || sellQtyNum <= 0) { toast({ title: 'Enter valid quantity', variant: 'destructive' }); return; }
-                            if (sellQtyNum > sellHolding.totalQty) { toast({ title: 'Quantity exceeds holdings', variant: 'destructive' }); return; }
-                            if (!sellMarkPrice) { toast({ title: 'Price unavailable', variant: 'destructive' }); return; }
+                            if (!sellQty || sellQtyNum <= 0) { toast({ title: t('walletPanel.toastEnterValidQuantity'), variant: 'destructive' }); return; }
+                            if (sellQtyNum > sellHolding.totalQty) { toast({ title: t('walletPanel.toastQuantityExceedsHoldings'), variant: 'destructive' }); return; }
+                            if (!sellMarkPrice) { toast({ title: t('walletPanel.toastPriceUnavailable'), variant: 'destructive' }); return; }
                             executeSell(sellHolding, sellQtyNum, sellMarkPrice);
                           }}
                           disabled={sellMutation.isPending || isAccountLocked || !sellQty || !sellMarkPrice}
                           className="w-full py-2 rounded-lg bg-red-500 hover:bg-red-400 disabled:opacity-50 text-white text-sm font-bold transition-colors"
                         >
-                          {sellMutation.isPending ? 'Selling...' : `Sell ${sellHolding.asset}`}
+                          {sellMutation.isPending ? t('walletPanel.selling') : t('walletPanel.sellAsset', { asset: sellHolding.asset })}
                         </button>
                       </>
                     )}
@@ -425,7 +427,7 @@ export default function WalletPanel({
         <div className={`lg:col-span-2 rounded-xl border ${border} ${bg} overflow-hidden`}>
           <div className={`px-4 py-3 border-b ${border} flex items-center gap-2`}>
             <Wallet className="w-4 h-4 text-amber-500" />
-            <span className={`text-sm font-semibold ${text}`}>Holdings</span>
+            <span className={`text-sm font-semibold ${text}`}>{t('walletPanel.holdings')}</span>
             {holdings.length > 0 && (
               <span className="ml-1 text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-500 font-bold">{holdings.length}</span>
             )}
@@ -436,20 +438,20 @@ export default function WalletPanel({
               <div className={`w-12 h-12 rounded-full mb-3 flex items-center justify-center ${isDark ? 'bg-white/5' : 'bg-slate-200'}`}>
                 <TrendingUp className={`w-6 h-6 ${muted}`} />
               </div>
-              <p className={`font-medium text-sm ${text}`}>No spot holdings</p>
-              <p className={`text-xs mt-1 ${muted}`}>Buy crypto using the Buy tab on the left</p>
+              <p className={`font-medium text-sm ${text}`}>{t('walletPanel.noSpotHoldings')}</p>
+              <p className={`text-xs mt-1 ${muted}`}>{t('walletPanel.buyCryptoUsingBuyTab')}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr className={`border-b ${border}`}>
-                    <th style={{ ...thStyle, textAlign: 'left' }} className={muted}>Asset</th>
-                    <th style={{ ...thStyle, textAlign: 'right' }} className={muted}>Qty</th>
-                    <th style={{ ...thStyle, textAlign: 'right' }} className={muted}>Avg Cost</th>
-                    <th style={{ ...thStyle, textAlign: 'right' }} className={muted}>Mark Price</th>
-                    <th style={{ ...thStyle, textAlign: 'right' }} className={muted}>Value</th>
-                    <th style={{ ...thStyle, textAlign: 'right' }} className={muted}>Unrealized PnL</th>
+                    <th style={{ ...thStyle, textAlign: 'left' }} className={muted}>{t('walletPanel.asset')}</th>
+                    <th style={{ ...thStyle, textAlign: 'right' }} className={muted}>{t('walletPanel.qty')}</th>
+                    <th style={{ ...thStyle, textAlign: 'right' }} className={muted}>{t('walletPanel.avgCost')}</th>
+                    <th style={{ ...thStyle, textAlign: 'right' }} className={muted}>{t('walletPanel.markPrice')}</th>
+                    <th style={{ ...thStyle, textAlign: 'right' }} className={muted}>{t('walletPanel.value')}</th>
+                    <th style={{ ...thStyle, textAlign: 'right' }} className={muted}>{t('walletPanel.unrealizedPnl')}</th>
                     <th style={{ ...thStyle, textAlign: 'center' }} className={muted}></th>
                   </tr>
                 </thead>
@@ -494,7 +496,7 @@ export default function WalletPanel({
                               : 'border-slate-300 text-slate-500 hover:text-slate-900 hover:border-slate-400'
                           }`}
                         >
-                          Sell
+                          {t('walletPanel.sell')}
                         </button>
                       </td>
                     </tr>
@@ -510,26 +512,28 @@ export default function WalletPanel({
       {confirmSell && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
           <div className={`rounded-2xl border ${border} ${bg} p-6 w-full max-w-sm shadow-2xl`}>
-            <h3 className={`text-base font-bold ${text} mb-1`}>Sell {confirmSell.asset}</h3>
+            <h3 className={`text-base font-bold ${text} mb-1`}>{t('walletPanel.sellAsset', { asset: confirmSell.asset })}</h3>
             <p className={`text-sm ${muted} mb-4`}>
-              Close all {confirmSell.trades.length} open position{confirmSell.trades.length > 1 ? 's' : ''} — {confirmSell.totalQty.toFixed(6)} {confirmSell.asset} at market price.
+              {confirmSell.trades.length > 1
+                ? t('walletPanel.confirmSellBody_plural', { count: confirmSell.trades.length, qty: confirmSell.totalQty.toFixed(6), asset: confirmSell.asset })
+                : t('walletPanel.confirmSellBody', { count: confirmSell.trades.length, qty: confirmSell.totalQty.toFixed(6), asset: confirmSell.asset })}
             </p>
 
             <div className={`rounded-lg ${bg2} p-3 mb-4 space-y-1`}>
               <div className="flex justify-between text-xs">
-                <span className={muted}>Quantity</span>
+                <span className={muted}>{t('walletPanel.quantityLabel')}</span>
                 <span className={`font-mono ${text}`}>{confirmSell.totalQty.toFixed(6)} {confirmSell.asset}</span>
               </div>
               <div className="flex justify-between text-xs">
-                <span className={muted}>Mark Price</span>
+                <span className={muted}>{t('walletPanel.markPrice')}</span>
                 <span className={`font-mono ${text}`}>{formatPrice(confirmSell.markPrice)}</span>
               </div>
               <div className="flex justify-between text-xs">
-                <span className={muted}>Est. Value</span>
+                <span className={muted}>{t('walletPanel.estValueLabel')}</span>
                 <span className={`font-mono ${text}`}>{formatUsd(confirmSell.valueUsd)}</span>
               </div>
               <div className="flex justify-between text-xs">
-                <span className={muted}>Unrealized PnL</span>
+                <span className={muted}>{t('walletPanel.unrealizedPnl')}</span>
                 <span className="font-mono" style={{ color: confirmSell.unrealizedPnl >= 0 ? green : red }}>
                   {confirmSell.unrealizedPnl >= 0 ? '+' : ''}{formatUsd(confirmSell.unrealizedPnl)}
                 </span>
@@ -541,14 +545,14 @@ export default function WalletPanel({
                 onClick={() => setConfirmSell(null)}
                 className={`flex-1 py-2 rounded-lg border ${border} text-sm ${muted} hover:${text} transition-colors`}
               >
-                Cancel
+                {t('walletPanel.cancel')}
               </button>
               <button
                 disabled={!confirmSell.markPrice || sellMutation.isPending}
                 onClick={() => {
                   const price = confirmSell.markPrice;
                   if (!price) {
-                    toast({ title: 'Price unavailable', variant: 'destructive' });
+                    toast({ title: t('walletPanel.toastPriceUnavailable'), variant: 'destructive' });
                     return;
                   }
                   // Close each individual trade
@@ -559,17 +563,17 @@ export default function WalletPanel({
                     .then(() => {
                       queryClient.invalidateQueries({ queryKey: ['trades', accountId] });
                       queryClient.invalidateQueries({ queryKey: ['accountSummary', accountId] });
-                      toast({ title: `${confirmSell.asset} sold` });
+                      toast({ title: t('walletPanel.toastAssetSold', { asset: confirmSell.asset }) });
                       setConfirmSell(null);
                       onTradeExecuted?.();
                     })
                     .catch((e) => {
-                      toast({ title: 'Sell failed', description: e?.response?.data?.message || e.message, variant: 'destructive' });
+                      toast({ title: t('walletPanel.toastSellFailed'), description: e?.response?.data?.message || e.message, variant: 'destructive' });
                     });
                 }}
                 className="flex-1 py-2 rounded-lg bg-red-500 hover:bg-red-400 disabled:opacity-50 text-white text-sm font-bold transition-colors"
               >
-                {sellMutation.isPending ? 'Selling...' : 'Confirm Sell'}
+                {sellMutation.isPending ? t('walletPanel.selling') : t('walletPanel.confirmSell')}
               </button>
             </div>
           </div>

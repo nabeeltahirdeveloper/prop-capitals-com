@@ -8,27 +8,42 @@
   },
   "home": {
     "hero": {
-      "badge": "Trusted by 15,000+ traders worldwide",
-      "title": "Trade With ",
-      "titleHighlight": "Our Capital",
-      "subtitle": "Prove your skills, get funded up to â¬200,000, and keep up to 90% of your profits. No risk to your own capital.",
-      "cta": "Start Your Challenge",
-      "howItWorks": "How It Works",
-      "verified": "Verified Company",
-      "secure": "Secure Payments",
-      "support": "24/7 Support",
-      "profitToday": "Profit Today",
-      "winRate": "Win Rate"
+      "trustpilotRating": "4.8 on Trustpilot",
+      "trustpilotCount": "(18,500+ traders)",
+      "promo": "Limited Time: 70% OFF All Challenges",
+      "title": "Trade Globally,",
+      "titleHighlight": "Earn Anywhere",
+      "subtitle": "Join 18,500+ traders worldwide who are already trading with Prop Capitals funding. Get funded up to {{amount}} and keep up to 90% of your profits.",
+      "getFunded": "Get Funded Now",
+      "watchDemo": "Watch Demo",
+      "traders": "traders",
+      "countries": "Countries",
+      "maxFunding": "Max Funding",
+      "liveTrading": "Live Trading Active",
+      "stats": {
+        "activeTraders": "Active Traders",
+        "totalPaidOut": "Total Paid Out",
+        "avgPayout": "Avg Payout"
+      }
     },
     "stats": {
       "fundedCapital": "Funded Capital",
       "activeTraders": "Active Traders",
       "paidToTraders": "Paid to Traders",
-      "trustScore": "Trust Score"
+      "trustScore": "Trust Score",
+      "totalPaidOut": "Total Paid Out",
+      "avgPayout": "Avg. Payout",
+      "payoutSpeed": "Payout Speed",
+      "trustpilot": "Trustpilot",
+      "successRate": "Success Rate",
+      "ctaTitle": "Ready to Get Funded?",
+      "ctaSubtitle": "Join thousands of successful traders who trust Prop Capitals. Get funded today and start your journey to financial freedom.",
+      "startTrading": "Start Trading NOW",
+      "viewAllPlans": "View All Plans"
     },
     "features": {
       "title": "Why Choose Us",
-      "subtitle": "Built for Serious Traders",
+      "subtitle": "No restrictions, no limitations. Use any strategy that works for you with complete trading freedom.",
       "description": "We've built the most trader-friendly prop firm with transparent rules, generous conditions, and real support.",
       "clearObjectives": {
         "title": "Clear Trading Objectives",
@@ -54,7 +69,39 @@
       "noTimeLimits": {
         "title": "No Time Limits",
         "description": "Take your time to reach your targets. No maximum trading period or rushing required."
-      }
+      },
+      "eyebrow": "Trading Freedom",
+      "headingLead": "Trade",
+      "headingHighlight": "Your Way",
+      "items": [
+        {
+          "title": "Expert Advisors",
+          "description": "Use any automated trading bot or EA"
+        },
+        {
+          "title": "News Trading",
+          "description": "Trade during high-impact economic events"
+        },
+        {
+          "title": "Weekend Holding",
+          "description": "Keep your positions open over weekends"
+        },
+        {
+          "title": "No Time Limit",
+          "description": "Complete challenges at your own pace"
+        },
+        {
+          "title": "Scalping Allowed",
+          "description": "No minimum holding time restrictions"
+        },
+        {
+          "title": "Copy Trading",
+          "description": "Use signal services and copy trading"
+        }
+      ],
+      "ctaTitle": "Ready to Trade Without Limits?",
+      "ctaSubtitle": "Join thousands of traders who enjoy complete freedom with Prop Capitals. No restrictions on how you trade.",
+      "ctaButton": "Get Started Now"
     },
     "howItWorks": {
       "label": "Getting Started",
@@ -87,9 +134,13 @@
     },
     "testimonials": {
       "label": "Testimonials",
-      "title": "Traders Love Us",
+      "title": "Hear From Our",
       "subtitle": "Join thousands of successful traders who have earned with Prop Capitals.",
-      "totalEarned": "Total Earned"
+      "totalEarned": "Total Earned",
+      "eyebrow": "Testimonials",
+      "titleHighlight": "Traders",
+      "fundedTrader": "Funded Trader",
+      "payout": "Payout"
     },
     "cta": {
       "title": "Ready to Start Your",
@@ -114,10 +165,213 @@
       "faq": "FAQ",
       "contact": "Contact",
       "terms": "Terms of Service",
-      "privacy": "Privacy Policy"
+      "privacy": "Privacy Policy",
+      "tagline": "Empowering traders worldwide with funded accounts and industry-leading conditions.",
+      "trading": "Trading",
+      "resources": "Resources",
+      "aboutUs": "About Us",
+      "careers": "Careers",
+      "blog": "Blog",
+      "oneStepChallenge": "1-Step Challenge",
+      "twoStepChallenge": "2-Step Challenge",
+      "pricing": "Pricing",
+      "platforms": "Platforms",
+      "faqs": "FAQs",
+      "tradingRules": "Trading Rules",
+      "affiliateProgram": "Affiliate Program",
+      "riskDisclosure": "Risk Disclosure",
+      "refundPolicy": "Refund Policy",
+      "withdrawalPolicy": "Withdrawal Policy",
+      "kycPolicy": "KYC Policy",
+      "amlPolicy": "AML Policy",
+      "riskDisclaimerLabel": "Risk Disclaimer:",
+      "riskDisclaimerText": "Trading in foreign exchange and other financial instruments involves substantial risk of loss and is not suitable for all investors. Past performance is not indicative of future results. Prop Capitals provides simulated trading accounts; we are not a broker, investment advisor, or financial institution. All trading activities during the evaluation phase are performed in a simulated environment. Please trade responsibly and only with capital you can afford to lose.",
+      "copyrightLine": "© 2026 Prop-Capitals.com. All rights reserved.",
+      "riskShort": "Risk",
+      "refundsShort": "Refunds",
+      "withdrawalsShort": "Withdrawals",
+      "kycShort": "KYC",
+      "amlShort": "AML"
     },
     "partners": {
       "title": "Trusted by traders using:"
+    },
+    "challengesSection": {
+      "eyebrow": "Funding Programs",
+      "title": "Choose Your",
+      "titleHighlight": "Path",
+      "subtitle": "Select the funding program that matches your trading style. All programs include 100% fee refund.",
+      "errorState": "Our funding programs are temporarily unavailable. Please try again shortly.",
+      "emptyState": "No funding programs are available right now. Please check back soon.",
+      "viewAllChallenges": "View all challenges",
+      "customSize": "Custom {{symbol}}",
+      "discountBadge": "70% OFF",
+      "notAtThisSize": "Not at this size",
+      "pickAnotherSize": "Pick another account size",
+      "stats": {
+        "profitTarget": "Profit Target",
+        "dailyDrawdown": "Daily Drawdown",
+        "maxDrawdown": "Max Drawdown",
+        "leverage": "Leverage",
+        "profitSplit": "Profit Split"
+      },
+      "features": [
+        "No time limit",
+        "All strategies allowed",
+        "100% fee refund",
+        "Free education included"
+      ],
+      "getStarted": "Get Started"
+    },
+    "comparison": {
+      "eyebrow": "Why Choose Us",
+      "titleStart": "Prop Capitals vs.",
+      "titleOther": "\"Other\"",
+      "titleEnd": "Firms",
+      "subtitle": "See why thousands of traders are switching to Prop Capitals.",
+      "others": "Others",
+      "feature": "Feature",
+      "otherPropFirms": "Other Prop Firms"
+    },
+    "education": {
+      "badge": "Free Education",
+      "title": "Free Trading",
+      "titleHighlight": "Blueprint",
+      "subtitle": "When you purchase any challenge, you get instant access to our comprehensive trading course. Learn from professional traders and master the markets with proven strategies.",
+      "watchPreview": "Watch Preview",
+      "featureList": [
+        "50+ video lessons",
+        "Live trading sessions",
+        "Private Discord community",
+        "Weekly market analysis"
+      ],
+      "cards": [
+        {
+          "title": "Your Trading Setup Advantage",
+          "item1": "Learn trading secrets",
+          "item2": "Optimize your workspace",
+          "item3": "Create consistency in every trade"
+        },
+        {
+          "title": "Mapping High Timeframe Zones",
+          "item1": "Draw supply and demand zones",
+          "item2": "Identify optimal entries along zones",
+          "item3": "Use HTF zones to guide LTF trades"
+        },
+        {
+          "title": "Essential Trading Resources",
+          "item1": "Top news sources on social media",
+          "item2": "How to evaluate outside resources",
+          "item3": "Critical risk management tools"
+        },
+        {
+          "title": "Fibonacci Entries and Exits",
+          "item1": "Optimal ratios for entries and exits",
+          "item2": "Set precise targets with extensions",
+          "item3": "Catch pullbacks with confidence"
+        }
+      ]
+    },
+    "faqSection": {
+      "eyebrow": "Support",
+      "titlePrefix": "Frequently Asked",
+      "titleHighlight": "Questions",
+      "subtitle": "Everything you need to know about Prop Capitals funding programs.",
+      "stillHaveQuestions": "Still have questions?",
+      "contactSupport": "Contact our 24/7 support team"
+    },
+    "payoutsSection": {
+      "logoAlt": "Logo",
+      "logoDarkAlt": "Logo Dark",
+      "fundedTrading": "Funded Trading",
+      "checkNo": "Check No.",
+      "date": "DATE",
+      "payToTheOrderOf": "PAY TO THE ORDER OF",
+      "amountUsd": "AMOUNT (USD)",
+      "memo": "MEMO",
+      "memoValue": "Trading Profit Payout",
+      "authorized": "Authorized",
+      "verified": "VERIFIED",
+      "badge": "Real Trader Payouts",
+      "headingBefore": "Over",
+      "headingAfter": "Paid Out",
+      "subtitle": "Every check represents a real trader who achieved their goals with Prop Capitals."
+    },
+    "platforms": {
+      "eyebrow": "Trading Platforms",
+      "titlePrefix": "Trade on",
+      "titleHighlight": "Your Terms",
+      "subtitle": "Choose from industry-leading platforms with advanced charting, automated trading, and mobile access.",
+      "newBadge": "NEW",
+      "mt5": {
+        "description": "Industry-standard platform with powerful charting and automated trading.",
+        "features": [
+          "Expert Advisors",
+          "Advanced Charts",
+          "Mobile App"
+        ]
+      },
+      "tradeLocker": {
+        "description": "Modern platform with TradingView integration for seamless analysis.",
+        "features": [
+          "TradingView Charts",
+          "Web-Based",
+          "One-Click Trading"
+        ]
+      },
+      "bybit": {
+        "description": "Leading crypto exchange with advanced derivatives and spot trading.",
+        "features": [
+          "Crypto Futures",
+          "Copy Trading",
+          "Unified Account"
+        ]
+      },
+      "pt5": {
+        "description": "Our proprietary platform built for funded traders with exclusive features.",
+        "features": [
+          "Zero Latency",
+          "Built-in Risk Manager",
+          "Exclusive to PC"
+        ]
+      },
+      "highlights": {
+        "webPlatform": {
+          "label": "Web Platform",
+          "value": "Trade from any browser"
+        },
+        "instruments": {
+          "label": "100+ Instruments",
+          "value": "Forex, Crypto, Indices"
+        },
+        "spreads": {
+          "label": "0.0 Pip Spreads",
+          "value": "Institutional pricing"
+        }
+      }
+    },
+    "profitCalculator": {
+      "badge": "Profit Calculator",
+      "titlePrefix": "Calculate Your",
+      "titleHighlight": "Earning Potential",
+      "subtitle": "Based on statistics from our funded traders, the average monthly profit rate is 5.72%.",
+      "unavailable": "The calculator is temporarily unavailable. Please try again shortly.",
+      "accountSize": "Account Size",
+      "step": "Step {{current}}/{{total}}",
+      "monthlyProfitRate": "Monthly Profit Rate",
+      "average": "Avg: 5.72%",
+      "monthlyEarnings": "Monthly Earnings (90% split)",
+      "yearlyPotential": "Yearly Potential",
+      "disclaimer": "*Based on 90% profit split. Actual results may vary based on trading performance."
+    },
+    "trustpilot": {
+      "verified": "Verified",
+      "postedOn": "Posted on Trustpilot",
+      "basedOnReviews": "Based on 2,340+ reviews",
+      "headingBefore": "Trusted by",
+      "headingHighlight": "Thousands",
+      "headingAfter": "of Traders",
+      "subtitle": "Don't just take our word for it. See what real traders are saying about their experience with Prop Capitals."
     }
   },
   "dashboard": {
@@ -214,7 +468,7 @@
       "hedging": "Hedging",
       "copyTrading": "Copy Trading",
       "leverage": "Leverage",
-      "maxLot": "Max {{lot}}",
+      "maxLot": "{{max}} {{lot}}",
       "lot": "lot",
       "profitSplit": "Profit Split",
       "target": "Target",
@@ -228,7 +482,8 @@
         "warning": "WARNING",
         "safe": "SAFE"
       }
-    }
+    },
+    "pl": "P/L"
   },
   "myAccounts": {
     "title": "My Accounts",
@@ -307,7 +562,7 @@
     "bestDay": "Best Day",
     "worstDay": "Worst Day",
     "noData": "No symbol distribution data",
-    "loading": "Loading..."
+    "loading": "Loading analytics..."
   },
   "payouts": {
     "title": "Payouts",
@@ -339,7 +594,7 @@
     "businessDaysOnly": "business days",
     "minimumAmount": "Minimum Amount",
     "payoutFee": "Payout Fee",
-    "free": "â¬0 (Free)",
+    "free": "€0 (Free)",
     "freeValue": "Free",
     "availablePaymentMethods": "Available Payment Methods",
     "bankTransfer": "Bank Transfer",
@@ -363,7 +618,14 @@
     "date": "Date",
     "method": "Method",
     "status": "Status",
-    "processed": "Processed"
+    "processed": "Processed",
+    "requestFailed": "Failed to request payout",
+    "loadingAvailable": "Loading available amount...",
+    "availableForPayout": "Available for payout",
+    "profitSplitLabel": "Profit split",
+    "minimumLabel": "Minimum",
+    "pendingPayoutWarning": "You already have a pending payout request for this account",
+    "belowMinimumWarning": "Available amount is below the minimum payout of {{amount}}"
   },
   "profile": {
     "title": "Profile",
@@ -442,19 +704,22 @@
     "personal": "Personal",
     "sec": "Security",
     "verify": "Verify",
-    "notif": "Notifications"
+    "notif": "Notifications",
+    "saveError": "Failed to save profile",
+    "notificationUpdateFailed": "Failed to update notification preferences",
+    "passwordChangeFailed": "Failed to change password",
+    "documentUploadFailed": "Failed to upload document",
+    "preferencesSaved": "Preferences saved"
   },
   "support": {
     "title": "Support",
     "subtitle": "Get help with your account and trading",
     "newTicket": "New Ticket",
     "createTicket": "Create Support Ticket",
-    "ticketCreated":"ticketCreated",
-                     "ticketCreatedDesc":"ticketCreatedDesc",
-
+    "ticketCreated": "Ticket Created",
+    "ticketCreatedDesc": "Your support ticket has been submitted successfully.",
     "subject": "Subject",
     "subjectPlaceholder": "Brief description of your issue",
-
     "category": "Category",
     "select": "Select",
     "account": "Account",
@@ -470,7 +735,6 @@
     "messagePlaceholder": "Describe your issue in detail...",
     "submitting": "Submitting...",
     "submitTicket": "Submit Ticket",
-
     "openTickets": "Open Tickets",
     "inProgress": "In Progress",
     "resolved": "Resolved",
@@ -491,7 +755,9 @@
     "faq3Q": "How long do payouts take?",
     "faq3A": "Payouts are processed within 24-48 hours after approval. Bank transfers may take additional 2-5 business days.",
     "faq4Q": "Can I trade during news events?",
-    "faq4A": "Yes, news trading is allowed on all challenge types. There are no restrictions on trading during high-impact news."
+    "faq4A": "Yes, news trading is allowed on all challenge types. There are no restrictions on trading during high-impact news.",
+    "error": "Error",
+    "ticketError": "Failed to create support ticket. Please try again."
   },
   "tradeHistory": {
     "title": "Trade History",
@@ -532,7 +798,10 @@
     "profit": "Profit",
     "status": "Status",
     "noAccounts": "No Trading Accounts",
-    "noAccountsDesc": "You need to create a trading account first to view trade history."
+    "noAccountsDesc": "You need to create a trading account first to view trade history.",
+    "csvLots": "Lots",
+    "openTime": "Open Time",
+    "closeTime": "Close Time"
   },
   "challengeProgress": {
     "title": "Challenge Progress",
@@ -558,7 +827,7 @@
     "maxOverallDD": "Max Overall DD",
     "fundedDesc": "Trade with our capital",
     "profitSplit80": "80% profit split",
-    "scalingDesc": "Grow to â¬2,000,000",
+    "scalingDesc": "Grow to {{amount}}",
     "profitSplit90": "Up to 90% profit split",
     "currentPhaseRequirements": "Current Phase Requirements",
     "profitSplit": "Profit Split",
@@ -575,7 +844,18 @@
     "readyToStartDesc": "Open your trading platform and work towards your profit target.",
     "viewTradingRules": "View Trading Rules",
     "failed": "Failed",
-    "noAccountsDesc": "Purchase a challenge to start tracking your progress."
+    "noAccountsDesc": "Purchase a challenge to start tracking your progress.",
+    "accountNumberLabel": "Account #{{number}}",
+    "dailyDD": "Daily DD",
+    "overallDD": "Overall DD",
+    "targetLabel": "Target: {{value}}",
+    "minDaysLabel": "Min: {{value}} days",
+    "maxLabel": "Max: {{value}}",
+    "progress": "Progress",
+    "passed": "Passed",
+    "challengeFailed": "Challenge Failed",
+    "failedDescription": "This challenge has been disqualified due to a rule violation.",
+    "startNewChallenge": "Start New Challenge"
   },
   "phaseTimeline": {
     "challengeJourney": "Challenge Journey",
@@ -763,7 +1043,9 @@
       "limit": "Limit",
       "violationDetected": "Account Violation Detected",
       "violationMessage": "Your account has violated one or more trading rules. Please review your trading activity."
-    }
+    },
+    "hoursShort": "h",
+    "minutesShort": "m"
   },
   "notifications": {
     "title": "Notifications",
@@ -809,22 +1091,25 @@
       "overallDrawdownWarning": "Your overall drawdown has reached {{overallPercent}}% on account #{{accountNumber}}. Maximum allowed is {{maxPercent}}%. Please manage your risk carefully.",
       "dailyDrawdownViolation": "Your daily drawdown has reached {{dailyPercent}}% on account #{{accountNumber}}. Maximum allowed is {{maxPercent}}%. Trading is locked until tomorrow.",
       "overallDrawdownViolation": "Your overall drawdown has reached {{overallPercent}}% on account #{{accountNumber}}. Maximum allowed is {{maxPercent}}%. Challenge disqualified.",
-      "payoutApproved": "Your payout request of â¬{{amount}} has been approved. Funds will be transferred within 24-48 hours.",
-      "payoutRejected": "Your payout request of â¬{{amount}} has been rejected. Please contact support for more information.",
-      "payoutProcessed": "Your payout of â¬{{amount}} has been processed and transferred to your account.",
-      "phase1Completed": "Congratulations! You have successfully completed Phase 1 of your â¬{{accountSize}} challenge. Proceed to Phase 2 to continue.",
-      "phase2Completed": "Congratulations! You have successfully completed Phase 2 of your â¬{{accountSize}} challenge. Your account is now funded!",
+      "payoutApproved": "Your payout request of €{{amount}} has been approved. Funds will be transferred within 24-48 hours.",
+      "payoutRejected": "Your payout request of €{{amount}} has been rejected. Please contact support for more information.",
+      "payoutProcessed": "Your payout of €{{amount}} has been processed and transferred to your account.",
+      "phase1Completed": "Congratulations! You have successfully completed Phase 1 of your €{{accountSize}} challenge. Proceed to Phase 2 to continue.",
+      "phase2Completed": "Congratulations! You have successfully completed Phase 2 of your €{{accountSize}} challenge. Your account is now funded!",
       "tradingDaysMilestoneMet": "You have completed {{tradingDays}} trading days on account #{{accountNumber}}. Minimum trading days requirement met!",
       "tradingDaysMilestone": "You have completed {{tradingDays}} trading days on account #{{accountNumber}}. Keep up the great work!",
-      "challengePurchased": "Your {{challengeName}} challenge has been purchased successfully. Your trading account #{{accountNumber}} is now active with a starting balance of â¬{{startingBalance}}.",
-      "accountScalingApproved": "Your scaling request for account #{{accountNumber}} has been approved. Account balance increased from â¬{{oldBalance}} to â¬{{newBalance}}.",
+      "challengePurchased": "Your {{challengeName}} challenge has been purchased successfully. Your trading account #{{accountNumber}} is now active with a starting balance of €{{startingBalance}}.",
+      "accountScalingApproved": "Your scaling request for account #{{accountNumber}} has been approved. Account balance increased from €{{oldBalance}} to €{{newBalance}}.",
       "accountScalingRejected": "Your scaling request for account #{{accountNumber}} has been rejected. Please contact support for more information.",
       "newChallengeAvailable": "Check out our new {{challengeName}} challenge - {{accountSize}} account size on {{platform}}! Get started now.",
       "accountViolationGeneric": "Account #{{accountNumber}} has violated trading rules{{violationPercent}}.",
       "accountPaused": "Your trading account #{{accountNumber}} has been paused. Trading is temporarily disabled.",
       "accountClosed": "Your trading account #{{accountNumber}} has been closed.",
       "accountResumed": "Your trading account #{{accountNumber}} has been resumed. Trading is now active."
-    }
+    },
+    "loadError": "Failed to load notifications",
+    "loadErrorHint": "Please refresh the page and try again.",
+    "deleteNotification": "Delete notification"
   },
   "buyChallenge": {
     "title": "Add New Challenge",
@@ -870,7 +1155,7 @@
     "total": "Total",
     "processing": "Processing...",
     "pay": "Pay",
-    "payAmount": "Pay â¬{{amount}}",
+    "payAmount": "Pay {{symbol}}{{amount}}",
     "secureEncryption": "Secure 256-bit SSL encryption",
     "noChallenges": "No Challenges",
     "minTradingDays": "Min Trading Days",
@@ -910,7 +1195,17 @@
         "name": "PayPal",
         "desc": "Pay with PayPal"
       }
-    }
+    },
+    "enterCouponPrompt": "Please enter a coupon code",
+    "invalidCouponCode": "Invalid coupon code",
+    "invalidCouponDesc": "The coupon code is invalid",
+    "couponValidationFailed": "Failed to validate coupon",
+    "couponValidationFailedDesc": "Failed to validate coupon. Please try again.",
+    "purchaseFailedRetry": "Purchase failed. Please try again.",
+    "authRequired": "Authentication Required",
+    "signInToPurchase": "Please sign in to purchase a challenge.",
+    "noChallengeSelected": "No Challenge Selected",
+    "selectChallengeToContinue": "Please select a challenge to continue."
   },
   "violationModal": {
     "dailyLossTitle": "Daily Drawdown Limit Reached",
@@ -1055,7 +1350,15 @@
       "bid": "BID",
       "ask": "ASK",
       "spread": "Spread",
-      "limit": "Limit"
+      "limit": "Limit",
+      "closeModal": "Close modal",
+      "available": "Available",
+      "noAvailableBalance": "No Available Balance",
+      "selectSymbol": "Select a symbol",
+      "insufficientMargin": "Insufficient Margin",
+      "tradingDisabled": "Trading Disabled",
+      "lots": "LOTS",
+      "crypto": "CRYPTO"
     },
     "chart": {
       "lastUpdate": "Last updated",
@@ -1082,7 +1385,9 @@
       "ask": "Ask",
       "chg": "Chg%",
       "updated": "Updated",
-      "retry": "Retry"
+      "retry": "Retry",
+      "noResults": "No results found",
+      "toggleFavorite": "Toggle favorite"
     },
     "positions": {
       "title": "Open Positions",
@@ -1095,7 +1400,8 @@
       "closeAt": "Close @",
       "pips": "pips",
       "buy": "BUY",
-      "sell": "SELL"
+      "sell": "SELL",
+      "autoClosed": "Auto-closed"
     },
     "history": {
       "filterBySymbol": "Filter by symbol...",
@@ -1156,7 +1462,26 @@
       "accountViolatedRules": "Account has violated challenge rules",
       "daysRemaining_one": "{{count}} day remaining",
       "daysRemaining_other": "{{count}} days remaining"
-    }
+    },
+    "marketWatch": "Market Watch",
+    "positionModified": "Position Modified",
+    "positionModifiedSuccess": "{{symbol}} SL/TP updated successfully",
+    "positionAlreadyClosed": "Position was already closed",
+    "accountChangedDuringTrade": "Account changed during trade execution",
+    "executePendingOrderError": "Failed to execute pending order",
+    "createPendingOrderError": "Failed to create pending order",
+    "cancelOrderError": "Failed to cancel order",
+    "ws": {
+      "connectedTooltip": "WebSocket connected - real-time updates active",
+      "reconnectingTooltip": "WebSocket reconnecting - fallback polling active",
+      "disconnectedTooltip": "WebSocket disconnected - using fallback polling (5s interval)",
+      "liveUpdates": "Live Updates",
+      "reconnecting": "Reconnecting...",
+      "pollingMode": "Polling Mode",
+      "liveShort": "Live",
+      "pollShort": "Poll"
+    },
+    "accountStatusChanged": "Account Status Changed"
   },
   "nav": {
     "home": "Home",
@@ -1166,7 +1491,7 @@
     "rules": "Rules",
     "faq": "FAQ",
     "contact": "Contact",
-    "login": "Login",
+    "login": "Log in",
     "getStarted": "Get Started",
     "dashboard": "Dashboard",
     "tradingTerminal": "Trading Terminal",
@@ -1193,7 +1518,16 @@
     "website": "Website",
     "logout": "Logout",
     "user": "User",
-    "adminPanel": "Admin Panel"
+    "adminPanel": "Admin Panel",
+    "links": {
+      "home": "Home",
+      "howItWorks": "How It Works",
+      "challenges": "Challenges",
+      "faqs": "FAQs",
+      "about": "About"
+    },
+    "tagline": "FUNDED TRADING",
+    "getFunded": "Get Funded"
   },
   "status": {
     "active": "Active",
@@ -1405,9 +1739,8 @@
     },
     "riskMonitor": {
       "title": "Risk Monitor",
-      "subtitle": "Real-time monitoring of trading account risk levels",
+      "subtitle": "Real-time account risk monitoring",
       "refresh": "Refresh",
-      "searchPlaceholder": "Search by account number or trader ID...",
       "riskLevels": {
         "critical": "Critical Risk",
         "high": "High Risk",
@@ -1420,6 +1753,7 @@
         "medium": "Medium",
         "low": "Low"
       },
+      "searchPlaceholder": "Search by account number or trader...",
       "table": {
         "account": "Account",
         "balance": "Balance",
@@ -1429,18 +1763,18 @@
         "riskLevel": "Risk Level",
         "actions": "Actions"
       },
+      "confirmations": {
+        "emergencyClose": "Are you sure you want to close all positions for this account?",
+        "lockAccount": "Are you sure you want to lock this account?"
+      },
       "recentViolations": {
         "title": "Recent Violations",
-        "account": "Account",
-        "noViolations": "No recent violations"
+        "noViolations": "No recent violations",
+        "account": "Account"
       },
       "severity": {
         "fatal": "Fatal",
         "warning": "Warning"
-      },
-      "confirmations": {
-        "emergencyClose": "Are you sure you want to pause this account? This will prevent further trading.",
-        "lockAccount": "Are you sure you want to lock this account? This will pause all trading activity."
       }
     },
     "payouts": {
@@ -1747,46 +2081,6 @@
         "payoutApproved": "Payout Approved",
         "payoutApprovedDesc": "Sent when a payout is approved",
         "editTemplate": "Edit Template"
-      }
-    },
-    "riskMonitor": {
-      "title": "Risk Monitor",
-      "subtitle": "Real-time account risk monitoring",
-      "refresh": "Refresh",
-      "riskLevels": {
-        "critical": "Critical Risk",
-        "high": "High Risk",
-        "medium": "Medium Risk",
-        "low": "Low Risk"
-      },
-      "riskBadges": {
-        "critical": "Critical",
-        "high": "High",
-        "medium": "Medium",
-        "low": "Low"
-      },
-      "searchPlaceholder": "Search by account number or trader...",
-      "table": {
-        "account": "Account",
-        "balance": "Balance",
-        "equity": "Equity",
-        "dailyDD": "Daily DD",
-        "maxDD": "Max DD",
-        "riskLevel": "Risk Level",
-        "actions": "Actions"
-      },
-      "confirmations": {
-        "emergencyClose": "Are you sure you want to close all positions for this account?",
-        "lockAccount": "Are you sure you want to lock this account?"
-      },
-      "recentViolations": {
-        "title": "Recent Violations",
-        "noViolations": "No recent violations",
-        "account": "Account"
-      },
-      "severity": {
-        "fatal": "Fatal",
-        "warning": "Warning"
       }
     },
     "brokerServers": {
@@ -2338,6 +2632,50 @@
       "title": "Ready to Get Started?",
       "subtitle": "Join thousands of funded traders and start your journey today.",
       "viewChallenges": "View Challenges"
+    },
+    "hero": {
+      "badge": "How It Works",
+      "titleLead": "Your Path to",
+      "titleHighlight": "Funded Trading",
+      "subtitle": "Prop Capitals provides talented traders with the capital they need. Here's how you can start trading with up to {{amount}}."
+    },
+    "platform": {
+      "liveTrading": "Live Trading",
+      "tradingPlatform": "Trading Platform",
+      "accountBalance": "Account Balance",
+      "quickTrade": "Quick Trade",
+      "lotSize": "Lot Size",
+      "openPositions": "Open Positions"
+    },
+    "steps": {
+      "chooseChallenge": {
+        "title": "Choose Your Challenge",
+        "description": "Select between our 1-Step or 2-Step evaluation. Pick your account size from €5K to €200K."
+      },
+      "passEvaluation": {
+        "title": "Pass the Evaluation",
+        "description": "Hit the profit target while respecting drawdown limits. No time pressure - trade at your own pace."
+      },
+      "getFunded": {
+        "title": "Get Funded",
+        "description": "Once you pass, receive your funded account. Start trading with our capital immediately."
+      },
+      "earnWithdraw": {
+        "title": "Earn & Withdraw",
+        "description": "Keep up to 90% of your profits. Request payouts anytime - funds arrive in under 90 minutes."
+      }
+    },
+    "stepsSection": {
+      "titleLead": "4 Simple Steps to",
+      "titleHighlight": "Get Funded",
+      "subtitle": "From registration to your first payout in as little as a few days."
+    },
+    "ctaSection": {
+      "titleLead": "Ready to Start Your",
+      "titleHighlight": "Trading Journey",
+      "titleTail": "?",
+      "subtitle": "Join thousands of traders who have already proven their skills and are now trading with Prop Capitals funding.",
+      "button": "Get Funded Now"
     }
   },
   "challenges": {
@@ -2483,8 +2821,8 @@
         "desc": "Consistent rules throughout your journey"
       },
       "scaleTo2M": {
-        "title": "Scale to â¬2M",
-        "desc": "Grow your trading capital up to â¬2 million"
+        "title": "Scale to €2M",
+        "desc": "Grow your trading capital up to €2 million"
       },
       "automaticUpgrades": {
         "title": "Automatic Upgrades",
@@ -2509,7 +2847,7 @@
     },
     "roadmap": {
       "badge": "Roadmap",
-      "title": "Your Path to â¬2 Million",
+      "title": "Your Path to €2 Million",
       "subtitle": "See exactly how your account grows at each level.",
       "start": "START",
       "max": "MAX",
@@ -2544,10 +2882,11 @@
     "ctaSection": {
       "title": "Ready to Scale Your",
       "tradingCareer": "Trading Career?",
-      "subtitle": "Start with any challenge size and scale your way to â¬2 million in trading capital.",
+      "subtitle": "Start with any challenge size and scale your way to €2 million in trading capital.",
       "getStartedNow": "Get Started Now",
-      "footer": "Starting from just â¬99 • Scale up to â¬2M • Up to 90% profit split"
-    }
+      "footer": "Starting from just €99 • Scale up to €2M • Up to 90% profit split"
+    },
+    "heroImageAlt": "Scaling plan background"
   },
   "payoutsPage": {
     "badge": "Fast & Reliable Payouts",
@@ -2567,9 +2906,9 @@
       "profitSplit": "Profit Split",
       "best": "BEST",
       "tiers": {
-        "tier1": "â¬10K - â¬25K",
-        "tier2": "â¬50K",
-        "tier3": "â¬100K+",
+        "tier1": "€10K - €25K",
+        "tier2": "€50K",
+        "tier3": "€100K+",
         "tier4": "Scaled"
       }
     },
@@ -2614,12 +2953,16 @@
     "recentPayouts": {
       "badge": "Live Updates",
       "title": "Recent Payouts",
-      "subtitle": "Real payouts to real traders. Join our community of successful funded traders."
+      "subtitle": "Real payouts to real traders. Join our community of successful funded traders.",
+      "time": {
+        "hoursAgo": "{{count}} hours ago",
+        "dayAgo": "{{count}} day ago"
+      }
     },
     "payoutTerms": {
       "title": "Payout Terms",
       "biWeekly": "Bi-weekly payout schedule (every 14 days)",
-      "minimumAmount": "Minimum payout amount is â¬50",
+      "minimumAmount": "Minimum payout amount is €50",
       "noMaximum": "No maximum payout limit",
       "noFees": "No payout fees on any method",
       "firstPayout": "First payout after 14 days of funded trading",
@@ -2678,14 +3021,15 @@
         "title": "Daily Drawdown (5%)",
         "description": "The maximum you can lose in a single day, calculated from the day's starting balance. Resets at midnight server time.",
         "example": "Example:",
-        "exampleText": "With a â¬50,000 balance, your daily drawdown limit is â¬2,500."
+        "exampleText": "With a €50,000 balance, your daily drawdown limit is €2,500."
       },
       "maximumDrawdown": {
         "title": "Maximum Drawdown (10%)",
         "description": "The maximum total drawdown from your highest achieved balance. This is a trailing drawdown that follows your highest equity.",
         "example": "Example:",
-        "exampleText": "If your highest balance was â¬55,000, your max drawdown level is â¬49,500."
-      }
+        "exampleText": "If your highest balance was €55,000, your max drawdown level is €49,500."
+      },
+      "imageAlt": "Drawdown Chart"
     },
     "allowedActions": {
       "title": "Allowed Actions",
@@ -2753,7 +3097,7 @@
     },
     "scalingPlan": {
       "title": "Scaling Plan",
-      "subtitle": "Grow your account up to â¬2,000,000",
+      "subtitle": "Grow your account up to €2,000,000",
       "accountSize": "Account Size",
       "profitSplit": "Profit Split",
       "howItWorks": {
@@ -2774,7 +3118,7 @@
       },
       "minimum": {
         "label": "Minimum Payout",
-        "value": "â¬50"
+        "value": "€50"
       },
       "maximum": {
         "label": "Maximum Payout",
@@ -2786,12 +3130,13 @@
       },
       "fee": {
         "label": "Payout Fee",
-        "value": "â¬0 (Free)"
+        "value": "€0 (Free)"
       },
       "firstPayout": {
         "label": "First Payout",
         "value": "After 14 days of funded trading"
-      }
+      },
+      "imageAlt": "Payouts"
     },
     "cta": {
       "title": "Ready to Start Trading?",
@@ -2801,26 +3146,35 @@
     "important": "Important",
     "phase1": "Phase 1",
     "phase2": "Phase 2",
-    "funded": "Funded"
+    "funded": "Funded",
+    "heroImageAlt": "Trading Rules"
   },
   "terms": {
     "title": "Terms of Service",
-    "lastUpdated": "Last updated: January 2024",
+    "lastUpdated": "Last updated: January 1, 2025",
     "acceptance": {
       "title": "1. Acceptance of Terms",
       "content": "By accessing and using Prop Capitals's services, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services."
     },
     "description": {
-      "title": "2. Description of Services",
-      "content": "Prop Capitals provides proprietary trading evaluation programs (\"Challenges\") that allow traders to demonstrate their trading skills. Successful completion of a Challenge may result in access to a funded trading account."
+      "title": "2. Description of Service",
+      "content": "Prop Capitals provides simulated trading evaluation programs (\"Challenges\") that allow participants to demonstrate their trading abilities. Successful participants may receive access to funded trading accounts. All trading activities during the evaluation phase are conducted in a simulated environment."
     },
     "eligibility": {
       "title": "3. Eligibility",
-      "content": "You must be at least 18 years old to use our services. By using Prop Capitals, you represent that you have the legal capacity to enter into this agreement."
+      "content": "You must be at least 18 years old and legally capable of entering into binding contracts in your jurisdiction to use our Service. By using the Service, you represent and warrant that you meet these requirements."
     },
     "accountRegistration": {
       "title": "4. Account Registration",
-      "content": "You agree to provide accurate, current, and complete information during registration. You are responsible for maintaining the confidentiality of your account credentials."
+      "content": "You agree to provide accurate, current, and complete information during registration. You are responsible for maintaining the confidentiality of your account credentials.",
+      "intro": "To access certain features of the Service, you must register for an account. You agree to:",
+      "items": [
+        "Provide accurate, current, and complete information",
+        "Maintain and update your information to keep it accurate",
+        "Maintain the security of your account credentials",
+        "Accept responsibility for all activities under your account",
+        "Notify us immediately of any unauthorized use"
+      ]
     },
     "tradingRules": {
       "title": "5. Trading Rules",
@@ -2845,49 +3199,70 @@
       "content": "Funded traders are eligible for bi-weekly profit withdrawals according to their profit split agreement. Prop Capitals reserves the right to verify all trading activity before processing payouts."
     },
     "intellectualProperty": {
-      "title": "9. Intellectual Property",
-      "content": "All content, trademarks, and intellectual property on Prop Capitals's platform are owned by Prop Capitals and protected by applicable laws."
+      "title": "7. Intellectual Property",
+      "content": "The Service and its original content, features, and functionality are owned by Prop Capitals and are protected by international copyright, trademark, and other intellectual property laws."
     },
     "limitationOfLiability": {
-      "title": "10. Limitation of Liability",
-      "content": "Prop Capitals shall not be liable for any indirect, incidental, or consequential damages arising from your use of our services."
+      "title": "8. Limitation of Liability",
+      "content": "Prop Capitals shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of the Service. Our total liability shall not exceed the amount paid by you for the Service in the 12 months preceding the claim."
     },
     "modifications": {
       "title": "11. Modifications",
       "content": "Prop Capitals reserves the right to modify these terms at any time. Continued use of our services after modifications constitutes acceptance of the updated terms."
     },
     "contact": {
-      "title": "12. Contact",
-      "content": "For questions about these terms, please contact us at support@prop-capitals.com"
+      "title": "10. Contact Us",
+      "content": "For questions about these terms, please contact us at support@prop-capitals.com",
+      "intro": "If you have any questions about these Terms, please contact us at:",
+      "emailLabel": "Email",
+      "addressLabel": "Address"
+    },
+    "agreement": {
+      "title": "1. Agreement to Terms",
+      "content": "By accessing or using the Prop Capitals website and services at prop-capitals.com (\"Service\"), you agree to be bound by these Terms of Service (\"Terms\"). If you disagree with any part of these terms, you may not access the Service."
+    },
+    "challengeRules": {
+      "title": "5. Challenge Rules and Trading Conditions",
+      "content": "All trading challenges are subject to specific rules including profit targets, drawdown limits, and trading restrictions. These rules are displayed on our website and must be followed. Violation of challenge rules may result in account termination without refund."
+    },
+    "payments": {
+      "title": "6. Payments and Refunds",
+      "content": "Challenge fees are due at the time of purchase. We offer a 100% fee refund with your first profit payout as a funded trader. Refund requests outside of this policy are subject to our Refund Policy. All payments are processed securely through our payment providers."
+    },
+    "governingLaw": {
+      "title": "9. Governing Law",
+      "content": "These Terms shall be governed by and construed in accordance with the laws of England and Wales, without regard to its conflict of law provisions."
     }
   },
   "privacy": {
     "title": "Privacy Policy",
-    "lastUpdated": "Last updated: January 2024",
+    "lastUpdated": "Last updated: January 1, 2025",
     "informationWeCollect": {
-      "title": "1. Information We Collect",
-      "intro": "We collect information that you provide directly to us:",
+      "title": "Information We Collect",
+      "intro": "We collect information you provide directly to us, including:",
       "items": [
-        "Personal identification information (name, email, phone number)",
-        "Payment information (processed securely through third-party providers)",
-        "Trading account data and activity",
-        "Communication records with our support team",
-        "KYC documentation (ID, proof of address)"
+        "Name, email address, and contact information",
+        "Payment and billing information",
+        "Trading account data and performance metrics",
+        "Communication preferences",
+        "Any other information you choose to provide"
       ]
     },
     "howWeUse": {
-      "title": "2. How We Use Your Information",
+      "title": "How We Use Your Information",
       "items": [
-        "To provide and maintain our services",
-        "To process transactions and send related information",
-        "To monitor trading activity and enforce our rules",
-        "To communicate with you about updates and promotions",
-        "To detect and prevent fraud"
-      ]
+        "Provide, maintain, and improve our services",
+        "Process transactions and send related information",
+        "Send technical notices, updates, and support messages",
+        "Respond to your comments, questions, and requests",
+        "Monitor and analyze trends, usage, and activities",
+        "Detect, investigate, and prevent fraudulent transactions"
+      ],
+      "intro": "We use the information we collect to:"
     },
     "dataSecurity": {
-      "title": "3. Data Security",
-      "content": "We implement industry-standard security measures to protect your personal information. This includes encryption, secure servers, and regular security audits."
+      "title": "Data Security",
+      "content": "We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. This includes encryption of data in transit and at rest, regular security assessments, and strict access controls."
     },
     "dataSharing": {
       "title": "4. Data Sharing",
@@ -2900,35 +3275,2495 @@
       ]
     },
     "yourRights": {
-      "title": "5. Your Rights",
+      "title": "Your Rights",
       "intro": "You have the right to:",
       "items": [
-        "Access your personal data",
-        "Request correction of inaccurate data",
-        "Request deletion of your data (subject to legal requirements)",
-        "Opt-out of marketing communications",
-        "Request data portability"
+        "Access and receive a copy of your personal data",
+        "Rectify inaccurate personal data",
+        "Request deletion of your personal data",
+        "Object to processing of your personal data",
+        "Request restriction of processing",
+        "Data portability",
+        "Withdraw consent at any time"
       ]
     },
     "cookies": {
-      "title": "6. Cookies",
-      "content": "We use cookies and similar technologies to enhance your experience, analyze usage patterns, and personalize content. You can manage cookie preferences through your browser settings."
+      "title": "Cookies",
+      "content": "We use cookies and similar tracking technologies to collect and track information about your browsing activities. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent."
     },
     "dataRetention": {
       "title": "7. Data Retention",
       "content": "We retain your personal information for as long as your account is active or as needed to provide services. We may retain certain information for legal compliance and dispute resolution."
     },
     "internationalTransfers": {
-      "title": "8. International Transfers",
-      "content": "Your information may be transferred to and processed in countries other than your country of residence. We ensure appropriate safeguards are in place for such transfers."
+      "title": "International Data Transfers",
+      "content": "Your information may be transferred to and processed in countries other than your own. We ensure that appropriate safeguards are in place to protect your information in accordance with this Privacy Policy."
     },
     "childrensPrivacy": {
       "title": "9. Children's Privacy",
       "content": "Our services are not intended for individuals under 18 years of age. We do not knowingly collect information from children."
     },
     "contactUs": {
-      "title": "10. Contact Us",
-      "content": "For privacy-related inquiries, please contact our Data Protection Officer at support@prop-capitals.com"
+      "title": "Contact Us",
+      "content": "For privacy-related inquiries, please contact our Data Protection Officer at support@prop-capitals.com",
+      "intro": "If you have any questions about this Privacy Policy, please contact us at:",
+      "emailLabel": "Email",
+      "addressLabel": "Address"
+    }
+  },
+  "layout": {},
+  "faqPage": {
+    "eyebrow": "Support",
+    "titleLine1": "Frequently Asked",
+    "titleHighlight": "Questions",
+    "subtitle": "Find answers to common questions about Prop Capitals funding programs, trading rules, and payouts.",
+    "searchPlaceholder": "Search questions...",
+    "searchResultsPrefix": "Found",
+    "searchResultsSuffix": "results for \"{{query}}\"",
+    "categories": {
+      "general": "General",
+      "challenges": "Challenges",
+      "trading": "Trading Rules",
+      "payouts": "Payouts",
+      "platforms": "Platforms"
+    },
+    "questions": {
+      "general": [
+        {
+          "question": "What is Prop Capitals?",
+          "answer": "Prop Capitals is a proprietary trading firm that provides talented traders with funded accounts to trade with. We handle all the risk while you keep up to 90% of the profits you generate."
+        },
+        {
+          "question": "How does the funding work?",
+          "answer": "After you pass our evaluation challenge (1-Step or 2-Step), you receive a funded account with our capital. You trade normally and we split the profits - you keep up to 90%, we keep 10%."
+        },
+        {
+          "question": "Is Prop Capitals legitimate?",
+          "answer": "Yes, Prop Capitals is a legitimate proprietary trading firm with thousands of funded traders worldwide. We have paid out over $15 million to our traders and have a 4.8 rating on Trustpilot."
+        },
+        {
+          "question": "What countries do you accept traders from?",
+          "answer": "We accept traders from most countries worldwide. However, due to regulatory restrictions, we cannot accept traders from certain jurisdictions. Please check our terms of service for the complete list."
+        },
+        {
+          "question": "Do I need trading experience?",
+          "answer": "While we don't require specific credentials, prop trading is suited for traders with a solid understanding of the markets and risk management. We provide free education with every challenge purchase to help you succeed."
+        },
+        {
+          "question": "What is the minimum age requirement?",
+          "answer": "You must be at least 18 years old to participate in our funding programs."
+        },
+        {
+          "question": "Can I have multiple accounts?",
+          "answer": "Yes, you can have multiple funded accounts with us. Many of our successful traders manage several accounts simultaneously to maximize their earning potential."
+        },
+        {
+          "question": "Is there a time limit to pass the challenge?",
+          "answer": "No! Unlike many other prop firms, we have no time limit on our challenges. Take as long as you need to hit your profit targets."
+        }
+      ],
+      "challenges": [
+        {
+          "question": "What's the difference between 1-Step and 2-Step?",
+          "answer": "The 1-Step Challenge has one evaluation phase with a 10% profit target and offers an 85% profit split. The 2-Step Challenge has two phases (8% and 5% profit targets) but offers a higher 90% profit split."
+        },
+        {
+          "question": "What happens if I fail a challenge?",
+          "answer": "If you breach the rules during a challenge, you can retry with a new purchase. We offer discounts of up to 20% on retry accounts. Your trading data is saved for analysis to help you improve."
+        },
+        {
+          "question": "Is the challenge fee refundable?",
+          "answer": "Yes! We refund 100% of your challenge fee with your first payout once you become a funded trader. This effectively makes your evaluation free."
+        },
+        {
+          "question": "Can I upgrade my account size?",
+          "answer": "Yes, once funded, you can participate in our scaling program. Hit profit milestones and your account size can grow up to $5,000,000."
+        },
+        {
+          "question": "What account sizes are available?",
+          "answer": "We offer account sizes ranging from $5,000 to $200,000 for both 1-Step and 2-Step challenges. Choose the size that matches your trading style and risk tolerance."
+        },
+        {
+          "question": "Are there any minimum trading days?",
+          "answer": "No, there are no minimum trading days required. You can complete the challenge as quickly as your trading allows, though we encourage sustainable trading practices."
+        }
+      ],
+      "trading": [
+        {
+          "question": "What trading strategies are allowed?",
+          "answer": "We allow all legitimate trading strategies including scalping, swing trading, day trading, and position trading. Expert Advisors (EAs) and automated trading are also permitted."
+        },
+        {
+          "question": "Can I trade during news events?",
+          "answer": "Yes, news trading is fully allowed on our platform. You can trade during high-impact economic events without restrictions."
+        },
+        {
+          "question": "Can I hold positions overnight?",
+          "answer": "Yes, overnight holding is allowed. You can also hold positions over weekends with no restrictions."
+        },
+        {
+          "question": "What is the daily drawdown limit?",
+          "answer": "The daily drawdown limit is 4% for 1-Step and 5% for 2-Step challenges. This is calculated based on your previous day's closing balance."
+        },
+        {
+          "question": "What is the maximum drawdown?",
+          "answer": "The maximum drawdown is 8% for 1-Step and 10% for 2-Step challenges. This is the maximum your account can decline from its highest point."
+        },
+        {
+          "question": "Can I use copy trading services?",
+          "answer": "No, copy trading is not allowed. Each trader must execute their own trades independently. Sharing account credentials or using third-party copy trading services is strictly prohibited and may result in account termination."
+        },
+        {
+          "question": "What instruments can I trade?",
+          "answer": "You can trade Forex (50+ pairs), Metals (Gold, Silver), Indices (US30, NAS100, SPX500), and Cryptocurrencies (BTC, ETH). Over 100 instruments available."
+        }
+      ],
+      "payouts": [
+        {
+          "question": "How fast are payouts processed?",
+          "answer": "Our average payout processing time is under 90 minutes - one of the fastest in the industry. Most payouts are completed within a few hours of request."
+        },
+        {
+          "question": "What is the minimum payout amount?",
+          "answer": "The minimum payout amount is $100. You can request payouts as often as you like once you meet this threshold."
+        },
+        {
+          "question": "What payout methods are available?",
+          "answer": "We support multiple payout methods including bank wire transfer, cryptocurrency (BTC, ETH, USDT), and popular e-wallets like Wise and Payoneer."
+        },
+        {
+          "question": "Is there a payout schedule?",
+          "answer": "No fixed schedule - you can request payouts anytime once you have profits. Many traders request weekly or bi-weekly payouts."
+        },
+        {
+          "question": "What is the profit split?",
+          "answer": "The profit split is 85% for 1-Step funded traders and 90% for 2-Step funded traders. You keep the majority of every dollar you make."
+        }
+      ],
+      "platforms": [
+        {
+          "question": "What trading platforms do you offer?",
+          "answer": "We offer MetaTrader 5 (MT5), TradeLocker, MatchTrader, and cTrader. You can choose your preferred platform when starting your challenge."
+        },
+        {
+          "question": "Can I use Expert Advisors (EAs)?",
+          "answer": "Yes, EAs and automated trading systems are fully allowed on all our platforms. Use any strategy that works for you."
+        },
+        {
+          "question": "Is there a mobile trading app?",
+          "answer": "Yes, all our platforms have mobile apps available for iOS and Android, allowing you to trade on the go."
+        },
+        {
+          "question": "Can I change platforms after starting?",
+          "answer": "You can choose your platform when starting a new challenge or funded account. Contact support if you need to discuss platform changes for existing accounts."
+        }
+      ]
+    },
+    "contact": {
+      "title": "Still Have Questions?",
+      "subtitle": "Our support team is available 24/7 to help you with any questions or concerns.",
+      "liveChat": "Live Chat",
+      "contactForm": "Contact Form",
+      "emailSupport": "Email Support",
+      "responseTimeLabel": "Average response time:",
+      "responseTimeValue": "Under 60 seconds"
+    }
+  },
+  "contactPage": {
+    "eyebrow": "Contact Us",
+    "titleLead": "Get in",
+    "titleHighlight": "Touch",
+    "subtitle": "Have questions? Our support team is here to help you 24/7. Reach out through any of our channels.",
+    "email": {
+      "title": "Email Us",
+      "desc": "For general inquiries and support"
+    },
+    "liveChat": {
+      "title": "Live Chat",
+      "desc": "Average response time under 60 seconds",
+      "value": "Available 24/7"
+    },
+    "hours": {
+      "title": "Business Hours",
+      "desc": "Support available around the clock",
+      "value": "24 hours / 7 days a week"
+    },
+    "headquarters": {
+      "title": "Headquarters"
+    },
+    "form": {
+      "heading": "Send us a Message",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "John",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Doe",
+      "emailLabel": "Email",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "Select a topic",
+      "subjectGeneral": "General Inquiry",
+      "subjectSupport": "Technical Support",
+      "subjectBilling": "Billing Question",
+      "subjectPartnership": "Partnership",
+      "messageLabel": "Message",
+      "messagePlaceholder": "How can we help you?",
+      "submit": "Send Message"
+    }
+  },
+  "aboutPage": {
+    "hero": {
+      "badge": "About Us",
+      "titleLead": "Empowering Traders",
+      "titleHighlight": "Worldwide",
+      "subtitle": "Prop Capitals was founded with a simple mission: to give talented traders access to the capital they need to succeed. We believe that financial opportunity shouldn't be limited by your starting capital."
+    },
+    "stats": {
+      "labels": [
+        "Active Traders",
+        "Total Paid Out",
+        "Countries",
+        "Avg Payout Time"
+      ]
+    },
+    "mission": {
+      "badge": "Our Mission",
+      "titleLead": "Democratizing Access to",
+      "titleHighlight": "Trading Capital",
+      "paragraph1": "We believe that your trading ability shouldn't be limited by your bank account. Too many talented traders struggle to grow because they lack sufficient capital. Prop Capitals changes that.",
+      "paragraph2": "By providing funding to skilled traders, we create a win-win situation: traders get the capital they need, and we share in their success. It's a partnership built on trust, transparency, and mutual benefit.",
+      "checklist": [
+        "Funded accounts up to $200,000",
+        "Keep up to 90% of your profits",
+        "No risk to your personal capital"
+      ],
+      "tradersBadge": "+18,500 traders",
+      "quote": "\"Our goal is simple: if you can trade, we'll give you the capital to do it at scale.\"",
+      "quoteAuthor": "Alex Thompson",
+      "quoteRole": "CEO & Founder, Prop Capitals"
+    },
+    "values": {
+      "badge": "Our Values",
+      "titleLead": "What We",
+      "titleHighlight": "Stand For",
+      "items": [
+        {
+          "title": "Transparency",
+          "description": "Clear rules, no hidden conditions. What you see is what you get with our straightforward evaluation process."
+        },
+        {
+          "title": "Trader Success",
+          "description": "Your success is our success. We provide the tools, education, and capital to help you reach your trading goals."
+        },
+        {
+          "title": "Excellence",
+          "description": "We continuously improve our platform, services, and trading conditions to provide the best experience."
+        },
+        {
+          "title": "Speed",
+          "description": "From fast support responses to lightning-quick payouts, we value your time and act accordingly."
+        }
+      ]
+    },
+    "timeline": {
+      "badge": "Our Journey",
+      "titleLead": "From Startup to",
+      "titleHighlight": "Industry Leader",
+      "items": [
+        {
+          "title": "Founded",
+          "description": "Prop Capitals was founded with a mission to democratize prop trading."
+        },
+        {
+          "title": "Growth",
+          "description": "Reached 5,000 funded traders and $3M in payouts."
+        },
+        {
+          "title": "Expansion",
+          "description": "Expanded to 120+ countries with 15,000+ traders and $10M+ paid."
+        },
+        {
+          "title": "Today",
+          "description": "Industry leader with 18,500+ traders and $15.2M+ in total payouts."
+        }
+      ]
+    },
+    "team": {
+      "0": {
+        "name": "Alex Thompson",
+        "role": "CEO & Founder"
+      },
+      "1": {
+        "name": "Sarah Chen",
+        "role": "Head of Trading"
+      },
+      "2": {
+        "name": "Michael Roberts",
+        "role": "CTO"
+      },
+      "3": {
+        "name": "Emma Wilson",
+        "role": "Head of Support"
+      },
+      "badge": "Our Team",
+      "titleLead": "Meet the",
+      "titleHighlight": "Leadership"
+    },
+    "trustpilot": {
+      "score": "4.8 out of 5",
+      "reviews": "Based on 2,340+ reviews"
+    },
+    "cta": {
+      "titleLead": "Ready to Join Our",
+      "titleHighlight": "Community",
+      "titleTrail": "?",
+      "subtitle": "Become part of a global community of funded traders. Start your journey with Prop Capitals today.",
+      "button": "Get Started Now"
+    }
+  },
+  "challengesPage": {
+    "hero": {
+      "eyebrow": "Funding Programs",
+      "titlePrefix": "Choose Your",
+      "titleHighlight": "Challenge",
+      "subtitle": "Select the evaluation program that matches your trading style. All programs include free education and 100% fee refund."
+    },
+    "customSize": "Custom {{symbol}}",
+    "discountBadge": "70% OFF - Limited Time",
+    "stats": {
+      "phases": "Phases",
+      "phaseCount": "{{count}} Phase",
+      "profitTarget": "Profit Target",
+      "dailyDrawdown": "Daily Drawdown",
+      "maxDrawdown": "Max Drawdown",
+      "minTradingDays": "Min Trading Days",
+      "profitSplit": "Profit Split"
+    },
+    "cardFeatures": [
+      "No time limit",
+      "All strategies allowed",
+      "100% fee refund",
+      "Free trading course"
+    ],
+    "startChallenge": "Start Challenge",
+    "features": [
+      {
+        "title": "No Time Limit",
+        "description": "Complete the challenge at your own pace"
+      },
+      {
+        "title": "100% Fee Refund",
+        "description": "Get your fee back on first payout"
+      },
+      {
+        "title": "All Strategies",
+        "description": "EAs, scalping, news trading allowed"
+      },
+      {
+        "title": "Fast Payouts",
+        "description": "Under 90 minutes average"
+      }
+    ],
+    "whyChoose": {
+      "prefix": "Why Choose",
+      "suffix": "?"
+    },
+    "compare": {
+      "prefix": "Compare",
+      "highlight": "Challenges",
+      "featureColumn": "Feature",
+      "oneStep": "1-Step",
+      "twoStep": "2-Step"
+    },
+    "comparison": {
+      "phases": "Phases",
+      "profitTarget": "Profit Target",
+      "dailyDrawdown": "Daily Drawdown",
+      "maxDrawdown": "Max Drawdown",
+      "profitSplit": "Profit Split",
+      "minTradingDays": "Min Trading Days",
+      "timeLimit": "Time Limit",
+      "unlimited": "Unlimited"
+    },
+    "cta": {
+      "titlePrefix": "Ready to Get",
+      "titleHighlight": "Funded",
+      "titleSuffix": "?",
+      "subtitle": "Join thousands of successful traders. Start your challenge today and trade with up to {{amount}}.",
+      "button": "Start Trading Now"
+    }
+  },
+  "challengeCard": {
+    "badge": "Custom Pricing",
+    "title": "Build Your Own",
+    "subtitle": "Pick any price between {{min}} and {{max}}. Your account size = price x 100.",
+    "priceLabel": "Challenge Price ({{symbol}})",
+    "previewPrefix": "For",
+    "previewMiddle": "you get a",
+    "previewSuffix": "account.",
+    "invalidPrice": "Enter a price from {{min}} to {{max}}.",
+    "specs": {
+      "phases": "Phases",
+      "phasesValue": "1 Phase",
+      "profitTarget": "Profit Target",
+      "dailyDrawdown": "Daily Drawdown",
+      "maxDrawdown": "Max Drawdown",
+      "minTradingDays": "Min Trading Days",
+      "minTradingDaysValue": "None",
+      "profitSplit": "Profit Split"
+    },
+    "startButton": "Start Custom Challenge"
+  },
+  "careers": {
+    "eyebrow": "Careers",
+    "titleBefore": "Join the",
+    "titleAfter": "Team",
+    "subtitle": "Help us revolutionize the prop trading industry. We're looking for passionate individuals who want to make a difference.",
+    "whyWorkWithUs": "Why Work With Us",
+    "openPositions": "Open Positions",
+    "applyNow": "Apply Now",
+    "stats": [
+      {
+        "value": "50+",
+        "label": "Team Members"
+      },
+      {
+        "value": "15+",
+        "label": "Countries"
+      },
+      {
+        "value": "100%",
+        "label": "Remote Friendly"
+      },
+      {
+        "value": "4.8",
+        "label": "Glassdoor Rating"
+      }
+    ],
+    "benefits": [
+      {
+        "title": "Remote First",
+        "description": "Work from anywhere in the world"
+      },
+      {
+        "title": "Growth",
+        "description": "Fast-track your career progression"
+      },
+      {
+        "title": "Health",
+        "description": "Comprehensive health coverage"
+      },
+      {
+        "title": "Equipment",
+        "description": "Latest tools and technology"
+      }
+    ],
+    "openings": [
+      {
+        "title": "Senior Full-Stack Developer",
+        "department": "Engineering",
+        "location": "Remote",
+        "type": "Full-time"
+      },
+      {
+        "title": "Risk Analyst",
+        "department": "Trading",
+        "location": "Dubai, UAE",
+        "type": "Full-time"
+      },
+      {
+        "title": "Customer Success Manager",
+        "department": "Support",
+        "location": "Remote",
+        "type": "Full-time"
+      },
+      {
+        "title": "Marketing Manager",
+        "department": "Marketing",
+        "location": "Remote",
+        "type": "Full-time"
+      },
+      {
+        "title": "Compliance Officer",
+        "department": "Legal",
+        "location": "Dubai, UAE",
+        "type": "Full-time"
+      }
+    ]
+  },
+  "blog": {
+    "eyebrow": "Blog",
+    "headingPrefix": "Trading",
+    "headingHighlight": "Insights",
+    "subtitle": "Expert analysis, trading tips, and industry news to help you become a better trader.",
+    "readMore": "Read More",
+    "featured": {
+      "title": "How to Pass Your Prop Trading Challenge: A Complete Guide",
+      "excerpt": "Learn the strategies and mindset needed to successfully pass your prop trading evaluation and get funded.",
+      "author": "Trading Team",
+      "date": "Jan 28, 2025",
+      "readTime": "8 min read",
+      "category": "Trading Tips"
+    },
+    "posts": [
+      {
+        "title": "Risk Management: The Key to Long-Term Trading Success",
+        "excerpt": "Discover why proper risk management is more important than any trading strategy.",
+        "author": "Risk Team",
+        "date": "Jan 25, 2025",
+        "readTime": "5 min read",
+        "category": "Education"
+      },
+      {
+        "title": "Understanding Market Structure for Better Entries",
+        "excerpt": "Learn how to read market structure and improve your trade entries.",
+        "author": "Analysis Team",
+        "date": "Jan 22, 2025",
+        "readTime": "6 min read",
+        "category": "Analysis"
+      },
+      {
+        "title": "Top 5 Mistakes New Prop Traders Make",
+        "excerpt": "Avoid these common pitfalls that cause most traders to fail their challenges.",
+        "author": "Trading Team",
+        "date": "Jan 18, 2025",
+        "readTime": "4 min read",
+        "category": "Trading Tips"
+      },
+      {
+        "title": "Prop Capitals vs Traditional Trading: What's the Difference?",
+        "excerpt": "Compare prop trading with retail trading and understand the benefits.",
+        "author": "Content Team",
+        "date": "Jan 15, 2025",
+        "readTime": "7 min read",
+        "category": "Industry"
+      },
+      {
+        "title": "Building a Consistent Trading Routine",
+        "excerpt": "How successful traders structure their day for optimal performance.",
+        "author": "Trading Team",
+        "date": "Jan 12, 2025",
+        "readTime": "5 min read",
+        "category": "Lifestyle"
+      },
+      {
+        "title": "The Psychology of Profitable Trading",
+        "excerpt": "Master your emotions and develop the mindset of a professional trader.",
+        "author": "Psychology Team",
+        "date": "Jan 8, 2025",
+        "readTime": "6 min read",
+        "category": "Psychology"
+      }
+    ]
+  },
+  "affiliate": {
+    "eyebrow": "Affiliate Program",
+    "heroTitle": "Earn Up to",
+    "heroTitleHighlight": "15% Commission",
+    "heroSubtitle": "Join our affiliate program and earn passive income by referring traders to Prop Capitals. No limits on earnings!",
+    "becomeAffiliate": "Become an Affiliate",
+    "benefits": [
+      {
+        "title": "Up to 15% Commission",
+        "description": "Earn on every challenge purchase from your referrals"
+      },
+      {
+        "title": "Lifetime Referrals",
+        "description": "Get commissions on all future purchases from your referrals"
+      },
+      {
+        "title": "Monthly Bonuses",
+        "description": "Top affiliates receive additional performance bonuses"
+      },
+      {
+        "title": "Real-Time Tracking",
+        "description": "Monitor your earnings and referrals in real-time"
+      }
+    ],
+    "commissionTiers": "Commission Tiers",
+    "bestBadge": "BEST",
+    "tiers": [
+      {
+        "name": "Starter",
+        "requirements": "0-10 referrals"
+      },
+      {
+        "name": "Bronze",
+        "requirements": "11-50 referrals"
+      },
+      {
+        "name": "Silver",
+        "requirements": "51-100 referrals"
+      },
+      {
+        "name": "Gold",
+        "requirements": "100+ referrals"
+      }
+    ],
+    "howItWorks": "How It Works",
+    "steps": [
+      {
+        "title": "Sign Up",
+        "description": "Create your free affiliate account in minutes"
+      },
+      {
+        "title": "Get Your Link",
+        "description": "Receive your unique referral link and marketing materials"
+      },
+      {
+        "title": "Promote",
+        "description": "Share with your audience through any channel"
+      },
+      {
+        "title": "Earn",
+        "description": "Get paid monthly for every successful referral"
+      }
+    ],
+    "faqTitle": "Frequently Asked Questions",
+    "faqs": [
+      {
+        "q": "How much can I earn?",
+        "a": "There's no limit! Top affiliates earn $10,000+ per month. You earn commission on every challenge purchase made through your link."
+      },
+      {
+        "q": "When do I get paid?",
+        "a": "Payments are processed on the 1st of each month for the previous month's earnings. Minimum payout is $50."
+      },
+      {
+        "q": "What marketing materials do you provide?",
+        "a": "We provide banners, social media graphics, email templates, and video content you can use to promote."
+      },
+      {
+        "q": "Can I promote on social media?",
+        "a": "Yes! You can promote on any platform - YouTube, Instagram, TikTok, Twitter, blogs, email lists, etc."
+      }
+    ],
+    "ctaTitle": "Ready to Start Earning?",
+    "ctaSubtitle": "Join hundreds of affiliates already earning with Prop Capitals. It takes less than 2 minutes to sign up.",
+    "joinProgram": "Join Affiliate Program",
+    "modalTitle": "Become an Affiliate",
+    "modalSubtitle": "Fill out the form below to join our program",
+    "fullNameLabel": "Full Name *",
+    "fullNamePlaceholder": "John Doe",
+    "emailLabel": "Email Address *",
+    "websiteLabel": "Website/Blog (Optional)",
+    "socialMediaLabel": "Social Media Handle (Optional)",
+    "socialMediaPlaceholder": "@yourhandle",
+    "audienceLabel": "Estimated Audience Size *",
+    "audiencePlaceholder": "Select audience size",
+    "howHeardLabel": "How did you hear about us?",
+    "howHeardPlaceholder": "Select an option",
+    "howHeardSocial": "Social Media",
+    "howHeardSearch": "Search Engine",
+    "howHeardFriend": "Friend/Referral",
+    "howHeardAd": "Advertisement",
+    "howHeardOther": "Other",
+    "submitting": "Submitting...",
+    "submitApplication": "Submit Application",
+    "successTitle": "Application Submitted!",
+    "successMessage": "Thank you for applying! We'll review your application and get back to you within 24-48 hours.",
+    "referralLinkLabel": "Your referral link (demo):",
+    "close": "Close"
+  },
+  "tradingRules": {
+    "eyebrow": "Trading Rules",
+    "headingLead": "Challenge",
+    "headingHighlight": "Rules",
+    "subheading": "Clear, fair, and transparent rules designed to help you succeed. No hidden conditions or surprises.",
+    "tableHeaders": {
+      "rule": "Rule",
+      "oneStep": "1-Step Challenge",
+      "twoStep": "2-Step Challenge"
+    },
+    "criticalBadge": "CRITICAL",
+    "rules": [
+      {
+        "title": "Daily Drawdown Limit",
+        "description": "Your account equity must not fall below the daily drawdown limit at any point during the trading day.",
+        "oneStep": "4%",
+        "twoStep": "5%"
+      },
+      {
+        "title": "Maximum Drawdown",
+        "description": "The total account drawdown from the initial balance must not exceed this limit at any time.",
+        "oneStep": "8%",
+        "twoStep": "10%"
+      },
+      {
+        "title": "Profit Target",
+        "description": "Achieve this profit target to pass the challenge phase and move to the next stage.",
+        "oneStep": "10%",
+        "twoStep": "8% / 5%"
+      },
+      {
+        "title": "Minimum Trading Days",
+        "description": "Trade for at least this many days before you can request a payout or pass the challenge.",
+        "oneStep": "5 days",
+        "twoStep": "5 days"
+      },
+      {
+        "title": "Time Limit",
+        "description": "Complete the challenge within this timeframe. Take your time - there's no rush!",
+        "oneStep": "Unlimited",
+        "twoStep": "Unlimited"
+      }
+    ],
+    "allowedTitle": "What's Allowed",
+    "allowedActions": [
+      "Expert Advisors (EAs) and automated trading bots",
+      "News trading during high-impact events",
+      "Weekend holding of positions",
+      "Scalping with no minimum hold time",
+      "Copy trading and signal services",
+      "Hedging within the same account",
+      "Trading all available instruments"
+    ],
+    "prohibitedTitle": "What's Prohibited",
+    "prohibitedActions": [
+      "Account sharing or third-party trading",
+      "Exploiting platform errors or arbitrage",
+      "Using stolen or fraudulent payment methods",
+      "Coordinated trading with other accounts",
+      "High-frequency trading (HFT) exploitation"
+    ],
+    "noticeTitle": "Important Notice",
+    "noticeBody": "Violation of critical rules (Daily Drawdown or Maximum Drawdown) will result in immediate account termination. Please trade responsibly and always manage your risk. If you have questions about any rules, contact our support team."
+  },
+  "watchDemo": {
+    "hero": {
+      "badge": "Platform Demo",
+      "titleStart": "See Prop Capitals",
+      "titleHighlight": "In Action",
+      "subtitle": "Watch our comprehensive demo video to learn how you can start your funded trading journey with Prop Capitals."
+    },
+    "player": {
+      "unsupported": "Your browser does not support the video tag.",
+      "clickToPlay": "Click to play demo",
+      "label": "Prop Capitals Demo"
+    },
+    "stats": {
+      "averagePayout": "Average Payout",
+      "payoutSpeed": "Payout Speed",
+      "payoutSpeedValue": "<90 min",
+      "profitSplit": "Profit Split",
+      "profitSplitValue": "Up to 90%",
+      "fundedTraders": "Funded Traders"
+    },
+    "videoFeatures": [
+      "See how our evaluation process works",
+      "Watch real traders pass their challenges",
+      "Learn about our payout process",
+      "Understand our trading rules",
+      "Explore the PT5 trading platform",
+      "Get tips from successful funded traders"
+    ],
+    "learn": {
+      "badge": "In This Video",
+      "titleStart": "Everything You Need to",
+      "titleHighlight": "Get Started",
+      "subtitle": "Our comprehensive demo walks you through the entire process from signup to your first payout."
+    },
+    "cta": {
+      "titleStart": "Ready to Start Your",
+      "titleHighlight": "Funded Journey",
+      "titleEnd": "?",
+      "subtitle": "Join thousands of traders who have already transformed their trading careers with Prop Capitals.",
+      "startChallenge": "Start Challenge Now",
+      "learnMore": "Learn More"
+    }
+  },
+  "auth": {
+    "tabSignIn": "Sign In",
+    "tabSignUp": "Sign Up",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "trader@example.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "createPasswordPlaceholder": "Create a strong password",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "signInButton": "Sign In",
+    "signingIn": "Signing in...",
+    "firstNameLabel": "First Name",
+    "firstNamePlaceholder": "John",
+    "lastNameLabel": "Last Name",
+    "lastNamePlaceholder": "Doe",
+    "passwordRequirements": [
+      "8+ characters",
+      "One uppercase",
+      "One number",
+      "One special char"
+    ],
+    "agreePrefix": "I agree to the",
+    "agreeAnd": "and",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "confirmAgeLabel": "I confirm I am over 18 years old",
+    "createAccountButton": "Create Account",
+    "creatingAccount": "Creating account...",
+    "otpSentTo": "OTP sent to",
+    "enterOtp": "Enter OTP",
+    "verifyOtpButton": "Verify OTP",
+    "verifying": "Verifying...",
+    "changeEmail": "Change Email",
+    "resendCode": "Resend Code",
+    "resendIn": "Resend in {{seconds}}s",
+    "backToHome": "Back to Home",
+    "errors": {
+      "passwordsNotMatch": "Passwords do not match",
+      "agreeTerms": "Please agree to the Terms of Service and Privacy Policy",
+      "confirmAge": "Please confirm you are over 18 years old"
+    }
+  },
+  "forgotPassword": {
+    "back": "Back",
+    "backToSignIn": "Back to Sign In",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your.email@example.com",
+    "sendOtp": "Send OTP",
+    "verifyOtp": "Verify OTP",
+    "didntReceive": "Didn't receive the code?",
+    "resendIn": "Resend in {{seconds}}s",
+    "sending": "Sending...",
+    "resendOtp": "Resend OTP",
+    "newPasswordPlaceholder": "New Password",
+    "confirmPasswordPlaceholder": "Confirm Password",
+    "resetPassword": "Reset Password",
+    "imageAlt": "Trading",
+    "step1": {
+      "title": "Forgot Password",
+      "subtitle": "Enter your email to receive OTP"
+    },
+    "step2": {
+      "title": "Verify OTP",
+      "subtitle": "Enter the 6-digit OTP sent to your email"
+    },
+    "step3": {
+      "title": "Reset Password",
+      "subtitle": "Create a new password"
+    },
+    "requirements": {
+      "title": "Password must contain:",
+      "minLength": "At least 8 characters",
+      "uppercase": "One uppercase letter",
+      "lowercase": "One lowercase letter",
+      "number": "One number"
+    },
+    "validation": {
+      "minLength": "Password must be at least 8 characters",
+      "uppercase": "Password must contain at least one uppercase letter",
+      "lowercase": "Password must contain at least one lowercase letter",
+      "number": "Password must contain at least one number"
+    },
+    "errors": {
+      "emailRequired": "Email is required",
+      "invalidEmail": "Please enter a valid email address",
+      "sendOtpFailed": "Failed to send OTP. Please try again.",
+      "invalidOtp": "Please enter a valid 6-digit OTP",
+      "allFieldsRequired": "All fields are required",
+      "passwordsMismatch": "Passwords do not match",
+      "resetFailed": "Failed to reset password. The OTP may have expired."
+    },
+    "success": {
+      "otpSent": "OTP has been sent to your email. Please check your inbox.",
+      "passwordReset": "Password reset successfully! Redirecting to login..."
+    },
+    "sideCard": {
+      "title": "Secure Account Recovery",
+      "subtitle": "Your security is our priority"
+    }
+  },
+  "setPassword": {
+    "toastSuccess": "Password set successfully — welcome!",
+    "toastError": "Could not set password. Please try again.",
+    "missingTokenTitle": "Missing Token",
+    "missingTokenDescription": "This page requires a valid set-password link. Please use the link from your welcome email.",
+    "verifying": "Verifying your link...",
+    "invalidTokenTitle": "Link Invalid or Expired",
+    "invalidTokenDescription": "This set-password link is invalid or has expired.",
+    "contactPrefix": "Please contact",
+    "contactSuffix": "for help.",
+    "errorTooShort": "Password must be at least 8 characters",
+    "errorMismatch": "Passwords do not match",
+    "heading": "Set Your Password",
+    "descriptionPrefix": "Create a password for",
+    "descriptionSuffix": "to access your dashboard.",
+    "newPasswordLabel": "New Password",
+    "newPasswordPlaceholder": "At least 8 characters",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Repeat your password",
+    "submitting": "Setting password...",
+    "submit": "Set Password & Sign In"
+  },
+  "accountOverview": {
+    "loadingAccounts": "Loading accounts...",
+    "noChallengesFound": "No challenges found. Buy a challenge to get started!",
+    "pinnedChallenges": "Pinned Challenges",
+    "accountsPinned": "{{pinned}} of {{total}} accounts pinned",
+    "noPinnedChallenges": "No pinned challenges yet. Pin up to 4 accounts from the header account selector.",
+    "oneStep": "1-Step",
+    "twoStep": "2-Step",
+    "platformId": "Platform ID",
+    "platform": "Platform",
+    "challengeType": "Challenge Type",
+    "server": "Server",
+    "startDate": "Start Date",
+    "profitSplit": "Profit Split",
+    "profitSplitToYou": "{{percent}}% to You",
+    "accountSize": "Account Size",
+    "currentBalance": "Current Balance",
+    "tradingDays": "Trading Days",
+    "challengeRulesCompliance": "Challenge Rules Compliance",
+    "challengeFailed": "Challenge Failed",
+    "profitTarget": "Profit Target",
+    "dailyLoss": "Daily Loss",
+    "maxDrawdown": "Max Drawdown",
+    "targetValue": "Target: {{value}}%",
+    "limitValue": "Limit: {{value}}%",
+    "requiredValue": "Required: {{value}}",
+    "challengeProgress": "Challenge Progress",
+    "phaseEvaluation": "Evaluation",
+    "phaseFunded": "Funded",
+    "phaseOne": "Phase 1",
+    "phaseTwo": "Phase 2",
+    "phasePassed": "Passed",
+    "phaseYouAreHere": "You are here",
+    "phaseLiveAccount": "Live Account",
+    "phaseNextStage": "Next Stage",
+    "phaseFinalStage": "Final Stage",
+    "accountBalance": "Account Balance",
+    "noEquityData": "No equity data yet",
+    "balance": "Balance",
+    "equity": "Equity",
+    "tradeCalendar": "Trade Calendar",
+    "weekdays": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ],
+    "totalTrades": "Total Trades:",
+    "winRate": "Win Rate:",
+    "avgRR": "Avg RR:",
+    "currentPL": "Current P/L",
+    "percentFromStart": "{{value}}% from start",
+    "dailyDrawdown": "Daily Drawdown",
+    "totalDrawdown": "Total Drawdown",
+    "current": "Current",
+    "max": "Max",
+    "target": "Target",
+    "payoutAvailable": "Payout Available",
+    "payoutSubtitle": "You have profits ready to withdraw • {{percent}}% profit split",
+    "available": "Available",
+    "requestPayout": "Request Payout"
+  },
+  "accountSettings": {
+    "title": "Account Settings",
+    "saving": "Saving...",
+    "saveChanges": "Save Changes",
+    "personalInfo": {
+      "title": "Personal Information",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "First name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Last name",
+      "email": "Email Address",
+      "emailReadOnly": "Email cannot be changed",
+      "phone": "Phone Number",
+      "country": "Country",
+      "countryPlaceholder": "e.g. United Kingdom"
+    },
+    "security": {
+      "title": "Security",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm New Password"
+    },
+    "trading": {
+      "title": "Trading Preferences",
+      "defaultLotSize": "Default Lot Size",
+      "defaultLeverage": "Default Leverage",
+      "chartTheme": "Chart Theme",
+      "themeDark": "Dark",
+      "themeLight": "Light"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "emailNotifications": {
+        "label": "Email Notifications",
+        "desc": "Receive trading alerts via email"
+      },
+      "tradeNotifications": {
+        "label": "Trade Notifications",
+        "desc": "Browser notifications for trades"
+      },
+      "accountAlerts": {
+        "label": "Account Alerts",
+        "desc": "Critical alerts via SMS"
+      },
+      "payoutUpdates": {
+        "label": "Payout Updates",
+        "desc": "Receive weekly performance reports"
+      },
+      "challengeUpdates": {
+        "label": "Challenge Updates",
+        "desc": "Receive updates about your challenges"
+      },
+      "marketingEmails": {
+        "label": "Marketing Emails",
+        "desc": "Receive marketing emails"
+      }
+    },
+    "toast": {
+      "profileUpdated": "Profile updated successfully",
+      "profileFailed": "Failed to save profile",
+      "passwordChanged": "Password changed successfully",
+      "passwordFailed": "Failed to change password",
+      "notificationsUpdated": "Notification preferences updated",
+      "notificationsFailed": "Failed to update notifications",
+      "passwordMismatchTitle": "Passwords do not match",
+      "passwordMismatchDesc": "Your new password and confirmation do not match."
+    }
+  },
+  "buySellPanel": {
+    "sell": "SELL",
+    "buy": "BUY"
+  },
+  "economicCalendar": {
+    "title": "Economic Calendar",
+    "highImpact": "High Impact",
+    "medium": "Medium",
+    "low": "Low",
+    "monthNames": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ],
+    "dayHeaders": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ],
+    "eventsForDay": "Events - Day {{day}}",
+    "selectADay": "Select a day",
+    "loading": "Loading...",
+    "noEventsOnThisDay": "No events on this day",
+    "forecast": "Forecast",
+    "previous": "Previous",
+    "actual": "Actual",
+    "eventDetailsNotFound": "Event details not found",
+    "failedToFetchDetails": "Failed to fetch details ({{status}})",
+    "failedToLoadDetails": "Failed to load event details"
+  },
+  "eventDetailModal": {
+    "title": "Event Details",
+    "loading": "Loading event details...",
+    "latestValues": "Latest Values",
+    "forecast": "Forecast",
+    "previous": "Previous",
+    "actual": "Actual",
+    "description": "Description",
+    "region": "Region",
+    "currencyLabel": "Currency: {{currency}}",
+    "schedule": "Schedule",
+    "nextLabel": "Next: {{value}}",
+    "unitLabel": "Unit: {{unit}}",
+    "historicalData": "Historical Data",
+    "date": "Date",
+    "showingEntries": "Showing 10 of {{total}} entries",
+    "chartDataAvailable": "Chart Data Available",
+    "dataPointsAvailable": "{{count}} data points available",
+    "noDetails": "No additional details available for this event."
+  },
+  "traderFaq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find answers to common questions about challenges, trading rules, and payouts.",
+    "searchPlaceholder": "Search questions...",
+    "categories": {
+      "all": "All Questions",
+      "challenges": "Challenges",
+      "rules": "Trading Rules",
+      "payouts": "Payouts",
+      "billing": "Billing"
+    },
+    "badges": {
+      "challenges": "Challenges",
+      "rules": "Rules",
+      "payouts": "Payouts",
+      "billing": "Billing"
+    },
+    "noResultsTitle": "No results found",
+    "noResultsDescription": "Try adjusting your search or category filter.",
+    "stillHaveQuestionsTitle": "Still have questions?",
+    "stillHaveQuestionsDescription": "Cannot find what you are looking for? Our support team is here to help.",
+    "contactSupport": "Contact Support",
+    "faqs": [
+      {
+        "question": "What is the difference between 1-Step and 2-Step challenges?",
+        "answer": "The 1-Step challenge requires you to hit a single profit target (typically 10%) to get funded. The 2-Step challenge has two phases with lower profit targets (8% and 5%) but is generally considered less risky. Both have the same drawdown rules."
+      },
+      {
+        "question": "How long do I have to complete a challenge?",
+        "answer": "There is no time limit to complete our challenges. Take as much time as you need to reach your profit target while following the trading rules. The only requirement is to complete the minimum trading days."
+      },
+      {
+        "question": "What happens if I break the daily loss limit?",
+        "answer": "If your daily loss exceeds 5% of your starting balance for that day, your challenge will be marked as failed. This is a hard breach and cannot be reversed. We recommend using stop losses and monitoring your daily P/L closely."
+      },
+      {
+        "question": "Can I trade during news events?",
+        "answer": "Yes, news trading is allowed on all our challenge types. However, we recommend being cautious as spreads can widen significantly during high-impact news events, which could affect your positions."
+      },
+      {
+        "question": "Is weekend holding allowed?",
+        "answer": "No, holding positions over the weekend is not allowed. All positions must be closed before the market closes on Friday. Positions left open will be automatically closed and may result in slippage."
+      },
+      {
+        "question": "How do I request a payout?",
+        "answer": "Once you have profits in your funded account and have completed the minimum trading days, you can request a payout from the \"Payout History\" section. Payouts are processed within 24-48 hours to your preferred payment method."
+      },
+      {
+        "question": "What is the profit split?",
+        "answer": "Our profit split starts at 80% for traders and goes up to 90% based on your performance. This means you keep 80-90% of all profits made on your funded account."
+      },
+      {
+        "question": "What payment methods are available for payouts?",
+        "answer": "We support multiple payment methods including bank transfer, crypto (USDT, BTC, ETH), and various e-wallets. You can set your preferred payment method in your account settings."
+      },
+      {
+        "question": "What happens if I fail a challenge?",
+        "answer": "If you fail a challenge, you can purchase a new one at a discounted rate. We also offer a free retry for traders who fail within the first 14 days without breaking any hard rules."
+      },
+      {
+        "question": "Do you offer refunds?",
+        "answer": "We offer a 14-day refund policy for challenges that have not been started (no trades placed). Once you start trading, the challenge fee is non-refundable. Please refer to our refund policy for full details."
+      }
+    ]
+  },
+  "mt5Login": {
+    "headerBar": "Trading accounts: MetaQuotes Ltd..",
+    "title": "Connect to account",
+    "emailLabel": "Email",
+    "loginPlaceholder": "Enter Login",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter Password",
+    "savePassword": "Save password",
+    "forgotPassword": "Forgot Password?",
+    "sending": "Sending...",
+    "sendResetCredentials": "Send reset credentials",
+    "serverLabel": "Server",
+    "connecting": "Connecting...",
+    "connectToAccount": "Connect to account"
+  },
+  "marketWatch": {
+    "searchPlaceholder": "Search symbol",
+    "loadingSymbols": "Loading symbols...",
+    "forex": "FOREX",
+    "columns": {
+      "symbol": "Symbol",
+      "bid": "Bid",
+      "ask": "Ask",
+      "change": "Change"
+    }
+  },
+  "notificationsPanel": {
+    "title": "Notifications",
+    "markAllRead": "Mark All Read",
+    "stats": {
+      "total": "Total Notifications",
+      "unread": "Unread",
+      "warnings": "Warnings",
+      "violations": "Violations"
+    },
+    "tabs": {
+      "all": "All",
+      "unread": "Unread",
+      "challenges": "Challenges",
+      "payouts": "Payouts",
+      "account": "Account"
+    },
+    "empty": {
+      "title": "No notifications found",
+      "subtitle": "You're all caught up"
+    },
+    "actions": {
+      "markAsRead": "Mark as read",
+      "delete": "Delete"
+    },
+    "category": {
+      "challenge": "Challenge",
+      "payout": "Payout",
+      "account": "Account",
+      "system": "System"
+    },
+    "time": {
+      "justNow": "Just now",
+      "minsAgo": "{{count}} mins ago",
+      "hoursAgo": "{{count}} hours ago",
+      "daysAgo": "{{count}} days ago"
+    }
+  },
+  "ordersPage": {
+    "title": "Orders",
+    "refresh": "Refresh",
+    "export": "Export",
+    "totalTrades": "Total Trades",
+    "closedPl": "Closed P/L",
+    "openPl": "Open P/L",
+    "winRate": "Win Rate",
+    "tabAllOrders": "All Orders",
+    "tabOpen": "Open",
+    "tabClosed": "Closed",
+    "searchPlaceholder": "Search symbol...",
+    "colSymbol": "Symbol",
+    "colType": "Type",
+    "colLots": "Lots",
+    "colOpenPrice": "Open Price",
+    "colClosePrice": "Close Price",
+    "colOpenTime": "Open Time",
+    "colCloseTime": "Close Time",
+    "colPl": "P/L",
+    "colStatus": "Status",
+    "csvProfitLoss": "P/L ($)",
+    "noOrdersFound": "No orders found",
+    "open": "Open",
+    "closeReasonSlHit": "SL Hit",
+    "closeReasonTpHit": "TP Hit",
+    "closeReasonAutoClose": "Auto Close",
+    "closeReasonClosed": "Closed"
+  },
+  "pt5Terminal": {
+    "watchlist": "Watchlist",
+    "execution": "Execution",
+    "tradeFlowUnavailableTitle": "Trade flow unavailable",
+    "tradeFlowUnavailableDescription": "Terminal wrapper trade handler is not connected."
+  },
+  "payCheckout": {
+    "form": {
+      "title": "Complete Your Purchase",
+      "subtitle": "Enter your details to continue to the secure payment page."
+    },
+    "fields": {
+      "firstName": "First Name *",
+      "lastName": "Last Name *",
+      "email": "Email Address *",
+      "emailHelp": "We'll send your account access and trading credentials here.",
+      "phone": "Phone *",
+      "country": "Country *",
+      "address": "Billing Address *",
+      "city": "City *"
+    },
+    "placeholders": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "trader@example.com",
+      "selectCountry": "Select country...",
+      "address": "221B Baker Street",
+      "city": "London"
+    },
+    "secureNotice": "After you click Pay, you'll be redirected to our secure payment processor to enter your card details. We never see or store your card number.",
+    "button": {
+      "redirecting": "Redirecting to payment...",
+      "pay": "Pay {{amount}}"
+    },
+    "summary": {
+      "title": "Order Summary",
+      "account": "{{size}} Account",
+      "profitSplit": "Profit Split",
+      "dailyDrawdown": "Daily Drawdown",
+      "maxDrawdown": "Max Drawdown",
+      "total": "Total"
+    },
+    "trust": {
+      "secureCard": "Secure card payment",
+      "threeDSecure": "3-D Secure protected"
+    },
+    "acceptedPayments": "We accept",
+    "notFound": {
+      "title": "Challenge Not Found",
+      "description": "This challenge is no longer active. Please go back and pick another package."
+    },
+    "toasts": {
+      "redirecting": "Redirecting to secure payment...",
+      "couldNotStart": "Could not start checkout. Please try again.",
+      "failedToStart": "Failed to start checkout. Please try again."
+    },
+    "errors": {
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Email is not valid",
+      "phoneRequired": "Phone number is required",
+      "phoneInvalid": "Enter a valid phone number with country code (e.g. +1 202 555 0100)",
+      "countryRequired": "Country is required",
+      "addressRequired": "Address is required",
+      "cityRequired": "City is required"
+    }
+  },
+  "payoutHistoryPanel": {
+    "title": "Payout History",
+    "requestPayout": "Request Payout",
+    "payoutsAfterFundingTitle": "Payouts Available After Funding",
+    "payoutsAfterFundingDesc": "Complete your challenge to unlock payout requests. You are currently in {{phase}}.",
+    "phase1": "Phase 1",
+    "phase2": "Phase 2",
+    "evaluation": "evaluation",
+    "totalPaidOut": "Total Paid Out",
+    "pending": "Pending",
+    "availableBalance": "Available Balance",
+    "noHistoryYet": "No payout history yet"
+  },
+  "profilePanel": {
+    "errorLoadProfile": "Failed to load profile. Please refresh the page.",
+    "avatarAlt": "Profile",
+    "verifiedBadge": "Verified",
+    "unknownUser": "Unknown User",
+    "joinedLabel": "Joined {{date}}",
+    "editProfileButton": "Edit Profile",
+    "cancelButton": "Cancel",
+    "saveChangesButton": "Save Changes",
+    "savingButton": "Saving...",
+    "statChallengesCompleted": "Challenges Completed",
+    "statTotalPayouts": "Total Payouts",
+    "statWinRate": "Win Rate",
+    "statMemberSince": "Member Since",
+    "personalInformation": "Personal Information",
+    "firstNameLabel": "First Name",
+    "lastNameLabel": "Last Name",
+    "emailAddressLabel": "Email Address",
+    "emailHelperText": "Email cannot be changed. Contact support if needed.",
+    "phoneNumberLabel": "Phone Number",
+    "locationPreferences": "Location & Preferences",
+    "countryLabel": "Country",
+    "cityLabel": "City",
+    "timezoneLabel": "Timezone",
+    "timezonePlaceholder": "e.g. UTC+5, America/New_York",
+    "toastProfileUpdatedTitle": "Profile updated",
+    "toastProfileUpdatedDesc": "Your changes have been saved successfully.",
+    "toastSaveFailedTitle": "Failed to save profile",
+    "toastInvalidFileTitle": "Invalid file",
+    "toastInvalidFileDesc": "Please select an image file.",
+    "toastFileTooLargeTitle": "File too large",
+    "toastFileTooLargeDesc": "Please upload an image smaller than 5MB.",
+    "toastAvatarUpdatedTitle": "Profile picture updated",
+    "toastAvatarUpdatedDesc": "Your new profile picture is now visible."
+  },
+  "supportPanel": {
+    "heading": "Support Center",
+    "subheading": "Need help? Our support team is available 24/7 to assist you.",
+    "liveChatTitle": "Live Chat",
+    "online": "Online",
+    "liveChatDesc": "Get instant help from our AI assistant or connect with a live agent.",
+    "startChat": "Start Chat",
+    "emailSupportTitle": "Email Support",
+    "emailResponseTime": "Response within 24h",
+    "businessHoursTitle": "Business Hours",
+    "mondayFriday": "Monday - Friday",
+    "saturdaySunday": "Saturday - Sunday",
+    "twentyFourHours": "24 Hours",
+    "timezoneNote": "Support available in your timezone",
+    "submitTicketHeading": "Submit a Support Ticket",
+    "ticketSubmittedTitle": "Ticket Submitted!",
+    "ticketSubmittedDesc": "We will respond to your inquiry within 24 hours.",
+    "submitAnotherTicket": "Submit Another Ticket",
+    "labelCategory": "Category",
+    "labelSubject": "Subject",
+    "labelMessage": "Message",
+    "subjectPlaceholder": "Brief description of your issue",
+    "messagePlaceholder": "Describe your issue in detail...",
+    "submitting": "Submitting...",
+    "submitTicketButton": "Submit Ticket",
+    "recentTickets": "Recent Tickets",
+    "loadingTickets": "Loading tickets...",
+    "ticketsLoadError": "Failed to load tickets. Please refresh and try again.",
+    "noTickets": "No tickets yet.",
+    "categoryAccount": "Account",
+    "categoryPayment": "Payment",
+    "categoryPayout": "Payout",
+    "categoryTechnical": "Technical",
+    "categoryOther": "Other",
+    "statusOpen": "Open",
+    "statusInProgress": "In Progress",
+    "statusResolved": "Resolved",
+    "statusClosed": "Closed",
+    "statusWaitingForAdmin": "Waiting For Admin",
+    "statusWaitingForTrader": "Waiting For Trader",
+    "toastCreatedTitle": "Ticket Created",
+    "toastCreatedDesc": "Your support ticket has been submitted successfully.",
+    "toastFailedTitle": "Failed to create ticket",
+    "toastFailedDesc": "Failed to create ticket",
+    "toastNotAuthTitle": "Not authenticated",
+    "toastNotAuthDesc": "Please sign in to submit a support ticket."
+  },
+  "tradeLockerComingSoon": {
+    "comingSoon": "Coming Soon",
+    "description": "We're currently working on integrating TradeLocker into our platform. This feature will be available soon. Please choose another trading platform in the meantime.",
+    "chooseAnotherPlatform": "Choose Another Platform",
+    "backToDashboard": "Back to Dashboard"
+  },
+  "panelLayout": {
+    "startTrading": "Start Trading",
+    "buyChallenge": "Buy Challenge",
+    "switchAccount": "Switch Account",
+    "accountLabel": "Account #{{id}}",
+    "toggleTheme": "Toggle theme",
+    "viewAllNotifications": "View All Notifications",
+    "unreadCount": "{{count}} unread",
+    "demoAccount": "Demo Account",
+    "userFallback": "User",
+    "pinAccount": "Pin account",
+    "unpinAccount": "Unpin account",
+    "maxPinnedAccounts": "Maximum 4 pinned accounts",
+    "sections": {
+      "trades": "Trades",
+      "accountSettings": "Account Settings",
+      "support": "Support"
+    },
+    "nav": {
+      "accountOverview": "Account Overview",
+      "tradingTerminal": "Trading Terminal",
+      "orders": "Orders",
+      "economicCalendar": "Economic Calendar",
+      "payoutHistory": "Payout History",
+      "transactions": "Transactions",
+      "accountSettings": "Account Settings",
+      "profile": "Profile",
+      "support": "Support",
+      "faq": "FAQ"
+    },
+    "status": {
+      "active": "Active",
+      "failed": "Failed"
+    },
+    "profileMenu": {
+      "myProfile": "My Profile",
+      "settings": "Settings",
+      "support": "Support",
+      "signOut": "Sign Out"
+    }
+  },
+  "ticketChat": {
+    "searchPlaceholder": "Search tickets...",
+    "noTicketsFound": "No tickets found",
+    "ticketsTitle": "Tickets",
+    "loading": "Loading...",
+    "noMessagesYet": "No messages yet",
+    "selectTicketPrompt": "Select a ticket to view the conversation",
+    "sendFailedTitle": "Send Failed",
+    "sendFailedDesc": "Could not send message. Please try again.",
+    "status": {
+      "open": "Open",
+      "in_progress": "In Progress",
+      "resolved": "Resolved",
+      "closed": "Closed",
+      "waiting_for_admin": "Waiting For Admin",
+      "waiting_for_trader": "Waiting For Trader"
+    }
+  },
+  "transactionsPanel": {
+    "title": "Transactions",
+    "refresh": "Refresh",
+    "searchPlaceholder": "Search by reference or challenge...",
+    "loading": "Loading transactions...",
+    "loadError": "Failed to load transactions",
+    "tryAgain": "Try again",
+    "empty": "No transactions found",
+    "showAll": "Show all transactions",
+    "discountOff": "-{{amount}} off",
+    "viewAccount": "View account",
+    "checkStatus": "Check status",
+    "stats": {
+      "total": "Total",
+      "succeeded": "Succeeded",
+      "pending": "Pending",
+      "failed": "Failed"
+    },
+    "tabs": {
+      "all": "All",
+      "succeeded": "Succeeded",
+      "pending": "Pending",
+      "failed": "Failed"
+    },
+    "status": {
+      "succeeded": "Succeeded",
+      "pending": "Pending",
+      "failed": "Failed"
+    },
+    "columns": {
+      "reference": "Reference",
+      "challenge": "Challenge",
+      "amount": "Amount",
+      "provider": "Provider",
+      "status": "Status",
+      "date": "Date"
+    },
+    "provider": {
+      "internal": "Internal",
+      "card": "Card"
+    }
+  },
+  "walletPanel": {
+    "totalHoldings": "Total Holdings",
+    "unrealizedPnl": "Unrealized PnL",
+    "availableBalance": "Available Balance",
+    "buy": "Buy",
+    "sell": "Sell",
+    "orderTypeMarket": "MARKET",
+    "orderTypeLimit": "LIMIT",
+    "asset": "Asset",
+    "markPriceLabel": "Mark price:",
+    "limitPriceUsd": "Limit Price (USD)",
+    "quantity": "Quantity ({{asset}})",
+    "estCost": "Est. cost:",
+    "insufficientBalanceInline": "— insufficient balance",
+    "placing": "Placing...",
+    "buyNow": "Buy Now",
+    "placeLimitOrder": "Place Limit Order",
+    "noHoldingsToSell": "No holdings to sell.",
+    "buyCryptoFromBuyTab": "Buy crypto from the Buy tab.",
+    "selectAssetPlaceholder": "— Select asset —",
+    "qtyAvailable": "{{qty}} available",
+    "markPrice": "Mark Price",
+    "holdings": "Holdings",
+    "avgCost": "Avg Cost",
+    "max": "Max",
+    "estValue": "Est. value:",
+    "selling": "Selling...",
+    "sellAsset": "Sell {{asset}}",
+    "noSpotHoldings": "No spot holdings",
+    "buyCryptoUsingBuyTab": "Buy crypto using the Buy tab on the left",
+    "qty": "Qty",
+    "value": "Value",
+    "quantityLabel": "Quantity",
+    "estValueLabel": "Est. Value",
+    "cancel": "Cancel",
+    "confirmSell": "Confirm Sell",
+    "confirmSellBody": "Close the {{count}} open position — {{qty}} {{asset}} at market price.",
+    "confirmSellBody_plural": "Close all {{count}} open positions — {{qty}} {{asset}} at market price.",
+    "errorInvalidQuantity": "Enter a valid quantity.",
+    "errorPriceUnavailableRetry": "Price is unavailable. Try again.",
+    "errorInsufficientBalanceDetail": "Insufficient balance. Required ${{required}}, available ${{available}}.",
+    "toastSpotBuyExecuted": "Spot buy executed",
+    "toastSpotLimitPlaced": "Spot limit order placed",
+    "toastBuyFailed": "Buy failed",
+    "toastSellFailed": "Sell failed",
+    "toastPriceUnavailable": "Price unavailable",
+    "toastAssetSold": "{{asset}} sold",
+    "toastEnterValidQuantity": "Enter valid quantity",
+    "toastQuantityExceedsHoldings": "Quantity exceeds holdings"
+  },
+  "worldCardFail": {
+    "checkingTitle": "Checking Payment Status...",
+    "checkingDescription": "Please wait while we verify your payment.",
+    "successTitle": "Payment Actually Succeeded!",
+    "successDescription": "Despite the redirect, your payment was confirmed successfully. Your challenge account is active.",
+    "failedTitle": "Payment Failed",
+    "failedDescription": "Your payment was not completed. No charges were made to your account.",
+    "reference": "Reference:",
+    "goToDashboard": "Go to Dashboard",
+    "tryAgain": "Try Again",
+    "needHelp": "Need help? Contact"
+  },
+  "worldCardSuccess": {
+    "missingReferenceTitle": "Missing Payment Reference",
+    "missingReferenceDesc": "No payment reference found. Please check your email or contact support.",
+    "goToDashboard": "Go to Dashboard",
+    "checkingStatusTitle": "Checking Payment Status...",
+    "checkingStatusDesc": "Please wait while we verify your payment.",
+    "unableToCheckTitle": "Unable to Check Payment",
+    "genericError": "Something went wrong. Please try again.",
+    "purchaseSuccessTitle": "Purchase Successful!",
+    "purchaseSuccessDesc": "Your challenge account has been activated. Check your email for platform credentials.",
+    "reference": "Reference",
+    "status": "Status",
+    "active": "Active",
+    "startTrading": "Start Trading",
+    "paymentConfirmedTitle": "Payment Confirmed!",
+    "paymentConfirmedDesc": "Your payment was successful. Your trading account is being set up — this usually takes a few seconds.",
+    "referenceLabel": "Reference:",
+    "paymentFailedTitle": "Payment Failed",
+    "paymentFailedDesc": "Your payment could not be completed. No charges were made.",
+    "tryAgain": "Try Again",
+    "stillProcessingTitle": "Payment Still Processing",
+    "stillProcessingDesc": "Your payment is taking longer than expected. Don't worry — if the payment was successful, your account will be activated automatically.",
+    "contactPrefix": "Check back on your dashboard or contact",
+    "confirmingTitle": "Confirming Your Payment...",
+    "confirmingDesc": "We're waiting for payment confirmation. This usually takes a few seconds."
+  },
+  "bybitTerminal": {
+    "bannerAccountFailed": "Account Failed - Trading Disabled",
+    "bannerAccountDailyLocked": "Account Daily Locked",
+    "bannerAccountInactive": "Account Inactive",
+    "perpetual": "Perpetual",
+    "searchPlaceholder": "Search...",
+    "groupCrypto": "Crypto",
+    "groupForexMetals": "Forex & Metals",
+    "stat24hChange": "24h Change",
+    "stat24hHigh": "24h High",
+    "stat24hLow": "24h Low",
+    "stat24hTurnoverUsdt": "24H Turnover(USDT)",
+    "stat24hVolume": "24h Volume",
+    "stat24hTurnover": "24h Turnover",
+    "connLive": "Live",
+    "connOffline": "Offline",
+    "connPolling": "Polling",
+    "tabChart": "Chart",
+    "tabOverview": "Overview",
+    "tabData": "Data",
+    "chartCandles": "Candles",
+    "chartLine": "Line",
+    "chartFit": "Fit",
+    "resetChartView": "Reset chart view",
+    "perpetualContract": "Perpetual Contract",
+    "perpetualMetal": "Perpetual Metal",
+    "forexPerpetual": "Forex Perpetual",
+    "priceOverview": "Price Overview",
+    "bid": "Bid",
+    "ask": "Ask",
+    "midPrice": "Mid Price",
+    "spread": "Spread",
+    "statistics24h": "24h Statistics",
+    "lastPrice": "Last Price",
+    "marketInfo": "Market Info",
+    "baseAsset": "Base Asset",
+    "quoteAsset": "Quote Asset",
+    "marketType": "Market Type",
+    "cryptoPerpetual": "Crypto Perpetual",
+    "preciousMetal": "Precious Metal",
+    "forex": "Forex",
+    "priceSource": "Price Source",
+    "restPolling": "REST Polling",
+    "statusLabel": "Status",
+    "statusTrading": "Trading",
+    "about": "About {{label}}",
+    "aboutCrypto": "{{base}} is traded against {{quote}} as a perpetual contract. This pair tracks the spot price of {{base}} and is one of the most liquid cryptocurrency trading pairs available.",
+    "aboutGold": "Gold (XAU) is a precious metal traded against the US Dollar. It is considered a safe-haven asset and is one of the most actively traded commodities worldwide.",
+    "aboutSilver": "Silver (XAG) is a precious metal traded against the US Dollar. It serves as both an industrial commodity and a store of value.",
+    "aboutForex": "The {{base}}/{{quote}} pair represents the exchange rate between the {{base}} and {{quote}}. It is one of the major forex pairs traded in the global foreign exchange market.",
+    "contractSpecifications": "Contract Specifications",
+    "pairSpecifications": "Pair Specifications",
+    "symbol": "Symbol",
+    "type": "Type",
+    "baseCurrency": "Base Currency",
+    "quoteCurrency": "Quote Currency",
+    "contractSize": "Contract Size",
+    "unitsValue": "{{count}} units",
+    "tickSize": "Tick Size",
+    "margin": "Margin",
+    "marginValue": "Perpetual ({{leverage}}x Leverage)",
+    "tradingHours": "Trading Hours",
+    "tradingHours247": "24/7",
+    "tradingHoursForex": "Mon-Fri, 00:00-24:00 UTC",
+    "myPosition": "My Position",
+    "noOpenPositionFor": "No open position for {{label}}",
+    "myPositionsFor": "My Positions — {{label}}",
+    "long": "Long",
+    "short": "Short",
+    "size": "Size",
+    "entryPrice": "Entry Price",
+    "markPrice": "Mark Price",
+    "mode": "Mode",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "maxVolume": "Max {{volume}}",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "closeAll": "Close All",
+    "partialClose": "Partial Close",
+    "priceReference": "Price Reference",
+    "accountSummary": "Account Summary",
+    "balance": "Balance",
+    "openPositions": "Open Positions",
+    "symbolPositions": "{{label}} Positions",
+    "accountStatus": "Account Status",
+    "locked": "Locked",
+    "active": "Active",
+    "orderBook": "Order Book",
+    "recentTrades": "Recent Trades",
+    "priceWithQuote": "Price({{quote}})",
+    "qty": "Qty",
+    "total": "Total",
+    "spreadLabel": "Spread: {{value}}",
+    "buyShort": "B",
+    "sellShort": "S",
+    "noRecentTradesFor": "No recent trades for {{label}}",
+    "price": "Price",
+    "time": "Time",
+    "tradePanel": "Trade Panel",
+    "trade": "Trade",
+    "spotTrading": "Spot Trading",
+    "spotTradingDescPrefix": "Buy and manage crypto assets from the",
+    "wallet": "Wallet",
+    "spotTradingDescSuffix": "tab in the panel below.",
+    "orderTypes": "Order Types",
+    "marketAndLimit": "Market & Limit",
+    "available": "Available",
+    "spotNoLeverage": "Spot (No Leverage)",
+    "assets": "Assets",
+    "cryptoPairsCount": "{{count}} crypto pairs",
+    "scrollDownPrefix": "Scroll down to the",
+    "scrollDownSuffix": "tab to buy, sell, and track your spot positions.",
+    "buy": "Buy",
+    "sell": "Sell",
+    "orderTypeLimit": "Limit",
+    "orderTypeMarket": "Market",
+    "orderTypeTpSl": "TP/SL",
+    "equity": "Equity",
+    "acctBalance": "Acct. Balance",
+    "usedMargin": "Used Margin",
+    "freeMargin": "Free Margin",
+    "quantity": "Quantity",
+    "leverage": "Leverage",
+    "orderValue": "Order Value",
+    "commission": "Commission",
+    "maxBuyAmount": "Max. buy amount",
+    "maxSellAmount": "Max. sell amount",
+    "placing": "Placing...",
+    "accountLocked": "Account Locked",
+    "buySymbol": "Buy {{label}}",
+    "sellSymbol": "Sell {{label}}",
+    "unitLots": "Lots",
+    "toastAccountStatusChangedTitle": "Account Status Changed",
+    "toastAccountStatusChangedDesc": "Account is now {{status}}",
+    "toastOrderPlaced": "Order Placed",
+    "toastOrderFailed": "Order Failed",
+    "toastFailedGeneric": "Failed",
+    "toastPendingOrderCreated": "Pending Order Created",
+    "toastPositionClosed": "Position Closed",
+    "toastCloseFailed": "Close Failed",
+    "toastAccountLocked": "Account Locked",
+    "toastSelectSymbol": "Select a symbol",
+    "toastEnterValidQuantity": "Enter valid quantity",
+    "toastEnterValidPrice": "Enter valid price",
+    "toastInsufficientMargin": "Insufficient Margin",
+    "toastMaxAllowed": "Max allowed: {{amount}} {{unit}}",
+    "toastNoPriceAvailable": "No price available"
+  },
+  "commonTerminal": {
+    "loadingChallenges": "Loading challenges...",
+    "loading": "Loading...",
+    "noActiveChallenges": "No Active Challenges",
+    "purchaseToStart": "Purchase a challenge to start trading",
+    "buyChallenge": "Buy Challenge",
+    "tabs": {
+      "positions": "Positions",
+      "pending": "Pending",
+      "history": "History"
+    },
+    "columns": {
+      "symbol": "Symbol",
+      "side": "Side",
+      "type": "Type",
+      "qty": "Qty",
+      "entry": "Entry",
+      "current": "Current",
+      "close": "Close",
+      "price": "Price",
+      "pnl": "PnL",
+      "sl": "SL",
+      "tp": "TP",
+      "reason": "Reason"
+    },
+    "side": {
+      "long": "Long",
+      "short": "Short"
+    },
+    "empty": {
+      "noOpenPositionsTitle": "No Open Positions",
+      "noOpenPositionsDesc": "Place a trade to see your positions here",
+      "noPendingOrdersTitle": "No Pending Orders",
+      "noPendingOrdersDesc": "Create pending orders to see them here",
+      "noHistoryTitle": "No Trade History",
+      "noHistoryDesc": "Your closed trades will appear here"
+    },
+    "actions": {
+      "modifyTpSl": "Modify TP/SL",
+      "close": "Close",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving...",
+      "confirmClose": "Confirm Close",
+      "closing": "Closing..."
+    },
+    "banner": {
+      "dailyLossTitle": "Daily Loss Limit Reached",
+      "dailyLossMessage": "Trading is locked until tomorrow. Open positions are being force-closed.",
+      "disqualifiedTitle": "Challenge Disqualified",
+      "disqualifiedMessage": "Maximum drawdown was exceeded. Trading is disabled and positions are being force-closed."
+    },
+    "modifyDialog": {
+      "title": "Modify TP / SL",
+      "entry": "Entry",
+      "takeProfit": "Take Profit",
+      "stopLoss": "Stop Loss",
+      "leaveBlank": "Leave blank to remove"
+    },
+    "closeDialog": {
+      "title": "Close Position?",
+      "entryPrice": "Entry Price",
+      "closePrice": "Close Price",
+      "estPnl": "Est. PnL"
+    },
+    "toast": {
+      "accountStatusChangedTitle": "Account Status Changed",
+      "accountStatusChangedDesc": "Limit breached. {{count}} positions auto-closed.",
+      "positionClosed": "Position Closed",
+      "closeFailed": "Close Failed",
+      "tpSlUpdated": "TP/SL updated",
+      "modifyFailed": "Modify failed",
+      "orderCancelled": "Order Cancelled",
+      "cancelFailed": "Cancel Failed",
+      "noAccountSelected": "No account selected",
+      "tradingLockedTitle": "Trading locked",
+      "tradingLockedDesc": "Account is not active for trading.",
+      "invalidTradeTitle": "Invalid trade",
+      "invalidTradeMissingFields": "Missing symbol, type, or valid volume.",
+      "invalidTradeExecutionPrice": "Missing or invalid execution price.",
+      "invalidTradeMarginPrice": "Missing or invalid price for margin calculation.",
+      "insufficientMarginTitle": "Insufficient margin",
+      "insufficientMarginDesc": "Required ${{required}}, available ${{available}}.",
+      "invalidOrderTitle": "Invalid order",
+      "invalidOrderPendingPrice": "Missing or invalid pending order price.",
+      "pendingOrderCreated": "Pending order created",
+      "tradeExecuted": "Trade executed",
+      "tradeFailed": "Trade failed"
+    }
+  },
+  "mt5TradingArea": {
+    "toast": {
+      "positionClosed": "Position closed",
+      "closeFailed": "Close failed",
+      "positionModified": "Position modified",
+      "modifyFailed": "Modify failed",
+      "noAccountSelected": "No account selected",
+      "connectedToMt5": "Successfully connected to MT5",
+      "loginFailed": "Login failed",
+      "passwordResetEmailSent": "Password reset email sent",
+      "resetFailed": "Reset failed",
+      "noPriceToClose": "No price available to close"
+    },
+    "mobileTabs": {
+      "chart": "Chart",
+      "quotes": "Quotes",
+      "positions": "Positions"
+    }
+  },
+  "tradeCheckoutPanel": {
+    "title": "Buy New Challenge",
+    "subtitle": "Choose your challenge package and start your trading journey.",
+    "custom": "Custom",
+    "noChallengesAtSize": "No challenges are available at this size right now.",
+    "noMatchingChallenge": "No matching challenge found. Try a different size or type.",
+    "percentOff": "70% OFF",
+    "phasesSingular": "{{count}} Phase",
+    "phasesPlural": "{{count}} Phases",
+    "stats": {
+      "phases": "Phases",
+      "profitTarget": "Profit Target",
+      "dailyDrawdown": "Daily Drawdown",
+      "maxDrawdown": "Max Drawdown",
+      "leverage": "Leverage",
+      "minTradingDays": "Min Trading Days",
+      "profitSplit": "Profit Split"
+    },
+    "features": [
+      "No time limit",
+      "All strategies",
+      "100% fee refund",
+      "Free course"
+    ],
+    "selectPlatform": "Select Trading Platform",
+    "platformDesc": {
+      "mt5": "Most popular platform",
+      "tradelocker": "Coming soon",
+      "bybit": "Crypto trading",
+      "pt5": "Advanced trading"
+    },
+    "soon": "SOON",
+    "tradeLockerComingSoonTitle": "TradeLocker is Coming Soon",
+    "tradeLockerComingSoonBody": "We are currently working on integrating TradeLocker. Please choose another trading platform.",
+    "selectMt5Instead": "Select MetaTrader 5 instead",
+    "continueToPayment": "Continue to Payment"
+  },
+  "accountSummaryCard": {
+    "balance": "Balance",
+    "equity": "Equity",
+    "profit": "Profit",
+    "tradingDays": "Trading Days",
+    "profitTarget": "Profit Target",
+    "dailyDrawdown": "Daily Drawdown",
+    "overallDrawdown": "Overall Drawdown"
+  },
+  "balanceStats": {
+    "available": "Available",
+    "equity": "Equity",
+    "floatingPL": "Floating P/L",
+    "profitPercent": "Profit %"
+  },
+  "challengeActiveBanner": {
+    "title": "Challenge Active",
+    "workingTowards": "Working towards {{phase}} completion",
+    "defaultPhase": "Phase 1"
+  },
+  "complianceMetrics": {
+    "profitTarget": "Profit Target",
+    "dailyLossLimit": "Daily Loss Limit",
+    "overallDrawdown": "Overall Drawdown",
+    "status": {
+      "passed": "PASSED",
+      "warning": "WARNING",
+      "violated": "VIOLATED",
+      "safe": "SAFE",
+      "inProgress": "IN PROGRESS"
+    }
+  },
+  "terminalSidebar": {
+    "tools": {
+      "menu": {
+        "name": "Menu",
+        "description": "Opens/closes navigation menu"
+      },
+      "crosshair": {
+        "name": "Crosshair",
+        "description": "Precise cursor positioning for measurement on chart"
+      },
+      "trendLine": {
+        "name": "Trend Line",
+        "description": "Draw trend line (drag from first point to second point)"
+      },
+      "parallelLines": {
+        "name": "Parallel Lines",
+        "description": "Draw two parallel trend lines (draw first line, then second)"
+      },
+      "fibonacci": {
+        "name": "Fibonacci",
+        "description": "Draw Fibonacci retracement levels"
+      },
+      "rectangle": {
+        "name": "Rectangle",
+        "description": "Draw support/resistance zone (drag from corner to corner)"
+      },
+      "priceLevel": {
+        "name": "Price Level",
+        "description": "Add horizontal price line (click on chart)"
+      },
+      "text": {
+        "name": "Text",
+        "description": "Add text label on chart (coming soon)"
+      },
+      "eye": {
+        "name": "Eye",
+        "description": "Show or hide all drawing objects on chart"
+      },
+      "lock": {
+        "name": "Lock",
+        "description": "Lock chart (disable pan and zoom)"
+      },
+      "delete": {
+        "name": "Delete",
+        "description": "Remove last drawn object from chart"
+      },
+      "grid": {
+        "name": "Grid",
+        "description": "Toggle grid display on/off for chart alignment"
+      },
+      "history": {
+        "name": "History",
+        "description": "Undo/redo actions and view action history"
+      },
+      "layout": {
+        "name": "Layout",
+        "description": "Manage chart layouts and panel arrangements"
+      }
+    },
+    "menu": {
+      "accounts": "Trading accounts",
+      "chart": "Chart settings",
+      "oneClickTrading": "One Click Trading",
+      "darkTheme": "Dark Theme",
+      "lightTheme": "Light Theme",
+      "colorTemplates": "Color Templates",
+      "language": "Language",
+      "shortcuts": "Shortcuts",
+      "contactUs": "Contact us",
+      "aboutProgram": "About program"
+    },
+    "submenu": {
+      "connectToAccount": "Connect to account",
+      "openDemoAccount": "Open Demo account",
+      "gridLines": "Grid",
+      "tradeOrders": "Trade Orders",
+      "tradePosition": "Trade Position",
+      "tradeHistory": "Trade History",
+      "slTpLevels": "SL/TP Levels",
+      "askPrice": "Ask Price",
+      "chartControls": "Chart Controls",
+      "tradeNotification": "Trade Notification",
+      "crosshairCursor": "Crosshair cursor",
+      "showOhlc": "Show OHLC",
+      "greenAndRed": "Green & Red",
+      "blueAndRed": "Blue & Red",
+      "blackAndWhite": "Black & White",
+      "neutral": "Neutral"
+    },
+    "languages": {
+      "english": "English",
+      "arabic": "Arabic",
+      "bulgarian": "Bulgarian",
+      "chineseSimplified": "Chinese Simplified",
+      "chineseTraditional": "Chinese Traditional",
+      "czech": "Czech",
+      "dutch": "Dutch",
+      "urdu": "Urdu"
+    },
+    "account": {
+      "demo": "Demo"
+    }
+  },
+  "phaseProgressionCards": {
+    "title": "Phase Progression",
+    "evaluation": "Evaluation",
+    "funded": "Funded",
+    "phase1": "Phase 1",
+    "phase2": "Phase 2",
+    "passEvaluationPhase": "Pass evaluation phase",
+    "receiveFundingAndTrade": "Receive funding & trade",
+    "completeFirstPhase": "Complete first phase",
+    "completeSecondPhase": "Complete second phase",
+    "profit": "Profit:",
+    "days": "Days:",
+    "completed": "Completed",
+    "locked": "Locked"
+  },
+  "terminalTopbar": {
+    "chartTypes": {
+      "bars": "Bars",
+      "candles": "Candles",
+      "line": "Line",
+      "area": "Area",
+      "volume": "Volume",
+      "volumeTicks": "Volume Ticks"
+    },
+    "newOrder": "New Order",
+    "showBuySellOnChart": "Show Buy/Sell on Chart",
+    "hideBuySellOnChart": "Hide Buy/Sell on Chart",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "openMarketWatch": "Open Market Watch",
+    "closeMarketWatch": "Close Market Watch",
+    "downloadChartPng": "Download chart as PNG",
+    "fullScreen": "Full screen ({{key}})"
+  },
+  "tradingChart": {
+    "chartNotReady": "Chart not ready",
+    "chartSavedAsPng": "Chart saved as PNG",
+    "screenshotFailed": "Screenshot failed. Try again."
+  },
+  "tradingStyleRules": {
+    "title": "Trading Style Rules",
+    "newsTrading": "News Trading",
+    "weekendHolding": "Weekend Holding",
+    "expertAdvisors": "Expert Advisors",
+    "hedging": "Hedging",
+    "copyTrading": "Copy Trading",
+    "allowed": "Allowed",
+    "notAllowed": "Not Allowed"
+  },
+  "violationPopup": {
+    "challengeFailed": "Challenge Failed",
+    "warning": "Warning",
+    "violationMessage": "A rule violation has been detected on your account.",
+    "warningMessage": "You are approaching a rule limit.",
+    "details": "Details",
+    "iUnderstand": "I Understand",
+    "continueTrading": "Continue Trading"
+  },
+  "chatSupport": {
+    "greeting": "Hi! I'm the Prop Capitals AI assistant. How can I help you today? Ask me about challenges, trading rules, payouts, or anything else!",
+    "online": "Online",
+    "thinking": "Thinking...",
+    "humanSupport": "Human Support",
+    "inputPlaceholder": "Type your message...",
+    "errors": {
+      "generic": "Something went wrong on our end.",
+      "retry": "{{message}} Please try again in a moment, or use the Human Support button below.",
+      "contactSupport": "{{message}} Please use the Human Support button below or email support@prop-capitals.com.",
+      "noResponse": "I could not generate a response.",
+      "connection": "I'm having trouble connecting right now. Please try again or contact support@prop-capitals.com directly."
+    },
+    "categories": {
+      "ACCOUNT": "Account",
+      "PAYMENT": "Payment",
+      "PAYOUT": "Payout",
+      "TECHNICAL": "Technical",
+      "OTHER": "Other"
+    },
+    "ticket": {
+      "created": "Thanks! Your support ticket has been created under {{category}}. Our team will reply as soon as possible.",
+      "continueFromTickets": "You can continue the conversation from your Support Tickets page.",
+      "submitIssue": "There was an issue submitting your request.",
+      "emailFallback": "{{message}} Please email us directly at support@prop-capitals.com.",
+      "submitFailed": "Failed to submit your request. Please email us directly at support@prop-capitals.com.",
+      "openTicket": "Open Ticket"
+    },
+    "form": {
+      "closeForm": "Close form",
+      "namePlaceholder": "Your Name",
+      "emailPlaceholder": "Your Email",
+      "messagePlaceholder": "Describe your issue...",
+      "cancel": "Cancel",
+      "submit": "Submit"
+    },
+    "quickReplies": {
+      "challenges": "Challenges",
+      "challengesPrompt": "What challenges do you offer?",
+      "payouts": "Payouts",
+      "payoutsPrompt": "How do payouts work?",
+      "rules": "Rules",
+      "rulesPrompt": "Trading rules?"
+    },
+    "login": {
+      "linkText": "Log in",
+      "suffix": "for account-specific help (balance, trades, payouts)."
+    }
+  },
+  "socialProof": {
+    "timeAgo": "{{minutes}} min ago",
+    "messages": {
+      "challengePassed": "{{name}} from {{city}} just passed their challenge!",
+      "gotFunded": "{{name}} from {{city}} just got funded ${{amount}}K!",
+      "payoutReceived": "{{name}} from {{city}} received a ${{amount}} payout!",
+      "challengeStarted": "{{name}} from {{city}} just started a challenge!"
+    }
+  },
+  "supportChat": {
+    "placeholderClosed": "This ticket is closed",
+    "placeholderType": "Type your message..."
+  },
+  "equityChart": {
+    "title": "Equity Curve",
+    "noData": "No equity data available"
+  },
+  "profitChart": {
+    "title": "Daily Profit"
+  },
+  "propTradingExplainer": {
+    "scenes": {
+      "intro": {
+        "title": "What is Prop Trading?",
+        "subtitle": "Trade with our capital, keep the profits"
+      },
+      "problem": {
+        "title": "The Challenge",
+        "subtitle": "Most traders lack sufficient capital to generate meaningful returns"
+      },
+      "solution": {
+        "title": "Our Solution",
+        "subtitle": "We provide the capital, you provide the skill"
+      },
+      "step1": {
+        "title": "Step 1: Choose Your Challenge",
+        "subtitle": "Select an account size from $10K to $200K"
+      },
+      "step2": {
+        "title": "Step 2: Prove Your Skills",
+        "subtitle": "Reach the profit target while managing risk"
+      },
+      "step3": {
+        "title": "Step 3: Get Funded",
+        "subtitle": "Pass the evaluation and receive real capital"
+      },
+      "profits": {
+        "title": "Keep Up to 90% Profits",
+        "subtitle": "Your skills, our capital, shared success"
+      },
+      "scale": {
+        "title": "Scale to $2 Million",
+        "subtitle": "Grow your account through consistent performance"
+      },
+      "cta": {
+        "title": "Start Your Journey Today",
+        "subtitle": "Join thousands of funded traders worldwide"
+      }
+    },
+    "labels": {
+      "yourSkills": "Your Skills",
+      "ourCapital": "Our Capital",
+      "success": "Success",
+      "firstStep": "First Step",
+      "evaluation": "Evaluation",
+      "profitTarget": "{{value}} Target",
+      "maxDrawdown": "{{value}} Max DD",
+      "getFunded": "Get Funded",
+      "yourShare": "Your Share",
+      "fundedTraders": "Funded Traders",
+      "capitalDeployed": "Capital Deployed",
+      "paidOut": "Paid Out"
+    }
+  },
+  "riskDisclosure": {
+    "pageTitle": "Risk Disclosure",
+    "pageSubtitle": "Important information about trading risks",
+    "highRiskWarning": {
+      "heading": "High Risk Warning",
+      "body": "Trading involves significant risk of loss and may not be suitable for all investors. Please ensure you fully understand these risks before participating and only trade with money you can afford to lose."
+    },
+    "generalInfo": {
+      "heading": "General Information & Risk Disclosure",
+      "body": "Risk Disclosure: All material published and disseminated by Prop Capitals should be considered as general information only. The information provided by Prop Capitals or included here is not intended to serve as (a) investment advice, (b) an offer or solicitation to buy or sell any securities, or (c) a recommendation, endorsement, or sponsorship of any security, company, or fund. Testimonials featured on Prop Capitals's website(s) may not reflect the experiences of other clients or customers and do not guarantee future performance or success. Using the information on Prop Capitals's website(s) is at your own risk. Prop Capitals, along with its partners, representatives, agents, employees, and contractors, does not accept any responsibility or liability for the use or misuse of such information."
+    },
+    "tradingRisk": {
+      "heading": "Trading Risk & Suitability",
+      "body": "Trading leveraged instruments carries significant risk and is not suitable for all investors. Investors may lose all or more than their initial investment. Only risk capital—money that can be lost without affecting one's financial security or lifestyle—should be used for trading, and only those with sufficient risk capital should engage in trading. This document is not a solicitation or an offer to buy or sell futures, options, or forex. Past performance does not necessarily predict future results."
+    },
+    "hypotheticalPerformance": {
+      "heading": "Hypothetical & Simulated Performance",
+      "body": "Hypothetical or simulated performance results have inherent limitations. Unlike an actual performance record, simulated results do not reflect real trading. Additionally, because these trades have not been executed, the results may have under- or overcompensated for the impact of certain market factors, such as lack of liquidity. Simulated trading programs are also typically designed with the benefit of hindsight. There is no guarantee that any account will achieve profits or losses similar to those shown."
+    },
+    "cfdAvailability": {
+      "heading": "CFD Availability",
+      "body": "Prop Capitals does not offer Contracts for Difference to residents of certain restricted jurisdictions. Please refer to our Terms of Service for the full list of restricted regions."
+    },
+    "companyInfo": {
+      "heading": "Company Information",
+      "body": "This website is owned and operated by {{entity}} with registration number {{registrationNumber}} and registered address at {{address}}."
+    },
+    "ownershipCopyright": {
+      "heading": "Ownership & Copyright",
+      "body": "© {{year}} {{entity}}. All Rights Reserved."
+    }
+  },
+  "refundPolicy": {
+    "pageTitle": "Refund Policy",
+    "pageSubtitle": "Clear conditions for refund eligibility and processing",
+    "section1Heading": "1. Eligibility for Refunds",
+    "section1Para1": "1.1. Clients may request a refund within fourteen (14) calendar days from the date of purchase, provided that no trading activity has been initiated on the purchased evaluation or account.",
+    "section1Para2": "1.2. The refund eligibility period shall automatically expire upon the execution of any trade, regardless of trade size, duration, or outcome.",
+    "section2Heading": "2. Non-Refundable Conditions",
+    "section2Para1": "2.1. Once trading activity has commenced, the evaluation shall be deemed active, and the Client expressly acknowledges that no refunds shall be granted thereafter.",
+    "section2Para2": "2.2. This applies equally to: Evaluation accounts, Challenge programs, and any funded or simulated trading environment.",
+    "section3Heading": "3. Scope of Refunds",
+    "section3Para1": "3.1. Refunds, where approved, apply only to the initial purchase fee paid for the evaluation or program.",
+    "section3Para2": "3.2. Any additional fees, third-party charges, or service costs are non-refundable, unless otherwise required by applicable law.",
+    "section4Heading": "4. Refund Processing",
+    "section4Para1": "4.1. Approved refunds will be processed using the original payment method whenever possible.",
+    "section4Para2": "4.2. Processing times may vary depending on the payment provider and are subject to external banking or payment system delays.",
+    "section5Heading": "5. Abuse Prevention",
+    "section5Para1": "5.1. The Company reserves the right to deny refund requests in cases of suspected abuse, fraud, or attempts to circumvent platform rules.",
+    "section5Para2": "5.2. Repeated refund requests or account activity indicating misuse may result in account suspension or termination.",
+    "section6Heading": "6. Policy Amendments",
+    "section6Para1": "6.1. The Company reserves the right to amend this Refund Policy at any time.",
+    "section6Para2": "6.2. Any amendments shall become effective upon publication on the Company’s website unless otherwise stated.",
+    "section7Heading": "7. Governing Law",
+    "section7Para1": "This Refund Policy shall be governed by and construed in accordance with the laws applicable to the Company’s jurisdiction of operation."
+  },
+  "withdrawalPolicy": {
+    "pageTitle": "Withdrawal (Payout) Policy",
+    "pageSubtitle": "How and when profit withdrawals are processed for funded accounts",
+    "section1": {
+      "heading": "1. General Provisions",
+      "p1": "This Withdrawal Policy (\"Policy\") governs the conditions under which eligible Clients may request and receive profit withdrawals from their funded trading accounts. By participating in funded trading programs, the Client agrees to be bound by this Policy, the Terms and Conditions, and all related platform rules."
+    },
+    "section2": {
+      "heading": "2. Payout Eligibility",
+      "p1": "2.1. The Client shall become eligible to request a withdrawal after completing fourteen (14) consecutive calendar days of funded trading activity, provided all trading rules and risk management requirements have been fully complied with.",
+      "p2": "2.2. Eligibility for subsequent withdrawals shall be subject to ongoing compliance with all platform policies, including but not limited to trading conduct, risk limits, and account integrity."
+    },
+    "section3": {
+      "heading": "3. Payout Frequency",
+      "p1": "3.1. Withdrawal requests may be submitted on a bi-weekly basis, defined as once every fourteen (14) calendar days.",
+      "p2": "3.2. The Company reserves the right to modify payout schedules at its discretion, subject to prior notice where required by applicable law."
+    },
+    "section4": {
+      "heading": "4. Withdrawal Amounts",
+      "p1": "4.1. The minimum withdrawal amount per request is USD 50 (fifty United States dollars).",
+      "p2": "4.2. There is no maximum withdrawal limit, provided the requested amount represents legitimately earned profits in accordance with platform rules."
+    },
+    "section5": {
+      "heading": "5. Processing Time",
+      "p1": "5.1. Approved withdrawal requests shall be processed within twenty-four (24) to forty-eight (48) hours from the time of submission.",
+      "p2": "5.2. Processing times may be extended due to compliance reviews, technical issues, payment provider delays, or force majeure events."
+    },
+    "section6": {
+      "heading": "6. Fees",
+      "p1": "6.1. The Company does not charge any withdrawal fees.",
+      "p2": "6.2. Any third-party fees imposed by banks, payment processors, or intermediaries are the sole responsibility of the Client."
+    },
+    "section7": {
+      "heading": "7. Compliance and Verification",
+      "p1": "7.1. All withdrawal requests are subject to standard Know Your Customer (KYC), Anti-Money Laundering (AML), and fraud prevention checks.",
+      "p2": "7.2. The Company reserves the right to request additional documentation or clarification prior to approving any withdrawal."
+    },
+    "section8": {
+      "heading": "8. Violations and Withholding",
+      "p1": "8.1. The Company reserves the right to delay, suspend, reduce, or deny withdrawals in cases of suspected rule violations, abusive trading practices, manipulation, or breach of contractual obligations.",
+      "p2": "8.2. Any profits derived from prohibited or non-compliant trading activity shall be deemed invalid and non-withdrawable."
+    },
+    "section9": {
+      "heading": "9. Amendments",
+      "p1": "9.1. The Company may amend this Policy at any time. Updated versions shall become effective upon publication on the Company's website unless otherwise stated."
+    },
+    "section10": {
+      "heading": "10. Governing Law",
+      "p1": "This Policy shall be governed by and construed in accordance with the laws applicable to the Company's jurisdiction of operation, without regard to conflict of law principles."
+    }
+  },
+  "kycPolicy": {
+    "title": "Know Your Customer (KYC) Policy",
+    "subtitle": "How we verify client identities and comply with AML requirements",
+    "purpose": {
+      "heading": "1. Purpose",
+      "body": "This Know Your Customer (\"KYC\") Policy outlines the procedures implemented by the Company to verify the identity of its Clients, prevent fraud, and comply with applicable Anti-Money Laundering (AML) and regulatory requirements. Completion of KYC verification is mandatory for access to certain services, including funded trading and withdrawals."
+    },
+    "requiredInfo": {
+      "heading": "2. Required Client Information",
+      "intro": "To satisfy KYC requirements, each Client may be required to provide accurate, current, and complete information, including but not limited to:",
+      "items": [
+        "Full legal name",
+        "Date of birth",
+        "Nationality",
+        "Residential address"
+      ]
+    },
+    "identity": {
+      "heading": "3. Identity Verification",
+      "intro": "Clients must submit a valid, government-issued photo identification document, which may include:",
+      "items": [
+        "Passport",
+        "National identity card",
+        "Driver's license"
+      ],
+      "note": "The submitted identification must be clear, legible, unexpired, and issued by a recognized governmental authority."
+    },
+    "address": {
+      "heading": "4. Proof of Address",
+      "intro": "Clients may be required to submit proof of residential address, dated within the last three (3) months, such as:",
+      "items": [
+        "Utility bill",
+        "Bank statement",
+        "Official government correspondence"
+      ],
+      "note": "The document must clearly display the Client's full name and residential address."
+    },
+    "funds": {
+      "heading": "5. Proof of Funds",
+      "intro": "Clients may be required to provide proof of funds to demonstrate the lawful origin of capital used in connection with the Company's services. Acceptable documentation may include, but is not limited to:",
+      "items": [
+        "Recent bank statements",
+        "Salary slips or income statements",
+        "Investment or trading account statements"
+      ],
+      "note": "The Company reserves the right to request additional documentation where necessary."
+    },
+    "verification": {
+      "heading": "6. Verification and Review",
+      "clause1": "6.1. All submitted KYC information and documentation are subject to verification and review.",
+      "clause2": "6.2. The Company reserves the right to reject, suspend, or restrict access to services if the Client fails to provide satisfactory documentation or if submitted information is incomplete, inaccurate, or misleading."
+    },
+    "monitoring": {
+      "heading": "7. Ongoing Monitoring",
+      "body": "The Company may conduct periodic reviews and re-verification of Client information to ensure continued compliance with regulatory requirements."
+    },
+    "dataProtection": {
+      "heading": "8. Data Protection",
+      "body": "All personal data collected under this Policy shall be processed in accordance with the Company's Privacy Policy and applicable data protection laws. Information will be used solely for verification, compliance, and security purposes."
+    },
+    "refusal": {
+      "heading": "9. Refusal or Termination",
+      "intro": "Failure to comply with KYC requirements may result in:",
+      "items": [
+        "Denial of account access",
+        "Suspension of trading privileges",
+        "Delay or denial of withdrawals",
+        "Termination of the Client relationship"
+      ]
+    },
+    "amendments": {
+      "heading": "10. Amendments",
+      "body": "The Company reserves the right to amend this KYC Policy at any time. Any changes shall become effective upon publication on the Company's website unless otherwise stated."
+    },
+    "governingLaw": {
+      "heading": "11. Governing Law",
+      "body": "This Policy shall be governed by and construed in accordance with the laws applicable to the Company's jurisdiction of operation."
+    }
+  },
+  "amlPolicy": {
+    "pageTitle": "Anti-Money Laundering (AML) Policy",
+    "pageSubtitle": "Our commitment to preventing money laundering and terrorist financing",
+    "purpose": {
+      "heading": "1. Purpose",
+      "body": "This Anti-Money Laundering (\"AML\") Policy sets out the measures and procedures adopted by BLUEHAVEN MANAGEMENT LTD (\"the Company\") to detect, prevent, and report money laundering, terrorist financing, and other financial crimes in accordance with applicable laws and regulations."
+    },
+    "scope": {
+      "heading": "2. Scope",
+      "body": "This Policy applies to all directors, officers, employees, contractors, and agents of the Company. It also applies to all business relationships and transactions conducted through the Company's platforms and services."
+    },
+    "riskAssessment": {
+      "heading": "3. Risk Assessment",
+      "intro": "The Company conducts regular risk assessments to identify and evaluate money laundering and terrorist financing risks. Risk factors considered include but are not limited to:",
+      "factors": [
+        "Client risk profile and geographic location",
+        "Nature and complexity of products and services",
+        "Transaction patterns and volumes",
+        "Delivery channels and payment methods used"
+      ]
+    },
+    "cdd": {
+      "heading": "4. Customer Due Diligence (CDD)",
+      "intro": "The Company applies Customer Due Diligence measures before establishing a business relationship or processing transactions. CDD procedures include:",
+      "measures": [
+        "Verifying the identity of clients using reliable, independent documents",
+        "Identifying and verifying beneficial owners where applicable",
+        "Understanding the purpose and intended nature of the business relationship",
+        "Conducting ongoing monitoring of transactions and activities"
+      ],
+      "edd": "Enhanced Due Diligence (EDD) is applied where higher risks are identified, including for politically exposed persons (PEPs) and clients from higher-risk jurisdictions."
+    },
+    "transactionMonitoring": {
+      "heading": "5. Transaction Monitoring",
+      "body": "The Company monitors client transactions on an ongoing basis to detect unusual or suspicious activity. Monitoring includes automated systems and manual review processes designed to identify transactions that are inconsistent with a client's known profile, business activities, or risk assessment."
+    },
+    "suspiciousActivity": {
+      "heading": "6. Suspicious Activity Reporting",
+      "intro": "Where there are reasonable grounds to suspect that a transaction or activity may be related to money laundering or terrorist financing, the Company will:",
+      "actions": [
+        "File a Suspicious Activity Report (SAR) with the relevant authorities",
+        "Refrain from disclosing the existence of the report to the client (tipping off)",
+        "Cooperate fully with law enforcement and regulatory bodies",
+        "Suspend or terminate the business relationship where appropriate"
+      ]
+    },
+    "recordKeeping": {
+      "heading": "7. Record Keeping",
+      "body": "The Company maintains records of all client identification documents, transaction records, and due diligence information for a minimum period of five (5) years from the date of the transaction or the end of the business relationship, whichever is later, in compliance with applicable legal requirements."
+    },
+    "staffTraining": {
+      "heading": "8. Staff Training",
+      "body": "All relevant personnel receive regular training on AML policies, procedures, and obligations. Training covers the identification of suspicious activities, reporting procedures, and updates to applicable laws and regulations."
+    },
+    "amendments": {
+      "heading": "9. Amendments",
+      "body": "The Company reserves the right to amend this AML Policy at any time. Any changes shall become effective upon publication on the Company's website unless otherwise stated."
+    },
+    "governingLaw": {
+      "heading": "10. Governing Law",
+      "body": "This Policy shall be governed by and construed in accordance with the laws of England and Wales applicable to the Company's jurisdiction of operation."
     }
   }
 }

@@ -2,9 +2,11 @@ import React from 'react';
 import { Mail, Phone, MapPin, Clock, Send, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const ContactPage = () => {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <div className={`min-h-screen pt-20 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
@@ -15,12 +17,12 @@ const ContactPage = () => {
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-12">
-            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">Contact Us</span>
+            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">{t('contactPage.eyebrow')}</span>
             <h1 className={`text-3xl sm:text-4xl lg:text-5xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Get in <span className="text-amber-500">Touch</span>
+              {t('contactPage.titleLead')} <span className="text-amber-500">{t('contactPage.titleHighlight')}</span>
             </h1>
             <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-              Have questions? Our support team is here to help you 24/7. Reach out through any of our channels.
+              {t('contactPage.subtitle')}
             </p>
           </div>
 
@@ -33,8 +35,8 @@ const ContactPage = () => {
                     <Mail className="w-6 h-6 text-amber-500" />
                   </div>
                   <div>
-                    <h3 className={`font-bold text-lg mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>Email Us</h3>
-                    <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>For general inquiries and support</p>
+                    <h3 className={`font-bold text-lg mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('contactPage.email.title')}</h3>
+                    <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('contactPage.email.desc')}</p>
                     <a href="mailto:support@prop-capitals.com" className="text-amber-500 hover:text-amber-400 font-medium">
                       support@prop-capitals.com
                     </a>
@@ -48,9 +50,9 @@ const ContactPage = () => {
                     <MessageCircle className="w-6 h-6 text-emerald-400" />
                   </div>
                   <div>
-                    <h3 className={`font-bold text-lg mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>Live Chat</h3>
-                    <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Average response time under 60 seconds</p>
-                    <span className="text-emerald-400 font-medium">Available 24/7</span>
+                    <h3 className={`font-bold text-lg mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('contactPage.liveChat.title')}</h3>
+                    <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('contactPage.liveChat.desc')}</p>
+                    <span className="text-emerald-400 font-medium">{t('contactPage.liveChat.value')}</span>
                   </div>
                 </div>
               </div>
@@ -61,9 +63,9 @@ const ContactPage = () => {
                     <Clock className="w-6 h-6 text-blue-400" />
                   </div>
                   <div>
-                    <h3 className={`font-bold text-lg mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>Business Hours</h3>
-                    <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Support available around the clock</p>
-                    <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>24 hours / 7 days a week</span>
+                    <h3 className={`font-bold text-lg mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('contactPage.hours.title')}</h3>
+                    <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('contactPage.hours.desc')}</p>
+                    <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('contactPage.hours.value')}</span>
                   </div>
                 </div>
               </div>
@@ -74,7 +76,7 @@ const ContactPage = () => {
                     <MapPin className="w-6 h-6 text-purple-400" />
                   </div>
                   <div>
-                    <h3 className={`font-bold text-lg mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>Headquarters</h3>
+                    <h3 className={`font-bold text-lg mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('contactPage.headquarters.title')}</h3>
                     <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
                       BLUEHAVEN MANAGEMENT LTD.<br />
                       60 TOTTENHAM COURT ROAD, OFFICE 469<br />
@@ -87,36 +89,36 @@ const ContactPage = () => {
 
             {/* Contact Form */}
             <div className={`rounded-2xl p-6 lg:p-8 border ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`}>
-              <h2 className={`text-xl font-bold mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>Send us a Message</h2>
+              <h2 className={`text-xl font-bold mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('contactPage.form.heading')}</h2>
               <form className="space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>First Name</label>
-                    <input 
-                      type="text" 
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('contactPage.form.firstName')}</label>
+                    <input
+                      type="text"
                       className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${
-                        isDark 
-                          ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500' 
+                        isDark
+                          ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500'
                           : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
                       }`}
-                      placeholder="John"
+                      placeholder={t('contactPage.form.firstNamePlaceholder')}
                     />
                   </div>
                   <div>
-                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Last Name</label>
-                    <input 
-                      type="text" 
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('contactPage.form.lastName')}</label>
+                    <input
+                      type="text"
                       className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${
-                        isDark 
-                          ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500' 
+                        isDark
+                          ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500'
                           : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
                       }`}
-                      placeholder="Doe"
+                      placeholder={t('contactPage.form.lastNamePlaceholder')}
                     />
                   </div>
                 </div>
                 <div>
-                  <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Email</label>
+                  <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('contactPage.form.emailLabel')}</label>
                   <input 
                     type="email" 
                     className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${
@@ -128,34 +130,34 @@ const ContactPage = () => {
                   />
                 </div>
                 <div>
-                  <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Subject</label>
+                  <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('contactPage.form.subjectLabel')}</label>
                   <select className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${
-                    isDark 
-                      ? 'bg-[#0a0d12] border border-white/10 text-white' 
+                    isDark
+                      ? 'bg-[#0a0d12] border border-white/10 text-white'
                       : 'bg-slate-50 border border-slate-200 text-slate-900'
                   }`}>
-                    <option value="">Select a topic</option>
-                    <option value="general">General Inquiry</option>
-                    <option value="support">Technical Support</option>
-                    <option value="billing">Billing Question</option>
-                    <option value="partnership">Partnership</option>
+                    <option value="">{t('contactPage.form.subjectPlaceholder')}</option>
+                    <option value="general">{t('contactPage.form.subjectGeneral')}</option>
+                    <option value="support">{t('contactPage.form.subjectSupport')}</option>
+                    <option value="billing">{t('contactPage.form.subjectBilling')}</option>
+                    <option value="partnership">{t('contactPage.form.subjectPartnership')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Message</label>
-                  <textarea 
+                  <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('contactPage.form.messageLabel')}</label>
+                  <textarea
                     rows={4}
                     className={`w-full rounded-xl px-4 py-3 resize-none focus:outline-none focus:border-amber-500/50 ${
-                      isDark 
-                        ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500' 
+                      isDark
+                        ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500'
                         : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
                     }`}
-                    placeholder="How can we help you?"
+                    placeholder={t('contactPage.form.messagePlaceholder')}
                   ></textarea>
                 </div>
                 <Button className="w-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-xl py-6 h-auto font-bold">
                   <Send className="w-5 h-5 mr-2" />
-                  Send Message
+                  {t('contactPage.form.submit')}
                 </Button>
               </form>
             </div>

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 import { useChallenges, challengeTypes } from '@/contexts/ChallengesContext';
 import { usePlatformTokensStore } from '@/lib/stores/platform-tokens.store';
 import { useQuery } from '@tanstack/react-query';
@@ -26,6 +27,7 @@ import { dayjs } from '@/lib/utils';
 
 // ComplianceIndicator moved outside to prevent re-renders
 const ComplianceIndicator = ({ label, data, icon: Icon, type = 'progress', isDark }) => {
+  const { t } = useTranslation();
   const getStatusColor = () => {
     if (data.status === 'passed' || data.status === 'safe') return 'emerald';
     if (data.status === 'warning') return 'amber';
@@ -57,7 +59,7 @@ const ComplianceIndicator = ({ label, data, icon: Icon, type = 'progress', isDar
           {type === 'progress' ? `${Number(data.current).toFixed(2)}%` : type === 'days' ? `${data.current}/${data.required || data.limit}` : `${Number(data.current).toFixed(2)}/${data.required || data.limit}`}
         </span>
         <span className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-          {type === 'progress' ? `Target: ${data.target}%` : type === 'limit' ? `Limit: ${data.limit}%` : `Required: ${data.required}`}
+          {type === 'progress' ? t('accountOverview.targetValue', { value: data.target }) : type === 'limit' ? t('accountOverview.limitValue', { value: data.limit }) : t('accountOverview.requiredValue', { value: data.required })}
         </span>
       </div>
       <div className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-white/10' : 'bg-slate-200'}`}>
@@ -76,6 +78,7 @@ const ComplianceIndicator = ({ label, data, icon: Icon, type = 'progress', isDar
 const AccountOverview = () => {
   const { isDark } = useTraderTheme();
   const { formatAmount } = useCurrency();
+  const { t } = useTranslation();
   const {
     challenges,
     selectedChallenge,
@@ -104,7 +107,7 @@ const AccountOverview = () => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4" />
           <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>
-            Loading accounts...
+            {t('accountOverview.loadingAccounts')}
           </p>
         </div>
       </div>
@@ -112,7 +115,7 @@ const AccountOverview = () => {
   }
 
   if (!selectedChallenge) {
-    return <div className={`text-center py-12 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>No challenges found. Buy a challenge to get started!</div>;
+    return <div className={`text-center py-12 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('accountOverview.noChallengesFound')}</div>;
   }
 
   const compliance = getRuleCompliance(selectedChallenge);
@@ -147,14 +150,14 @@ const AccountOverview = () => {
   const getPhases = () => {
     if (selectedChallenge.type === '1-step') {
       return [
-        { id: 1, name: 'Evaluation', status: selectedChallenge.phase === 'funded' ? 'completed' : 'active', description: selectedChallenge.phase === 'funded' ? 'Passed' : 'You are here' },
-        { id: 2, name: 'Funded', status: selectedChallenge.phase === 'funded' ? 'active' : 'pending', description: selectedChallenge.phase === 'funded' ? 'Live Account' : 'Next Stage' },
+        { id: 1, name: t('accountOverview.phaseEvaluation'), status: selectedChallenge.phase === 'funded' ? 'completed' : 'active', description: selectedChallenge.phase === 'funded' ? t('accountOverview.phasePassed') : t('accountOverview.phaseYouAreHere') },
+        { id: 2, name: t('accountOverview.phaseFunded'), status: selectedChallenge.phase === 'funded' ? 'active' : 'pending', description: selectedChallenge.phase === 'funded' ? t('accountOverview.phaseLiveAccount') : t('accountOverview.phaseNextStage') },
       ];
     }
     return [
-      { id: 1, name: 'Phase 1', status: selectedChallenge.phase >= 2 || selectedChallenge.phase === 'funded' ? 'completed' : selectedChallenge.phase === 1 ? 'active' : 'pending', description: selectedChallenge.phase === 1 ? 'You are here' : 'Passed' },
-      { id: 2, name: 'Phase 2', status: selectedChallenge.phase === 'funded' ? 'completed' : selectedChallenge.phase === 2 ? 'active' : 'pending', description: selectedChallenge.phase === 2 ? 'You are here' : selectedChallenge.phase > 2 || selectedChallenge.phase === 'funded' ? 'Passed' : 'Next Stage' },
-      { id: 3, name: 'Funded', status: selectedChallenge.phase === 'funded' ? 'active' : 'pending', description: selectedChallenge.phase === 'funded' ? 'Live Account' : 'Final Stage' },
+      { id: 1, name: t('accountOverview.phaseOne'), status: selectedChallenge.phase >= 2 || selectedChallenge.phase === 'funded' ? 'completed' : selectedChallenge.phase === 1 ? 'active' : 'pending', description: selectedChallenge.phase === 1 ? t('accountOverview.phaseYouAreHere') : t('accountOverview.phasePassed') },
+      { id: 2, name: t('accountOverview.phaseTwo'), status: selectedChallenge.phase === 'funded' ? 'completed' : selectedChallenge.phase === 2 ? 'active' : 'pending', description: selectedChallenge.phase === 2 ? t('accountOverview.phaseYouAreHere') : selectedChallenge.phase > 2 || selectedChallenge.phase === 'funded' ? t('accountOverview.phasePassed') : t('accountOverview.phaseNextStage') },
+      { id: 3, name: t('accountOverview.phaseFunded'), status: selectedChallenge.phase === 'funded' ? 'active' : 'pending', description: selectedChallenge.phase === 'funded' ? t('accountOverview.phaseLiveAccount') : t('accountOverview.phaseFinalStage') },
     ];
   };
 
@@ -170,9 +173,9 @@ const AccountOverview = () => {
               <Award className="w-5 h-5 text-amber-500" />
             </div>
             <div>
-              <h3 className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Pinned Challenges</h3>
+              <h3 className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('accountOverview.pinnedChallenges')}</h3>
               <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                {pinnedChallenges.length} of {challenges.length} accounts pinned
+                {t('accountOverview.accountsPinned', { pinned: pinnedChallenges.length, total: challenges.length })}
               </p>
             </div>
           </div>
@@ -220,7 +223,7 @@ const AccountOverview = () => {
                   </span>
                   <span className={`text-xs px-1.5 py-0.5 rounded ${challenge.type === '1-step' ? 'bg-blue-500/10 text-blue-500' : 'bg-purple-500/10 text-purple-500'
                     }`}>
-                    {challenge.type === '1-step' ? '1-Step' : '2-Step'}
+                    {challenge.type === '1-step' ? t('accountOverview.oneStep') : t('accountOverview.twoStep')}
                   </span>
                 </div>
 
@@ -243,7 +246,7 @@ const AccountOverview = () => {
           </div>
         ) : (
           <div className={`rounded-xl border px-4 py-5 text-sm ${isDark ? 'border-white/10 bg-white/5 text-gray-400' : 'border-slate-200 bg-slate-50 text-slate-500'}`}>
-            No pinned challenges yet. Pin up to 4 accounts from the header account selector.
+            {t('accountOverview.noPinnedChallenges')}
           </div>
         )}
       </div>
@@ -254,34 +257,34 @@ const AccountOverview = () => {
         <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Platform ID</p>
+              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.platformId')}</p>
               <p className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedChallenge.accountId?.slice(0, 4)}</p>
             </div>
             <div>
-              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Platform</p>
+              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.platform')}</p>
               <p className={`font-semibold flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {selectedChallenge.platform}
                 <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
               </p>
             </div>
             <div>
-              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Challenge Type</p>
+              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.challengeType')}</p>
               <p className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {challengeTypes[selectedChallenge.type]?.name}
               </p>
             </div>
             <div>
-              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Server</p>
+              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.server')}</p>
               <p className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedChallenge.server}</p>
             </div>
             <div>
-              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Start Date</p>
+              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.startDate')}</p>
               <p className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedChallenge.createdAt}</p>
             </div>
             {selectedChallenge.phase === 'funded' && selectedChallenge.profitSplit && (
               <div>
-                <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Profit Split</p>
-                <p className="font-semibold text-emerald-500">{selectedChallenge.profitSplit}% to You</p>
+                <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.profitSplit')}</p>
+                <p className="font-semibold text-emerald-500">{t('accountOverview.profitSplitToYou', { percent: selectedChallenge.profitSplit })}</p>
               </div>
             )}
           </div>
@@ -291,19 +294,19 @@ const AccountOverview = () => {
         <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Account Size</p>
+              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.accountSize')}</p>
               <p className={`font-semibold text-xl ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {formatAmount(selectedChallenge.accountSize)}
               </p>
             </div>
             <div>
-              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Current Balance</p>
+              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.currentBalance')}</p>
               <p className={`font-semibold text-xl ${profitAmount >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
                 {formatAmount(selectedChallenge.currentBalance)}
               </p>
             </div>
             <div className="col-span-2 mt-4">
-              <p className={`text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Trading Days</p>
+              <p className={`text-sm mb-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.tradingDays')}</p>
               <div className="flex items-center gap-3">
                 <div className={`flex-1 h-2 rounded-full overflow-hidden ${isDark ? 'bg-white/10' : 'bg-slate-200'}`}>
                   <div
@@ -323,38 +326,38 @@ const AccountOverview = () => {
       {/* Rules Compliance Dashboard */}
       <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>Challenge Rules Compliance</h3>
+          <h3 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('accountOverview.challengeRulesCompliance')}</h3>
           {selectedChallenge.status === 'failed' && (
             <span className="px-3 py-1 bg-red-500/10 text-red-500 text-sm font-medium rounded-lg flex items-center gap-2">
               <AlertCircle className="w-4 h-4" />
-              Challenge Failed
+              {t('accountOverview.challengeFailed')}
             </span>
           )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <ComplianceIndicator
-            label="Profit Target"
+            label={t('accountOverview.profitTarget')}
             data={compliance.profitTarget}
             icon={Target}
             type="progress"
             isDark={isDark}
           />
           <ComplianceIndicator
-            label="Daily Loss"
+            label={t('accountOverview.dailyLoss')}
             data={compliance.dailyLoss}
             icon={TrendingDown}
             type="limit"
             isDark={isDark}
           />
           <ComplianceIndicator
-            label="Max Drawdown"
+            label={t('accountOverview.maxDrawdown')}
             data={compliance.totalDrawdown}
             icon={Activity}
             type="limit"
             isDark={isDark}
           />
           <ComplianceIndicator
-            label="Trading Days"
+            label={t('accountOverview.tradingDays')}
             data={compliance.tradingDays}
             icon={Clock}
             type="days"
@@ -365,7 +368,7 @@ const AccountOverview = () => {
 
       {/* Phase Progression */}
       <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
-        <h3 className={`font-bold text-lg mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Challenge Progress</h3>
+        <h3 className={`font-bold text-lg mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('accountOverview.challengeProgress')}</h3>
         <div className="flex items-center justify-between overflow-x-auto pb-2">
           {phases.map((phase, index) => (
             <React.Fragment key={phase.id}>
@@ -399,7 +402,7 @@ const AccountOverview = () => {
         {/* Account Balance Chart */}
         <div className={`rounded-2xl border p-6 flex flex-col ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           <div className="flex items-center justify-between mb-4">
-            <h3 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>Account Balance</h3>
+            <h3 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('accountOverview.accountBalance')}</h3>
             <div className={`flex items-center gap-2 ${profitPercent >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
               {profitPercent >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
               <span className="font-semibold">{profitPercent >= 0 ? '+' : ''}{profitPercent.toFixed(2)}%</span>
@@ -412,7 +415,7 @@ const AccountOverview = () => {
             </div>
           ) : equityCurveData.length === 0 ? (
             <div className="flex-1 flex items-center justify-center">
-              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>No equity data yet</p>
+              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{t('accountOverview.noEquityData')}</p>
             </div>
           ) : (
             <div className="relative h-48">
@@ -436,7 +439,7 @@ const AccountOverview = () => {
                     contentStyle={{ backgroundColor: isDark ? '#1a1f2e' : '#fff', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
                     labelStyle={{ color: isDark ? '#9ca3af' : '#64748b' }}
                     itemStyle={{ color: '#fff' }}
-                    formatter={(value, name) => [formatAmount(Number(value)), name === 'balance' ? 'Balance' : 'Equity']}
+                    formatter={(value, name) => [formatAmount(Number(value)), name === 'balance' ? t('accountOverview.balance') : t('accountOverview.equity')]}
                   />
                   <Area type="monotone" dataKey="balance" stroke="#3b82f6" strokeWidth={2} fill="url(#balanceGrad)" dot={false} />
                   <Area type="monotone" dataKey="equity" stroke="#10b981" strokeWidth={2} fill="url(#equityGrad)" dot={false} />
@@ -449,7 +452,7 @@ const AccountOverview = () => {
         {/* Trade Calendar */}
         <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           <div className="flex items-center justify-between mb-6">
-            <h3 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>Trade Calendar</h3>
+            <h3 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('accountOverview.tradeCalendar')}</h3>
             <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{dayjs().format('MMMM YYYY')}</p>
           </div>
 
@@ -461,8 +464,8 @@ const AccountOverview = () => {
           ) : (
           <div className="grid grid-cols-7 gap-1">
             {/* Day headers */}
-            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
-              <div key={day} className={`text-center text-xs py-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{day}</div>
+            {t('accountOverview.weekdays', { returnObjects: true }).map((day, idx) => (
+              <div key={idx} className={`text-center text-xs py-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{day}</div>
             ))}
 
             {/* Offset empty cells so day 1 lands on the correct weekday */}
@@ -495,15 +498,15 @@ const AccountOverview = () => {
           {/* Calendar Footer */}
           <div className={`flex items-center justify-between mt-4 pt-4 border-t text-sm ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
             <div className="flex items-center gap-2">
-              <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>Total Trades:</span>
+              <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>{t('accountOverview.totalTrades')}</span>
               <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedChallenge.stats.totalTrades}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>Win Rate:</span>
+              <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>{t('accountOverview.winRate')}</span>
               <span className="text-emerald-500 font-semibold">{selectedChallenge.stats.winRate}%</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>Avg RR:</span>
+              <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>{t('accountOverview.avgRR')}</span>
               <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedChallenge.stats.avgRR}</span>
             </div>
           </div>
@@ -515,7 +518,7 @@ const AccountOverview = () => {
         {/* Current Profit */}
         <div className={`rounded-2xl border p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           <div className="flex items-center justify-between mb-3">
-            <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Current P/L</p>
+            <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.currentPL')}</p>
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${profitAmount >= 0 ? isDark ? 'bg-emerald-500/10' : 'bg-emerald-50' : isDark ? 'bg-red-500/10' : 'bg-red-50'
               }`}>
               {profitAmount >= 0 ? <TrendingUp className="w-4 h-4 text-emerald-500" /> : <TrendingDown className="w-4 h-4 text-red-500" />}
@@ -525,14 +528,14 @@ const AccountOverview = () => {
             {profitAmount >= 0 ? '+' : ''}{formatAmount(profitAmount)}
           </p>
           <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-            {profitPercent >= 0 ? '+' : ''}{profitPercent.toFixed(2)}% from start
+            {t('accountOverview.percentFromStart', { value: `${profitPercent >= 0 ? '+' : ''}${profitPercent.toFixed(2)}` })}
           </p>
         </div>
 
         {/* Daily Drawdown */}
         <div className={`rounded-2xl border p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           <div className="flex items-center justify-between mb-3">
-            <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Daily Drawdown</p>
+            <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.dailyDrawdown')}</p>
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${compliance.dailyLoss.status === 'safe' ? isDark ? 'bg-emerald-500/10' : 'bg-emerald-50' :
               compliance.dailyLoss.status === 'warning' ? isDark ? 'bg-amber-500/10' : 'bg-amber-50' :
                 isDark ? 'bg-red-500/10' : 'bg-red-50'
@@ -545,11 +548,11 @@ const AccountOverview = () => {
           <div className="flex items-baseline gap-4">
             <div>
               <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedChallenge.stats.currentDailyLoss.toFixed(2)}%</p>
-              <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Current</p>
+              <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.current')}</p>
             </div>
             <div>
               <p className={`text-lg font-semibold ${isDark ? 'text-gray-400' : 'text-slate-400'}`}>{selectedChallenge.rules.maxDailyLoss}%</p>
-              <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Max</p>
+              <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.max')}</p>
             </div>
           </div>
         </div>
@@ -557,7 +560,7 @@ const AccountOverview = () => {
         {/* Total Drawdown */}
         <div className={`rounded-2xl border p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           <div className="flex items-center justify-between mb-3">
-            <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Total Drawdown</p>
+            <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.totalDrawdown')}</p>
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${compliance.totalDrawdown.status === 'safe' ? isDark ? 'bg-emerald-500/10' : 'bg-emerald-50' :
               compliance.totalDrawdown.status === 'warning' ? isDark ? 'bg-amber-500/10' : 'bg-amber-50' :
                 isDark ? 'bg-red-500/10' : 'bg-red-50'
@@ -570,11 +573,11 @@ const AccountOverview = () => {
           <div className="flex items-baseline gap-4">
             <div>
               <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedChallenge.stats.currentDrawdown.toFixed(2)}%</p>
-              <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Current</p>
+              <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.current')}</p>
             </div>
             <div>
               <p className={`text-lg font-semibold ${isDark ? 'text-gray-400' : 'text-slate-400'}`}>{selectedChallenge.rules.maxTotalDrawdown}%</p>
-              <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Max</p>
+              <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.max')}</p>
             </div>
           </div>
         </div>
@@ -582,7 +585,7 @@ const AccountOverview = () => {
         {/* Profit Target */}
         <div className={`rounded-2xl border p-5 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           <div className="flex items-center justify-between mb-3">
-            <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Profit Target</p>
+            <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.profitTarget')}</p>
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isDark ? 'bg-amber-500/10' : 'bg-amber-50'}`}>
               <Target className="w-4 h-4 text-amber-500" />
             </div>
@@ -591,11 +594,11 @@ const AccountOverview = () => {
             <div>
               <p className={`text-2xl font-bold ${compliance.profitTarget.status === 'passed' ? 'text-emerald-500' : isDark ? 'text-white' : 'text-slate-900'
                 }`}>{selectedChallenge.stats.currentProfit.toFixed(2)}%</p>
-              <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Current</p>
+              <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.current')}</p>
             </div>
             <div>
               <p className="text-amber-500 text-lg font-semibold">{selectedChallenge.rules.profitTarget}%</p>
-              <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Target</p>
+              <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.target')}</p>
             </div>
           </div>
         </div>
@@ -606,20 +609,20 @@ const AccountOverview = () => {
         <div className={`rounded-2xl border p-6 ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`}>
           <div className="flex items-center justify-between">
             <div>
-              <h3 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>Payout Available</h3>
+              <h3 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('accountOverview.payoutAvailable')}</h3>
               <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                You have profits ready to withdraw • {selectedChallenge.profitSplit}% profit split
+                {t('accountOverview.payoutSubtitle', { percent: selectedChallenge.profitSplit })}
               </p>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>Available</p>
+                <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>{t('accountOverview.available')}</p>
                 <p className="text-2xl font-bold text-emerald-500">
                   {formatAmount((selectedChallenge.currentBalance - selectedChallenge.accountSize) * (selectedChallenge.profitSplit / 100))}
                 </p>
               </div>
               <button className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all">
-                Request Payout
+                {t('accountOverview.requestPayout')}
               </button>
             </div>
           </div>

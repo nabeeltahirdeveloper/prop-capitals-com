@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { tradingFeatures } from './data/mockData';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 
 const iconMap = {
@@ -17,6 +18,9 @@ const iconMap = {
 
 const FeaturesSection = () => {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
+
+  const featureItems = t('home.features.items', { returnObjects: true });
 
   return (
     <section className={`py-20 lg:py-32 transition-colors duration-300 ${
@@ -25,12 +29,12 @@ const FeaturesSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">Trading Freedom</span>
+          <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">{t('home.features.eyebrow')}</span>
           <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Trade <span className="text-amber-500">Your Way</span>
+            {t('home.features.headingLead')} <span className="text-amber-500">{t('home.features.headingHighlight')}</span>
           </h2>
           <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-            No restrictions, no limitations. Use any strategy that works for you with complete trading freedom.
+            {t('home.features.subtitle')}
           </p>
         </div>
 
@@ -57,10 +61,10 @@ const FeaturesSection = () => {
                   </div>
                   <div>
                     <h3 className={`text-lg font-bold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                      {feature.title}
+                      {featureItems?.[index]?.title ?? feature.title}
                     </h3>
                     <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                      {feature.description}
+                      {featureItems?.[index]?.description ?? feature.description}
                     </p>
                   </div>
                 </div>
@@ -76,14 +80,14 @@ const FeaturesSection = () => {
             : 'bg-gradient-to-r from-amber-50 to-amber-100/50 border-amber-200'
         }`}>
           <h3 className={`text-2xl lg:text-3xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Ready to Trade Without Limits?
+            {t('home.features.ctaTitle')}
           </h3>
           <p className={`mb-6 max-w-xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-            Join thousands of traders who enjoy complete freedom with Prop Capitals. No restrictions on how you trade.
+            {t('home.features.ctaSubtitle')}
           </p>
           <Link to="/challenges">
             <Button className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-8 py-6 h-auto text-lg font-bold shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 transition-all group">
-              Get Started Now
+              {t('home.features.ctaButton')}
               <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
             </Button>
           </Link>

@@ -131,7 +131,7 @@ export default function Rules() {
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1920&h=600&fit=crop"
-            alt="Trading Rules"
+            alt={t('rules.heroImageAlt')}
             className="w-full h-full object-cover opacity-10"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-950/90 to-slate-950" />
@@ -267,7 +267,7 @@ export default function Rules() {
             <div className="relative">
               <img
                 src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop"
-                alt="Drawdown Chart"
+                alt={t('rules.drawdownExplanation.imageAlt')}
                 className="rounded-xl border border-slate-800"
               />
             </div>
@@ -404,7 +404,7 @@ export default function Rules() {
             <div className="relative">
               <img
                 src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&h=400&fit=crop"
-                alt="Payouts"
+                alt={t('rules.payoutPolicy.imageAlt')}
                 className="rounded-xl border border-slate-800"
               />
             </div>

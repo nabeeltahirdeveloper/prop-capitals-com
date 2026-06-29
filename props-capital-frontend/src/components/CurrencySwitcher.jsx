@@ -8,7 +8,7 @@ export default function CurrencySwitcher() {
   const { isDark } = useTheme();
 
   return (
-    <Select value={currency} onValueChange={setCurrency}>
+    <Select value={currency} onValueChange={(code) => setCurrency(code, { manual: true })}>
       <SelectTrigger
         className={`w-[92px] rounded-full h-10 ${
           isDark

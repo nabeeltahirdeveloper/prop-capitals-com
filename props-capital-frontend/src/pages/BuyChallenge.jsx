@@ -109,16 +109,16 @@ export default function BuyChallenge() {
   }, [displayChallenges, challengesLoading]);
 
   const platforms = [
-    { id: 'MT5', name: 'MetaTrader 5', desc: 'Most popular trading platform', image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=200&h=150&fit=crop' },
-    { id: 'MT4', name: 'MetaTrader 4', desc: 'Classic trading platform', image: 'https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=200&h=150&fit=crop' },
-    { id: 'cTrader', name: 'cTrader', desc: 'Professional platform', image: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=200&h=150&fit=crop' },
-    { id: 'DXTrade', name: 'DXTrade', desc: 'Web-based platform', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&h=150&fit=crop' },
+    { id: 'MT5', name: t('buyChallenge.platforms.MT5.name'), desc: t('buyChallenge.platforms.MT5.desc'), image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=200&h=150&fit=crop' },
+    { id: 'MT4', name: t('buyChallenge.platforms.MT4.name'), desc: t('buyChallenge.platforms.MT4.desc'), image: 'https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=200&h=150&fit=crop' },
+    { id: 'cTrader', name: t('buyChallenge.platforms.cTrader.name'), desc: t('buyChallenge.platforms.cTrader.desc'), image: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=200&h=150&fit=crop' },
+    { id: 'DXTrade', name: t('buyChallenge.platforms.DXTrade.name'), desc: t('buyChallenge.platforms.DXTrade.desc'), image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&h=150&fit=crop' },
   ];
 
   const paymentMethods = [
-    { id: 'card', name: 'Credit/Debit Card', icon: CreditCard, desc: 'Visa, Mastercard, Amex' },
-    { id: 'crypto', name: 'Cryptocurrency', icon: Bitcoin, desc: 'BTC, ETH, USDT' },
-    { id: 'paypal', name: 'PayPal', icon: Wallet, desc: 'Pay with PayPal' },
+    { id: 'card', name: t('buyChallenge.paymentMethods.card.name'), icon: CreditCard, desc: t('buyChallenge.paymentMethods.card.desc') },
+    { id: 'crypto', name: t('buyChallenge.paymentMethods.crypto.name'), icon: Bitcoin, desc: t('buyChallenge.paymentMethods.crypto.desc') },
+    { id: 'paypal', name: t('buyChallenge.paymentMethods.paypal.name'), icon: Wallet, desc: t('buyChallenge.paymentMethods.paypal.desc') },
   ];
 
   const applyCoupon = () => {
@@ -475,7 +475,7 @@ export default function BuyChallenge() {
               {/* Order Summary */}
               <div>
                 <Card className="bg-slate-900 border-slate-800 p-4 md:p-6 lg:sticky lg:top-24">
-                  <h3 className="text-lg font-semibold text-white mb-6">Order Summary</h3>
+                  <h3 className="text-lg font-semibold text-white mb-6">{t('buyChallenge.orderSummary')}</h3>
 
                   <div className="space-y-4 mb-6">
                     <div className="flex justify-between">

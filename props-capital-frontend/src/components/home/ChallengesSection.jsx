@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 import { getFullPrice } from '@/utils/fullPrice';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useChallenges } from '@/hooks/useChallenges';
@@ -16,6 +17,7 @@ const ChallengesSection = () => {
   const { isDark } = useTheme();
   const { user } = useAuth();
   const { formatFee, formatSize, symbol } = useCurrency();
+  const { t } = useTranslation();
   const [selectedSize, setSelectedSize] = useState(3);
 
   const { data: rawChallenges = [], isLoading, isError } = useChallenges();
@@ -35,12 +37,12 @@ const ChallengesSection = () => {
   const sectionClass = `py-20 lg:py-32 transition-colors duration-300 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`;
   const heading = (
     <div className="text-center mb-12">
-      <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">Funding Programs</span>
+      <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">{t('home.challengesSection.eyebrow')}</span>
       <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-        Choose Your <span className="text-amber-500">Path</span>
+        {t('home.challengesSection.title')} <span className="text-amber-500">{t('home.challengesSection.titleHighlight')}</span>
       </h2>
       <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-        Select the funding program that matches your trading style. All programs include 100% fee refund.
+        {t('home.challengesSection.subtitle')}
       </p>
     </div>
   );
@@ -76,12 +78,12 @@ const ChallengesSection = () => {
           <div className={`max-w-lg mx-auto text-center rounded-3xl p-8 border ${isDark ? 'bg-[#12161d] border-white/10 text-gray-300' : 'bg-white border-slate-200 text-slate-600'}`}>
             <p className="mb-6">
               {isError
-                ? 'Our funding programs are temporarily unavailable. Please try again shortly.'
-                : 'No funding programs are available right now. Please check back soon.'}
+                ? t('home.challengesSection.errorState')
+                : t('home.challengesSection.emptyState')}
             </p>
             <Link to="/Challenges">
               <Button className="rounded-full px-8 py-5 h-auto font-bold bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12]">
-                View all challenges
+                {t('home.challengesSection.viewAllChallenges')}
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </Link>
@@ -122,7 +124,7 @@ const ChallengesSection = () => {
                   : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
-              Custom {symbol}
+              {t('home.challengesSection.customSize', { symbol })}
             </button>
           </div>
         </div>
@@ -185,15 +187,15 @@ const ChallengesSection = () => {
                     <div className="text-amber-500 text-3xl sm:text-4xl font-black">
                       {formatFee(price)}
                     </div>
-                    <div className="text-emerald-500 text-xs sm:text-sm font-semibold mt-1">70% OFF</div>
+                    <div className="text-emerald-500 text-xs sm:text-sm font-semibold mt-1">{t('home.challengesSection.discountBadge')}</div>
                   </div>
                 ) : (
                   <div className={`text-center mb-5 py-4 rounded-2xl ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
                     <div className="text-amber-500 text-2xl sm:text-3xl font-black">
-                      Not at this size
+                      {t('home.challengesSection.notAtThisSize')}
                     </div>
                     <div className={`text-xs sm:text-sm mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                      Pick another account size
+                      {t('home.challengesSection.pickAnotherSize')}
                     </div>
                   </div>
                 )}
@@ -201,31 +203,31 @@ const ChallengesSection = () => {
                 {/* Stats */}
                 <div className="space-y-2 sm:space-y-3 mb-5">
                   <div className={`flex items-center justify-between py-2 border-b ${isDark ? 'border-white/5' : 'border-slate-100'}`}>
-                    <span className={`text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Profit Target</span>
+                    <span className={`text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('home.challengesSection.stats.profitTarget')}</span>
                     <span className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{challenge.profitTarget}</span>
                   </div>
                   <div className={`flex items-center justify-between py-2 border-b ${isDark ? 'border-white/5' : 'border-slate-100'}`}>
-                    <span className={`text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Daily Drawdown</span>
+                    <span className={`text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('home.challengesSection.stats.dailyDrawdown')}</span>
                     <span className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{challenge.dailyDrawdown}</span>
                   </div>
                   <div className={`flex items-center justify-between py-2 border-b ${isDark ? 'border-white/5' : 'border-slate-100'}`}>
-                    <span className={`text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Max Drawdown</span>
+                    <span className={`text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('home.challengesSection.stats.maxDrawdown')}</span>
                     <span className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{challenge.maxDrawdown}</span>
                   </div>
                   <div className={`flex items-center justify-between py-2 border-b ${isDark ? 'border-white/5' : 'border-slate-100'}`}>
-                    <span className={`text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Leverage</span>
+                    <span className={`text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('home.challengesSection.stats.leverage')}</span>
                     <span className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{challenge.leverage}</span>
                   </div>
                   <div className="flex items-center justify-between py-2">
-                    <span className={`text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Profit Split</span>
+                    <span className={`text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('home.challengesSection.stats.profitSplit')}</span>
                     <span className="text-amber-500 font-bold text-base sm:text-lg">{challenge.profitSplit}</span>
                   </div>
                 </div>
 
                 {/* Features */}
                 <div className="space-y-2 mb-5">
-                  {['No time limit', 'All strategies allowed', '100% fee refund', 'Free education included'].map((feature) => (
-                    <div key={feature} className="flex items-center gap-2">
+                  {t('home.challengesSection.features', { returnObjects: true }).map((feature, featureIndex) => (
+                    <div key={featureIndex} className="flex items-center gap-2">
                       <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
                         <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-500" />
                       </div>
@@ -243,7 +245,7 @@ const ChallengesSection = () => {
                         : isDark ? 'bg-white hover:bg-gray-100 text-[#0a0d12]' : 'bg-slate-900 hover:bg-slate-800 text-white'
                     }`}
                   >
-                    Get Started
+                    {t('home.challengesSection.getStarted')}
                     <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </Link>

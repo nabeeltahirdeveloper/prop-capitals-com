@@ -1,56 +1,62 @@
 import React from 'react';
 import { Monitor, Globe, Zap } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 
 const PlatformsSection = () => {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <section className={`py-20 lg:py-32 transition-colors duration-300 ${isDark ? 'bg-[#0d1117]' : 'bg-white'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">Trading Platforms</span>
+          <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">{t('home.platforms.eyebrow')}</span>
           <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Trade on <span className="text-amber-500">Your Terms</span>
+            {t('home.platforms.titlePrefix')} <span className="text-amber-500">{t('home.platforms.titleHighlight')}</span>
           </h2>
           <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-            Choose from industry-leading platforms with advanced charting, automated trading, and mobile access.
+            {t('home.platforms.subtitle')}
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <PlatformCard 
+          <PlatformCard
             isDark={isDark}
-            name="MetaTrader 5" 
-            logo="MT5" 
+            name="MetaTrader 5"
+            logo="MT5"
             color="#6366f1"
-            description="Industry-standard platform with powerful charting and automated trading."
-            features={["Expert Advisors", "Advanced Charts", "Mobile App"]}
+            badgeLabel={t('home.platforms.newBadge')}
+            description={t('home.platforms.mt5.description')}
+            features={t('home.platforms.mt5.features', { returnObjects: true })}
           />
-          <PlatformCard 
+          <PlatformCard
             isDark={isDark}
-            name="TradeLocker" 
-            logo="TL" 
+            name="TradeLocker"
+            logo="TL"
             color="#f59e0b"
-            description="Modern platform with TradingView integration for seamless analysis."
-            features={["TradingView Charts", "Web-Based", "One-Click Trading"]}
+            badgeLabel={t('home.platforms.newBadge')}
+            description={t('home.platforms.tradeLocker.description')}
+            features={t('home.platforms.tradeLocker.features', { returnObjects: true })}
           />
-          <PlatformCard 
+          <PlatformCard
             isDark={isDark}
-            name="Bybit" 
-            logo="BB" 
+            name="Bybit"
+            logo="BB"
             color="#f7a600"
-            description="Leading crypto exchange with advanced derivatives and spot trading."
-            features={["Crypto Futures", "Copy Trading", "Unified Account"]}
+            badgeLabel={t('home.platforms.newBadge')}
+            description={t('home.platforms.bybit.description')}
+            features={t('home.platforms.bybit.features', { returnObjects: true })}
           />
-          <PlatformCard 
+          <PlatformCard
             isDark={isDark}
-            name="PT5 WebTrader" 
-            logo="PT5" 
+            name="PT5 WebTrader"
+            logo="PT5"
             color="#d97706"
-            description="Our proprietary platform built for funded traders with exclusive features."
-            features={["Zero Latency", "Built-in Risk Manager", "Exclusive to PC"]}
+            badgeLabel={t('home.platforms.newBadge')}
+            description={t('home.platforms.pt5.description')}
+            features={t('home.platforms.pt5.features', { returnObjects: true })}
             isProprietary={true}
           />
         </div>
@@ -59,9 +65,9 @@ const PlatformsSection = () => {
           isDark ? 'bg-[#12161d] border-white/10' : 'bg-slate-50 border-slate-200'
         }`}>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            <FeatureItem isDark={isDark} icon={Monitor} label="Web Platform" value="Trade from any browser" />
-            <FeatureItem isDark={isDark} icon={Globe} label="100+ Instruments" value="Forex, Crypto, Indices" />
-            <FeatureItem isDark={isDark} icon={Zap} label="0.0 Pip Spreads" value="Institutional pricing" />
+            <FeatureItem isDark={isDark} icon={Monitor} label={t('home.platforms.highlights.webPlatform.label')} value={t('home.platforms.highlights.webPlatform.value')} />
+            <FeatureItem isDark={isDark} icon={Globe} label={t('home.platforms.highlights.instruments.label')} value={t('home.platforms.highlights.instruments.value')} />
+            <FeatureItem isDark={isDark} icon={Zap} label={t('home.platforms.highlights.spreads.label')} value={t('home.platforms.highlights.spreads.value')} />
           </div>
         </div>
       </div>
@@ -69,7 +75,7 @@ const PlatformsSection = () => {
   );
 };
 
-const PlatformCard = ({ isDark, name, logo, color, description, features, isProprietary }) => (
+const PlatformCard = ({ isDark, name, logo, color, description, features, isProprietary, badgeLabel }) => (
   <div className={`rounded-2xl p-6 border transition-all duration-300 group hover:-translate-y-2 relative overflow-hidden ${
     isProprietary 
       ? isDark 
@@ -81,7 +87,7 @@ const PlatformCard = ({ isDark, name, logo, color, description, features, isProp
   }`}>
     {isProprietary && (
       <div className="absolute top-2 -right-9 bg-gradient-to-r from-amber-400 to-amber-600 text-[#0a0d12] text-xs font-bold px-10 py-1.5 rotate-45 whitespace-nowrap">
-        NEW
+        {badgeLabel}
       </div>
     )}
     <div 

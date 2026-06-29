@@ -3,23 +3,25 @@ import { Check, X } from 'lucide-react';
 import { comparisonData } from './data/mockData.js';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 
 const ComparisonSection = () => {
   const { isDark } = useTheme();
   const { cur } = useCurrency();
+  const { t } = useTranslation();
 
   return (
     <section className={`py-20 lg:py-32 transition-colors duration-300 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-12 lg:mb-16">
-          <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">Why Choose Us</span>
+          <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">{t('home.comparison.eyebrow')}</span>
           <h2 className={`text-2xl sm:text-3xl lg:text-5xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Prop Capitals vs. <span className={isDark ? 'text-gray-500' : 'text-slate-400'}>"Other"</span> Firms
+            {t('home.comparison.titleStart')} <span className={isDark ? 'text-gray-500' : 'text-slate-400'}>{t('home.comparison.titleOther')}</span> {t('home.comparison.titleEnd')}
           </h2>
           <p className={`text-base lg:text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-            See why thousands of traders are switching to Prop Capitals.
+            {t('home.comparison.subtitle')}
           </p>
         </div>
 
@@ -37,7 +39,7 @@ const ComparisonSection = () => {
                 <div className={`rounded-xl p-3 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
                   <div className="flex items-center gap-1 mb-2">
                     <X className="w-4 h-4 text-red-400" />
-                    <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>Others</span>
+                    <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{t('home.comparison.others')}</span>
                   </div>
                   <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{cur(row.others)}</p>
                 </div>
@@ -66,12 +68,12 @@ const ComparisonSection = () => {
           {/* Table Header */}
           <div className="grid grid-cols-3">
             <div className={`p-6 ${isDark ? 'bg-[#0d1117]' : 'bg-slate-50'}`}>
-              <span className={`font-medium ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Feature</span>
+              <span className={`font-medium ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('home.comparison.feature')}</span>
             </div>
             <div className={`p-6 border-l ${isDark ? 'bg-[#0d1117] border-white/5' : 'bg-slate-50 border-slate-200'}`}>
               <div className="flex items-center justify-center gap-2">
                 <X className="w-5 h-5 text-red-400" />
-                <span className={`font-medium ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Other Prop Firms</span>
+                <span className={`font-medium ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('home.comparison.otherPropFirms')}</span>
               </div>
             </div>
             <div className={`p-6 border-l ${isDark ? 'bg-amber-500/5 border-white/5' : 'bg-amber-50 border-slate-200'}`}>

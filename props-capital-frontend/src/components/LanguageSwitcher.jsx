@@ -4,12 +4,19 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { Globe } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
+// Only expose English and Turkish in the navbar dropdown for now.
+const ENABLED_LANGUAGE_CODES = ['en', 'tr'];
+
 export default function LanguageSwitcher() {
   const { language, setLanguage } = useTranslation();
   const { isDark } = useTheme();
 
+  const languages = supportedLanguages.filter((lang) =>
+    ENABLED_LANGUAGE_CODES.includes(lang.code)
+  );
+
   return (
-    <Select value={language} onValueChange={setLanguage}>
+    <Select value={language} onValueChange={(code) => setLanguage(code, { manual: true })}>
       <SelectTrigger
         className={`w-[124px] rounded-full h-10 gap-1.5 ${
           isDark
@@ -22,7 +29,7 @@ export default function LanguageSwitcher() {
         <SelectValue placeholder="Language" />
       </SelectTrigger>
       <SelectContent>
-        {supportedLanguages.map((lang) => (
+        {languages.map((lang) => (
           <SelectItem key={lang.code} value={lang.code}>
             {lang.label}
           </SelectItem>

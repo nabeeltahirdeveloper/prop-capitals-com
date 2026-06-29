@@ -2,8 +2,10 @@ import React from 'react'
 import { MdAdd, MdRemove } from 'react-icons/md'
 import { useTrading } from '@/contexts/TradingContext'
 import { useTraderTheme } from '@/components/trader/TraderPanelLayout'
+import { useTranslation } from '@/contexts/LanguageContext'
 
 const TopBar = ({ selectedSymbol, selectedTimeframe, onTimeframeChange, chartType = 'candles', onChartTypeChange, onNewOrder, onZoomIn, onZoomOut, onToggleBuySell, onDownloadChartPNG, onToggleFullscreen, marketWatchOpen = true, onToggleMarketWatch, buySellPanelOpen }) => {
+    const { t } = useTranslation()
     const { theme } = useTrading()
     const traderTheme = useTraderTheme()
     // Match trader panel: use TraderThemeContext when inside trader layout, else TradingContext theme
@@ -84,7 +86,7 @@ const TopBar = ({ selectedSymbol, selectedTimeframe, onTimeframeChange, chartTyp
                                     : isLight ? 'text-slate-700 hover:text-slate-900 hover:bg-[#E5F4FF]' : 'text-gray-400 hover:text-white hover:bg-white/5'
                                 }
                             `}
-                            title={type}
+                            title={t(`terminalTopbar.chartTypes.${type}`)}
                         >
                             {chartTypeIcons[type]}
                             {/* <span>{type}</span> */}
@@ -104,7 +106,7 @@ const TopBar = ({ selectedSymbol, selectedTimeframe, onTimeframeChange, chartTyp
                                     : isLight ? 'text-slate-700 hover:text-slate-900 hover:bg-[#E5F4FF]' : 'text-gray-400 hover:text-white hover:bg-white/5'
                                 }
                             `}
-                            title={type}
+                            title={type === 'volume ticks' ? t('terminalTopbar.chartTypes.volumeTicks') : t('terminalTopbar.chartTypes.volume')}
                         >
                             {chartTypeIcons[type]}
                             {/* <span>{type}</span> */}
@@ -136,7 +138,7 @@ const TopBar = ({ selectedSymbol, selectedTimeframe, onTimeframeChange, chartTyp
                     > */}
                     <button
                         onClick={() => onToggleBuySell?.()}
-                        title={buySellPanelOpen ? 'Hide Buy/Sell on Chart' : 'Show Buy/Sell on Chart'}
+                        title={buySellPanelOpen ? t('terminalTopbar.hideBuySellOnChart') : t('terminalTopbar.showBuySellOnChart')}
                         className={`px-2 py-2 flex justify-center items-center rounded transition-colors ${buySellPanelOpen ? (isLight ? 'text-sky-600 bg-sky-50 hover:bg-[#E5F4FF]' : 'text-sky-400 bg-white/5 hover:bg-white/10') : (isLight ? 'text-slate-600 hover:text-sky-600 hover:bg-[#E5F4FF]' : 'text-gray-400 hover:text-white hover:bg-white/5')}`}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -162,7 +164,7 @@ const TopBar = ({ selectedSymbol, selectedTimeframe, onTimeframeChange, chartTyp
                                 <path fill="#B0BEC5" d="M13 8v4.186l2.657 2.657-1.414 1.414L11 13V8z"></path>
                             </g >
                         </svg>
-                        <span className="button-text svelte-1iwf8ix">New Order</span>
+                        <span className="button-text svelte-1iwf8ix">{t('terminalTopbar.newOrder')}</span>
                     </button> 
 
                     {/* Border line after Order Button */}
@@ -173,14 +175,14 @@ const TopBar = ({ selectedSymbol, selectedTimeframe, onTimeframeChange, chartTyp
                         <button
                             onClick={onZoomIn}
                             className={`p-1 ${isLight ? 'text-slate-700 hover:bg-[#E5F4FF]' : 'text-gray-400 hover:text-white hover:bg-white/5'} rounded transition-colors`}
-                            title="Zoom In"
+                            title={t('terminalTopbar.zoomIn')}
                         >
                             <MdAdd className='w-5 h-5' />
                         </button> 
                          <button
                             onClick={onZoomOut}
                             className={`p-2 ${isLight ? 'text-slate-700 hover:bg-[#E5F4FF]' : 'text-gray-400 hover:text-white hover:bg-white/5'} rounded transition-colors`}
-                            title="Zoom Out"
+                            title={t('terminalTopbar.zoomOut')}
                         >
                             <MdRemove className='w-5 h-5' />
                         </button> 
@@ -221,7 +223,7 @@ const TopBar = ({ selectedSymbol, selectedTimeframe, onTimeframeChange, chartTyp
                          <button
                             type="button"
                             onClick={() => onToggleMarketWatch?.()}
-                            title={marketWatchOpen ? 'Close Market Watch' : 'Open Market Watch'}
+                            title={marketWatchOpen ? t('terminalTopbar.closeMarketWatch') : t('terminalTopbar.openMarketWatch')}
                             className={`px-2 py-2 flex justify-center items-center gap-1 cursor-pointer text-xs font-medium rounded transition-colors ${marketWatchOpen ? (isLight ? 'text-sky-600 bg-sky-50 hover:bg-[#E5F4FF]' : 'text-sky-400 bg-white/5 hover:bg-white/10') : (isLight ? 'text-slate-600 hover:text-sky-600 hover:bg-[#E5F4FF]' : 'text-gray-400 hover:text-white hover:bg-white/5')}`}
                         >
                             <svg width={24} height={24} viewBox="0 0 24 24" xmlns='http://www.w3.org/2000/svg' fill="currentColor">
@@ -241,7 +243,7 @@ const TopBar = ({ selectedSymbol, selectedTimeframe, onTimeframeChange, chartTyp
                 <button
                     type="button"
                     onClick={() => onDownloadChartPNG?.()}
-                    title="Download chart as PNG"
+                    title={t('terminalTopbar.downloadChartPng')}
                     className={`p-2 rounded transition-colors ${isLight ? 'text-slate-500 hover:text-slate-800 hover:bg-slate-100' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" className="inline-block" fill="currentColor">
@@ -251,7 +253,7 @@ const TopBar = ({ selectedSymbol, selectedTimeframe, onTimeframeChange, chartTyp
                 <button
                     type="button"
                     onClick={() => onToggleFullscreen?.()}
-                    title="Full screen (F11)"
+                    title={t('terminalTopbar.fullScreen', { key: 'F11' })}
                     className={`p-2 rounded transition-colors ${isLight ? 'text-slate-600 hover:text-slate-800 hover:bg-slate-100' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
                 >
                     <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>

@@ -1144,6 +1144,7 @@ import { toast } from 'sonner';
 import { useTraderTheme } from './TraderPanelLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 import { useChallenges } from '@/hooks/useChallenges';
 import { groupChallengesByType } from '@/lib/challenges';
 import CustomChallengeCard from '@/components/challenges/CustomChallengeCard';
@@ -1170,10 +1171,10 @@ const formatCurrency = (amount, currency) => {
 // and Home. No hardcoded catalog here.
 
 const platforms = [
-  { id: 'mt5', name: 'MetaTrader 5', desc: 'Most popular platform' },
-  { id: 'tradelocker', name: 'TradeLocker', desc: 'Coming soon', comingSoon: true },
-  { id: 'bybit', name: 'Bybit', desc: 'Crypto trading' },
-  { id: 'pt5', name: 'PT5', desc: 'Advanced trading' },
+  { id: 'mt5', name: 'MetaTrader 5', descKey: 'tradeCheckoutPanel.platformDesc.mt5' },
+  { id: 'tradelocker', name: 'TradeLocker', descKey: 'tradeCheckoutPanel.platformDesc.tradelocker', comingSoon: true },
+  { id: 'bybit', name: 'Bybit', descKey: 'tradeCheckoutPanel.platformDesc.bybit' },
+  { id: 'pt5', name: 'PT5', descKey: 'tradeCheckoutPanel.platformDesc.pt5' },
 ];
 
 // Map a picker id to the backend ChallengePlatform enum value.
@@ -1193,6 +1194,7 @@ const TradeCheckoutPanelPage = () => {
   const { user } = useAuth();
   const { formatFee, formatSize, symbol } = useCurrency();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [selectedType, setSelectedType] = useState('one_phase');
   const [selectedSizeIndex, setSelectedSizeIndex] = useState(4);
@@ -1262,7 +1264,7 @@ const TradeCheckoutPanelPage = () => {
       return;
     }
     if (!matchingBackendChallenge?.id) {
-      toast.error('No matching challenge found. Try a different size or type.');
+      toast.error(t('tradeCheckoutPanel.noMatchingChallenge'));
       return;
     }
     // Hand off to the public /pay/:slug page using the challenge id as the
@@ -1286,9 +1288,9 @@ const TradeCheckoutPanelPage = () => {
       <div className={`${cardClass} p-6`}>
         <div className="flex items-center gap-3 mb-2">
           <ShoppingCart className="w-6 h-6 text-amber-500" />
-          <h1 className={`text-2xl font-bold ${textClass}`}>Buy New Challenge</h1>
+          <h1 className={`text-2xl font-bold ${textClass}`}>{t('tradeCheckoutPanel.title')}</h1>
         </div>
-        <p className={mutedClass}>Choose your challenge package and start your trading journey.</p>
+        <p className={mutedClass}>{t('tradeCheckoutPanel.subtitle')}</p>
       </div>
 
       <div className="flex justify-center overflow-x-auto pb-2">
@@ -1312,7 +1314,7 @@ const TradeCheckoutPanelPage = () => {
               : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
               }`}
           >
-            Custom {symbol}
+            {t('tradeCheckoutPanel.custom')} {symbol}
           </button>
         </div>
       </div>
@@ -1325,7 +1327,7 @@ const TradeCheckoutPanelPage = () => {
         </div>
       ) : visibleTypes.length === 0 ? (
         <div className={`${cardClass} p-8 text-center ${mutedClass}`}>
-          No challenges are available at this size right now.
+          {t('tradeCheckoutPanel.noChallengesAtSize')}
         </div>
       ) : (
       <>
@@ -1378,7 +1380,7 @@ const TradeCheckoutPanelPage = () => {
                   <div className="text-amber-500 text-3xl font-black">
                     {formatFee(cardPrice)}
                   </div>
-                  <div className="text-emerald-500 text-xs font-semibold mt-1">70% OFF</div>
+                  <div className="text-emerald-500 text-xs font-semibold mt-1">{t('tradeCheckoutPanel.percentOff')}</div>
                 </div>
               );
             })()}
@@ -1386,12 +1388,12 @@ const TradeCheckoutPanelPage = () => {
             {/* Stats Grid */}
             <div className="space-y-2 mb-4">
               {[
-                { label: 'Phases', value: `${challenge.phases} Phase${challenge.phases > 1 ? 's' : ''}` },
-                { label: 'Profit Target', value: challenge.profitTarget },
-                { label: 'Daily Drawdown', value: challenge.dailyDrawdown },
-                { label: 'Max Drawdown', value: challenge.maxDrawdown },
-                { label: 'Leverage', value: challenge.leverage },
-                { label: 'Min Trading Days', value: challenge.minDays, highlight: true },
+                { label: t('tradeCheckoutPanel.stats.phases'), value: challenge.phases > 1 ? t('tradeCheckoutPanel.phasesPlural', { count: challenge.phases }) : t('tradeCheckoutPanel.phasesSingular', { count: challenge.phases }) },
+                { label: t('tradeCheckoutPanel.stats.profitTarget'), value: challenge.profitTarget },
+                { label: t('tradeCheckoutPanel.stats.dailyDrawdown'), value: challenge.dailyDrawdown },
+                { label: t('tradeCheckoutPanel.stats.maxDrawdown'), value: challenge.maxDrawdown },
+                { label: t('tradeCheckoutPanel.stats.leverage'), value: challenge.leverage },
+                { label: t('tradeCheckoutPanel.stats.minTradingDays'), value: challenge.minDays, highlight: true },
               ].map((item, index) => (
                 <div key={index} className={`flex items-center justify-between py-1.5 text-sm ${index < 5 ? isDark ? 'border-b border-white/5' : 'border-b border-slate-100' : ''
                   }`}>
@@ -1402,14 +1404,14 @@ const TradeCheckoutPanelPage = () => {
                 </div>
               ))}
               <div className="flex items-center justify-between py-2">
-                <span className={mutedClass}>Profit Split</span>
+                <span className={mutedClass}>{t('tradeCheckoutPanel.stats.profitSplit')}</span>
                 <span className="text-amber-500 text-xl font-bold">{challenge.profitSplit}</span>
               </div>
             </div>
 
             {/* Features */}
             <div className="grid grid-cols-2 gap-2">
-              {['No time limit', 'All strategies', '100% fee refund', 'Free course'].map((feature, index) => (
+              {t('tradeCheckoutPanel.features', { returnObjects: true }).map((feature, index) => (
                 <div key={index} className="flex items-center gap-1.5">
                   <Check className="w-3 h-3 text-emerald-500 flex-shrink-0" />
                   <span className={`text-xs ${mutedClass}`}>{feature}</span>
@@ -1422,7 +1424,7 @@ const TradeCheckoutPanelPage = () => {
 
       {/* Platform Selection */}
       <div className={`${cardClass} p-6`}>
-        <h3 className={`font-bold mb-4 ${textClass}`}>Select Trading Platform</h3>
+        <h3 className={`font-bold mb-4 ${textClass}`}>{t('tradeCheckoutPanel.selectPlatform')}</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {visiblePlatforms.map((platform) => (
             <button
@@ -1441,9 +1443,9 @@ const TradeCheckoutPanelPage = () => {
                 <Zap className={`w-6 h-6 ${effectivePlatform === platform.id ? 'text-amber-500' : mutedClass}`} />
               )}
               <span className={`font-semibold text-sm ${textClass}`}>{platform.name}</span>
-              <span className={`text-xs ${platform.comingSoon ? 'text-amber-500 font-medium' : mutedClass}`}>{platform.desc}</span>
+              <span className={`text-xs ${platform.comingSoon ? 'text-amber-500 font-medium' : mutedClass}`}>{t(platform.descKey)}</span>
               {platform.comingSoon && (
-                <span className="absolute -top-2 -right-2 px-2 py-0.5 bg-amber-500 text-black text-[10px] font-bold rounded-full">SOON</span>
+                <span className="absolute -top-2 -right-2 px-2 py-0.5 bg-amber-500 text-black text-[10px] font-bold rounded-full">{t('tradeCheckoutPanel.soon')}</span>
               )}
             </button>
           ))}
@@ -1452,15 +1454,15 @@ const TradeCheckoutPanelPage = () => {
           <div className={`mt-4 p-4 rounded-xl border flex items-start gap-3 ${isDark ? 'bg-amber-500/10 border-amber-500/30' : 'bg-amber-50 border-amber-200'}`}>
             <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
             <div>
-              <p className={`font-semibold text-sm ${textClass}`}>TradeLocker is Coming Soon</p>
+              <p className={`font-semibold text-sm ${textClass}`}>{t('tradeCheckoutPanel.tradeLockerComingSoonTitle')}</p>
               <p className={`text-sm mt-1 ${mutedClass}`}>
-                We are currently working on integrating TradeLocker. Please choose another trading platform.
+                {t('tradeCheckoutPanel.tradeLockerComingSoonBody')}
               </p>
               <button
                 onClick={() => { setTradeLockerAlert(false); setSelectedPlatform('mt5'); }}
                 className="mt-2 text-sm text-amber-500 font-semibold hover:underline"
               >
-                Select MetaTrader 5 instead
+                {t('tradeCheckoutPanel.selectMt5Instead')}
               </button>
 
 
@@ -1479,7 +1481,7 @@ const TradeCheckoutPanelPage = () => {
           disabled={loadingChallenges || !matchingBackendChallenge}
           className={`flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold rounded-xl ${loadingChallenges || !matchingBackendChallenge ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          Continue to Payment
+          {t('tradeCheckoutPanel.continueToPayment')}
         </button>
       </div>
       </>

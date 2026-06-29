@@ -1,82 +1,43 @@
 import React from 'react';
 import { Shield, AlertTriangle, CheckCircle2, XCircle, Clock, Target, TrendingDown, Calendar } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const TradingRulesPage = () => {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
 
-  const rules = [
-    {
-      title: "Daily Drawdown Limit",
-      description: "Your account equity must not fall below the daily drawdown limit at any point during the trading day.",
-      oneStep: "4%",
-      twoStep: "5%",
-      icon: TrendingDown,
-      critical: true
-    },
-    {
-      title: "Maximum Drawdown",
-      description: "The total account drawdown from the initial balance must not exceed this limit at any time.",
-      oneStep: "8%",
-      twoStep: "10%",
-      icon: Shield,
-      critical: true
-    },
-    {
-      title: "Profit Target",
-      description: "Achieve this profit target to pass the challenge phase and move to the next stage.",
-      oneStep: "10%",
-      twoStep: "8% / 5%",
-      icon: Target,
-      critical: false
-    },
-    {
-      title: "Minimum Trading Days",
-      description: "Trade for at least this many days before you can request a payout or pass the challenge.",
-      oneStep: "5 days",
-      twoStep: "5 days",
-      icon: Calendar,
-      critical: false
-    },
-    {
-      title: "Time Limit",
-      description: "Complete the challenge within this timeframe. Take your time - there's no rush!",
-      oneStep: "Unlimited",
-      twoStep: "Unlimited",
-      icon: Clock,
-      critical: false
-    }
+  const ruleContent = t('tradingRules.rules', { returnObjects: true });
+  const ruleConfig = [
+    { icon: TrendingDown, critical: true },
+    { icon: Shield, critical: true },
+    { icon: Target, critical: false },
+    { icon: Calendar, critical: false },
+    { icon: Clock, critical: false }
   ];
+  const rules = ruleConfig.map((config, i) => ({
+    ...config,
+    title: ruleContent[i]?.title,
+    description: ruleContent[i]?.description,
+    oneStep: ruleContent[i]?.oneStep,
+    twoStep: ruleContent[i]?.twoStep
+  }));
 
-  const allowedActions = [
-    "Expert Advisors (EAs) and automated trading bots",
-    "News trading during high-impact events",
-    "Weekend holding of positions",
-    "Scalping with no minimum hold time",
-    "Copy trading and signal services",
-    "Hedging within the same account",
-    "Trading all available instruments"
-  ];
+  const allowedActions = t('tradingRules.allowedActions', { returnObjects: true });
 
-  const prohibitedActions = [
-    "Account sharing or third-party trading",
-    "Exploiting platform errors or arbitrage",
-    "Using stolen or fraudulent payment methods",
-    "Coordinated trading with other accounts",
-    "High-frequency trading (HFT) exploitation"
-  ];
+  const prohibitedActions = t('tradingRules.prohibitedActions', { returnObjects: true });
 
   return (
     <div className={`min-h-screen pt-20 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
       <section className="py-12 sm:py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">Trading Rules</span>
+            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">{t('tradingRules.eyebrow')}</span>
             <h1 className={`text-3xl sm:text-4xl lg:text-5xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Challenge <span className="text-amber-500">Rules</span>
+              {t('tradingRules.headingLead')} <span className="text-amber-500">{t('tradingRules.headingHighlight')}</span>
             </h1>
             <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-              Clear, fair, and transparent rules designed to help you succeed. No hidden conditions or surprises.
+              {t('tradingRules.subheading')}
             </p>
           </div>
 
@@ -86,9 +47,9 @@ const TradingRulesPage = () => {
               <table className="w-full">
                 <thead>
                   <tr className={`border-b ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-                    <th className={`text-left font-semibold p-4 sm:p-6 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Rule</th>
-                    <th className="text-center text-amber-500 font-semibold p-4 sm:p-6">1-Step Challenge</th>
-                    <th className="text-center text-emerald-400 font-semibold p-4 sm:p-6">2-Step Challenge</th>
+                    <th className={`text-left font-semibold p-4 sm:p-6 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('tradingRules.tableHeaders.rule')}</th>
+                    <th className="text-center text-amber-500 font-semibold p-4 sm:p-6">{t('tradingRules.tableHeaders.oneStep')}</th>
+                    <th className="text-center text-emerald-400 font-semibold p-4 sm:p-6">{t('tradingRules.tableHeaders.twoStep')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -103,7 +64,7 @@ const TradingRulesPage = () => {
                             <div className="flex items-center gap-2">
                               <h3 className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{rule.title}</h3>
                               {rule.critical && (
-                                <span className="bg-red-500/10 text-red-400 text-[10px] font-bold px-2 py-0.5 rounded">CRITICAL</span>
+                                <span className="bg-red-500/10 text-red-400 text-[10px] font-bold px-2 py-0.5 rounded">{t('tradingRules.criticalBadge')}</span>
                               )}
                             </div>
                             <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{rule.description}</p>
@@ -130,7 +91,7 @@ const TradingRulesPage = () => {
                 <div className="w-10 h-10 bg-emerald-500/10 rounded-lg flex items-center justify-center">
                   <CheckCircle2 className="w-5 h-5 text-emerald-400" />
                 </div>
-                <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>What's Allowed</h2>
+                <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('tradingRules.allowedTitle')}</h2>
               </div>
               <ul className="space-y-3">
                 {allowedActions.map((action, i) => (
@@ -147,7 +108,7 @@ const TradingRulesPage = () => {
                 <div className="w-10 h-10 bg-red-500/10 rounded-lg flex items-center justify-center">
                   <XCircle className="w-5 h-5 text-red-400" />
                 </div>
-                <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>What's Prohibited</h2>
+                <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('tradingRules.prohibitedTitle')}</h2>
               </div>
               <ul className="space-y-3">
                 {prohibitedActions.map((action, i) => (
@@ -164,10 +125,9 @@ const TradingRulesPage = () => {
           <div className="mt-8 bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 flex items-start gap-4">
             <AlertTriangle className="w-6 h-6 text-amber-500 flex-shrink-0" />
             <div>
-              <h3 className="text-amber-500 font-bold mb-1">Important Notice</h3>
+              <h3 className="text-amber-500 font-bold mb-1">{t('tradingRules.noticeTitle')}</h3>
               <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
-                Violation of critical rules (Daily Drawdown or Maximum Drawdown) will result in immediate account termination. 
-                Please trade responsibly and always manage your risk. If you have questions about any rules, contact our support team.
+                {t('tradingRules.noticeBody')}
               </p>
             </div>
           </div>

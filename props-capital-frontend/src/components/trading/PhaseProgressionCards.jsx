@@ -1,10 +1,12 @@
 import React from 'react';
 import { Layers, ArrowRight } from 'lucide-react';
 import { useTraderTheme } from '../trader/TraderPanelLayout';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const PhaseProgressionCards = ({ challenge }) => {
   const { isDark } = useTraderTheme();
-  
+  const { t } = useTranslation();
+
   if (!challenge) return null;
 
   const cardClass = `rounded-2xl border ${isDark ? 'bg-[#12161d] border-white/5' : 'bg-white border-slate-200'}`;
@@ -15,43 +17,43 @@ const PhaseProgressionCards = ({ challenge }) => {
   const phases = [];
   if (challenge.type === '1-step') {
     phases.push({
-      name: 'Evaluation',
+      name: t('phaseProgressionCards.evaluation'),
       status: challenge.phase === 1 ? 'active' : challenge.phase === 'funded' ? 'completed' : 'locked',
       profit: challenge.phase === 1 ? challenge.stats?.currentProfit : undefined,
       profitTarget: challenge.rules?.profitTarget || 10,
       days: challenge.tradingDays?.current || 0,
       daysTarget: challenge.rules?.minTradingDays || 0,
-      description: 'Pass evaluation phase',
+      description: t('phaseProgressionCards.passEvaluationPhase'),
     });
     phases.push({
-      name: 'Funded',
+      name: t('phaseProgressionCards.funded'),
       status: challenge.phase === 'funded' ? 'active' : 'locked',
-      description: 'Receive funding & trade',
+      description: t('phaseProgressionCards.receiveFundingAndTrade'),
     });
   } else {
     // 2-step challenge
     phases.push({
-      name: 'Phase 1',
+      name: t('phaseProgressionCards.phase1'),
       status: challenge.phase === 1 ? 'active' : challenge.phase > 1 ? 'completed' : 'locked',
       profit: challenge.phase === 1 ? challenge.stats?.currentProfit : undefined,
       profitTarget: challenge.rules?.profitTarget || 8,
       days: challenge.tradingDays?.current || 0,
       daysTarget: challenge.rules?.minTradingDays || 0,
-      description: 'Complete first phase',
+      description: t('phaseProgressionCards.completeFirstPhase'),
     });
     phases.push({
-      name: 'Phase 2',
+      name: t('phaseProgressionCards.phase2'),
       status: challenge.phase === 2 ? 'active' : challenge.phase === 'funded' ? 'completed' : 'locked',
       profit: challenge.phase === 2 ? challenge.stats?.currentProfit : undefined,
       profitTarget: 5, // Phase 2 typically has 5% target
       days: challenge.phase === 2 ? challenge.tradingDays?.current : 0,
       daysTarget: challenge.rules?.minTradingDays || 0,
-      description: 'Complete second phase',
+      description: t('phaseProgressionCards.completeSecondPhase'),
     });
     phases.push({
-      name: 'Funded',
+      name: t('phaseProgressionCards.funded'),
       status: challenge.phase === 'funded' ? 'active' : 'locked',
-      description: 'Receive funding & trade',
+      description: t('phaseProgressionCards.receiveFundingAndTrade'),
     });
   }
 
@@ -59,7 +61,7 @@ const PhaseProgressionCards = ({ challenge }) => {
     <div className={cardClass + ' p-3 sm:p-4'}>
       <div className="flex items-center gap-2 mb-3 sm:mb-4">
         <Layers className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
-        <h3 className={`font-bold text-sm sm:text-base ${textClass}`}>Phase Progression</h3>
+        <h3 className={`font-bold text-sm sm:text-base ${textClass}`}>{t('phaseProgressionCards.title')}</h3>
       </div>
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 overflow-x-auto">
         {phases.map((phase, index) => (
@@ -98,7 +100,7 @@ const PhaseProgressionCards = ({ challenge }) => {
               {phase.profit !== undefined && phase.status === 'active' ? (
                 <div className="space-y-1 text-xs sm:text-sm">
                   <div className="flex justify-between">
-                    <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>Profit:</span>
+                    <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>{t('phaseProgressionCards.profit')}</span>
                     <span className={textClass}>
                       <span className={phase.profit >= phase.profitTarget ? 'text-emerald-500' : 'text-red-500'}>
                         {phase.profit >= phase.profitTarget ? '✓' : '✗'}
@@ -107,7 +109,7 @@ const PhaseProgressionCards = ({ challenge }) => {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>Days:</span>
+                    <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>{t('phaseProgressionCards.days')}</span>
                     <span className={textClass}>
                       <span className={phase.days >= phase.daysTarget ? 'text-emerald-500' : 'text-red-500'}>
                         {phase.days >= phase.daysTarget ? '✓' : '✗'}
@@ -118,7 +120,7 @@ const PhaseProgressionCards = ({ challenge }) => {
                 </div>
               ) : (
                 <p className={`text-xs sm:text-sm ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                  {phase.status === 'completed' ? 'Completed' : phase.description || 'Locked'}
+                  {phase.status === 'completed' ? t('phaseProgressionCards.completed') : phase.description || t('phaseProgressionCards.locked')}
                 </p>
               )}
             </div>

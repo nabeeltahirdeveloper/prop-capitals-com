@@ -2665,7 +2665,7 @@ const {
             if (showToast) {
               toast({
                 title: t("terminal.positionClosed"),
-                description: `${position.type.toUpperCase()} ${position.lotSize} ${position.symbol} - Position was already closed`,
+                description: `${position.type.toUpperCase()} ${position.lotSize} ${position.symbol} - ${t("terminal.positionAlreadyClosed")}`,
               });
             }
             return;
@@ -2933,7 +2933,8 @@ const {
             console.error("❌ Failed to execute limit order:", error);
             toast({
               title: t("terminal.orderExecutionFailed"),
-              description: error.message || "Failed to execute pending order",
+              description:
+                error.message || t("terminal.executePendingOrderError"),
               variant: "destructive",
             });
           }
@@ -3612,7 +3613,7 @@ const {
         console.error("Failed to save pending order to backend:", error);
         toast({
           title: t("terminal.orderFailed"),
-          description: error.message || "Failed to create pending order",
+          description: error.message || t("terminal.createPendingOrderError"),
           variant: "destructive",
         });
       } finally {
@@ -3628,7 +3629,7 @@ const {
     if (!selectedAccountId || selectedAccountId !== selectedAccount?.id) {
       toast({
         title: t("terminal.tradeFailed"),
-        description: "Account changed during trade execution",
+        description: t("terminal.accountChangedDuringTrade"),
         variant: "destructive",
       });
       setIsExecutingTrade(false);
@@ -3950,8 +3951,10 @@ const {
           setModifyingPosition(null);
 
           toast({
-            title: "Position Modified",
-            description: `${updatedPosition.symbol} SL/TP updated successfully`,
+            title: t("terminal.positionModified"),
+            description: t("terminal.positionModifiedSuccess", {
+              symbol: updatedPosition.symbol,
+            }),
           });
         } else {
           throw new Error("Backend did not return updated trade");
@@ -4031,10 +4034,10 @@ const {
                     }`}
                   title={
                     websocketStatus.connected
-                      ? "WebSocket Connected - Real-time updates active"
+                      ? t("terminal.ws.connectedTooltip")
                       : websocketStatus.status === "reconnecting"
-                        ? "WebSocket Reconnecting - Fallback polling active"
-                        : "WebSocket Disconnected - Using fallback polling (5s interval)"
+                        ? t("terminal.ws.reconnectingTooltip")
+                        : t("terminal.ws.disconnectedTooltip")
                   }
                 >
                   <div
@@ -4047,13 +4050,15 @@ const {
                   />
                   <span className="hidden md:inline font-medium">
                     {websocketStatus.connected
-                      ? "Live Updates"
+                      ? t("terminal.ws.liveUpdates")
                       : websocketStatus.status === "reconnecting"
-                        ? "Reconnecting..."
-                        : "Polling Mode"}
+                        ? t("terminal.ws.reconnecting")
+                        : t("terminal.ws.pollingMode")}
                   </span>
                   <span className="inline md:hidden">
-                    {websocketStatus.connected ? "Live" : "Poll"}
+                    {websocketStatus.connected
+                      ? t("terminal.ws.liveShort")
+                      : t("terminal.ws.pollShort")}
                   </span>
                 </Badge>
               </div>
@@ -4185,10 +4190,10 @@ const {
               }`}
             title={
               websocketStatus.connected
-                ? "WebSocket Connected - Real-time updates active"
+                ? t("terminal.ws.connectedTooltip")
                 : websocketStatus.status === "reconnecting"
-                  ? "WebSocket Reconnecting - Fallback polling active"
-                  : "WebSocket Disconnected - Using fallback polling (5s interval)"
+                  ? t("terminal.ws.reconnectingTooltip")
+                  : t("terminal.ws.disconnectedTooltip")
             }
           >
             <div
@@ -4201,13 +4206,15 @@ const {
             />
             <span className="hidden md:inline font-medium">
               {websocketStatus.connected
-                ? "Live Updates"
+                ? t("terminal.ws.liveUpdates")
                 : websocketStatus.status === "reconnecting"
-                  ? "Reconnecting..."
-                  : "Polling Mode"}
+                  ? t("terminal.ws.reconnecting")
+                  : t("terminal.ws.pollingMode")}
             </span>
             <span className="inline md:hidden">
-              {websocketStatus.connected ? "Live" : "Poll"}
+              {websocketStatus.connected
+                ? t("terminal.ws.liveShort")
+                : t("terminal.ws.pollShort")}
             </span>
           </Badge>
         </div>
@@ -4244,7 +4251,7 @@ const {
           {/* 1) Prices / Symbols */}
           <Card className="bg-slate-900 border-slate-800 p-3">
             <h4 className="text-white font-medium mb-3">
-              Market Watch
+              {t("terminal.marketWatch")}
             </h4>
             <div className="h-[320px]">
               <MarketWatchlist
@@ -4423,7 +4430,8 @@ const {
                               toast({
                                 title: t("terminal.cancelFailed"),
                                 description:
-                                  error.message || "Failed to cancel order",
+                                  error.message ||
+                                  t("terminal.cancelOrderError"),
                                 variant: "destructive",
                               });
                             }
@@ -4741,7 +4749,8 @@ const {
                                   toast({
                                     title: t("terminal.cancelFailed"),
                                     description:
-                                      error.message || "Failed to cancel order",
+                                      error.message ||
+                                      t("terminal.cancelOrderError"),
                                     variant: "destructive",
                                   });
                                 }

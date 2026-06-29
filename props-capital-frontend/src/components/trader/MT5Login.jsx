@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTraderTheme } from "./TraderPanelLayout";
+import { useTranslation } from "@/contexts/LanguageContext";
 
 export default function MT5Login({
   onPlatformLogin,
@@ -8,6 +9,7 @@ export default function MT5Login({
   isResetting = false,
 }) {
   const { isDark } = useTraderTheme();
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -36,20 +38,20 @@ export default function MT5Login({
       >
         {/* Header bar */}
         <div className="bg-blue-500 px-4 py-3 text-xs font-medium text-white mb-2">
-          Trading accounts: MetaQuotes Ltd..
+          {t('mt5Login.headerBar')}
         </div>
 
         <form onSubmit={onSubmit} autoComplete="off" className="max-w-xl p-5">
-          <h2 className={`text-base ${titleClass}`}>Connect to account</h2>
+          <h2 className={`text-base ${titleClass}`}>{t('mt5Login.title')}</h2>
 
           <div className="mt-5 grid grid-cols-[1fr_2fr_2fr] items-center gap-x-4 gap-y-3">
             {/* Email */}
-            <label className={`text-xs ${labelClass}`}>Email</label>
+            <label className={`text-xs ${labelClass}`}>{t('mt5Login.emailLabel')}</label>
             <input
               type="email"
               name="email"
               autoComplete="email"
-              placeholder="Enter Login"
+              placeholder={t('mt5Login.loginPlaceholder')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className={`h-8 border px-3 text-xs outline-none focus:ring-2 ${inputClass}`}
@@ -58,13 +60,13 @@ export default function MT5Login({
             <div />
 
             {/* Password */}
-            <label className={`text-xs ${labelClass}`}>Password</label>
+            <label className={`text-xs ${labelClass}`}>{t('mt5Login.passwordLabel')}</label>
             <div className="flex items-center gap-4">
               <input
                 type="password"
                 name="password"
                 autoComplete="off"
-                placeholder="Enter Password"
+                placeholder={t('mt5Login.passwordPlaceholder')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className={`h-8 flex-1 border px-3 text-xs outline-none focus:ring-2 ${inputClass}`}
@@ -79,25 +81,25 @@ export default function MT5Login({
                   isDark ? "border-white/20 bg-white/5" : "border-gray-300"
                 }`}
               />
-              <span>Save password</span>
+              <span>{t('mt5Login.savePassword')}</span>
             </label>
 
             <div />
             <div className={`text-xs ${mutedClass}`}>
-              <span>Forgot Password?</span>{" "}
+              <span>{t('mt5Login.forgotPassword')}</span>{" "}
               <button
                 type="button"
                 disabled={isResetting || isSubmitting}
                 className="text-blue-500 hover:underline disabled:opacity-60 disabled:cursor-not-allowed"
                 onClick={() => onPasswordReset()}
               >
-                {isResetting ? "Sending..." : "Send reset credentials"}
+                {isResetting ? t('mt5Login.sending') : t('mt5Login.sendResetCredentials')}
               </button>
             </div>
             <div />
 
             {/* Server */}
-            <label className={`text-xs ${labelClass}`}>Server</label>
+            <label className={`text-xs ${labelClass}`}>{t('mt5Login.serverLabel')}</label>
             <div className={`text-xs ${labelClass}`}>MetaQuotes</div>
           </div>
 
@@ -107,7 +109,7 @@ export default function MT5Login({
               disabled={isSubmitting || isResetting}
               className="h-8 rounded bg-green-500 border border-green-600 px-2 text-sm text-white hover:bg-green-600"
             >
-              {isSubmitting ? "Connecting..." : "Connect to account"}
+              {isSubmitting ? t('mt5Login.connecting') : t('mt5Login.connectToAccount')}
             </button>
           </div>
         </form>
