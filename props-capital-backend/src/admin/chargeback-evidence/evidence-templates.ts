@@ -284,7 +284,9 @@ export interface ActivityReportData {
     provider: string;
     cardBrand?: string | null;
     cardLast4?: string | null;
+    cardBin?: string | null;
     paidAt: Date;
+    processor?: Record<string, string | null> | null;
   };
   account: {
     id: string;
@@ -309,10 +311,58 @@ export interface ActivityReportData {
   payouts: Array<{ amount: number; currency: string; status: string }>;
 }
 
+const PROCESSOR_LABELS: { key: string; label: string }[] = [
+  { key: 'merchant', label: 'Merchant' },
+  { key: 'orderId', label: 'Order ID' },
+  { key: 'orderDescription', label: 'Order description' },
+  { key: 'paymentId', label: 'Payment ID' },
+  { key: 'trackingId', label: 'Tracking ID' },
+  { key: 'uuid', label: 'UUID' },
+  { key: 'authCode', label: 'Authorization code' },
+  { key: 'rrn', label: 'RRN' },
+  { key: 'arn', label: 'ARN' },
+  { key: 'transactionMode', label: '3-D Secure / mode' },
+  { key: 'paymentMode', label: 'Payment mode' },
+  { key: 'paymentBrand', label: 'Card scheme' },
+  { key: 'binCardType', label: 'Card type' },
+  { key: 'binCardCategory', label: 'Card category' },
+  { key: 'firstSix', label: 'Card BIN (first 6)' },
+  { key: 'lastFour', label: 'Card last 4' },
+  { key: 'issuingBank', label: 'Issuing bank' },
+  { key: 'acquirerBank', label: 'Acquirer' },
+  { key: 'processingBank', label: 'Processing bank' },
+  { key: 'aliasName', label: 'Acquirer alias' },
+  { key: 'terminalId', label: 'Terminal ID' },
+  { key: 'isoCountry', label: 'Issuing country' },
+  { key: 'transactionCountry', label: 'Transaction country' },
+  { key: 'authAmount', label: 'Authorized amount' },
+  { key: 'capturedAmount', label: 'Captured amount' },
+  { key: 'status', label: 'Status' },
+  { key: 'remark', label: 'Remark' },
+  { key: 'successTimeStamp', label: 'Auth/capture time' },
+  { key: 'transactionDate', label: 'Transaction date' },
+];
+
+function renderProcessorRows(p: Record<string, string | null>): string {
+  return PROCESSOR_LABELS.filter(({ key }) => p[key])
+    .map(
+      ({ key, label }) =>
+        `<tr><td style="padding:5px 0;color:#6b7280;">${label}</td><td style="padding:5px 0;text-align:right;font-weight:600;word-break:break-all;">${p[key]}</td></tr>`,
+    )
+    .join('');
+}
+
+function renderProcessorText(p: Record<string, string | null>): string {
+  return PROCESSOR_LABELS.filter(({ key }) => p[key])
+    .map(({ key, label }) => `  ${label}: ${p[key]}`)
+    .join('\n');
+}
+
 export function buildAccountActivityReportEmail(
   d: ActivityReportData,
 ): EmailContent {
   const cur = d.plan.currency;
+  const proc = d.payment.processor;
   const totalLoss = d.trades.reduce((s, t) => s + t.profit, 0);
   const tradeRows = d.trades
     .map(
@@ -347,9 +397,9 @@ PURCHASE
   Plan: ${d.plan.name} (${d.plan.accountSize.toLocaleString()} ${cur} virtual account)
   Invoice: #${d.payment.invoiceNumber}  Ref: ${d.payment.reference}
   Amount: ${money(d.payment.amount, d.payment.currency)}  Status: ${d.payment.status}
-  Provider: ${d.payment.provider}  Card: ${d.payment.cardBrand ?? 'n/a'} ${d.payment.cardLast4 ? `ending ${d.payment.cardLast4}` : ''}
+  Provider: ${d.payment.provider}  Card: ${d.payment.cardBrand ?? 'n/a'} ${d.payment.cardLast4 ? `ending ${d.payment.cardLast4}` : ''}${d.payment.cardBin ? ` (BIN ${d.payment.cardBin})` : ''}
   Paid at: ${fmtDate(d.payment.paidAt)}
-
+${proc ? `\nPAYMENT PROCESSOR DETAILS\n${renderProcessorText(proc)}\n` : ''}
 TRADING ACCOUNT (${d.account.id})
   Started: ${fmtDate(d.account.startedAt)}
   Status: ${d.account.status} / ${d.account.phase}
@@ -387,6 +437,15 @@ WITHDRAWALS / PAYOUTS
         <tr><td style="padding:5px 0;color:#6b7280;">Reference</td><td style="padding:5px 0;text-align:right;font-weight:600;">${d.payment.reference}</td></tr>
         <tr><td style="padding:5px 0;color:#6b7280;">Paid at</td><td style="padding:5px 0;text-align:right;font-weight:600;">${fmtDate(d.payment.paidAt)}</td></tr>
       </table>
+
+      ${
+        proc
+          ? `<h2 style="margin:0 0 8px;color:${INK};font-size:15px;">Payment processor details</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;color:#334155;margin-bottom:18px;">
+        ${renderProcessorRows(proc)}
+      </table>`
+          : ''
+      }
 
       <h2 style="margin:0 0 8px;color:${INK};font-size:15px;">Trading account</h2>
       <table style="width:100%;border-collapse:collapse;font-size:14px;color:#334155;margin-bottom:18px;">

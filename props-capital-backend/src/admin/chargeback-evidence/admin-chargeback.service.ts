@@ -35,6 +35,7 @@ import {
   SignedTermsData,
   TERMS_CLAUSES,
 } from './evidence-templates';
+import { mapUpload } from './upload-mapping';
 
 const DEFAULT_RECIPIENT = 'gabordancs@tutamail.com';
 const DEFAULT_TERMS_VERSION = 'v3.1 (2026-01-10)';
@@ -116,6 +117,50 @@ export class AdminChargebackService {
         dailyDrawdownPercent: true,
       },
     });
+  }
+
+  /**
+   * Parse an uploaded transaction export (CSV/XLSX), map it to the evidence
+   * form fields, and match the purchased plan against the Challenge table.
+   */
+  async parseUpload(file: Express.Multer.File) {
+    if (!file || !file.buffer) {
+      throw new BadRequestException('No file uploaded');
+    }
+    const mapped = mapUpload(file.buffer, file.originalname, file.mimetype);
+    const warnings = [...mapped.warnings];
+
+    let challengeId: string | null = null;
+    let planName: string | null = null;
+    const { challengeType, accountSize } = mapped.planHint;
+
+    if (accountSize != null) {
+      const where: { accountSize: number; isActive: boolean; challengeType?: string } =
+        { accountSize, isActive: true };
+      if (challengeType) where.challengeType = challengeType;
+      const challenge =
+        (await this.prisma.challenge.findFirst({ where })) ||
+        (await this.prisma.challenge.findFirst({
+          where: { accountSize, isActive: true },
+        }));
+      if (challenge) {
+        challengeId = challenge.id;
+        planName = challenge.name;
+      } else {
+        warnings.push(
+          `No active plan found for ${challengeType ?? 'challenge'} with account size ${accountSize.toLocaleString()}`,
+        );
+      }
+    }
+
+    return {
+      matched: !!challengeId,
+      challengeId,
+      planName,
+      fields: mapped.fields,
+      transaction: mapped.transaction,
+      warnings,
+    };
   }
 
   /** Static policies (also surfaced in the UI without generating a pack). */
@@ -367,8 +412,8 @@ export class AdminChargebackService {
     });
     if (!challenge) throw new NotFoundException('Challenge plan not found');
 
-    const registeredAt = new Date(dto.registrationDate);
-    if (Number.isNaN(registeredAt.getTime())) {
+    const formDate = new Date(dto.registrationDate);
+    if (Number.isNaN(formDate.getTime())) {
       throw new BadRequestException('Invalid registrationDate');
     }
 
@@ -379,10 +424,97 @@ export class AdminChargebackService {
     );
     const numTrades = dto.numTrades ?? 6;
     const platform = challenge.platform;
-    const firstName = dto.firstName || 'Card';
-    const lastName = dto.lastName || 'Holder';
+    const derivedName = this.nameFromEmail(dto.email);
+    const firstName = dto.firstName || derivedName.firstName;
+    const lastName = dto.lastName || derivedName.lastName;
     const fullName = `${firstName} ${lastName}`.trim();
     const cardholder: CardholderInfo = { email: dto.email, name: fullName };
+    const uploadTx = dto.transaction || null;
+    const cardBrand = dto.cardBrand || uploadTx?.paymentBrand || null;
+    const cardLast4 = dto.cardLast4 || uploadTx?.lastFour || null;
+    const cardBin = uploadTx?.firstSix || null;
+    const processor = uploadTx
+      ? {
+          merchant: uploadTx.merchant || null,
+          orderId: uploadTx.orderId || null,
+          orderDescription: uploadTx.orderDescription || null,
+          paymentId: uploadTx.paymentId || null,
+          trackingId: uploadTx.trackingId || null,
+          uuid: uploadTx.uuid || null,
+          rrn: uploadTx.rrn || null,
+          arn: uploadTx.arn || null,
+          authCode: uploadTx.authCode || null,
+          acquirerBank: uploadTx.acquirerBank || null,
+          processingBank: uploadTx.processingBank || null,
+          issuingBank: uploadTx.issuingBank || null,
+          aliasName: uploadTx.aliasName || null,
+          terminalId: uploadTx.terminalId || null,
+          paymentMode: uploadTx.paymentMode || null,
+          paymentBrand: uploadTx.paymentBrand || null,
+          transactionMode: uploadTx.transactionMode || null,
+          binCardCategory: uploadTx.binCardCategory || null,
+          binCardType: uploadTx.binCardType || null,
+          firstSix: uploadTx.firstSix || null,
+          lastFour: uploadTx.lastFour || null,
+          isoCountry: uploadTx.isoCountry || null,
+          transactionCountry: uploadTx.transactionCountry || null,
+          status: uploadTx.status || null,
+          remark: uploadTx.remark || null,
+          authAmount: uploadTx.authAmount || null,
+          capturedAmount: uploadTx.capturedAmount || null,
+          successTimeStamp: uploadTx.successTimeStamp || null,
+          transactionDate: uploadTx.transactionDate || null,
+        }
+      : null;
+    // Resolve the registration moment. If evidence already exists for this
+    // cardholder, reuse the original date AND time so a 2nd run is identical.
+    // Otherwise anchor on the uploaded transaction's real timestamp, or
+    // synthesise a realistic, stable (seeded) time-of-day — never midnight.
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+      select: { createdAt: true },
+    });
+    const txTimestamp =
+      this.parseTimestamp(uploadTx?.transactionDate) ||
+      this.parseTimestamp(uploadTx?.successTimeStamp);
+    const regDayKey = (existingUser?.createdAt ?? txTimestamp ?? formDate)
+      .toISOString()
+      .slice(0, 10);
+    const rng = this.seedFrom(`${dto.email}|${regDayKey}`);
+
+    let registeredAt: Date;
+    if (existingUser?.createdAt) {
+      registeredAt = new Date(existingUser.createdAt);
+    } else if (txTimestamp) {
+      registeredAt = txTimestamp;
+    } else {
+      registeredAt = new Date(`${regDayKey}T00:00:00.000Z`);
+      registeredAt.setUTCHours(
+        9 + Math.floor(rng() * 10), // 09:00–18:59 UTC
+        Math.floor(rng() * 60),
+        Math.floor(rng() * 60),
+        0,
+      );
+    }
+    const reusedRegistration = !!existingUser?.createdAt;
+
+    // Ordered, deterministic lifecycle times (registration → purchase →
+    // account provisioned). Uses the real capture time when available.
+    const successTime = this.parseTimestamp(uploadTx?.successTimeStamp);
+    const purchasedAt =
+      successTime && successTime.getTime() >= registeredAt.getTime()
+        ? successTime
+        : new Date(
+            registeredAt.getTime() +
+              (2 + Math.floor(rng() * 11)) * MS_MIN +
+              Math.floor(rng() * 60) * 1000,
+          );
+    const accountCreatedAt = new Date(
+      purchasedAt.getTime() +
+        (1 + Math.floor(rng() * 5)) * MS_MIN +
+        Math.floor(rng() * 60) * 1000,
+    );
+
     const frontendBase = (
       this.config.get<string>('APP_FRONTEND_URL') || 'https://prop-capitals.com'
     ).replace(/\/$/, '');
@@ -394,16 +526,6 @@ export class AdminChargebackService {
       termsVersion: dto.termsVersion || DEFAULT_TERMS_VERSION,
       documentUrl: `${frontendBase}/legal/terms`,
     };
-
-    // ---- Timeline (slightly randomized, realistic) -------------------------
-    const purchasedAt = new Date(
-      registeredAt.getTime() +
-        this.rndInt(20, 200) * MS_MIN +
-        this.rndInt(0, 59) * 1000,
-    );
-    const accountCreatedAt = new Date(
-      purchasedAt.getTime() + this.rndInt(3, 25) * MS_MIN + this.rndInt(0, 59) * 1000,
-    );
 
     const sim = this.buildTrades(challenge, numTrades, registeredAt);
     const trades = sim.trades;
@@ -481,8 +603,12 @@ export class AdminChargebackService {
           billingAddress: dto.address || null,
           billingPhone: dto.phone || null,
           cardholderName: fullName,
-          cardBrand: dto.cardBrand || null,
-          cardLast4: dto.cardLast4 || null,
+          cardBrand,
+          cardLast4,
+          cardBin,
+          metadata: uploadTx
+            ? { source: 'transaction-upload', transaction: uploadTx }
+            : undefined,
         },
       });
 
@@ -626,8 +752,8 @@ export class AdminChargebackService {
           amount: amountPaid,
           currency,
           invoiceNumber,
-          cardBrand: dto.cardBrand,
-          cardLast4: dto.cardLast4,
+          cardBrand,
+          cardLast4,
           paidAt: purchasedAt,
         }),
       },
@@ -681,9 +807,11 @@ export class AdminChargebackService {
         currency,
         status: 'succeeded',
         provider: 'card',
-        cardBrand: dto.cardBrand || null,
-        cardLast4: dto.cardLast4 || null,
+        cardBrand,
+        cardLast4,
+        cardBin,
         paidAt: purchasedAt,
+        processor,
       },
       account: {
         id: result.account.id,
@@ -807,11 +935,16 @@ export class AdminChargebackService {
       },
     ];
 
+    const reuseNote = reusedRegistration
+      ? ` Reused the existing registration date for ${dto.email}.`
+      : '';
     return {
-      message: sendEmails
-        ? `Evidence pack generated and ${communications.filter((c) => c.sent).length}/${communications.length} emails sent to ${recipientEmail}.`
-        : 'Evidence pack generated (emails not sent).',
+      message:
+        (sendEmails
+          ? `Evidence pack generated and ${communications.filter((c) => c.sent).length}/${communications.length} emails sent to ${recipientEmail}.`
+          : 'Evidence pack generated (emails not sent).') + reuseNote,
       recipientEmail,
+      reusedRegistration,
       userCreated: result.userCreated,
       userId: result.user.id,
       accountId: result.account.id,
@@ -850,6 +983,46 @@ export class AdminChargebackService {
       },
       policies: this.getPolicies(),
     };
+  }
+
+  /** Deterministic seeded PRNG (mulberry32) so a run is reproducible per input. */
+  private seedFrom(s: string): () => number {
+    let h = 2166136261 >>> 0;
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    let a = h >>> 0;
+    return () => {
+      a = (a + 0x6d2b79f5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  /** Parse "YYYY-MM-DD HH:MM[:SS]" (or ISO) into a UTC Date, else null. */
+  private parseTimestamp(s?: string | null): Date | null {
+    if (!s) return null;
+    const m = s
+      .trim()
+      .match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+    if (!m) return null;
+    return new Date(
+      Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], m[6] ? +m[6] : 0),
+    );
+  }
+
+  /** Derive a plausible first/last name from an email local-part. */
+  private nameFromEmail(email: string): { firstName: string; lastName: string } {
+    const local = (email.split('@')[0] || '').replace(/[0-9]+/g, '');
+    const parts = local
+      .split(/[._-]+/)
+      .filter(Boolean)
+      .map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase());
+    if (parts.length === 0) return { firstName: 'Card', lastName: 'Holder' };
+    if (parts.length === 1) return { firstName: parts[0], lastName: 'Holder' };
+    return { firstName: parts[0], lastName: parts.slice(1).join(' ') };
   }
 
   /** Deterministic-ish plausible public IP derived from the email. */

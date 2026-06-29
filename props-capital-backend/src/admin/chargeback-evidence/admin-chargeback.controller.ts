@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 import { AdminChargebackService } from './admin-chargeback.service';
 import { JwtAuthGuard } from '../../auth/jwt.guard';
@@ -9,6 +18,13 @@ import { GenerateEvidenceDto } from './dto/generate-evidence.dto';
 @UseGuards(JwtAuthGuard, AdminRoleGuard)
 export class AdminChargebackController {
   constructor(private readonly service: AdminChargebackService) {}
+
+  // Parse an uploaded CSV/XLSX transaction export and auto-fill the form.
+  @Post('parse-upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async parseUpload(@UploadedFile() file: Express.Multer.File) {
+    return this.service.parseUpload(file);
+  }
 
   // Plans available for the dropdown
   @Get('plans')
