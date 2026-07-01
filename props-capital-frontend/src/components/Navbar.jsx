@@ -8,13 +8,26 @@ import { useTranslation } from '@/contexts/LanguageContext';
 import CurrencySwitcher from '@/components/CurrencySwitcher';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
+// Locales whose nav labels are long enough to overflow the default (xl) horizontal
+// navbar. For these we widen the container, tighten link padding, and raise the
+// hamburger breakpoint so the full nav only shows once it actually fits (~1440px+).
+const WIDE_NAV_LOCALES = ['kk'];
+
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+
+  // Wide-label locales (e.g. Kazakh) need more horizontal room; scope the layout
+  // tweaks to them so English/Turkish render exactly as before.
+  const wideNav = WIDE_NAV_LOCALES.includes(language);
+  const containerMaxW = wideNav ? 'max-w-[1600px]' : 'max-w-7xl';
+  const desktopShow = wideNav ? 'hidden min-[1440px]:flex' : 'hidden xl:flex';
+  const mobileShow = wideNav ? 'min-[1440px]:hidden' : 'xl:hidden';
+  const linkPadX = wideNav ? 'px-3' : 'px-5';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -47,7 +60,7 @@ const Navbar = () => {
         : 'bg-transparent'
         }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className={`${containerMaxW} mx-auto px-4 sm:px-6 lg:px-8`}>
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
@@ -64,12 +77,12 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden xl:flex items-center gap-1">
+          <div className={`${desktopShow} items-center gap-1`}>
             {navLinks.map((link) => (
               <Link key={link.path} to={link.path}>
                 <Button
                   variant="ghost"
-                  className={`rounded-full px-5 h-10 font-medium transition-all ${isActive(link.path)
+                  className={`rounded-full ${linkPadX} h-10 font-medium transition-all ${isActive(link.path)
                     ? 'text-amber-500 bg-amber-500/10'
                     : isDark
                       ? 'text-gray-300 hover:text-white hover:bg-white/5'
@@ -83,7 +96,7 @@ const Navbar = () => {
           </div>
 
           {/* Right Side */}
-          <div className="hidden xl:flex items-center gap-2">
+          <div className={`${desktopShow} items-center gap-2`}>
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
@@ -121,7 +134,7 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex items-center gap-2 xl:hidden">
+          <div className={`flex items-center gap-2 ${mobileShow}`}>
             {/* Theme Toggle Mobile */}
             <button
               onClick={toggleTheme}
@@ -151,7 +164,7 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className={`xl:hidden border-t ${isDark
+        <div className={`${mobileShow} border-t ${isDark
           ? 'bg-[#0a0d12]/98 backdrop-blur-xl border-white/10'
           : 'bg-white/98 backdrop-blur-xl border-slate-200'
           }`}>
