@@ -15,6 +15,13 @@ describe('seedLocaleCookieFromSavedLanguage', () => {
     expect(doc.cookie).toContain('locale=tr');
     expect(store.getItem('localeCookieSeeded')).toBe('1');
   });
+  it('seeds the locale cookie from a saved kk language', () => {
+    const doc = fakeDoc('');
+    const store = fakeStore({ language: 'kk' });
+    seedLocaleCookieFromSavedLanguage(doc, store);
+    expect(doc.cookie).toContain('locale=kk');
+    expect(store.getItem('localeCookieSeeded')).toBe('1');
+  });
   it('does not overwrite an existing locale cookie', () => {
     const doc = fakeDoc('locale=en');
     const store = fakeStore({ language: 'tr' });
