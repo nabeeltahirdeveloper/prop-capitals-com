@@ -1,9 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { countryToLanguage, isLocaleAgnosticPath, parseLocaleCookie, decideLanguageRedirect } from './geo.mjs';
+import { countryToLanguage, isLocaleAgnosticPath, isLocalePrefixedPath, parseLocaleCookie, decideLanguageRedirect } from './geo.mjs';
 
 describe('countryToLanguage', () => {
-  it('maps TR to tr, else en', () => {
+  it('maps TR to tr, KZ to kk, else en', () => {
     expect(countryToLanguage('TR')).toBe('tr');
+    expect(countryToLanguage('KZ')).toBe('kk');
     expect(countryToLanguage('US')).toBe('en');
     expect(countryToLanguage('')).toBe('en');
   });
@@ -20,10 +21,23 @@ describe('isLocaleAgnosticPath', () => {
   });
 });
 
+describe('isLocalePrefixedPath', () => {
+  it('flags /tr and /kk paths only', () => {
+    expect(isLocalePrefixedPath('/tr')).toBe(true);
+    expect(isLocalePrefixedPath('/tr/about')).toBe(true);
+    expect(isLocalePrefixedPath('/kk')).toBe(true);
+    expect(isLocalePrefixedPath('/kk/about')).toBe(true);
+    expect(isLocalePrefixedPath('/about')).toBe(false);
+    expect(isLocalePrefixedPath('/trading-rules')).toBe(false);
+    expect(isLocalePrefixedPath('/')).toBe(false);
+  });
+});
+
 describe('parseLocaleCookie', () => {
   it('reads a valid locale', () => {
     expect(parseLocaleCookie('a=1; locale=tr; b=2')).toBe('tr');
     expect(parseLocaleCookie('locale=en')).toBe('en');
+    expect(parseLocaleCookie('locale=kk')).toBe('kk');
   });
   it('returns null for missing/invalid', () => {
     expect(parseLocaleCookie('a=1')).toBeNull();
@@ -54,5 +68,25 @@ describe('decideLanguageRedirect', () => {
   it('serves English (null) for non-TR with no cookie', () => {
     expect(decideLanguageRedirect({ path: '/Challenges', localeCookie: null, country: 'US' })).toBeNull();
     expect(decideLanguageRedirect({ path: '/', localeCookie: null, country: '' })).toBeNull();
+  });
+  it('redirects unprefixed KZ visitors to /kk', () => {
+    expect(decideLanguageRedirect({ path: '/', localeCookie: null, country: 'KZ' })).toBe('/kk');
+    expect(decideLanguageRedirect({ path: '/Challenges', localeCookie: null, country: 'KZ' })).toBe('/kk/Challenges');
+  });
+  it('honors a kk locale cookie over geo', () => {
+    expect(decideLanguageRedirect({ path: '/Challenges', localeCookie: 'kk', country: 'US' })).toBe('/kk/Challenges');
+    expect(decideLanguageRedirect({ path: '/', localeCookie: 'en', country: 'KZ' })).toBeNull();
+  });
+  it('never redirects /kk paths (no loop)', () => {
+    expect(decideLanguageRedirect({ path: '/kk', localeCookie: null, country: 'KZ' })).toBeNull();
+    expect(decideLanguageRedirect({ path: '/kk/Challenges', localeCookie: 'kk', country: 'KZ' })).toBeNull();
+  });
+  it('never redirects across prefixes (kk cookie on a /tr path stays put)', () => {
+    expect(decideLanguageRedirect({ path: '/tr/about', localeCookie: 'kk', country: 'KZ' })).toBeNull();
+    expect(decideLanguageRedirect({ path: '/kk/about', localeCookie: 'tr', country: 'TR' })).toBeNull();
+  });
+  it('serves English (null) for KZ locale-agnostic paths', () => {
+    expect(decideLanguageRedirect({ path: '/pay/abc', localeCookie: null, country: 'KZ' })).toBeNull();
+    expect(decideLanguageRedirect({ path: '/set-password', localeCookie: 'kk', country: 'KZ' })).toBeNull();
   });
 });

@@ -12,3 +12,12 @@ describe('currency utils — TRY', () => {
     expect(getCurrencySymbol('ZZZ')).toBe('ZZZ');
   });
 });
+
+describe('currency utils — KZT', () => {
+  it('returns the tenge symbol for KZT', () => {
+    expect(getCurrencySymbol('KZT')).toBe('₸');
+  });
+  it('has a name for KZT', () => {
+    expect(CURRENCY_NAMES.KZT).toBe('Kazakhstani Tenge');
+  });
+});

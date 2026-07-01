@@ -9,6 +9,7 @@ import {
   buildGeoCookie,
   parseLocaleCookie,
   decideLanguageRedirect,
+  isLocalePrefixedPath,
 } from './server/geo.mjs';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
@@ -62,19 +63,19 @@ app.use(
   }),
 );
 
-// HTML document requests: (1) redirect unprefixed Turkish-IP visitors to /tr,
+// HTML document requests: (1) redirect unprefixed geo-matched visitors to /tr or /kk,
 // (2) otherwise serve index.html and keep stamping the geo_country cookie (currency).
 app.get('/{*path}', async (req, res) => {
   const reqPath = req.path || '/';
   const cookieHeader = req.headers.cookie || '';
   const localeCookie = parseLocaleCookie(cookieHeader);
   const hasGeoCookie = cookieHeader.includes('geo_country=');
-  const isTrPath = /^\/tr(\/|$)/.test(reqPath);
+  const isPrefixedPath = isLocalePrefixedPath(reqPath);
 
   // One country lookup, reused for the redirect decision AND the geo_country cookie.
   // Needed when a redirect is possible (unprefixed, no locale cookie) or to stamp the cookie.
   let country = '';
-  const mayRedirect = !isTrPath && !localeCookie;
+  const mayRedirect = !isPrefixedPath && !localeCookie;
   if (mayRedirect || !hasGeoCookie) {
     const ip = clientIpFromHeaders({
       xForwardedFor: req.headers['x-forwarded-for'],
@@ -89,7 +90,7 @@ app.get('/{*path}', async (req, res) => {
     country = c || '';
   }
 
-  // Language redirect (unprefixed Turkish visitors -> /tr), preserving the query string.
+  // Language redirect (unprefixed geo-matched visitors -> /tr or /kk), preserving the query string.
   const target = decideLanguageRedirect({ path: reqPath, localeCookie, country });
   if (target) {
     const qs = req.url.slice(reqPath.length); // querystring; hash never reaches the server

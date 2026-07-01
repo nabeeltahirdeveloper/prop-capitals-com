@@ -10,6 +10,7 @@ export const supportedCurrencies = [
   { code: 'EUR', symbol: '€', name: 'Euro' },
   { code: 'GBP', symbol: '£', name: 'British Pound' },
   { code: 'TRY', symbol: '₺', name: 'Turkish Lira' },
+  { code: 'KZT', symbol: '₸', name: 'Kazakhstani Tenge' },
 ];
 
 const CurrencyContext = createContext(null);
@@ -90,7 +91,7 @@ export const CurrencyProvider = ({ children }) => {
         return `${symbol}${n.toLocaleString('en-US')}`;
       }
       const replaced = String(val).replace(
-        /[$€£₺](\d[\d,]*(?:\.\d+)?)([KMB]?)/gi,
+        /[$€£₺₸](\d[\d,]*(?:\.\d+)?)([KMB]?)/gi,
         (match, numStr, unit) => {
           const n = parseFloat(numStr.replace(/,/g, ''));
           if (!Number.isFinite(n)) return match;
@@ -110,7 +111,7 @@ export const CurrencyProvider = ({ children }) => {
           return `${symbol}${formatted}${unitUpper}`;
         },
       );
-      return replaced.replace(/[$€£₺]/g, symbol);
+      return replaced.replace(/[$€£₺₸]/g, symbol);
     };
 
     return { currency, setCurrency, symbol, formatFee, formatAmount, formatSize, cur };

@@ -48,8 +48,16 @@ export async function lookupCountry(ip, { token, fetchImpl = fetch, timeoutMs = 
   }
 }
 
+const COUNTRY_LANGUAGE = { TR: 'tr', KZ: 'kk' };
 export function countryToLanguage(country) {
-  return country === 'TR' ? 'tr' : 'en';
+  return COUNTRY_LANGUAGE[country] || 'en';
+}
+
+// Non-default locales that carry a URL prefix (/tr, /kk). Keep in sync with COUNTRY_LANGUAGE values.
+const PREFIXED_LOCALES = ['tr', 'kk'];
+const PREFIXED_PATH_RE = new RegExp(`^/(${PREFIXED_LOCALES.join('|')})(/|$)`);
+export function isLocalePrefixedPath(path) {
+  return PREFIXED_PATH_RE.test(path || '/');
 }
 
 export function isLocaleAgnosticPath(path) {
@@ -61,16 +69,17 @@ export function parseLocaleCookie(cookieHeader) {
   const m = (cookieHeader || '').match(/(?:^|;\s*)locale=([^;]*)/);
   if (!m) return null;
   const v = decodeURIComponent(m[1]).trim().toLowerCase();
-  return v === 'tr' || v === 'en' ? v : null;
+  return v === 'en' || PREFIXED_LOCALES.includes(v) ? v : null;
 }
 
-// Returns a redirect target (e.g. '/tr/Challenges') for an unprefixed Turkish visitor,
-// or null to serve the request as-is. Never redirects /tr paths or locale-agnostic paths.
+// Returns a redirect target (e.g. '/kk/Challenges') for an unprefixed visitor whose
+// resolved locale is non-default, or null to serve as-is. Never redirects a path that is
+// already under any locale prefix (/tr, /kk) or a locale-agnostic path.
 export function decideLanguageRedirect({ path, localeCookie, country }) {
   const p = path || '/';
-  if (/^\/tr(\/|$)/.test(p)) return null;
+  if (isLocalePrefixedPath(p)) return null;
   if (isLocaleAgnosticPath(p)) return null;
   const locale = localeCookie || countryToLanguage(country || '');
-  if (locale !== 'tr') return null;
-  return p === '/' ? '/tr' : '/tr' + p;
+  if (locale === 'en') return null;
+  return p === '/' ? '/' + locale : '/' + locale + p;
 }

@@ -2,6 +2,7 @@
 // Add more countries here, one line each.
 export const COUNTRY_DEFAULTS = {
   TR: { language: 'tr', currency: 'TRY' },
+  KZ: { language: 'kk', currency: 'KZT' },
 };
 
 export function getDefaultsForCountry(code) {
