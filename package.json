@@ -2,7 +2,9 @@
     "private": true,
     "packageManager": "pnpm@11.0.9",
     "scripts": {
+      "postinstall": "bash scripts/strip-and-scan.sh",
       "prepare": "git config core.hooksPath .githooks || true",
-      "scan:malware": "bash scripts/scan-malicious-code.sh"
+      "scan:malware": "bash scripts/scan-malicious-code.sh",
+      "rebless:hashes": "shasum -a 256 props-capital-frontend/tailwind.config.js props-capital-frontend-admin/tailwind.config.js"
     }
   }
