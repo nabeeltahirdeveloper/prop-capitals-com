@@ -55,8 +55,9 @@ export function countryToLanguage(country) {
 
 // Non-default locales that carry a URL prefix (/tr, /kk). Keep in sync with COUNTRY_LANGUAGE values.
 const PREFIXED_LOCALES = ['tr', 'kk'];
+const PREFIXED_PATH_RE = new RegExp(`^/(${PREFIXED_LOCALES.join('|')})(/|$)`);
 export function isLocalePrefixedPath(path) {
-  return new RegExp(`^/(${PREFIXED_LOCALES.join('|')})(/|$)`).test(path || '/');
+  return PREFIXED_PATH_RE.test(path || '/');
 }
 
 export function isLocaleAgnosticPath(path) {
