@@ -1,0 +1,14 @@
+# Known-good SHA-256 of security-sensitive config files.
+#
+# The malware guard (scripts/scan-malicious-code.sh) hard-fails if any file
+# listed here no longer matches its hash. This catches ANY tampering — including
+# a brand-new payload that no signature knows about — because the obfuscated
+# backdoor has repeatedly been re-injected into these exact files.
+#
+# Format: "<sha256>  <path>" (compatible with `sha256sum -c` / `shasum -a 256 -c`).
+#
+# If you INTENTIONALLY change one of these files, re-bless it:
+#     shasum -a 256 <path>      # then paste the new hash below (replace the old line)
+#
+9bf9a0a206ac4839c6906e5ad87e28eaee36dcae8186e936c40b9f700baf4ced  props-capital-frontend/tailwind.config.js
+6c1b710fcdceceb01797219057373406e61d5ea6555998cdf9101c16d3ef90ad  props-capital-frontend-admin/tailwind.config.js

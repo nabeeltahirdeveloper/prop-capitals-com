@@ -95,7 +95,7 @@ pnpm --filter props-capital-backend test    # Jest; uuid ESM import failures are
 
 ## CI/CD and the malicious-code guard
 
-GitHub Actions deploys to the server `45.32.154.10` (PM2). Vercel deploys the
+GitHub Actions deploys to the server `188.166.155.160` (PM2). Vercel deploys the
 frontends via its own Git integration.
 
 | Workflow | Trigger | Deploys |
