@@ -8,10 +8,8 @@ import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import {
   Challenge,
-  ChallengePlatform,
   NotificationCategory,
   NotificationType,
-  Prisma,
   TradeType,
   TradingAccountStatus,
   TradingPhase,
@@ -55,12 +53,60 @@ interface SymbolInfo {
   volMax: number;
 }
 const SYMBOLS: SymbolInfo[] = [
-  { symbol: 'EURUSD', price: 1.0852, contractSize: 100000, decimals: 5, volStep: 0.01, volMin: 0.3, volMax: 2.5 },
-  { symbol: 'XAUUSD', price: 2348.5, contractSize: 100, decimals: 2, volStep: 0.01, volMin: 0.2, volMax: 1.8 },
-  { symbol: 'GBPUSD', price: 1.2715, contractSize: 100000, decimals: 5, volStep: 0.01, volMin: 0.3, volMax: 2.2 },
-  { symbol: 'US30', price: 38975.0, contractSize: 1, decimals: 1, volStep: 0.1, volMin: 0.5, volMax: 3.0 },
-  { symbol: 'USDJPY', price: 157.32, contractSize: 100000, decimals: 3, volStep: 0.01, volMin: 0.3, volMax: 2.0 },
-  { symbol: 'NAS100', price: 18420.0, contractSize: 1, decimals: 1, volStep: 0.1, volMin: 0.5, volMax: 3.0 },
+  {
+    symbol: 'EURUSD',
+    price: 1.0852,
+    contractSize: 100000,
+    decimals: 5,
+    volStep: 0.01,
+    volMin: 0.3,
+    volMax: 2.5,
+  },
+  {
+    symbol: 'XAUUSD',
+    price: 2348.5,
+    contractSize: 100,
+    decimals: 2,
+    volStep: 0.01,
+    volMin: 0.2,
+    volMax: 1.8,
+  },
+  {
+    symbol: 'GBPUSD',
+    price: 1.2715,
+    contractSize: 100000,
+    decimals: 5,
+    volStep: 0.01,
+    volMin: 0.3,
+    volMax: 2.2,
+  },
+  {
+    symbol: 'US30',
+    price: 38975.0,
+    contractSize: 1,
+    decimals: 1,
+    volStep: 0.1,
+    volMin: 0.5,
+    volMax: 3.0,
+  },
+  {
+    symbol: 'USDJPY',
+    price: 157.32,
+    contractSize: 100000,
+    decimals: 3,
+    volStep: 0.01,
+    volMin: 0.3,
+    volMax: 2.0,
+  },
+  {
+    symbol: 'NAS100',
+    price: 18420.0,
+    contractSize: 1,
+    decimals: 1,
+    volStep: 0.1,
+    volMin: 0.5,
+    volMax: 3.0,
+  },
 ];
 
 interface SimTrade {
@@ -135,8 +181,11 @@ export class AdminChargebackService {
     const { challengeType, accountSize } = mapped.planHint;
 
     if (accountSize != null) {
-      const where: { accountSize: number; isActive: boolean; challengeType?: string } =
-        { accountSize, isActive: true };
+      const where: {
+        accountSize: number;
+        isActive: boolean;
+        challengeType?: string;
+      } = { accountSize, isActive: true };
       if (challengeType) where.challengeType = challengeType;
       const challenge =
         (await this.prisma.challenge.findFirst({ where })) ||
@@ -250,7 +299,10 @@ export class AdminChargebackService {
       for (let j = 0; j < k; j++) {
         const sym = SYMBOLS[this.rndInt(0, SYMBOLS.length - 1)];
         const type = Math.random() < 0.5 ? TradeType.BUY : TradeType.SELL;
-        const volume = this.roundVol(this.rnd(sym.volMin, sym.volMax), sym.volStep);
+        const volume = this.roundVol(
+          this.rnd(sym.volMin, sym.volMax),
+          sym.volStep,
+        );
         // Small random entry offset from the reference price.
         const openPrice = this.round(
           sym.price * (1 + this.rnd(-0.012, 0.012)),
@@ -263,7 +315,8 @@ export class AdminChargebackService {
           type === TradeType.BUY ? openPrice + unitMove : openPrice - unitMove,
           sym.decimals,
         );
-        const duration = this.rndInt(6, 95) * MS_MIN + this.rndInt(0, 59) * 1000;
+        const duration =
+          this.rndInt(6, 95) * MS_MIN + this.rndInt(0, 59) * 1000;
         const openedAt = new Date(cursor.getTime());
         const closedAt = new Date(openedAt.getTime() + duration);
         trades.push({
@@ -380,7 +433,11 @@ export class AdminChargebackService {
    * losses with varied magnitudes; non-final days may include one small winner.
    * The final day's largest loss is placed last so it is the breach trade.
    */
-  private splitDayProfits(net: number, k: number, isLastDay: boolean): number[] {
+  private splitDayProfits(
+    net: number,
+    k: number,
+    isLastDay: boolean,
+  ): number[] {
     const mags = Array.from({ length: k }, () => this.rnd(0.5, 1.6));
     const signs = mags.map(() => -1);
     if (!isLastDay && k >= 3 && Math.random() < 0.5) {
@@ -397,7 +454,8 @@ export class AdminChargebackService {
     const rounded = values.map((v) => this.round(v, 2));
     const drift = this.round(-net - rounded.reduce((a, b) => a + b, 0), 2);
     const loserIdx = rounded.findIndex((v) => v < 0);
-    if (loserIdx >= 0) rounded[loserIdx] = this.round(rounded[loserIdx] + drift, 2);
+    if (loserIdx >= 0)
+      rounded[loserIdx] = this.round(rounded[loserIdx] + drift, 2);
     values = rounded;
     if (isLastDay) {
       // Largest loss last (this trade breaches the overall limit).
@@ -519,7 +577,11 @@ export class AdminChargebackService {
       this.config.get<string>('APP_FRONTEND_URL') || 'https://prop-capitals.com'
     ).replace(/\/$/, '');
     const signed: SignedTermsData = {
-      cardholder: { email: dto.email, name: fullName, country: dto.country || null },
+      cardholder: {
+        email: dto.email,
+        name: fullName,
+        country: dto.country || null,
+      },
       acceptedAt: registeredAt,
       ipAddress: dto.ipAddress || this.randomIp(dto.email),
       userAgent: dto.userAgent || DEFAULT_USER_AGENT,
@@ -530,7 +592,10 @@ export class AdminChargebackService {
     const sim = this.buildTrades(challenge, numTrades, registeredAt);
     const trades = sim.trades;
     const terminatedAt = sim.terminatedAt;
-    const totalLoss = this.round(trades.reduce((s, t) => s + t.profit, 0), 2);
+    const totalLoss = this.round(
+      trades.reduce((s, t) => s + t.profit, 0),
+      2,
+    );
     const finalBalance = sim.finalBalance;
     const overallDrawdownPercent = sim.overallDrawdownPercent;
     const breachIsDaily = sim.breachType === 'DAILY_DRAWDOWN';
@@ -622,7 +687,7 @@ export class AdminChargebackService {
           balance: finalBalance,
           equity: finalBalance,
           initialBalance: challenge.accountSize,
-          platform: platform as ChallengePlatform,
+          platform: platform,
           platformEmail: dto.email,
           createdAt: accountCreatedAt,
           maxEquityToDate: challenge.accountSize,
@@ -836,7 +901,11 @@ export class AdminChargebackService {
         openedAt: t.openedAt,
         closedAt: t.closedAt,
       })),
-      payouts: [] as Array<{ amount: number; currency: string; status: string }>,
+      payouts: [] as Array<{
+        amount: number;
+        currency: string;
+        status: string;
+      }>,
     };
 
     built.push({
@@ -1014,7 +1083,10 @@ export class AdminChargebackService {
   }
 
   /** Derive a plausible first/last name from an email local-part. */
-  private nameFromEmail(email: string): { firstName: string; lastName: string } {
+  private nameFromEmail(email: string): {
+    firstName: string;
+    lastName: string;
+  } {
     const local = (email.split('@')[0] || '').replace(/[0-9]+/g, '');
     const parts = local
       .split(/[._-]+/)
@@ -1039,8 +1111,7 @@ export class AdminChargebackService {
   }
 
   private generatePassword(): string {
-    const chars =
-      'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
     let out = '';
     for (let i = 0; i < 12; i++) {
       out += chars[Math.floor(Math.random() * chars.length)];

@@ -17,13 +17,13 @@ function normalizeRedirectParameters(
     const normalized = raw
       .map((param) => {
         if (!param || typeof param !== 'object') return null;
-        const name = (param as any).name;
+        const name = param.name;
         if (name === undefined || name === null || String(name).trim() === '') {
           return null;
         }
         return {
           name: String(name),
-          value: (param as any).value,
+          value: param.value,
         };
       })
       .filter((param): param is XoalaRedirectParameter => !!param);

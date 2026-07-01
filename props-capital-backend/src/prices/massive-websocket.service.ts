@@ -447,9 +447,8 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
     // collected the caller's target count. Using the caller's (smaller) limit
     // here would yield tiny pages and truncate higher/intraday timeframes.
     const PAGE_LIMIT = 50000;
-    let url:
-      | string
-      | null = `https://api.massive.com/v2/aggs/ticker/${massiveTicker}/range/${multiplier}/${timespan}/${from}/${to}?adjusted=true&sort=desc&limit=${PAGE_LIMIT}`;
+    let url: string | null =
+      `https://api.massive.com/v2/aggs/ticker/${massiveTicker}/range/${multiplier}/${timespan}/${from}/${to}?adjusted=true&sort=desc&limit=${PAGE_LIMIT}`;
 
     const rawBars: any[] = [];
     let page = 0;
@@ -476,8 +475,7 @@ export class MassiveWebSocketService implements OnModuleInit, OnModuleDestroy {
 
     // Pages arrive newest→oldest (sort=desc). Keep the newest `limit` bars,
     // then reverse to ascending order for lightweight-charts.
-    const trimmed =
-      rawBars.length > limit ? rawBars.slice(0, limit) : rawBars;
+    const trimmed = rawBars.length > limit ? rawBars.slice(0, limit) : rawBars;
 
     const candles: Candlestick[] = trimmed
       .map((bar: any) => ({

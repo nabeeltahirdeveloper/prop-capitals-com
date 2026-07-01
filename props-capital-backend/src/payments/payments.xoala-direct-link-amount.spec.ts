@@ -112,7 +112,7 @@ describe('PaymentsService Xoala direct-link custom amount', () => {
           listofParameters: [{ name: 'xid', value: 'abc' }],
         },
       },
-    } as any);
+    });
 
     const result = await service.createXoalaCharge({
       challengeId: challenge.id,
@@ -140,9 +140,7 @@ describe('PaymentsService Xoala direct-link custom amount', () => {
       mockedAxios.post.mock.calls[0][1] as string,
     );
     expect(gatewayBody.get('amount')).toBe('11.00');
-    expect(
-      (prisma.payment.create as jest.Mock).mock.calls[0][0].data,
-    ).toMatchObject({
+    expect(prisma.payment.create.mock.calls[0][0].data).toMatchObject({
       amount: 1100,
       originalAmount: 1100,
       linkSlug: brandLink.slug,
@@ -248,7 +246,7 @@ describe('PaymentsService Xoala direct-link custom amount', () => {
           listofParameters: [{ name: 'xid', value: 'abc' }],
         },
       },
-    } as any);
+    });
 
     const result = await service.chargeQuickLink(quickLink.slug, {
       firstName: 'Buyer',
@@ -269,9 +267,7 @@ describe('PaymentsService Xoala direct-link custom amount', () => {
       mockedAxios.post.mock.calls[0][1] as string,
     );
     expect(gatewayBody.get('amount')).toBe('25.00');
-    expect(
-      (prisma.payment.create as jest.Mock).mock.calls[0][0].data,
-    ).toMatchObject({
+    expect(prisma.payment.create.mock.calls[0][0].data).toMatchObject({
       amount: 2500,
       originalAmount: 2500,
       linkSlug: quickLink.slug,

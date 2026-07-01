@@ -466,7 +466,8 @@ export class AdminConsoleService {
   }
 
   private normalizePaymentStatus(status: any): string | undefined {
-    if (status === undefined || status === null || status === '') return undefined;
+    if (status === undefined || status === null || status === '')
+      return undefined;
     const s = String(status).trim().toLowerCase();
     const aliases: Record<string, string> = {
       completed: 'succeeded',
@@ -637,7 +638,9 @@ export class AdminConsoleService {
   }
 
   async createManualOrder(data: any) {
-    const email = String(data.email ?? '').trim().toLowerCase();
+    const email = String(data.email ?? '')
+      .trim()
+      .toLowerCase();
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       throw new Error('A valid customer email is required');
     }
@@ -661,7 +664,10 @@ export class AdminConsoleService {
 
     const brandId = this.normalizeBrandId(data.brand_id ?? data.brandId);
     const brand = await this.getBrandForAttribution(brandId);
-    const brandCommission = this.calculateCommissionForBrand(brand, amountCents);
+    const brandCommission = this.calculateCommissionForBrand(
+      brand,
+      amountCents,
+    );
 
     const created = await this.db.payment.create({
       data: {
@@ -721,11 +727,15 @@ export class AdminConsoleService {
       }
     }
     if (body.payment_method !== undefined || body.provider !== undefined) {
-      data.provider = String((body.payment_method ?? body.provider) || 'manual');
+      data.provider = String(
+        (body.payment_method ?? body.provider) || 'manual',
+      );
     }
     if (body.email !== undefined) data.billingEmail = body.email || null;
-    if (body.first_name !== undefined) data.billingFirstName = body.first_name || null;
-    if (body.last_name !== undefined) data.billingLastName = body.last_name || null;
+    if (body.first_name !== undefined)
+      data.billingFirstName = body.first_name || null;
+    if (body.last_name !== undefined)
+      data.billingLastName = body.last_name || null;
     if (body.phone !== undefined) data.billingPhone = body.phone || null;
     if (body.billing_country !== undefined)
       data.billingCountry = body.billing_country || null;
@@ -816,7 +826,9 @@ export class AdminConsoleService {
         { billingLastName: { contains: params.search, mode: 'insensitive' } },
         { user: { email: { contains: params.search, mode: 'insensitive' } } },
         { brand: { name: { contains: params.search, mode: 'insensitive' } } },
-        { challenge: { name: { contains: params.search, mode: 'insensitive' } } },
+        {
+          challenge: { name: { contains: params.search, mode: 'insensitive' } },
+        },
       ];
     }
 
@@ -865,7 +877,10 @@ export class AdminConsoleService {
           billing.lastName ??
           null;
         const country =
-          p.billingCountry ?? p.user?.profile?.country ?? billing.country ?? null;
+          p.billingCountry ??
+          p.user?.profile?.country ??
+          billing.country ??
+          null;
         const amountDollars = (p.amount ?? 0) / 100;
         const items = Array.isArray(meta.orderItems)
           ? meta.orderItems
@@ -903,7 +918,8 @@ export class AdminConsoleService {
             billing.cardHolderName ??
             ([firstName, lastName].filter(Boolean).join(' ') || null),
           email: p.billingEmail ?? p.user?.email ?? billing.email ?? null,
-          phone: p.billingPhone ?? p.user?.profile?.phone ?? billing.phone ?? null,
+          phone:
+            p.billingPhone ?? p.user?.profile?.phone ?? billing.phone ?? null,
           // Geo
           country,
           billing_country: country,
