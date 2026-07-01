@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { urlForLocale } from '@/lib/localeUrl';
 
 // Only expose English and Turkish in the navbar dropdown for now.
-const ENABLED_LANGUAGE_CODES = ['en', 'tr'];
+const ENABLED_LANGUAGE_CODES = ['en', 'tr', 'kk'];
 
 export default function LanguageSwitcher() {
   const { language } = useTranslation();

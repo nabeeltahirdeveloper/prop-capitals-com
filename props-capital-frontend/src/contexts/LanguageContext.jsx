@@ -7,6 +7,7 @@ import ruTranslations from '../locales/ru.json';
 import trTranslations from '../locales/tr.json';
 import krTranslations from '../locales/kr.json';
 import jaTranslations from '../locales/ja.json';
+import kkTranslations from '../locales/kk.json';
 import { localeFromPath } from '@/lib/localeUrl';
 
 // Helper function for nested value access
@@ -25,6 +26,7 @@ export const supportedLanguages = [
   {code: 'tr', label: 'Turkish'},
   {code: 'kr', label: 'Korean'},
   {code: 'ja', label: 'Japanese'},
+  {code: 'kk', label: 'Kazakh'},
 ];
 
 const translationsMap = {
@@ -36,6 +38,7 @@ const translationsMap = {
   tr: trTranslations,
   kr: krTranslations,
   ja: jaTranslations,
+  kk: kkTranslations,
 }
 
 // Create default/fallback translation function
