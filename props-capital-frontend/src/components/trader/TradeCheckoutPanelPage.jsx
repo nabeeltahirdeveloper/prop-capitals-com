@@ -1351,7 +1351,7 @@ const TradeCheckoutPanelPage = () => {
                   : isDark ? 'bg-white/10 text-gray-400' : 'bg-slate-100 text-slate-500'
                 }`}>
                 {challenge.popular && <Star className="w-3 h-3 fill-current" />}
-                {challenge.badge}
+                {challenge.badgeKey ? t(challenge.badgeKey) : challenge.badge}
               </div>
             </div>
 
@@ -1365,8 +1365,8 @@ const TradeCheckoutPanelPage = () => {
 
             {/* Header */}
             <div className="text-center mb-4 pt-4">
-              <h3 className={`text-xl font-bold mb-1 ${textClass}`}>{challenge.name}</h3>
-              <p className={`text-sm ${mutedClass}`}>{challenge.description}</p>
+              <h3 className={`text-xl font-bold mb-1 ${textClass}`}>{challenge.nameKey ? t(challenge.nameKey) : challenge.name}</h3>
+              <p className={`text-sm ${mutedClass}`}>{challenge.descriptionKey ? t(challenge.descriptionKey) : challenge.description}</p>
             </div>
 
             {/* Price — pulled from backend so trader-card matches PayCheckout exactly */}
@@ -1393,7 +1393,7 @@ const TradeCheckoutPanelPage = () => {
                 { label: t('tradeCheckoutPanel.stats.dailyDrawdown'), value: challenge.dailyDrawdown },
                 { label: t('tradeCheckoutPanel.stats.maxDrawdown'), value: challenge.maxDrawdown },
                 { label: t('tradeCheckoutPanel.stats.leverage'), value: challenge.leverage },
-                { label: t('tradeCheckoutPanel.stats.minTradingDays'), value: challenge.minDays, highlight: true },
+                { label: t('tradeCheckoutPanel.stats.minTradingDays'), value: challenge.minTradingDays ? t('challengeDefs.minDays', { count: challenge.minTradingDays }) : t('challengeDefs.none'), highlight: true },
               ].map((item, index) => (
                 <div key={index} className={`flex items-center justify-between py-1.5 text-sm ${index < 5 ? isDark ? 'border-b border-white/5' : 'border-b border-slate-100' : ''
                   }`}>

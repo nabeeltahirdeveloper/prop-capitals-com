@@ -551,7 +551,7 @@ export default function ScalingPlan() {
                 LONDON, ENGLAND W1T 2EW
               </p>
               <p className="text-xs text-slate-600 mt-1">
-                Email: support@prop-capitals.com
+                {t('scalingPlan.footer.emailLabel')}: support@prop-capitals.com
               </p>
             </div>
           </div>

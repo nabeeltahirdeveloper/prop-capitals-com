@@ -8,24 +8,33 @@
 export const CHALLENGE_TYPE_CONFIG = {
   one_phase: {
     name: '1-Step Challenge',
+    nameKey: 'challengeDefs.oneStep.name',
     badge: 'Most Popular',
+    badgeKey: 'challengeDefs.oneStep.badge',
     description: 'Quick evaluation with achievable targets and best value for traders',
+    descriptionKey: 'challengeDefs.oneStep.description',
     phases: 1,
     popular: true,
     leverage: '1:30',
   },
   two_phase: {
     name: '2-Step Challenge',
+    nameKey: 'challengeDefs.twoStep.name',
     badge: 'Best Split',
+    badgeKey: 'challengeDefs.twoStep.badge',
     description: 'Traditional evaluation with highest profit split potential',
+    descriptionKey: 'challengeDefs.twoStep.description',
     phases: 2,
     popular: false,
     leverage: '1:50',
   },
   instant_funding: {
     name: 'Instant Funding',
+    nameKey: 'challengeDefs.instantFunding.name',
     badge: 'No Evaluation',
+    badgeKey: 'challengeDefs.instantFunding.badge',
     description: 'Skip the evaluation and start trading immediately',
+    descriptionKey: 'challengeDefs.instantFunding.description',
     phases: 0,
     popular: false,
     leverage: '1:30',
@@ -94,6 +103,9 @@ export function groupChallengesByType(rawChallenges = []) {
       maxDrawdown: `${first.overallDrawdownPercent}%`,
       profitSplit: `${first.profitSplit}%`,
       minDays: first.minTradingDays ? `${first.minTradingDays} days` : 'None',
+      // Raw min trading days so consumers can render a translated label
+      // (e.g. t('challengeDefs.minDays', { count }) / t('challengeDefs.none')).
+      minTradingDays: first.minTradingDays || 0,
       prices,
       // Raw record kept for comparison tables / detail views.
       _raw: first,

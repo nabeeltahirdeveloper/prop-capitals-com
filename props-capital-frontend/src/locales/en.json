@@ -140,7 +140,53 @@
       "eyebrow": "Testimonials",
       "titleHighlight": "Traders",
       "fundedTrader": "Funded Trader",
-      "payout": "Payout"
+      "payout": "Payout",
+      "items": [
+        {
+          "id": 1,
+          "name": "Derex",
+          "country": "UK",
+          "quote": "I just want to express my gratitude to Prop Capitals for being such an outstanding firm!",
+          "highlight": "outstanding firm",
+          "rating": "4.9/5.0 Rating",
+          "payout": "€1,450.00",
+          "avatar": "/assets/images/img2.png",
+          "promoVideo": "/assets/videos/video1.mp4"
+        },
+        {
+          "id": 2,
+          "name": "Chad Johnson",
+          "country": "AU",
+          "quote": "The fastest payout I've ever received! Prop Capitals truly cares about their traders.",
+          "highlight": "fastest payout",
+          "rating": "5.0/5.0 Rating",
+          "payout": "€3,500.00",
+          "avatar": "/assets/images/img4.png",
+          "promoVideo": "/assets/videos/video2.mp4"
+        },
+        {
+          "id": 3,
+          "name": "Josh",
+          "country": "DE",
+          "quote": "Incredible support team and amazing trading conditions. Best prop firm hands down!",
+          "highlight": "Best prop firm",
+          "rating": "4.8/5.0 Rating",
+          "payout": "€1,944.00",
+          "avatar": "/assets/images/img3.png",
+          "promoVideo": "/assets/videos/video3.mp4"
+        },
+        {
+          "id": 4,
+          "name": "Nova",
+          "country": "SG",
+          "quote": "From €25K to €200K funded account. Prop Capitals changed my trading career completely!",
+          "highlight": "changed my trading career",
+          "rating": "4.9/5.0 Rating",
+          "payout": "€933.00",
+          "avatar": "/assets/images/img1.png",
+          "promoVideo": "/assets/videos/video4.mp4"
+        }
+      ]
     },
     "cta": {
       "title": "Ready to Start Your",
@@ -231,7 +277,63 @@
       "subtitle": "See why thousands of traders are switching to Prop Capitals.",
       "others": "Others",
       "feature": "Feature",
-      "otherPropFirms": "Other Prop Firms"
+      "otherPropFirms": "Other Prop Firms",
+      "rows": [
+        {
+          "feature": "Evaluation Process",
+          "others": "1-Step or 2-Step",
+          "propCapitals": "Simple 1 or 2 Step Challenge",
+          "highlight": false
+        },
+        {
+          "feature": "Payout Times",
+          "others": "Weekly / Biweekly cycles",
+          "propCapitals": "Less than 90 Minutes",
+          "highlight": true
+        },
+        {
+          "feature": "Support",
+          "others": "24/7 Live Chat & Email",
+          "propCapitals": "24/7 Live Chat & Email",
+          "highlight": false
+        },
+        {
+          "feature": "Support Response",
+          "others": "Minutes to a few hours",
+          "propCapitals": "Under 60 Seconds Avg",
+          "highlight": true
+        },
+        {
+          "feature": "Trading Education",
+          "others": "Sometimes Included",
+          "propCapitals": "Free Course Included",
+          "highlight": false
+        },
+        {
+          "feature": "Profit Split",
+          "others": "Up to 90% (by plan)",
+          "propCapitals": "Up to 90%",
+          "highlight": false
+        },
+        {
+          "feature": "News Trading",
+          "others": "Often Restricted",
+          "propCapitals": "Fully Allowed",
+          "highlight": false
+        },
+        {
+          "feature": "Weekend Holding",
+          "others": "Allowed (with/without swap)",
+          "propCapitals": "Fully Allowed",
+          "highlight": false
+        },
+        {
+          "feature": "Challenge Fee Refund",
+          "others": "Refunded on 1st Payout",
+          "propCapitals": "100% Refund on 1st Payout",
+          "highlight": false
+        }
+      ]
     },
     "education": {
       "badge": "Free Education",
@@ -278,7 +380,41 @@
       "titleHighlight": "Questions",
       "subtitle": "Everything you need to know about Prop Capitals funding programs.",
       "stillHaveQuestions": "Still have questions?",
-      "contactSupport": "Contact our 24/7 support team"
+      "contactSupport": "Contact our 24/7 support team",
+      "items": [
+        {
+          "question": "How does Prop Capitals work?",
+          "answer": "Prop Capitals provides traders with funded accounts to trade with. You can choose from Instant Funding, 1-Step, or 2-Step challenges. Once you pass the evaluation (or choose instant funding), you trade with our capital and keep up to 90% of the profits. We handle all the risk while you focus on trading."
+        },
+        {
+          "question": "What is the profit split?",
+          "answer": "We offer industry-leading profit splits up to 90%. The exact split depends on your chosen program: Instant Funding offers 70%, 1-Step Challenge offers 85%, and 2-Step Challenge offers up to 90% profit split. Top performers can even reach 100% profit split."
+        },
+        {
+          "question": "How fast are payouts processed?",
+          "answer": "Our payouts are processed in under 90 minutes on average - one of the fastest in the industry. Once you request a payout, our team works around the clock to ensure you receive your earnings quickly. We support multiple payout methods including bank transfer, crypto, and e-wallets."
+        },
+        {
+          "question": "Can I use Expert Advisors (EAs)?",
+          "answer": "Yes! We allow all trading strategies including EAs, automated bots, scalping, news trading, and weekend holding. There are virtually no restrictions on how you trade - use whatever strategy works best for you."
+        },
+        {
+          "question": "What happens if I fail a challenge?",
+          "answer": "If you breach the rules during a challenge, you can retry with a new purchase at a discounted rate. We offer up to 20% off on retry accounts. Remember, there's no time limit on our challenges, so take your time to trade responsibly and manage your risk."
+        },
+        {
+          "question": "Is the challenge fee refundable?",
+          "answer": "Yes! We refund 100% of your challenge fee with your first payout once you become a funded trader. This means your evaluation is essentially free if you pass and profit."
+        },
+        {
+          "question": "What trading instruments are available?",
+          "answer": "Trade Forex (50+ pairs), Metals (Gold, Silver), Indices (US30, NAS100, SPX500), and Cryptocurrencies (BTC, ETH). We offer competitive spreads starting from 0.0 pips and low commissions."
+        },
+        {
+          "question": "Is there a scaling plan?",
+          "answer": "Yes! Our scaling plan allows you to grow your account up to €5,000,000. Every time you reach a 10% profit milestone, your account size increases by 25%. Top traders can access our Elite program with even better conditions."
+        }
+      ]
     },
     "payoutsSection": {
       "logoAlt": "Logo",
@@ -371,7 +507,155 @@
       "headingBefore": "Trusted by",
       "headingHighlight": "Thousands",
       "headingAfter": "of Traders",
-      "subtitle": "Don't just take our word for it. See what real traders are saying about their experience with Prop Capitals."
+      "subtitle": "Don't just take our word for it. See what real traders are saying about their experience with Prop Capitals.",
+      "reviews": [
+        {
+          "id": 1,
+          "name": "James Wilson",
+          "location": "United Kingdom",
+          "date": "2 days ago",
+          "rating": 5,
+          "verified": true,
+          "title": "Best prop firm I've worked with",
+          "review": "The payout process is incredibly fast - received my funds in under 2 hours! The support team is responsive and the trading conditions are excellent. Highly recommend Prop Capitals to anyone serious about prop trading."
+        },
+        {
+          "id": 2,
+          "name": "Sophie Martin",
+          "location": "United Kingdom",
+          "date": "5 days ago",
+          "rating": 5,
+          "verified": true,
+          "title": "Exceeded all my expectations",
+          "review": "I've tried several prop firms before, but Prop Capitals stands out. The 90% profit split is amazing, and the fact that they refund the challenge fee on your first payout shows they truly believe in their traders."
+        },
+        {
+          "id": 3,
+          "name": "Marco Rossi",
+          "location": "Italy",
+          "date": "1 week ago",
+          "rating": 5,
+          "verified": true,
+          "title": "Professional and trustworthy",
+          "review": "From signup to my first payout, everything was smooth. The platform is easy to use, the rules are clear, and the support team actually helps when you need them. This is how prop trading should be!"
+        },
+        {
+          "id": 4,
+          "name": "Anna Kowalski",
+          "location": "Germany",
+          "date": "1 week ago",
+          "rating": 5,
+          "verified": true,
+          "title": "Finally a reliable prop firm",
+          "review": "After being burned by other prop firms, I was skeptical. But Prop Capitals delivered exactly what they promised. Fast payouts, great conditions, and excellent customer service. Very impressed!"
+        },
+        {
+          "id": 5,
+          "name": "David Chen",
+          "location": "Singapore",
+          "date": "2 weeks ago",
+          "rating": 5,
+          "verified": true,
+          "title": "Game changer for my trading career",
+          "review": "The free trading course included with the challenge was actually valuable - not just marketing fluff. Combined with their generous profit split and fast payouts, Prop Capitals is the real deal."
+        },
+        {
+          "id": 6,
+          "name": "Lucas Silva",
+          "location": "Brazil",
+          "date": "2 weeks ago",
+          "rating": 4,
+          "verified": true,
+          "title": "Great experience overall",
+          "review": "Very satisfied with my experience. The challenge was fair, the rules are reasonable, and I got my first payout within 90 minutes of requesting it. Would definitely recommend to other traders."
+        },
+        {
+          "id": 7,
+          "name": "Yuki Tanaka",
+          "location": "Japan",
+          "date": "3 days ago",
+          "rating": 5,
+          "verified": true,
+          "title": "Exceptional trading conditions",
+          "review": "The spreads are tight, execution is fast, and the PT5 platform is incredibly intuitive. I've scaled my account twice already. Prop Capitals is the real deal for serious traders."
+        },
+        {
+          "id": 8,
+          "name": "Mohammed Al-Rashid",
+          "location": "UAE",
+          "date": "4 days ago",
+          "rating": 5,
+          "verified": true,
+          "title": "Lightning fast payouts",
+          "review": "Requested my payout at 3 PM and had it in my account by 4 PM. Unbelievable speed! The support team is always helpful and the trading rules are fair and transparent."
+        },
+        {
+          "id": 9,
+          "name": "Emma Thompson",
+          "location": "Australia",
+          "date": "1 week ago",
+          "rating": 5,
+          "verified": true,
+          "title": "Best decision I've made",
+          "review": "Started with a $25K challenge and now trading a $100K funded account. The scaling plan is generous and the community is supportive. Couldn't ask for more!"
+        },
+        {
+          "id": 10,
+          "name": "Pierre Dubois",
+          "location": "France",
+          "date": "5 days ago",
+          "rating": 5,
+          "verified": true,
+          "title": "Transparent and reliable",
+          "review": "No hidden rules, no tricks. Everything is clear from day one. The dashboard is clean and makes tracking progress easy. This is how prop trading should work."
+        },
+        {
+          "id": 11,
+          "name": "Carlos Rodriguez",
+          "location": "Mexico",
+          "date": "6 days ago",
+          "rating": 5,
+          "verified": true,
+          "title": "Life-changing opportunity",
+          "review": "From struggling retail trader to funded professional in 3 weeks. The education resources helped me refine my strategy. Now making consistent profits with their capital!"
+        },
+        {
+          "id": 12,
+          "name": "Olga Petrov",
+          "location": "Netherlands",
+          "date": "1 week ago",
+          "rating": 4,
+          "verified": true,
+          "title": "Solid prop firm",
+          "review": "Great platform options including MT5 and the new PT5. Support responded to my ticket in under 10 minutes. The only reason for 4 stars is I wish they had more crypto pairs."
+        },
+        {
+          "id": 13,
+          "name": "Henrik Johansson",
+          "location": "Sweden",
+          "date": "2 weeks ago",
+          "rating": 5,
+          "verified": true,
+          "title": "Professional in every way",
+          "review": "The onboarding was smooth, the rules are straightforward, and the profit splits are industry-leading. Already recommended Prop Capitals to my trading group."
+        },
+        {
+          "id": 14,
+          "name": "Priya Sharma",
+          "location": "India",
+          "date": "3 days ago",
+          "rating": 5,
+          "verified": true,
+          "title": "Finally found the right firm",
+          "review": "After trying 3 other prop firms, I can confidently say Prop Capitals is the best. Fast payouts, excellent support, and they actually want you to succeed. 10/10!"
+        }
+      ]
+    },
+    "payouts": {
+      "dates": {
+        "jan2025": "Jan 2025",
+        "dec2024": "Dec 2024"
+      }
     }
   },
   "dashboard": {
@@ -2886,7 +3170,10 @@
       "getStartedNow": "Get Started Now",
       "footer": "Starting from just €99 • Scale up to €2M • Up to 90% profit split"
     },
-    "heroImageAlt": "Scaling plan background"
+    "heroImageAlt": "Scaling plan background",
+    "footer": {
+      "emailLabel": "Email"
+    }
   },
   "payoutsPage": {
     "badge": "Fast & Reliable Payouts",
@@ -5764,6 +6051,246 @@
     "governingLaw": {
       "heading": "10. Governing Law",
       "body": "This Policy shall be governed by and construed in accordance with the laws of England and Wales applicable to the Company's jurisdiction of operation."
+    }
+  },
+  "a11y": {
+    "language": "Language",
+    "currency": "Currency"
+  },
+  "challengeDefs": {
+    "oneStep": {
+      "name": "1-Step Challenge",
+      "badge": "Most Popular",
+      "description": "Quick evaluation with achievable targets and best value for traders"
+    },
+    "twoStep": {
+      "name": "2-Step Challenge",
+      "badge": "Best Split",
+      "description": "Traditional evaluation with highest profit split potential"
+    },
+    "instantFunding": {
+      "name": "Instant Funding",
+      "badge": "No Evaluation",
+      "description": "Skip the evaluation and start trading immediately"
+    },
+    "minDays": "{{count}} days",
+    "none": "None"
+  },
+  "checkout": {
+    "steps": {
+      "platform": "Platform",
+      "details": "Details",
+      "confirm": "Confirm"
+    },
+    "alerts": {
+      "selectPlatform": "Please select a trading platform",
+      "fillRequired": "Please fill in all required fields"
+    },
+    "challengeName": {
+      "oneStep": "1-Step Challenge",
+      "twoStep": "2-Step Challenge"
+    },
+    "challengeFallback": "Challenge",
+    "challengeType": "Challenge Type",
+    "confirmOrder": "Confirm Order",
+    "confirmStep": {
+      "title": "Confirm Your Order",
+      "subtitle": "Review your selection and complete your purchase."
+    },
+    "countries": {
+      "other": "Other"
+    },
+    "detailsStep": {
+      "title": "Your Information",
+      "subtitle": "Enter your details to create your trading account."
+    },
+    "feeRefund": "100% Fee Refund",
+    "fields": {
+      "country": "Country",
+      "phoneOptional": "Phone (Optional)"
+    },
+    "instantSetup": "Instant Account Setup",
+    "new": "NEW",
+    "placeholders": {
+      "phone": "+1 234 567 890"
+    },
+    "platformStep": {
+      "title": "Choose Your Trading Platform",
+      "subtitle": "Select the platform you want to trade on."
+    },
+    "platformDesc": {
+      "mt5": "Industry standard platform",
+      "tradelocker": "Modern web-based platform",
+      "bybit": "Crypto trading platform",
+      "pt5": "Our newest platform"
+    },
+    "preparing": "Preparing your checkout…",
+    "secureNotice": "After you confirm, you'll be redirected to our secure payment processor to enter your card details. We never see or store your card number.",
+    "securePayment": "Secure Payment",
+    "support247": "24/7 Support",
+    "success": {
+      "title": "Order Confirmed!",
+      "subtitle": "Your challenge account is being set up. You'll receive login credentials via email shortly.",
+      "orderId": "Order ID",
+      "processing": "Processing",
+      "whatNext": "What happens next?",
+      "backHome": "Back to Home",
+      "viewRules": "View Trading Rules",
+      "needHelpPrefix": "Need help? Contact us at",
+      "steps": {
+        "email": {
+          "title": "Check Your Email",
+          "desc": "You'll receive login credentials within 5 minutes"
+        },
+        "download": {
+          "title": "Download Platform",
+          "desc": "Install your selected trading platform"
+        },
+        "trade": {
+          "desc": "Login and begin your evaluation"
+        }
+      }
+    }
+  },
+  "quickLink": {
+    "agreePrefix": "I agree to the",
+    "terms": "Terms & Conditions",
+    "continueSecure": "Continue to secure payment",
+    "hostedNotice": "After you continue, you'll be taken to our secure payment provider to enter your card details and complete the payment.",
+    "payByCard": "Pay by card",
+    "processing": "Processing…",
+    "securedPayment": "Secured payment",
+    "yourDetails": "Your details",
+    "errors": {
+      "postalRequired": "Postal code is required",
+      "cardholderRequired": "Cardholder name is required",
+      "cardNumberRequired": "Card number is required",
+      "cardNumberInvalid": "Card number is invalid",
+      "expiryFormat": "Expiry must be MM/YY",
+      "invalidMonth": "Invalid month",
+      "cardExpired": "Card has expired",
+      "cvvInvalid": "CVV must be 3-4 digits",
+      "termsRequired": "You must accept the T&Cs"
+    },
+    "fields": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "address": "Billing address",
+      "city": "City",
+      "state": "State",
+      "optional": "(opt)",
+      "postal": "Postal",
+      "cardNumber": "Card number",
+      "expiry": "Expiry",
+      "cvv": "CVV",
+      "nameOnCard": "Name on card"
+    },
+    "placeholders": {
+      "address": "Street address",
+      "nameOnCard": "As it appears on the card"
+    },
+    "notFound": {
+      "title": "Payment link not found",
+      "inactiveTitle": "Link no longer active",
+      "desc": "We could not find the payment link you opened. Please check the URL or contact the merchant.",
+      "inactiveDesc": "This payment link has already been used or has been deactivated. Please contact the merchant for a new one."
+    },
+    "toast": {
+      "success": "Payment successful! Redirecting…",
+      "notCompleted": "Payment was not completed.",
+      "failed": "Payment failed. Please try again."
+    }
+  },
+  "payLink": {
+    "notFound": {
+      "title": "Payment Link Not Found",
+      "description": "This payment link is invalid or no longer active. Please contact the merchant who shared it with you."
+    },
+    "form": {
+      "subtitle": "Enter your billing and card details to complete your order."
+    },
+    "sections": {
+      "billingDetails": "Billing Details",
+      "paymentDetails": "Payment Details"
+    },
+    "fields": {
+      "emailHelpLocked": "Locked to your account email. Credentials and receipts go here.",
+      "emailHelpGuest": "We will create your dashboard account with this email after payment.",
+      "phoneHelp": "Use international format with + country code (e.g. +1 202 555 0100).",
+      "stateOptional": "State / Region (Optional)",
+      "postalCode": "Postal / ZIP Code *",
+      "cardholderName": "Cardholder Name *",
+      "cardNumber": "Card Number *",
+      "expiry": "Expiry (MM/YY) *",
+      "cvv": "CVV *"
+    },
+    "placeholders": {
+      "phone": "+1 202 555 0100",
+      "state": "England",
+      "postalCode": "SW1A 1AA",
+      "cardholderName": "As shown on the card"
+    },
+    "secureNoticeS2S": "Your card is processed securely over TLS. We store only the last 4 digits for receipts — never the full number or CVV. 3-D Secure may be requested by your bank.",
+    "terms": {
+      "agreePrefix": "I agree to the",
+      "termsLink": "Terms & Conditions",
+      "and": "and",
+      "privacyLink": "Privacy Policy",
+      "ageConfirm": "I confirm I am over 18 years old"
+    },
+    "button": {
+      "processing": "Processing payment…"
+    },
+    "tryNotice": "Turkish Lira payments are coming soon. Choose EUR or GBP to complete your purchase.",
+    "switchToEur": "Switch to EUR and continue",
+    "doNotClose": "Please don't close or refresh this window.",
+    "errors": {
+      "firstNameMin": "First name must be at least 2 characters",
+      "lastNameMin": "Last name must be at least 2 characters",
+      "emailInvalid": "Enter a valid email address",
+      "addressRequired": "Billing address is required",
+      "addressShort": "Address looks too short",
+      "postalRequired": "Postal / ZIP code is required",
+      "postalInvalid": "Postal code must be 2-10 letters, digits or hyphens",
+      "cardholderRequired": "Cardholder name is required",
+      "cardholderInvalid": "Cardholder name has invalid characters",
+      "cardNumberRequired": "Card number is required",
+      "cardNumberShort": "Enter a valid card number",
+      "cardNumberInvalid": "Card number is invalid",
+      "expiryFormat": "Expiry must be MM/YY",
+      "expiryMonth": "Invalid expiry month",
+      "expiryYear": "Invalid expiry year",
+      "expired": "Card has expired",
+      "cvvRequired": "CVV is required",
+      "cvvShort": "CVV must be 3 or 4 digits"
+    },
+    "toasts": {
+      "approved": "Payment approved",
+      "verifying": "Verifying with your bank…",
+      "declined": "Payment was declined. Please try a different card.",
+      "unexpected": "Unexpected response from payment processor.",
+      "failed": "Payment failed. Please try again.",
+      "received": "Payment received — confirming with the bank…",
+      "tryComingSoon": "Turkish Lira payments are coming soon. Please switch to EUR or GBP to complete your purchase.",
+      "visaMastercardOnly": "We only accept Visa and Mastercard payments.",
+      "acceptTerms": "Please accept the Terms & Conditions and Privacy Policy.",
+      "confirmAge": "You must confirm you are over 18 years old."
+    },
+    "success": {
+      "missingReferenceDesc": "No payment reference found. If you just paid, please check your email for confirmation.",
+      "checkError": "Something went wrong. Please check your email for confirmation.",
+      "successTitle": "Payment Successful!",
+      "successDesc": "Your challenge has been activated.",
+      "checkEmailTitle": "Check your email",
+      "checkEmailBody": "We've sent a \"set your password\" link, your trading platform credentials, and your receipt. Click the link in the email to activate your account and access your dashboard.",
+      "failedContactPrefix": "Please contact the merchant who shared this link with you, or get in touch at",
+      "stillProcessingDesc": "Your payment is taking longer than expected. If it was successful, you'll receive an email shortly with your account access."
+    },
+    "fail": {
+      "title": "Payment Cancelled",
+      "description": "Your payment was not completed. No charges were made to your card.",
+      "retryHint": "You can return to the original link to try again, or contact the merchant who shared it with you.",
+      "needHelp": "Need help? Email"
     }
   }
 }

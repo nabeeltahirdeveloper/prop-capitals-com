@@ -49,6 +49,10 @@ const ChallengesPage = () => {
     [rawChallenges],
   );
 
+  // Translated "min trading days" label ("N days" / "None").
+  const fmtMinDays = (c) =>
+    c.minTradingDays ? t('challengeDefs.minDays', { count: c.minTradingDays }) : t('challengeDefs.none');
+
   // Build comparison rows from fetched data
   const comparisonRows = useMemo(() => {
     if (challengeTypes.length < 2) return [];
@@ -61,7 +65,7 @@ const ChallengesPage = () => {
       { feature: t('challengesPage.comparison.dailyDrawdown'), oneStep: oneStep.dailyDrawdown, twoStep: twoStep.dailyDrawdown },
       { feature: t('challengesPage.comparison.maxDrawdown'), oneStep: oneStep.maxDrawdown, twoStep: twoStep.maxDrawdown },
       { feature: t('challengesPage.comparison.profitSplit'), oneStep: oneStep.profitSplit, twoStep: twoStep.profitSplit },
-      { feature: t('challengesPage.comparison.minTradingDays'), oneStep: oneStep.minDays, twoStep: twoStep.minDays },
+      { feature: t('challengesPage.comparison.minTradingDays'), oneStep: fmtMinDays(oneStep), twoStep: fmtMinDays(twoStep) },
       { feature: t('challengesPage.comparison.timeLimit'), oneStep: t('challengesPage.comparison.unlimited'), twoStep: t('challengesPage.comparison.unlimited') }
     ];
   }, [challengeTypes, t]);
@@ -165,15 +169,15 @@ const ChallengesPage = () => {
                               : isDark ? 'bg-[#1a1f2a] text-gray-400 border border-white/10' : 'bg-slate-100 text-slate-500 border border-slate-200'
                           }`}>
                             {challenge.popular && <Star className="w-4 h-4 fill-current" />}
-                            {challenge.badge}
+                            {challenge.badgeKey ? t(challenge.badgeKey) : challenge.badge}
                           </div>
                         </div>
                       )}
 
                       {/* Header */}
                       <div className="text-center mb-6 pt-4">
-                        <h3 className={`text-xl lg:text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{challenge.name}</h3>
-                        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{challenge.description}</p>
+                        <h3 className={`text-xl lg:text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{challenge.nameKey ? t(challenge.nameKey) : challenge.name}</h3>
+                        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{challenge.descriptionKey ? t(challenge.descriptionKey) : challenge.description}</p>
                       </div>
 
                       {/* Price */}
@@ -196,7 +200,7 @@ const ChallengesPage = () => {
                           { label: t('challengesPage.stats.profitTarget'), value: challenge.profitTarget },
                           { label: t('challengesPage.stats.dailyDrawdown'), value: challenge.dailyDrawdown },
                           { label: t('challengesPage.stats.maxDrawdown'), value: challenge.maxDrawdown },
-                          { label: t('challengesPage.stats.minTradingDays'), value: challenge.minDays, highlight: true },
+                          { label: t('challengesPage.stats.minTradingDays'), value: fmtMinDays(challenge), highlight: true },
                           { label: t('challengesPage.stats.profitSplit'), value: challenge.profitSplit, highlight: 'amber', large: true }
                         ].map((item, index) => (
                           <div key={index} className={`flex items-center justify-between py-2 ${index < 5 ? isDark ? 'border-b border-white/5' : 'border-b border-slate-100' : ''}`}>

@@ -9,7 +9,7 @@ import { urlForLocale } from '@/lib/localeUrl';
 const ENABLED_LANGUAGE_CODES = ['en', 'tr', 'kk'];
 
 export default function LanguageSwitcher() {
-  const { language } = useTranslation();
+  const { language, t } = useTranslation();
   const { isDark } = useTheme();
 
   const languages = supportedLanguages.filter((lang) =>
@@ -34,10 +34,10 @@ export default function LanguageSwitcher() {
             ? 'bg-white/10 border-white/10 text-gray-200'
             : 'bg-slate-100 border-slate-200 text-slate-700'
         }`}
-        aria-label="Language"
+        aria-label={t('a11y.language')}
       >
         <Globe className={`w-4 h-4 shrink-0 ${isDark ? 'text-gray-400' : 'text-slate-500'}`} />
-        <SelectValue placeholder="Language" />
+        <SelectValue placeholder={t('a11y.language')} />
       </SelectTrigger>
       <SelectContent>
         {languages.map((lang) => (

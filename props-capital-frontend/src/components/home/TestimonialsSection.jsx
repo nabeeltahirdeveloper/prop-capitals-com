@@ -9,7 +9,6 @@ import {
   Play,
   Pause,
 } from "lucide-react";
-import { testimonials } from "./data/mockData.js";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useTranslation } from "@/contexts/LanguageContext";
@@ -92,6 +91,7 @@ const TestimonialsSection = () => {
   const { isDark } = useTheme();
   const { cur } = useCurrency();
   const { t } = useTranslation();
+  const testimonials = t("home.testimonials.items", { returnObjects: true });
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextSlide = () => {
