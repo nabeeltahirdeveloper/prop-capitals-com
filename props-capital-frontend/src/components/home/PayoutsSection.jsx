@@ -105,18 +105,18 @@ const flags = {
 };
 
 const payoutCertificates = [
-  { id: 1, checkNo: "PC-847291", name: "Michael T.", country: "US", amount: 31362.00, date: "Jan 2025" },
-  { id: 2, checkNo: "PC-523648", name: "Sarah K.", country: "UK", amount: 10086.80, date: "Jan 2025" },
-  { id: 3, checkNo: "PC-391574", name: "Ahmed R.", country: "AE", amount: 29260.20, date: "Dec 2024" },
-  { id: 4, checkNo: "PC-718293", name: "Lucas M.", country: "BR", amount: 15554.00, date: "Jan 2025" },
-  { id: 5, checkNo: "PC-462815", name: "Elena V.", country: "RU", amount: 45496.00, date: "Dec 2024" },
-  { id: 6, checkNo: "PC-936472", name: "Carlos P.", country: "ES", amount: 42314.40, date: "Jan 2025" },
-  { id: 7, checkNo: "PC-159384", name: "James W.", country: "AU", amount: 14818.90, date: "Jan 2025" },
-  { id: 8, checkNo: "PC-274618", name: "Marie L.", country: "FR", amount: 33510.40, date: "Dec 2024" },
-  { id: 9, checkNo: "PC-683159", name: "David H.", country: "DE", amount: 33576.25, date: "Jan 2025" },
-  { id: 10, checkNo: "PC-847265", name: "Sofia R.", country: "IT", amount: 48727.10, date: "Dec 2024" },
-  { id: 11, checkNo: "PC-512947", name: "Chen W.", country: "SG", amount: 22450.00, date: "Jan 2025" },
-  { id: 12, checkNo: "PC-395821", name: "Raj P.", country: "IN", amount: 18920.50, date: "Jan 2025" }
+  { id: 1, checkNo: "PC-847291", name: "Michael T.", country: "US", amount: 31362.00, date: "jan2025" },
+  { id: 2, checkNo: "PC-523648", name: "Sarah K.", country: "UK", amount: 10086.80, date: "jan2025" },
+  { id: 3, checkNo: "PC-391574", name: "Ahmed R.", country: "AE", amount: 29260.20, date: "dec2024" },
+  { id: 4, checkNo: "PC-718293", name: "Lucas M.", country: "BR", amount: 15554.00, date: "jan2025" },
+  { id: 5, checkNo: "PC-462815", name: "Elena V.", country: "RU", amount: 45496.00, date: "dec2024" },
+  { id: 6, checkNo: "PC-936472", name: "Carlos P.", country: "ES", amount: 42314.40, date: "jan2025" },
+  { id: 7, checkNo: "PC-159384", name: "James W.", country: "AU", amount: 14818.90, date: "jan2025" },
+  { id: 8, checkNo: "PC-274618", name: "Marie L.", country: "FR", amount: 33510.40, date: "dec2024" },
+  { id: 9, checkNo: "PC-683159", name: "David H.", country: "DE", amount: 33576.25, date: "jan2025" },
+  { id: 10, checkNo: "PC-847265", name: "Sofia R.", country: "IT", amount: 48727.10, date: "dec2024" },
+  { id: 11, checkNo: "PC-512947", name: "Chen W.", country: "SG", amount: 22450.00, date: "jan2025" },
+  { id: 12, checkNo: "PC-395821", name: "Raj P.", country: "IN", amount: 18920.50, date: "jan2025" }
 ];
 
 const FlagIcon = ({ country }) => {
@@ -154,7 +154,7 @@ const PayoutCheck = ({ payout }) => {
           <div className="flex justify-end mb-3">
             <div className="text-right">
               <span className="text-amber-700 text-[10px]">{t('home.payoutsSection.date')}</span>
-              <p className="text-amber-900 font-semibold text-xs">{payout.date}</p>
+              <p className="text-amber-900 font-semibold text-xs">{t(`home.payouts.dates.${payout.date}`)}</p>
             </div>
           </div>
 

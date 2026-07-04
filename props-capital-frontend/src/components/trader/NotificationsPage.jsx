@@ -25,6 +25,7 @@ import {
 import { useTraderTheme } from './TraderPanelLayout';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useTranslation } from '@/contexts/LanguageContext';
+import { translateNotification } from '@/utils/notificationTranslations';
 
 const formatRelativeTime = (dateStr, t) => {
   if (!dateStr) return '-';
@@ -234,7 +235,9 @@ const NotificationsPage = () => {
             <p className={`text-sm mt-2 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('notificationsPanel.empty.subtitle')}</p>
           </div>
         ) : (
-          filteredNotifications.map((notification) => (
+          filteredNotifications.map((notification) => {
+            const translated = translateNotification(notification.title, notification.body, t);
+            return (
             <div
               key={notification.id}
               className={`rounded-2xl border p-4 transition-all ${isDark ? 'bg-[#12161d] border-white/5 hover:bg-white/5' : 'bg-white border-slate-200 hover:bg-slate-50'
@@ -256,14 +259,14 @@ const NotificationsPage = () => {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                          {cur(notification.title)}
+                          {cur(translated.title)}
                         </h3>
                         {!notification.read && (
                           <span className="w-2 h-2 bg-amber-500 rounded-full" />
                         )}
                       </div>
                       <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                        {cur(notification.body)}
+                        {cur(translated.message)}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
@@ -301,7 +304,8 @@ const NotificationsPage = () => {
                 </div>
               </div>
             </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>

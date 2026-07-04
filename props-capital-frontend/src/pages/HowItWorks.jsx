@@ -230,10 +230,10 @@ const HowItWorksPage = () => {
                         <div className={`font-semibold text-xs lg:text-sm mb-2 lg:mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('howItWorks.platform.quickTrade')}</div>
                         <div className="grid grid-cols-2 gap-2 mb-2 lg:mb-3">
                           <button className="bg-emerald-500 hover:bg-emerald-600 text-white py-2 lg:py-3 rounded-lg lg:rounded-xl font-bold text-xs lg:text-sm transition-all hover:scale-105">
-                            BUY
+                            {t('buySellPanel.buy')}
                           </button>
                           <button className="bg-red-500 hover:bg-red-600 text-white py-2 lg:py-3 rounded-lg lg:rounded-xl font-bold text-xs lg:text-sm transition-all hover:scale-105">
-                            SELL
+                            {t('buySellPanel.sell')}
                           </button>
                         </div>
                         <div className="flex items-center justify-between text-xs lg:text-sm">

@@ -140,7 +140,53 @@
       "eyebrow": "Yorumlar",
       "titleHighlight": "Dinleyin",
       "fundedTrader": "Fonlanan Trader",
-      "payout": "Ödeme"
+      "payout": "Ödeme",
+      "items": [
+        {
+          "id": 1,
+          "name": "Derex",
+          "country": "UK",
+          "quote": "Prop Capitals'a bu kadar olağanüstü bir firma olduğu için minnettarlığımı ifade etmek istiyorum!",
+          "highlight": "olağanüstü bir firma",
+          "rating": "4.9/5.0 Rating",
+          "payout": "€1,450.00",
+          "avatar": "/assets/images/img2.png",
+          "promoVideo": "/assets/videos/video1.mp4"
+        },
+        {
+          "id": 2,
+          "name": "Chad Johnson",
+          "country": "AU",
+          "quote": "Şimdiye kadar aldığım en hızlı ödeme! Prop Capitals yatırımcılarını gerçekten önemsiyor.",
+          "highlight": "en hızlı ödeme",
+          "rating": "5.0/5.0 Rating",
+          "payout": "€3,500.00",
+          "avatar": "/assets/images/img4.png",
+          "promoVideo": "/assets/videos/video2.mp4"
+        },
+        {
+          "id": 3,
+          "name": "Josh",
+          "country": "DE",
+          "quote": "İnanılmaz destek ekibi ve harika işlem koşulları. Açık ara en iyi prop firması!",
+          "highlight": "en iyi prop firması",
+          "rating": "4.8/5.0 Rating",
+          "payout": "€1,944.00",
+          "avatar": "/assets/images/img3.png",
+          "promoVideo": "/assets/videos/video3.mp4"
+        },
+        {
+          "id": 4,
+          "name": "Nova",
+          "country": "SG",
+          "quote": "€25K'dan €200K fonlu hesaba. Prop Capitals işlem kariyerimi tamamen değiştirdi!",
+          "highlight": "işlem kariyerimi tamamen değiştirdi",
+          "rating": "4.9/5.0 Rating",
+          "payout": "€933.00",
+          "avatar": "/assets/images/img1.png",
+          "promoVideo": "/assets/videos/video4.mp4"
+        }
+      ]
     },
     "cta": {
       "title": "Başlamaya hazır mısınız?",
@@ -231,7 +277,63 @@
       "subtitle": "Binlerce trader'ın neden Prop Capitals'e geçtiğini görün.",
       "others": "Diğerleri",
       "feature": "Özellik",
-      "otherPropFirms": "Diğer Prop Firmaları"
+      "otherPropFirms": "Diğer Prop Firmaları",
+      "rows": [
+        {
+          "feature": "Değerlendirme Süreci",
+          "others": "1 Adımlı veya 2 Adımlı",
+          "propCapitals": "Basit 1 veya 2 Adımlı Sınama",
+          "highlight": false
+        },
+        {
+          "feature": "Ödeme Süreleri",
+          "others": "Haftalık / İki haftada bir döngüler",
+          "propCapitals": "90 Dakikadan Az",
+          "highlight": true
+        },
+        {
+          "feature": "Destek",
+          "others": "7/24 Canlı Sohbet ve E-posta",
+          "propCapitals": "7/24 Canlı Sohbet ve E-posta",
+          "highlight": false
+        },
+        {
+          "feature": "Destek Yanıt Süresi",
+          "others": "Dakikalar ile birkaç saat arası",
+          "propCapitals": "Ortalama 60 Saniyenin Altında",
+          "highlight": true
+        },
+        {
+          "feature": "İşlem Eğitimi",
+          "others": "Bazen Dahil",
+          "propCapitals": "Ücretsiz Kurs Dahil",
+          "highlight": false
+        },
+        {
+          "feature": "Kâr Paylaşımı",
+          "others": "%90'a kadar (plana göre)",
+          "propCapitals": "%90'a kadar",
+          "highlight": false
+        },
+        {
+          "feature": "Haber İşlemleri",
+          "others": "Genellikle Kısıtlı",
+          "propCapitals": "Tamamen Serbest",
+          "highlight": false
+        },
+        {
+          "feature": "Hafta Sonu Pozisyon Tutma",
+          "others": "İzinli (swaplı/swapsız)",
+          "propCapitals": "Tamamen Serbest",
+          "highlight": false
+        },
+        {
+          "feature": "Sınama Ücreti İadesi",
+          "others": "İlk Ödemede İade Edilir",
+          "propCapitals": "İlk Ödemede %100 İade",
+          "highlight": false
+        }
+      ]
     },
     "education": {
       "badge": "Ücretsiz Eğitim",
@@ -278,7 +380,41 @@
       "titleHighlight": "Sorular",
       "subtitle": "Prop Capitals fonlama programları hakkında bilmeniz gereken her şey.",
       "stillHaveQuestions": "Hâlâ sorularınız mı var?",
-      "contactSupport": "7/24 destek ekibimizle iletişime geçin"
+      "contactSupport": "7/24 destek ekibimizle iletişime geçin",
+      "items": [
+        {
+          "question": "Prop Capitals nasıl çalışır?",
+          "answer": "Prop Capitals, yatırımcılara işlem yapmaları için fonlanmış hesaplar sunar. Anında Fonlama, 1 Adımlı veya 2 Adımlı sınamalar arasından seçim yapabilirsiniz. Değerlendirmeyi geçtiğinizde (veya anında fonlamayı seçtiğinizde) sermayemizle işlem yapar ve kârın %90'ına kadarını elinizde tutarsınız. Siz işleme odaklanırken tüm riski biz üstleniriz."
+        },
+        {
+          "question": "Kâr paylaşımı nedir?",
+          "answer": "Sektör lideri, %90'a varan kâr paylaşımı sunuyoruz. Kesin paylaşım oranı seçtiğiniz programa bağlıdır: Anında Fonlama %70, 1 Adımlı Sınama %85 ve 2 Adımlı Sınama %90'a varan kâr paylaşımı sunar. En iyi performans gösterenler %100 kâr paylaşımına bile ulaşabilir."
+        },
+        {
+          "question": "Ödemeler ne kadar hızlı işleme alınır?",
+          "answer": "Ödemelerimiz ortalama 90 dakikanın altında işleme alınır - sektördeki en hızlılardan biri. Bir ödeme talebinde bulunduğunuzda, ekibimiz kazancınızı hızlıca almanız için gece gündüz çalışır. Banka havalesi, kripto ve e-cüzdanlar dahil olmak üzere birden fazla ödeme yöntemini destekliyoruz."
+        },
+        {
+          "question": "Uzman Danışmanları (EA'lar) kullanabilir miyim?",
+          "answer": "Evet! EA'lar, otomatik botlar, skalping, haber işlemleri ve hafta sonu pozisyon tutma dahil tüm işlem stratejilerine izin veriyoruz. İşlem yapma şekliniz üzerinde neredeyse hiçbir kısıtlama yoktur - sizin için en iyi çalışan stratejiyi kullanın."
+        },
+        {
+          "question": "Bir sınamada başarısız olursam ne olur?",
+          "answer": "Bir sınama sırasında kuralları ihlal ederseniz, indirimli bir fiyattan yeni bir satın alma ile tekrar deneyebilirsiniz. Yeniden deneme hesaplarında %20'ye varan indirim sunuyoruz. Unutmayın, sınamalarımızda zaman sınırı yoktur; bu yüzden sorumlu bir şekilde işlem yapmak ve riskinizi yönetmek için acele etmeyin."
+        },
+        {
+          "question": "Sınama ücreti iade edilebilir mi?",
+          "answer": "Evet! Fonlanmış bir yatırımcı olduğunuzda, ilk ödemenizle birlikte sınama ücretinizin %100'ünü iade ediyoruz. Bu, geçip kâr etmeniz halinde değerlendirmenizin aslında ücretsiz olduğu anlamına gelir."
+        },
+        {
+          "question": "Hangi işlem araçları mevcut?",
+          "answer": "Forex (50+ parite), Metaller (Altın, Gümüş), Endeksler (US30, NAS100, SPX500) ve Kripto Paralar (BTC, ETH) işlemleri yapın. 0.0 pipten başlayan rekabetçi spreadler ve düşük komisyonlar sunuyoruz."
+        },
+        {
+          "question": "Ölçeklendirme planı var mı?",
+          "answer": "Evet! Ölçeklendirme planımız, hesabınızı €5,000,000'a kadar büyütmenize olanak tanır. Her %10 kâr kilometre taşına ulaştığınızda, hesap boyutunuz %25 artar. En iyi yatırımcılar, daha da iyi koşullara sahip Elite programımıza erişebilir."
+        }
+      ]
     },
     "payoutsSection": {
       "logoAlt": "Logo",
@@ -371,7 +507,155 @@
       "headingBefore": "Binlerce Trader'ın",
       "headingHighlight": "Güvendiği",
       "headingAfter": "Platform",
-      "subtitle": "Sadece bizim sözümüze güvenmeyin. Gerçek trader'ların Prop Capitals deneyimleri hakkında neler söylediğini görün."
+      "subtitle": "Sadece bizim sözümüze güvenmeyin. Gerçek trader'ların Prop Capitals deneyimleri hakkında neler söylediğini görün.",
+      "reviews": [
+        {
+          "id": 1,
+          "name": "James Wilson",
+          "location": "United Kingdom",
+          "date": "2 gün önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Çalıştığım en iyi prop firması",
+          "review": "Ödeme süreci inanılmaz hızlı - paramı 2 saatten kısa sürede aldım! Destek ekibi son derece ilgili ve işlem koşulları mükemmel. Prop trading konusunda ciddi olan herkese Prop Capitals'ı gönülden tavsiye ederim."
+        },
+        {
+          "id": 2,
+          "name": "Sophie Martin",
+          "location": "United Kingdom",
+          "date": "5 gün önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Tüm beklentilerimi aştı",
+          "review": "Daha önce birçok prop firmasını denedim ama Prop Capitals gerçekten öne çıkıyor. %90 kâr paylaşımı harika ve ilk ödemende meydan okuma ücretini iade etmeleri, trader'larına gerçekten güvendiklerini gösteriyor."
+        },
+        {
+          "id": 3,
+          "name": "Marco Rossi",
+          "location": "Italy",
+          "date": "1 hafta önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Profesyonel ve güvenilir",
+          "review": "Kayıttan ilk ödememe kadar her şey sorunsuz ilerledi. Platform kullanımı kolay, kurallar net ve destek ekibi ihtiyacın olduğunda gerçekten yardımcı oluyor. Prop trading tam da böyle olmalı!"
+        },
+        {
+          "id": 4,
+          "name": "Anna Kowalski",
+          "location": "Germany",
+          "date": "1 hafta önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Sonunda güvenilir bir prop firması",
+          "review": "Diğer prop firmalarında hayal kırıklığına uğradıktan sonra şüpheciydim. Ama Prop Capitals tam olarak vaat ettiklerini yerine getirdi. Hızlı ödemeler, harika koşullar ve mükemmel müşteri hizmetleri. Çok etkilendim!"
+        },
+        {
+          "id": 5,
+          "name": "David Chen",
+          "location": "Singapore",
+          "date": "2 hafta önce",
+          "rating": 5,
+          "verified": true,
+          "title": "İşlem kariyerim için bir dönüm noktası",
+          "review": "Meydan okumayla birlikte gelen ücretsiz işlem kursu gerçekten değerliydi - sadece pazarlama sözü değil. Cömert kâr paylaşımı ve hızlı ödemelerle birlikte Prop Capitals gerçekten işini biliyor."
+        },
+        {
+          "id": 6,
+          "name": "Lucas Silva",
+          "location": "Brazil",
+          "date": "2 hafta önce",
+          "rating": 4,
+          "verified": true,
+          "title": "Genel olarak harika bir deneyim",
+          "review": "Deneyimimden çok memnunum. Meydan okuma adildi, kurallar makul ve ilk ödememi talep ettikten sonra 90 dakika içinde aldım. Diğer trader'lara kesinlikle tavsiye ederim."
+        },
+        {
+          "id": 7,
+          "name": "Yuki Tanaka",
+          "location": "Japan",
+          "date": "3 gün önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Olağanüstü işlem koşulları",
+          "review": "Spread'ler dar, emir gerçekleşmesi hızlı ve PT5 platformu inanılmaz kullanıcı dostu. Hesabımı şimdiden iki kez büyüttüm. Prop Capitals, ciddi trader'lar için gerçek bir adres."
+        },
+        {
+          "id": 8,
+          "name": "Mohammed Al-Rashid",
+          "location": "UAE",
+          "date": "4 gün önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Şimşek hızında ödemeler",
+          "review": "Ödememi saat 15.00'te talep ettim ve 16.00'da hesabımdaydı. İnanılmaz bir hız! Destek ekibi her zaman yardımcı oluyor ve işlem kuralları adil ve şeffaf."
+        },
+        {
+          "id": 9,
+          "name": "Emma Thompson",
+          "location": "Australia",
+          "date": "1 hafta önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Verdiğim en iyi karar",
+          "review": "$25K'lık bir meydan okumayla başladım ve şimdi $100K'lık fonlanmış bir hesapta işlem yapıyorum. Büyüme planı cömert ve topluluk çok destekleyici. Daha fazlasını isteyemezdim!"
+        },
+        {
+          "id": 10,
+          "name": "Pierre Dubois",
+          "location": "France",
+          "date": "5 gün önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Şeffaf ve güvenilir",
+          "review": "Gizli kural yok, oyun yok. Her şey ilk günden itibaren net. Panel sade ve ilerlemeni takip etmeyi kolaylaştırıyor. Prop trading tam da böyle işlemeli."
+        },
+        {
+          "id": 11,
+          "name": "Carlos Rodriguez",
+          "location": "Mexico",
+          "date": "6 gün önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Hayat değiştiren bir fırsat",
+          "review": "3 hafta içinde zorlanan bir bireysel trader'dan fonlanmış bir profesyonele dönüştüm. Eğitim kaynakları stratejimi geliştirmeme yardımcı oldu. Artık onların sermayesiyle istikrarlı kâr elde ediyorum!"
+        },
+        {
+          "id": 12,
+          "name": "Olga Petrov",
+          "location": "Netherlands",
+          "date": "1 hafta önce",
+          "rating": 4,
+          "verified": true,
+          "title": "Sağlam bir prop firması",
+          "review": "MT5 ve yeni PT5 dahil harika platform seçenekleri. Destek, talebime 10 dakikadan kısa sürede yanıt verdi. 4 yıldız vermemin tek nedeni, daha fazla kripto paritesi olmasını istemem."
+        },
+        {
+          "id": 13,
+          "name": "Henrik Johansson",
+          "location": "Sweden",
+          "date": "2 hafta önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Her açıdan profesyonel",
+          "review": "Süreç sorunsuz başladı, kurallar anlaşılır ve kâr paylaşımları sektörün en iyileri arasında. Prop Capitals'ı işlem grubuma çoktan tavsiye ettim."
+        },
+        {
+          "id": 14,
+          "name": "Priya Sharma",
+          "location": "India",
+          "date": "3 gün önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Sonunda doğru firmayı buldum",
+          "review": "3 farklı prop firmasını denedikten sonra, Prop Capitals'ın en iyisi olduğunu rahatlıkla söyleyebilirim. Hızlı ödemeler, mükemmel destek ve gerçekten başarılı olmanı istiyorlar. 10/10!"
+        }
+      ]
+    },
+    "payouts": {
+      "dates": {
+        "jan2025": "Oca 2025",
+        "dec2024": "Ara 2024"
+      }
     }
   },
   "dashboard": {
@@ -2856,7 +3140,10 @@
       "getStartedNow": "Hemen başla",
       "footer": "Yalnızca €99’dan başla • €2M’a kadar ölçekle • %90’a kadar kâr paylaşımı"
     },
-    "heroImageAlt": "Ölçekleme planı arka planı"
+    "heroImageAlt": "Ölçekleme planı arka planı",
+    "footer": {
+      "emailLabel": "E-posta"
+    }
   },
   "payoutsPage": {
     "badge": "Hızlı ve güvenilir çekimler",
@@ -5734,6 +6021,246 @@
     "governingLaw": {
       "heading": "10. Geçerli Hukuk",
       "body": "Bu Politika, Şirketin faaliyet gösterdiği yargı bölgesinde uygulanan İngiltere ve Galler yasalarına tabi olacak ve bu yasalara göre yorumlanacaktır."
+    }
+  },
+  "a11y": {
+    "language": "Dil",
+    "currency": "Para birimi"
+  },
+  "challengeDefs": {
+    "oneStep": {
+      "name": "1 Aşamalı Challenge",
+      "badge": "En Popüler",
+      "description": "Ulaşılabilir hedefler ve trader'lar için en iyi değeri sunan hızlı değerlendirme"
+    },
+    "twoStep": {
+      "name": "2 Aşamalı Challenge",
+      "badge": "En İyi Paylaşım",
+      "description": "En yüksek kâr paylaşımı potansiyeline sahip geleneksel değerlendirme"
+    },
+    "instantFunding": {
+      "name": "Anında Fonlama",
+      "badge": "Değerlendirme Yok",
+      "description": "Değerlendirmeyi atlayın ve hemen işlem yapmaya başlayın"
+    },
+    "minDays": "{{count}} gün",
+    "none": "Yok"
+  },
+  "checkout": {
+    "steps": {
+      "platform": "Platform",
+      "details": "Bilgiler",
+      "confirm": "Onay"
+    },
+    "alerts": {
+      "selectPlatform": "Lütfen bir işlem platformu seçin",
+      "fillRequired": "Lütfen tüm zorunlu alanları doldurun"
+    },
+    "challengeName": {
+      "oneStep": "1 Aşamalı Meydan Okuma",
+      "twoStep": "2 Aşamalı Meydan Okuma"
+    },
+    "challengeFallback": "Meydan Okuma",
+    "challengeType": "Meydan Okuma Türü",
+    "confirmOrder": "Siparişi Onayla",
+    "confirmStep": {
+      "title": "Siparişinizi Onaylayın",
+      "subtitle": "Seçiminizi gözden geçirin ve satın alma işlemini tamamlayın."
+    },
+    "countries": {
+      "other": "Diğer"
+    },
+    "detailsStep": {
+      "title": "Bilgileriniz",
+      "subtitle": "İşlem hesabınızı oluşturmak için bilgilerinizi girin."
+    },
+    "feeRefund": "%100 Ücret İadesi",
+    "fields": {
+      "country": "Ülke",
+      "phoneOptional": "Telefon (İsteğe bağlı)"
+    },
+    "instantSetup": "Anında Hesap Kurulumu",
+    "new": "YENİ",
+    "placeholders": {
+      "phone": "+90 555 123 4567"
+    },
+    "platformStep": {
+      "title": "İşlem Platformunuzu Seçin",
+      "subtitle": "İşlem yapmak istediğiniz platformu seçin."
+    },
+    "platformDesc": {
+      "mt5": "Sektör standardı platform",
+      "tradelocker": "Modern web tabanlı platform",
+      "bybit": "Kripto işlem platformu",
+      "pt5": "En yeni platformumuz"
+    },
+    "preparing": "Ödeme sayfanız hazırlanıyor…",
+    "secureNotice": "Onayladıktan sonra, kart bilgilerinizi girmeniz için güvenli ödeme sağlayıcımıza yönlendirileceksiniz. Kart numaranızı asla görmez veya saklamayız.",
+    "securePayment": "Güvenli Ödeme",
+    "support247": "7/24 Destek",
+    "success": {
+      "title": "Sipariş Onaylandı!",
+      "subtitle": "Meydan okuma hesabınız kuruluyor. Giriş bilgilerinizi kısa süre içinde e-posta ile alacaksınız.",
+      "orderId": "Sipariş No",
+      "processing": "İşleniyor",
+      "whatNext": "Sırada ne var?",
+      "backHome": "Ana Sayfaya Dön",
+      "viewRules": "İşlem Kurallarını Görüntüle",
+      "needHelpPrefix": "Yardıma mı ihtiyacınız var? Bize şu adresten ulaşın:",
+      "steps": {
+        "email": {
+          "title": "E-postanızı Kontrol Edin",
+          "desc": "Giriş bilgilerinizi 5 dakika içinde alacaksınız"
+        },
+        "download": {
+          "title": "Platformu İndirin",
+          "desc": "Seçtiğiniz işlem platformunu yükleyin"
+        },
+        "trade": {
+          "desc": "Giriş yapın ve değerlendirmenize başlayın"
+        }
+      }
+    }
+  },
+  "quickLink": {
+    "agreePrefix": "Şunları kabul ediyorum:",
+    "terms": "Şartlar ve Koşullar",
+    "continueSecure": "Güvenli ödemeye devam et",
+    "hostedNotice": "Devam ettikten sonra, kart bilgilerinizi girip ödemeyi tamamlamak için güvenli ödeme sağlayıcımıza yönlendirileceksiniz.",
+    "payByCard": "Kartla öde",
+    "processing": "İşleniyor…",
+    "securedPayment": "Güvenli ödeme",
+    "yourDetails": "Bilgileriniz",
+    "errors": {
+      "postalRequired": "Posta kodu gerekli",
+      "cardholderRequired": "Kart sahibinin adı gerekli",
+      "cardNumberRequired": "Kart numarası gerekli",
+      "cardNumberInvalid": "Kart numarası geçersiz",
+      "expiryFormat": "Son kullanma tarihi AA/YY olmalıdır",
+      "invalidMonth": "Geçersiz ay",
+      "cardExpired": "Kartın süresi dolmuş",
+      "cvvInvalid": "CVV 3-4 haneli olmalıdır",
+      "termsRequired": "Şartları ve Koşulları kabul etmelisiniz"
+    },
+    "fields": {
+      "firstName": "Ad",
+      "lastName": "Soyad",
+      "address": "Fatura adresi",
+      "city": "Şehir",
+      "state": "Eyalet",
+      "optional": "(ops.)",
+      "postal": "Posta kodu",
+      "cardNumber": "Kart numarası",
+      "expiry": "Son kullanma",
+      "cvv": "CVV",
+      "nameOnCard": "Kart üzerindeki isim"
+    },
+    "placeholders": {
+      "address": "Sokak adresi",
+      "nameOnCard": "Kart üzerinde göründüğü gibi"
+    },
+    "notFound": {
+      "title": "Ödeme bağlantısı bulunamadı",
+      "inactiveTitle": "Bağlantı artık aktif değil",
+      "desc": "Açtığınız ödeme bağlantısını bulamadık. Lütfen URL'yi kontrol edin veya satıcıyla iletişime geçin.",
+      "inactiveDesc": "Bu ödeme bağlantısı zaten kullanılmış veya devre dışı bırakılmış. Lütfen yenisi için satıcıyla iletişime geçin."
+    },
+    "toast": {
+      "success": "Ödeme başarılı! Yönlendiriliyorsunuz…",
+      "notCompleted": "Ödeme tamamlanamadı.",
+      "failed": "Ödeme başarısız oldu. Lütfen tekrar deneyin."
+    }
+  },
+  "payLink": {
+    "notFound": {
+      "title": "Ödeme Bağlantısı Bulunamadı",
+      "description": "Bu ödeme bağlantısı geçersiz veya artık aktif değil. Lütfen bağlantıyı sizinle paylaşan satıcıyla iletişime geçin."
+    },
+    "form": {
+      "subtitle": "Siparişinizi tamamlamak için fatura ve kart bilgilerinizi girin."
+    },
+    "sections": {
+      "billingDetails": "Fatura Bilgileri",
+      "paymentDetails": "Ödeme Bilgileri"
+    },
+    "fields": {
+      "emailHelpLocked": "Hesap e-postanıza kilitlidir. Giriş bilgileri ve makbuzlar buraya gönderilir.",
+      "emailHelpGuest": "Ödeme sonrasında panel hesabınızı bu e-posta ile oluşturacağız.",
+      "phoneHelp": "Uluslararası formatı + ülke koduyla kullanın (örn. +90 532 555 0100).",
+      "stateOptional": "İl / Bölge (İsteğe Bağlı)",
+      "postalCode": "Posta Kodu *",
+      "cardholderName": "Kart Sahibinin Adı *",
+      "cardNumber": "Kart Numarası *",
+      "expiry": "Son Kullanma (AA/YY) *",
+      "cvv": "CVV *"
+    },
+    "placeholders": {
+      "phone": "+90 532 555 0100",
+      "state": "Ankara",
+      "postalCode": "34000",
+      "cardholderName": "Kartta yazıldığı gibi"
+    },
+    "secureNoticeS2S": "Kartınız TLS üzerinden güvenli şekilde işlenir. Makbuzlar için yalnızca son 4 haneyi saklarız — tam numarayı veya CVV'yi asla saklamayız. Bankanız 3-D Secure doğrulaması isteyebilir.",
+    "terms": {
+      "agreePrefix": "Şunları kabul ediyorum:",
+      "termsLink": "Şartlar ve Koşullar",
+      "and": "ve",
+      "privacyLink": "Gizlilik Politikası",
+      "ageConfirm": "18 yaşından büyük olduğumu onaylıyorum"
+    },
+    "button": {
+      "processing": "Ödeme işleniyor…"
+    },
+    "tryNotice": "Türk Lirası ödemeleri yakında geliyor. Satın alımınızı tamamlamak için EUR veya GBP seçin.",
+    "switchToEur": "EUR'ya geç ve devam et",
+    "doNotClose": "Lütfen bu pencereyi kapatmayın veya yenilemeyin.",
+    "errors": {
+      "firstNameMin": "Ad en az 2 karakter olmalıdır",
+      "lastNameMin": "Soyad en az 2 karakter olmalıdır",
+      "emailInvalid": "Geçerli bir e-posta adresi girin",
+      "addressRequired": "Fatura adresi gereklidir",
+      "addressShort": "Adres çok kısa görünüyor",
+      "postalRequired": "Posta kodu gereklidir",
+      "postalInvalid": "Posta kodu 2-10 harf, rakam veya tire olmalıdır",
+      "cardholderRequired": "Kart sahibinin adı gereklidir",
+      "cardholderInvalid": "Kart sahibinin adında geçersiz karakterler var",
+      "cardNumberRequired": "Kart numarası gereklidir",
+      "cardNumberShort": "Geçerli bir kart numarası girin",
+      "cardNumberInvalid": "Kart numarası geçersiz",
+      "expiryFormat": "Son kullanma tarihi AA/YY olmalıdır",
+      "expiryMonth": "Geçersiz son kullanma ayı",
+      "expiryYear": "Geçersiz son kullanma yılı",
+      "expired": "Kartın süresi dolmuş",
+      "cvvRequired": "CVV gereklidir",
+      "cvvShort": "CVV 3 veya 4 haneli olmalıdır"
+    },
+    "toasts": {
+      "approved": "Ödeme onaylandı",
+      "verifying": "Bankanızla doğrulanıyor…",
+      "declined": "Ödeme reddedildi. Lütfen farklı bir kart deneyin.",
+      "unexpected": "Ödeme işlemcisinden beklenmeyen yanıt.",
+      "failed": "Ödeme başarısız oldu. Lütfen tekrar deneyin.",
+      "received": "Ödeme alındı — bankayla onaylanıyor…",
+      "tryComingSoon": "Türk Lirası ödemeleri yakında geliyor. Satın alımınızı tamamlamak için lütfen EUR veya GBP'ye geçin.",
+      "visaMastercardOnly": "Yalnızca Visa ve Mastercard ödemelerini kabul ediyoruz.",
+      "acceptTerms": "Lütfen Şartlar ve Koşullar ile Gizlilik Politikası'nı kabul edin.",
+      "confirmAge": "18 yaşından büyük olduğunuzu onaylamanız gerekir."
+    },
+    "success": {
+      "missingReferenceDesc": "Ödeme referansı bulunamadı. Az önce ödeme yaptıysanız lütfen onay için e-postanızı kontrol edin.",
+      "checkError": "Bir sorun oluştu. Lütfen onay için e-postanızı kontrol edin.",
+      "successTitle": "Ödeme Başarılı!",
+      "successDesc": "Challenge hesabınız etkinleştirildi.",
+      "checkEmailTitle": "E-postanızı kontrol edin",
+      "checkEmailBody": "Size bir \"şifrenizi belirleyin\" bağlantısı, işlem platformu giriş bilgileriniz ve makbuzunuzu gönderdik. Hesabınızı etkinleştirmek ve panelinize erişmek için e-postadaki bağlantıya tıklayın.",
+      "failedContactPrefix": "Lütfen bu bağlantıyı sizinle paylaşan satıcıyla iletişime geçin veya bize şu adresten ulaşın:",
+      "stillProcessingDesc": "Ödemeniz beklenenden uzun sürüyor. Başarılı olduysa, hesap erişiminizle birlikte kısa süre içinde bir e-posta alacaksınız."
+    },
+    "fail": {
+      "title": "Ödeme İptal Edildi",
+      "description": "Ödemeniz tamamlanmadı. Kartınızdan herhangi bir tahsilat yapılmadı.",
+      "retryHint": "Tekrar denemek için orijinal bağlantıya dönebilir veya bağlantıyı sizinle paylaşan satıcıyla iletişime geçebilirsiniz.",
+      "needHelp": "Yardıma mı ihtiyacınız var? E-posta:"
     }
   }
 }

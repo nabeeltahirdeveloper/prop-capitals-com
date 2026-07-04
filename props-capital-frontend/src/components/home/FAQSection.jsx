@@ -5,7 +5,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { faqData } from './data/mockData';
 import { HelpCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -17,6 +16,7 @@ const FAQSection = () => {
   const { isDark } = useTheme();
   const { cur } = useCurrency();
   const { t } = useTranslation();
+  const faqData = t('home.faqSection.items', { returnObjects: true });
 
   return (
     <section className={`py-20 lg:py-32 transition-colors duration-300 ${

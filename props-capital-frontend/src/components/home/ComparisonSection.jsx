@@ -1,6 +1,5 @@
 import React from 'react';
 import { Check, X } from 'lucide-react';
-import { comparisonData } from './data/mockData.js';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useTranslation } from '@/contexts/LanguageContext';
@@ -10,6 +9,7 @@ const ComparisonSection = () => {
   const { isDark } = useTheme();
   const { cur } = useCurrency();
   const { t } = useTranslation();
+  const comparisonData = t('home.comparison.rows', { returnObjects: true });
 
   return (
     <section className={`py-20 lg:py-32 transition-colors duration-300 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>

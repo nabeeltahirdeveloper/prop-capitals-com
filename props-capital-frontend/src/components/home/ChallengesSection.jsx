@@ -167,15 +167,15 @@ const ChallengesSection = () => {
                         : isDark ? 'bg-[#1a1f2a] text-gray-400 border border-white/10' : 'bg-slate-100 text-slate-500 border border-slate-200'
                     }`}>
                       {challenge.popular && <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-current" />}
-                      {challenge.badge}
+                      {challenge.badgeKey ? t(challenge.badgeKey) : challenge.badge}
                     </div>
                   </div>
                 )}
 
                 {/* Header */}
                 <div className="text-center mb-5 pt-4">
-                  <h3 className={`text-lg sm:text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{challenge.name}</h3>
-                  <p className={`text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{challenge.description}</p>
+                  <h3 className={`text-lg sm:text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{challenge.nameKey ? t(challenge.nameKey) : challenge.name}</h3>
+                  <p className={`text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{challenge.descriptionKey ? t(challenge.descriptionKey) : challenge.description}</p>
                 </div>
 
                 {/* Price */}
