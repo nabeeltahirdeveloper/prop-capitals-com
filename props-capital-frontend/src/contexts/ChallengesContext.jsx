@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { getUserAccounts } from "@/api/accounts";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTraderAccountsStore } from "@/lib/stores/trader-accounts.store";
+import { useTranslation } from "@/contexts/LanguageContext";
 
 const ChallengesContext = createContext();
 
@@ -261,6 +262,7 @@ export const challengeTypes = {
 
 export const ChallengesProvider = ({ children }) => {
   const { user, status } = useAuth();
+  const { t } = useTranslation();
   const [challenges, setChallenges] = useState([]);
   const [loading, setLoading] = useState(true);
   const selectedChallengeId = useTraderAccountsStore((state) =>
@@ -450,12 +452,12 @@ export const ChallengesProvider = ({ children }) => {
   };
 
   const getChallengePhaseLabel = (challenge) => {
-    if (challenge.status === "failed") return "Failed";
-    if (challenge.phase === "funded") return "Funded";
+    if (challenge.status === "failed") return t("accountStatus.failed");
+    if (challenge.phase === "funded") return t("accountStatus.funded");
     if (challenge.type === "1-step") {
-      return "Evaluation";
+      return t("accountStatus.evaluation");
     }
-    return `Phase ${challenge.phase}`;
+    return t("accountStatus.phase", { phase: challenge.phase });
   };
 
   const getRuleCompliance = (challenge) => {
