@@ -6274,7 +6274,8 @@
       "tryComingSoon": "Turkish Lira payments are coming soon. Please switch to EUR or GBP to complete your purchase.",
       "visaMastercardOnly": "We only accept Visa and Mastercard payments.",
       "acceptTerms": "Please accept the Terms & Conditions and Privacy Policy.",
-      "confirmAge": "You must confirm you are over 18 years old."
+      "confirmAge": "You must confirm you are over 18 years old.",
+      "currencyUnsupported": "This currency isn't available for payment yet. Please switch to EUR or GBP to complete your purchase."
     },
     "success": {
       "missingReferenceDesc": "No payment reference found. If you just paid, please check your email for confirmation.",
@@ -6291,6 +6292,13 @@
       "description": "Your payment was not completed. No charges were made to your card.",
       "retryHint": "You can return to the original link to try again, or contact the merchant who shared it with you.",
       "needHelp": "Need help? Email"
-    }
+    },
+    "unsupportedCurrencyNotice": "This currency isn't available for payment yet. Choose EUR or GBP to complete your purchase."
+  },
+  "accountStatus": {
+    "failed": "Failed",
+    "funded": "Funded",
+    "evaluation": "Evaluation",
+    "phase": "Phase {{phase}}"
   }
 }

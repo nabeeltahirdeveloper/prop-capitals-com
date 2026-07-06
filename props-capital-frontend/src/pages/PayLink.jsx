@@ -357,10 +357,10 @@ const PayLink = () => {
   // inputs (see JSX below).
   const CARD_FIELDS = ['cardholderName', 'cardNumber', 'expiry', 'cvv'];
   const isHostedWorldCard = provider === 'worldcard' && worldCardFlow === 'hosted';
-  // Turkish Lira is display-only for now: the page shows ₺ prices, but no
-  // payment provider can settle TRY yet, so the Pay button is disabled until a
-  // Turkish provider is wired up. Users must switch to EUR/GBP to check out.
-  const isTry = currency === 'TRY';
+  // Display-only currencies (e.g. TRY, KZT) can be shown for browsing, but the
+  // payment provider only settles EUR/GBP, so the Pay button is disabled and the
+  // user is prompted to switch to EUR when any other currency is active.
+  const isUnsupportedCurrency = currency !== 'EUR' && currency !== 'GBP';
 
   const validateAll = () => {
     const next = {};
@@ -385,8 +385,8 @@ const PayLink = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (isTry) {
-      toast.error(t('payLink.toasts.tryComingSoon'));
+    if (isUnsupportedCurrency) {
+      toast.error(t('payLink.toasts.currencyUnsupported'));
       return;
     }
     const { firstError, firstErrorField } = validateAll();
@@ -903,7 +903,7 @@ const PayLink = () => {
 
               <Button
                 type="submit"
-                disabled={submitting || !agreedTerms || !confirmedAge || isTry}
+                disabled={submitting || !agreedTerms || !confirmedAge || isUnsupportedCurrency}
                 className="w-full mt-6 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-6 py-6 h-auto font-bold text-base disabled:opacity-50"
               >
                 {submitting ? (
@@ -918,10 +918,10 @@ const PayLink = () => {
                   </>
                 )}
               </Button>
-              {isTry && (
+              {isUnsupportedCurrency && (
                 <div className="mt-3 text-center">
                   <p className="text-xs text-amber-500">
-                    {t('payLink.tryNotice')}
+                    {t('payLink.unsupportedCurrencyNotice')}
                   </p>
                   <button
                     type="button"

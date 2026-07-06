@@ -6244,7 +6244,8 @@
       "tryComingSoon": "Türk Lirası ödemeleri yakında geliyor. Satın alımınızı tamamlamak için lütfen EUR veya GBP'ye geçin.",
       "visaMastercardOnly": "Yalnızca Visa ve Mastercard ödemelerini kabul ediyoruz.",
       "acceptTerms": "Lütfen Şartlar ve Koşullar ile Gizlilik Politikası'nı kabul edin.",
-      "confirmAge": "18 yaşından büyük olduğunuzu onaylamanız gerekir."
+      "confirmAge": "18 yaşından büyük olduğunuzu onaylamanız gerekir.",
+      "currencyUnsupported": "Bu para birimi henüz ödeme için kullanılamıyor. Lütfen satın alımınızı tamamlamak için EUR veya GBP’ye geçin."
     },
     "success": {
       "missingReferenceDesc": "Ödeme referansı bulunamadı. Az önce ödeme yaptıysanız lütfen onay için e-postanızı kontrol edin.",
@@ -6261,6 +6262,13 @@
       "description": "Ödemeniz tamamlanmadı. Kartınızdan herhangi bir tahsilat yapılmadı.",
       "retryHint": "Tekrar denemek için orijinal bağlantıya dönebilir veya bağlantıyı sizinle paylaşan satıcıyla iletişime geçebilirsiniz.",
       "needHelp": "Yardıma mı ihtiyacınız var? E-posta:"
-    }
+    },
+    "unsupportedCurrencyNotice": "Bu para birimi henüz ödeme için kullanılamıyor. Satın alımınızı tamamlamak için EUR veya GBP seçin."
+  },
+  "accountStatus": {
+    "failed": "Başarısız",
+    "funded": "Fonlanmış",
+    "evaluation": "Değerlendirme",
+    "phase": "Aşama {{phase}}"
   }
 }

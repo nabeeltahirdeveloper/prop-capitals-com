@@ -204,7 +204,13 @@ const CheckoutPage = () => {
       : challengeType === 'two-step'
       ? t('checkout.challengeName.twoStep')
       : t('checkout.challengeFallback');
-  const challengeName = matchedChallenge?.name || fallbackName;
+  // Prefer the translated, type-derived name for known challenge types so the
+  // display is localized; the raw admin-entered DB name (English-only) is used
+  // only as a fallback for unrecognized types.
+  const challengeName =
+    challengeType === 'one-step' || challengeType === 'two-step'
+      ? fallbackName
+      : matchedChallenge?.name || fallbackName;
   // Display price priority: URL custom override → matched DB challenge → static fallback.
   // Backend re-validates the override against the link record before charging.
   const price =
