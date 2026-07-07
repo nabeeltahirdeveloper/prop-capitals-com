@@ -26,6 +26,7 @@ import { PaymentLogos } from '@/components/PaymentLogos';
 import { getChallengeBySlug } from '@/api/challenges';
 import {
   chargeXoalaCard,
+  chargePaytechCard,
   chargeWorldCardCard,
   createWorldCardSession,
   resolvePaymentProvider,
@@ -178,6 +179,20 @@ const FieldError = ({ name, error }) =>
     </p>
   ) : null;
 
+const normalizePaymentError = (message, fallback) => {
+  if (Array.isArray(message)) {
+    const text = message.filter(Boolean).join(' ');
+    return text || fallback;
+  }
+  if (typeof message === 'string') {
+    return message.trim() || fallback;
+  }
+  if (message && typeof message === 'object') {
+    return normalizePaymentError(message.message || message.error, fallback);
+  }
+  return fallback;
+};
+
 const PayLink = () => {
   const { isDark } = useTheme();
   const { currency, setCurrency, formatFee, cur, formatAmount } = useCurrency();
@@ -210,6 +225,7 @@ const PayLink = () => {
   // the age confirmation is a hard regulatory gate.
   const [agreedTerms, setAgreedTerms] = useState(false);
   const [confirmedAge, setConfirmedAge] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
 
   // Payment provider routing.
   // /payments/provider tells us which gateway to use AND, for WorldCard,
@@ -259,23 +275,61 @@ const PayLink = () => {
     retry: 0,
   });
 
+  const showPaymentError = (message, fallback = t('payLink.toasts.failed')) => {
+    const text = normalizePaymentError(message, fallback);
+    setPaymentError(text);
+    toast.error(text, { duration: 10000 });
+  };
+
   const chargeMutation = useMutation({
     mutationFn: chargeXoalaCard,
     onSuccess: (data) => {
       if (data?.status === 'succeeded') {
+        setPaymentError('');
         toast.success(t('payLink.toasts.approved'));
         navigate(`/pay/success?reference=${data.reference}`);
       } else if (data?.status === 'requires_action' && data?.redirectUrl) {
+        setPaymentError('');
         toast.info(t('payLink.toasts.verifying'));
         submitPaymentRedirect(data);
       } else if (data?.status === 'failed') {
-        toast.error(data.message || t('payLink.toasts.declined'));
+        showPaymentError(data.message, t('payLink.toasts.declined'));
       } else {
-        toast.error(t('payLink.toasts.unexpected'));
+        showPaymentError(null, t('payLink.toasts.unexpected'));
       }
     },
     onError: (err) => {
-      toast.error(err?.message || t('payLink.toasts.failed'));
+      showPaymentError(err?.message, t('payLink.toasts.failed'));
+    },
+  });
+
+  // Paytech hosted (EXTERNAL_HPP) — backend returns { status:'requires_action',
+  // redirectUrl }; submitPaymentRedirect sends the browser to FlowaPay's hosted
+  // page. Same response shape as the other gateways, so handling is shared.
+  const paytechMutation = useMutation({
+    mutationFn: chargePaytechCard,
+    onSuccess: (data) => {
+      if (data?.status === 'succeeded') {
+        setPaymentError('');
+        toast.success(t('payLink.toasts.approved'));
+        navigate(`/pay/success?reference=${data.reference}`);
+      } else if (data?.status === 'requires_action' && data?.redirectUrl) {
+        setPaymentError('');
+        toast.info(t('payLink.toasts.verifying'));
+        submitPaymentRedirect(data);
+      } else if (data?.status === 'pending') {
+        setPaymentError('');
+        toast.info(t('payLink.toasts.received'));
+        navigate(`/pay/success?reference=${data.reference}`);
+      } else if (data?.status === 'failed') {
+        // Surface PayTech's real reason (e.g. "Terminal not Found (code 1.05)").
+        showPaymentError(data.message, t('payLink.toasts.declined'));
+      } else {
+        showPaymentError(null, t('payLink.toasts.unexpected'));
+      }
+    },
+    onError: (err) => {
+      showPaymentError(err?.message, t('payLink.toasts.failed'));
     },
   });
 
@@ -286,16 +340,17 @@ const PayLink = () => {
     mutationFn: createWorldCardSession,
     onSuccess: (data) => {
       if (data?.status === 'requires_action' && data?.redirectUrl) {
+        setPaymentError('');
         toast.success(t('payCheckout.toasts.redirecting'));
         window.location.href = data.redirectUrl;
       } else if (data?.status === 'failed') {
-        toast.error(data.message || t('payCheckout.toasts.couldNotStart'));
+        showPaymentError(data.message, t('payCheckout.toasts.couldNotStart'));
       } else {
-        toast.error(t('payLink.toasts.unexpected'));
+        showPaymentError(null, t('payLink.toasts.unexpected'));
       }
     },
     onError: (err) => {
-      toast.error(err?.message || t('payCheckout.toasts.failedToStart'));
+      showPaymentError(err?.message, t('payCheckout.toasts.failedToStart'));
     },
   });
 
@@ -306,22 +361,25 @@ const PayLink = () => {
     mutationFn: chargeWorldCardCard,
     onSuccess: (data) => {
       if (data?.status === 'succeeded') {
+        setPaymentError('');
         toast.success(t('payLink.toasts.approved'));
         navigate(`/pay/success?reference=${data.reference}`);
       } else if (data?.status === 'requires_action' && data?.redirectUrl) {
+        setPaymentError('');
         toast.info(t('payLink.toasts.verifying'));
         submitPaymentRedirect(data);
       } else if (data?.status === 'pending') {
+        setPaymentError('');
         toast.info(t('payLink.toasts.received'));
         navigate(`/pay/success?reference=${data.reference}`);
       } else if (data?.status === 'failed') {
-        toast.error(data.message || t('payLink.toasts.declined'));
+        showPaymentError(data.message, t('payLink.toasts.declined'));
       } else {
-        toast.error(t('payLink.toasts.unexpected'));
+        showPaymentError(null, t('payLink.toasts.unexpected'));
       }
     },
     onError: (err) => {
-      toast.error(err?.message || t('payLink.toasts.failed'));
+      showPaymentError(err?.message, t('payLink.toasts.failed'));
     },
   });
 
@@ -357,6 +415,11 @@ const PayLink = () => {
   // inputs (see JSX below).
   const CARD_FIELDS = ['cardholderName', 'cardNumber', 'expiry', 'cvv'];
   const isHostedWorldCard = provider === 'worldcard' && worldCardFlow === 'hosted';
+  // PayTech (FlowaPay) uses the EXTERNAL_HPP hosted page — the card is entered
+  // on FlowaPay's own page, so we collect billing only here, exactly like the
+  // hosted WorldCard flow.
+  const isHostedPaytech = provider === 'paytech';
+  const isHosted = isHostedWorldCard || isHostedPaytech;
   // Display-only currencies (e.g. TRY, KZT) can be shown for browsing, but the
   // payment provider only settles EUR/GBP, so the Pay button is disabled and the
   // user is prompted to switch to EUR when any other currency is active.
@@ -367,7 +430,7 @@ const PayLink = () => {
     let firstError = '';
     let firstErrorField = '';
     const fieldsToCheck = Object.keys(INITIAL_FORM).filter(
-      (k) => !isHostedWorldCard || !CARD_FIELDS.includes(k),
+      (k) => !isHosted || !CARD_FIELDS.includes(k),
     );
     fieldsToCheck.forEach((k) => {
       const err = validateField(k, form[k], t);
@@ -385,6 +448,7 @@ const PayLink = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setPaymentError('');
     if (isUnsupportedCurrency) {
       toast.error(t('payLink.toasts.currencyUnsupported'));
       return;
@@ -398,8 +462,8 @@ const PayLink = () => {
     }
 
     // Mirrors the server-side check: only VISA/MC route to a terminal.
-    // Skipped for hosted WorldCard — the card isn't entered here.
-    if (!isHostedWorldCard && brand && brand !== 'VISA' && brand !== 'MC') {
+    // Skipped for hosted flows (WorldCard / PayTech) — no card entered here.
+    if (!isHosted && brand && brand !== 'VISA' && brand !== 'MC') {
       toast.error(t('payLink.toasts.visaMastercardOnly'));
       const el = document.getElementsByName('cardNumber')[0];
       if (el && typeof el.focus === 'function') el.focus();
@@ -454,6 +518,14 @@ const PayLink = () => {
           holder: form.cardholderName.trim(),
           brand: brand || undefined,
         },
+      });
+    } else if (provider === 'paytech') {
+      // Paytech hosted (EXTERNAL_HPP): send billing only; FlowaPay returns a
+      // redirectUrl and the card is entered on its hosted page. Currency is
+      // only ever EUR or GBP (TRY is blocked at the Pay button + server-side).
+      paytechMutation.mutate({
+        ...baseBody,
+        currency,
       });
     } else {
       // Xoala S2S — also needs the EUR/GBP display currency. TRY is blocked at
@@ -523,7 +595,7 @@ const PayLink = () => {
     );
   }
 
-  const submitting = chargeMutation.isPending || worldCardMutation.isPending || worldCardSessionMutation.isPending;
+  const submitting = chargeMutation.isPending || paytechMutation.isPending || worldCardMutation.isPending || worldCardSessionMutation.isPending;
   const displayPrice = customPriceFromQuery ?? challenge.price;
 
   return (
@@ -741,7 +813,7 @@ const PayLink = () => {
               </div>
 
               {/* ── Card details (S2S flows only — hosted collects them off-site) ── */}
-              {!isHostedWorldCard && (
+              {!isHosted && (
               <div className={`mt-8 pt-6 border-t ${dividerClass}`}>
                 <div className={sectionHeaderClass}>{t('payLink.sections.paymentDetails')}</div>
                 <div className="mt-3 space-y-4">
@@ -846,11 +918,24 @@ const PayLink = () => {
               <div className={`mt-6 rounded-xl p-4 flex items-start gap-3 ${isDark ? 'bg-emerald-500/5 border border-emerald-500/20' : 'bg-emerald-50 border border-emerald-200'}`}>
                 <Shield className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
                 <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
-                  {isHostedWorldCard
+                  {isHosted
                     ? t('payCheckout.secureNotice')
                     : t('payLink.secureNoticeS2S')}
                 </p>
               </div>
+
+              {paymentError && (
+                <div
+                  role="alert"
+                  className={`mt-4 rounded-xl p-4 flex items-start gap-3 ${isDark ? 'bg-red-500/10 border border-red-500/30 text-red-100' : 'bg-red-50 border border-red-200 text-red-800'}`}
+                >
+                  <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-semibold">Payment error</p>
+                    <p className="text-sm mt-1 break-words">{paymentError}</p>
+                  </div>
+                </div>
+              )}
 
               <div className={`mt-6 rounded-xl p-4 flex items-start gap-3 ${isDark ? 'bg-amber-500/5 border border-amber-500/20' : 'bg-amber-50 border border-amber-200'}`}>
                 <input

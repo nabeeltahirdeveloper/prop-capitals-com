@@ -26,6 +26,7 @@ import { generatePassword } from 'src/utils/generate-password.util';
 import { EmailService } from 'src/email/email.service';
 import { XoalaAuthService } from './xoala-auth.service';
 import { WorldCardService } from './worldcard.service';
+import { PaytechService } from './paytech.service';
 import { buildXoalaRequestChecksum } from './xoala-checksum.util';
 import {
   getXoalaRedirectMethod,
@@ -46,6 +47,9 @@ export class PaymentsService {
     // WorldCardService injects PaymentsService → forwardRef breaks the cycle.
     @Inject(forwardRef(() => WorldCardService))
     private readonly worldCardService: WorldCardService,
+    // PaytechService injects PaymentsService → forwardRef breaks the cycle.
+    @Inject(forwardRef(() => PaytechService))
+    private readonly paytechService: PaytechService,
   ) {}
 
   // ─── Platform normalization (shared) ───────────────────────────────
@@ -1559,10 +1563,18 @@ export class PaymentsService {
     //     enters their card on WorldCard's own page, so no card data is
     //     collected on our /q/ page. (S2S CARD is not enabled on the
     //     merchant account, so we cannot post the PAN ourselves.)
+    //   - link.provider = 'PAYTECH' / 'FLOWAPAY' → PayTech EXTERNAL_HPP hosted
+    //     page. Like WorldCard, the customer enters their card on FlowaPay's
+    //     hosted page, so no card data is collected on our /q/ page.
     //   - link.provider = 'XOALA' / null / 'AUTO' → Xoala S2S. The card is
     //     collected on the /q/ page and posted server-to-server.
-    const wantsWorldCard =
-      String(link.provider || '').toUpperCase() === 'WORLDCARD';
+    const providerUpper = String(link.provider || '').toUpperCase();
+    const wantsWorldCard = providerUpper === 'WORLDCARD';
+    const wantsPaytech =
+      providerUpper === 'PAYTECH' || providerUpper === 'FLOWAPAY';
+    // Hosted gateways collect the card on the provider's own page, so we never
+    // require (or expect) card data on the request for them.
+    const isHosted = wantsWorldCard || wantsPaytech;
 
     // Body from the /q/<slug> page carries:
     //   - card data (Xoala S2S only)
@@ -1572,7 +1584,7 @@ export class PaymentsService {
     // challenge, amount, currency, provider, platform) come from `link`.
     const card = body?.card;
     if (
-      !wantsWorldCard &&
+      !isHosted &&
       (!card?.number || !card?.expiryMonth || !card?.expiryYear || !card?.cvv)
     ) {
       throw new BadRequestException(
@@ -1587,9 +1599,9 @@ export class PaymentsService {
     const postalCode = String(body?.postalCode ?? '').trim();
     const state = body?.state ? String(body.state).trim() : undefined;
     // Billing is only collected/required for the on-page (Xoala S2S) flow.
-    // WorldCard's hosted page gathers name + address itself, so the /q/ page
-    // sends none of it for hosted links.
-    if (!wantsWorldCard) {
+    // Hosted pages (WorldCard / PayTech) gather name + address themselves, so
+    // the /q/ page sends none of it for hosted links.
+    if (!isHosted) {
       if (!firstName || !lastName) {
         throw new BadRequestException('First and last name are required');
       }
@@ -1605,8 +1617,13 @@ export class PaymentsService {
     ).toUpperCase();
     const currency = rawCurrency === 'GBP' ? 'GBP' : 'EUR';
 
+    const routedTo = wantsWorldCard
+      ? 'WORLDCARD (hosted)'
+      : wantsPaytech
+        ? 'PAYTECH (hosted EXTERNAL_HPP)'
+        : 'XOALA';
     this.logger.log(
-      `[QuickLink] slug=${slug} provider=${link.provider ?? '<null/auto>'} → routing to ${wantsWorldCard ? 'WORLDCARD (hosted)' : 'XOALA'}`,
+      `[QuickLink] slug=${slug} provider=${link.provider ?? '<null/auto>'} → routing to ${routedTo}`,
     );
     if (wantsWorldCard && !this.worldCardService) {
       // Defensive: should never happen, but if Nest hot-reload misses the
@@ -1638,13 +1655,15 @@ export class PaymentsService {
       email: link.customerEmail,
       phone: link.customerPhone ?? undefined,
       country: link.customerCountry,
-      // Billing from the customer
-      firstName,
-      lastName,
-      address,
-      city,
-      state,
-      postalCode,
+      // Billing from the customer (Xoala S2S). For hosted links the /q/ page
+      // sends no billing, so fall back to the admin-supplied link fields —
+      // PayTech's EXTERNAL_HPP create still wants name + billing address.
+      firstName: firstName || link.customerFirstName || undefined,
+      lastName: lastName || link.customerLastName || undefined,
+      address: address || link.customerAddress || undefined,
+      city: city || link.customerCity || undefined,
+      state: state || link.customerState || undefined,
+      postalCode: postalCode || link.customerPostalCode || undefined,
       currency,
       amountOverride,
       platform: link.platform ?? undefined,
@@ -1657,6 +1676,11 @@ export class PaymentsService {
       // Hosted page: returns { status: 'requires_action', redirectUrl } and
       // the /q/ page sends the customer to WorldCard to enter their card.
       return this.worldCardService.createHostedSession(chargeInput);
+    }
+    if (wantsPaytech) {
+      // PayTech EXTERNAL_HPP hosted page: returns { status:'requires_action',
+      // redirectUrl }; the /q/ page sends the customer to FlowaPay's page.
+      return this.paytechService.createCharge(chargeInput);
     }
     return this.createXoalaCharge(chargeInput);
   }

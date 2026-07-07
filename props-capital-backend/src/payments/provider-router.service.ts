@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 
-export type PaymentProvider = 'xoala' | 'worldcard';
+export type PaymentProvider = 'xoala' | 'worldcard' | 'paytech';
 // 'hosted' = WorldCard's hosted-page session (POST /api/v1/session +
 //            redirect_url). The customer never enters their card on our
 //            domain. Default until the merchant account has S2S APM
@@ -35,7 +35,7 @@ export class PaymentProviderRouter {
   constructor(
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   // Read the WorldCard flow override from env. Defaults to 'hosted'
   // (the Standard Checkout session endpoint POST /api/v1/session, which
@@ -56,6 +56,7 @@ export class PaymentProviderRouter {
     if (s === 'xoala') return 'xoala';
     if (s === 'worldcard' || s === 'world-card' || s === 'wc')
       return 'worldcard';
+    if (s === 'paytech' || s === 'flowapay') return 'paytech';
     return null;
   }
 

@@ -17,6 +17,15 @@ export const chargeXoalaCard = async (data) => {
   return apiPost('/payments/xoala/charge', data);
 };
 
+// Paytech S2S — backend charges the card directly and returns the same
+// shape as Xoala:
+//   { status: 'succeeded', reference, paymentId, tradingAccountId? }
+//   { status: 'requires_action', reference, redirectUrl }   // 3DS challenge
+//   { status: 'failed', reference, message }
+export const chargePaytechCard = async (data) => {
+  return apiPost('/payments/paytech/charge', data);
+};
+
 // QuickLink: lightweight summary for the silent /q/<slug> page. Returns
 // only what the customer needs to see — { amount, currency, active }.
 // Never the customer's own email, the brand, or any internals.
@@ -117,7 +126,7 @@ const PROVIDER_STORAGE_KEY = 'pc_payment_provider';
 export const getStoredProvider = () => {
   try {
     const v = (localStorage.getItem(PROVIDER_STORAGE_KEY) || '').toLowerCase();
-    return v === 'xoala' || v === 'worldcard' ? v : null;
+    return v === 'xoala' || v === 'worldcard' || v === 'paytech' ? v : null;
   } catch (_e) {
     return null;
   }
@@ -126,7 +135,7 @@ export const getStoredProvider = () => {
 export const setStoredProvider = (provider) => {
   try {
     const v = (provider || '').toLowerCase();
-    if (v === 'xoala' || v === 'worldcard') {
+    if (v === 'xoala' || v === 'worldcard' || v === 'paytech') {
       localStorage.setItem(PROVIDER_STORAGE_KEY, v);
     }
   } catch (_e) {

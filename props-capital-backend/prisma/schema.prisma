@@ -93,11 +93,6 @@ model Challenge {
   accountSize            Int
   price                  Int
   platform               ChallengePlatform
-  // Platforms the admin has enabled for this challenge. The trader chooses one
-  // of these at purchase. Empty array = no restriction (falls back to all /
-  // the single `platform`). Apply with `prisma db push` (project uses db push,
-  // not migrations) and backfill: UPDATE "Challenge" SET "platforms" = ARRAY["platform"];
-  platforms              ChallengePlatform[]  @default([])
   phase1TargetPercent    Float                @default(8.0)
   phase2TargetPercent    Float                @default(5.0)
   dailyDrawdownPercent   Float                @default(5.0)
@@ -115,6 +110,7 @@ model Challenge {
   weekendHoldingAllowed  Boolean              @default(true)
   currency               String               @default("USD")
   slug                   String?              @unique
+  platforms              ChallengePlatform[]  @default([])
   directPurchaseLinks    DirectPurchaseLink[]
   payments               Payment[]
   quickLinks             QuickLink[]
