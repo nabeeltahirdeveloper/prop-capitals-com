@@ -5,16 +5,18 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { faqData } from './data/mockData';
 import { HelpCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 
 const FAQSection = () => {
   const { isDark } = useTheme();
   const { cur } = useCurrency();
+  const { t } = useTranslation();
+  const faqData = t('home.faqSection.items', { returnObjects: true });
 
   return (
     <section className={`py-20 lg:py-32 transition-colors duration-300 ${
@@ -23,12 +25,12 @@ const FAQSection = () => {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">Support</span>
+          <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">{t('home.faqSection.eyebrow')}</span>
           <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Frequently Asked <span className="text-amber-500">Questions</span>
+            {t('home.faqSection.titlePrefix')} <span className="text-amber-500">{t('home.faqSection.titleHighlight')}</span>
           </h2>
           <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-            Everything you need to know about Prop Capitals funding programs.
+            {t('home.faqSection.subtitle')}
           </p>
         </div>
 
@@ -61,11 +63,11 @@ const FAQSection = () => {
 
         {/* Contact Support */}
         <div className="mt-12 text-center">
-          <p className={`mb-4 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Still have questions?</p>
+          <p className={`mb-4 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('home.faqSection.stillHaveQuestions')}</p>
           <Link to="/contact" className={`font-semibold hover:underline ${
             isDark ? 'text-amber-400' : 'text-amber-600'
           }`}>
-            Contact our 24/7 support team
+            {t('home.faqSection.contactSupport')}
           </Link>
         </div>
       </div>

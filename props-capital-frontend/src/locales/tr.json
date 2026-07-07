@@ -3,31 +3,47 @@
     "loading": "Yükleniyor...",
     "url": "URL",
     "dismiss": "Kapat",
-    "allPlatforms": "Tüm platformlar"
+    "allPlatforms": "Tüm platformlar",
+    "remaining": "kalan"
   },
   "home": {
     "hero": {
-      "badge": "Dünya çapında 15.000’den fazla trader tarafından güveniliyor",
-      "title": "İşlem yap",
-      "titleHighlight": "bizim sermayemizle",
-      "subtitle": "Becerilerini kanıtla ve â¬200.000’a kadar sermaye kazan. Kendi paranı riske atmadan kârın %90’ına kadarını koru",
-      "cta": "Meydan okumayı başlat",
-      "howItWorks": "Nasıl çalışır",
-      "verified": "Doğrulanmış şirket",
-      "secure": "Güvenli ödeme",
-      "support": "7/24 destek",
-      "profitToday": "Bugünkü kâr",
-      "winRate": "Kazanma oranı"
+      "trustpilotRating": "Trustpilot'ta 4,8",
+      "trustpilotCount": "(18.500+ trader)",
+      "promo": "Sınırlı Süre: Tüm Meydan Okumalarda %70 İNDİRİM",
+      "title": "Küresel İşlem Yap,",
+      "titleHighlight": "Her Yerden Kazan",
+      "subtitle": "Prop Capitals fonlamasıyla halihazırda işlem yapan dünya çapında 18.500+ trader'a katıl. {{amount}} kadar fonlan ve kârının %90'ına kadarını koru.",
+      "getFunded": "Hemen Fonlan",
+      "watchDemo": "Demoyu İzle",
+      "traders": "trader",
+      "countries": "Ülke",
+      "maxFunding": "Maks. Fonlama",
+      "liveTrading": "Canlı İşlem Aktif",
+      "stats": {
+        "activeTraders": "Aktif Trader",
+        "totalPaidOut": "Toplam Ödenen",
+        "avgPayout": "Ort. Ödeme"
+      }
     },
     "stats": {
       "fundedCapital": "Sağlanan sermaye",
-      "activeTraders": "Aktif traderlar",
+      "activeTraders": "Aktif Trader",
       "paidToTraders": "Traderlara ödenen tutar",
-      "trustScore": "Güven puanı"
+      "trustScore": "Güven puanı",
+      "totalPaidOut": "Toplam Ödenen",
+      "avgPayout": "Ort. Ödeme",
+      "payoutSpeed": "Ödeme Hızı",
+      "trustpilot": "Trustpilot",
+      "successRate": "Başarı Oranı",
+      "ctaTitle": "Fonlanmaya Hazır mısın?",
+      "ctaSubtitle": "Prop Capitals'e güvenen binlerce başarılı trader'a katıl. Bugün fonlan ve finansal özgürlüğe giden yolculuğuna başla.",
+      "startTrading": "HEMEN İŞLEM YAP",
+      "viewAllPlans": "Tüm Planları Gör"
     },
     "features": {
       "title": "Neden bizi seçmelisiniz",
-      "subtitle": "Profesyonel traderlar için tasarlandı",
+      "subtitle": "Hiçbir kısıtlama, hiçbir sınır yok. Tam işlem özgürlüğüyle senin için işe yarayan her stratejiyi kullan.",
       "description": "Şeffaf kurallar, avantajlı şartlar ve gerçek destek sunan, trader dostu bir prop firması oluşturduk",
       "clearObjectives": {
         "title": "Net işlem hedefleri",
@@ -53,7 +69,39 @@
       "noTimeLimits": {
         "title": "Zaman sınırı yok",
         "description": "Hedeflere kendi hızınızda ulaşın. Maksimum işlem süresi veya baskı yok"
-      }
+      },
+      "eyebrow": "İşlem Özgürlüğü",
+      "headingLead": "Kendi Tarzında",
+      "headingHighlight": "İşlem Yap",
+      "items": [
+        {
+          "title": "Expert Advisor'lar",
+          "description": "Dilediğin otomatik işlem botunu veya EA'yı kullan"
+        },
+        {
+          "title": "Haber İşlemleri",
+          "description": "Yüksek etkili ekonomik veriler sırasında işlem yap"
+        },
+        {
+          "title": "Hafta Sonu Pozisyon Tutma",
+          "description": "Pozisyonlarını hafta sonu boyunca açık tut"
+        },
+        {
+          "title": "Zaman Sınırı Yok",
+          "description": "Meydan okumaları kendi temponla tamamla"
+        },
+        {
+          "title": "Scalping Serbest",
+          "description": "Minimum pozisyon tutma süresi kısıtlaması yok"
+        },
+        {
+          "title": "Kopya İşlem",
+          "description": "Sinyal servislerini ve kopya işlemi kullan"
+        }
+      ],
+      "ctaTitle": "Sınırsız İşlem Yapmaya Hazır mısın?",
+      "ctaSubtitle": "Prop Capitals ile tam özgürlüğün tadını çıkaran binlerce trader'a katıl. İşlem yapma şeklinde hiçbir kısıtlama yok.",
+      "ctaButton": "Hemen Başla"
     },
     "howItWorks": {
       "label": "Nasıl başlarsınız",
@@ -86,9 +134,59 @@
     },
     "testimonials": {
       "label": "Yorumlar",
-      "title": "Traderlar tarafından seviliyor",
+      "title": "Trader'larımızdan",
       "subtitle": "Prop Capitals ile kazanan binlerce başarılı tradere katılın",
-      "totalEarned": "Toplam kazanç"
+      "totalEarned": "Toplam kazanç",
+      "eyebrow": "Yorumlar",
+      "titleHighlight": "Dinleyin",
+      "fundedTrader": "Fonlanan Trader",
+      "payout": "Ödeme",
+      "items": [
+        {
+          "id": 1,
+          "name": "Derex",
+          "country": "UK",
+          "quote": "Prop Capitals'a bu kadar olağanüstü bir firma olduğu için minnettarlığımı ifade etmek istiyorum!",
+          "highlight": "olağanüstü bir firma",
+          "rating": "4.9/5.0 Rating",
+          "payout": "€1,450.00",
+          "avatar": "/assets/images/img2.png",
+          "promoVideo": "/assets/videos/video1.mp4"
+        },
+        {
+          "id": 2,
+          "name": "Chad Johnson",
+          "country": "AU",
+          "quote": "Şimdiye kadar aldığım en hızlı ödeme! Prop Capitals yatırımcılarını gerçekten önemsiyor.",
+          "highlight": "en hızlı ödeme",
+          "rating": "5.0/5.0 Rating",
+          "payout": "€3,500.00",
+          "avatar": "/assets/images/img4.png",
+          "promoVideo": "/assets/videos/video2.mp4"
+        },
+        {
+          "id": 3,
+          "name": "Josh",
+          "country": "DE",
+          "quote": "İnanılmaz destek ekibi ve harika işlem koşulları. Açık ara en iyi prop firması!",
+          "highlight": "en iyi prop firması",
+          "rating": "4.8/5.0 Rating",
+          "payout": "€1,944.00",
+          "avatar": "/assets/images/img3.png",
+          "promoVideo": "/assets/videos/video3.mp4"
+        },
+        {
+          "id": 4,
+          "name": "Nova",
+          "country": "SG",
+          "quote": "€25K'dan €200K fonlu hesaba. Prop Capitals işlem kariyerimi tamamen değiştirdi!",
+          "highlight": "işlem kariyerimi tamamen değiştirdi",
+          "rating": "4.9/5.0 Rating",
+          "payout": "€933.00",
+          "avatar": "/assets/images/img1.png",
+          "promoVideo": "/assets/videos/video4.mp4"
+        }
+      ]
     },
     "cta": {
       "title": "Başlamaya hazır mısınız?",
@@ -113,10 +211,451 @@
       "faq": "SSS",
       "contact": "İletişim",
       "terms": "Kullanım şartları",
-      "privacy": "Gizlilik politikası"
+      "privacy": "Gizlilik politikası",
+      "tagline": "Fonlanmış hesaplar ve sektör lideri koşullarla dünya genelindeki trader'ları güçlendiriyoruz.",
+      "trading": "İşlem",
+      "resources": "Kaynaklar",
+      "aboutUs": "Hakkımızda",
+      "careers": "Kariyer",
+      "blog": "Blog",
+      "oneStepChallenge": "1 Aşamalı Challenge",
+      "twoStepChallenge": "2 Aşamalı Challenge",
+      "pricing": "Fiyatlandırma",
+      "platforms": "Platformlar",
+      "faqs": "SSS",
+      "tradingRules": "İşlem Kuralları",
+      "affiliateProgram": "Ortaklık Programı",
+      "riskDisclosure": "Risk Bildirimi",
+      "refundPolicy": "İade Politikası",
+      "withdrawalPolicy": "Para Çekme Politikası",
+      "kycPolicy": "KYC Politikası",
+      "amlPolicy": "AML Politikası",
+      "riskDisclaimerLabel": "Risk Uyarısı:",
+      "riskDisclaimerText": "Döviz ve diğer finansal araçlarda işlem yapmak önemli ölçüde zarar riski taşır ve tüm yatırımcılar için uygun değildir. Geçmiş performans, gelecekteki sonuçların göstergesi değildir. Prop Capitals simüle edilmiş işlem hesapları sunar; bir aracı kurum, yatırım danışmanı veya finans kuruluşu değiliz. Değerlendirme aşamasındaki tüm işlem faaliyetleri simüle edilmiş bir ortamda gerçekleştirilir. Lütfen sorumlu bir şekilde ve yalnızca kaybetmeyi göze alabileceğiniz sermaye ile işlem yapın.",
+      "copyrightLine": "© 2026 Prop-Capitals.com. Tüm hakları saklıdır.",
+      "riskShort": "Risk",
+      "refundsShort": "İadeler",
+      "withdrawalsShort": "Para Çekme",
+      "kycShort": "KYC",
+      "amlShort": "AML"
     },
     "partners": {
       "title": "Aşağıdaki platformları kullanan traderlar tarafından güvenilmektedir:"
+    },
+    "challengesSection": {
+      "eyebrow": "Fonlama Programları",
+      "title": "Kendi",
+      "titleHighlight": "Yolunu Seç",
+      "subtitle": "İşlem tarzına uygun fonlama programını seç. Tüm programlar %100 ücret iadesi içerir.",
+      "errorState": "Fonlama programlarımız geçici olarak kullanılamıyor. Lütfen kısa süre sonra tekrar dene.",
+      "emptyState": "Şu anda kullanılabilir fonlama programı yok. Lütfen yakında tekrar kontrol et.",
+      "viewAllChallenges": "Tüm meydan okumaları gör",
+      "customSize": "Özel {{symbol}}",
+      "discountBadge": "%70 İNDİRİM",
+      "notAtThisSize": "Bu boyutta yok",
+      "pickAnotherSize": "Başka bir hesap boyutu seç",
+      "stats": {
+        "profitTarget": "Kâr Hedefi",
+        "dailyDrawdown": "Günlük Drawdown",
+        "maxDrawdown": "Maksimum Drawdown",
+        "leverage": "Kaldıraç",
+        "profitSplit": "Kâr Paylaşımı"
+      },
+      "features": [
+        "Süre sınırı yok",
+        "Tüm stratejilere izin verilir",
+        "%100 ücret iadesi",
+        "Ücretsiz eğitim dahil"
+      ],
+      "getStarted": "Başla"
+    },
+    "comparison": {
+      "eyebrow": "Neden Bizi Seçmelisiniz",
+      "titleStart": "Prop Capitals ile",
+      "titleOther": "\"Diğer\"",
+      "titleEnd": "Firmalar",
+      "subtitle": "Binlerce trader'ın neden Prop Capitals'e geçtiğini görün.",
+      "others": "Diğerleri",
+      "feature": "Özellik",
+      "otherPropFirms": "Diğer Prop Firmaları",
+      "rows": [
+        {
+          "feature": "Değerlendirme Süreci",
+          "others": "1 Adımlı veya 2 Adımlı",
+          "propCapitals": "Basit 1 veya 2 Adımlı Sınama",
+          "highlight": false
+        },
+        {
+          "feature": "Ödeme Süreleri",
+          "others": "Haftalık / İki haftada bir döngüler",
+          "propCapitals": "90 Dakikadan Az",
+          "highlight": true
+        },
+        {
+          "feature": "Destek",
+          "others": "7/24 Canlı Sohbet ve E-posta",
+          "propCapitals": "7/24 Canlı Sohbet ve E-posta",
+          "highlight": false
+        },
+        {
+          "feature": "Destek Yanıt Süresi",
+          "others": "Dakikalar ile birkaç saat arası",
+          "propCapitals": "Ortalama 60 Saniyenin Altında",
+          "highlight": true
+        },
+        {
+          "feature": "İşlem Eğitimi",
+          "others": "Bazen Dahil",
+          "propCapitals": "Ücretsiz Kurs Dahil",
+          "highlight": false
+        },
+        {
+          "feature": "Kâr Paylaşımı",
+          "others": "%90'a kadar (plana göre)",
+          "propCapitals": "%90'a kadar",
+          "highlight": false
+        },
+        {
+          "feature": "Haber İşlemleri",
+          "others": "Genellikle Kısıtlı",
+          "propCapitals": "Tamamen Serbest",
+          "highlight": false
+        },
+        {
+          "feature": "Hafta Sonu Pozisyon Tutma",
+          "others": "İzinli (swaplı/swapsız)",
+          "propCapitals": "Tamamen Serbest",
+          "highlight": false
+        },
+        {
+          "feature": "Sınama Ücreti İadesi",
+          "others": "İlk Ödemede İade Edilir",
+          "propCapitals": "İlk Ödemede %100 İade",
+          "highlight": false
+        }
+      ]
+    },
+    "education": {
+      "badge": "Ücretsiz Eğitim",
+      "title": "Ücretsiz İşlem",
+      "titleHighlight": "Yol Haritası",
+      "subtitle": "Herhangi bir meydan okumayı satın aldığında, kapsamlı işlem eğitimimize anında erişim kazanırsın. Profesyonel trader'lardan öğren ve kanıtlanmış stratejilerle piyasalarda ustalaş.",
+      "watchPreview": "Önizlemeyi İzle",
+      "featureList": [
+        "50+ video ders",
+        "Canlı işlem seansları",
+        "Özel Discord topluluğu",
+        "Haftalık piyasa analizi"
+      ],
+      "cards": [
+        {
+          "title": "İşlem Kurulumu Avantajın",
+          "item1": "İşlem sırlarını öğren",
+          "item2": "Çalışma alanını optimize et",
+          "item3": "Her işlemde tutarlılık oluştur"
+        },
+        {
+          "title": "Yüksek Zaman Dilimi Bölgelerini Belirleme",
+          "item1": "Arz ve talep bölgelerini çiz",
+          "item2": "Bölgeler boyunca en uygun girişleri tespit et",
+          "item3": "Düşük zaman dilimi işlemlerini yönlendirmek için yüksek zaman dilimi bölgelerini kullan"
+        },
+        {
+          "title": "Olmazsa Olmaz İşlem Kaynakları",
+          "item1": "Sosyal medyadaki en iyi haber kaynakları",
+          "item2": "Dış kaynaklar nasıl değerlendirilir",
+          "item3": "Kritik risk yönetimi araçları"
+        },
+        {
+          "title": "Fibonacci Girişleri ve Çıkışları",
+          "item1": "Girişler ve çıkışlar için en uygun oranlar",
+          "item2": "Uzantılarla hassas hedefler belirle",
+          "item3": "Geri çekilmeleri güvenle yakala"
+        }
+      ]
+    },
+    "faqSection": {
+      "eyebrow": "Destek",
+      "titlePrefix": "Sıkça Sorulan",
+      "titleHighlight": "Sorular",
+      "subtitle": "Prop Capitals fonlama programları hakkında bilmeniz gereken her şey.",
+      "stillHaveQuestions": "Hâlâ sorularınız mı var?",
+      "contactSupport": "7/24 destek ekibimizle iletişime geçin",
+      "items": [
+        {
+          "question": "Prop Capitals nasıl çalışır?",
+          "answer": "Prop Capitals, yatırımcılara işlem yapmaları için fonlanmış hesaplar sunar. Anında Fonlama, 1 Adımlı veya 2 Adımlı sınamalar arasından seçim yapabilirsiniz. Değerlendirmeyi geçtiğinizde (veya anında fonlamayı seçtiğinizde) sermayemizle işlem yapar ve kârın %90'ına kadarını elinizde tutarsınız. Siz işleme odaklanırken tüm riski biz üstleniriz."
+        },
+        {
+          "question": "Kâr paylaşımı nedir?",
+          "answer": "Sektör lideri, %90'a varan kâr paylaşımı sunuyoruz. Kesin paylaşım oranı seçtiğiniz programa bağlıdır: Anında Fonlama %70, 1 Adımlı Sınama %85 ve 2 Adımlı Sınama %90'a varan kâr paylaşımı sunar. En iyi performans gösterenler %100 kâr paylaşımına bile ulaşabilir."
+        },
+        {
+          "question": "Ödemeler ne kadar hızlı işleme alınır?",
+          "answer": "Ödemelerimiz ortalama 90 dakikanın altında işleme alınır - sektördeki en hızlılardan biri. Bir ödeme talebinde bulunduğunuzda, ekibimiz kazancınızı hızlıca almanız için gece gündüz çalışır. Banka havalesi, kripto ve e-cüzdanlar dahil olmak üzere birden fazla ödeme yöntemini destekliyoruz."
+        },
+        {
+          "question": "Uzman Danışmanları (EA'lar) kullanabilir miyim?",
+          "answer": "Evet! EA'lar, otomatik botlar, skalping, haber işlemleri ve hafta sonu pozisyon tutma dahil tüm işlem stratejilerine izin veriyoruz. İşlem yapma şekliniz üzerinde neredeyse hiçbir kısıtlama yoktur - sizin için en iyi çalışan stratejiyi kullanın."
+        },
+        {
+          "question": "Bir sınamada başarısız olursam ne olur?",
+          "answer": "Bir sınama sırasında kuralları ihlal ederseniz, indirimli bir fiyattan yeni bir satın alma ile tekrar deneyebilirsiniz. Yeniden deneme hesaplarında %20'ye varan indirim sunuyoruz. Unutmayın, sınamalarımızda zaman sınırı yoktur; bu yüzden sorumlu bir şekilde işlem yapmak ve riskinizi yönetmek için acele etmeyin."
+        },
+        {
+          "question": "Sınama ücreti iade edilebilir mi?",
+          "answer": "Evet! Fonlanmış bir yatırımcı olduğunuzda, ilk ödemenizle birlikte sınama ücretinizin %100'ünü iade ediyoruz. Bu, geçip kâr etmeniz halinde değerlendirmenizin aslında ücretsiz olduğu anlamına gelir."
+        },
+        {
+          "question": "Hangi işlem araçları mevcut?",
+          "answer": "Forex (50+ parite), Metaller (Altın, Gümüş), Endeksler (US30, NAS100, SPX500) ve Kripto Paralar (BTC, ETH) işlemleri yapın. 0.0 pipten başlayan rekabetçi spreadler ve düşük komisyonlar sunuyoruz."
+        },
+        {
+          "question": "Ölçeklendirme planı var mı?",
+          "answer": "Evet! Ölçeklendirme planımız, hesabınızı €5,000,000'a kadar büyütmenize olanak tanır. Her %10 kâr kilometre taşına ulaştığınızda, hesap boyutunuz %25 artar. En iyi yatırımcılar, daha da iyi koşullara sahip Elite programımıza erişebilir."
+        }
+      ]
+    },
+    "payoutsSection": {
+      "logoAlt": "Logo",
+      "logoDarkAlt": "Koyu Logo",
+      "fundedTrading": "Fonlu İşlem",
+      "checkNo": "Çek No.",
+      "date": "TARİH",
+      "payToTheOrderOf": "ÖDEME EMRİ",
+      "amountUsd": "TUTAR (USD)",
+      "memo": "AÇIKLAMA",
+      "memoValue": "İşlem Kârı Ödemesi",
+      "authorized": "Onaylandı",
+      "verified": "DOĞRULANDI",
+      "badge": "Gerçek Trader Ödemeleri",
+      "headingBefore": "Toplam",
+      "headingAfter": "Ödendi",
+      "subtitle": "Her çek, Prop Capitals ile hedeflerine ulaşan gerçek bir trader'ı temsil eder."
+    },
+    "platforms": {
+      "eyebrow": "İşlem Platformları",
+      "titlePrefix": "Kendi",
+      "titleHighlight": "Şartlarınla İşlem Yap",
+      "subtitle": "Gelişmiş grafik araçları, otomatik işlem ve mobil erişim sunan sektör lideri platformlar arasından seç.",
+      "newBadge": "YENİ",
+      "mt5": {
+        "description": "Güçlü grafik araçları ve otomatik işlem özellikleriyle sektör standardı platform.",
+        "features": [
+          "Expert Advisor'lar",
+          "Gelişmiş Grafikler",
+          "Mobil Uygulama"
+        ]
+      },
+      "tradeLocker": {
+        "description": "Kesintisiz analiz için TradingView entegrasyonuna sahip modern platform.",
+        "features": [
+          "TradingView Grafikleri",
+          "Web Tabanlı",
+          "Tek Tıkla İşlem"
+        ]
+      },
+      "bybit": {
+        "description": "Gelişmiş türev ve spot işlem imkanı sunan lider kripto borsası.",
+        "features": [
+          "Kripto Vadeli İşlemler",
+          "Kopya İşlem",
+          "Birleşik Hesap"
+        ]
+      },
+      "pt5": {
+        "description": "Fonlanan trader'lar için özel özelliklerle geliştirilmiş kendi platformumuz.",
+        "features": [
+          "Sıfır Gecikme",
+          "Dahili Risk Yöneticisi",
+          "PC'ye Özel"
+        ]
+      },
+      "highlights": {
+        "webPlatform": {
+          "label": "Web Platformu",
+          "value": "Herhangi bir tarayıcıdan işlem yap"
+        },
+        "instruments": {
+          "label": "100+ Enstrüman",
+          "value": "Forex, Kripto, Endeksler"
+        },
+        "spreads": {
+          "label": "0.0 Pip Spread",
+          "value": "Kurumsal fiyatlandırma"
+        }
+      }
+    },
+    "profitCalculator": {
+      "badge": "Kâr Hesaplayıcı",
+      "titlePrefix": "Kazanç Potansiyelini",
+      "titleHighlight": "Hesapla",
+      "subtitle": "Fonladığımız trader'ların istatistiklerine göre ortalama aylık kâr oranı %5,72'dir.",
+      "unavailable": "Hesaplayıcı geçici olarak kullanılamıyor. Lütfen kısa süre sonra tekrar deneyin.",
+      "accountSize": "Hesap Büyüklüğü",
+      "step": "Adım {{current}}/{{total}}",
+      "monthlyProfitRate": "Aylık Kâr Oranı",
+      "average": "Ort.: %5,72",
+      "monthlyEarnings": "Aylık Kazanç (%90 pay)",
+      "yearlyPotential": "Yıllık Potansiyel",
+      "disclaimer": "*%90 kâr payına göre hesaplanmıştır. Gerçek sonuçlar işlem performansına göre değişebilir."
+    },
+    "trustpilot": {
+      "verified": "Doğrulanmış",
+      "postedOn": "Trustpilot'ta paylaşıldı",
+      "basedOnReviews": "2.340+ değerlendirmeye dayanır",
+      "headingBefore": "Binlerce Trader'ın",
+      "headingHighlight": "Güvendiği",
+      "headingAfter": "Platform",
+      "subtitle": "Sadece bizim sözümüze güvenmeyin. Gerçek trader'ların Prop Capitals deneyimleri hakkında neler söylediğini görün.",
+      "reviews": [
+        {
+          "id": 1,
+          "name": "James Wilson",
+          "location": "United Kingdom",
+          "date": "2 gün önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Çalıştığım en iyi prop firması",
+          "review": "Ödeme süreci inanılmaz hızlı - paramı 2 saatten kısa sürede aldım! Destek ekibi son derece ilgili ve işlem koşulları mükemmel. Prop trading konusunda ciddi olan herkese Prop Capitals'ı gönülden tavsiye ederim."
+        },
+        {
+          "id": 2,
+          "name": "Sophie Martin",
+          "location": "United Kingdom",
+          "date": "5 gün önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Tüm beklentilerimi aştı",
+          "review": "Daha önce birçok prop firmasını denedim ama Prop Capitals gerçekten öne çıkıyor. %90 kâr paylaşımı harika ve ilk ödemende meydan okuma ücretini iade etmeleri, trader'larına gerçekten güvendiklerini gösteriyor."
+        },
+        {
+          "id": 3,
+          "name": "Marco Rossi",
+          "location": "Italy",
+          "date": "1 hafta önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Profesyonel ve güvenilir",
+          "review": "Kayıttan ilk ödememe kadar her şey sorunsuz ilerledi. Platform kullanımı kolay, kurallar net ve destek ekibi ihtiyacın olduğunda gerçekten yardımcı oluyor. Prop trading tam da böyle olmalı!"
+        },
+        {
+          "id": 4,
+          "name": "Anna Kowalski",
+          "location": "Germany",
+          "date": "1 hafta önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Sonunda güvenilir bir prop firması",
+          "review": "Diğer prop firmalarında hayal kırıklığına uğradıktan sonra şüpheciydim. Ama Prop Capitals tam olarak vaat ettiklerini yerine getirdi. Hızlı ödemeler, harika koşullar ve mükemmel müşteri hizmetleri. Çok etkilendim!"
+        },
+        {
+          "id": 5,
+          "name": "David Chen",
+          "location": "Singapore",
+          "date": "2 hafta önce",
+          "rating": 5,
+          "verified": true,
+          "title": "İşlem kariyerim için bir dönüm noktası",
+          "review": "Meydan okumayla birlikte gelen ücretsiz işlem kursu gerçekten değerliydi - sadece pazarlama sözü değil. Cömert kâr paylaşımı ve hızlı ödemelerle birlikte Prop Capitals gerçekten işini biliyor."
+        },
+        {
+          "id": 6,
+          "name": "Lucas Silva",
+          "location": "Brazil",
+          "date": "2 hafta önce",
+          "rating": 4,
+          "verified": true,
+          "title": "Genel olarak harika bir deneyim",
+          "review": "Deneyimimden çok memnunum. Meydan okuma adildi, kurallar makul ve ilk ödememi talep ettikten sonra 90 dakika içinde aldım. Diğer trader'lara kesinlikle tavsiye ederim."
+        },
+        {
+          "id": 7,
+          "name": "Yuki Tanaka",
+          "location": "Japan",
+          "date": "3 gün önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Olağanüstü işlem koşulları",
+          "review": "Spread'ler dar, emir gerçekleşmesi hızlı ve PT5 platformu inanılmaz kullanıcı dostu. Hesabımı şimdiden iki kez büyüttüm. Prop Capitals, ciddi trader'lar için gerçek bir adres."
+        },
+        {
+          "id": 8,
+          "name": "Mohammed Al-Rashid",
+          "location": "UAE",
+          "date": "4 gün önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Şimşek hızında ödemeler",
+          "review": "Ödememi saat 15.00'te talep ettim ve 16.00'da hesabımdaydı. İnanılmaz bir hız! Destek ekibi her zaman yardımcı oluyor ve işlem kuralları adil ve şeffaf."
+        },
+        {
+          "id": 9,
+          "name": "Emma Thompson",
+          "location": "Australia",
+          "date": "1 hafta önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Verdiğim en iyi karar",
+          "review": "$25K'lık bir meydan okumayla başladım ve şimdi $100K'lık fonlanmış bir hesapta işlem yapıyorum. Büyüme planı cömert ve topluluk çok destekleyici. Daha fazlasını isteyemezdim!"
+        },
+        {
+          "id": 10,
+          "name": "Pierre Dubois",
+          "location": "France",
+          "date": "5 gün önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Şeffaf ve güvenilir",
+          "review": "Gizli kural yok, oyun yok. Her şey ilk günden itibaren net. Panel sade ve ilerlemeni takip etmeyi kolaylaştırıyor. Prop trading tam da böyle işlemeli."
+        },
+        {
+          "id": 11,
+          "name": "Carlos Rodriguez",
+          "location": "Mexico",
+          "date": "6 gün önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Hayat değiştiren bir fırsat",
+          "review": "3 hafta içinde zorlanan bir bireysel trader'dan fonlanmış bir profesyonele dönüştüm. Eğitim kaynakları stratejimi geliştirmeme yardımcı oldu. Artık onların sermayesiyle istikrarlı kâr elde ediyorum!"
+        },
+        {
+          "id": 12,
+          "name": "Olga Petrov",
+          "location": "Netherlands",
+          "date": "1 hafta önce",
+          "rating": 4,
+          "verified": true,
+          "title": "Sağlam bir prop firması",
+          "review": "MT5 ve yeni PT5 dahil harika platform seçenekleri. Destek, talebime 10 dakikadan kısa sürede yanıt verdi. 4 yıldız vermemin tek nedeni, daha fazla kripto paritesi olmasını istemem."
+        },
+        {
+          "id": 13,
+          "name": "Henrik Johansson",
+          "location": "Sweden",
+          "date": "2 hafta önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Her açıdan profesyonel",
+          "review": "Süreç sorunsuz başladı, kurallar anlaşılır ve kâr paylaşımları sektörün en iyileri arasında. Prop Capitals'ı işlem grubuma çoktan tavsiye ettim."
+        },
+        {
+          "id": 14,
+          "name": "Priya Sharma",
+          "location": "India",
+          "date": "3 gün önce",
+          "rating": 5,
+          "verified": true,
+          "title": "Sonunda doğru firmayı buldum",
+          "review": "3 farklı prop firmasını denedikten sonra, Prop Capitals'ın en iyisi olduğunu rahatlıkla söyleyebilirim. Hızlı ödemeler, mükemmel destek ve gerçekten başarılı olmanı istiyorlar. 10/10!"
+        }
+      ]
+    },
+    "payouts": {
+      "dates": {
+        "jan2025": "Oca 2025",
+        "dec2024": "Ara 2024"
+      }
     }
   },
   "dashboard": {
@@ -204,7 +743,7 @@
       "dailyLossLimit": "Günlük zarar limiti",
       "overallDrawdown": "Toplam drawdown",
       "minTradingDays": "Minimum işlem günleri",
-      "daysRemaining": "Kalan günler",
+      "daysRemaining": "Maksimum gün",
       "tradingStyleRules": "İşlem stili kuralları",
       "newsTrading": "Haber işlemleri",
       "weekendHolding": "Hafta sonu taşıma",
@@ -225,8 +764,10 @@
         "danger": "Tehlike",
         "warning": "Uyarı",
         "safe": "Güvenli"
-      }
-    }
+      },
+      "days": "gün"
+    },
+    "pl": "K/Z"
   },
   "myAccounts": {
     "title": "Hesaplarım",
@@ -245,8 +786,8 @@
     "balance": "Bakiye",
     "profit": "Kâr",
     "days": "Gün",
-    "dailyDD": "Günlük zarar",
-    "overallDD": "Toplam zarar",
+    "dailyDD": "Günlük düşüş",
+    "overallDD": "Toplam düşüş",
     "openDashboard": "İşlem panosunu aç",
     "progress": "İlerleme",
     "trades": "İşlemler",
@@ -305,7 +846,7 @@
     "bestDay": "En iyi gün",
     "worstDay": "En kötü gün",
     "noData": "Sembol dağılımı için veri yok",
-    "loading": "Yükleniyor..."
+    "loading": "Analizler yükleniyor..."
   },
   "payouts": {
     "title": "Ödemeler",
@@ -337,7 +878,7 @@
     "businessDaysOnly": "Sadece iş günleri",
     "minimumAmount": "Minimum tutar",
     "payoutFee": "Çekim ücreti",
-    "free": "â¬0 (Ücretsiz)",
+    "free": "€0 (Ücretsiz)",
     "freeValue": "Ücretsiz",
     "availablePaymentMethods": "Mevcut ödeme yöntemleri",
     "bankTransfer": "Banka havalesi",
@@ -361,7 +902,14 @@
     "date": "Tarih",
     "method": "Yöntem",
     "status": "Durum",
-    "processed": "İşlendi"
+    "processed": "İşlendi",
+    "requestFailed": "Ödeme talebi gönderilemedi",
+    "loadingAvailable": "Kullanılabilir tutar yükleniyor...",
+    "availableForPayout": "Ödemeye uygun tutar",
+    "profitSplitLabel": "Kâr paylaşımı",
+    "minimumLabel": "Minimum",
+    "pendingPayoutWarning": "Bu hesap için zaten bekleyen bir ödeme talebiniz var",
+    "belowMinimumWarning": "Kullanılabilir tutar, {{amount}} olan minimum ödeme tutarının altında"
   },
   "profile": {
     "title": "Profil",
@@ -436,7 +984,16 @@
     "challengeUpdates": "Meydan okuma güncellemeleri",
     "challengeUpdatesDesc": "İlerleme ve aşama değişiklikleriyle ilgili güncellemeler",
     "marketingEmails": "Pazarlama e-postaları",
-    "marketingEmailsDesc": "Haberler, promosyonlar ve özel teklifler"
+    "marketingEmailsDesc": "Haberler, promosyonlar ve özel teklifler",
+    "saveError": "Profil kaydedilemedi",
+    "notificationUpdateFailed": "Bildirim tercihleri güncellenemedi",
+    "passwordChangeFailed": "Şifre değiştirilemedi",
+    "documentUploadFailed": "Belge yüklenemedi",
+    "preferencesSaved": "Tercihler kaydedildi",
+    "personal": "Kişisel",
+    "sec": "Güvenlik",
+    "verify": "Doğrulama",
+    "notif": "Bildirimler"
   },
   "support": {
     "title": "Destek",
@@ -447,9 +1004,8 @@
     "subjectPlaceholder": "Sorunun kısa açıklaması",
     "category": "Kategori",
     "select": "Seç",
-                "ticketCreated":"biletOluşturuldu",
-                "ticketCreatedDesc":"biletOluşturulmaAçıklaması",
-
+    "ticketCreated": "Talep oluşturuldu",
+    "ticketCreatedDesc": "Destek talebiniz başarıyla gönderildi.",
     "account": "Hesap",
     "payment": "Ödeme",
     "payout": "Çekim",
@@ -483,7 +1039,9 @@
     "faq3Q": "Çekimler ne kadar sürede tamamlanır?",
     "faq3A": "Çekimler onaydan sonra 24–48 saat içinde işlenir. Banka transferleri 2–5 iş günü sürebilir",
     "faq4Q": "Haber zamanlarında işlem yapabilir miyim?",
-    "faq4A": "Evet. Haber işlemleri tüm meydan okumalarda serbesttir ve yüksek etkili haberler için kısıtlama yoktur"
+    "faq4A": "Evet. Haber işlemleri tüm meydan okumalarda serbesttir ve yüksek etkili haberler için kısıtlama yoktur",
+    "error": "Hata",
+    "ticketError": "Destek talebi oluşturulamadı. Lütfen tekrar deneyin."
   },
   "tradeHistory": {
     "title": "İşlem geçmişi",
@@ -524,7 +1082,10 @@
     "profit": "Kâr",
     "status": "Durum",
     "noAccounts": "İşlem hesabı yok",
-    "noAccountsDesc": "İşlem geçmişini görmek için önce bir işlem hesabı oluşturmalısınız"
+    "noAccountsDesc": "İşlem geçmişini görmek için önce bir işlem hesabı oluşturmalısınız",
+    "csvLots": "Lot",
+    "openTime": "Açılış zamanı",
+    "closeTime": "Kapanış zamanı"
   },
   "challengeProgress": {
     "title": "Meydan okuma ilerlemesi",
@@ -543,14 +1104,14 @@
     "phase2": "Aşama 2",
     "funded": "Fonlandı",
     "scaling": "Ölçekleme",
-    "reachTarget": "{{target}} kâr hedefini ulaş",
+    "reachTarget": "{{target}} kâr hedefine ulaşın",
     "profitTarget": "Kâr hedefi",
     "minTradingDays": "Minimum işlem günleri",
     "maxDailyDD": "Maksimum günlük DD",
     "maxOverallDD": "Maksimum toplam DD",
     "fundedDesc": "Şirket sermayesiyle işlem",
     "profitSplit80": "%80 kâr paylaşımı",
-    "scalingDesc": "â¬2.000.000’a kadar büyüme",
+    "scalingDesc": "{{amount}} tutarına kadar büyüme",
     "profitSplit90": "%90’a kadar kâr paylaşımı",
     "currentPhaseRequirements": "Mevcut aşama gereksinimleri",
     "profitSplit": "Kâr paylaşımı",
@@ -567,7 +1128,18 @@
     "readyToStartDesc": "İşlem platformunu açın ve kâr hedefini yakalayın",
     "viewTradingRules": "İşlem kurallarını görüntüle",
     "failed": "Başarısız",
-    "noAccountsDesc": "Bir meydan okuma satın alarak ilerlemeyi takip etmeye başlayın"
+    "noAccountsDesc": "Bir meydan okuma satın alarak ilerlemeyi takip etmeye başlayın",
+    "accountNumberLabel": "Hesap #{{number}}",
+    "dailyDD": "Günlük DD",
+    "overallDD": "Toplam DD",
+    "targetLabel": "Hedef: {{value}}",
+    "minDaysLabel": "Min: {{value}} gün",
+    "maxLabel": "Maks: {{value}}",
+    "progress": "İlerleme",
+    "passed": "Geçti",
+    "challengeFailed": "Meydan Okuma Başarısız",
+    "failedDescription": "Bu meydan okuma, bir kural ihlali nedeniyle diskalifiye edildi.",
+    "startNewChallenge": "Yeni Meydan Okuma Başlat"
   },
   "phaseTimeline": {
     "challengeJourney": "Meydan okuma yolculuğu",
@@ -603,7 +1175,7 @@
     "selectAccount": "Hesap seç",
     "loading": "Yükleniyor...",
     "noAccounts": "İşlem hesabı yok",
-    "noAccountsDesc": "Bir meydan okuma satın alarak kural uyumunu kontrol edin",
+    "noAccountsDesc": "Kural uyumunu ve işlem kurallarını görüntülemek için bir meydan okuma satın alın.",
     "purchaseChallenge": "Meydan okuma satın al",
     "loadingCompliance": "Kural uyumu yükleniyor...",
     "loadError": "Hesap detayları yüklenemedi",
@@ -648,8 +1220,8 @@
     "noComplianceHistory": "Uyum geçmişi yok",
     "noComplianceHistoryDesc": "İşlem yapmaya başladığınızda burada görünecektir",
     "importantInformation": "Önemli bilgiler",
-    "info1": "Günlük zarar, önceki gün kapanış bakiyesine göre hesaplanır",
-    "info2": "Toplam zarar, hesap özkaynağının en yüksek seviyesine göre hesaplanır",
+    "info1": "Günlük drawdown, bir önceki günün kapanış bakiyesine göre hesaplanır",
+    "info2": "Toplam drawdown, hesabınızın en yüksek bakiyesine (özkaynak zirvesi) göre hesaplanır",
     "info3": "Herhangi bir kural ihlali anında diskalifiye ile sonuçlanır",
     "info4": "Küçük ihlaller izlenir ancak anında diskalifiye edilmez",
     "info5": "Tüm hesaplamalar piyasa saatlerinde gerçek zamanlı yapılır"
@@ -755,7 +1327,9 @@
       "limit": "Limit",
       "violationDetected": "Kural ihlali tespit edildi",
       "violationMessage": "Hesabınız bir veya daha fazla işlem kuralını ihlal etti. Lütfen işlemlerinizi gözden geçirin"
-    }
+    },
+    "hoursShort": "sa",
+    "minutesShort": "dk"
   },
   "notifications": {
     "title": "Bildirimler",
@@ -801,22 +1375,25 @@
       "overallDrawdownWarning": "Hesap #{{accountNumber}} için toplam drawdown {{overallPercent}}% seviyesine ulaştı. İzin verilen üst limit {{maxPercent}}%. Lütfen risk yönetimine dikkat edin",
       "dailyDrawdownViolation": "Hesap #{{accountNumber}} için günlük drawdown {{dailyPercent}}% seviyesine ulaştı. İzin verilen üst limit {{maxPercent}}%. İşlemler yarına kadar kilitlenecek",
       "overallDrawdownViolation": "Hesap #{{accountNumber}} için toplam drawdown {{overallPercent}}% seviyesine ulaştı. İzin verilen üst limit {{maxPercent}}%. Meydan okuma diskalifiye edildi",
-      "payoutApproved": "â¬{{amount}} tutarındaki çekim talebiniz onaylandı. 24–48 saat içinde gönderilecektir",
-      "payoutRejected": "â¬{{amount}} tutarındaki çekim talebiniz reddedildi. Detaylar için destekle iletişime geçin",
-      "payoutProcessed": "â¬{{amount}} tutarındaki çekiminiz işlendi ve transfer tamamlandı",
-      "phase1Completed": "Tebrikler! â¬{{accountSize}} meydan okumasında Aşama 1’i tamamladınız. Şimdi Aşama 2’ye devam edelim",
-      "phase2Completed": "Tebrikler! â¬{{accountSize}} meydan okumasında Aşama 2’yi tamamladınız. Hesabınız fonlandı!",
+      "payoutApproved": "€{{amount}} tutarındaki çekim talebiniz onaylandı. Tutar 24–48 saat içinde gönderilecektir.",
+      "payoutRejected": "€{{amount}} tutarındaki çekim talebiniz reddedildi. Daha fazla bilgi için destekle iletişime geçin.",
+      "payoutProcessed": "€{{amount}} tutarındaki çekiminiz işlendi ve hesabınıza transfer edildi.",
+      "phase1Completed": "Tebrikler! €{{accountSize}} meydan okumanızın Aşama 1'ini başarıyla tamamladınız. Devam etmek için Aşama 2'ye geçin.",
+      "phase2Completed": "Tebrikler! €{{accountSize}} meydan okumanızın Aşama 2'sini başarıyla tamamladınız. Hesabınız artık fonlandı!",
       "tradingDaysMilestoneMet": "Hesap #{{accountNumber}} üzerinde {{tradingDays}} işlem günü tamamlandı. Minimum işlem günü şartını karşıladınız!",
       "tradingDaysMilestone": "Hesap #{{accountNumber}} üzerinde {{tradingDays}} işlem günü tamamlandı. Harika iş!",
-      "challengePurchased": "{{challengeName}} meydan okuması satın alımı tamamlandı. İşlem hesabınız #{{accountNumber}} başlangıç bakiyesi â¬{{startingBalance}} ile hazır",
-      "accountScalingApproved": "Hesap #{{accountNumber}} için ölçekleme talebi onaylandı. Bakiye â¬{{oldBalance}}’dan â¬{{newBalance}}’a yükseldi",
+      "challengePurchased": "{{challengeName}} meydan okumanız başarıyla satın alındı. İşlem hesabınız #{{accountNumber}} artık €{{startingBalance}} başlangıç bakiyesiyle aktif.",
+      "accountScalingApproved": "Hesap #{{accountNumber}} için ölçekleme talebiniz onaylandı. Hesap bakiyesi €{{oldBalance}} seviyesinden €{{newBalance}} seviyesine yükseldi.",
       "accountScalingRejected": "Hesap #{{accountNumber}} için ölçekleme talebi reddedildi. Detaylar için destekle iletişime geçin",
       "newChallengeAvailable": "Yeni meydan okumaya göz atın: {{challengeName}}! {{platform}} üzerinde {{accountSize}} hesap boyutu. Hemen başlayın",
       "accountViolationGeneric": "Hesap #{{accountNumber}} işlem kurallarını ihlal etti{{violationPercent}}",
       "accountPaused": "İşlem hesabı #{{accountNumber}} duraklatıldı. İşlemler geçici olarak durduruldu",
       "accountClosed": "İşlem hesabı #{{accountNumber}} kapatıldı",
       "accountResumed": "İşlem hesabı #{{accountNumber}} yeniden başlatıldı. İşlemler artık aktif"
-    }
+    },
+    "loadError": "Bildirimler yüklenemedi",
+    "loadErrorHint": "Lütfen sayfayı yenileyip tekrar deneyin.",
+    "deleteNotification": "Bildirimi sil"
   },
   "buyChallenge": {
     "title": "Yeni meydan okuma ekle",
@@ -826,7 +1403,6 @@
     "orderSummary": "Sipariş özeti",
     "challenge": "Meydan okuma",
     "noChallenges": "Zorluk yok",
-
     "platform": "Platform",
     "amountPaid": "Ödenen tutar",
     "goToDashboard": "Panoya git",
@@ -853,7 +1429,7 @@
     "validating": "Doğrulanıyor...",
     "applied": "Uygulandı",
     "off": "İNDİRİM",
-    "discountApplied": "İndirim Uygulandı: -{{discount}}%",
+    "discountApplied": "%{{discount}} indirim uygulandı",
     "couponApplied": "{{code}} uygulandı - %{{discount}} indirim!",
     "couponSuccess": "Kupon uygulandı",
     "couponError": "Geçersiz kupon",
@@ -864,7 +1440,7 @@
     "total": "Toplam",
     "processing": "İşleniyor...",
     "pay": "Öde",
-    "payAmount": "â¬{{amount}} öde",
+    "payAmount": "{{symbol}}{{amount}} öde",
     "secureEncryption": "Güvenli 256-bit SSL şifreleme",
     "minTradingDays": "Min işlem günü",
     "maxTradingDays": "Maks işlem günü",
@@ -903,7 +1479,17 @@
         "name": "PayPal",
         "desc": "PayPal ile öde"
       }
-    }
+    },
+    "enterCouponPrompt": "Lütfen bir kupon kodu girin",
+    "invalidCouponCode": "Geçersiz kupon kodu",
+    "invalidCouponDesc": "Kupon kodu geçersiz",
+    "couponValidationFailed": "Kupon doğrulanamadı",
+    "couponValidationFailedDesc": "Kupon doğrulanamadı. Lütfen tekrar deneyin.",
+    "purchaseFailedRetry": "Satın alma başarısız oldu. Lütfen tekrar deneyin.",
+    "authRequired": "Giriş gerekli",
+    "signInToPurchase": "Meydan okuma satın almak için lütfen giriş yapın.",
+    "noChallengeSelected": "Meydan okuma seçilmedi",
+    "selectChallengeToContinue": "Devam etmek için lütfen bir meydan okuma seçin."
   },
   "violationModal": {
     "dailyLossTitle": "Günlük zarar limitine ulaşıldı",
@@ -1048,7 +1634,15 @@
       "bid": "Bid",
       "ask": "Ask",
       "spread": "Spread",
-      "limit": "Limit"
+      "limit": "Limit",
+      "closeModal": "Pencereyi kapat",
+      "available": "Kullanılabilir",
+      "noAvailableBalance": "Kullanılabilir bakiye yok",
+      "selectSymbol": "Bir sembol seçin",
+      "insufficientMargin": "Yetersiz marjin",
+      "tradingDisabled": "İşlem devre dışı",
+      "lots": "LOT",
+      "crypto": "KRİPTO"
     },
     "chart": {
       "lastUpdate": "Son güncelleme",
@@ -1074,7 +1668,9 @@
       "ask": "Ask",
       "chg": "Chg%",
       "updated": "Güncellendi",
-      "retry": "Tekrar dene"
+      "retry": "Tekrar dene",
+      "noResults": "Sonuç bulunamadı",
+      "toggleFavorite": "Favorilere ekle/çıkar"
     },
     "positions": {
       "title": "Açık pozisyonlar",
@@ -1087,7 +1683,8 @@
       "closeAt": "Kapanış fiyatı",
       "pips": "pips",
       "buy": "Al",
-      "sell": "Sat"
+      "sell": "Sat",
+      "autoClosed": "Otomatik kapatıldı"
     },
     "history": {
       "filterBySymbol": "Sembole göre filtrele...",
@@ -1146,7 +1743,26 @@
       "accountViolatedRules": "Hesap meydan okuma kurallarını ihlal etti",
       "daysRemaining_one": "{{count}} gün kaldı",
       "daysRemaining_other": "{{count}} gün kaldı"
-    }
+    },
+    "marketWatch": "Piyasa Takibi",
+    "positionModified": "Pozisyon Güncellendi",
+    "positionModifiedSuccess": "{{symbol}} SL/TP başarıyla güncellendi",
+    "positionAlreadyClosed": "Pozisyon zaten kapatılmıştı",
+    "accountChangedDuringTrade": "İşlem yürütülürken hesap değişti",
+    "executePendingOrderError": "Bekleyen emir yürütülemedi",
+    "createPendingOrderError": "Bekleyen emir oluşturulamadı",
+    "cancelOrderError": "Emir iptal edilemedi",
+    "ws": {
+      "connectedTooltip": "WebSocket bağlı - gerçek zamanlı güncellemeler etkin",
+      "reconnectingTooltip": "WebSocket yeniden bağlanıyor - yedek yoklama etkin",
+      "disconnectedTooltip": "WebSocket bağlantısı kesildi - yedek yoklama kullanılıyor (5 sn aralık)",
+      "liveUpdates": "Canlı Güncellemeler",
+      "reconnecting": "Yeniden bağlanıyor...",
+      "pollingMode": "Yoklama Modu",
+      "liveShort": "Canlı",
+      "pollShort": "Yokla"
+    },
+    "accountStatusChanged": "Hesap Durumu Değişti"
   },
   "nav": {
     "home": "Ana sayfa",
@@ -1156,9 +1772,9 @@
     "rules": "Kurallar",
     "faq": "SSS",
     "contact": "İletişim",
-    "login": "Giriş",
+    "login": "Giriş Yap",
     "getStarted": "Başla",
-    "dashboard": "Pano",
+    "dashboard": "Kontrol Paneli",
     "tradingTerminal": "İşlem terminali",
     "buyChallenge": "Meydan okuma satın al",
     "myAccounts": "Hesaplarım",
@@ -1182,7 +1798,16 @@
     "website": "Web sitesi",
     "logout": "Çıkış",
     "user": "Kullanıcı",
-    "adminPanel": "Yönetici paneli"
+    "adminPanel": "Yönetici paneli",
+    "links": {
+      "home": "Ana Sayfa",
+      "howItWorks": "Nasıl Çalışır",
+      "challenges": "Challenge'lar",
+      "faqs": "SSS",
+      "about": "Hakkımızda"
+    },
+    "tagline": "FONLANMIŞ TRADING",
+    "getFunded": "Fonlan"
   },
   "status": {
     "active": "Aktif",
@@ -2261,6 +2886,50 @@
       "title": "Başlamaya hazır mısınız?",
       "subtitle": "Fonlanan binlerce trader’a katılın ve yolculuğunuza bugün başlayın",
       "viewChallenges": "Meydan okumaları görüntüle"
+    },
+    "hero": {
+      "badge": "Nasıl Çalışır",
+      "titleLead": "Fonlanmaya Giden",
+      "titleHighlight": "Yolunuz",
+      "subtitle": "Prop Capitals, yetenekli trader'lara ihtiyaç duydukları sermayeyi sağlar. {{amount}} kadar sermayeyle nasıl işlem yapmaya başlayabileceğiniz aşağıda."
+    },
+    "platform": {
+      "liveTrading": "Canlı İşlem",
+      "tradingPlatform": "İşlem Platformu",
+      "accountBalance": "Hesap Bakiyesi",
+      "quickTrade": "Hızlı İşlem",
+      "lotSize": "Lot Büyüklüğü",
+      "openPositions": "Açık Pozisyonlar"
+    },
+    "steps": {
+      "chooseChallenge": {
+        "title": "Meydan Okumanızı Seçin",
+        "description": "Tek Aşamalı veya İki Aşamalı değerlendirmemiz arasından seçim yapın. €5K'dan €200K'ya kadar hesap büyüklüğünüzü belirleyin."
+      },
+      "passEvaluation": {
+        "title": "Değerlendirmeyi Geçin",
+        "description": "Zarar limitlerine uyarak kâr hedefine ulaşın. Zaman baskısı yok - kendi temponuzda işlem yapın."
+      },
+      "getFunded": {
+        "title": "Fonlanın",
+        "description": "Geçtiğinizde fonlanan hesabınızı alın. Sermayemizle hemen işlem yapmaya başlayın."
+      },
+      "earnWithdraw": {
+        "title": "Kazanın ve Çekin",
+        "description": "Kârınızın %90'ına kadarını koruyun. Dilediğiniz an çekim talep edin - ödemeler 90 dakikadan kısa sürede hesabınızda."
+      }
+    },
+    "stepsSection": {
+      "titleLead": "Fonlanmak İçin",
+      "titleHighlight": "4 Basit Adım",
+      "subtitle": "Kayıttan ilk ödemenize, yalnızca birkaç gün içinde."
+    },
+    "ctaSection": {
+      "titleLead": "İşlem Yolculuğunuza",
+      "titleHighlight": "Başlamaya",
+      "titleTail": " Hazır mısınız?",
+      "subtitle": "Becerilerini kanıtlamış ve artık Prop Capitals fonlamasıyla işlem yapan binlerce trader'a katılın.",
+      "button": "Hemen Fonlan"
     }
   },
   "challenges": {
@@ -2406,8 +3075,8 @@
         "desc": "Yolculuğunuz boyunca tutarlı kurallar uygulanır."
       },
       "scaleTo2M": {
-        "title": "â¬2M’a kadar ölçekle",
-        "desc": "İşlem sermayenizi 2 milyon dolara kadar büyütebilirsiniz."
+        "title": "€2M’a kadar ölçekle",
+        "desc": "İşlem sermayenizi 2 milyon euroya kadar büyütebilirsiniz."
       },
       "automaticUpgrades": {
         "title": "Otomatik yükseltmeler",
@@ -2432,7 +3101,7 @@
     },
     "roadmap": {
       "badge": "Yol haritası",
-      "title": "2 milyon dolara giden yol",
+      "title": "2 milyon euroya giden yol",
       "subtitle": "Her seviyede hesabınızın nasıl büyüdüğünü görün.",
       "start": "Başlangıç",
       "max": "Maksimum",
@@ -2467,9 +3136,13 @@
     "ctaSection": {
       "title": "Ölçeklemeye hazır mısınız?",
       "tradingCareer": "Trading kariyerinizi bir üst seviyeye taşıyın.",
-      "subtitle": "Herhangi bir hesap büyüklüğünden başlayın ve işlem sermayenizi â¬2.000.000’a kadar ölçekleyin.",
+      "subtitle": "Herhangi bir hesap büyüklüğünden başlayın ve işlem sermayenizi 2 milyon euroya kadar ölçekleyin.",
       "getStartedNow": "Hemen başla",
-      "footer": "â¬99’dan başla • â¬2M’a kadar ölçekle • %90’a kadar kâr paylaşımı"
+      "footer": "Yalnızca €99’dan başla • €2M’a kadar ölçekle • %90’a kadar kâr paylaşımı"
+    },
+    "heroImageAlt": "Ölçekleme planı arka planı",
+    "footer": {
+      "emailLabel": "E-posta"
     }
   },
   "payoutsPage": {
@@ -2490,9 +3163,9 @@
       "profitSplit": "Kâr paylaşımı",
       "best": "En iyi",
       "tiers": {
-        "tier1": "â¬10K - â¬25K",
-        "tier2": "â¬50K",
-        "tier3": "â¬100K+",
+        "tier1": "€10K - €25K",
+        "tier2": "€50K",
+        "tier3": "€100K+",
         "tier4": "Ölçekleme sonrası"
       }
     },
@@ -2537,12 +3210,16 @@
     "recentPayouts": {
       "badge": "Canlı güncellemeler",
       "title": "Son çekimler",
-      "subtitle": "Gerçek trader’lara gerçek çekimler. Başarılı fonlanan trader topluluğuna katılın."
+      "subtitle": "Gerçek trader’lara gerçek çekimler. Başarılı fonlanan trader topluluğuna katılın.",
+      "time": {
+        "hoursAgo": "{{count}} saat önce",
+        "dayAgo": "{{count}} gün önce"
+      }
     },
     "payoutTerms": {
       "title": "Çekim şartları",
       "biWeekly": "İki haftada bir çekim takvimi (14 günde bir)",
-      "minimumAmount": "Minimum çekim tutarı â¬50’dir",
+      "minimumAmount": "Minimum çekim tutarı €50’dir",
       "noMaximum": "Maksimum çekim limiti yoktur",
       "noFees": "Her yöntemde çekim ücreti ücretsizdir",
       "firstPayout": "İlk çekim fonlandıktan 14 gün sonra mümkündür",
@@ -2601,14 +3278,15 @@
         "title": "Günlük zarar (%5)",
         "description": "Bir günde izin verilen maksimum kayıp. Gün başlangıç bakiyesine göre hesaplanır ve sunucu saatine göre gece yarısı sıfırlanır.",
         "example": "Örnek:",
-        "exampleText": "Bakiye â¬50.000 ise günlük zarar limiti â¬2.500’dır."
+        "exampleText": "Bakiye €50.000 ise günlük zarar limiti €2.500'dur."
       },
       "maximumDrawdown": {
         "title": "Maksimum zarar (%10)",
         "description": "Ulaşılan en yüksek bakiyeden izin verilen maksimum kayıp. Özkaynak zirvesini izleyen trailing sistemdir.",
         "example": "Örnek:",
-        "exampleText": "En yüksek bakiye â¬55.000 ise maksimum zarar çizgisi â¬49.500’dür."
-      }
+        "exampleText": "En yüksek bakiye €55.000 ise maksimum zarar çizgisi €49.500'dür."
+      },
+      "imageAlt": "Drawdown grafiği"
     },
     "allowedActions": {
       "title": "İzin verilenler",
@@ -2676,7 +3354,7 @@
     },
     "scalingPlan": {
       "title": "Ölçekleme planı",
-      "subtitle": "Hesabınızı â¬2.000.000’a kadar büyütün",
+      "subtitle": "Hesabınızı €2.000.000'a kadar büyütün",
       "accountSize": "Hesap büyüklüğü",
       "profitSplit": "Kâr paylaşımı",
       "howItWorks": {
@@ -2697,7 +3375,7 @@
       },
       "minimum": {
         "label": "Minimum çekim tutarı",
-        "value": "â¬50"
+        "value": "€50"
       },
       "maximum": {
         "label": "Maksimum çekim tutarı",
@@ -2709,12 +3387,13 @@
       },
       "fee": {
         "label": "Çekim ücreti",
-        "value": "â¬0 (Ücretsiz)"
+        "value": "€0 (Ücretsiz)"
       },
       "firstPayout": {
         "label": "İlk çekim",
         "value": "Fonlanan hesapta işlem başladıktan 14 gün sonra"
-      }
+      },
+      "imageAlt": "Çekimler"
     },
     "cta": {
       "title": "İşleme başlamaya hazır mısınız?",
@@ -2724,26 +3403,35 @@
     "important": "Önemli",
     "phase1": "Aşama 1",
     "phase2": "Aşama 2",
-    "funded": "Fonlanan"
+    "funded": "Fonlanan",
+    "heroImageAlt": "İşlem kuralları"
   },
   "terms": {
-    "title": "Kullanım Şartları",
-    "lastUpdated": "Son güncelleme: Ocak 2024",
+    "title": "Hizmet Şartları",
+    "lastUpdated": "Son güncelleme: 1 Ocak 2025",
     "acceptance": {
       "title": "1. Şartların kabulü",
       "content": "Prop Capitals hizmetlerine erişerek ve kullanarak bu Kullanım Şartları ile bağlı olmayı kabul edersiniz. Şartları kabul etmiyorsanız hizmetlerimizi kullanmayın."
     },
     "description": {
-      "title": "2. Hizmetin tanımı",
-      "content": "Prop Capitals, trader’ların işlem becerilerini kanıtlayabildiği özel bir işlem değerlendirme programı (“Meydan Okuma”) sunar. Meydan okumanın başarıyla tamamlanması, fonlanan işlem hesabına erişim sağlayabilir."
+      "title": "2. Hizmetin Tanımı",
+      "content": "Prop Capitals, katılımcıların işlem yapma yeteneklerini sergilemelerine olanak tanıyan simüle edilmiş işlem değerlendirme programları (\"Meydan Okumalar\") sunar. Başarılı katılımcılar, fonlanan işlem hesaplarına erişim elde edebilir. Değerlendirme aşamasındaki tüm işlem faaliyetleri simüle edilmiş bir ortamda gerçekleştirilir."
     },
     "eligibility": {
       "title": "3. Uygunluk",
-      "content": "Hizmetlerimizi kullanmak için 18 yaşında veya daha büyük olmalısınız. Prop Capitals’u kullanarak bu sözleşmeyi yapabilecek yasal ehliyete sahip olduğunuzu beyan edersiniz."
+      "content": "Hizmetimizi kullanabilmek için en az 18 yaşında olmanız ve kendi yargı bölgenizde bağlayıcı sözleşmeler yapmaya yasal olarak ehil olmanız gerekir. Hizmet'i kullanarak, bu gereklilikleri karşıladığınızı beyan ve taahhüt edersiniz."
     },
     "accountRegistration": {
-      "title": "4. Hesap kaydı",
-      "content": "Kayıt sırasında doğru, güncel ve eksiksiz bilgi sağlamayı kabul edersiniz. Hesap bilgilerinizin gizliliğini korumak sizin sorumluluğunuzdadır."
+      "title": "4. Hesap Kaydı",
+      "content": "Kayıt sırasında doğru, güncel ve eksiksiz bilgi sağlamayı kabul edersiniz. Hesap bilgilerinizin gizliliğini korumak sizin sorumluluğunuzdadır.",
+      "intro": "Hizmet'in belirli özelliklerine erişmek için bir hesap oluşturmanız gerekir. Aşağıdakileri kabul edersiniz:",
+      "items": [
+        "Doğru, güncel ve eksiksiz bilgi sağlamak",
+        "Bilgilerinizin doğru kalmasını sağlamak için bunları korumak ve güncellemek",
+        "Hesap kimlik bilgilerinizin güvenliğini sağlamak",
+        "Hesabınız altındaki tüm faaliyetlerin sorumluluğunu kabul etmek",
+        "Herhangi bir yetkisiz kullanım durumunda bizi derhal bilgilendirmek"
+      ]
     },
     "tradingRules": {
       "title": "5. İşlem kuralları",
@@ -2768,49 +3456,70 @@
       "content": "Fonlanan trader’lar, kâr paylaşımı anlaşmasına göre iki haftada bir kâr çekebilir. Prop Capitals, çekim işlemi öncesinde tüm işlem aktivitelerini inceleme hakkını saklı tutar."
     },
     "intellectualProperty": {
-      "title": "9. Fikri mülkiyet",
-      "content": "Prop Capitals platformundaki tüm içerik, ticari markalar ve fikri mülkiyet Prop Capitals’a aittir ve yürürlükteki yasalarla korunur."
+      "title": "7. Fikri Mülkiyet",
+      "content": "Hizmet ile özgün içeriği, özellikleri ve işlevselliği Prop Capitals'a aittir ve uluslararası telif hakkı, ticari marka ve diğer fikri mülkiyet yasalarıyla korunmaktadır."
     },
     "limitationOfLiability": {
-      "title": "10. Sorumluluğun sınırlandırılması",
-      "content": "Prop Capitals, hizmetlerimizin kullanımından doğan dolaylı, arızi veya sonuçsal zararlardan sorumlu değildir."
+      "title": "8. Sorumluluğun Sınırlandırılması",
+      "content": "Prop Capitals, Hizmet'i kullanmanızdan kaynaklanan dolaylı, arızi, özel, sonuçsal veya cezai hiçbir zarardan sorumlu olmayacaktır. Toplam sorumluluğumuz, talebin doğmasından önceki 12 ay içinde Hizmet için tarafınızca ödenen tutarı aşmayacaktır."
     },
     "modifications": {
       "title": "11. Değişiklikler",
       "content": "Prop Capitals, bu şartları herhangi bir zamanda değiştirme hakkını saklı tutar. Hizmeti kullanmaya devam etmeniz, güncellenmiş şartları kabul ettiğiniz anlamına gelir."
     },
     "contact": {
-      "title": "12. İletişim",
-      "content": "Bu şartlarla ilgili sorularınız için support@prop-capitals.com adresine yazabilirsiniz."
+      "title": "10. Bize Ulaşın",
+      "content": "Bu şartlarla ilgili sorularınız için support@prop-capitals.com adresine yazabilirsiniz.",
+      "intro": "Bu Şartlar hakkında herhangi bir sorunuz varsa, lütfen bizimle iletişime geçin:",
+      "emailLabel": "E-posta",
+      "addressLabel": "Adres"
+    },
+    "agreement": {
+      "title": "1. Şartların Kabulü",
+      "content": "prop-capitals.com adresindeki Prop Capitals web sitesine ve hizmetlerine (\"Hizmet\") erişerek veya bunları kullanarak, bu Hizmet Şartları (\"Şartlar\") ile bağlı olmayı kabul edersiniz. Bu şartların herhangi bir bölümünü kabul etmiyorsanız, Hizmet'e erişemezsiniz."
+    },
+    "challengeRules": {
+      "title": "5. Meydan Okuma Kuralları ve İşlem Koşulları",
+      "content": "Tüm işlem meydan okumaları; kâr hedefleri, düşüş limitleri ve işlem kısıtlamaları dahil olmak üzere belirli kurallara tabidir. Bu kurallar web sitemizde gösterilir ve bunlara uyulmalıdır. Meydan okuma kurallarının ihlali, para iadesi olmaksızın hesabın kapatılmasıyla sonuçlanabilir."
+    },
+    "payments": {
+      "title": "6. Ödemeler ve İadeler",
+      "content": "Meydan okuma ücretleri satın alma sırasında tahsil edilir. Fonlanan bir trader olarak ilk kâr ödemenizle birlikte %100 ücret iadesi sunuyoruz. Bu politikanın dışındaki iade talepleri İade Politikamıza tabidir. Tüm ödemeler, ödeme sağlayıcılarımız aracılığıyla güvenli bir şekilde işlenir."
+    },
+    "governingLaw": {
+      "title": "9. Geçerli Hukuk",
+      "content": "Bu Şartlar, kanunlar ihtilafı hükümleri dikkate alınmaksızın, İngiltere ve Galler yasalarına göre yönetilir ve yorumlanır."
     }
   },
   "privacy": {
     "title": "Gizlilik Politikası",
-    "lastUpdated": "Son güncelleme: Ocak 2024",
+    "lastUpdated": "Son güncelleme: 1 Ocak 2025",
     "informationWeCollect": {
-      "title": "1. Topladığımız bilgiler",
-      "intro": "Doğrudan sağladığınız bilgileri toplarız:",
+      "title": "Topladığımız Bilgiler",
+      "intro": "Doğrudan bize sağladığınız bilgileri toplarız; bunlar şunları içerir:",
       "items": [
-        "Kişisel tanımlayıcı bilgiler (ad, e-posta, telefon numarası)",
-        "Ödeme bilgileri (üçüncü taraf ödeme sağlayıcıları tarafından güvenle işlenir)",
-        "İşlem hesabı bilgileri ve aktiviteleri",
-        "Destek ekibiyle iletişim kayıtları",
-        "KYC belgeleri (kimlik, adres doğrulama)"
+        "Ad, e-posta adresi ve iletişim bilgileri",
+        "Ödeme ve fatura bilgileri",
+        "İşlem hesabı verileri ve performans ölçütleri",
+        "İletişim tercihleri",
+        "Sağlamayı seçtiğiniz diğer her türlü bilgi"
       ]
     },
     "howWeUse": {
-      "title": "2. Bilgileri nasıl kullanırız?",
+      "title": "Bilgilerinizi Nasıl Kullanırız",
       "items": [
-        "Hizmeti sağlamak ve sürdürmek",
-        "Ödemeleri işlemek ve ilgili bilgileri iletmek",
-        "İşlem aktivitelerini izlemek ve kuralları uygulamak",
-        "Güncellemeler ve promosyonlar hakkında iletişim kurmak",
-        "Dolandırıcılığı tespit etmek ve önlemek"
-      ]
+        "Hizmetlerimizi sunmak, sürdürmek ve geliştirmek",
+        "İşlemleri gerçekleştirmek ve ilgili bilgileri göndermek",
+        "Teknik bildirimler, güncellemeler ve destek mesajları göndermek",
+        "Yorumlarınıza, sorularınıza ve taleplerinize yanıt vermek",
+        "Eğilimleri, kullanımı ve etkinlikleri izlemek ve analiz etmek",
+        "Hileli işlemleri tespit etmek, araştırmak ve önlemek"
+      ],
+      "intro": "Topladığımız bilgileri şu amaçlarla kullanırız:"
     },
     "dataSecurity": {
-      "title": "3. Veri güvenliği",
-      "content": "Kişisel bilgileri şifreleme, güvenli sunucular ve düzenli güvenlik denetimleri gibi sektör standardı önlemlerle koruruz."
+      "title": "Veri Güvenliği",
+      "content": "Kişisel bilgilerinizi yetkisiz erişime, değiştirilmeye, ifşaya veya imhaya karşı korumak için uygun teknik ve organizasyonel önlemleri uygularız. Buna, aktarım sırasında ve beklemedeyken verilerin şifrelenmesi, düzenli güvenlik değerlendirmeleri ve sıkı erişim denetimleri dahildir."
     },
     "dataSharing": {
       "title": "4. Bilgi paylaşımı",
@@ -2823,35 +3532,2744 @@
       ]
     },
     "yourRights": {
-      "title": "5. Haklarınız",
+      "title": "Haklarınız",
       "intro": "Şu haklara sahipsiniz:",
       "items": [
-        "Kişisel verilerinize erişim",
-        "Hatalı bilgilerin düzeltilmesini talep etme",
-        "Verilerin silinmesini talep etme (yasal gerekliliklere tabi)",
-        "Pazarlama iletişimlerini durdurma (opt-out)",
-        "Veri taşınabilirliği talebi"
+        "Kişisel verilerinize erişme ve bir kopyasını alma",
+        "Hatalı kişisel verileri düzelttirme",
+        "Kişisel verilerinizin silinmesini talep etme",
+        "Kişisel verilerinizin işlenmesine itiraz etme",
+        "İşlemenin kısıtlanmasını talep etme",
+        "Veri taşınabilirliği",
+        "Onayınızı dilediğiniz zaman geri çekme"
       ]
     },
     "cookies": {
-      "title": "6. Çerezler",
-      "content": "Deneyimi iyileştirmek, kullanım analizi yapmak ve içeriği optimize etmek için çerezler ve benzeri teknolojiler kullanırız. Tarayıcı ayarlarınızdan çerez tercihlerinizi yönetebilirsiniz."
+      "title": "Çerezler",
+      "content": "Tarama etkinlikleriniz hakkında bilgi toplamak ve izlemek için çerezler ve benzeri izleme teknolojileri kullanırız. Tarayıcınızı tüm çerezleri reddedecek veya bir çerez gönderildiğinde bunu belirtecek şekilde ayarlayabilirsiniz."
     },
     "dataRetention": {
       "title": "7. Veri saklama",
       "content": "Hesabınız aktif olduğu sürece veya hizmeti sunmak için gerekli olduğu müddetçe kişisel bilgileri saklarız. Yasal uyum ve uyuşmazlık çözümü için bazı bilgileri daha uzun süre tutabiliriz."
     },
     "internationalTransfers": {
-      "title": "8. Uluslararası aktarım",
-      "content": "Bilgileriniz, ikamet ettiğiniz ülke dışındaki ülkelere aktarılabilir ve orada işlenebilir. Uygun koruma önlemlerini uygularız."
+      "title": "Uluslararası Veri Aktarımları",
+      "content": "Bilgileriniz, kendi ülkeniz dışındaki ülkelere aktarılabilir ve buralarda işlenebilir. Bilgilerinizi bu Gizlilik Politikası'na uygun şekilde korumak için uygun güvencelerin mevcut olmasını sağlarız."
     },
     "childrensPrivacy": {
       "title": "9. Çocukların gizliliği",
       "content": "Hizmetlerimiz 18 yaş altını hedeflemez. Bilerek 18 yaş altından bilgi topladığımızı düşünmüyoruz."
     },
     "contactUs": {
-      "title": "10. Bize ulaşın",
-      "content": "Gizlilikle ilgili sorularınız için support@prop-capitals.com adresinden bize ulaşabilirsiniz."
+      "title": "Bize Ulaşın",
+      "content": "Gizlilikle ilgili sorularınız için support@prop-capitals.com adresinden bize ulaşabilirsiniz.",
+      "intro": "Bu Gizlilik Politikası hakkında herhangi bir sorunuz varsa, lütfen bizimle iletişime geçin:",
+      "emailLabel": "E-posta",
+      "addressLabel": "Adres"
     }
+  },
+  "layout": {},
+  "faqPage": {
+    "eyebrow": "Destek",
+    "titleLine1": "Sıkça Sorulan",
+    "titleHighlight": "Sorular",
+    "subtitle": "Prop Capitals fonlama programları, işlem kuralları ve ödemeler hakkında sıkça sorulan soruların yanıtlarını bulun.",
+    "searchPlaceholder": "Soru ara...",
+    "searchResultsPrefix": "\"{{query}}\" için",
+    "searchResultsSuffix": "sonuç bulundu",
+    "categories": {
+      "general": "Genel",
+      "challenges": "Challenge'lar",
+      "trading": "İşlem Kuralları",
+      "payouts": "Ödemeler",
+      "platforms": "Platformlar"
+    },
+    "questions": {
+      "general": [
+        {
+          "question": "Prop Capitals nedir?",
+          "answer": "Prop Capitals, yetenekli trader'lara işlem yapabilecekleri fonlanmış hesaplar sunan bir proprietary trading (öz sermaye) firmasıdır. Tüm riski biz üstlenirken, elde ettiğiniz kârın %90'ına kadarını siz alırsınız."
+        },
+        {
+          "question": "Fonlama nasıl işliyor?",
+          "answer": "Değerlendirme challenge'ımızı (1 Aşamalı veya 2 Aşamalı) geçtikten sonra, sermayemizle fonlanmış bir hesap alırsınız. Normal şekilde işlem yaparsınız ve kârı paylaşırız - %90'ına kadarını siz alırsınız, %10'unu biz alırız."
+        },
+        {
+          "question": "Prop Capitals güvenilir mi?",
+          "answer": "Evet, Prop Capitals dünya genelinde binlerce fonlanmış trader'a sahip, güvenilir bir proprietary trading firmasıdır. Trader'larımıza 15 milyon doların üzerinde ödeme yaptık ve Trustpilot'ta 4,8 puana sahibiz."
+        },
+        {
+          "question": "Hangi ülkelerden trader kabul ediyorsunuz?",
+          "answer": "Dünya genelinde çoğu ülkeden trader kabul ediyoruz. Ancak yasal kısıtlamalar nedeniyle belirli yargı bölgelerinden trader kabul edemiyoruz. Tam listeyi görmek için lütfen hizmet şartlarımızı inceleyin."
+        },
+        {
+          "question": "İşlem tecrübesine ihtiyacım var mı?",
+          "answer": "Belirli bir belge şartı aramasak da, prop trading; piyasalar ve risk yönetimi konusunda sağlam bir anlayışa sahip trader'lar için uygundur. Başarılı olmanıza yardımcı olmak için her challenge satın alımıyla birlikte ücretsiz eğitim sunuyoruz."
+        },
+        {
+          "question": "Minimum yaş şartı nedir?",
+          "answer": "Fonlama programlarımıza katılabilmek için en az 18 yaşında olmanız gerekir."
+        },
+        {
+          "question": "Birden fazla hesabım olabilir mi?",
+          "answer": "Evet, bizimle birden fazla fonlanmış hesaba sahip olabilirsiniz. Başarılı trader'larımızın çoğu, kazanç potansiyellerini en üst düzeye çıkarmak için aynı anda birkaç hesabı yönetiyor."
+        },
+        {
+          "question": "Challenge'ı geçmek için bir süre sınırı var mı?",
+          "answer": "Hayır! Diğer birçok prop firmasının aksine, challenge'larımızda süre sınırı yoktur. Kâr hedeflerinize ulaşmak için ihtiyacınız olduğu kadar zaman ayırabilirsiniz."
+        }
+      ],
+      "challenges": [
+        {
+          "question": "1 Aşamalı ile 2 Aşamalı arasındaki fark nedir?",
+          "answer": "1 Aşamalı Challenge, %10 kâr hedefi olan tek bir değerlendirme aşamasına sahiptir ve %85 kâr paylaşımı sunar. 2 Aşamalı Challenge ise iki aşamadan (%8 ve %5 kâr hedefleri) oluşur, ancak daha yüksek bir %90 kâr paylaşımı sunar."
+        },
+        {
+          "question": "Bir challenge'da başarısız olursam ne olur?",
+          "answer": "Challenge sırasında kuralları ihlal ederseniz, yeni bir satın alımla tekrar deneyebilirsiniz. Tekrar deneme hesaplarında %20'ye varan indirimler sunuyoruz. İşlem verileriniz, gelişmenize yardımcı olmak amacıyla analiz için saklanır."
+        },
+        {
+          "question": "Challenge ücreti iade edilebilir mi?",
+          "answer": "Evet! Fonlanmış bir trader olduğunuzda, ilk ödemenizle birlikte challenge ücretinizin %100'ünü iade ediyoruz. Bu da değerlendirmenizi etkin bir şekilde ücretsiz hale getiriyor."
+        },
+        {
+          "question": "Hesap büyüklüğümü yükseltebilir miyim?",
+          "answer": "Evet, fonlandıktan sonra ölçeklendirme programımıza katılabilirsiniz. Kâr kilometre taşlarına ulaşın ve hesap büyüklüğünüz 5.000.000 dolara kadar artabilsin."
+        },
+        {
+          "question": "Hangi hesap büyüklükleri mevcut?",
+          "answer": "Hem 1 Aşamalı hem de 2 Aşamalı challenge'lar için 5.000 dolardan 200.000 dolara kadar hesap büyüklükleri sunuyoruz. İşlem tarzınıza ve risk toleransınıza uygun büyüklüğü seçin."
+        },
+        {
+          "question": "Minimum işlem günü şartı var mı?",
+          "answer": "Hayır, herhangi bir minimum işlem günü şartı yoktur. Challenge'ı işlemleriniz elverdiği ölçüde hızlı tamamlayabilirsiniz; yine de sürdürülebilir işlem alışkanlıklarını teşvik ediyoruz."
+        }
+      ],
+      "trading": [
+        {
+          "question": "Hangi işlem stratejilerine izin veriliyor?",
+          "answer": "Scalping, swing trading, gün içi işlem ve pozisyon işlemleri dahil olmak üzere tüm meşru işlem stratejilerine izin veriyoruz. Expert Advisor'lar (EA'lar) ve otomatik işlemlere de izin verilmektedir."
+        },
+        {
+          "question": "Haber dönemlerinde işlem yapabilir miyim?",
+          "answer": "Evet, platformumuzda haber işlemlerine tamamen izin verilmektedir. Yüksek etkili ekonomik gelişmeler sırasında kısıtlama olmadan işlem yapabilirsiniz."
+        },
+        {
+          "question": "Pozisyonları gece boyunca tutabilir miyim?",
+          "answer": "Evet, pozisyonları gece boyunca tutmaya izin verilmektedir. Ayrıca pozisyonları hafta sonları boyunca da hiçbir kısıtlama olmadan tutabilirsiniz."
+        },
+        {
+          "question": "Günlük drawdown limiti nedir?",
+          "answer": "Günlük drawdown limiti, 1 Aşamalı challenge'lar için %4 ve 2 Aşamalı challenge'lar için %5'tir. Bu, bir önceki günün kapanış bakiyeniz üzerinden hesaplanır."
+        },
+        {
+          "question": "Maksimum drawdown nedir?",
+          "answer": "Maksimum drawdown, 1 Aşamalı challenge'lar için %8 ve 2 Aşamalı challenge'lar için %10'dur. Bu, hesabınızın en yüksek noktasından gerileyebileceği maksimum miktardır."
+        },
+        {
+          "question": "Kopya işlem (copy trading) hizmetlerini kullanabilir miyim?",
+          "answer": "Hayır, kopya işleme izin verilmemektedir. Her trader kendi işlemlerini bağımsız olarak gerçekleştirmelidir. Hesap bilgilerini paylaşmak veya üçüncü taraf kopya işlem hizmetlerini kullanmak kesinlikle yasaktır ve hesabın kapatılmasıyla sonuçlanabilir."
+        },
+        {
+          "question": "Hangi enstrümanlarla işlem yapabilirim?",
+          "answer": "Forex (50+ parite), Metaller (Altın, Gümüş), Endeksler (US30, NAS100, SPX500) ve Kripto Paralar (BTC, ETH) ile işlem yapabilirsiniz. 100'den fazla enstrüman mevcuttur."
+        }
+      ],
+      "payouts": [
+        {
+          "question": "Ödemeler ne kadar hızlı işleniyor?",
+          "answer": "Ortalama ödeme işleme süremiz 90 dakikanın altında - sektördeki en hızlılardan biri. Ödemelerin çoğu, talepten sonraki birkaç saat içinde tamamlanır."
+        },
+        {
+          "question": "Minimum ödeme tutarı nedir?",
+          "answer": "Minimum ödeme tutarı 100 dolardır. Bu eşiği karşıladığınızda istediğiniz sıklıkta ödeme talep edebilirsiniz."
+        },
+        {
+          "question": "Hangi ödeme yöntemleri mevcut?",
+          "answer": "Banka havalesi, kripto para (BTC, ETH, USDT) ve Wise ile Payoneer gibi popüler e-cüzdanlar dahil olmak üzere birden fazla ödeme yöntemini destekliyoruz."
+        },
+        {
+          "question": "Bir ödeme takvimi var mı?",
+          "answer": "Sabit bir takvim yoktur - kârınız olduğunda istediğiniz zaman ödeme talep edebilirsiniz. Birçok trader haftalık veya iki haftalık ödeme talep ediyor."
+        },
+        {
+          "question": "Kâr paylaşımı nedir?",
+          "answer": "Kâr paylaşımı, 1 Aşamalı fonlanmış trader'lar için %85 ve 2 Aşamalı fonlanmış trader'lar için %90'dır. Kazandığınız her doların büyük çoğunluğu sizde kalır."
+        }
+      ],
+      "platforms": [
+        {
+          "question": "Hangi işlem platformlarını sunuyorsunuz?",
+          "answer": "MetaTrader 5 (MT5), TradeLocker, MatchTrader ve cTrader sunuyoruz. Challenge'ınıza başlarken tercih ettiğiniz platformu seçebilirsiniz."
+        },
+        {
+          "question": "Expert Advisor (EA) kullanabilir miyim?",
+          "answer": "Evet, EA'lara ve otomatik işlem sistemlerine tüm platformlarımızda tamamen izin verilmektedir. Sizin için işe yarayan herhangi bir stratejiyi kullanabilirsiniz."
+        },
+        {
+          "question": "Mobil bir işlem uygulaması var mı?",
+          "answer": "Evet, tüm platformlarımızın iOS ve Android için mobil uygulamaları mevcuttur; bu sayede hareket halindeyken de işlem yapabilirsiniz."
+        },
+        {
+          "question": "Başladıktan sonra platform değiştirebilir miyim?",
+          "answer": "Platformunuzu yeni bir challenge veya fonlanmış hesaba başlarken seçebilirsiniz. Mevcut hesaplar için platform değişikliğini görüşmeniz gerekiyorsa destek ekibiyle iletişime geçin."
+        }
+      ]
+    },
+    "contact": {
+      "title": "Hâlâ Sorularınız mı Var?",
+      "subtitle": "Destek ekibimiz, her türlü soru veya sorununuzda size yardımcı olmak için 7/24 hizmetinizde.",
+      "liveChat": "Canlı Sohbet",
+      "contactForm": "İletişim Formu",
+      "emailSupport": "E-posta Desteği",
+      "responseTimeLabel": "Ortalama yanıt süresi:",
+      "responseTimeValue": "60 saniyenin altında"
+    }
+  },
+  "contactPage": {
+    "eyebrow": "Bize Ulaşın",
+    "titleLead": "İletişime",
+    "titleHighlight": "Geçin",
+    "subtitle": "Sorularınız mı var? Destek ekibimiz size 7/24 yardımcı olmak için burada. Kanallarımızdan herhangi biri üzerinden bize ulaşabilirsiniz.",
+    "email": {
+      "title": "E-posta Gönderin",
+      "desc": "Genel sorular ve destek için"
+    },
+    "liveChat": {
+      "title": "Canlı Sohbet",
+      "desc": "Ortalama yanıt süresi 60 saniyenin altında",
+      "value": "7/24 Erişilebilir"
+    },
+    "hours": {
+      "title": "Çalışma Saatleri",
+      "desc": "Destek günün her saati erişilebilir",
+      "value": "Haftanın 7 günü, günde 24 saat"
+    },
+    "headquarters": {
+      "title": "Genel Merkez"
+    },
+    "form": {
+      "heading": "Bize Mesaj Gönderin",
+      "firstName": "Ad",
+      "firstNamePlaceholder": "John",
+      "lastName": "Soyad",
+      "lastNamePlaceholder": "Doe",
+      "emailLabel": "E-posta",
+      "subjectLabel": "Konu",
+      "subjectPlaceholder": "Bir konu seçin",
+      "subjectGeneral": "Genel Soru",
+      "subjectSupport": "Teknik Destek",
+      "subjectBilling": "Faturalandırma Sorusu",
+      "subjectPartnership": "İş Ortaklığı",
+      "messageLabel": "Mesaj",
+      "messagePlaceholder": "Size nasıl yardımcı olabiliriz?",
+      "submit": "Mesaj Gönder"
+    }
+  },
+  "aboutPage": {
+    "hero": {
+      "badge": "Hakkımızda",
+      "titleLead": "Trader'lara Güç Veriyoruz",
+      "titleHighlight": "Dünya Çapında",
+      "subtitle": "Prop Capitals basit bir misyonla kuruldu: yetenekli trader'lara başarıya ulaşmak için ihtiyaç duydukları sermayeye erişim sağlamak. Finansal fırsatın, başlangıç sermayenle sınırlı kalmaması gerektiğine inanıyoruz."
+    },
+    "stats": {
+      "labels": [
+        "Aktif Trader",
+        "Toplam Ödenen",
+        "Ülke",
+        "Ort. Ödeme Süresi"
+      ]
+    },
+    "mission": {
+      "badge": "Misyonumuz",
+      "titleLead": "İşlem Sermayesine Erişimi",
+      "titleHighlight": "Demokratikleştirmek",
+      "paragraph1": "İşlem yeteneğinin banka hesabınla sınırlı kalmaması gerektiğine inanıyoruz. Pek çok yetenekli trader, yeterli sermayeye sahip olmadığı için büyümekte zorlanıyor. Prop Capitals bunu değiştiriyor.",
+      "paragraph2": "Yetenekli trader'lara fon sağlayarak herkesin kazandığı bir denklem kuruyoruz: trader'lar ihtiyaç duydukları sermayeye kavuşuyor, biz de onların başarısına ortak oluyoruz. Bu, güven, şeffaflık ve karşılıklı fayda üzerine kurulu bir ortaklıktır.",
+      "checklist": [
+        "$200,000 kadar fonlu hesaplar",
+        "Kârının %90'ına kadarını koru",
+        "Kişisel sermayene hiçbir risk yok"
+      ],
+      "tradersBadge": "+18.500 trader",
+      "quote": "\"Amacımız basit: işlem yapabiliyorsan, bunu büyük ölçekte yapman için sermayeyi sana veririz.\"",
+      "quoteAuthor": "Alex Thompson",
+      "quoteRole": "CEO ve Kurucu, Prop Capitals"
+    },
+    "values": {
+      "badge": "Değerlerimiz",
+      "titleLead": "Neyi",
+      "titleHighlight": "Savunuyoruz",
+      "items": [
+        {
+          "title": "Şeffaflık",
+          "description": "Net kurallar, gizli koşullar yok. Sade değerlendirme sürecimizde gördüğün, elde ettiğindir."
+        },
+        {
+          "title": "Trader Başarısı",
+          "description": "Senin başarın, bizim başarımızdır. İşlem hedeflerine ulaşman için araçları, eğitimi ve sermayeyi sunuyoruz."
+        },
+        {
+          "title": "Mükemmellik",
+          "description": "En iyi deneyimi sunmak için platformumuzu, hizmetlerimizi ve işlem koşullarımızı sürekli geliştiriyoruz."
+        },
+        {
+          "title": "Hız",
+          "description": "Hızlı destek yanıtlarından şimşek hızındaki ödemelere kadar, zamanına değer veriyor ve buna göre hareket ediyoruz."
+        }
+      ]
+    },
+    "timeline": {
+      "badge": "Yolculuğumuz",
+      "titleLead": "Girişimden",
+      "titleHighlight": "Sektör Lideri Olmaya",
+      "items": [
+        {
+          "title": "Kuruluş",
+          "description": "Prop Capitals, prop trading'i demokratikleştirme misyonuyla kuruldu."
+        },
+        {
+          "title": "Büyüme",
+          "description": "5.000 fonlu trader'a ve $3M ödemeye ulaşıldı."
+        },
+        {
+          "title": "Genişleme",
+          "description": "120+ ülkeye, 15.000+ trader'a ve $10M+ ödemeye genişledik."
+        },
+        {
+          "title": "Bugün",
+          "description": "18.500+ trader ve toplam $15.2M+ ödeme ile sektör lideri."
+        }
+      ]
+    },
+    "team": {
+      "0": {
+        "name": "Alex Thompson",
+        "role": "CEO ve Kurucu"
+      },
+      "1": {
+        "name": "Sarah Chen",
+        "role": "İşlem Birimi Başkanı"
+      },
+      "2": {
+        "name": "Michael Roberts",
+        "role": "CTO"
+      },
+      "3": {
+        "name": "Emma Wilson",
+        "role": "Destek Birimi Başkanı"
+      },
+      "badge": "Ekibimiz",
+      "titleLead": "Liderlik Ekibiyle",
+      "titleHighlight": "Tanışın"
+    },
+    "trustpilot": {
+      "score": "5 üzerinden 4,8",
+      "reviews": "2.340+ değerlendirmeye dayanıyor"
+    },
+    "cta": {
+      "titleLead": "Topluluğumuza Katılmaya",
+      "titleHighlight": "Hazır mısın",
+      "titleTrail": "?",
+      "subtitle": "Fonlanmış trader'lardan oluşan küresel bir topluluğun parçası ol. Yolculuğuna bugün Prop Capitals ile başla.",
+      "button": "Hemen Başla"
+    }
+  },
+  "challengesPage": {
+    "hero": {
+      "eyebrow": "Fonlama Programları",
+      "titlePrefix": "Meydan Okumanı",
+      "titleHighlight": "Seç",
+      "subtitle": "Trade tarzına uygun değerlendirme programını seç. Tüm programlar ücretsiz eğitim ve %100 ücret iadesi içerir."
+    },
+    "customSize": "Özel {{symbol}}",
+    "discountBadge": "%70 İNDİRİM - Sınırlı Süre",
+    "stats": {
+      "phases": "Aşamalar",
+      "phaseCount": "{{count}} Aşama",
+      "profitTarget": "Kâr Hedefi",
+      "dailyDrawdown": "Günlük Düşüş",
+      "maxDrawdown": "Maksimum Düşüş",
+      "minTradingDays": "Min. İşlem Günü",
+      "profitSplit": "Kâr Paylaşımı"
+    },
+    "cardFeatures": [
+      "Süre sınırı yok",
+      "Tüm stratejilere izin verilir",
+      "%100 ücret iadesi",
+      "Ücretsiz trading kursu"
+    ],
+    "startChallenge": "Meydan Okumaya Başla",
+    "features": [
+      {
+        "title": "Süre Sınırı Yok",
+        "description": "Meydan okumayı kendi hızında tamamla"
+      },
+      {
+        "title": "%100 Ücret İadesi",
+        "description": "İlk ödemende ücretini geri al"
+      },
+      {
+        "title": "Tüm Stratejiler",
+        "description": "EA, scalping ve haber tradingine izin verilir"
+      },
+      {
+        "title": "Hızlı Ödemeler",
+        "description": "Ortalama 90 dakikanın altında"
+      }
+    ],
+    "whyChoose": {
+      "prefix": "Neden",
+      "suffix": " tercih etmelisin?"
+    },
+    "compare": {
+      "prefix": "Meydan Okumaları",
+      "highlight": "Karşılaştır",
+      "featureColumn": "Özellik",
+      "oneStep": "1 Aşamalı",
+      "twoStep": "2 Aşamalı"
+    },
+    "comparison": {
+      "phases": "Aşamalar",
+      "profitTarget": "Kâr Hedefi",
+      "dailyDrawdown": "Günlük Düşüş",
+      "maxDrawdown": "Maksimum Düşüş",
+      "profitSplit": "Kâr Paylaşımı",
+      "minTradingDays": "Min. İşlem Günü",
+      "timeLimit": "Süre Sınırı",
+      "unlimited": "Sınırsız"
+    },
+    "cta": {
+      "titlePrefix": "Fonlanmaya",
+      "titleHighlight": "Hazır",
+      "titleSuffix": " mısın?",
+      "subtitle": "Binlerce başarılı trader'a katıl. Meydan okumana bugün başla ve {{amount}}'ya kadar trade yap.",
+      "button": "Hemen Trade Yapmaya Başla"
+    }
+  },
+  "challengeCard": {
+    "badge": "Özel Fiyatlandırma",
+    "title": "Kendi Planını Oluştur",
+    "subtitle": "{{min}} ile {{max}} arasında dilediğin fiyatı seç. Hesap büyüklüğün = fiyat x 100.",
+    "priceLabel": "Meydan Okuma Ücreti ({{symbol}})",
+    "previewPrefix": "",
+    "previewMiddle": "ödeyerek",
+    "previewSuffix": "büyüklüğünde hesap alırsın.",
+    "invalidPrice": "{{min}} ile {{max}} arasında bir fiyat gir.",
+    "specs": {
+      "phases": "Aşama Sayısı",
+      "phasesValue": "1 Aşama",
+      "profitTarget": "Kâr Hedefi",
+      "dailyDrawdown": "Günlük Kayıp Limiti",
+      "maxDrawdown": "Maksimum Kayıp Limiti",
+      "minTradingDays": "Min. İşlem Günü",
+      "minTradingDaysValue": "Yok",
+      "profitSplit": "Kâr Paylaşımı"
+    },
+    "startButton": "Özel Meydan Okumayı Başlat"
+  },
+  "careers": {
+    "eyebrow": "Kariyer",
+    "titleBefore": "Ekibimize",
+    "titleAfter": "Katılın",
+    "subtitle": "Prop trading sektöründe devrim yaratmamıza yardımcı olun. Fark yaratmak isteyen tutkulu kişiler arıyoruz.",
+    "whyWorkWithUs": "Neden Bizimle Çalışmalısınız",
+    "openPositions": "Açık Pozisyonlar",
+    "applyNow": "Hemen Başvur",
+    "stats": [
+      {
+        "value": "50+",
+        "label": "Ekip Üyesi"
+      },
+      {
+        "value": "15+",
+        "label": "Ülke"
+      },
+      {
+        "value": "%100",
+        "label": "Uzaktan Çalışmaya Uygun"
+      },
+      {
+        "value": "4.8",
+        "label": "Glassdoor Puanı"
+      }
+    ],
+    "benefits": [
+      {
+        "title": "Önce Uzaktan",
+        "description": "Dünyanın her yerinden çalışın"
+      },
+      {
+        "title": "Gelişim",
+        "description": "Kariyerinizi hızla ilerletin"
+      },
+      {
+        "title": "Sağlık",
+        "description": "Kapsamlı sağlık güvencesi"
+      },
+      {
+        "title": "Ekipman",
+        "description": "En yeni araçlar ve teknoloji"
+      }
+    ],
+    "openings": [
+      {
+        "title": "Kıdemli Full-Stack Geliştirici",
+        "department": "Mühendislik",
+        "location": "Uzaktan",
+        "type": "Tam Zamanlı"
+      },
+      {
+        "title": "Risk Analisti",
+        "department": "Trading",
+        "location": "Dubai, BAE",
+        "type": "Tam Zamanlı"
+      },
+      {
+        "title": "Müşteri Başarısı Yöneticisi",
+        "department": "Destek",
+        "location": "Uzaktan",
+        "type": "Tam Zamanlı"
+      },
+      {
+        "title": "Pazarlama Yöneticisi",
+        "department": "Pazarlama",
+        "location": "Uzaktan",
+        "type": "Tam Zamanlı"
+      },
+      {
+        "title": "Uyum Görevlisi",
+        "department": "Hukuk",
+        "location": "Dubai, BAE",
+        "type": "Tam Zamanlı"
+      }
+    ]
+  },
+  "blog": {
+    "eyebrow": "Blog",
+    "headingPrefix": "Trading",
+    "headingHighlight": "İçgörüleri",
+    "subtitle": "Daha iyi bir trader olmanıza yardımcı olacak uzman analizleri, trading ipuçları ve sektör haberleri.",
+    "readMore": "Devamını Oku",
+    "featured": {
+      "title": "Prop Trading Challenge Nasıl Geçilir: Eksiksiz Rehber",
+      "excerpt": "Prop trading değerlendirmenizi başarıyla geçmek ve fonlanmak için gereken stratejileri ve zihniyeti öğrenin.",
+      "author": "Trading Ekibi",
+      "date": "28 Oca 2025",
+      "readTime": "8 dk okuma",
+      "category": "Trading İpuçları"
+    },
+    "posts": [
+      {
+        "title": "Risk Yönetimi: Uzun Vadeli Trading Başarısının Anahtarı",
+        "excerpt": "Doğru risk yönetiminin neden herhangi bir trading stratejisinden daha önemli olduğunu keşfedin.",
+        "author": "Risk Ekibi",
+        "date": "25 Oca 2025",
+        "readTime": "5 dk okuma",
+        "category": "Eğitim"
+      },
+      {
+        "title": "Daha İyi Girişler İçin Piyasa Yapısını Anlamak",
+        "excerpt": "Piyasa yapısını nasıl okuyacağınızı öğrenin ve işlem girişlerinizi iyileştirin.",
+        "author": "Analiz Ekibi",
+        "date": "22 Oca 2025",
+        "readTime": "6 dk okuma",
+        "category": "Analiz"
+      },
+      {
+        "title": "Yeni Prop Trader'ların Yaptığı İlk 5 Hata",
+        "excerpt": "Çoğu trader'ın challenge'larını geçememesine neden olan bu yaygın tuzaklardan kaçının.",
+        "author": "Trading Ekibi",
+        "date": "18 Oca 2025",
+        "readTime": "4 dk okuma",
+        "category": "Trading İpuçları"
+      },
+      {
+        "title": "Prop Capitals ile Geleneksel Trading Karşılaştırması: Fark Nedir?",
+        "excerpt": "Prop trading'i bireysel yatırımcı trading'i ile karşılaştırın ve avantajlarını anlayın.",
+        "author": "İçerik Ekibi",
+        "date": "15 Oca 2025",
+        "readTime": "7 dk okuma",
+        "category": "Sektör"
+      },
+      {
+        "title": "Tutarlı Bir Trading Rutini Oluşturmak",
+        "excerpt": "Başarılı trader'ların en iyi performans için günlerini nasıl yapılandırdığını öğrenin.",
+        "author": "Trading Ekibi",
+        "date": "12 Oca 2025",
+        "readTime": "5 dk okuma",
+        "category": "Yaşam Tarzı"
+      },
+      {
+        "title": "Kârlı Trading'in Psikolojisi",
+        "excerpt": "Duygularınıza hâkim olun ve profesyonel bir trader'ın zihniyetini geliştirin.",
+        "author": "Psikoloji Ekibi",
+        "date": "8 Oca 2025",
+        "readTime": "6 dk okuma",
+        "category": "Psikoloji"
+      }
+    ]
+  },
+  "affiliate": {
+    "eyebrow": "Affiliate Programı",
+    "heroTitle": "Kazancınız",
+    "heroTitleHighlight": "%15'e Varan Komisyon",
+    "heroSubtitle": "Affiliate programımıza katılın, trader'ları Prop Capitals'a yönlendirerek pasif gelir elde edin. Kazançta hiçbir sınır yok!",
+    "becomeAffiliate": "Affiliate Ol",
+    "benefits": [
+      {
+        "title": "%15'e Varan Komisyon",
+        "description": "Yönlendirdiğiniz her challenge satın alımından kazanın"
+      },
+      {
+        "title": "Ömür Boyu Yönlendirme",
+        "description": "Yönlendirdiğiniz kişilerin tüm gelecek alımlarından komisyon kazanın"
+      },
+      {
+        "title": "Aylık Bonuslar",
+        "description": "En iyi affiliate'ler ek performans bonusları kazanır"
+      },
+      {
+        "title": "Gerçek Zamanlı Takip",
+        "description": "Kazançlarınızı ve yönlendirmelerinizi anlık olarak izleyin"
+      }
+    ],
+    "commissionTiers": "Komisyon Seviyeleri",
+    "bestBadge": "EN İYİ",
+    "tiers": [
+      {
+        "name": "Başlangıç",
+        "requirements": "0-10 yönlendirme"
+      },
+      {
+        "name": "Bronz",
+        "requirements": "11-50 yönlendirme"
+      },
+      {
+        "name": "Gümüş",
+        "requirements": "51-100 yönlendirme"
+      },
+      {
+        "name": "Altın",
+        "requirements": "100+ yönlendirme"
+      }
+    ],
+    "howItWorks": "Nasıl Çalışır",
+    "steps": [
+      {
+        "title": "Kaydol",
+        "description": "Ücretsiz affiliate hesabınızı dakikalar içinde oluşturun"
+      },
+      {
+        "title": "Linkinizi Alın",
+        "description": "Size özel yönlendirme linkinizi ve pazarlama materyallerinizi alın"
+      },
+      {
+        "title": "Tanıtın",
+        "description": "Dilediğiniz kanaldan kitlenizle paylaşın"
+      },
+      {
+        "title": "Kazanın",
+        "description": "Her başarılı yönlendirme için aylık ödeme alın"
+      }
+    ],
+    "faqTitle": "Sıkça Sorulan Sorular",
+    "faqs": [
+      {
+        "q": "Ne kadar kazanabilirim?",
+        "a": "Hiçbir sınır yok! En iyi affiliate'ler ayda $10,000+ kazanıyor. Linkiniz üzerinden yapılan her challenge alımından komisyon kazanırsınız."
+      },
+      {
+        "q": "Ödememi ne zaman alırım?",
+        "a": "Ödemeler, bir önceki ayın kazançları için her ayın 1'inde işleme alınır. Minimum ödeme tutarı $50'dir."
+      },
+      {
+        "q": "Hangi pazarlama materyallerini sağlıyorsunuz?",
+        "a": "Tanıtımda kullanabileceğiniz banner'lar, sosyal medya görselleri, e-posta şablonları ve video içerikleri sağlıyoruz."
+      },
+      {
+        "q": "Sosyal medyada tanıtım yapabilir miyim?",
+        "a": "Evet! YouTube, Instagram, TikTok, Twitter, bloglar, e-posta listeleri ve daha pek çok platformda tanıtım yapabilirsiniz."
+      }
+    ],
+    "ctaTitle": "Kazanmaya Başlamaya Hazır mısınız?",
+    "ctaSubtitle": "Prop Capitals ile hâlihazırda kazanan yüzlerce affiliate'e katılın. Kaydolmak 2 dakikadan kısa sürüyor.",
+    "joinProgram": "Affiliate Programına Katıl",
+    "modalTitle": "Affiliate Ol",
+    "modalSubtitle": "Programımıza katılmak için aşağıdaki formu doldurun",
+    "fullNameLabel": "Ad Soyad *",
+    "fullNamePlaceholder": "Ahmet Yılmaz",
+    "emailLabel": "E-posta Adresi *",
+    "websiteLabel": "Web Sitesi/Blog (İsteğe Bağlı)",
+    "socialMediaLabel": "Sosyal Medya Kullanıcı Adı (İsteğe Bağlı)",
+    "socialMediaPlaceholder": "@kullaniciadiniz",
+    "audienceLabel": "Tahmini Kitle Büyüklüğü *",
+    "audiencePlaceholder": "Kitle büyüklüğü seçin",
+    "howHeardLabel": "Bizi nereden duydunuz?",
+    "howHeardPlaceholder": "Bir seçenek seçin",
+    "howHeardSocial": "Sosyal Medya",
+    "howHeardSearch": "Arama Motoru",
+    "howHeardFriend": "Arkadaş/Yönlendirme",
+    "howHeardAd": "Reklam",
+    "howHeardOther": "Diğer",
+    "submitting": "Gönderiliyor...",
+    "submitApplication": "Başvuruyu Gönder",
+    "successTitle": "Başvurunuz Alındı!",
+    "successMessage": "Başvurduğunuz için teşekkürler! Başvurunuzu inceleyip 24-48 saat içinde size geri dönüş yapacağız.",
+    "referralLinkLabel": "Yönlendirme linkiniz (demo):",
+    "close": "Kapat"
+  },
+  "tradingRules": {
+    "eyebrow": "İşlem Kuralları",
+    "headingLead": "Challenge",
+    "headingHighlight": "Kuralları",
+    "subheading": "Başarılı olmanıza yardımcı olmak için tasarlanmış net, adil ve şeffaf kurallar. Gizli koşullar veya sürprizler yok.",
+    "tableHeaders": {
+      "rule": "Kural",
+      "oneStep": "Tek Adımlı Challenge",
+      "twoStep": "İki Adımlı Challenge"
+    },
+    "criticalBadge": "KRİTİK",
+    "rules": [
+      {
+        "title": "Günlük Drawdown Limiti",
+        "description": "Hesap özsermayeniz, işlem günü boyunca hiçbir anda günlük drawdown limitinin altına düşmemelidir.",
+        "oneStep": "%4",
+        "twoStep": "%5"
+      },
+      {
+        "title": "Maksimum Drawdown",
+        "description": "Başlangıç bakiyesine göre toplam hesap drawdown'u hiçbir zaman bu limiti aşmamalıdır.",
+        "oneStep": "%8",
+        "twoStep": "%10"
+      },
+      {
+        "title": "Kâr Hedefi",
+        "description": "Challenge aşamasını geçmek ve bir sonraki aşamaya ilerlemek için bu kâr hedefine ulaşın.",
+        "oneStep": "%10",
+        "twoStep": "%8 / %5"
+      },
+      {
+        "title": "Minimum İşlem Günü",
+        "description": "Bir ödeme talep edebilmek veya challenge'ı geçebilmek için en az bu kadar gün işlem yapın.",
+        "oneStep": "5 gün",
+        "twoStep": "5 gün"
+      },
+      {
+        "title": "Süre Sınırı",
+        "description": "Challenge'ı bu süre içinde tamamlayın. Acele etmeyin, zamanınız var!",
+        "oneStep": "Sınırsız",
+        "twoStep": "Sınırsız"
+      }
+    ],
+    "allowedTitle": "Nelere İzin Verilir",
+    "allowedActions": [
+      "Expert Advisor'lar (EA) ve otomatik işlem botları",
+      "Yüksek etkili haber dönemlerinde haber ticareti",
+      "Pozisyonların hafta sonu tutulması",
+      "Minimum tutma süresi olmadan scalping",
+      "Kopya ticaret ve sinyal hizmetleri",
+      "Aynı hesap içinde hedging",
+      "Mevcut tüm enstrümanlarda işlem yapma"
+    ],
+    "prohibitedTitle": "Nelere İzin Verilmez",
+    "prohibitedActions": [
+      "Hesap paylaşımı veya üçüncü taraf adına işlem",
+      "Platform hatalarından veya arbitrajdan yararlanma",
+      "Çalıntı veya sahte ödeme yöntemleri kullanma",
+      "Diğer hesaplarla koordineli işlem yapma",
+      "Yüksek frekanslı işlem (HFT) suistimali"
+    ],
+    "noticeTitle": "Önemli Uyarı",
+    "noticeBody": "Kritik kuralların (Günlük Drawdown veya Maksimum Drawdown) ihlali, hesabın derhal kapatılmasıyla sonuçlanır. Lütfen sorumlu bir şekilde işlem yapın ve riskinizi her zaman yönetin. Kurallarla ilgili sorularınız varsa destek ekibimizle iletişime geçin."
+  },
+  "watchDemo": {
+    "hero": {
+      "badge": "Platform Demosu",
+      "titleStart": "Prop Capitals'i",
+      "titleHighlight": "İş Başında Gör",
+      "subtitle": "Prop Capitals ile fonlanan işlem yolculuğuna nasıl başlayabileceğini öğrenmek için kapsamlı demo videomuzu izle."
+    },
+    "player": {
+      "unsupported": "Tarayıcınız video etiketini desteklemiyor.",
+      "clickToPlay": "Demoyu oynatmak için tıkla",
+      "label": "Prop Capitals Demosu"
+    },
+    "stats": {
+      "averagePayout": "Ortalama Ödeme",
+      "payoutSpeed": "Ödeme Hızı",
+      "payoutSpeedValue": "<90 dk",
+      "profitSplit": "Kâr Paylaşımı",
+      "profitSplitValue": "%90'a kadar",
+      "fundedTraders": "Fonlanan Trader"
+    },
+    "videoFeatures": [
+      "Değerlendirme sürecimizin nasıl işlediğini gör",
+      "Gerçek trader'ların meydan okumalarını nasıl geçtiğini izle",
+      "Ödeme sürecimiz hakkında bilgi edin",
+      "İşlem kurallarımızı anla",
+      "PT5 işlem platformunu keşfet",
+      "Başarılı fonlanan trader'lardan ipuçları al"
+    ],
+    "learn": {
+      "badge": "Bu Videoda",
+      "titleStart": "Başlamak İçin İhtiyacın Olan",
+      "titleHighlight": "Her Şey",
+      "subtitle": "Kapsamlı demomuz, kayıttan ilk ödemene kadar tüm süreçte sana adım adım rehberlik eder."
+    },
+    "cta": {
+      "titleStart": "Fonlanma Yolculuğuna",
+      "titleHighlight": "Başlamaya Hazır mısın",
+      "titleEnd": "?",
+      "subtitle": "Prop Capitals ile işlem kariyerini halihazırda dönüştürmüş binlerce trader'a katıl.",
+      "startChallenge": "Meydan Okumaya Başla",
+      "learnMore": "Daha Fazla Bilgi"
+    }
+  },
+  "auth": {
+    "tabSignIn": "Giriş Yap",
+    "tabSignUp": "Kayıt Ol",
+    "emailLabel": "E-posta Adresi",
+    "emailPlaceholder": "trader@example.com",
+    "passwordLabel": "Parola",
+    "passwordPlaceholder": "Parolanızı girin",
+    "createPasswordPlaceholder": "Güçlü bir parola oluşturun",
+    "confirmPasswordLabel": "Parolayı Onayla",
+    "confirmPasswordPlaceholder": "Parolanızı onaylayın",
+    "rememberMe": "Beni hatırla",
+    "forgotPassword": "Parolanızı mı unuttunuz?",
+    "signInButton": "Giriş Yap",
+    "signingIn": "Giriş yapılıyor...",
+    "firstNameLabel": "Ad",
+    "firstNamePlaceholder": "Ahmet",
+    "lastNameLabel": "Soyad",
+    "lastNamePlaceholder": "Yılmaz",
+    "passwordRequirements": [
+      "8+ karakter",
+      "Bir büyük harf",
+      "Bir rakam",
+      "Bir özel karakter"
+    ],
+    "agreePrefix": "Şunları kabul ediyorum:",
+    "agreeAnd": "ve",
+    "termsOfService": "Hizmet Şartları",
+    "privacyPolicy": "Gizlilik Politikası",
+    "confirmAgeLabel": "18 yaşından büyük olduğumu onaylıyorum",
+    "createAccountButton": "Hesap Oluştur",
+    "creatingAccount": "Hesap oluşturuluyor...",
+    "otpSentTo": "Doğrulama kodu gönderildi:",
+    "enterOtp": "Doğrulama Kodunu Girin",
+    "verifyOtpButton": "Kodu Doğrula",
+    "verifying": "Doğrulanıyor...",
+    "changeEmail": "E-postayı Değiştir",
+    "resendCode": "Kodu Tekrar Gönder",
+    "resendIn": "{{seconds}} sn içinde tekrar gönder",
+    "backToHome": "Ana Sayfaya Dön",
+    "errors": {
+      "passwordsNotMatch": "Parolalar eşleşmiyor",
+      "agreeTerms": "Lütfen Hizmet Şartları'nı ve Gizlilik Politikası'nı kabul edin",
+      "confirmAge": "Lütfen 18 yaşından büyük olduğunuzu onaylayın"
+    }
+  },
+  "forgotPassword": {
+    "back": "Geri",
+    "backToSignIn": "Girişe Dön",
+    "emailLabel": "E-posta",
+    "emailPlaceholder": "ornek.eposta@example.com",
+    "sendOtp": "OTP Gönder",
+    "verifyOtp": "OTP'yi Doğrula",
+    "didntReceive": "Kodu almadınız mı?",
+    "resendIn": "{{seconds}} sn sonra tekrar gönder",
+    "sending": "Gönderiliyor...",
+    "resendOtp": "OTP'yi Tekrar Gönder",
+    "newPasswordPlaceholder": "Yeni Şifre",
+    "confirmPasswordPlaceholder": "Şifreyi Onayla",
+    "resetPassword": "Şifreyi Sıfırla",
+    "imageAlt": "Trading",
+    "step1": {
+      "title": "Şifremi Unuttum",
+      "subtitle": "OTP almak için e-postanızı girin"
+    },
+    "step2": {
+      "title": "OTP'yi Doğrula",
+      "subtitle": "E-postanıza gönderilen 6 haneli OTP'yi girin"
+    },
+    "step3": {
+      "title": "Şifreyi Sıfırla",
+      "subtitle": "Yeni bir şifre oluşturun"
+    },
+    "requirements": {
+      "title": "Şifre şunları içermelidir:",
+      "minLength": "En az 8 karakter",
+      "uppercase": "Bir büyük harf",
+      "lowercase": "Bir küçük harf",
+      "number": "Bir rakam"
+    },
+    "validation": {
+      "minLength": "Şifre en az 8 karakter olmalıdır",
+      "uppercase": "Şifre en az bir büyük harf içermelidir",
+      "lowercase": "Şifre en az bir küçük harf içermelidir",
+      "number": "Şifre en az bir rakam içermelidir"
+    },
+    "errors": {
+      "emailRequired": "E-posta gereklidir",
+      "invalidEmail": "Lütfen geçerli bir e-posta adresi girin",
+      "sendOtpFailed": "OTP gönderilemedi. Lütfen tekrar deneyin.",
+      "invalidOtp": "Lütfen geçerli bir 6 haneli OTP girin",
+      "allFieldsRequired": "Tüm alanlar zorunludur",
+      "passwordsMismatch": "Şifreler eşleşmiyor",
+      "resetFailed": "Şifre sıfırlanamadı. OTP'nin süresi dolmuş olabilir."
+    },
+    "success": {
+      "otpSent": "OTP e-postanıza gönderildi. Lütfen gelen kutunuzu kontrol edin.",
+      "passwordReset": "Şifre başarıyla sıfırlandı! Girişe yönlendiriliyorsunuz..."
+    },
+    "sideCard": {
+      "title": "Güvenli Hesap Kurtarma",
+      "subtitle": "Güvenliğiniz önceliğimizdir"
+    }
+  },
+  "setPassword": {
+    "toastSuccess": "Şifreniz başarıyla oluşturuldu — aramıza hoş geldiniz!",
+    "toastError": "Şifre oluşturulamadı. Lütfen tekrar deneyin.",
+    "missingTokenTitle": "Eksik Token",
+    "missingTokenDescription": "Bu sayfa geçerli bir şifre belirleme bağlantısı gerektirir. Lütfen karşılama e-postanızdaki bağlantıyı kullanın.",
+    "verifying": "Bağlantınız doğrulanıyor...",
+    "invalidTokenTitle": "Bağlantı Geçersiz veya Süresi Dolmuş",
+    "invalidTokenDescription": "Bu şifre belirleme bağlantısı geçersiz veya süresi dolmuş.",
+    "contactPrefix": "Yardım için lütfen",
+    "contactSuffix": "ile iletişime geçin.",
+    "errorTooShort": "Şifre en az 8 karakter olmalıdır",
+    "errorMismatch": "Şifreler eşleşmiyor",
+    "heading": "Şifrenizi Belirleyin",
+    "descriptionPrefix": "Panonuza erişmek için",
+    "descriptionSuffix": "hesabınız için bir şifre oluşturun.",
+    "newPasswordLabel": "Yeni Şifre",
+    "newPasswordPlaceholder": "En az 8 karakter",
+    "confirmPasswordLabel": "Şifreyi Onayla",
+    "confirmPasswordPlaceholder": "Şifrenizi tekrar girin",
+    "submitting": "Şifre belirleniyor...",
+    "submit": "Şifreyi Belirle ve Giriş Yap"
+  },
+  "accountOverview": {
+    "loadingAccounts": "Hesaplar yükleniyor...",
+    "noChallengesFound": "Challenge bulunamadı. Başlamak için bir challenge satın alın!",
+    "pinnedChallenges": "Sabitlenen Challenge'lar",
+    "accountsPinned": "{{total}} hesabın {{pinned}} tanesi sabitlendi",
+    "noPinnedChallenges": "Henüz sabitlenmiş challenge yok. Üst kısımdaki hesap seçiciden en fazla 4 hesap sabitleyin.",
+    "oneStep": "1 Aşama",
+    "twoStep": "2 Aşama",
+    "platformId": "Platform ID",
+    "platform": "Platform",
+    "challengeType": "Challenge Türü",
+    "server": "Sunucu",
+    "startDate": "Başlangıç Tarihi",
+    "profitSplit": "Kâr Paylaşımı",
+    "profitSplitToYou": "Size %{{percent}}",
+    "accountSize": "Hesap Büyüklüğü",
+    "currentBalance": "Güncel Bakiye",
+    "tradingDays": "İşlem Günleri",
+    "challengeRulesCompliance": "Challenge Kurallarına Uyum",
+    "challengeFailed": "Challenge Başarısız",
+    "profitTarget": "Kâr Hedefi",
+    "dailyLoss": "Günlük Zarar",
+    "maxDrawdown": "Maksimum Düşüş",
+    "targetValue": "Hedef: %{{value}}",
+    "limitValue": "Limit: %{{value}}",
+    "requiredValue": "Gerekli: {{value}}",
+    "challengeProgress": "Challenge İlerlemesi",
+    "phaseEvaluation": "Değerlendirme",
+    "phaseFunded": "Fonlanmış",
+    "phaseOne": "Aşama 1",
+    "phaseTwo": "Aşama 2",
+    "phasePassed": "Geçildi",
+    "phaseYouAreHere": "Buradasınız",
+    "phaseLiveAccount": "Canlı Hesap",
+    "phaseNextStage": "Sonraki Aşama",
+    "phaseFinalStage": "Son Aşama",
+    "accountBalance": "Hesap Bakiyesi",
+    "noEquityData": "Henüz özkaynak verisi yok",
+    "balance": "Bakiye",
+    "equity": "Özkaynak",
+    "tradeCalendar": "İşlem Takvimi",
+    "weekdays": [
+      "Pzt",
+      "Sal",
+      "Çar",
+      "Per",
+      "Cum",
+      "Cmt",
+      "Paz"
+    ],
+    "totalTrades": "Toplam İşlem:",
+    "winRate": "Kazanma Oranı:",
+    "avgRR": "Ort. R/R:",
+    "currentPL": "Güncel K/Z",
+    "percentFromStart": "başlangıçtan bu yana %{{value}}",
+    "dailyDrawdown": "Günlük Düşüş",
+    "totalDrawdown": "Toplam Düşüş",
+    "current": "Güncel",
+    "max": "Maks.",
+    "target": "Hedef",
+    "payoutAvailable": "Ödeme Hazır",
+    "payoutSubtitle": "Çekmeye hazır kârınız var • %{{percent}} kâr paylaşımı",
+    "available": "Mevcut",
+    "requestPayout": "Ödeme Talep Et"
+  },
+  "accountSettings": {
+    "title": "Hesap Ayarları",
+    "saving": "Kaydediliyor...",
+    "saveChanges": "Değişiklikleri Kaydet",
+    "personalInfo": {
+      "title": "Kişisel Bilgiler",
+      "firstName": "Ad",
+      "firstNamePlaceholder": "Ad",
+      "lastName": "Soyad",
+      "lastNamePlaceholder": "Soyad",
+      "email": "E-posta Adresi",
+      "emailReadOnly": "E-posta değiştirilemez",
+      "phone": "Telefon Numarası",
+      "country": "Ülke",
+      "countryPlaceholder": "ör. Birleşik Krallık"
+    },
+    "security": {
+      "title": "Güvenlik",
+      "currentPassword": "Mevcut Şifre",
+      "newPassword": "Yeni Şifre",
+      "confirmNewPassword": "Yeni Şifreyi Onayla"
+    },
+    "trading": {
+      "title": "İşlem Tercihleri",
+      "defaultLotSize": "Varsayılan Lot Büyüklüğü",
+      "defaultLeverage": "Varsayılan Kaldıraç",
+      "chartTheme": "Grafik Teması",
+      "themeDark": "Koyu",
+      "themeLight": "Açık"
+    },
+    "notifications": {
+      "title": "Bildirimler",
+      "emailNotifications": {
+        "label": "E-posta Bildirimleri",
+        "desc": "İşlem uyarılarını e-posta ile alın"
+      },
+      "tradeNotifications": {
+        "label": "İşlem Bildirimleri",
+        "desc": "İşlemler için tarayıcı bildirimleri"
+      },
+      "accountAlerts": {
+        "label": "Hesap Uyarıları",
+        "desc": "SMS ile kritik uyarılar"
+      },
+      "payoutUpdates": {
+        "label": "Ödeme Güncellemeleri",
+        "desc": "Haftalık performans raporları alın"
+      },
+      "challengeUpdates": {
+        "label": "Meydan Okuma Güncellemeleri",
+        "desc": "Meydan okumalarınızla ilgili güncellemeler alın"
+      },
+      "marketingEmails": {
+        "label": "Pazarlama E-postaları",
+        "desc": "Pazarlama e-postaları alın"
+      }
+    },
+    "toast": {
+      "profileUpdated": "Profil başarıyla güncellendi",
+      "profileFailed": "Profil kaydedilemedi",
+      "passwordChanged": "Şifre başarıyla değiştirildi",
+      "passwordFailed": "Şifre değiştirilemedi",
+      "notificationsUpdated": "Bildirim tercihleri güncellendi",
+      "notificationsFailed": "Bildirimler güncellenemedi",
+      "passwordMismatchTitle": "Şifreler eşleşmiyor",
+      "passwordMismatchDesc": "Yeni şifreniz ile onayı eşleşmiyor."
+    }
+  },
+  "buySellPanel": {
+    "sell": "SAT",
+    "buy": "AL"
+  },
+  "economicCalendar": {
+    "title": "Ekonomik Takvim",
+    "highImpact": "Yüksek Etki",
+    "medium": "Orta",
+    "low": "Düşük",
+    "monthNames": [
+      "Ocak",
+      "Şubat",
+      "Mart",
+      "Nisan",
+      "Mayıs",
+      "Haziran",
+      "Temmuz",
+      "Ağustos",
+      "Eylül",
+      "Ekim",
+      "Kasım",
+      "Aralık"
+    ],
+    "dayHeaders": [
+      "Pzt",
+      "Sal",
+      "Çar",
+      "Per",
+      "Cum",
+      "Cmt",
+      "Paz"
+    ],
+    "eventsForDay": "Etkinlikler - {{day}}. Gün",
+    "selectADay": "Bir gün seçin",
+    "loading": "Yükleniyor...",
+    "noEventsOnThisDay": "Bu güne ait etkinlik yok",
+    "forecast": "Tahmin",
+    "previous": "Önceki",
+    "actual": "Gerçekleşen",
+    "eventDetailsNotFound": "Etkinlik ayrıntıları bulunamadı",
+    "failedToFetchDetails": "Ayrıntılar getirilemedi ({{status}})",
+    "failedToLoadDetails": "Etkinlik ayrıntıları yüklenemedi"
+  },
+  "eventDetailModal": {
+    "title": "Olay Detayları",
+    "loading": "Olay detayları yükleniyor...",
+    "latestValues": "Son Değerler",
+    "forecast": "Beklenti",
+    "previous": "Önceki",
+    "actual": "Gerçekleşen",
+    "description": "Açıklama",
+    "region": "Bölge",
+    "currencyLabel": "Para birimi: {{currency}}",
+    "schedule": "Takvim",
+    "nextLabel": "Sonraki: {{value}}",
+    "unitLabel": "Birim: {{unit}}",
+    "historicalData": "Geçmiş Veriler",
+    "date": "Tarih",
+    "showingEntries": "{{total}} kayıttan 10 tanesi gösteriliyor",
+    "chartDataAvailable": "Grafik Verisi Mevcut",
+    "dataPointsAvailable": "{{count}} veri noktası mevcut",
+    "noDetails": "Bu olay için ek detay bulunmuyor."
+  },
+  "traderFaq": {
+    "title": "Sıkça Sorulan Sorular",
+    "subtitle": "Meydan okumalar, işlem kuralları ve ödemeler hakkında sık sorulan soruların yanıtlarını bulun.",
+    "searchPlaceholder": "Soru ara...",
+    "categories": {
+      "all": "Tüm Sorular",
+      "challenges": "Meydan Okumalar",
+      "rules": "İşlem Kuralları",
+      "payouts": "Ödemeler",
+      "billing": "Faturalandırma"
+    },
+    "badges": {
+      "challenges": "Meydan Okumalar",
+      "rules": "Kurallar",
+      "payouts": "Ödemeler",
+      "billing": "Faturalandırma"
+    },
+    "noResultsTitle": "Sonuç bulunamadı",
+    "noResultsDescription": "Aramanızı veya kategori filtrenizi değiştirmeyi deneyin.",
+    "stillHaveQuestionsTitle": "Hâlâ sorularınız mı var?",
+    "stillHaveQuestionsDescription": "Aradığınızı bulamadınız mı? Destek ekibimiz yardımcı olmak için burada.",
+    "contactSupport": "Destekle İletişime Geç",
+    "faqs": [
+      {
+        "question": "1 Aşamalı ve 2 Aşamalı meydan okumalar arasındaki fark nedir?",
+        "answer": "1 Aşamalı meydan okumada fonlanmak için tek bir kâr hedefine (genellikle %10) ulaşmanız gerekir. 2 Aşamalı meydan okumada ise daha düşük kâr hedeflerine (%8 ve %5) sahip iki aşama bulunur ve genel olarak daha az riskli kabul edilir. İkisinde de aynı düşüş (drawdown) kuralları geçerlidir."
+      },
+      {
+        "question": "Bir meydan okumayı tamamlamak için ne kadar sürem var?",
+        "answer": "Meydan okumalarımızı tamamlamak için herhangi bir süre sınırı yoktur. İşlem kurallarına uyduğunuz sürece, kâr hedefinize ulaşmak için ihtiyaç duyduğunuz kadar zaman ayırabilirsiniz. Tek şart, minimum işlem günü sayısını tamamlamaktır."
+      },
+      {
+        "question": "Günlük zarar limitini aşarsam ne olur?",
+        "answer": "Günlük zararınız o güne ait başlangıç bakiyenizin %5'ini aşarsa, meydan okumanız başarısız olarak işaretlenir. Bu kesin bir ihlaldir ve geri alınamaz. Stop loss kullanmanızı ve günlük K/Z'nizi yakından takip etmenizi öneririz."
+      },
+      {
+        "question": "Haber zamanlarında işlem yapabilir miyim?",
+        "answer": "Evet, tüm meydan okuma türlerimizde haber işlemleri (news trading) yapılabilir. Ancak, yüksek etkili haber zamanlarında spreadlerin önemli ölçüde genişleyebileceğini ve pozisyonlarınızı etkileyebileceğini göz önünde bulundurarak dikkatli olmanızı öneririz."
+      },
+      {
+        "question": "Hafta sonu pozisyon tutmaya izin veriliyor mu?",
+        "answer": "Hayır, hafta sonu pozisyon tutmaya izin verilmez. Tüm pozisyonlar Cuma günü piyasa kapanmadan önce kapatılmalıdır. Açık bırakılan pozisyonlar otomatik olarak kapatılır ve kayma (slippage) ile sonuçlanabilir."
+      },
+      {
+        "question": "Nasıl ödeme talebinde bulunurum?",
+        "answer": "Fonlanmış hesabınızda kârınız olduğunda ve minimum işlem günü sayısını tamamladığınızda, \"Ödeme Geçmişi\" bölümünden ödeme talebinde bulunabilirsiniz. Ödemeler, tercih ettiğiniz ödeme yöntemine 24-48 saat içinde işlenir."
+      },
+      {
+        "question": "Kâr paylaşımı nedir?",
+        "answer": "Kâr paylaşımımız trader'lar için %80'den başlar ve performansınıza bağlı olarak %90'a kadar çıkar. Bu, fonlanmış hesabınızda elde ettiğiniz tüm kârın %80-90'ını sizin tutacağınız anlamına gelir."
+      },
+      {
+        "question": "Ödemeler için hangi ödeme yöntemleri mevcut?",
+        "answer": "Banka havalesi, kripto (USDT, BTC, ETH) ve çeşitli e-cüzdanlar dahil olmak üzere birden fazla ödeme yöntemini destekliyoruz. Tercih ettiğiniz ödeme yöntemini hesap ayarlarınızdan belirleyebilirsiniz."
+      },
+      {
+        "question": "Bir meydan okumada başarısız olursam ne olur?",
+        "answer": "Bir meydan okumada başarısız olursanız, indirimli bir fiyattan yenisini satın alabilirsiniz. Ayrıca, ilk 14 gün içinde herhangi bir kesin kuralı ihlal etmeden başarısız olan trader'lara ücretsiz bir yeniden deneme hakkı da sunuyoruz."
+      },
+      {
+        "question": "İade sunuyor musunuz?",
+        "answer": "Henüz başlatılmamış (hiç işlem yapılmamış) meydan okumalar için 14 günlük iade politikası sunuyoruz. İşlem yapmaya başladığınızda meydan okuma ücreti iade edilemez. Tüm ayrıntılar için lütfen iade politikamıza bakın."
+      }
+    ]
+  },
+  "mt5Login": {
+    "headerBar": "İşlem hesapları: MetaQuotes Ltd..",
+    "title": "Hesaba bağlan",
+    "emailLabel": "E-posta",
+    "loginPlaceholder": "Giriş bilgisini girin",
+    "passwordLabel": "Şifre",
+    "passwordPlaceholder": "Şifrenizi girin",
+    "savePassword": "Şifreyi kaydet",
+    "forgotPassword": "Şifrenizi mi unuttunuz?",
+    "sending": "Gönderiliyor...",
+    "sendResetCredentials": "Sıfırlama bilgilerini gönder",
+    "serverLabel": "Sunucu",
+    "connecting": "Bağlanıyor...",
+    "connectToAccount": "Hesaba bağlan"
+  },
+  "marketWatch": {
+    "searchPlaceholder": "Sembol ara",
+    "loadingSymbols": "Semboller yükleniyor...",
+    "forex": "FOREX",
+    "columns": {
+      "symbol": "Sembol",
+      "bid": "Alış",
+      "ask": "Satış",
+      "change": "Değişim"
+    }
+  },
+  "notificationsPanel": {
+    "title": "Bildirimler",
+    "markAllRead": "Tümünü Okundu İşaretle",
+    "stats": {
+      "total": "Toplam Bildirim",
+      "unread": "Okunmamış",
+      "warnings": "Uyarılar",
+      "violations": "İhlaller"
+    },
+    "tabs": {
+      "all": "Tümü",
+      "unread": "Okunmamış",
+      "challenges": "Meydan Okumalar",
+      "payouts": "Ödemeler",
+      "account": "Hesap"
+    },
+    "empty": {
+      "title": "Bildirim bulunamadı",
+      "subtitle": "Hepsi bu kadar"
+    },
+    "actions": {
+      "markAsRead": "Okundu işaretle",
+      "delete": "Sil"
+    },
+    "category": {
+      "challenge": "Meydan Okuma",
+      "payout": "Ödeme",
+      "account": "Hesap",
+      "system": "Sistem"
+    },
+    "time": {
+      "justNow": "Az önce",
+      "minsAgo": "{{count}} dakika önce",
+      "hoursAgo": "{{count}} saat önce",
+      "daysAgo": "{{count}} gün önce"
+    }
+  },
+  "ordersPage": {
+    "title": "Emirler",
+    "refresh": "Yenile",
+    "export": "Dışa Aktar",
+    "totalTrades": "Toplam İşlem",
+    "closedPl": "Kapalı K/Z",
+    "openPl": "Açık K/Z",
+    "winRate": "Kazanma Oranı",
+    "tabAllOrders": "Tüm Emirler",
+    "tabOpen": "Açık",
+    "tabClosed": "Kapalı",
+    "searchPlaceholder": "Sembol ara...",
+    "colSymbol": "Sembol",
+    "colType": "Tür",
+    "colLots": "Lot",
+    "colOpenPrice": "Açılış Fiyatı",
+    "colClosePrice": "Kapanış Fiyatı",
+    "colOpenTime": "Açılış Zamanı",
+    "colCloseTime": "Kapanış Zamanı",
+    "colPl": "K/Z",
+    "colStatus": "Durum",
+    "csvProfitLoss": "K/Z ($)",
+    "noOrdersFound": "Emir bulunamadı",
+    "open": "Açık",
+    "closeReasonSlHit": "SL Tetiklendi",
+    "closeReasonTpHit": "TP Tetiklendi",
+    "closeReasonAutoClose": "Otomatik Kapanış",
+    "closeReasonClosed": "Kapatıldı"
+  },
+  "pt5Terminal": {
+    "watchlist": "İzleme Listesi",
+    "execution": "İşlem",
+    "tradeFlowUnavailableTitle": "İşlem akışı kullanılamıyor",
+    "tradeFlowUnavailableDescription": "Terminal sarmalayıcısının işlem yöneticisi bağlı değil."
+  },
+  "payCheckout": {
+    "form": {
+      "title": "Satın Alımınızı Tamamlayın",
+      "subtitle": "Güvenli ödeme sayfasına devam etmek için bilgilerinizi girin."
+    },
+    "fields": {
+      "firstName": "Ad *",
+      "lastName": "Soyad *",
+      "email": "E-posta Adresi *",
+      "emailHelp": "Hesap erişiminizi ve işlem giriş bilgilerinizi bu adrese göndereceğiz.",
+      "phone": "Telefon *",
+      "country": "Ülke *",
+      "address": "Fatura Adresi *",
+      "city": "Şehir *"
+    },
+    "placeholders": {
+      "firstName": "Ahmet",
+      "lastName": "Yılmaz",
+      "email": "trader@ornek.com",
+      "selectCountry": "Ülke seçin...",
+      "address": "Atatürk Caddesi No 221",
+      "city": "İstanbul"
+    },
+    "secureNotice": "Öde'ye tıkladıktan sonra kart bilgilerinizi girmek üzere güvenli ödeme işlemcimize yönlendirileceksiniz. Kart numaranızı asla görmez veya saklamayız.",
+    "button": {
+      "redirecting": "Ödemeye yönlendiriliyor...",
+      "pay": "Öde {{amount}}"
+    },
+    "summary": {
+      "title": "Sipariş Özeti",
+      "account": "{{size}} Hesap",
+      "profitSplit": "Kâr Paylaşımı",
+      "dailyDrawdown": "Günlük Kayıp Limiti",
+      "maxDrawdown": "Maksimum Kayıp Limiti",
+      "total": "Toplam"
+    },
+    "trust": {
+      "secureCard": "Güvenli kart ödemesi",
+      "threeDSecure": "3-D Secure korumalı"
+    },
+    "acceptedPayments": "Kabul ettiğimiz ödemeler",
+    "notFound": {
+      "title": "Challenge Bulunamadı",
+      "description": "Bu challenge artık aktif değil. Lütfen geri dönüp başka bir paket seçin."
+    },
+    "toasts": {
+      "redirecting": "Güvenli ödemeye yönlendiriliyor...",
+      "couldNotStart": "Ödeme işlemi başlatılamadı. Lütfen tekrar deneyin.",
+      "failedToStart": "Ödeme işlemi başlatılamadı. Lütfen tekrar deneyin."
+    },
+    "errors": {
+      "firstNameRequired": "Ad gereklidir",
+      "lastNameRequired": "Soyad gereklidir",
+      "emailRequired": "E-posta gereklidir",
+      "emailInvalid": "E-posta geçerli değil",
+      "phoneRequired": "Telefon numarası gereklidir",
+      "phoneInvalid": "Ülke koduyla birlikte geçerli bir telefon numarası girin (örn. +90 532 555 0100)",
+      "countryRequired": "Ülke gereklidir",
+      "addressRequired": "Adres gereklidir",
+      "cityRequired": "Şehir gereklidir"
+    }
+  },
+  "payoutHistoryPanel": {
+    "title": "Ödeme Geçmişi",
+    "requestPayout": "Ödeme Talep Et",
+    "payoutsAfterFundingTitle": "Ödemeler Fonlamadan Sonra Kullanılabilir",
+    "payoutsAfterFundingDesc": "Ödeme taleplerini açmak için meydan okumanı tamamla. Şu anda {{phase}} aşamasındasın.",
+    "phase1": "Aşama 1",
+    "phase2": "Aşama 2",
+    "evaluation": "değerlendirme",
+    "totalPaidOut": "Toplam Ödenen",
+    "pending": "Bekleyen",
+    "availableBalance": "Kullanılabilir Bakiye",
+    "noHistoryYet": "Henüz ödeme geçmişi yok"
+  },
+  "profilePanel": {
+    "errorLoadProfile": "Profil yüklenemedi. Lütfen sayfayı yenileyin.",
+    "avatarAlt": "Profil",
+    "verifiedBadge": "Doğrulandı",
+    "unknownUser": "Bilinmeyen Kullanıcı",
+    "joinedLabel": "Katılım: {{date}}",
+    "editProfileButton": "Profili Düzenle",
+    "cancelButton": "İptal",
+    "saveChangesButton": "Değişiklikleri Kaydet",
+    "savingButton": "Kaydediliyor...",
+    "statChallengesCompleted": "Tamamlanan Challenge'lar",
+    "statTotalPayouts": "Toplam Ödemeler",
+    "statWinRate": "Kazanma Oranı",
+    "statMemberSince": "Üyelik Tarihi",
+    "personalInformation": "Kişisel Bilgiler",
+    "firstNameLabel": "Ad",
+    "lastNameLabel": "Soyad",
+    "emailAddressLabel": "E-posta Adresi",
+    "emailHelperText": "E-posta değiştirilemez. Gerekirse destek ekibiyle iletişime geçin.",
+    "phoneNumberLabel": "Telefon Numarası",
+    "locationPreferences": "Konum ve Tercihler",
+    "countryLabel": "Ülke",
+    "cityLabel": "Şehir",
+    "timezoneLabel": "Saat Dilimi",
+    "timezonePlaceholder": "örn. UTC+5, America/New_York",
+    "toastProfileUpdatedTitle": "Profil güncellendi",
+    "toastProfileUpdatedDesc": "Değişiklikleriniz başarıyla kaydedildi.",
+    "toastSaveFailedTitle": "Profil kaydedilemedi",
+    "toastInvalidFileTitle": "Geçersiz dosya",
+    "toastInvalidFileDesc": "Lütfen bir görsel dosyası seçin.",
+    "toastFileTooLargeTitle": "Dosya çok büyük",
+    "toastFileTooLargeDesc": "Lütfen 5 MB'tan küçük bir görsel yükleyin.",
+    "toastAvatarUpdatedTitle": "Profil fotoğrafı güncellendi",
+    "toastAvatarUpdatedDesc": "Yeni profil fotoğrafınız artık görünür."
+  },
+  "supportPanel": {
+    "heading": "Destek Merkezi",
+    "subheading": "Yardıma mı ihtiyacınız var? Destek ekibimiz size yardımcı olmak için 7/24 hizmetinizde.",
+    "liveChatTitle": "Canlı Sohbet",
+    "online": "Çevrimiçi",
+    "liveChatDesc": "Yapay zeka asistanımızdan anında yardım alın veya canlı bir temsilciyle görüşün.",
+    "startChat": "Sohbeti Başlat",
+    "emailSupportTitle": "E-posta Desteği",
+    "emailResponseTime": "24 saat içinde yanıt",
+    "businessHoursTitle": "Çalışma Saatleri",
+    "mondayFriday": "Pazartesi - Cuma",
+    "saturdaySunday": "Cumartesi - Pazar",
+    "twentyFourHours": "24 Saat",
+    "timezoneNote": "Destek kendi saat diliminizde sunulmaktadır",
+    "submitTicketHeading": "Destek Talebi Oluştur",
+    "ticketSubmittedTitle": "Talebiniz Gönderildi!",
+    "ticketSubmittedDesc": "Talebinize 24 saat içinde yanıt vereceğiz.",
+    "submitAnotherTicket": "Yeni Talep Gönder",
+    "labelCategory": "Kategori",
+    "labelSubject": "Konu",
+    "labelMessage": "Mesaj",
+    "subjectPlaceholder": "Sorununuzun kısa açıklaması",
+    "messagePlaceholder": "Sorununuzu ayrıntılı olarak açıklayın...",
+    "submitting": "Gönderiliyor...",
+    "submitTicketButton": "Talebi Gönder",
+    "recentTickets": "Son Talepler",
+    "loadingTickets": "Talepler yükleniyor...",
+    "ticketsLoadError": "Talepler yüklenemedi. Lütfen sayfayı yenileyip tekrar deneyin.",
+    "noTickets": "Henüz talep yok.",
+    "categoryAccount": "Hesap",
+    "categoryPayment": "Ödeme",
+    "categoryPayout": "Kazanç Ödemesi",
+    "categoryTechnical": "Teknik",
+    "categoryOther": "Diğer",
+    "autoSubject": "Destek Talebi - {{category}}",
+    "statusOpen": "Açık",
+    "statusInProgress": "İşlemde",
+    "statusResolved": "Çözüldü",
+    "statusClosed": "Kapatıldı",
+    "statusWaitingForAdmin": "Yönetici Bekleniyor",
+    "statusWaitingForTrader": "Trader Bekleniyor",
+    "toastCreatedTitle": "Talep Oluşturuldu",
+    "toastCreatedDesc": "Destek talebiniz başarıyla gönderildi.",
+    "toastFailedTitle": "Talep oluşturulamadı",
+    "toastFailedDesc": "Talep oluşturulamadı",
+    "toastNotAuthTitle": "Oturum açılmadı",
+    "toastNotAuthDesc": "Destek talebi göndermek için lütfen oturum açın."
+  },
+  "tradeLockerComingSoon": {
+    "comingSoon": "Çok Yakında",
+    "description": "Şu anda TradeLocker'ı platformumuza entegre etme üzerinde çalışıyoruz. Bu özellik çok yakında kullanıma sunulacak. Bu süre zarfında lütfen başka bir işlem platformu seçin.",
+    "chooseAnotherPlatform": "Başka Bir Platform Seç",
+    "backToDashboard": "Panoya Dön"
+  },
+  "panelLayout": {
+    "startTrading": "İşleme Başla",
+    "buyChallenge": "Meydan Okuma Al",
+    "switchAccount": "Hesap Değiştir",
+    "accountLabel": "Hesap #{{id}}",
+    "toggleTheme": "Temayı değiştir",
+    "viewAllNotifications": "Tüm Bildirimleri Gör",
+    "unreadCount": "{{count}} okunmamış",
+    "demoAccount": "Demo Hesap",
+    "userFallback": "Kullanıcı",
+    "pinAccount": "Hesabı sabitle",
+    "unpinAccount": "Sabitlemeyi kaldır",
+    "maxPinnedAccounts": "En fazla 4 hesap sabitlenebilir",
+    "sections": {
+      "trades": "İşlemler",
+      "accountSettings": "Hesap Ayarları",
+      "support": "Destek"
+    },
+    "nav": {
+      "accountOverview": "Hesap Genel Bakış",
+      "tradingTerminal": "İşlem Terminali",
+      "orders": "Emirler",
+      "economicCalendar": "Ekonomik Takvim",
+      "payoutHistory": "Çekim Geçmişi",
+      "transactions": "İşlem Kayıtları",
+      "accountSettings": "Hesap Ayarları",
+      "profile": "Profil",
+      "support": "Destek",
+      "faq": "SSS"
+    },
+    "status": {
+      "active": "Aktif",
+      "failed": "Diskalifiye"
+    },
+    "profileMenu": {
+      "myProfile": "Profilim",
+      "settings": "Ayarlar",
+      "support": "Destek",
+      "signOut": "Çıkış Yap"
+    }
+  },
+  "ticketChat": {
+    "searchPlaceholder": "Talep ara...",
+    "noTicketsFound": "Talep bulunamadı",
+    "ticketsTitle": "Talepler",
+    "loading": "Yükleniyor...",
+    "noMessagesYet": "Henüz mesaj yok",
+    "selectTicketPrompt": "Görüşmeyi görüntülemek için bir talep seçin",
+    "sendFailedTitle": "Gönderilemedi",
+    "sendFailedDesc": "Mesaj gönderilemedi. Lütfen tekrar deneyin.",
+    "status": {
+      "open": "Açık",
+      "in_progress": "İşlemde",
+      "resolved": "Çözüldü",
+      "closed": "Kapalı",
+      "waiting_for_admin": "Yöneticiyi Bekliyor",
+      "waiting_for_trader": "Trader'ı Bekliyor"
+    }
+  },
+  "transactionsPanel": {
+    "title": "İşlemler",
+    "refresh": "Yenile",
+    "searchPlaceholder": "Referans veya challenge ile ara...",
+    "loading": "İşlemler yükleniyor...",
+    "loadError": "İşlemler yüklenemedi",
+    "tryAgain": "Tekrar dene",
+    "empty": "İşlem bulunamadı",
+    "showAll": "Tüm işlemleri göster",
+    "discountOff": "-{{amount}} indirim",
+    "viewAccount": "Hesabı görüntüle",
+    "checkStatus": "Durumu kontrol et",
+    "stats": {
+      "total": "Toplam",
+      "succeeded": "Başarılı",
+      "pending": "Beklemede",
+      "failed": "Başarısız"
+    },
+    "tabs": {
+      "all": "Tümü",
+      "succeeded": "Başarılı",
+      "pending": "Beklemede",
+      "failed": "Başarısız"
+    },
+    "status": {
+      "succeeded": "Başarılı",
+      "pending": "Beklemede",
+      "failed": "Başarısız"
+    },
+    "columns": {
+      "reference": "Referans",
+      "challenge": "Challenge",
+      "amount": "Tutar",
+      "provider": "Sağlayıcı",
+      "status": "Durum",
+      "date": "Tarih"
+    },
+    "provider": {
+      "internal": "Dahili",
+      "card": "Kart"
+    }
+  },
+  "walletPanel": {
+    "totalHoldings": "Toplam Varlıklar",
+    "unrealizedPnl": "Gerçekleşmemiş K/Z",
+    "availableBalance": "Kullanılabilir Bakiye",
+    "buy": "Al",
+    "sell": "Sat",
+    "orderTypeMarket": "PİYASA",
+    "orderTypeLimit": "LİMİT",
+    "asset": "Varlık",
+    "markPriceLabel": "Piyasa fiyatı:",
+    "limitPriceUsd": "Limit Fiyatı (USD)",
+    "quantity": "Miktar ({{asset}})",
+    "estCost": "Tah. maliyet:",
+    "insufficientBalanceInline": "— yetersiz bakiye",
+    "placing": "Gönderiliyor...",
+    "buyNow": "Şimdi Al",
+    "placeLimitOrder": "Limit Emri Ver",
+    "noHoldingsToSell": "Satılacak varlık yok.",
+    "buyCryptoFromBuyTab": "Al sekmesinden kripto satın alın.",
+    "selectAssetPlaceholder": "— Varlık seçin —",
+    "qtyAvailable": "{{qty}} mevcut",
+    "markPrice": "Piyasa Fiyatı",
+    "holdings": "Varlıklar",
+    "avgCost": "Ort. Maliyet",
+    "max": "Maks.",
+    "estValue": "Tah. değer:",
+    "selling": "Satılıyor...",
+    "sellAsset": "{{asset}} Sat",
+    "noSpotHoldings": "Spot varlık yok",
+    "buyCryptoUsingBuyTab": "Soldaki Al sekmesini kullanarak kripto satın alın",
+    "qty": "Miktar",
+    "value": "Değer",
+    "quantityLabel": "Miktar",
+    "estValueLabel": "Tah. Değer",
+    "cancel": "İptal",
+    "confirmSell": "Satışı Onayla",
+    "confirmSellBody": "{{count}} açık pozisyonu piyasa fiyatından kapat — {{qty}} {{asset}}.",
+    "confirmSellBody_plural": "{{count}} açık pozisyonun tümünü piyasa fiyatından kapat — {{qty}} {{asset}}.",
+    "errorInvalidQuantity": "Geçerli bir miktar girin.",
+    "errorPriceUnavailableRetry": "Fiyat kullanılamıyor. Tekrar deneyin.",
+    "errorInsufficientBalanceDetail": "Yetersiz bakiye. Gereken ${{required}}, mevcut ${{available}}.",
+    "toastSpotBuyExecuted": "Spot alım gerçekleştirildi",
+    "toastSpotLimitPlaced": "Spot limit emri verildi",
+    "toastBuyFailed": "Alım başarısız",
+    "toastSellFailed": "Satış başarısız",
+    "toastPriceUnavailable": "Fiyat kullanılamıyor",
+    "toastAssetSold": "{{asset}} satıldı",
+    "toastEnterValidQuantity": "Geçerli miktar girin",
+    "toastQuantityExceedsHoldings": "Miktar varlıkları aşıyor"
+  },
+  "worldCardFail": {
+    "checkingTitle": "Ödeme Durumu Kontrol Ediliyor...",
+    "checkingDescription": "Ödemenizi doğrularken lütfen bekleyin.",
+    "successTitle": "Ödeme Aslında Başarılı Oldu!",
+    "successDescription": "Yönlendirmeye rağmen ödemeniz başarıyla onaylandı. Challenge hesabınız aktif.",
+    "failedTitle": "Ödeme Başarısız",
+    "failedDescription": "Ödemeniz tamamlanmadı. Hesabınızdan herhangi bir ücret tahsil edilmedi.",
+    "reference": "Referans:",
+    "goToDashboard": "Panele Git",
+    "tryAgain": "Tekrar Dene",
+    "needHelp": "Yardıma mı ihtiyacınız var? İletişim:"
+  },
+  "worldCardSuccess": {
+    "missingReferenceTitle": "Ödeme Referansı Eksik",
+    "missingReferenceDesc": "Ödeme referansı bulunamadı. Lütfen e-postanızı kontrol edin veya destek ekibiyle iletişime geçin.",
+    "goToDashboard": "Panele Git",
+    "checkingStatusTitle": "Ödeme Durumu Kontrol Ediliyor...",
+    "checkingStatusDesc": "Ödemenizi doğrularken lütfen bekleyin.",
+    "unableToCheckTitle": "Ödeme Kontrol Edilemedi",
+    "genericError": "Bir sorun oluştu. Lütfen tekrar deneyin.",
+    "purchaseSuccessTitle": "Satın Alma Başarılı!",
+    "purchaseSuccessDesc": "Challenge hesabınız etkinleştirildi. Platform giriş bilgileriniz için e-postanızı kontrol edin.",
+    "reference": "Referans",
+    "status": "Durum",
+    "active": "Aktif",
+    "startTrading": "İşlem Yapmaya Başla",
+    "paymentConfirmedTitle": "Ödeme Onaylandı!",
+    "paymentConfirmedDesc": "Ödemeniz başarılı oldu. İşlem hesabınız kuruluyor — bu işlem genellikle birkaç saniye sürer.",
+    "referenceLabel": "Referans:",
+    "paymentFailedTitle": "Ödeme Başarısız",
+    "paymentFailedDesc": "Ödemeniz tamamlanamadı. Hesabınızdan hiçbir tahsilat yapılmadı.",
+    "tryAgain": "Tekrar Dene",
+    "stillProcessingTitle": "Ödeme Hâlâ İşleniyor",
+    "stillProcessingDesc": "Ödemeniz beklenenden uzun sürüyor. Endişelenmeyin — ödeme başarılı olduysa hesabınız otomatik olarak etkinleştirilecektir.",
+    "contactPrefix": "Panelinizi tekrar kontrol edin veya iletişime geçin:",
+    "confirmingTitle": "Ödemeniz Onaylanıyor...",
+    "confirmingDesc": "Ödeme onayını bekliyoruz. Bu işlem genellikle birkaç saniye sürer."
+  },
+  "bybitTerminal": {
+    "bannerAccountFailed": "Hesap Başarısız - İşlem Devre Dışı",
+    "bannerAccountDailyLocked": "Hesap Günlük Kilitli",
+    "bannerAccountInactive": "Hesap Pasif",
+    "perpetual": "Perpetual",
+    "searchPlaceholder": "Ara...",
+    "groupCrypto": "Kripto",
+    "groupForexMetals": "Forex ve Metaller",
+    "stat24hChange": "24s Değişim",
+    "stat24hHigh": "24s En Yüksek",
+    "stat24hLow": "24s En Düşük",
+    "stat24hTurnoverUsdt": "24S Hacim(USDT)",
+    "stat24hVolume": "24s Hacim",
+    "stat24hTurnover": "24s Ciro",
+    "connLive": "Canlı",
+    "connOffline": "Çevrimdışı",
+    "connPolling": "Sorgulanıyor",
+    "tabChart": "Grafik",
+    "tabOverview": "Genel Bakış",
+    "tabData": "Veri",
+    "chartCandles": "Mumlar",
+    "chartLine": "Çizgi",
+    "chartFit": "Sığdır",
+    "resetChartView": "Grafik görünümünü sıfırla",
+    "perpetualContract": "Perpetual Sözleşme",
+    "perpetualMetal": "Perpetual Metal",
+    "forexPerpetual": "Forex Perpetual",
+    "priceOverview": "Fiyat Özeti",
+    "bid": "Alış",
+    "ask": "Satış",
+    "midPrice": "Orta Fiyat",
+    "spread": "Spread",
+    "statistics24h": "24s İstatistikler",
+    "lastPrice": "Son Fiyat",
+    "marketInfo": "Piyasa Bilgisi",
+    "baseAsset": "Baz Varlık",
+    "quoteAsset": "Karşı Varlık",
+    "marketType": "Piyasa Türü",
+    "cryptoPerpetual": "Kripto Perpetual",
+    "preciousMetal": "Değerli Metal",
+    "forex": "Forex",
+    "priceSource": "Fiyat Kaynağı",
+    "restPolling": "REST Sorgulama",
+    "statusLabel": "Durum",
+    "statusTrading": "İşlemde",
+    "about": "{{label}} Hakkında",
+    "aboutCrypto": "{{base}}, perpetual sözleşme olarak {{quote}} karşısında işlem görür. Bu parite {{base}} spot fiyatını takip eder ve mevcut en likit kripto para işlem paritelerinden biridir.",
+    "aboutGold": "Altın (XAU), ABD Doları karşısında işlem gören değerli bir metaldir. Güvenli liman varlığı olarak kabul edilir ve dünya çapında en aktif işlem gören emtialardan biridir.",
+    "aboutSilver": "Gümüş (XAG), ABD Doları karşısında işlem gören değerli bir metaldir. Hem endüstriyel bir emtia hem de değer saklama aracı olarak hizmet eder.",
+    "aboutForex": "{{base}}/{{quote}} paritesi, {{base}} ile {{quote}} arasındaki döviz kurunu temsil eder. Küresel döviz piyasasında işlem gören başlıca forex paritelerinden biridir.",
+    "contractSpecifications": "Sözleşme Özellikleri",
+    "pairSpecifications": "Parite Özellikleri",
+    "symbol": "Sembol",
+    "type": "Tür",
+    "baseCurrency": "Baz Para Birimi",
+    "quoteCurrency": "Karşı Para Birimi",
+    "contractSize": "Sözleşme Büyüklüğü",
+    "unitsValue": "{{count}} birim",
+    "tickSize": "Tik Boyutu",
+    "margin": "Marjin",
+    "marginValue": "Perpetual ({{leverage}}x Kaldıraç)",
+    "tradingHours": "İşlem Saatleri",
+    "tradingHours247": "7/24",
+    "tradingHoursForex": "Pzt-Cum, 00:00-24:00 UTC",
+    "myPosition": "Pozisyonum",
+    "noOpenPositionFor": "{{label}} için açık pozisyon yok",
+    "myPositionsFor": "Pozisyonlarım — {{label}}",
+    "long": "Long",
+    "short": "Short",
+    "size": "Büyüklük",
+    "entryPrice": "Giriş Fiyatı",
+    "markPrice": "Mark Fiyatı",
+    "mode": "Mod",
+    "stopLoss": "Stop Loss",
+    "takeProfit": "Take Profit",
+    "maxVolume": "Maks {{volume}}",
+    "confirm": "Onayla",
+    "cancel": "İptal",
+    "closeAll": "Tümünü Kapat",
+    "partialClose": "Kısmi Kapat",
+    "priceReference": "Fiyat Referansı",
+    "accountSummary": "Hesap Özeti",
+    "balance": "Bakiye",
+    "openPositions": "Açık Pozisyonlar",
+    "symbolPositions": "{{label}} Pozisyonları",
+    "accountStatus": "Hesap Durumu",
+    "locked": "Kilitli",
+    "active": "Aktif",
+    "orderBook": "Emir Defteri",
+    "recentTrades": "Son İşlemler",
+    "priceWithQuote": "Fiyat({{quote}})",
+    "qty": "Miktar",
+    "total": "Toplam",
+    "spreadLabel": "Spread: {{value}}",
+    "buyShort": "A",
+    "sellShort": "S",
+    "noRecentTradesFor": "{{label}} için son işlem yok",
+    "price": "Fiyat",
+    "time": "Zaman",
+    "tradePanel": "İşlem Paneli",
+    "trade": "İşlem",
+    "spotTrading": "Spot İşlem",
+    "spotTradingDescPrefix": "Kripto varlıkları aşağıdaki paneldeki",
+    "wallet": "Cüzdan",
+    "spotTradingDescSuffix": "sekmesinden satın alın ve yönetin.",
+    "orderTypes": "Emir Türleri",
+    "marketAndLimit": "Piyasa ve Limit",
+    "available": "Kullanılabilir",
+    "spotNoLeverage": "Spot (Kaldıraçsız)",
+    "assets": "Varlıklar",
+    "cryptoPairsCount": "{{count}} kripto paritesi",
+    "scrollDownPrefix": "Spot pozisyonlarınızı almak, satmak ve takip etmek için aşağıdaki",
+    "scrollDownSuffix": "sekmesine ilerleyin.",
+    "buy": "Al",
+    "sell": "Sat",
+    "orderTypeLimit": "Limit",
+    "orderTypeMarket": "Piyasa",
+    "orderTypeTpSl": "TP/SL",
+    "equity": "Özkaynak",
+    "acctBalance": "Hesap Bakiyesi",
+    "usedMargin": "Kullanılan Marjin",
+    "freeMargin": "Serbest Marjin",
+    "quantity": "Miktar",
+    "leverage": "Kaldıraç",
+    "orderValue": "Emir Değeri",
+    "commission": "Komisyon",
+    "maxBuyAmount": "Maks. alım miktarı",
+    "maxSellAmount": "Maks. satım miktarı",
+    "placing": "Gönderiliyor...",
+    "accountLocked": "Hesap Kilitli",
+    "buySymbol": "{{label}} Al",
+    "sellSymbol": "{{label}} Sat",
+    "unitLots": "Lot",
+    "toastAccountStatusChangedTitle": "Hesap Durumu Değişti",
+    "toastAccountStatusChangedDesc": "Hesap artık {{status}}",
+    "toastOrderPlaced": "Emir Verildi",
+    "toastOrderFailed": "Emir Başarısız",
+    "toastFailedGeneric": "Başarısız",
+    "toastPendingOrderCreated": "Bekleyen Emir Oluşturuldu",
+    "toastPositionClosed": "Pozisyon Kapatıldı",
+    "toastCloseFailed": "Kapatma Başarısız",
+    "toastAccountLocked": "Hesap Kilitli",
+    "toastSelectSymbol": "Bir sembol seçin",
+    "toastEnterValidQuantity": "Geçerli bir miktar girin",
+    "toastEnterValidPrice": "Geçerli bir fiyat girin",
+    "toastInsufficientMargin": "Yetersiz Marjin",
+    "toastMaxAllowed": "İzin verilen maks: {{amount}} {{unit}}",
+    "toastNoPriceAvailable": "Fiyat mevcut değil"
+  },
+  "commonTerminal": {
+    "loadingChallenges": "Challenge'ler yükleniyor...",
+    "loading": "Yükleniyor...",
+    "noActiveChallenges": "Aktif Challenge Yok",
+    "purchaseToStart": "İşlem yapmaya başlamak için bir challenge satın alın",
+    "buyChallenge": "Challenge Satın Al",
+    "tabs": {
+      "positions": "Pozisyonlar",
+      "pending": "Bekleyen",
+      "history": "Geçmiş"
+    },
+    "columns": {
+      "symbol": "Sembol",
+      "side": "Yön",
+      "type": "Tür",
+      "qty": "Miktar",
+      "entry": "Giriş",
+      "current": "Güncel",
+      "close": "Kapanış",
+      "price": "Fiyat",
+      "pnl": "K/Z",
+      "sl": "SL",
+      "tp": "TP",
+      "reason": "Neden"
+    },
+    "side": {
+      "long": "Long",
+      "short": "Short"
+    },
+    "empty": {
+      "noOpenPositionsTitle": "Açık Pozisyon Yok",
+      "noOpenPositionsDesc": "Pozisyonlarınızı burada görmek için bir işlem açın",
+      "noPendingOrdersTitle": "Bekleyen Emir Yok",
+      "noPendingOrdersDesc": "Burada görmek için bekleyen emirler oluşturun",
+      "noHistoryTitle": "İşlem Geçmişi Yok",
+      "noHistoryDesc": "Kapanan işlemleriniz burada görünecek"
+    },
+    "actions": {
+      "modifyTpSl": "TP/SL Düzenle",
+      "close": "Kapat",
+      "cancel": "İptal",
+      "save": "Kaydet",
+      "saving": "Kaydediliyor...",
+      "confirmClose": "Kapatmayı Onayla",
+      "closing": "Kapatılıyor..."
+    },
+    "banner": {
+      "dailyLossTitle": "Günlük Zarar Limitine Ulaşıldı",
+      "dailyLossMessage": "İşlemler yarına kadar kilitlendi. Açık pozisyonlar zorunlu olarak kapatılıyor.",
+      "disqualifiedTitle": "Challenge Diskalifiye Edildi",
+      "disqualifiedMessage": "Maksimum drawdown aşıldı. İşlemler devre dışı bırakıldı ve pozisyonlar zorunlu olarak kapatılıyor."
+    },
+    "modifyDialog": {
+      "title": "TP / SL Düzenle",
+      "entry": "Giriş",
+      "takeProfit": "Take Profit",
+      "stopLoss": "Stop Loss",
+      "leaveBlank": "Kaldırmak için boş bırakın"
+    },
+    "closeDialog": {
+      "title": "Pozisyon Kapatılsın mı?",
+      "entryPrice": "Giriş Fiyatı",
+      "closePrice": "Kapanış Fiyatı",
+      "estPnl": "Tahmini K/Z"
+    },
+    "toast": {
+      "accountStatusChangedTitle": "Hesap Durumu Değişti",
+      "accountStatusChangedDesc": "Limit aşıldı. {{count}} pozisyon otomatik kapatıldı.",
+      "positionClosed": "Pozisyon Kapatıldı",
+      "closeFailed": "Kapatma Başarısız",
+      "tpSlUpdated": "TP/SL güncellendi",
+      "modifyFailed": "Düzenleme başarısız",
+      "orderCancelled": "Emir İptal Edildi",
+      "cancelFailed": "İptal Başarısız",
+      "noAccountSelected": "Hesap seçilmedi",
+      "tradingLockedTitle": "İşlemler kilitli",
+      "tradingLockedDesc": "Hesap işlem için aktif değil.",
+      "invalidTradeTitle": "Geçersiz işlem",
+      "invalidTradeMissingFields": "Sembol, tür veya geçerli hacim eksik.",
+      "invalidTradeExecutionPrice": "İşlem fiyatı eksik veya geçersiz.",
+      "invalidTradeMarginPrice": "Marjin hesaplaması için fiyat eksik veya geçersiz.",
+      "insufficientMarginTitle": "Yetersiz marjin",
+      "insufficientMarginDesc": "Gerekli ${{required}}, mevcut ${{available}}.",
+      "invalidOrderTitle": "Geçersiz emir",
+      "invalidOrderPendingPrice": "Bekleyen emir fiyatı eksik veya geçersiz.",
+      "pendingOrderCreated": "Bekleyen emir oluşturuldu",
+      "tradeExecuted": "İşlem gerçekleştirildi",
+      "tradeFailed": "İşlem başarısız"
+    }
+  },
+  "mt5TradingArea": {
+    "toast": {
+      "positionClosed": "Pozisyon kapatıldı",
+      "closeFailed": "Kapatma başarısız",
+      "positionModified": "Pozisyon değiştirildi",
+      "modifyFailed": "Değiştirme başarısız",
+      "noAccountSelected": "Hesap seçilmedi",
+      "connectedToMt5": "MT5'e başarıyla bağlanıldı",
+      "loginFailed": "Giriş başarısız",
+      "passwordResetEmailSent": "Şifre sıfırlama e-postası gönderildi",
+      "resetFailed": "Sıfırlama başarısız",
+      "noPriceToClose": "Kapatmak için uygun fiyat yok"
+    },
+    "mobileTabs": {
+      "chart": "Grafik",
+      "quotes": "Fiyatlar",
+      "positions": "Pozisyonlar"
+    }
+  },
+  "tradeCheckoutPanel": {
+    "title": "Yeni Challenge Satın Al",
+    "subtitle": "Challenge paketinizi seçin ve trading yolculuğunuza başlayın.",
+    "custom": "Özel",
+    "noChallengesAtSize": "Şu anda bu hesap büyüklüğünde mevcut challenge bulunmuyor.",
+    "noMatchingChallenge": "Eşleşen challenge bulunamadı. Farklı bir büyüklük veya tür deneyin.",
+    "percentOff": "%70 İNDİRİM",
+    "phasesSingular": "{{count}} Aşama",
+    "phasesPlural": "{{count}} Aşama",
+    "stats": {
+      "phases": "Aşamalar",
+      "profitTarget": "Kâr Hedefi",
+      "dailyDrawdown": "Günlük Drawdown",
+      "maxDrawdown": "Maksimum Drawdown",
+      "leverage": "Kaldıraç",
+      "minTradingDays": "Min. Trading Günü",
+      "profitSplit": "Kâr Paylaşımı"
+    },
+    "features": [
+      "Zaman sınırı yok",
+      "Tüm stratejiler",
+      "%100 ücret iadesi",
+      "Ücretsiz eğitim"
+    ],
+    "selectPlatform": "Trading Platformu Seçin",
+    "platformDesc": {
+      "mt5": "En popüler platform",
+      "tradelocker": "Çok yakında",
+      "bybit": "Kripto trading",
+      "pt5": "Gelişmiş trading"
+    },
+    "soon": "YAKINDA",
+    "tradeLockerComingSoonTitle": "TradeLocker Çok Yakında",
+    "tradeLockerComingSoonBody": "TradeLocker entegrasyonu üzerinde çalışıyoruz. Lütfen başka bir trading platformu seçin.",
+    "selectMt5Instead": "Bunun yerine MetaTrader 5 seçin",
+    "continueToPayment": "Ödemeye Devam Et"
+  },
+  "accountSummaryCard": {
+    "balance": "Bakiye",
+    "equity": "Özkaynak",
+    "profit": "Kâr",
+    "tradingDays": "İşlem Günleri",
+    "profitTarget": "Kâr Hedefi",
+    "dailyDrawdown": "Günlük Düşüş",
+    "overallDrawdown": "Genel Düşüş"
+  },
+  "balanceStats": {
+    "available": "Kullanılabilir",
+    "equity": "Özkaynak",
+    "floatingPL": "Değişken K/Z",
+    "profitPercent": "Kâr %"
+  },
+  "challengeActiveBanner": {
+    "title": "Challenge Aktif",
+    "workingTowards": "{{phase}} tamamlanması için çalışılıyor",
+    "defaultPhase": "Aşama 1"
+  },
+  "complianceMetrics": {
+    "profitTarget": "Kâr Hedefi",
+    "dailyLossLimit": "Günlük Zarar Limiti",
+    "overallDrawdown": "Genel Düşüş",
+    "status": {
+      "passed": "GEÇTİ",
+      "warning": "UYARI",
+      "violated": "İHLAL EDİLDİ",
+      "safe": "GÜVENLİ",
+      "inProgress": "DEVAM EDİYOR"
+    }
+  },
+  "terminalSidebar": {
+    "tools": {
+      "menu": {
+        "name": "Menü",
+        "description": "Gezinme menüsünü açar/kapatır"
+      },
+      "crosshair": {
+        "name": "Artı İmleç",
+        "description": "Grafikte ölçüm için hassas imleç konumlandırması"
+      },
+      "trendLine": {
+        "name": "Trend Çizgisi",
+        "description": "Trend çizgisi çizin (ilk noktadan ikinci noktaya sürükleyin)"
+      },
+      "parallelLines": {
+        "name": "Paralel Çizgiler",
+        "description": "İki paralel trend çizgisi çizin (önce ilk çizgiyi, sonra ikinciyi)"
+      },
+      "fibonacci": {
+        "name": "Fibonacci",
+        "description": "Fibonacci düzeltme seviyelerini çizin"
+      },
+      "rectangle": {
+        "name": "Dikdörtgen",
+        "description": "Destek/direnç bölgesi çizin (köşeden köşeye sürükleyin)"
+      },
+      "priceLevel": {
+        "name": "Fiyat Seviyesi",
+        "description": "Yatay fiyat çizgisi ekleyin (grafiğe tıklayın)"
+      },
+      "text": {
+        "name": "Metin",
+        "description": "Grafiğe metin etiketi ekleyin (yakında)"
+      },
+      "eye": {
+        "name": "Göz",
+        "description": "Grafikteki tüm çizim nesnelerini göster veya gizle"
+      },
+      "lock": {
+        "name": "Kilit",
+        "description": "Grafiği kilitle (kaydırma ve yakınlaştırmayı devre dışı bırak)"
+      },
+      "delete": {
+        "name": "Sil",
+        "description": "Grafikten son çizilen nesneyi kaldır"
+      },
+      "grid": {
+        "name": "Izgara",
+        "description": "Grafik hizalaması için ızgara görünümünü aç/kapat"
+      },
+      "history": {
+        "name": "Geçmiş",
+        "description": "İşlemleri geri al/yinele ve işlem geçmişini görüntüle"
+      },
+      "layout": {
+        "name": "Düzen",
+        "description": "Grafik düzenlerini ve panel yerleşimlerini yönet"
+      }
+    },
+    "menu": {
+      "accounts": "İşlem hesapları",
+      "chart": "Grafik ayarları",
+      "oneClickTrading": "Tek Tıkla İşlem",
+      "darkTheme": "Koyu Tema",
+      "lightTheme": "Açık Tema",
+      "colorTemplates": "Renk Şablonları",
+      "language": "Dil",
+      "shortcuts": "Kısayollar",
+      "contactUs": "Bize ulaşın",
+      "aboutProgram": "Program hakkında"
+    },
+    "submenu": {
+      "connectToAccount": "Hesaba bağlan",
+      "openDemoAccount": "Demo hesabı aç",
+      "gridLines": "Izgara",
+      "tradeOrders": "İşlem Emirleri",
+      "tradePosition": "İşlem Pozisyonu",
+      "tradeHistory": "İşlem Geçmişi",
+      "slTpLevels": "SL/TP Seviyeleri",
+      "askPrice": "Satış Fiyatı",
+      "chartControls": "Grafik Kontrolleri",
+      "tradeNotification": "İşlem Bildirimi",
+      "crosshairCursor": "Artı imleç",
+      "showOhlc": "OHLC Göster",
+      "greenAndRed": "Yeşil ve Kırmızı",
+      "blueAndRed": "Mavi ve Kırmızı",
+      "blackAndWhite": "Siyah ve Beyaz",
+      "neutral": "Nötr"
+    },
+    "languages": {
+      "english": "İngilizce",
+      "arabic": "Arapça",
+      "bulgarian": "Bulgarca",
+      "chineseSimplified": "Çince (Basitleştirilmiş)",
+      "chineseTraditional": "Çince (Geleneksel)",
+      "czech": "Çekçe",
+      "dutch": "Felemenkçe",
+      "urdu": "Urduca"
+    },
+    "account": {
+      "demo": "Demo"
+    }
+  },
+  "phaseProgressionCards": {
+    "title": "Aşama İlerlemesi",
+    "evaluation": "Değerlendirme",
+    "funded": "Fonlanmış",
+    "phase1": "1. Aşama",
+    "phase2": "2. Aşama",
+    "passEvaluationPhase": "Değerlendirme aşamasını geç",
+    "receiveFundingAndTrade": "Fon al ve işlem yap",
+    "completeFirstPhase": "Birinci aşamayı tamamla",
+    "completeSecondPhase": "İkinci aşamayı tamamla",
+    "profit": "Kâr:",
+    "days": "Gün:",
+    "completed": "Tamamlandı",
+    "locked": "Kilitli"
+  },
+  "terminalTopbar": {
+    "chartTypes": {
+      "bars": "Çubuklar",
+      "candles": "Mumlar",
+      "line": "Çizgi",
+      "area": "Alan",
+      "volume": "Hacim",
+      "volumeTicks": "Hacim Tikleri"
+    },
+    "newOrder": "Yeni Emir",
+    "showBuySellOnChart": "Grafikte Al/Sat'ı Göster",
+    "hideBuySellOnChart": "Grafikte Al/Sat'ı Gizle",
+    "zoomIn": "Yakınlaştır",
+    "zoomOut": "Uzaklaştır",
+    "openMarketWatch": "Piyasa İzlemeyi Aç",
+    "closeMarketWatch": "Piyasa İzlemeyi Kapat",
+    "downloadChartPng": "Grafiği PNG olarak indir",
+    "fullScreen": "Tam ekran ({{key}})"
+  },
+  "tradingChart": {
+    "chartNotReady": "Grafik hazır değil",
+    "chartSavedAsPng": "Grafik PNG olarak kaydedildi",
+    "screenshotFailed": "Ekran görüntüsü alınamadı. Tekrar deneyin."
+  },
+  "tradingStyleRules": {
+    "title": "İşlem Stili Kuralları",
+    "newsTrading": "Haber İşlemleri",
+    "weekendHolding": "Hafta Sonu Pozisyon Taşıma",
+    "expertAdvisors": "Uzman Danışmanlar (EA)",
+    "hedging": "Hedge İşlemleri",
+    "copyTrading": "Kopya İşlem",
+    "allowed": "İzin Veriliyor",
+    "notAllowed": "İzin Verilmiyor"
+  },
+  "violationPopup": {
+    "challengeFailed": "Challenge Başarısız",
+    "warning": "Uyarı",
+    "violationMessage": "Hesabınızda bir kural ihlali tespit edildi.",
+    "warningMessage": "Bir kural limitine yaklaşıyorsunuz.",
+    "details": "Ayrıntılar",
+    "iUnderstand": "Anladım",
+    "continueTrading": "İşleme Devam Et"
+  },
+  "chatSupport": {
+    "greeting": "Merhaba! Ben Prop Capitals yapay zeka asistanıyım. Bugün size nasıl yardımcı olabilirim? Bana challenge'lar, işlem kuralları, ödemeler veya başka herhangi bir konuda soru sorabilirsiniz!",
+    "online": "Çevrimiçi",
+    "thinking": "Düşünüyor...",
+    "humanSupport": "Canlı Destek",
+    "inputPlaceholder": "Mesajınızı yazın...",
+    "errors": {
+      "generic": "Tarafımızda bir sorun oluştu.",
+      "retry": "{{message}} Lütfen birazdan tekrar deneyin veya aşağıdaki Canlı Destek düğmesini kullanın.",
+      "contactSupport": "{{message}} Lütfen aşağıdaki Canlı Destek düğmesini kullanın veya support@prop-capitals.com adresine e-posta gönderin.",
+      "noResponse": "Bir yanıt oluşturamadım.",
+      "connection": "Şu anda bağlantı sorunu yaşıyorum. Lütfen tekrar deneyin veya doğrudan support@prop-capitals.com adresinden bizimle iletişime geçin."
+    },
+    "categories": {
+      "ACCOUNT": "Hesap",
+      "PAYMENT": "Ödeme",
+      "PAYOUT": "Para Çekme",
+      "TECHNICAL": "Teknik",
+      "OTHER": "Diğer"
+    },
+    "ticket": {
+      "created": "Teşekkürler! Destek talebiniz {{category}} kategorisi altında oluşturuldu. Ekibimiz en kısa sürede yanıt verecektir.",
+      "continueFromTickets": "Görüşmeye Destek Talepleri sayfanızdan devam edebilirsiniz.",
+      "submitIssue": "Talebiniz gönderilirken bir sorun oluştu.",
+      "emailFallback": "{{message}} Lütfen doğrudan support@prop-capitals.com adresinden bize e-posta gönderin.",
+      "submitFailed": "Talebiniz gönderilemedi. Lütfen doğrudan support@prop-capitals.com adresinden bize e-posta gönderin.",
+      "openTicket": "Talebi Aç"
+    },
+    "form": {
+      "closeForm": "Formu kapat",
+      "namePlaceholder": "Adınız",
+      "emailPlaceholder": "E-posta Adresiniz",
+      "messagePlaceholder": "Sorununuzu açıklayın...",
+      "cancel": "İptal",
+      "submit": "Gönder"
+    },
+    "quickReplies": {
+      "challenges": "Challenge'lar",
+      "challengesPrompt": "Hangi challenge'ları sunuyorsunuz?",
+      "payouts": "Ödemeler",
+      "payoutsPrompt": "Ödemeler nasıl işliyor?",
+      "rules": "Kurallar",
+      "rulesPrompt": "İşlem kuralları nelerdir?"
+    },
+    "login": {
+      "linkText": "Giriş yapın",
+      "suffix": "hesaba özel yardım (bakiye, işlemler, ödemeler) için."
+    }
+  },
+  "socialProof": {
+    "timeAgo": "{{minutes}} dakika önce",
+    "messages": {
+      "challengePassed": "{{city}} şehrinden {{name}} az önce challenge'ını geçti!",
+      "gotFunded": "{{city}} şehrinden {{name}} az önce ${{amount}}K fon aldı!",
+      "payoutReceived": "{{city}} şehrinden {{name}} ${{amount}} ödeme aldı!",
+      "challengeStarted": "{{city}} şehrinden {{name}} az önce bir challenge başlattı!"
+    }
+  },
+  "supportChat": {
+    "placeholderClosed": "Bu talep kapatıldı",
+    "placeholderType": "Mesajınızı yazın..."
+  },
+  "equityChart": {
+    "title": "Sermaye Eğrisi",
+    "noData": "Sermaye verisi bulunmuyor"
+  },
+  "profitChart": {
+    "title": "Günlük Kâr"
+  },
+  "propTradingExplainer": {
+    "scenes": {
+      "intro": {
+        "title": "Prop Trading Nedir?",
+        "subtitle": "Sermayemizle işlem yapın, kârı siz alın"
+      },
+      "problem": {
+        "title": "Zorluk",
+        "subtitle": "Çoğu yatırımcının anlamlı getiriler elde edecek yeterli sermayesi yoktur"
+      },
+      "solution": {
+        "title": "Çözümümüz",
+        "subtitle": "Sermayeyi biz sağlıyoruz, beceriyi siz sunuyorsunuz"
+      },
+      "step1": {
+        "title": "1. Adım: Challenge'ınızı Seçin",
+        "subtitle": "$10K ile $200K arasında bir hesap büyüklüğü seçin"
+      },
+      "step2": {
+        "title": "2. Adım: Becerilerinizi Kanıtlayın",
+        "subtitle": "Riski yönetirken kâr hedefine ulaşın"
+      },
+      "step3": {
+        "title": "3. Adım: Fonlanın",
+        "subtitle": "Değerlendirmeyi geçin ve gerçek sermaye alın"
+      },
+      "profits": {
+        "title": "Kârın %90'ına Kadar Sizin",
+        "subtitle": "Becerileriniz, sermayemiz, ortak başarı"
+      },
+      "scale": {
+        "title": "$2 Milyona Kadar Ölçeklendirin",
+        "subtitle": "Tutarlı performansla hesabınızı büyütün"
+      },
+      "cta": {
+        "title": "Yolculuğunuza Bugün Başlayın",
+        "subtitle": "Dünya genelinde binlerce fonlanmış yatırımcıya katılın"
+      }
+    },
+    "labels": {
+      "yourSkills": "Becerileriniz",
+      "ourCapital": "Sermayemiz",
+      "success": "Başarı",
+      "firstStep": "İlk Adım",
+      "evaluation": "Değerlendirme",
+      "profitTarget": "{{value}} Hedef",
+      "maxDrawdown": "{{value}} Maks. DD",
+      "getFunded": "Fonlanın",
+      "yourShare": "Sizin Payınız",
+      "fundedTraders": "Fonlanmış Yatırımcı",
+      "capitalDeployed": "Dağıtılan Sermaye",
+      "paidOut": "Ödenen"
+    }
+  },
+  "riskDisclosure": {
+    "pageTitle": "Risk Bildirimi",
+    "pageSubtitle": "İşlem riskleri hakkında önemli bilgiler",
+    "highRiskWarning": {
+      "heading": "Yüksek Risk Uyarısı",
+      "body": "İşlem yapmak önemli ölçüde zarar etme riski taşır ve tüm yatırımcılar için uygun olmayabilir. Katılmadan önce bu riskleri tam olarak anladığınızdan emin olun ve yalnızca kaybetmeyi göze alabileceğiniz parayla işlem yapın."
+    },
+    "generalInfo": {
+      "heading": "Genel Bilgiler ve Risk Bildirimi",
+      "body": "Risk Bildirimi: Prop Capitals tarafından yayımlanan ve dağıtılan tüm materyaller yalnızca genel bilgi olarak değerlendirilmelidir. Prop Capitals tarafından sağlanan veya burada yer alan bilgiler (a) yatırım tavsiyesi, (b) herhangi bir menkul kıymetin alımına veya satımına yönelik bir teklif ya da davet veya (c) herhangi bir menkul kıymet, şirket veya fonun tavsiyesi, onaylanması ya da desteklenmesi olarak hizmet etmeyi amaçlamaz. Prop Capitals'in web sitelerinde yer alan referanslar, diğer müşterilerin deneyimlerini yansıtmayabilir ve gelecekteki performansı veya başarıyı garanti etmez. Prop Capitals'in web sitelerindeki bilgileri kullanmak kendi sorumluluğunuzdadır. Prop Capitals; ortakları, temsilcileri, acenteleri, çalışanları ve yüklenicileriyle birlikte, bu tür bilgilerin kullanımı veya yanlış kullanımı için herhangi bir sorumluluk veya yükümlülük kabul etmez."
+    },
+    "tradingRisk": {
+      "heading": "İşlem Riski ve Uygunluk",
+      "body": "Kaldıraçlı enstrümanlarla işlem yapmak önemli ölçüde risk taşır ve tüm yatırımcılar için uygun değildir. Yatırımcılar başlangıç yatırımlarının tamamını veya daha fazlasını kaybedebilir. İşlemler için yalnızca risk sermayesi (kişinin mali güvenliğini veya yaşam tarzını etkilemeden kaybedilebilecek para) kullanılmalı ve yalnızca yeterli risk sermayesine sahip olanlar işlem yapmalıdır. Bu belge, vadeli işlem, opsiyon veya forex alım satımına yönelik bir davet ya da teklif değildir. Geçmiş performans, gelecekteki sonuçların mutlaka göstergesi değildir."
+    },
+    "hypotheticalPerformance": {
+      "heading": "Varsayımsal ve Simüle Edilmiş Performans",
+      "body": "Varsayımsal veya simüle edilmiş performans sonuçlarının doğası gereği sınırlamaları vardır. Gerçek bir performans kaydının aksine, simüle edilmiş sonuçlar gerçek işlemleri yansıtmaz. Ayrıca, bu işlemler fiilen gerçekleştirilmediğinden, sonuçlar likidite eksikliği gibi belirli piyasa faktörlerinin etkisini olduğundan az veya olduğundan fazla telafi etmiş olabilir. Simüle edilmiş işlem programları ayrıca genellikle geriye dönük bakışın avantajıyla tasarlanır. Herhangi bir hesabın, gösterilenlere benzer kâr veya zarar elde edeceğine dair hiçbir garanti yoktur."
+    },
+    "cfdAvailability": {
+      "heading": "CFD Kullanılabilirliği",
+      "body": "Prop Capitals, belirli kısıtlanmış yargı bölgelerinde ikamet edenlere Fark Sözleşmeleri (CFD) sunmaz. Kısıtlanmış bölgelerin tam listesi için lütfen Hizmet Şartlarımıza bakın."
+    },
+    "companyInfo": {
+      "heading": "Şirket Bilgileri",
+      "body": "Bu web sitesi, {{registrationNumber}} sicil numarası ve {{address}} adresindeki kayıtlı adresiyle {{entity}} tarafından sahiplenilmekte ve işletilmektedir."
+    },
+    "ownershipCopyright": {
+      "heading": "Mülkiyet ve Telif Hakkı",
+      "body": "© {{year}} {{entity}}. Tüm Hakları Saklıdır."
+    }
+  },
+  "refundPolicy": {
+    "pageTitle": "İade Politikası",
+    "pageSubtitle": "İade uygunluğu ve işlemleri için açık koşullar",
+    "section1Heading": "1. İade Uygunluğu",
+    "section1Para1": "1.1. Müşteriler, satın alınan değerlendirme veya hesapta herhangi bir alım satım işlemi başlatılmamış olması koşuluyla, satın alma tarihinden itibaren on dört (14) takvim günü içinde iade talebinde bulunabilir.",
+    "section1Para2": "1.2. İade uygunluğu süresi, işlem büyüklüğü, süresi veya sonucu ne olursa olsun, herhangi bir işlemin gerçekleştirilmesi üzerine otomatik olarak sona erer.",
+    "section2Heading": "2. İade Edilemeyen Durumlar",
+    "section2Para1": "2.1. Alım satım faaliyeti başladığında, değerlendirme aktif sayılır ve Müşteri, bu andan itibaren hiçbir iadenin yapılmayacağını açıkça kabul eder.",
+    "section2Para2": "2.2. Bu durum eşit şekilde şunlara uygulanır: Değerlendirme hesapları, Challenge programları ve fonlanmış veya simüle edilmiş herhangi bir alım satım ortamı.",
+    "section3Heading": "3. İadelerin Kapsamı",
+    "section3Para1": "3.1. Onaylanan iadeler, yalnızca değerlendirme veya program için ödenen ilk satın alma ücretine uygulanır.",
+    "section3Para2": "3.2. Yürürlükteki yasaların aksini gerektirmediği sürece, ek ücretler, üçüncü taraf masrafları veya hizmet maliyetleri iade edilemez.",
+    "section4Heading": "4. İade İşlemleri",
+    "section4Para1": "4.1. Onaylanan iadeler, mümkün olduğunda orijinal ödeme yöntemi kullanılarak işleme alınır.",
+    "section4Para2": "4.2. İşlem süreleri ödeme sağlayıcısına bağlı olarak değişebilir ve harici bankacılık veya ödeme sistemi gecikmelerine tabidir.",
+    "section5Heading": "5. Kötüye Kullanımın Önlenmesi",
+    "section5Para1": "5.1. Şirket, kötüye kullanım, dolandırıcılık veya platform kurallarını atlatma girişimlerinden şüphelenilen durumlarda iade taleplerini reddetme hakkını saklı tutar.",
+    "section5Para2": "5.2. Tekrarlanan iade talepleri veya kötüye kullanıma işaret eden hesap faaliyetleri, hesabın askıya alınması veya sonlandırılması ile sonuçlanabilir.",
+    "section6Heading": "6. Politika Değişiklikleri",
+    "section6Para1": "6.1. Şirket, bu İade Politikasını herhangi bir zamanda değiştirme hakkını saklı tutar.",
+    "section6Para2": "6.2. Aksi belirtilmediği sürece, her türlü değişiklik Şirket’in web sitesinde yayımlanması üzerine yürürlüğe girer.",
+    "section7Heading": "7. Geçerli Hukuk",
+    "section7Para1": "Bu İade Politikası, Şirket’in faaliyet gösterdiği yargı çevresinde geçerli olan yasalara tabi olacak ve bu yasalara göre yorumlanacaktır."
+  },
+  "withdrawalPolicy": {
+    "pageTitle": "Para Çekme (Ödeme) Politikası",
+    "pageSubtitle": "Fonlanmış hesaplar için kâr çekme işlemlerinin nasıl ve ne zaman gerçekleştirildiği",
+    "section1": {
+      "heading": "1. Genel Hükümler",
+      "p1": "Bu Para Çekme Politikası (\"Politika\"), uygun nitelikteki Müşterilerin fonlanmış işlem hesaplarından kâr çekme talebinde bulunabilecekleri ve bu kârları alabilecekleri koşulları düzenler. Müşteri, fonlanmış işlem programlarına katılarak bu Politika, Şartlar ve Koşullar ile ilgili tüm platform kurallarına bağlı kalmayı kabul eder."
+    },
+    "section2": {
+      "heading": "2. Ödeme Uygunluğu",
+      "p1": "2.1. Müşteri, tüm işlem kurallarına ve risk yönetimi gerekliliklerine eksiksiz olarak uyulması koşuluyla, on dört (14) ardışık takvim günü boyunca fonlanmış işlem faaliyetini tamamladıktan sonra para çekme talebinde bulunmaya hak kazanır.",
+      "p2": "2.2. Sonraki para çekme işlemlerine ilişkin uygunluk; işlem davranışı, risk limitleri ve hesap bütünlüğü dâhil ancak bunlarla sınırlı olmamak üzere tüm platform politikalarına sürekli uyuma tabidir."
+    },
+    "section3": {
+      "heading": "3. Ödeme Sıklığı",
+      "p1": "3.1. Para çekme talepleri, her on dört (14) takvim gününde bir kez olarak tanımlanan iki haftalık esasa göre iletilebilir.",
+      "p2": "3.2. Şirket, geçerli yasalarca gerekli görüldüğü hâllerde önceden bildirimde bulunmak kaydıyla, ödeme takvimlerini kendi takdirine göre değiştirme hakkını saklı tutar."
+    },
+    "section4": {
+      "heading": "4. Para Çekme Tutarları",
+      "p1": "4.1. Talep başına asgari para çekme tutarı 50 ABD doları (elli Amerika Birleşik Devletleri doları) tutarındadır.",
+      "p2": "4.2. Talep edilen tutarın platform kurallarına uygun olarak meşru biçimde kazanılmış kârları temsil etmesi koşuluyla, azami para çekme limiti bulunmamaktadır."
+    },
+    "section5": {
+      "heading": "5. İşlem Süresi",
+      "p1": "5.1. Onaylanan para çekme talepleri, talebin iletildiği andan itibaren yirmi dört (24) ila kırk sekiz (48) saat içinde işleme alınır.",
+      "p2": "5.2. İşlem süreleri; uyum incelemeleri, teknik sorunlar, ödeme sağlayıcısı gecikmeleri veya mücbir sebep olayları nedeniyle uzayabilir."
+    },
+    "section6": {
+      "heading": "6. Ücretler",
+      "p1": "6.1. Şirket herhangi bir para çekme ücreti tahsil etmez.",
+      "p2": "6.2. Bankalar, ödeme işlemcileri veya aracılar tarafından uygulanan herhangi bir üçüncü taraf ücreti, münhasıran Müşterinin sorumluluğundadır."
+    },
+    "section7": {
+      "heading": "7. Uyum ve Doğrulama",
+      "p1": "7.1. Tüm para çekme talepleri; standart Müşterini Tanı (KYC), Kara Para Aklamayı Önleme (AML) ve dolandırıcılık önleme kontrollerine tabidir.",
+      "p2": "7.2. Şirket, herhangi bir para çekme işlemini onaylamadan önce ek belge veya açıklama talep etme hakkını saklı tutar."
+    },
+    "section8": {
+      "heading": "8. İhlaller ve Alıkoyma",
+      "p1": "8.1. Şirket; kural ihlali, kötüye kullanıma yönelik işlem uygulamaları, manipülasyon veya sözleşmesel yükümlülüklerin ihlali şüphesi bulunan durumlarda para çekme işlemlerini geciktirme, askıya alma, azaltma veya reddetme hakkını saklı tutar.",
+      "p2": "8.2. Yasaklanmış veya kurallara aykırı işlem faaliyetlerinden elde edilen herhangi bir kâr, geçersiz ve çekilemez sayılır."
+    },
+    "section9": {
+      "heading": "9. Değişiklikler",
+      "p1": "9.1. Şirket bu Politikayı dilediği zaman değiştirebilir. Güncellenmiş sürümler, aksi belirtilmedikçe Şirketin web sitesinde yayımlanması üzerine yürürlüğe girer."
+    },
+    "section10": {
+      "heading": "10. Geçerli Hukuk",
+      "p1": "Bu Politika, kanunlar ihtilafı ilkeleri dikkate alınmaksızın, Şirketin faaliyet gösterdiği yargı çevresinde geçerli olan kanunlara tabi olacak ve bu kanunlara göre yorumlanacaktır."
+    }
+  },
+  "kycPolicy": {
+    "title": "Müşterini Tanı (KYC) Politikası",
+    "subtitle": "Müşteri kimliklerini nasıl doğruladığımız ve AML gerekliliklerine nasıl uyduğumuz",
+    "purpose": {
+      "heading": "1. Amaç",
+      "body": "Bu Müşterini Tanı (\"KYC\") Politikası, Şirket tarafından Müşterilerinin kimliğini doğrulamak, dolandırıcılığı önlemek ve yürürlükteki Kara Para Aklamayı Önleme (AML) ile düzenleyici gerekliliklere uymak amacıyla uygulanan prosedürleri ortaya koymaktadır. KYC doğrulamasının tamamlanması, fonlanmış işlem ve para çekme işlemleri de dahil olmak üzere belirli hizmetlere erişim için zorunludur."
+    },
+    "requiredInfo": {
+      "heading": "2. Gerekli Müşteri Bilgileri",
+      "intro": "KYC gerekliliklerini karşılamak için her Müşteriden, aşağıdakiler dahil ancak bunlarla sınırlı olmamak üzere doğru, güncel ve eksiksiz bilgi sağlaması istenebilir:",
+      "items": [
+        "Tam yasal ad",
+        "Doğum tarihi",
+        "Uyruk",
+        "İkamet adresi"
+      ]
+    },
+    "identity": {
+      "heading": "3. Kimlik Doğrulama",
+      "intro": "Müşteriler, aşağıdakileri içerebilecek geçerli, devlet tarafından verilmiş fotoğraflı bir kimlik belgesi sunmalıdır:",
+      "items": [
+        "Pasaport",
+        "Ulusal kimlik kartı",
+        "Sürücü belgesi"
+      ],
+      "note": "Sunulan kimlik belgesi net, okunaklı, süresi dolmamış ve tanınmış bir resmi devlet makamı tarafından verilmiş olmalıdır."
+    },
+    "address": {
+      "heading": "4. Adres Kanıtı",
+      "intro": "Müşterilerden, son üç (3) ay içinde tarihlenmiş, ikamet adreslerini kanıtlayan aşağıdakiler gibi belgeleri sunmaları istenebilir:",
+      "items": [
+        "Fatura",
+        "Banka hesap özeti",
+        "Resmi devlet yazışması"
+      ],
+      "note": "Belge, Müşterinin tam adını ve ikamet adresini açıkça göstermelidir."
+    },
+    "funds": {
+      "heading": "5. Fon Kanıtı",
+      "intro": "Müşterilerden, Şirketin hizmetleriyle bağlantılı olarak kullanılan sermayenin yasal kaynağını kanıtlamak için fon kanıtı sağlamaları istenebilir. Kabul edilebilir belgeler aşağıdakileri içerebilir, ancak bunlarla sınırlı değildir:",
+      "items": [
+        "Güncel banka hesap özetleri",
+        "Maaş bordroları veya gelir beyanları",
+        "Yatırım veya işlem hesabı özetleri"
+      ],
+      "note": "Şirket, gerekli görüldüğünde ek belge talep etme hakkını saklı tutar."
+    },
+    "verification": {
+      "heading": "6. Doğrulama ve İnceleme",
+      "clause1": "6.1. Sunulan tüm KYC bilgileri ve belgeleri doğrulama ve incelemeye tabidir.",
+      "clause2": "6.2. Müşterinin tatmin edici belge sunmaması veya sunulan bilgilerin eksik, yanlış ya da yanıltıcı olması durumunda, Şirket hizmetlere erişimi reddetme, askıya alma veya kısıtlama hakkını saklı tutar."
+    },
+    "monitoring": {
+      "heading": "7. Sürekli İzleme",
+      "body": "Şirket, düzenleyici gerekliliklere sürekli uyumu sağlamak amacıyla Müşteri bilgilerini periyodik olarak inceleyebilir ve yeniden doğrulayabilir."
+    },
+    "dataProtection": {
+      "heading": "8. Veri Koruma",
+      "body": "Bu Politika kapsamında toplanan tüm kişisel veriler, Şirketin Gizlilik Politikası ve yürürlükteki veri koruma yasalarına uygun olarak işlenecektir. Bilgiler yalnızca doğrulama, uyum ve güvenlik amaçlarıyla kullanılacaktır."
+    },
+    "refusal": {
+      "heading": "9. Reddetme veya Sonlandırma",
+      "intro": "KYC gerekliliklerine uyulmaması aşağıdakilerle sonuçlanabilir:",
+      "items": [
+        "Hesap erişiminin reddedilmesi",
+        "İşlem ayrıcalıklarının askıya alınması",
+        "Para çekme işlemlerinin geciktirilmesi veya reddedilmesi",
+        "Müşteri ilişkisinin sonlandırılması"
+      ]
+    },
+    "amendments": {
+      "heading": "10. Değişiklikler",
+      "body": "Şirket, bu KYC Politikasını dilediği zaman değiştirme hakkını saklı tutar. Aksi belirtilmedikçe, herhangi bir değişiklik Şirketin web sitesinde yayımlandığı anda yürürlüğe girecektir."
+    },
+    "governingLaw": {
+      "heading": "11. Geçerli Hukuk",
+      "body": "Bu Politika, Şirketin faaliyet gösterdiği yargı bölgesinde geçerli olan yasalara tabi olacak ve bu yasalara göre yorumlanacaktır."
+    }
+  },
+  "amlPolicy": {
+    "pageTitle": "Kara Para Aklamayı Önleme (AML) Politikası",
+    "pageSubtitle": "Kara para aklama ve terörün finansmanını önleme taahhüdümüz",
+    "purpose": {
+      "heading": "1. Amaç",
+      "body": "Bu Kara Para Aklamayı Önleme (\"AML\") Politikası, BLUEHAVEN MANAGEMENT LTD (\"Şirket\") tarafından kara para aklama, terörün finansmanı ve diğer mali suçları tespit etmek, önlemek ve raporlamak amacıyla yürürlükteki yasa ve yönetmeliklere uygun olarak benimsenen tedbir ve prosedürleri ortaya koymaktadır."
+    },
+    "scope": {
+      "heading": "2. Kapsam",
+      "body": "Bu Politika, Şirketin tüm yöneticilerine, görevlilerine, çalışanlarına, yüklenicilerine ve temsilcilerine uygulanır. Ayrıca Şirketin platformları ve hizmetleri aracılığıyla yürütülen tüm iş ilişkileri ve işlemler için de geçerlidir."
+    },
+    "riskAssessment": {
+      "heading": "3. Risk Değerlendirmesi",
+      "intro": "Şirket, kara para aklama ve terörün finansmanı risklerini belirlemek ve değerlendirmek için düzenli risk değerlendirmeleri gerçekleştirir. Dikkate alınan risk faktörleri aşağıdakileri içerir ancak bunlarla sınırlı değildir:",
+      "factors": [
+        "Müşteri risk profili ve coğrafi konum",
+        "Ürün ve hizmetlerin niteliği ve karmaşıklığı",
+        "İşlem örüntüleri ve hacimleri",
+        "Kullanılan dağıtım kanalları ve ödeme yöntemleri"
+      ]
+    },
+    "cdd": {
+      "heading": "4. Müşterini Tanı (CDD)",
+      "intro": "Şirket, bir iş ilişkisi kurmadan veya işlemleri gerçekleştirmeden önce Müşterini Tanı tedbirlerini uygular. CDD prosedürleri şunları içerir:",
+      "measures": [
+        "Müşterilerin kimliğinin güvenilir ve bağımsız belgeler kullanılarak doğrulanması",
+        "Uygulanabilir olduğu durumlarda gerçek faydalanıcıların belirlenmesi ve doğrulanması",
+        "İş ilişkisinin amacının ve amaçlanan niteliğinin anlaşılması",
+        "İşlemlerin ve faaliyetlerin sürekli olarak izlenmesi"
+      ],
+      "edd": "Daha yüksek risklerin belirlendiği durumlarda, siyasi açıdan nüfuz sahibi kişiler (PEP'ler) ve daha yüksek riskli yargı bölgelerinden gelen müşteriler de dâhil olmak üzere Geliştirilmiş Durum Tespiti (EDD) uygulanır."
+    },
+    "transactionMonitoring": {
+      "heading": "5. İşlem İzleme",
+      "body": "Şirket, olağandışı veya şüpheli faaliyetleri tespit etmek amacıyla müşteri işlemlerini sürekli olarak izler. İzleme, bir müşterinin bilinen profili, ticari faaliyetleri veya risk değerlendirmesiyle tutarsız işlemleri tespit etmek üzere tasarlanmış otomatik sistemleri ve manuel inceleme süreçlerini içerir."
+    },
+    "suspiciousActivity": {
+      "heading": "6. Şüpheli Faaliyet Bildirimi",
+      "intro": "Bir işlemin veya faaliyetin kara para aklama ya da terörün finansmanı ile ilişkili olabileceğinden şüphelenmek için makul gerekçelerin bulunduğu durumlarda, Şirket:",
+      "actions": [
+        "İlgili makamlara bir Şüpheli Faaliyet Raporu (SAR) sunar",
+        "Raporun varlığını müşteriye açıklamaktan kaçınır (tüyo verme)",
+        "Kolluk kuvvetleri ve düzenleyici kurumlarla tam olarak iş birliği yapar",
+        "Uygun olduğu durumlarda iş ilişkisini askıya alır veya sonlandırır"
+      ]
+    },
+    "recordKeeping": {
+      "heading": "7. Kayıt Tutma",
+      "body": "Şirket, tüm müşteri kimlik belgelerine, işlem kayıtlarına ve durum tespiti bilgilerine ilişkin kayıtları, işlem tarihinden veya iş ilişkisinin sona ermesinden hangisi daha sonra ise itibaren en az beş (5) yıllık bir süre boyunca, yürürlükteki yasal gerekliliklere uygun olarak muhafaza eder."
+    },
+    "staffTraining": {
+      "heading": "8. Personel Eğitimi",
+      "body": "İlgili tüm personel, AML politikaları, prosedürleri ve yükümlülükleri konusunda düzenli olarak eğitim alır. Eğitim, şüpheli faaliyetlerin tespitini, raporlama prosedürlerini ve yürürlükteki yasa ve yönetmeliklerdeki güncellemeleri kapsar."
+    },
+    "amendments": {
+      "heading": "9. Değişiklikler",
+      "body": "Şirket, bu AML Politikasını dilediği zaman değiştirme hakkını saklı tutar. Aksi belirtilmedikçe, herhangi bir değişiklik Şirketin web sitesinde yayımlanması üzerine yürürlüğe girer."
+    },
+    "governingLaw": {
+      "heading": "10. Geçerli Hukuk",
+      "body": "Bu Politika, Şirketin faaliyet gösterdiği yargı bölgesinde uygulanan İngiltere ve Galler yasalarına tabi olacak ve bu yasalara göre yorumlanacaktır."
+    }
+  },
+  "a11y": {
+    "language": "Dil",
+    "currency": "Para birimi"
+  },
+  "challengeDefs": {
+    "oneStep": {
+      "name": "1 Aşamalı Challenge",
+      "badge": "En Popüler",
+      "description": "Ulaşılabilir hedefler ve trader'lar için en iyi değeri sunan hızlı değerlendirme"
+    },
+    "twoStep": {
+      "name": "2 Aşamalı Challenge",
+      "badge": "En İyi Paylaşım",
+      "description": "En yüksek kâr paylaşımı potansiyeline sahip geleneksel değerlendirme"
+    },
+    "instantFunding": {
+      "name": "Anında Fonlama",
+      "badge": "Değerlendirme Yok",
+      "description": "Değerlendirmeyi atlayın ve hemen işlem yapmaya başlayın"
+    },
+    "minDays": "{{count}} gün",
+    "none": "Yok"
+  },
+  "checkout": {
+    "steps": {
+      "platform": "Platform",
+      "details": "Bilgiler",
+      "confirm": "Onay"
+    },
+    "alerts": {
+      "selectPlatform": "Lütfen bir işlem platformu seçin",
+      "fillRequired": "Lütfen tüm zorunlu alanları doldurun"
+    },
+    "challengeName": {
+      "oneStep": "1 Aşamalı Meydan Okuma",
+      "twoStep": "2 Aşamalı Meydan Okuma"
+    },
+    "challengeFallback": "Meydan Okuma",
+    "challengeType": "Meydan Okuma Türü",
+    "confirmOrder": "Siparişi Onayla",
+    "confirmStep": {
+      "title": "Siparişinizi Onaylayın",
+      "subtitle": "Seçiminizi gözden geçirin ve satın alma işlemini tamamlayın."
+    },
+    "countries": {
+      "other": "Diğer"
+    },
+    "detailsStep": {
+      "title": "Bilgileriniz",
+      "subtitle": "İşlem hesabınızı oluşturmak için bilgilerinizi girin."
+    },
+    "feeRefund": "%100 Ücret İadesi",
+    "fields": {
+      "country": "Ülke",
+      "phoneOptional": "Telefon (İsteğe bağlı)"
+    },
+    "instantSetup": "Anında Hesap Kurulumu",
+    "new": "YENİ",
+    "placeholders": {
+      "phone": "+90 555 123 4567"
+    },
+    "platformStep": {
+      "title": "İşlem Platformunuzu Seçin",
+      "subtitle": "İşlem yapmak istediğiniz platformu seçin."
+    },
+    "platformDesc": {
+      "mt5": "Sektör standardı platform",
+      "tradelocker": "Modern web tabanlı platform",
+      "bybit": "Kripto işlem platformu",
+      "pt5": "En yeni platformumuz"
+    },
+    "preparing": "Ödeme sayfanız hazırlanıyor…",
+    "secureNotice": "Onayladıktan sonra, kart bilgilerinizi girmeniz için güvenli ödeme sağlayıcımıza yönlendirileceksiniz. Kart numaranızı asla görmez veya saklamayız.",
+    "securePayment": "Güvenli Ödeme",
+    "support247": "7/24 Destek",
+    "success": {
+      "title": "Sipariş Onaylandı!",
+      "subtitle": "Meydan okuma hesabınız kuruluyor. Giriş bilgilerinizi kısa süre içinde e-posta ile alacaksınız.",
+      "orderId": "Sipariş No",
+      "processing": "İşleniyor",
+      "whatNext": "Sırada ne var?",
+      "backHome": "Ana Sayfaya Dön",
+      "viewRules": "İşlem Kurallarını Görüntüle",
+      "needHelpPrefix": "Yardıma mı ihtiyacınız var? Bize şu adresten ulaşın:",
+      "steps": {
+        "email": {
+          "title": "E-postanızı Kontrol Edin",
+          "desc": "Giriş bilgilerinizi 5 dakika içinde alacaksınız"
+        },
+        "download": {
+          "title": "Platformu İndirin",
+          "desc": "Seçtiğiniz işlem platformunu yükleyin"
+        },
+        "trade": {
+          "desc": "Giriş yapın ve değerlendirmenize başlayın"
+        }
+      }
+    }
+  },
+  "quickLink": {
+    "agreePrefix": "Şunları kabul ediyorum:",
+    "terms": "Şartlar ve Koşullar",
+    "continueSecure": "Güvenli ödemeye devam et",
+    "hostedNotice": "Devam ettikten sonra, kart bilgilerinizi girip ödemeyi tamamlamak için güvenli ödeme sağlayıcımıza yönlendirileceksiniz.",
+    "payByCard": "Kartla öde",
+    "processing": "İşleniyor…",
+    "securedPayment": "Güvenli ödeme",
+    "yourDetails": "Bilgileriniz",
+    "errors": {
+      "postalRequired": "Posta kodu gerekli",
+      "cardholderRequired": "Kart sahibinin adı gerekli",
+      "cardNumberRequired": "Kart numarası gerekli",
+      "cardNumberInvalid": "Kart numarası geçersiz",
+      "expiryFormat": "Son kullanma tarihi AA/YY olmalıdır",
+      "invalidMonth": "Geçersiz ay",
+      "cardExpired": "Kartın süresi dolmuş",
+      "cvvInvalid": "CVV 3-4 haneli olmalıdır",
+      "termsRequired": "Şartları ve Koşulları kabul etmelisiniz"
+    },
+    "fields": {
+      "firstName": "Ad",
+      "lastName": "Soyad",
+      "address": "Fatura adresi",
+      "city": "Şehir",
+      "state": "Eyalet",
+      "optional": "(ops.)",
+      "postal": "Posta kodu",
+      "cardNumber": "Kart numarası",
+      "expiry": "Son kullanma",
+      "cvv": "CVV",
+      "nameOnCard": "Kart üzerindeki isim"
+    },
+    "placeholders": {
+      "address": "Sokak adresi",
+      "nameOnCard": "Kart üzerinde göründüğü gibi"
+    },
+    "notFound": {
+      "title": "Ödeme bağlantısı bulunamadı",
+      "inactiveTitle": "Bağlantı artık aktif değil",
+      "desc": "Açtığınız ödeme bağlantısını bulamadık. Lütfen URL'yi kontrol edin veya satıcıyla iletişime geçin.",
+      "inactiveDesc": "Bu ödeme bağlantısı zaten kullanılmış veya devre dışı bırakılmış. Lütfen yenisi için satıcıyla iletişime geçin."
+    },
+    "toast": {
+      "success": "Ödeme başarılı! Yönlendiriliyorsunuz…",
+      "notCompleted": "Ödeme tamamlanamadı.",
+      "failed": "Ödeme başarısız oldu. Lütfen tekrar deneyin."
+    }
+  },
+  "payLink": {
+    "notFound": {
+      "title": "Ödeme Bağlantısı Bulunamadı",
+      "description": "Bu ödeme bağlantısı geçersiz veya artık aktif değil. Lütfen bağlantıyı sizinle paylaşan satıcıyla iletişime geçin."
+    },
+    "form": {
+      "subtitle": "Siparişinizi tamamlamak için fatura ve kart bilgilerinizi girin."
+    },
+    "sections": {
+      "billingDetails": "Fatura Bilgileri",
+      "paymentDetails": "Ödeme Bilgileri"
+    },
+    "fields": {
+      "emailHelpLocked": "Hesap e-postanıza kilitlidir. Giriş bilgileri ve makbuzlar buraya gönderilir.",
+      "emailHelpGuest": "Ödeme sonrasında panel hesabınızı bu e-posta ile oluşturacağız.",
+      "phoneHelp": "Uluslararası formatı + ülke koduyla kullanın (örn. +90 532 555 0100).",
+      "stateOptional": "İl / Bölge (İsteğe Bağlı)",
+      "postalCode": "Posta Kodu *",
+      "cardholderName": "Kart Sahibinin Adı *",
+      "cardNumber": "Kart Numarası *",
+      "expiry": "Son Kullanma (AA/YY) *",
+      "cvv": "CVV *"
+    },
+    "placeholders": {
+      "phone": "+90 532 555 0100",
+      "state": "Ankara",
+      "postalCode": "34000",
+      "cardholderName": "Kartta yazıldığı gibi"
+    },
+    "secureNoticeS2S": "Kartınız TLS üzerinden güvenli şekilde işlenir. Makbuzlar için yalnızca son 4 haneyi saklarız — tam numarayı veya CVV'yi asla saklamayız. Bankanız 3-D Secure doğrulaması isteyebilir.",
+    "terms": {
+      "agreePrefix": "Şunları kabul ediyorum:",
+      "termsLink": "Şartlar ve Koşullar",
+      "and": "ve",
+      "privacyLink": "Gizlilik Politikası",
+      "ageConfirm": "18 yaşından büyük olduğumu onaylıyorum"
+    },
+    "button": {
+      "processing": "Ödeme işleniyor…"
+    },
+    "tryNotice": "Türk Lirası ödemeleri yakında geliyor. Satın alımınızı tamamlamak için EUR veya GBP seçin.",
+    "switchToEur": "EUR'ya geç ve devam et",
+    "doNotClose": "Lütfen bu pencereyi kapatmayın veya yenilemeyin.",
+    "errors": {
+      "firstNameMin": "Ad en az 2 karakter olmalıdır",
+      "lastNameMin": "Soyad en az 2 karakter olmalıdır",
+      "emailInvalid": "Geçerli bir e-posta adresi girin",
+      "addressRequired": "Fatura adresi gereklidir",
+      "addressShort": "Adres çok kısa görünüyor",
+      "postalRequired": "Posta kodu gereklidir",
+      "postalInvalid": "Posta kodu 2-10 harf, rakam veya tire olmalıdır",
+      "cardholderRequired": "Kart sahibinin adı gereklidir",
+      "cardholderInvalid": "Kart sahibinin adında geçersiz karakterler var",
+      "cardNumberRequired": "Kart numarası gereklidir",
+      "cardNumberShort": "Geçerli bir kart numarası girin",
+      "cardNumberInvalid": "Kart numarası geçersiz",
+      "expiryFormat": "Son kullanma tarihi AA/YY olmalıdır",
+      "expiryMonth": "Geçersiz son kullanma ayı",
+      "expiryYear": "Geçersiz son kullanma yılı",
+      "expired": "Kartın süresi dolmuş",
+      "cvvRequired": "CVV gereklidir",
+      "cvvShort": "CVV 3 veya 4 haneli olmalıdır"
+    },
+    "toasts": {
+      "approved": "Ödeme onaylandı",
+      "verifying": "Bankanızla doğrulanıyor…",
+      "declined": "Ödeme reddedildi. Lütfen farklı bir kart deneyin.",
+      "unexpected": "Ödeme işlemcisinden beklenmeyen yanıt.",
+      "failed": "Ödeme başarısız oldu. Lütfen tekrar deneyin.",
+      "received": "Ödeme alındı — bankayla onaylanıyor…",
+      "tryComingSoon": "Türk Lirası ödemeleri yakında geliyor. Satın alımınızı tamamlamak için lütfen EUR veya GBP'ye geçin.",
+      "visaMastercardOnly": "Yalnızca Visa ve Mastercard ödemelerini kabul ediyoruz.",
+      "acceptTerms": "Lütfen Şartlar ve Koşullar ile Gizlilik Politikası'nı kabul edin.",
+      "confirmAge": "18 yaşından büyük olduğunuzu onaylamanız gerekir.",
+      "currencyUnsupported": "Bu para birimi henüz ödeme için kullanılamıyor. Lütfen satın alımınızı tamamlamak için EUR veya GBP’ye geçin."
+    },
+    "success": {
+      "missingReferenceDesc": "Ödeme referansı bulunamadı. Az önce ödeme yaptıysanız lütfen onay için e-postanızı kontrol edin.",
+      "checkError": "Bir sorun oluştu. Lütfen onay için e-postanızı kontrol edin.",
+      "successTitle": "Ödeme Başarılı!",
+      "successDesc": "Challenge hesabınız etkinleştirildi.",
+      "checkEmailTitle": "E-postanızı kontrol edin",
+      "checkEmailBody": "Size bir \"şifrenizi belirleyin\" bağlantısı, işlem platformu giriş bilgileriniz ve makbuzunuzu gönderdik. Hesabınızı etkinleştirmek ve panelinize erişmek için e-postadaki bağlantıya tıklayın.",
+      "failedContactPrefix": "Lütfen bu bağlantıyı sizinle paylaşan satıcıyla iletişime geçin veya bize şu adresten ulaşın:",
+      "stillProcessingDesc": "Ödemeniz beklenenden uzun sürüyor. Başarılı olduysa, hesap erişiminizle birlikte kısa süre içinde bir e-posta alacaksınız."
+    },
+    "fail": {
+      "title": "Ödeme İptal Edildi",
+      "description": "Ödemeniz tamamlanmadı. Kartınızdan herhangi bir tahsilat yapılmadı.",
+      "retryHint": "Tekrar denemek için orijinal bağlantıya dönebilir veya bağlantıyı sizinle paylaşan satıcıyla iletişime geçebilirsiniz.",
+      "needHelp": "Yardıma mı ihtiyacınız var? E-posta:"
+    },
+    "unsupportedCurrencyNotice": "Bu para birimi henüz ödeme için kullanılamıyor. Satın alımınızı tamamlamak için EUR veya GBP seçin."
+  },
+  "accountStatus": {
+    "failed": "Başarısız",
+    "funded": "Fonlanmış",
+    "evaluation": "Değerlendirme",
+    "phase": "Aşama {{phase}}"
   }
 }

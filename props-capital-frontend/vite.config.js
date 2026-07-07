@@ -41,9 +41,9 @@ export default defineConfig({
   },
   build: {
     // Keep peak memory low so the build does not get OOM-killed on the
-    // memory-constrained shared production server. Splitting the single large
-    // bundle into vendor chunks and limiting parallel file ops dramatically
-    // reduces Rollup's working set during render/minify.
+    // memory-constrained shared production server. Limit parallel file ops
+    // and split only react-vendor from the rest — never split react vs
+    // react-dom (circular chunks break module init in production).
     sourcemap: false,
     chunkSizeWarningLimit: 2000,
     rollupOptions: {
@@ -51,17 +51,15 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (!id.includes('node_modules')) return undefined
-          if (/[\\/]node_modules[\\/](react-dom|scheduler)[\\/]/.test(id))
-            return 'react-dom'
-          if (/[\\/]node_modules[\\/](react|react-router|react-router-dom)[\\/]/.test(id))
-            return 'react'
           if (
-            /chart-sdk|lightweight-charts|klinecharts|recharts|d3-|victory|apexcharts/.test(id)
+            /[\\/]node_modules[\\/](react|react-dom|scheduler|react-is|use-sync-external-store|react-router|react-router-dom)[\\/]/.test(
+              id,
+            )
           )
-            return 'charts'
+            return 'react-vendor'
           return 'vendor'
         },
       },
     },
   },
-}) 
+})

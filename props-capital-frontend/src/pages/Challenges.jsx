@@ -4,6 +4,7 @@ import { Check, ArrowRight, Star, Shield, Zap, Clock, TrendingUp, Award, User } 
 import { Button } from '../components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getFullPrice } from '@/utils/fullPrice';
 import { persistBrandAttribution } from '@/pages/CheckoutPage';
@@ -12,18 +13,21 @@ import { useChallenges } from '@/hooks/useChallenges';
 import { groupChallengesByType } from '@/lib/challenges';
 import CustomChallengeCard from '@/components/challenges/CustomChallengeCard';
 
-const features = [
-  { icon: Zap, title: "No Time Limit", description: "Complete the challenge at your own pace" },
-  { icon: Shield, title: "100% Fee Refund", description: "Get your fee back on first payout" },
-  { icon: TrendingUp, title: "All Strategies", description: "EAs, scalping, news trading allowed" },
-  { icon: Clock, title: "Fast Payouts", description: "Under 90 minutes average" }
-];
+const featureIcons = [Zap, Shield, TrendingUp, Clock];
 
 const ChallengesPage = () => {
   const { isDark } = useTheme();
   const { formatFee, formatSize, cur, symbol } = useCurrency();
+  const { t } = useTranslation();
   const [selectedSize, setSelectedSize] = useState(3);
   const [searchParams] = useSearchParams();
+
+  const featureItems = t('challengesPage.features', { returnObjects: true });
+  const features = (Array.isArray(featureItems) ? featureItems : []).map((item, index) => ({
+    icon: featureIcons[index],
+    title: item.title,
+    description: item.description,
+  }));
 
   useEffect(() => {
     const brandSlug = searchParams.get('brand');
@@ -45,6 +49,10 @@ const ChallengesPage = () => {
     [rawChallenges],
   );
 
+  // Translated "min trading days" label ("N days" / "None").
+  const fmtMinDays = (c) =>
+    c.minTradingDays ? t('challengeDefs.minDays', { count: c.minTradingDays }) : t('challengeDefs.none');
+
   // Build comparison rows from fetched data
   const comparisonRows = useMemo(() => {
     if (challengeTypes.length < 2) return [];
@@ -52,15 +60,15 @@ const ChallengesPage = () => {
     const twoStep = challengeTypes.find(t => t.id === 'two_phase');
     if (!oneStep || !twoStep) return [];
     return [
-      { feature: "Phases", oneStep: `${oneStep.phases}`, twoStep: `${twoStep.phases}` },
-      { feature: "Profit Target", oneStep: oneStep.profitTarget, twoStep: twoStep.profitTarget },
-      { feature: "Daily Drawdown", oneStep: oneStep.dailyDrawdown, twoStep: twoStep.dailyDrawdown },
-      { feature: "Max Drawdown", oneStep: oneStep.maxDrawdown, twoStep: twoStep.maxDrawdown },
-      { feature: "Profit Split", oneStep: oneStep.profitSplit, twoStep: twoStep.profitSplit },
-      { feature: "Min Trading Days", oneStep: oneStep.minDays, twoStep: twoStep.minDays },
-      { feature: "Time Limit", oneStep: "Unlimited", twoStep: "Unlimited" }
+      { feature: t('challengesPage.comparison.phases'), oneStep: `${oneStep.phases}`, twoStep: `${twoStep.phases}` },
+      { feature: t('challengesPage.comparison.profitTarget'), oneStep: oneStep.profitTarget, twoStep: twoStep.profitTarget },
+      { feature: t('challengesPage.comparison.dailyDrawdown'), oneStep: oneStep.dailyDrawdown, twoStep: twoStep.dailyDrawdown },
+      { feature: t('challengesPage.comparison.maxDrawdown'), oneStep: oneStep.maxDrawdown, twoStep: twoStep.maxDrawdown },
+      { feature: t('challengesPage.comparison.profitSplit'), oneStep: oneStep.profitSplit, twoStep: twoStep.profitSplit },
+      { feature: t('challengesPage.comparison.minTradingDays'), oneStep: fmtMinDays(oneStep), twoStep: fmtMinDays(twoStep) },
+      { feature: t('challengesPage.comparison.timeLimit'), oneStep: t('challengesPage.comparison.unlimited'), twoStep: t('challengesPage.comparison.unlimited') }
     ];
-  }, [challengeTypes]);
+  }, [challengeTypes, t]);
 
   const isCustomSelected = selectedSize === 'custom' || accountSizes.length === 0;
   const safeSelectedSize = isCustomSelected
@@ -82,12 +90,12 @@ const ChallengesPage = () => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-12">
-            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">Funding Programs</span>
+            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">{t('challengesPage.hero.eyebrow')}</span>
             <h1 className={`text-3xl sm:text-4xl lg:text-6xl font-black mb-4 lg:mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Choose Your <span className="bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">Challenge</span>
+              {t('challengesPage.hero.titlePrefix')} <span className="bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">{t('challengesPage.hero.titleHighlight')}</span>
             </h1>
             <p className={`text-base lg:text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-              Select the evaluation program that matches your trading style. All programs include free education and 100% fee refund.
+              {t('challengesPage.hero.subtitle')}
             </p>
           </div>
 
@@ -129,7 +137,7 @@ const ChallengesPage = () => {
                         : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                     }`}
                   >
-                    Custom {symbol}
+                    {t('challengesPage.customSize', { symbol })}
                   </button>
                 </div>
               </div>
@@ -161,15 +169,15 @@ const ChallengesPage = () => {
                               : isDark ? 'bg-[#1a1f2a] text-gray-400 border border-white/10' : 'bg-slate-100 text-slate-500 border border-slate-200'
                           }`}>
                             {challenge.popular && <Star className="w-4 h-4 fill-current" />}
-                            {challenge.badge}
+                            {challenge.badgeKey ? t(challenge.badgeKey) : challenge.badge}
                           </div>
                         </div>
                       )}
 
                       {/* Header */}
                       <div className="text-center mb-6 pt-4">
-                        <h3 className={`text-xl lg:text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{challenge.name}</h3>
-                        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{challenge.description}</p>
+                        <h3 className={`text-xl lg:text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{challenge.nameKey ? t(challenge.nameKey) : challenge.name}</h3>
+                        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{challenge.descriptionKey ? t(challenge.descriptionKey) : challenge.description}</p>
                       </div>
 
                       {/* Price */}
@@ -181,19 +189,19 @@ const ChallengesPage = () => {
                           <div className="text-amber-500 text-4xl lg:text-5xl font-black">
                             {formatFee(price)}
                           </div>
-                          <div className="text-emerald-400 text-sm font-semibold mt-1">70% OFF - Limited Time</div>
+                          <div className="text-emerald-400 text-sm font-semibold mt-1">{t('challengesPage.discountBadge')}</div>
                         </div>
                       )}
 
                       {/* Stats */}
                       <div className="space-y-3 mb-6">
                         {[
-                          { label: 'Phases', value: `${challenge.phases} Phase${challenge.phases !== 1 ? 's' : ''}` },
-                          { label: 'Profit Target', value: challenge.profitTarget },
-                          { label: 'Daily Drawdown', value: challenge.dailyDrawdown },
-                          { label: 'Max Drawdown', value: challenge.maxDrawdown },
-                          { label: 'Min Trading Days', value: challenge.minDays, highlight: true },
-                          { label: 'Profit Split', value: challenge.profitSplit, highlight: 'amber', large: true }
+                          { label: t('challengesPage.stats.phases'), value: t('challengesPage.stats.phaseCount', { count: challenge.phases }) },
+                          { label: t('challengesPage.stats.profitTarget'), value: challenge.profitTarget },
+                          { label: t('challengesPage.stats.dailyDrawdown'), value: challenge.dailyDrawdown },
+                          { label: t('challengesPage.stats.maxDrawdown'), value: challenge.maxDrawdown },
+                          { label: t('challengesPage.stats.minTradingDays'), value: fmtMinDays(challenge), highlight: true },
+                          { label: t('challengesPage.stats.profitSplit'), value: challenge.profitSplit, highlight: 'amber', large: true }
                         ].map((item, index) => (
                           <div key={index} className={`flex items-center justify-between py-2 ${index < 5 ? isDark ? 'border-b border-white/5' : 'border-b border-slate-100' : ''}`}>
                             <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>{item.label}</span>
@@ -208,7 +216,7 @@ const ChallengesPage = () => {
 
                       {/* Features */}
                       <div className="space-y-2 mb-6">
-                        {['No time limit', 'All strategies allowed', '100% fee refund', 'Free trading course'].map((feature, index) => (
+                        {(t('challengesPage.cardFeatures', { returnObjects: true }) || []).map((feature, index) => (
                           <div key={index} className="flex items-center gap-2">
                             <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
                               <Check className="w-3 h-3 text-emerald-400" />
@@ -227,7 +235,7 @@ const ChallengesPage = () => {
                               : 'bg-slate-900 hover:bg-slate-800 text-white'
                           }`}
                         >
-                          Start Challenge
+                          {t('challengesPage.startChallenge')}
                           <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
                         </Button>
                       </Link>
@@ -246,7 +254,7 @@ const ChallengesPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Why Choose <span className="text-amber-500">Prop Capitals</span>?
+              {t('challengesPage.whyChoose.prefix')} <span className="text-amber-500">Prop Capitals</span>{t('challengesPage.whyChoose.suffix')}
             </h2>
           </div>
 
@@ -275,20 +283,20 @@ const ChallengesPage = () => {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                Compare <span className="text-amber-500">Challenges</span>
+                {t('challengesPage.compare.prefix')} <span className="text-amber-500">{t('challengesPage.compare.highlight')}</span>
               </h2>
             </div>
 
             <div className={`rounded-2xl border overflow-hidden ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`}>
               <div className={`grid grid-cols-3 ${isDark ? 'bg-[#0d1117]' : 'bg-slate-50'}`}>
                 <div className="p-4 lg:p-6">
-                  <span className={`font-medium ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Feature</span>
+                  <span className={`font-medium ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('challengesPage.compare.featureColumn')}</span>
                 </div>
                 <div className={`p-4 lg:p-6 text-center border-l ${isDark ? 'border-white/5' : 'border-slate-100'}`}>
-                  <span className="text-amber-500 font-bold">1-Step</span>
+                  <span className="text-amber-500 font-bold">{t('challengesPage.compare.oneStep')}</span>
                 </div>
                 <div className={`p-4 lg:p-6 text-center border-l ${isDark ? 'border-white/5' : 'border-slate-100'}`}>
-                  <span className="text-blue-400 font-bold">2-Step</span>
+                  <span className="text-blue-400 font-bold">{t('challengesPage.compare.twoStep')}</span>
                 </div>
               </div>
 
@@ -314,16 +322,16 @@ const ChallengesPage = () => {
       <section className={`py-16 lg:py-20 ${isDark ? 'bg-gradient-to-b from-[#0d1117] to-[#0a0d12]' : 'bg-white'}`}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Ready to Get <span className="text-amber-500">Funded</span>?
+            {t('challengesPage.cta.titlePrefix')} <span className="text-amber-500">{t('challengesPage.cta.titleHighlight')}</span>{t('challengesPage.cta.titleSuffix')}
           </h2>
           <p className={`text-base lg:text-lg mb-8 max-w-xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-            Join thousands of successful traders. Start your challenge today and trade with up to {cur('€200,000')}.
+            {t('challengesPage.cta.subtitle', { amount: cur('€200,000') })}
           </p>
           <Button
             onClick={User ? () => window.location.href = '/dashboard' : () => window.location.href = '/sign-up'}
             className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-10 py-6 h-auto text-lg font-bold shadow-xl shadow-amber-500/25 group"
           >
-            Start Trading Now
+            {t('challengesPage.cta.button')}
             <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
           </Button>
         </div>

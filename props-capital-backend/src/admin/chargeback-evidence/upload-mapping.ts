@@ -97,7 +97,7 @@ function normalizeHeader(h: string): string {
 }
 
 /** Clean a cell value: trim, strip Excel text-guard apostrophe, treat "-" as empty. */
-function clean(v: unknown): string {
+function clean(v: string): string {
   let s = String(v ?? '').trim();
   if (s.startsWith("'")) s = s.slice(1);
   s = s.trim();
@@ -177,9 +177,10 @@ function parseCsv(text: string): string[][] {
   if (!lines.length) return [];
   // Detect delimiter from the header line.
   const head = lines[0];
-  const delim = (head.match(/;/g) || []).length >= (head.match(/,/g) || []).length
-    ? ';'
-    : ',';
+  const delim =
+    (head.match(/;/g) || []).length >= (head.match(/,/g) || []).length
+      ? ';'
+      : ',';
   return lines.map((l) => splitDelimited(l, delim));
 }
 
@@ -227,7 +228,9 @@ function parsePlanHint(desc: string): {
 } {
   const d = (desc || '').toLowerCase();
   let challengeType: string | null = null;
-  if (/(^|[^0-9])1\s*-?\s*step|one[\s-]?step|one[\s-]?phase|1\s*phase/.test(d)) {
+  if (
+    /(^|[^0-9])1\s*-?\s*step|one[\s-]?step|one[\s-]?phase|1\s*phase/.test(d)
+  ) {
     challengeType = 'one_phase';
   } else if (
     /(^|[^0-9])2\s*-?\s*step|two[\s-]?step|two[\s-]?phase|2\s*phase/.test(d)

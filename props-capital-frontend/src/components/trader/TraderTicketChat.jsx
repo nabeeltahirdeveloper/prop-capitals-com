@@ -22,6 +22,8 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/components/ui/use-toast';
+import { useTranslation } from '@/contexts/LanguageContext';
+import { displayTicketSubject } from '@/utils/ticketSubject';
 
 const STATUS_MAP = {
   OPEN: 'open',
@@ -42,12 +44,10 @@ const STATUS_STYLES = {
 };
 
 function StatusBadge({ status }) {
+  const { t } = useTranslation();
   const mapped = STATUS_MAP[status] || status?.toLowerCase() || 'open';
   const style = STATUS_STYLES[mapped] || STATUS_STYLES.open;
-  const label = mapped
-    .split('_')
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(' ');
+  const label = t(`ticketChat.status.${mapped}`);
   return (
     <span
       className={`px-2 py-0.5 rounded text-[10px] font-semibold ${style.bg} ${style.text}`}
@@ -58,6 +58,7 @@ function StatusBadge({ status }) {
 }
 
 function TicketSidebarItem({ ticket, isActive, onClick, isDark }) {
+  const { t } = useTranslation();
   const lastMsg = ticket.messages?.[0];
   const preview = lastMsg?.message
     ? lastMsg.message.length > 50
@@ -78,7 +79,7 @@ function TicketSidebarItem({ ticket, isActive, onClick, isDark }) {
             isDark ? 'text-white' : 'text-slate-900'
           }`}
         >
-          {ticket.subject}
+          {displayTicketSubject(ticket.subject, ticket.category, t)}
         </p>
         <StatusBadge status={ticket.status} />
       </div>
@@ -106,6 +107,7 @@ export default function TraderTicketChat() {
   const { id: ticketId } = useParams();
   const navigate = useNavigate();
   const { isDark } = useTraderTheme();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const messagesEndRef = useRef(null);
@@ -178,8 +180,8 @@ export default function TraderTicketChat() {
     onError: (_err, _msg, context) => {
       queryClient.setQueryData(['ticket-messages', ticketId], context?.previous);
       toast({
-        title: 'Send Failed',
-        description: 'Could not send message. Please try again.',
+        title: t('ticketChat.sendFailedTitle'),
+        description: t('ticketChat.sendFailedDesc'),
         variant: 'destructive',
       });
     },
@@ -213,7 +215,7 @@ export default function TraderTicketChat() {
           />
           <input
             type="text"
-            placeholder="Search tickets..."
+            placeholder={t('ticketChat.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className={`w-full pl-8 pr-3 py-2 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/50 ${
@@ -236,7 +238,7 @@ export default function TraderTicketChat() {
               isDark ? 'text-gray-500' : 'text-slate-400'
             }`}
           >
-            No tickets found
+            {t('ticketChat.noTicketsFound')}
           </div>
         ) : (
           filteredTickets.map((t) => (
@@ -289,7 +291,7 @@ export default function TraderTicketChat() {
               isDark ? 'text-white' : 'text-slate-900'
             }`}
           >
-            {ticket?.subject || 'Loading...'}
+            {ticket?.subject ? displayTicketSubject(ticket.subject, ticket.category, t) : t('ticketChat.loading')}
           </p>
         </div>
         {ticket && <StatusBadge status={ticket.status} />}
@@ -304,7 +306,7 @@ export default function TraderTicketChat() {
         ) : messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-              No messages yet
+              {t('ticketChat.noMessagesYet')}
             </p>
           </div>
         ) : (
@@ -340,7 +342,7 @@ export default function TraderTicketChat() {
           }`}
         />
         <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-          Select a ticket to view the conversation
+          {t('ticketChat.selectTicketPrompt')}
         </p>
       </div>
     </div>
@@ -379,7 +381,7 @@ export default function TraderTicketChat() {
                   isDark ? 'text-white' : 'text-slate-900'
                 }`}
               >
-                Tickets
+                {t('ticketChat.ticketsTitle')}
               </span>
               <button
                 onClick={() => setSidebarOpen(false)}

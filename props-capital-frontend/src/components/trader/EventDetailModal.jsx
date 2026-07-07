@@ -7,6 +7,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Loader2, Globe, Calendar, TrendingUp, Info, History, BarChart3 } from 'lucide-react';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const EventDetailModal = ({
   isOpen,
@@ -17,6 +18,7 @@ const EventDetailModal = ({
   error,
   isDark,
 }) => {
+  const { t } = useTranslation();
   const impactColors = {
     high: 'bg-red-500',
     medium: 'bg-amber-500',
@@ -43,7 +45,7 @@ const EventDetailModal = ({
           <DialogTitle
             className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}
           >
-            {event?.name || 'Event Details'}
+            {event?.name || t('eventDetailModal.title')}
           </DialogTitle>
           {event && (
             <DialogDescription asChild>
@@ -80,7 +82,7 @@ const EventDetailModal = ({
                 className={`w-8 h-8 animate-spin ${isDark ? 'text-amber-500' : 'text-amber-600'}`}
               />
               <p className={`mt-3 text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                Loading event details...
+                {t('eventDetailModal.loading')}
               </p>
             </div>
           )}
@@ -114,12 +116,12 @@ const EventDetailModal = ({
                     }`}
                   >
                     <TrendingUp className="w-4 h-4" />
-                    Latest Values
+                    {t('eventDetailModal.latestValues')}
                   </h4>
                   <div className="grid grid-cols-3 gap-4">
                     <div>
                       <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                        Forecast
+                        {t('eventDetailModal.forecast')}
                       </p>
                       <p className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         {event.forecast || '-'}
@@ -127,7 +129,7 @@ const EventDetailModal = ({
                     </div>
                     <div>
                       <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                        Previous
+                        {t('eventDetailModal.previous')}
                       </p>
                       <p className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         {event.previous || '-'}
@@ -135,7 +137,7 @@ const EventDetailModal = ({
                     </div>
                     <div>
                       <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                        Actual
+                        {t('eventDetailModal.actual')}
                       </p>
                       <p
                         className={`text-lg font-semibold ${
@@ -162,7 +164,7 @@ const EventDetailModal = ({
                     }`}
                   >
                     <Info className="w-4 h-4" />
-                    Description
+                    {t('eventDetailModal.description')}
                   </h4>
                   <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-300' : 'text-slate-600'}`}>
                     {eventDetail.description}
@@ -185,7 +187,7 @@ const EventDetailModal = ({
                       }`}
                     >
                       <Globe className="w-4 h-4" />
-                      Region
+                      {t('eventDetailModal.region')}
                     </h4>
                     {eventDetail.country && (
                       <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-slate-600'}`}>
@@ -194,7 +196,7 @@ const EventDetailModal = ({
                     )}
                     {eventDetail.currency && (
                       <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                        Currency: {eventDetail.currency}
+                        {t('eventDetailModal.currencyLabel', { currency: eventDetail.currency })}
                       </p>
                     )}
                   </div>
@@ -213,7 +215,7 @@ const EventDetailModal = ({
                       }`}
                     >
                       <Calendar className="w-4 h-4" />
-                      Schedule
+                      {t('eventDetailModal.schedule')}
                     </h4>
                     {eventDetail.frequency && (
                       <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-slate-600'}`}>
@@ -222,7 +224,7 @@ const EventDetailModal = ({
                     )}
                     {eventDetail.nextRelease && (
                       <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                        Next: {eventDetail.nextRelease}
+                        {t('eventDetailModal.nextLabel', { value: eventDetail.nextRelease })}
                       </p>
                     )}
                   </div>
@@ -232,7 +234,7 @@ const EventDetailModal = ({
               {/* Unit */}
               {eventDetail.unit && (
                 <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                  Unit: {eventDetail.unit}
+                  {t('eventDetailModal.unitLabel', { unit: eventDetail.unit })}
                 </p>
               )}
 
@@ -249,23 +251,23 @@ const EventDetailModal = ({
                     }`}
                   >
                     <History className="w-4 h-4" />
-                    Historical Data
+                    {t('eventDetailModal.historicalData')}
                   </h4>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className={`border-b ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
                           <th className={`text-left py-2 px-2 font-medium ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                            Date
+                            {t('eventDetailModal.date')}
                           </th>
                           <th className={`text-right py-2 px-2 font-medium ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                            Actual
+                            {t('eventDetailModal.actual')}
                           </th>
                           <th className={`text-right py-2 px-2 font-medium ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                            Forecast
+                            {t('eventDetailModal.forecast')}
                           </th>
                           <th className={`text-right py-2 px-2 font-medium ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                            Previous
+                            {t('eventDetailModal.previous')}
                           </th>
                         </tr>
                       </thead>
@@ -293,7 +295,7 @@ const EventDetailModal = ({
                     </table>
                     {eventDetail.history.length > 10 && (
                       <p className={`text-xs mt-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                        Showing 10 of {eventDetail.history.length} entries
+                        {t('eventDetailModal.showingEntries', { total: eventDetail.history.length })}
                       </p>
                     )}
                   </div>
@@ -313,10 +315,10 @@ const EventDetailModal = ({
                     }`}
                   >
                     <BarChart3 className="w-4 h-4" />
-                    Chart Data Available
+                    {t('eventDetailModal.chartDataAvailable')}
                   </h4>
                   <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                    {eventDetail.chartSeries.length} data points available
+                    {t('eventDetailModal.dataPointsAvailable', { count: eventDetail.chartSeries.length })}
                   </p>
                 </div>
               )}
@@ -331,7 +333,7 @@ const EventDetailModal = ({
               }`}
             >
               <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                No additional details available for this event.
+                {t('eventDetailModal.noDetails')}
               </p>
             </div>
           )}

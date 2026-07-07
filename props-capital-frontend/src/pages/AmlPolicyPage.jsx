@@ -10,9 +10,15 @@ import {
   Users,
 } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const AmlPolicyPage = () => {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
+
+  const riskFactors = t('amlPolicy.riskAssessment.factors', { returnObjects: true });
+  const cddMeasures = t('amlPolicy.cdd.measures', { returnObjects: true });
+  const sarActions = t('amlPolicy.suspiciousActivity.actions', { returnObjects: true });
 
   return (
     <div className={`min-h-screen pt-20 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
@@ -27,10 +33,10 @@ const AmlPolicyPage = () => {
                 isDark ? 'text-white' : 'text-slate-900'
               }`}
             >
-              Anti-Money Laundering (AML) Policy
+              {t('amlPolicy.pageTitle')}
             </h1>
             <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>
-              Our commitment to preventing money laundering and terrorist financing
+              {t('amlPolicy.pageSubtitle')}
             </p>
           </div>
 
@@ -46,13 +52,10 @@ const AmlPolicyPage = () => {
                 }`}
               >
                 <FileText className="w-5 h-5 text-amber-500" />
-                1. Purpose
+                {t('amlPolicy.purpose.heading')}
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                This Anti-Money Laundering (&quot;AML&quot;) Policy sets out the measures and
-                procedures adopted by BLUEHAVEN MANAGEMENT LTD (&quot;the Company&quot;) to detect,
-                prevent, and report money laundering, terrorist financing, and other financial crimes
-                in accordance with applicable laws and regulations.
+                {t('amlPolicy.purpose.body')}
               </p>
             </section>
 
@@ -63,12 +66,10 @@ const AmlPolicyPage = () => {
                 }`}
               >
                 <Users className="w-5 h-5 text-amber-500" />
-                2. Scope
+                {t('amlPolicy.scope.heading')}
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                This Policy applies to all directors, officers, employees, contractors, and agents of
-                the Company. It also applies to all business relationships and transactions conducted
-                through the Company&apos;s platforms and services.
+                {t('amlPolicy.scope.body')}
               </p>
             </section>
 
@@ -79,18 +80,17 @@ const AmlPolicyPage = () => {
                 }`}
               >
                 <Search className="w-5 h-5 text-amber-500" />
-                3. Risk Assessment
+                {t('amlPolicy.riskAssessment.heading')}
               </h2>
               <p className={`leading-relaxed mb-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                The Company conducts regular risk assessments to identify and evaluate money
-                laundering and terrorist financing risks. Risk factors considered include but are not
-                limited to:
+                {t('amlPolicy.riskAssessment.intro')}
               </p>
               <ul className="space-y-2 list-disc list-inside">
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>Client risk profile and geographic location</li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>Nature and complexity of products and services</li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>Transaction patterns and volumes</li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>Delivery channels and payment methods used</li>
+                {riskFactors.map((item, index) => (
+                  <li key={index} className={isDark ? 'text-gray-400' : 'text-slate-600'}>
+                    {item}
+                  </li>
+                ))}
               </ul>
             </section>
 
@@ -101,29 +101,20 @@ const AmlPolicyPage = () => {
                 }`}
               >
                 <CheckCircle2 className="w-5 h-5 text-amber-500" />
-                4. Customer Due Diligence (CDD)
+                {t('amlPolicy.cdd.heading')}
               </h2>
               <p className={`leading-relaxed mb-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                The Company applies Customer Due Diligence measures before establishing a business
-                relationship or processing transactions. CDD procedures include:
+                {t('amlPolicy.cdd.intro')}
               </p>
               <ul className="space-y-2 list-disc list-inside mb-4">
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>
-                  Verifying the identity of clients using reliable, independent documents
-                </li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>
-                  Identifying and verifying beneficial owners where applicable
-                </li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>
-                  Understanding the purpose and intended nature of the business relationship
-                </li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>
-                  Conducting ongoing monitoring of transactions and activities
-                </li>
+                {cddMeasures.map((item, index) => (
+                  <li key={index} className={isDark ? 'text-gray-400' : 'text-slate-600'}>
+                    {item}
+                  </li>
+                ))}
               </ul>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Enhanced Due Diligence (EDD) is applied where higher risks are identified, including
-                for politically exposed persons (PEPs) and clients from higher-risk jurisdictions.
+                {t('amlPolicy.cdd.edd')}
               </p>
             </section>
 
@@ -134,13 +125,10 @@ const AmlPolicyPage = () => {
                 }`}
               >
                 <Eye className="w-5 h-5 text-amber-500" />
-                5. Transaction Monitoring
+                {t('amlPolicy.transactionMonitoring.heading')}
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                The Company monitors client transactions on an ongoing basis to detect unusual or
-                suspicious activity. Monitoring includes automated systems and manual review
-                processes designed to identify transactions that are inconsistent with a
-                client&apos;s known profile, business activities, or risk assessment.
+                {t('amlPolicy.transactionMonitoring.body')}
               </p>
             </section>
 
@@ -151,25 +139,17 @@ const AmlPolicyPage = () => {
                 }`}
               >
                 <AlertTriangle className="w-5 h-5 text-amber-500" />
-                6. Suspicious Activity Reporting
+                {t('amlPolicy.suspiciousActivity.heading')}
               </h2>
               <p className={`leading-relaxed mb-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Where there are reasonable grounds to suspect that a transaction or activity may be
-                related to money laundering or terrorist financing, the Company will:
+                {t('amlPolicy.suspiciousActivity.intro')}
               </p>
               <ul className="space-y-2 list-disc list-inside">
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>
-                  File a Suspicious Activity Report (SAR) with the relevant authorities
-                </li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>
-                  Refrain from disclosing the existence of the report to the client (tipping off)
-                </li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>
-                  Cooperate fully with law enforcement and regulatory bodies
-                </li>
-                <li className={isDark ? 'text-gray-400' : 'text-slate-600'}>
-                  Suspend or terminate the business relationship where appropriate
-                </li>
+                {sarActions.map((item, index) => (
+                  <li key={index} className={isDark ? 'text-gray-400' : 'text-slate-600'}>
+                    {item}
+                  </li>
+                ))}
               </ul>
             </section>
 
@@ -180,13 +160,10 @@ const AmlPolicyPage = () => {
                 }`}
               >
                 <Lock className="w-5 h-5 text-amber-500" />
-                7. Record Keeping
+                {t('amlPolicy.recordKeeping.heading')}
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                The Company maintains records of all client identification documents, transaction
-                records, and due diligence information for a minimum period of five (5) years from
-                the date of the transaction or the end of the business relationship, whichever is
-                later, in compliance with applicable legal requirements.
+                {t('amlPolicy.recordKeeping.body')}
               </p>
             </section>
 
@@ -197,12 +174,10 @@ const AmlPolicyPage = () => {
                 }`}
               >
                 <Users className="w-5 h-5 text-amber-500" />
-                8. Staff Training
+                {t('amlPolicy.staffTraining.heading')}
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                All relevant personnel receive regular training on AML policies, procedures, and
-                obligations. Training covers the identification of suspicious activities, reporting
-                procedures, and updates to applicable laws and regulations.
+                {t('amlPolicy.staffTraining.body')}
               </p>
             </section>
 
@@ -213,12 +188,10 @@ const AmlPolicyPage = () => {
                 }`}
               >
                 <FileText className="w-5 h-5 text-amber-500" />
-                9. Amendments
+                {t('amlPolicy.amendments.heading')}
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                The Company reserves the right to amend this AML Policy at any time. Any changes
-                shall become effective upon publication on the Company&apos;s website unless otherwise
-                stated.
+                {t('amlPolicy.amendments.body')}
               </p>
             </section>
 
@@ -229,11 +202,10 @@ const AmlPolicyPage = () => {
                 }`}
               >
                 <Shield className="w-5 h-5 text-amber-500" />
-                10. Governing Law
+                {t('amlPolicy.governingLaw.heading')}
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                This Policy shall be governed by and construed in accordance with the laws of England
-                and Wales applicable to the Company&apos;s jurisdiction of operation.
+                {t('amlPolicy.governingLaw.body')}
               </p>
             </section>
           </div>

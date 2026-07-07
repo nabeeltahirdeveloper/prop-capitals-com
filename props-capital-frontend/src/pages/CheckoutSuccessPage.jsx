@@ -3,9 +3,11 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { CheckCircle2, ArrowRight, Mail, Download, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const CheckoutSuccessPage = () => {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get('orderId') || 'DEMO12345';
 
@@ -21,24 +23,24 @@ const CheckoutSuccessPage = () => {
           </div>
 
           <h1 className={`text-3xl font-black mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Order Confirmed!
+            {t('checkout.success.title')}
           </h1>
-          
+
           <p className={`text-lg mb-6 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-            Your challenge account is being set up. You'll receive login credentials via email shortly.
+            {t('checkout.success.subtitle')}
           </p>
 
           {/* Order Details */}
           <div className={`rounded-xl p-6 mb-8 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
             <div className="flex justify-between items-center mb-4">
-              <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>Order ID</span>
+              <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>{t('checkout.success.orderId')}</span>
               <span className={`font-mono font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>#{orderId}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>Status</span>
+              <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>{t('worldCardSuccess.status')}</span>
               <span className="flex items-center gap-2 text-emerald-500 font-medium">
                 <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                Processing
+                {t('checkout.success.processing')}
               </span>
             </div>
           </div>
@@ -46,12 +48,12 @@ const CheckoutSuccessPage = () => {
 
           {/* What's Next */}
           <div className="text-left mb-8">
-            <h3 className={`font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>What happens next?</h3>
+            <h3 className={`font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('checkout.success.whatNext')}</h3>
             <div className="space-y-4">
               {[
-                { icon: Mail, title: 'Check Your Email', desc: 'You\'ll receive login credentials within 5 minutes' },
-                { icon: Download, title: 'Download Platform', desc: 'Install your selected trading platform' },
-                { icon: ExternalLink, title: 'Start Trading', desc: 'Login and begin your evaluation' }
+                { icon: Mail, title: t('checkout.success.steps.email.title'), desc: t('checkout.success.steps.email.desc') },
+                { icon: Download, title: t('checkout.success.steps.download.title'), desc: t('checkout.success.steps.download.desc') },
+                { icon: ExternalLink, title: t('worldCardSuccess.startTrading'), desc: t('checkout.success.steps.trade.desc') }
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-4">
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
@@ -72,7 +74,7 @@ const CheckoutSuccessPage = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/">
               <Button className="w-full sm:w-auto bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-8 py-5 h-auto font-bold">
-                Back to Home
+                {t('checkout.success.backHome')}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
@@ -82,7 +84,7 @@ const CheckoutSuccessPage = () => {
                   ? 'border-white/20 text-white hover:bg-white/5' 
                   : 'border-slate-300 text-slate-700 hover:bg-slate-50'
               }`}>
-                View Trading Rules
+                {t('checkout.success.viewRules')}
               </Button>
             </Link>
           </div>
@@ -90,7 +92,7 @@ const CheckoutSuccessPage = () => {
 
         {/* Support */}
         <p className={`text-center mt-6 text-sm ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-          Need help? Contact us at{' '}
+          {t('checkout.success.needHelpPrefix')}{' '}
           <a href="mailto:support@prop-capitals.com" className="text-amber-500 hover:text-amber-400">
             support@prop-capitals.com
           </a>

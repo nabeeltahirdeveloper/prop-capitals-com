@@ -4,7 +4,14 @@ import { Menu, X, ChevronDown, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 import CurrencySwitcher from '@/components/CurrencySwitcher';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+
+// Locales whose nav labels are long enough to overflow the default (xl) horizontal
+// navbar. For these we widen the container, tighten link padding, and raise the
+// hamburger breakpoint so the full nav only shows once it actually fits (~1440px+).
+const WIDE_NAV_LOCALES = ['kk'];
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -12,6 +19,15 @@ const Navbar = () => {
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
   const { user } = useAuth();
+  const { t, language } = useTranslation();
+
+  // Wide-label locales (e.g. Kazakh) need more horizontal room; scope the layout
+  // tweaks to them so English/Turkish render exactly as before.
+  const wideNav = WIDE_NAV_LOCALES.includes(language);
+  const containerMaxW = wideNav ? 'max-w-[1600px]' : 'max-w-7xl';
+  const desktopShow = wideNav ? 'hidden min-[1440px]:flex' : 'hidden xl:flex';
+  const mobileShow = wideNav ? 'min-[1440px]:hidden' : 'xl:hidden';
+  const linkPadX = wideNav ? 'px-3' : 'px-5';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,11 +41,11 @@ const Navbar = () => {
   const isActive = (path) => location.pathname === path;
 
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'How It Works', path: '/howitworks' },
-    { name: 'Challenges', path: '/challenges' },
-    { name: 'FAQs', path: '/faq ' },
-    { name: 'About', path: '/about' },
+    { name: t('nav.links.home'), path: '/' },
+    { name: t('nav.links.howItWorks'), path: '/howitworks' },
+    { name: t('nav.links.challenges'), path: '/challenges' },
+    { name: t('nav.links.faqs'), path: '/faq ' },
+    { name: t('nav.links.about'), path: '/about' },
     // { name: "Scaling", path: "/scalingplan"},
     // { name: "Rules", path: "/rules"},
     // { name: "Contact", path: "/contact"},
@@ -44,7 +60,7 @@ const Navbar = () => {
         : 'bg-transparent'
         }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className={`${containerMaxW} mx-auto px-4 sm:px-6 lg:px-8`}>
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
@@ -56,17 +72,17 @@ const Navbar = () => {
               <span className={`font-bold text-lg tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 PROP<span className="text-amber-500">CAPITALS</span>
               </span>
-              <span className={`text-[10px] ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>FUNDED TRADING</span>
+              <span className={`text-[10px] ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{t('nav.tagline')}</span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden xl:flex items-center gap-1">
+          <div className={`${desktopShow} items-center gap-1`}>
             {navLinks.map((link) => (
               <Link key={link.path} to={link.path}>
                 <Button
                   variant="ghost"
-                  className={`rounded-full px-5 h-10 font-medium transition-all ${isActive(link.path)
+                  className={`rounded-full ${linkPadX} h-10 font-medium transition-all ${isActive(link.path)
                     ? 'text-amber-500 bg-amber-500/10'
                     : isDark
                       ? 'text-gray-300 hover:text-white hover:bg-white/5'
@@ -80,7 +96,7 @@ const Navbar = () => {
           </div>
 
           {/* Right Side */}
-          <div className="hidden xl:flex items-center gap-2">
+          <div className={`${desktopShow} items-center gap-2`}>
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
@@ -92,6 +108,8 @@ const Navbar = () => {
             >
               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
+
+            <LanguageSwitcher />
 
             <CurrencySwitcher />
 
@@ -106,17 +124,24 @@ const Navbar = () => {
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                     }`}
                 >
-                  Log in
+                  {t('nav.login')}
                 </Button>
               </Link>
             )}
             <Link to={user ? "/dashboard" : "/signup"}>
-              <Button className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-6 h-10 font-bold shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 transition-all">{user ? "Dashboard" : "Get Funded"}</Button>
+              <Button className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-6 h-10 font-bold shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 transition-all">{user ? t('nav.dashboard') : t('nav.getFunded')}</Button>
             </Link>
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex items-center gap-2 xl:hidden">
+          <div className={`flex items-center gap-2 ${mobileShow}`}>
+            {/* Keep language + currency visible on tablet / narrow desktop (e.g. the
+                wider Kazakh nav collapses below 1440px). Only truly-small phones (<sm)
+                tuck them into the hamburger menu, so the dropdowns never disappear. */}
+            <div className="hidden sm:flex items-center gap-2">
+              <LanguageSwitcher />
+              <CurrencySwitcher />
+            </div>
             {/* Theme Toggle Mobile */}
             <button
               onClick={toggleTheme}
@@ -146,7 +171,7 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className={`xl:hidden border-t ${isDark
+        <div className={`${mobileShow} border-t ${isDark
           ? 'bg-[#0a0d12]/98 backdrop-blur-xl border-white/10'
           : 'bg-white/98 backdrop-blur-xl border-slate-200'
           }`}>
@@ -167,7 +192,10 @@ const Navbar = () => {
               </Link>
             ))}
 
-            <div className="flex items-center gap-2 px-2 py-3">
+            {/* Only shown on true mobile (<sm); on larger screens the switchers live
+                in the always-visible top bar above. */}
+            <div className="flex sm:hidden items-center gap-2 px-2 py-3">
+              <LanguageSwitcher />
               <CurrencySwitcher />
             </div>
 
@@ -178,12 +206,12 @@ const Navbar = () => {
                   className={`justify-start px-4 py-3 h-auto w-full ${isDark ? 'text-gray-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
                     }`}
                 >
-                  Log in
+                  {t('nav.login')}
                 </Button>
               </Link>
             )}
             <Link to={user ? "/dashboard" : "/signup"} onClick={() => setIsMobileMenuOpen(false)}>
-              <Button className="bg-gradient-to-r from-amber-400 to-amber-500 text-[#0a0d12] rounded-full px-6 py-3 h-auto font-bold mt-2 w-full">{user ? "Dashboard" : "Get Funded"}</Button>
+              <Button className="bg-gradient-to-r from-amber-400 to-amber-500 text-[#0a0d12] rounded-full px-6 py-3 h-auto font-bold mt-2 w-full">{user ? t('nav.dashboard') : t('nav.getFunded')}</Button>
             </Link>
           </div>
         </div>

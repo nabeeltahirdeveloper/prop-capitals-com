@@ -49,6 +49,7 @@ import { dayjs } from "@/lib/utils";
 import { usePlatformTokensStore } from "@/lib/stores/platform-tokens.store";
 import CompanyInfo from "@/components/CompanyInfo";
 import CurrencySwitcher from "@/components/CurrencySwitcher";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export const TraderThemeContext = React.createContext();
 export const useTraderTheme = () => React.useContext(TraderThemeContext);
@@ -218,36 +219,36 @@ const TraderPanelLayoutInner = () => {
     {
       path: "/traderdashboard",
       icon: LayoutDashboard,
-      label: "Account Overview",
+      label: t("panelLayout.nav.accountOverview"),
       exact: true,
     },
     {
       path: "/traderdashboard/trading",
       icon: LineChart,
-      label: "Trading Terminal",
+      label: t("panelLayout.nav.tradingTerminal"),
     },
-    { path: "/traderdashboard/orders", icon: ShoppingCart, label: "Orders" },
+    { path: "/traderdashboard/orders", icon: ShoppingCart, label: t("panelLayout.nav.orders") },
     {
       path: "/traderdashboard/calendar",
       icon: Calendar,
-      label: "Economic Calendar",
+      label: t("panelLayout.nav.economicCalendar"),
     },
-    { path: "/traderdashboard/payouts", icon: Wallet, label: "Payout History" },
-    { path: "/traderdashboard/transactions", icon: Receipt, label: "Transactions" },
+    { path: "/traderdashboard/payouts", icon: Wallet, label: t("panelLayout.nav.payoutHistory") },
+    { path: "/traderdashboard/transactions", icon: Receipt, label: t("panelLayout.nav.transactions") },
   ];
 
   const settingsNavItems = [
     {
       path: "/traderdashboard/settings",
       icon: Settings,
-      label: "Account Settings",
+      label: t("panelLayout.nav.accountSettings"),
     },
-    { path: "/traderdashboard/profile", icon: User, label: "Profile" },
+    { path: "/traderdashboard/profile", icon: User, label: t("panelLayout.nav.profile") },
   ];
 
   const supportNavItems = [
-    { path: "/traderdashboard/support", icon: MessageSquare, label: "Support" },
-    { path: "/traderdashboard/faqs", icon: HelpCircle, label: "FAQ" },
+    { path: "/traderdashboard/support", icon: MessageSquare, label: t("panelLayout.nav.support") },
+    { path: "/traderdashboard/faqs", icon: HelpCircle, label: t("panelLayout.nav.faq") },
   ];
 
   const isActive = (path, exact = false) => {
@@ -332,7 +333,7 @@ const TraderPanelLayoutInner = () => {
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition-all"
             >
               <Zap className="w-5 h-5" />
-              {!sidebarCollapsed && <span>Start Trading</span>}
+              {!sidebarCollapsed && <span>{t("panelLayout.startTrading")}</span>}
             </Link>
             <Link
               to="/traderdashboard/checkout"
@@ -340,7 +341,7 @@ const TraderPanelLayoutInner = () => {
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] font-bold py-3 px-4 rounded-xl transition-all"
             >
               <Plus className="w-5 h-5" />
-              {!sidebarCollapsed && <span>Buy Challenge</span>}
+              {!sidebarCollapsed && <span>{t("panelLayout.buyChallenge")}</span>}
             </Link>
           </div>
 
@@ -353,7 +354,7 @@ const TraderPanelLayoutInner = () => {
                   isDark ? "text-gray-500" : "text-slate-400"
                 } ${sidebarCollapsed ? "hidden" : ""}`}
               >
-                Trades
+                {t("panelLayout.sections.trades")}
               </p>
               {mainNavItems.map((item) => (
                 <Link
@@ -383,7 +384,7 @@ const TraderPanelLayoutInner = () => {
                   isDark ? "text-gray-500" : "text-slate-400"
                 } ${sidebarCollapsed ? "hidden" : ""}`}
               >
-                Account Settings
+                {t("panelLayout.sections.accountSettings")}
               </p>
               {settingsNavItems.map((item) => (
                 <Link
@@ -412,7 +413,7 @@ const TraderPanelLayoutInner = () => {
                   isDark ? "text-gray-500" : "text-slate-400"
                 } ${sidebarCollapsed ? "hidden" : ""}`}
               >
-                Support
+                {t("panelLayout.sections.support")}
               </p>
               {supportNavItems.map((item) => (
                 <Link
@@ -479,14 +480,18 @@ const TraderPanelLayoutInner = () => {
                       <h1
                         className={`font-bold text-sm sm:hidden truncate max-w-[140px] ${isDark ? "text-white" : "text-slate-900"}`}
                       >
-                        {`Account #${selectedChallenge.accountId.substring(0, 4)}`}
+                        {t("panelLayout.accountLabel", {
+                          id: selectedChallenge.accountId.substring(0, 4),
+                        })}
                       </h1>
                       <div className="hidden sm:flex flex-col gap-1 min-w-0">
                         <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                           <h1
                             className={`font-bold text-lg sm:text-xl ${isDark ? "text-white" : "text-slate-900"}`}
                           >
-                            {`Account #${selectedChallenge.accountId.substring(0, 4)}`}
+                            {t("panelLayout.accountLabel", {
+                              id: selectedChallenge.accountId.substring(0, 4),
+                            })}
                           </h1>
                           <span
                             className={`px-1.5 py-0.5 text-[10px] sm:px-2 sm:py-1 sm:text-xs font-medium rounded ${isDark ? "bg-white/10 text-gray-300" : "bg-slate-100 text-slate-700"}`}
@@ -517,8 +522,8 @@ const TraderPanelLayoutInner = () => {
                             }`}
                           >
                             {selectedChallenge.status === "active"
-                              ? "Active"
-                              : "Failed"}
+                              ? t("panelLayout.status.active")
+                              : t("panelLayout.status.failed")}
                           </span>
                         </div>
                       </div>
@@ -547,7 +552,7 @@ const TraderPanelLayoutInner = () => {
                         <p
                           className={`text-xs font-semibold uppercase tracking-wider ${isDark ? "text-gray-500" : "text-slate-400"}`}
                         >
-                          Switch Account
+                          {t("panelLayout.switchAccount")}
                         </p>
                       </div>
                       <div className="max-h-64 overflow-y-auto p-2">
@@ -586,7 +591,9 @@ const TraderPanelLayoutInner = () => {
                                   <span
                                     className={`text-sm font-semibold ${isDark ? "text-white" : "text-slate-900"}`}
                                   >
-                                    Account #{challenge.accountId.substr(0, 4)}
+                                    {t("panelLayout.accountLabel", {
+                                      id: challenge.accountId.substr(0, 4),
+                                    })}
                                   </span>
                                   <span
                                     className={`px-1.5 py-0.5 text-[10px] sm:px-2 sm:text-xs font-medium rounded ${
@@ -625,8 +632,8 @@ const TraderPanelLayoutInner = () => {
                                     }`}
                                   >
                                     {challenge.status === "active"
-                                      ? "Active"
-                                      : "Failed"}
+                                      ? t("panelLayout.status.active")
+                                      : t("panelLayout.status.failed")}
                                   </span>
                                 </div>
                               </div>
@@ -659,10 +666,10 @@ const TraderPanelLayoutInner = () => {
                                   }`}
                                   title={
                                     isPinned
-                                      ? "Unpin account"
+                                      ? t("panelLayout.unpinAccount")
                                       : pinLimitReached
-                                        ? "Maximum 4 pinned accounts"
-                                        : "Pin account"
+                                        ? t("panelLayout.maxPinnedAccounts")
+                                        : t("panelLayout.pinAccount")
                                   }
                                 >
                                   {isPinned ? (
@@ -689,7 +696,9 @@ const TraderPanelLayoutInner = () => {
                 Last Updated: {lastRefresh.toLocaleString()}
               </span> */}
 
-              {/* Currency Switcher (language dropdown hidden until translations finalized) */}
+              {/* Language + Currency Switchers */}
+              <LanguageSwitcher />
+
               <CurrencySwitcher />
 
               {/* Theme Toggle */}
@@ -700,7 +709,7 @@ const TraderPanelLayoutInner = () => {
                     ? "bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white"
                     : "bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900"
                 }`}
-                title="Toggle theme"
+                title={t("panelLayout.toggleTheme")}
               >
                 {isDark ? (
                   <Sun className="w-5 h-5" />
@@ -758,12 +767,14 @@ const TraderPanelLayoutInner = () => {
                         <h3
                           className={`font-bold ${isDark ? "text-white" : "text-slate-900"}`}
                         >
-                          Notifications
+                          {t("notifications.title")}
                         </h3>
                         <span
                           className={`text-xs ${isDark ? "text-gray-500" : "text-slate-500"}`}
                         >
-                          {unreadNotificationCount} unread
+                          {t("panelLayout.unreadCount", {
+                            count: unreadNotificationCount,
+                          })}
                         </span>
                       </div>
                     </div>
@@ -780,12 +791,12 @@ const TraderPanelLayoutInner = () => {
                           <p
                             className={`text-sm font-medium ${isDark ? "text-white" : "text-slate-900"}`}
                           >
-                            No new notifications
+                            {t("notifications.noNewNotifications")}
                           </p>
                           <p
                             className={`text-xs mt-1 ${isDark ? "text-gray-500" : "text-slate-500"}`}
                           >
-                            You&apos;re all caught up!
+                            {t("notifications.allCaughtUp")}
                           </p>
                         </div>
                       ) : (
@@ -856,7 +867,7 @@ const TraderPanelLayoutInner = () => {
                           setShowNotifications(false);
                         }}
                       >
-                        View All Notifications
+                        {t("panelLayout.viewAllNotifications")}
                       </Link>
                     </div>
                   </div>
@@ -878,12 +889,12 @@ const TraderPanelLayoutInner = () => {
                     <p
                       className={`text-sm font-medium truncate ${isDark ? "text-white" : "text-slate-900"}`}
                     >
-                      {userState.fullname || "User"}
+                      {userState.fullname || t("panelLayout.userFallback")}
                     </p>
                     <p
                       className={`text-xs truncate ${isDark ? "text-gray-500" : "text-slate-500"}`}
                     >
-                      Demo Account
+                      {t("panelLayout.demoAccount")}
                     </p>
                   </div>
                   <ChevronDown
@@ -906,7 +917,7 @@ const TraderPanelLayoutInner = () => {
                       <p
                         className={`font-medium ${isDark ? "text-white" : "text-slate-900"}`}
                       >
-                        {userState.fullname || "User"}
+                        {userState.fullname || t("panelLayout.userFallback")}
                       </p>
                       <p
                         className={`text-xs ${isDark ? "text-gray-500" : "text-slate-500"}`}
@@ -925,7 +936,7 @@ const TraderPanelLayoutInner = () => {
                         }`}
                       >
                         <User className="w-4 h-4" />
-                        <span className="text-sm">My Profile</span>
+                        <span className="text-sm">{t("panelLayout.profileMenu.myProfile")}</span>
                       </Link>
                       <Link
                         to="/traderdashboard/settings"
@@ -937,7 +948,7 @@ const TraderPanelLayoutInner = () => {
                         }`}
                       >
                         <Settings className="w-4 h-4" />
-                        <span className="text-sm">Settings</span>
+                        <span className="text-sm">{t("panelLayout.profileMenu.settings")}</span>
                       </Link>
                       <Link
                         to="/traderdashboard/support"
@@ -949,7 +960,7 @@ const TraderPanelLayoutInner = () => {
                         }`}
                       >
                         <MessageSquare className="w-4 h-4" />
-                        <span className="text-sm">Support</span>
+                        <span className="text-sm">{t("panelLayout.profileMenu.support")}</span>
                       </Link>
                     </div>
                     <div
@@ -964,7 +975,7 @@ const TraderPanelLayoutInner = () => {
                         }`}
                       >
                         <LogOut className="w-4 h-4" />
-                        <span className="text-sm">Sign Out</span>
+                        <span className="text-sm">{t("panelLayout.profileMenu.signOut")}</span>
                       </button>
                     </div>
                   </div>

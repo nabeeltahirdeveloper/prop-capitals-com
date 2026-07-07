@@ -9,9 +9,9 @@ import {
   Play,
   Pause,
 } from "lucide-react";
-import { testimonials } from "./data/mockData.js";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useTranslation } from "@/contexts/LanguageContext";
 
 const VideoPlayer = ({ src, className, isDark }) => {
   const [isMuted, setIsMuted] = useState(true);
@@ -90,6 +90,8 @@ const VideoPlayer = ({ src, className, isDark }) => {
 const TestimonialsSection = () => {
   const { isDark } = useTheme();
   const { cur } = useCurrency();
+  const { t } = useTranslation();
+  const testimonials = t("home.testimonials.items", { returnObjects: true });
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextSlide = () => {
@@ -111,12 +113,15 @@ const TestimonialsSection = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">
-            Testimonials
+            {t("home.testimonials.eyebrow")}
           </span>
           <h2
             className={`text-3xl sm:text-4xl lg:text-5xl font-black ${isDark ? "text-white" : "text-slate-900"}`}
           >
-            Hear From Our <span className="text-amber-500">Traders</span>
+            {t("home.testimonials.title")}{" "}
+            <span className="text-amber-500">
+              {t("home.testimonials.titleHighlight")}
+            </span>
           </h2>
         </div>
 
@@ -180,7 +185,8 @@ const TestimonialsSection = () => {
                         isDark ? "text-gray-400" : "text-slate-500 text-sm"
                       }
                     >
-                      Funded Trader • {currentTestimonial.country}
+                      {t("home.testimonials.fundedTrader")} •{" "}
+                      {currentTestimonial.country}
                     </p>
                   </div>
                 </div>
@@ -189,7 +195,7 @@ const TestimonialsSection = () => {
                   <span
                     className={`text-xs uppercase tracking-wider mb-1 ${isDark ? "text-gray-500" : "text-slate-400"}`}
                   >
-                    Payout
+                    {t("home.testimonials.payout")}
                   </span>
                   <span className="text-emerald-500 font-bold text-xl">
                     {cur(currentTestimonial.payout)}

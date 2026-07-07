@@ -48,12 +48,14 @@ describe('AdminConsoleService transaction brand assignment', () => {
 
     prisma.payment.findUnique.mockResolvedValue(basePayment);
     prisma.brand.findUnique.mockResolvedValue(brand);
-    prisma.payment.update.mockImplementation(async ({ data }) => ({
-      ...basePayment,
-      ...data,
-      brand,
-      updatedAt: new Date('2026-06-01T12:01:00.000Z'),
-    }));
+    prisma.payment.update.mockImplementation(({ data }) =>
+      Promise.resolve({
+        ...basePayment,
+        ...data,
+        brand,
+        updatedAt: new Date('2026-06-01T12:01:00.000Z'),
+      }),
+    );
 
     const result = await service.updateOrder('payment_1', {
       brand_id: 'brand_1',
@@ -92,12 +94,14 @@ describe('AdminConsoleService transaction brand assignment', () => {
     };
 
     prisma.payment.findUnique.mockResolvedValue(existingPayment);
-    prisma.payment.update.mockImplementation(async ({ data }) => ({
-      ...existingPayment,
-      ...data,
-      brand: null,
-      updatedAt: new Date('2026-06-01T12:02:00.000Z'),
-    }));
+    prisma.payment.update.mockImplementation(({ data }) =>
+      Promise.resolve({
+        ...existingPayment,
+        ...data,
+        brand: null,
+        updatedAt: new Date('2026-06-01T12:02:00.000Z'),
+      }),
+    );
 
     const result = await service.updateOrder('payment_1', {
       brand_id: null,

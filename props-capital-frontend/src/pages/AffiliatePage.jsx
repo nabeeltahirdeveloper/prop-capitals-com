@@ -3,10 +3,12 @@ import { DollarSign, Users, Share2, TrendingUp, Gift, Award, ArrowRight, CheckCi
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const AffiliatePage = () => {
   const { isDark } = useTheme();
   const { cur } = useCurrency();
+  const { t } = useTranslation();
   const [showSignupForm, setShowSignupForm] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
@@ -22,33 +24,33 @@ const AffiliatePage = () => {
 
   const BACKEND_URL = ""
 
-  const benefits = [
-    { icon: DollarSign, title: "Up to 15% Commission", description: "Earn on every challenge purchase from your referrals" },
-    { icon: Users, title: "Lifetime Referrals", description: "Get commissions on all future purchases from your referrals" },
-    { icon: Gift, title: "Monthly Bonuses", description: "Top affiliates receive additional performance bonuses" },
-    { icon: TrendingUp, title: "Real-Time Tracking", description: "Monitor your earnings and referrals in real-time" }
-  ];
+  const benefitIcons = [DollarSign, Users, Gift, TrendingUp];
+  const benefitsContent = t('affiliate.benefits', { returnObjects: true });
+  const benefits = (Array.isArray(benefitsContent) ? benefitsContent : []).map((b, i) => ({
+    icon: benefitIcons[i],
+    title: b.title,
+    description: b.description
+  }));
 
-  const tiers = [
-    { name: "Starter", commission: "8%", requirements: "0-10 referrals", color: "gray" },
-    { name: "Bronze", commission: "10%", requirements: "11-50 referrals", color: "amber" },
-    { name: "Silver", commission: "12%", requirements: "51-100 referrals", color: "gray" },
-    { name: "Gold", commission: "15%", requirements: "100+ referrals", color: "yellow" }
-  ];
+  const tierColors = ["gray", "amber", "gray", "yellow"];
+  const tierCommissions = ["8%", "10%", "12%", "15%"];
+  const tiersContent = t('affiliate.tiers', { returnObjects: true });
+  const tiers = (Array.isArray(tiersContent) ? tiersContent : []).map((tier, i) => ({
+    name: tier.name,
+    commission: tierCommissions[i],
+    requirements: tier.requirements,
+    color: tierColors[i]
+  }));
 
-  const steps = [
-    { step: 1, title: "Sign Up", description: "Create your free affiliate account in minutes" },
-    { step: 2, title: "Get Your Link", description: "Receive your unique referral link and marketing materials" },
-    { step: 3, title: "Promote", description: "Share with your audience through any channel" },
-    { step: 4, title: "Earn", description: "Get paid monthly for every successful referral" }
-  ];
+  const stepsContent = t('affiliate.steps', { returnObjects: true });
+  const steps = (Array.isArray(stepsContent) ? stepsContent : []).map((s, i) => ({
+    step: i + 1,
+    title: s.title,
+    description: s.description
+  }));
 
-  const faqs = [
-    { q: "How much can I earn?", a: "There's no limit! Top affiliates earn $10,000+ per month. You earn commission on every challenge purchase made through your link." },
-    { q: "When do I get paid?", a: "Payments are processed on the 1st of each month for the previous month's earnings. Minimum payout is $50." },
-    { q: "What marketing materials do you provide?", a: "We provide banners, social media graphics, email templates, and video content you can use to promote." },
-    { q: "Can I promote on social media?", a: "Yes! You can promote on any platform - YouTube, Instagram, TikTok, Twitter, blogs, email lists, etc." }
-  ];
+  const faqsContent = t('affiliate.faqs', { returnObjects: true });
+  const faqs = Array.isArray(faqsContent) ? faqsContent : [];
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -92,20 +94,19 @@ const AffiliatePage = () => {
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-12">
-            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">Affiliate Program</span>
+            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">{t('affiliate.eyebrow')}</span>
             <h1 className={`text-3xl sm:text-4xl lg:text-5xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Earn Up to <span className="text-amber-500">15% Commission</span>
+              {t('affiliate.heroTitle')} <span className="text-amber-500">{t('affiliate.heroTitleHighlight')}</span>
             </h1>
             <p className={`text-lg max-w-2xl mx-auto mb-8 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-              Join our affiliate program and earn passive income by referring traders to Prop Capitals. 
-              No limits on earnings!
+              {t('affiliate.heroSubtitle')}
             </p>
-            <Button 
+            <Button
               onClick={() => setShowSignupForm(true)}
               className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-8 py-6 h-auto text-lg font-bold"
               data-testid="become-affiliate-btn"
             >
-              Become an Affiliate
+              {t('affiliate.becomeAffiliate')}
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </div>
@@ -125,7 +126,7 @@ const AffiliatePage = () => {
 
           {/* Commission Tiers */}
           <div className="mb-16">
-            <h2 className={`text-2xl font-black text-center mb-8 ${isDark ? 'text-white' : 'text-slate-900'}`}>Commission Tiers</h2>
+            <h2 className={`text-2xl font-black text-center mb-8 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('affiliate.commissionTiers')}</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {tiers.map((tier, i) => (
                 <div key={i} className={`rounded-2xl p-6 border text-center relative overflow-hidden ${
@@ -133,7 +134,7 @@ const AffiliatePage = () => {
                 } ${isDark ? 'bg-[#12161d]' : 'bg-white'}`}>
                   {i === 3 && (
                     <div className="absolute -top-1 -right-8 bg-gradient-to-r from-amber-400 to-amber-600 text-[#0a0d12] text-[10px] font-bold px-8 py-1 rotate-45">
-                      BEST
+                      {t('affiliate.bestBadge')}
                     </div>
                   )}
                   <div className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{tier.name}</div>
@@ -146,7 +147,7 @@ const AffiliatePage = () => {
 
           {/* How It Works */}
           <div className="mb-16">
-            <h2 className={`text-2xl font-black text-center mb-8 ${isDark ? 'text-white' : 'text-slate-900'}`}>How It Works</h2>
+            <h2 className={`text-2xl font-black text-center mb-8 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('affiliate.howItWorks')}</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {steps.map((step, i) => (
                 <div key={i} className="relative">
@@ -169,7 +170,7 @@ const AffiliatePage = () => {
 
           {/* FAQ Section */}
           <div className="mb-16">
-            <h2 className={`text-2xl font-black text-center mb-8 ${isDark ? 'text-white' : 'text-slate-900'}`}>Frequently Asked Questions</h2>
+            <h2 className={`text-2xl font-black text-center mb-8 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('affiliate.faqTitle')}</h2>
             <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
               {faqs.map((faq, i) => (
                 <div key={i} className={`rounded-2xl p-6 border ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`}>
@@ -183,16 +184,16 @@ const AffiliatePage = () => {
           {/* CTA */}
           <div className={`rounded-3xl p-8 sm:p-12 text-center ${isDark ? 'bg-gradient-to-br from-[#12161d] to-[#0d1117] border border-white/10' : 'bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200'}`}>
             <h2 className={`text-2xl sm:text-3xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Ready to Start Earning?
+              {t('affiliate.ctaTitle')}
             </h2>
             <p className={`mb-6 max-w-xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-              Join hundreds of affiliates already earning with Prop Capitals. It takes less than 2 minutes to sign up.
+              {t('affiliate.ctaSubtitle')}
             </p>
-            <Button 
+            <Button
               onClick={() => setShowSignupForm(true)}
               className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-8 py-6 h-auto text-lg font-bold"
             >
-              Join Affiliate Program
+              {t('affiliate.joinProgram')}
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </div>
@@ -217,15 +218,15 @@ const AffiliatePage = () => {
               <>
                 {/* Header */}
                 <div className="bg-gradient-to-r from-amber-400 to-amber-600 p-6">
-                  <h2 className="text-2xl font-black text-[#0a0d12]">Become an Affiliate</h2>
-                  <p className="text-[#0a0d12]/70 text-sm">Fill out the form below to join our program</p>
+                  <h2 className="text-2xl font-black text-[#0a0d12]">{t('affiliate.modalTitle')}</h2>
+                  <p className="text-[#0a0d12]/70 text-sm">{t('affiliate.modalSubtitle')}</p>
                 </div>
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
                   <div>
                     <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
-                      Full Name *
+                      {t('affiliate.fullNameLabel')}
                     </label>
                     <div className="relative">
                       <User className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
@@ -238,7 +239,7 @@ const AffiliatePage = () => {
                         className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-amber-500/50 ${
                           isDark ? 'bg-[#0a0d12] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
                         }`}
-                        placeholder="John Doe"
+                        placeholder={t('affiliate.fullNamePlaceholder')}
                         data-testid="affiliate-name-input"
                       />
                     </div>
@@ -246,7 +247,7 @@ const AffiliatePage = () => {
 
                   <div>
                     <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
-                      Email Address *
+                      {t('affiliate.emailLabel')}
                     </label>
                     <div className="relative">
                       <Mail className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
@@ -267,7 +268,7 @@ const AffiliatePage = () => {
 
                   <div>
                     <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
-                      Website/Blog (Optional)
+                      {t('affiliate.websiteLabel')}
                     </label>
                     <div className="relative">
                       <Globe className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
@@ -286,7 +287,7 @@ const AffiliatePage = () => {
 
                   <div>
                     <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
-                      Social Media Handle (Optional)
+                      {t('affiliate.socialMediaLabel')}
                     </label>
                     <div className="relative">
                       <Instagram className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
@@ -298,14 +299,14 @@ const AffiliatePage = () => {
                         className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-amber-500/50 ${
                           isDark ? 'bg-[#0a0d12] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
                         }`}
-                        placeholder="@yourhandle"
+                        placeholder={t('affiliate.socialMediaPlaceholder')}
                       />
                     </div>
                   </div>
 
                   <div>
                     <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
-                      Estimated Audience Size *
+                      {t('affiliate.audienceLabel')}
                     </label>
                     <select
                       name="audience"
@@ -317,7 +318,7 @@ const AffiliatePage = () => {
                       }`}
                       data-testid="affiliate-audience-select"
                     >
-                      <option value="">Select audience size</option>
+                      <option value="">{t('affiliate.audiencePlaceholder')}</option>
                       <option value="0-1000">0 - 1,000</option>
                       <option value="1000-10000">1,000 - 10,000</option>
                       <option value="10000-50000">10,000 - 50,000</option>
@@ -328,7 +329,7 @@ const AffiliatePage = () => {
 
                   <div>
                     <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
-                      How did you hear about us?
+                      {t('affiliate.howHeardLabel')}
                     </label>
                     <select
                       name="howHeard"
@@ -338,12 +339,12 @@ const AffiliatePage = () => {
                         isDark ? 'bg-[#0a0d12] border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
                       }`}
                     >
-                      <option value="">Select an option</option>
-                      <option value="social">Social Media</option>
-                      <option value="search">Search Engine</option>
-                      <option value="friend">Friend/Referral</option>
-                      <option value="ad">Advertisement</option>
-                      <option value="other">Other</option>
+                      <option value="">{t('affiliate.howHeardPlaceholder')}</option>
+                      <option value="social">{t('affiliate.howHeardSocial')}</option>
+                      <option value="search">{t('affiliate.howHeardSearch')}</option>
+                      <option value="friend">{t('affiliate.howHeardFriend')}</option>
+                      <option value="ad">{t('affiliate.howHeardAd')}</option>
+                      <option value="other">{t('affiliate.howHeardOther')}</option>
                     </select>
                   </div>
 
@@ -353,7 +354,7 @@ const AffiliatePage = () => {
                     className="w-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-xl py-3 h-auto font-bold disabled:opacity-50"
                     data-testid="affiliate-submit-btn"
                   >
-                    {isSubmitting ? 'Submitting...' : 'Submit Application'}
+                    {isSubmitting ? t('affiliate.submitting') : t('affiliate.submitApplication')}
                   </Button>
                 </form>
               </>
@@ -364,15 +365,15 @@ const AffiliatePage = () => {
                   <CheckCircle2 className="w-8 h-8 text-emerald-500" />
                 </div>
                 <h2 className={`text-2xl font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  Application Submitted!
+                  {t('affiliate.successTitle')}
                 </h2>
                 <p className={`mb-6 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                  Thank you for applying! We'll review your application and get back to you within 24-48 hours.
+                  {t('affiliate.successMessage')}
                 </p>
-                
+
                 {/* Demo Referral Link */}
                 <div className={`rounded-xl p-4 mb-4 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
-                  <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Your referral link (demo):</p>
+                  <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('affiliate.referralLinkLabel')}</p>
                   <div className="flex items-center gap-2">
                     <code className={`flex-1 text-sm truncate ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>
                       https://prop-capitals.com/?ref=YOUR_ID
@@ -390,7 +391,7 @@ const AffiliatePage = () => {
                   onClick={() => { setShowSignupForm(false); setIsSubmitted(false); }}
                   className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-xl px-6 py-3 h-auto font-bold"
                 >
-                  Close
+                  {t('affiliate.close')}
                 </Button>
               </div>
             )}

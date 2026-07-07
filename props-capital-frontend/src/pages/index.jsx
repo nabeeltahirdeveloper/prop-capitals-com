@@ -1,6 +1,5 @@
 import Layout from "./Layout.jsx";
 import ErrorBoundary from "../components/ErrorBoundary.jsx";
-import { LanguageProvider } from "../contexts/LanguageContext";
 
 import Home from "./Home";
 import Challenges from "./Challenges";
@@ -78,6 +77,7 @@ import {
   useLocation,
   Navigate,
 } from "react-router-dom";
+import { basenameForPath } from '@/lib/localeUrl';
 import ProtectedRoute, {
   DashboardRedirect,
   PublicOnlyRoute,
@@ -173,23 +173,20 @@ function PagesContent() {
   if (isChromeFreeRoute) {
     return (
       <PriceProviderWithRouter>
-        <LanguageProvider>
-          <ErrorBoundary>
-            <Routes>
-              <Route path="/q/:slug" element={<QuickLinkCheckout />} />
-              <Route path="/pay/success" element={<PayLinkSuccess />} />
-              <Route path="/pay/fail" element={<PayLinkFail />} />
-              <Route path="/pay/:slug" element={<PayLink />} />
-            </Routes>
-          </ErrorBoundary>
-        </LanguageProvider>
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/q/:slug" element={<QuickLinkCheckout />} />
+            <Route path="/pay/success" element={<PayLinkSuccess />} />
+            <Route path="/pay/fail" element={<PayLinkFail />} />
+            <Route path="/pay/:slug" element={<PayLink />} />
+          </Routes>
+        </ErrorBoundary>
       </PriceProviderWithRouter>
     );
   }
 
   return (
     <PriceProviderWithRouter>
-      <LanguageProvider>
         <ErrorBoundary>
           <Layout currentPageName={currentPage}>
             <Routes>
@@ -309,14 +306,15 @@ function PagesContent() {
             </Routes>
           </Layout>
         </ErrorBoundary>
-      </LanguageProvider>
     </PriceProviderWithRouter>
   );
 }
 
 export default function Pages() {
+  const basename =
+    typeof window !== 'undefined' ? basenameForPath(window.location.pathname) : '';
   return (
-    <Router>
+    <Router basename={basename}>
       <PagesContent />
     </Router>
   );

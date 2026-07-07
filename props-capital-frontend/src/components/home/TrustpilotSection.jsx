@@ -2,164 +2,8 @@ import React, { useState } from 'react';
 import { Star, ChevronLeft, ChevronRight, ExternalLink, Quote } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 import PartialStarRating from '@/components/PartialStarRating';
-
-const trustpilotReviews = [
-  {
-    id: 1,
-    name: 'James Wilson',
-    location: 'United Kingdom',
-    date: '2 days ago',
-    rating: 5,
-    title: "Best prop firm I've worked with",
-    review:
-      'The payout process is incredibly fast - received my funds in under 2 hours! The support team is responsive and the trading conditions are excellent. Highly recommend Prop Capitals to anyone serious about prop trading.',
-    verified: true,
-  },
-  {
-    id: 2,
-    name: 'Sophie Martin',
-    location: 'United Kingdom',
-    date: '5 days ago',
-    rating: 5,
-    title: 'Exceeded all my expectations',
-    review:
-      "I've tried several prop firms before, but Prop Capitals stands out. The 90% profit split is amazing, and the fact that they refund the challenge fee on your first payout shows they truly believe in their traders.",
-    verified: true,
-  },
-  {
-    id: 3,
-    name: 'Marco Rossi',
-    location: 'Italy',
-    date: '1 week ago',
-    rating: 5,
-    title: 'Professional and trustworthy',
-    review:
-      'From signup to my first payout, everything was smooth. The platform is easy to use, the rules are clear, and the support team actually helps when you need them. This is how prop trading should be!',
-    verified: true,
-  },
-  {
-    id: 4,
-    name: 'Anna Kowalski',
-    location: 'Germany',
-    date: '1 week ago',
-    rating: 5,
-    title: 'Finally a reliable prop firm',
-    review:
-      'After being burned by other prop firms, I was skeptical. But Prop Capitals delivered exactly what they promised. Fast payouts, great conditions, and excellent customer service. Very impressed!',
-    verified: true,
-  },
-  {
-    id: 5,
-    name: 'David Chen',
-    location: 'Singapore',
-    date: '2 weeks ago',
-    rating: 5,
-    title: 'Game changer for my trading career',
-    review:
-      'The free trading course included with the challenge was actually valuable - not just marketing fluff. Combined with their generous profit split and fast payouts, Prop Capitals is the real deal.',
-    verified: true,
-  },
-  {
-    id: 6,
-    name: 'Lucas Silva',
-    location: 'Brazil',
-    date: '2 weeks ago',
-    rating: 4,
-    title: 'Great experience overall',
-    review:
-      'Very satisfied with my experience. The challenge was fair, the rules are reasonable, and I got my first payout within 90 minutes of requesting it. Would definitely recommend to other traders.',
-    verified: true,
-  },
-  {
-    id: 7,
-    name: 'Yuki Tanaka',
-    location: 'Japan',
-    date: '3 days ago',
-    rating: 5,
-    title: 'Exceptional trading conditions',
-    review:
-      "The spreads are tight, execution is fast, and the PT5 platform is incredibly intuitive. I've scaled my account twice already. Prop Capitals is the real deal for serious traders.",
-    verified: true,
-  },
-  {
-    id: 8,
-    name: 'Mohammed Al-Rashid',
-    location: 'UAE',
-    date: '4 days ago',
-    rating: 5,
-    title: 'Lightning fast payouts',
-    review:
-      'Requested my payout at 3 PM and had it in my account by 4 PM. Unbelievable speed! The support team is always helpful and the trading rules are fair and transparent.',
-    verified: true,
-  },
-  {
-    id: 9,
-    name: 'Emma Thompson',
-    location: 'Australia',
-    date: '1 week ago',
-    rating: 5,
-    title: "Best decision I've made",
-    review:
-      "Started with a $25K challenge and now trading a $100K funded account. The scaling plan is generous and the community is supportive. Couldn't ask for more!",
-    verified: true,
-  },
-  {
-    id: 10,
-    name: 'Pierre Dubois',
-    location: 'France',
-    date: '5 days ago',
-    rating: 5,
-    title: 'Transparent and reliable',
-    review:
-      'No hidden rules, no tricks. Everything is clear from day one. The dashboard is clean and makes tracking progress easy. This is how prop trading should work.',
-    verified: true,
-  },
-  {
-    id: 11,
-    name: 'Carlos Rodriguez',
-    location: 'Mexico',
-    date: '6 days ago',
-    rating: 5,
-    title: 'Life-changing opportunity',
-    review:
-      'From struggling retail trader to funded professional in 3 weeks. The education resources helped me refine my strategy. Now making consistent profits with their capital!',
-    verified: true,
-  },
-  {
-    id: 12,
-    name: 'Olga Petrov',
-    location: 'Netherlands',
-    date: '1 week ago',
-    rating: 4,
-    title: 'Solid prop firm',
-    review:
-      'Great platform options including MT5 and the new PT5. Support responded to my ticket in under 10 minutes. The only reason for 4 stars is I wish they had more crypto pairs.',
-    verified: true,
-  },
-  {
-    id: 13,
-    name: 'Henrik Johansson',
-    location: 'Sweden',
-    date: '2 weeks ago',
-    rating: 5,
-    title: 'Professional in every way',
-    review:
-      'The onboarding was smooth, the rules are straightforward, and the profit splits are industry-leading. Already recommended Prop Capitals to my trading group.',
-    verified: true,
-  },
-  {
-    id: 14,
-    name: 'Priya Sharma',
-    location: 'India',
-    date: '3 days ago',
-    rating: 5,
-    title: 'Finally found the right firm',
-    review:
-      'After trying 3 other prop firms, I can confidently say Prop Capitals is the best. Fast payouts, excellent support, and they actually want you to succeed. 10/10!',
-    verified: true,
-  },
-];
 
 const StarRating = ({ rating }) => (
   <div className="flex gap-0.5">
@@ -174,6 +18,7 @@ const StarRating = ({ rating }) => (
 
 const ReviewCard = ({ review }) => {
   const { cur } = useCurrency();
+  const { t } = useTranslation();
   return (
   <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 h-full flex flex-col">
     {/* Header */}
@@ -187,7 +32,7 @@ const ReviewCard = ({ review }) => {
             <p className="font-semibold text-gray-900">{review.name}</p>
             {review.verified && (
               <span className="bg-[#00b67a]/10 text-[#00b67a] text-[10px] font-semibold px-2 py-0.5 rounded-full">
-                Verified
+                {t('home.trustpilot.verified')}
               </span>
             )}
           </div>
@@ -213,7 +58,7 @@ const ReviewCard = ({ review }) => {
         />
         <path fill="#005128" d="M22.3 18.2L21.1 15.9L15.5 19.2L22.3 18.2Z" />
       </svg>
-      <span className="text-gray-500 text-xs">Posted on Trustpilot</span>
+      <span className="text-gray-500 text-xs">{t('home.trustpilot.postedOn')}</span>
     </div>
   </div>
   );
@@ -221,7 +66,9 @@ const ReviewCard = ({ review }) => {
 
 const TrustpilotSection = () => {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const trustpilotReviews = t('home.trustpilot.reviews', { returnObjects: true });
   const reviewsPerPage = 3;
   const totalPages = Math.ceil(trustpilotReviews.length / reviewsPerPage);
 
@@ -278,7 +125,7 @@ const TrustpilotSection = () => {
               <div className="flex flex-col items-start">
                 <PartialStarRating rating={4.8} size={24} />
                 <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                  Based on 2,340+ reviews
+                  {t('home.trustpilot.basedOnReviews')}
                 </span>
               </div>
             </div>
@@ -287,11 +134,12 @@ const TrustpilotSection = () => {
           <h2
             className={`text-3xl sm:text-4xl lg:text-5xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}
           >
-            Trusted by <span className="text-amber-500">Thousands</span> of Traders
+            {t('home.trustpilot.headingBefore')}{' '}
+            <span className="text-amber-500">{t('home.trustpilot.headingHighlight')}</span>{' '}
+            {t('home.trustpilot.headingAfter')}
           </h2>
           <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-            Don't just take our word for it. See what real traders are saying about their experience
-            with Prop Capitals.
+            {t('home.trustpilot.subtitle')}
           </p>
         </div>
 

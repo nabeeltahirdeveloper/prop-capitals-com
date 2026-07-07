@@ -57,20 +57,20 @@ const formatPrice = (price, symbol) => {
 };
 
 // Helper to export trades to CSV
-const exportTradesToCSV = (trades, filename = "trade_history.csv") => {
+const exportTradesToCSV = (trades, t, filename = "trade_history.csv") => {
   if (!trades || trades.length === 0) return;
 
   const headers = [
-    "Ticket",
-    "Symbol",
-    "Type",
-    "Lots",
-    "Open Price",
-    "Close Price",
-    "Profit",
-    "Open Time",
-    "Close Time",
-    "Status",
+    t("tradeHistory.ticket"),
+    t("tradeHistory.symbol"),
+    t("tradeHistory.type"),
+    t("tradeHistory.csvLots"),
+    t("tradeHistory.openPrice"),
+    t("tradeHistory.closePrice"),
+    t("tradeHistory.profit"),
+    t("tradeHistory.openTime"),
+    t("tradeHistory.closeTime"),
+    t("tradeHistory.status"),
   ];
   const csvRows = [headers.join(",")];
 
@@ -521,6 +521,7 @@ export default function TradeHistory() {
             onClick={() =>
               exportTradesToCSV(
                 filteredTrades,
+                t,
                 `trades_${new Date().toISOString().split("T")[0]}.csv`,
               )
             }

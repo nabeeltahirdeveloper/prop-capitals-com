@@ -7,6 +7,8 @@ import ruTranslations from '../locales/ru.json';
 import trTranslations from '../locales/tr.json';
 import krTranslations from '../locales/kr.json';
 import jaTranslations from '../locales/ja.json';
+import kkTranslations from '../locales/kk.json';
+import { localeFromPath } from '@/lib/localeUrl';
 
 // Helper function for nested value access
 const getNestedValue = (obj, path) => {
@@ -16,14 +18,15 @@ const getNestedValue = (obj, path) => {
 };
 
 export const supportedLanguages = [
-  {code: 'en', label: 'English'},
-  {code: 'th', label: 'Thai'},
-  {code: 'fr', label: 'French'},
-  {code: 'es', label: 'Spanish'},
-  {code: 'ru', label: 'Russian'},
-  {code: 'tr', label: 'Turkish'},
-  {code: 'kr', label: 'Korean'},
-  {code: 'ja', label: 'Japanese'},
+  {code: 'en', label: 'English', native: 'English'},
+  {code: 'th', label: 'Thai', native: 'ไทย'},
+  {code: 'fr', label: 'French', native: 'Français'},
+  {code: 'es', label: 'Spanish', native: 'Español'},
+  {code: 'ru', label: 'Russian', native: 'Русский'},
+  {code: 'tr', label: 'Turkish', native: 'Türkçe'},
+  {code: 'kr', label: 'Korean', native: '한국어'},
+  {code: 'ja', label: 'Japanese', native: '日本語'},
+  {code: 'kk', label: 'Kazakh', native: 'Қазақша'},
 ];
 
 const translationsMap = {
@@ -35,6 +38,7 @@ const translationsMap = {
   tr: trTranslations,
   kr: krTranslations,
   ja: jaTranslations,
+  kk: kkTranslations,
 }
 
 // Create default/fallback translation function
@@ -77,12 +81,18 @@ export const useTranslation = () => {
 };
 
 export const LanguageProvider = ({ children }) => {
-  const [language, setLanguage] = useState(() => {
-    return localStorage.getItem('language') || 'en';
+  const [language, setLanguageState] = useState(() => {
+    if (typeof window === 'undefined') return 'en';
+    return localeFromPath(window.location.pathname);
   });
+
+  const setLanguage = (code) => setLanguageState(code);
 
   useEffect(() => {
     localStorage.setItem('language', language);
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = language;
+    }
   }, [language]);
 
   const translations = useMemo(() => {

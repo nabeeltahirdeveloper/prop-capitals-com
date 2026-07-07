@@ -45,6 +45,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { format } from "date-fns";
+import { enUS, tr as trLocale } from "date-fns/locale";
 
 // Format large currency numbers compactly
 function formatCompactCurrency(num) {
@@ -61,8 +62,9 @@ function formatCompactCurrency(num) {
 }
 
 export default function AccountDetails() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { symbol } = useCurrency();
+  const dateLocale = language === "tr" ? trLocale : enUS;
   const [selectedAccountId, setSelectedAccountId] = useState(null);
 
   // Get current user
@@ -558,7 +560,9 @@ export default function AccountDetails() {
             (avgDurationMs % (1000 * 60 * 60)) / (1000 * 60),
           );
           const avgDuration =
-            avgDurationMs > 0 ? `${hours}h ${minutes}m` : "0h 0m";
+            avgDurationMs > 0
+              ? `${hours}${t("accountDetails.hoursShort")} ${minutes}${t("accountDetails.minutesShort")}`
+              : `0${t("accountDetails.hoursShort")} 0${t("accountDetails.minutesShort")}`;
 
           return {
             winRate,
@@ -609,7 +613,9 @@ export default function AccountDetails() {
       calculatedStats.profitFactor ??
       0,
     avgDuration:
-      integratedStats.avgDuration ?? calculatedStats.avgDuration ?? "0h 0m",
+      integratedStats.avgDuration ??
+      calculatedStats.avgDuration ??
+      `0${t("accountDetails.hoursShort")} 0${t("accountDetails.minutesShort")}`,
   };
 
   const tradeColumns = [
@@ -734,7 +740,9 @@ export default function AccountDetails() {
               <span className="hidden sm:inline">•</span>
               <span>
                 {t("accountDetails.started")}{" "}
-                {format(new Date(account.start_date), "MMM d, yyyy")}
+                {format(new Date(account.start_date), "MMM d, yyyy", {
+                  locale: dateLocale,
+                })}
               </span>
             </div>
           </div>

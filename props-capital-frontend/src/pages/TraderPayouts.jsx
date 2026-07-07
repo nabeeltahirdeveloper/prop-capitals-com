@@ -177,7 +177,7 @@ export default function TraderPayouts() {
       setSubmitError(
         error.response?.data?.message ||
           error.message ||
-          "Failed to request payout",
+          t("payouts.requestFailed"),
       );
     },
   });
@@ -491,8 +491,7 @@ export default function TraderPayouts() {
               {loadingAvailable && (
                 <div className="bg-slate-800 rounded-lg p-4 text-center">
                   <p className="text-slate-400 text-sm">
-                    {t("payouts.loadingAvailable") ||
-                      "Loading available amount..."}
+                    {t("payouts.loadingAvailable")}
                   </p>
                 </div>
               )}
@@ -501,8 +500,7 @@ export default function TraderPayouts() {
                 <div className="bg-slate-800 rounded-lg p-4 space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-slate-400 text-sm">
-                      {t("payouts.availableForPayout") ||
-                        "Available for payout"}
+                      {t("payouts.availableForPayout")}
                     </span>
                     <span className="text-emerald-400 font-bold text-lg">
                       $
@@ -511,7 +509,7 @@ export default function TraderPayouts() {
                   </div>
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-slate-500">
-                      {t("payouts.profitSplitLabel") || "Profit split"}
+                      {t("payouts.profitSplitLabel")}
                     </span>
                     <span className="text-slate-400">
                       {availablePayoutInfo.profitSplit}%
@@ -519,7 +517,7 @@ export default function TraderPayouts() {
                   </div>
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-slate-500">
-                      {t("payouts.minimumLabel") || "Minimum"}
+                      {t("payouts.minimumLabel")}
                     </span>
                     <span className="text-slate-400">
                       ${availablePayoutInfo.minimumPayoutAmount}
@@ -527,8 +525,7 @@ export default function TraderPayouts() {
                   </div>
                   {availablePayoutInfo.hasPendingPayout && (
                     <div className="mt-2 p-2 bg-amber-500/10 border border-amber-500/30 rounded text-amber-400 text-xs">
-                      {t("payouts.pendingPayoutWarning") ||
-                        "You already have a pending payout request for this account"}
+                      {t("payouts.pendingPayoutWarning")}
                     </div>
                   )}
                   {!availablePayoutInfo.canRequestPayout &&
@@ -536,8 +533,9 @@ export default function TraderPayouts() {
                     availablePayoutInfo.availablePayoutAmount <
                       availablePayoutInfo.minimumPayoutAmount && (
                       <div className="mt-2 p-2 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-xs">
-                        {t("payouts.belowMinimumWarning") ||
-                          `Available amount is below the minimum payout of $${availablePayoutInfo.minimumPayoutAmount}`}
+                        {t("payouts.belowMinimumWarning", {
+                          amount: `$${availablePayoutInfo.minimumPayoutAmount}`,
+                        })}
                       </div>
                     )}
                 </div>

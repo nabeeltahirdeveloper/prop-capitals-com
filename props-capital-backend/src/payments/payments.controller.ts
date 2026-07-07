@@ -153,7 +153,6 @@ export class PaymentsController {
     });
   }
 
-  
   @Post('worldcard/charge')
   @UseGuards(OptionalJwtAuthGuard)
   async worldCardCharge(@Body() body: any, @Req() req: Request) {
@@ -161,7 +160,6 @@ export class PaymentsController {
       userId: string;
       email: string;
     } | null;
-
 
     const xff = String(req.headers['x-forwarded-for'] || '')
       .split(',')[0]

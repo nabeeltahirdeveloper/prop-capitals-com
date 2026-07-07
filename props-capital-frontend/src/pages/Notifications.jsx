@@ -237,8 +237,8 @@ export default function Notifications() {
           <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertTriangle className="w-8 h-8 text-red-400" />
           </div>
-          <h3 className="text-lg font-semibold text-white mb-2">Failed to load notifications</h3>
-          <p className="text-slate-400">Please refresh the page and try again.</p>
+          <h3 className="text-lg font-semibold text-white mb-2">{t("notifications.loadError")}</h3>
+          <p className="text-slate-400">{t("notifications.loadErrorHint")}</p>
         </Card>
       </div>
     );
@@ -437,7 +437,7 @@ export default function Notifications() {
                           variant="ghost"
                           size="icon"
                           className="text-slate-400 h-8 w-8"
-                          aria-label="Mark as read"
+                          aria-label={t("notifications.markAsRead")}
                           onClick={() =>
                             markAsReadMutation.mutate(notification.id)
                           }
@@ -449,7 +449,7 @@ export default function Notifications() {
                         variant="ghost"
                         size="icon"
                         className="text-slate-400 hover:text-red-400 h-8 w-8"
-                        aria-label="Delete notification"
+                        aria-label={t("notifications.deleteNotification")}
                         onClick={() =>
                           deleteNotificationMutation.mutate(notification.id)
                         }

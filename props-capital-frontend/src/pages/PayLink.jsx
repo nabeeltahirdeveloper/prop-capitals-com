@@ -21,6 +21,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 import { PaymentLogos } from '@/components/PaymentLogos';
 import { getChallengeBySlug } from '@/api/challenges';
 import {
@@ -93,72 +94,72 @@ const INITIAL_FORM = {
 // where the card is captured on WorldCard's own page rather than here.
 const CARD_FIELDS = ['cardholderName', 'cardNumber', 'expiry', 'cvv'];
 
-const validateField = (name, value) => {
+const validateField = (name, value, t) => {
   switch (name) {
     case 'firstName':
-      if (!value.trim()) return 'First name is required';
-      if (value.trim().length < 2) return 'First name must be at least 2 characters';
+      if (!value.trim()) return t('payCheckout.errors.firstNameRequired');
+      if (value.trim().length < 2) return t('payLink.errors.firstNameMin');
       return '';
     case 'lastName':
-      if (!value.trim()) return 'Last name is required';
-      if (value.trim().length < 2) return 'Last name must be at least 2 characters';
+      if (!value.trim()) return t('payCheckout.errors.lastNameRequired');
+      if (value.trim().length < 2) return t('payLink.errors.lastNameMin');
       return '';
     case 'email': {
       const v = value.trim();
-      if (!v) return 'Email is required';
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return 'Enter a valid email address';
+      if (!v) return t('payCheckout.errors.emailRequired');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return t('payLink.errors.emailInvalid');
       return '';
     }
     case 'phone': {
       const v = value.trim();
       const compact = v.replace(/[\s\-()]/g, '');
-      if (!v) return 'Phone number is required';
+      if (!v) return t('payCheckout.errors.phoneRequired');
       if (!/^\+[1-9]\d{9,14}$/.test(compact)) {
-        return 'Enter a valid phone number with country code (e.g. +1 202 555 0100)';
+        return t('payCheckout.errors.phoneInvalid');
       }
       return '';
     }
     case 'country':
-      return value ? '' : 'Country is required';
+      return value ? '' : t('payCheckout.errors.countryRequired');
     case 'address':
-      if (!value.trim()) return 'Billing address is required';
-      if (value.trim().length < 4) return 'Address looks too short';
+      if (!value.trim()) return t('payLink.errors.addressRequired');
+      if (value.trim().length < 4) return t('payLink.errors.addressShort');
       return '';
     case 'city':
-      return value.trim() ? '' : 'City is required';
+      return value.trim() ? '' : t('payCheckout.errors.cityRequired');
     case 'state':
       return ''; // optional
     case 'postalCode': {
       const v = value.trim();
-      if (!v) return 'Postal / ZIP code is required';
-      if (!/^[0-9A-Za-z\- ]{2,10}$/.test(v)) return 'Postal code must be 2-10 letters, digits or hyphens';
+      if (!v) return t('payLink.errors.postalRequired');
+      if (!/^[0-9A-Za-z\- ]{2,10}$/.test(v)) return t('payLink.errors.postalInvalid');
       return '';
     }
     case 'cardholderName':
-      if (!value.trim()) return 'Cardholder name is required';
-      if (!/^[A-Za-z\s.'-]{2,}$/.test(value.trim())) return 'Cardholder name has invalid characters';
+      if (!value.trim()) return t('payLink.errors.cardholderRequired');
+      if (!/^[A-Za-z\s.'-]{2,}$/.test(value.trim())) return t('payLink.errors.cardholderInvalid');
       return '';
     case 'cardNumber': {
       const digits = (value || '').replace(/\D/g, '');
-      if (!digits) return 'Card number is required';
-      if (digits.length < 13) return 'Enter a valid card number';
-      if (!luhnValid(digits)) return 'Card number is invalid';
+      if (!digits) return t('payLink.errors.cardNumberRequired');
+      if (digits.length < 13) return t('payLink.errors.cardNumberShort');
+      if (!luhnValid(digits)) return t('payLink.errors.cardNumberInvalid');
       return '';
     }
     case 'expiry': {
       const [mm, yy] = (value || '').split('/');
-      if (!mm || !yy || mm.length !== 2 || yy.length !== 2) return 'Expiry must be MM/YY';
+      if (!mm || !yy || mm.length !== 2 || yy.length !== 2) return t('payLink.errors.expiryFormat');
       const monthNum = parseInt(mm, 10);
-      if (Number.isNaN(monthNum) || monthNum < 1 || monthNum > 12) return 'Invalid expiry month';
+      if (Number.isNaN(monthNum) || monthNum < 1 || monthNum > 12) return t('payLink.errors.expiryMonth');
       const yearNum = parseInt(yy, 10);
-      if (Number.isNaN(yearNum)) return 'Invalid expiry year';
+      if (Number.isNaN(yearNum)) return t('payLink.errors.expiryYear');
       const expDate = new Date(2000 + yearNum, monthNum, 0, 23, 59, 59);
-      if (expDate < new Date()) return 'Card has expired';
+      if (expDate < new Date()) return t('payLink.errors.expired');
       return '';
     }
     case 'cvv':
-      if (!value) return 'CVV is required';
-      if (value.length < 3) return 'CVV must be 3 or 4 digits';
+      if (!value) return t('payLink.errors.cvvRequired');
+      if (value.length < 3) return t('payLink.errors.cvvShort');
       return '';
     default:
       return '';
@@ -179,7 +180,8 @@ const FieldError = ({ name, error }) =>
 
 const PayLink = () => {
   const { isDark } = useTheme();
-  const { currency, formatFee, cur, formatAmount } = useCurrency();
+  const { currency, setCurrency, formatFee, cur, formatAmount } = useCurrency();
+  const { t } = useTranslation();
   const { slug } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -261,19 +263,19 @@ const PayLink = () => {
     mutationFn: chargeXoalaCard,
     onSuccess: (data) => {
       if (data?.status === 'succeeded') {
-        toast.success('Payment approved');
+        toast.success(t('payLink.toasts.approved'));
         navigate(`/pay/success?reference=${data.reference}`);
       } else if (data?.status === 'requires_action' && data?.redirectUrl) {
-        toast.info('Verifying with your bank…');
+        toast.info(t('payLink.toasts.verifying'));
         submitPaymentRedirect(data);
       } else if (data?.status === 'failed') {
-        toast.error(data.message || 'Payment was declined. Please try a different card.');
+        toast.error(data.message || t('payLink.toasts.declined'));
       } else {
-        toast.error('Unexpected response from payment processor.');
+        toast.error(t('payLink.toasts.unexpected'));
       }
     },
     onError: (err) => {
-      toast.error(err?.message || 'Payment failed. Please try again.');
+      toast.error(err?.message || t('payLink.toasts.failed'));
     },
   });
 
@@ -284,16 +286,16 @@ const PayLink = () => {
     mutationFn: createWorldCardSession,
     onSuccess: (data) => {
       if (data?.status === 'requires_action' && data?.redirectUrl) {
-        toast.success('Redirecting to secure payment…');
+        toast.success(t('payCheckout.toasts.redirecting'));
         window.location.href = data.redirectUrl;
       } else if (data?.status === 'failed') {
-        toast.error(data.message || 'Could not start checkout. Please try again.');
+        toast.error(data.message || t('payCheckout.toasts.couldNotStart'));
       } else {
-        toast.error('Unexpected response from payment processor.');
+        toast.error(t('payLink.toasts.unexpected'));
       }
     },
     onError: (err) => {
-      toast.error(err?.message || 'Failed to start checkout. Please try again.');
+      toast.error(err?.message || t('payCheckout.toasts.failedToStart'));
     },
   });
 
@@ -304,22 +306,22 @@ const PayLink = () => {
     mutationFn: chargeWorldCardCard,
     onSuccess: (data) => {
       if (data?.status === 'succeeded') {
-        toast.success('Payment approved');
+        toast.success(t('payLink.toasts.approved'));
         navigate(`/pay/success?reference=${data.reference}`);
       } else if (data?.status === 'requires_action' && data?.redirectUrl) {
-        toast.info('Verifying with your bank…');
+        toast.info(t('payLink.toasts.verifying'));
         submitPaymentRedirect(data);
       } else if (data?.status === 'pending') {
-        toast.info('Payment received — confirming with the bank…');
+        toast.info(t('payLink.toasts.received'));
         navigate(`/pay/success?reference=${data.reference}`);
       } else if (data?.status === 'failed') {
-        toast.error(data.message || 'Payment was declined. Please try a different card.');
+        toast.error(data.message || t('payLink.toasts.declined'));
       } else {
-        toast.error('Unexpected response from payment processor.');
+        toast.error(t('payLink.toasts.unexpected'));
       }
     },
     onError: (err) => {
-      toast.error(err?.message || 'Payment failed. Please try again.');
+      toast.error(err?.message || t('payLink.toasts.failed'));
     },
   });
 
@@ -328,7 +330,7 @@ const PayLink = () => {
   // they're trying to fix something.
   const setField = (name, value) => {
     setForm((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => (prev[name] ? { ...prev, [name]: validateField(name, value) } : prev));
+    setErrors((prev) => (prev[name] ? { ...prev, [name]: validateField(name, value, t) } : prev));
   };
 
   const handleChange = (e) => setField(e.target.name, e.target.value);
@@ -344,7 +346,7 @@ const PayLink = () => {
 
   const handleBlur = (e) => {
     const { name, value } = e.target;
-    setErrors((prev) => ({ ...prev, [name]: validateField(name, value) }));
+    setErrors((prev) => ({ ...prev, [name]: validateField(name, value, t) }));
   };
 
   const brand = detectBrand(form.cardNumber);
@@ -355,6 +357,10 @@ const PayLink = () => {
   // inputs (see JSX below).
   const CARD_FIELDS = ['cardholderName', 'cardNumber', 'expiry', 'cvv'];
   const isHostedWorldCard = provider === 'worldcard' && worldCardFlow === 'hosted';
+  // Display-only currencies (e.g. TRY, KZT) can be shown for browsing, but the
+  // payment provider only settles EUR/GBP, so the Pay button is disabled and the
+  // user is prompted to switch to EUR when any other currency is active.
+  const isUnsupportedCurrency = currency !== 'EUR' && currency !== 'GBP';
 
   const validateAll = () => {
     const next = {};
@@ -364,7 +370,7 @@ const PayLink = () => {
       (k) => !isHostedWorldCard || !CARD_FIELDS.includes(k),
     );
     fieldsToCheck.forEach((k) => {
-      const err = validateField(k, form[k]);
+      const err = validateField(k, form[k], t);
       if (err) {
         next[k] = err;
         if (!firstError) {
@@ -379,6 +385,10 @@ const PayLink = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (isUnsupportedCurrency) {
+      toast.error(t('payLink.toasts.currencyUnsupported'));
+      return;
+    }
     const { firstError, firstErrorField } = validateAll();
     if (firstError) {
       toast.error(firstError);
@@ -390,18 +400,18 @@ const PayLink = () => {
     // Mirrors the server-side check: only VISA/MC route to a terminal.
     // Skipped for hosted WorldCard — the card isn't entered here.
     if (!isHostedWorldCard && brand && brand !== 'VISA' && brand !== 'MC') {
-      toast.error('We only accept Visa and Mastercard payments.');
+      toast.error(t('payLink.toasts.visaMastercardOnly'));
       const el = document.getElementsByName('cardNumber')[0];
       if (el && typeof el.focus === 'function') el.focus();
       return;
     }
 
     if (!agreedTerms) {
-      toast.error('Please accept the Terms & Conditions and Privacy Policy.');
+      toast.error(t('payLink.toasts.acceptTerms'));
       return;
     }
     if (!confirmedAge) {
-      toast.error('You must confirm you are over 18 years old.');
+      toast.error(t('payLink.toasts.confirmAge'));
       return;
     }
 
@@ -446,7 +456,9 @@ const PayLink = () => {
         },
       });
     } else {
-      // Xoala S2S — also needs the EUR/GBP display currency.
+      // Xoala S2S — also needs the EUR/GBP display currency. TRY is blocked at
+      // the Pay button (and rejected server-side), so currency is only ever
+      // EUR or GBP here.
       chargeMutation.mutate({
         ...baseBody,
         currency,
@@ -501,10 +513,10 @@ const PayLink = () => {
         <div className={`${cardClass} rounded-2xl p-12 text-center max-w-md`}>
           <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
           <h2 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Payment Link Not Found
+            {t('payLink.notFound.title')}
           </h2>
           <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>
-            {challengeErrObj?.message || 'This payment link is invalid or no longer active. Please contact the merchant who shared it with you.'}
+            {challengeErrObj?.message || t('payLink.notFound.description')}
           </p>
         </div>
       </div>
@@ -522,18 +534,18 @@ const PayLink = () => {
           <form onSubmit={handleSubmit} className="lg:col-span-2" autoComplete="on" noValidate>
             <div className={`${cardClass} rounded-2xl p-6 lg:p-8`}>
               <h1 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                Complete Your Purchase
+                {t('payCheckout.form.title')}
               </h1>
               <p className={`mb-6 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                Enter your billing and card details to complete your order.
+                {t('payLink.form.subtitle')}
               </p>
 
               {/* ── Billing details ── */}
-              <div className={sectionHeaderClass}>Billing Details</div>
+              <div className={sectionHeaderClass}>{t('payLink.sections.billingDetails')}</div>
               <div className="mt-3 space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>First Name *</label>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('payCheckout.fields.firstName')}</label>
                     <div className="relative">
                       <User className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                       <input
@@ -544,7 +556,7 @@ const PayLink = () => {
                         onBlur={handleBlur}
                         autoComplete="given-name"
                         className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass} ${errClass('firstName')}`}
-                        placeholder="John"
+                        placeholder={t('payCheckout.placeholders.firstName')}
                         required
                         {...ariaProps('firstName')}
                       />
@@ -552,7 +564,7 @@ const PayLink = () => {
                     <FieldError name="firstName" error={errors.firstName} />
                   </div>
                   <div>
-                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Last Name *</label>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('payCheckout.fields.lastName')}</label>
                     <input
                       type="text"
                       name="lastName"
@@ -561,7 +573,7 @@ const PayLink = () => {
                       onBlur={handleBlur}
                       autoComplete="family-name"
                       className={`w-full rounded-xl px-4 py-3 focus:outline-none ${inputClass} ${errClass('lastName')}`}
-                      placeholder="Doe"
+                      placeholder={t('payCheckout.placeholders.lastName')}
                       required
                       {...ariaProps('lastName')}
                     />
@@ -570,7 +582,7 @@ const PayLink = () => {
                 </div>
 
                 <div>
-                  <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Email Address *</label>
+                  <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('payCheckout.fields.email')}</label>
                   <div className="relative">
                     <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                     <input
@@ -582,7 +594,7 @@ const PayLink = () => {
                       readOnly={isAuthenticated}
                       autoComplete="email"
                       className={`w-full rounded-xl pl-12 ${isAuthenticated ? 'pr-12 cursor-not-allowed opacity-90' : 'pr-4'} py-3 focus:outline-none ${inputClass} ${errClass('email')}`}
-                      placeholder="trader@example.com"
+                      placeholder={t('payCheckout.placeholders.email')}
                       required
                       aria-readonly={isAuthenticated ? 'true' : 'false'}
                       {...ariaProps('email')}
@@ -594,14 +606,14 @@ const PayLink = () => {
                   <FieldError name="email" error={errors.email} />
                   <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
                     {isAuthenticated
-                      ? 'Locked to your account email. Credentials and receipts go here.'
-                      : 'We will create your dashboard account with this email after payment.'}
+                      ? t('payLink.fields.emailHelpLocked')
+                      : t('payLink.fields.emailHelpGuest')}
                   </p>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Phone *</label>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('payCheckout.fields.phone')}</label>
                     <div className="relative">
                       <Phone className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                       <input
@@ -614,18 +626,18 @@ const PayLink = () => {
                         autoComplete="tel"
                         required
                         className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass} ${errClass('phone')}`}
-                        placeholder="+1 202 555 0100"
+                        placeholder={t('payLink.placeholders.phone')}
                         maxLength={24}
                         {...ariaProps('phone')}
                       />
                     </div>
                     <FieldError name="phone" error={errors.phone} />
                     <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                      Use international format with + country code (e.g. +1 202 555 0100).
+                      {t('payLink.fields.phoneHelp')}
                     </p>
                   </div>
                   <div>
-                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Country *</label>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('payCheckout.fields.country')}</label>
                     <div className="relative">
                       <Globe className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                       <select
@@ -638,7 +650,7 @@ const PayLink = () => {
                         required
                         {...ariaProps('country')}
                       >
-                        <option value="">Select country...</option>
+                        <option value="">{t('payCheckout.placeholders.selectCountry')}</option>
                         {COUNTRIES.map((c) => (
                           <option key={c.code} value={c.code}>{c.name}</option>
                         ))}
@@ -649,7 +661,7 @@ const PayLink = () => {
                 </div>
 
                 <div>
-                  <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Billing Address *</label>
+                  <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('payCheckout.fields.address')}</label>
                   <div className="relative">
                     <MapPin className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                     <input
@@ -660,7 +672,7 @@ const PayLink = () => {
                       onBlur={handleBlur}
                       autoComplete="street-address"
                       className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass} ${errClass('address')}`}
-                      placeholder="221B Baker Street"
+                      placeholder={t('payCheckout.placeholders.address')}
                       required
                       {...ariaProps('address')}
                     />
@@ -670,7 +682,7 @@ const PayLink = () => {
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>City *</label>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('payCheckout.fields.city')}</label>
                     <div className="relative">
                       <Building2 className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                       <input
@@ -681,7 +693,7 @@ const PayLink = () => {
                         onBlur={handleBlur}
                         autoComplete="address-level2"
                         className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass} ${errClass('city')}`}
-                        placeholder="London"
+                        placeholder={t('payCheckout.placeholders.city')}
                         required
                         {...ariaProps('city')}
                       />
@@ -689,7 +701,7 @@ const PayLink = () => {
                     <FieldError name="city" error={errors.city} />
                   </div>
                   <div>
-                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>State / Region (Optional)</label>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('payLink.fields.stateOptional')}</label>
                     <div className="relative">
                       <MapPin className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                       <input
@@ -700,14 +712,14 @@ const PayLink = () => {
                         onBlur={handleBlur}
                         autoComplete="address-level1"
                         className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass}`}
-                        placeholder="England"
+                        placeholder={t('payLink.placeholders.state')}
                       />
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Postal / ZIP Code *</label>
+                  <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('payLink.fields.postalCode')}</label>
                   <div className="relative">
                     <MapPin className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                     <input
@@ -718,7 +730,7 @@ const PayLink = () => {
                       onBlur={handleBlur}
                       autoComplete="postal-code"
                       className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass} ${errClass('postalCode')}`}
-                      placeholder="SW1A 1AA"
+                      placeholder={t('payLink.placeholders.postalCode')}
                       maxLength={10}
                       required
                       {...ariaProps('postalCode')}
@@ -731,10 +743,10 @@ const PayLink = () => {
               {/* ── Card details (S2S flows only — hosted collects them off-site) ── */}
               {!isHostedWorldCard && (
               <div className={`mt-8 pt-6 border-t ${dividerClass}`}>
-                <div className={sectionHeaderClass}>Payment Details</div>
+                <div className={sectionHeaderClass}>{t('payLink.sections.paymentDetails')}</div>
                 <div className="mt-3 space-y-4">
                   <div>
-                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Cardholder Name *</label>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('payLink.fields.cardholderName')}</label>
                     <div className="relative">
                       <User className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                       <input
@@ -745,7 +757,7 @@ const PayLink = () => {
                         onBlur={handleBlur}
                         autoComplete="off"
                         className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none ${inputClass} ${errClass('cardholderName')}`}
-                        placeholder="As shown on the card"
+                        placeholder={t('payLink.placeholders.cardholderName')}
                         required
                         {...ariaProps('cardholderName')}
                       />
@@ -754,7 +766,7 @@ const PayLink = () => {
                   </div>
 
                   <div>
-                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Card Number *</label>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('payLink.fields.cardNumber')}</label>
                     <div className="relative">
                       <CreditCard className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                       <input
@@ -783,7 +795,7 @@ const PayLink = () => {
 
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Expiry (MM/YY) *</label>
+                      <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('payLink.fields.expiry')}</label>
                       <div className="relative">
                         <Calendar className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                         <input
@@ -805,7 +817,7 @@ const PayLink = () => {
                       <FieldError name="expiry" error={errors.expiry} />
                     </div>
                     <div>
-                      <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>CVV *</label>
+                      <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('payLink.fields.cvv')}</label>
                       <div className="relative">
                         <KeyRound className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                         <input
@@ -835,8 +847,8 @@ const PayLink = () => {
                 <Shield className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
                 <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-slate-700'}`}>
                   {isHostedWorldCard
-                    ? 'After you click Pay, you\u2019ll be redirected to our secure payment processor to enter your card details. We never see or store your card number.'
-                    : 'Your card is processed securely over TLS. We store only the last 4 digits for receipts — never the full number or CVV. 3-D Secure may be requested by your bank.'}
+                    ? t('payCheckout.secureNotice')
+                    : t('payLink.secureNoticeS2S')}
                 </p>
               </div>
 
@@ -852,23 +864,23 @@ const PayLink = () => {
                   htmlFor="agreedTerms"
                   className={`text-sm cursor-pointer ${isDark ? 'text-gray-300' : 'text-slate-700'}`}
                 >
-                  I agree to the{' '}
+                  {t('payLink.terms.agreePrefix')}{' '}
                   <a
                     href="/terms"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="font-bold text-amber-500 hover:text-amber-600 underline"
                   >
-                    Terms &amp; Conditions
+                    {t('payLink.terms.termsLink')}
                   </a>{' '}
-                  and{' '}
+                  {t('payLink.terms.and')}{' '}
                   <a
                     href="/Privacy"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="font-bold text-amber-500 hover:text-amber-600 underline"
                   >
-                    Privacy Policy
+                    {t('payLink.terms.privacyLink')}
                   </a>
                 </label>
               </div>
@@ -885,30 +897,44 @@ const PayLink = () => {
                   htmlFor="confirmedAge"
                   className={`text-sm cursor-pointer ${isDark ? 'text-gray-300' : 'text-slate-700'}`}
                 >
-                  I confirm I am over 18 years old <span className="text-red-500">*</span>
+                  {t('payLink.terms.ageConfirm')} <span className="text-red-500">*</span>
                 </label>
               </div>
 
               <Button
                 type="submit"
-                disabled={submitting || !agreedTerms || !confirmedAge}
+                disabled={submitting || !agreedTerms || !confirmedAge || isUnsupportedCurrency}
                 className="w-full mt-6 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-6 py-6 h-auto font-bold text-base disabled:opacity-50"
               >
                 {submitting ? (
                   <>
                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Processing payment…
+                    {t('payLink.button.processing')}
                   </>
                 ) : (
                   <>
                     <CreditCard className="w-5 h-5 mr-2" />
-                    Pay {formatFee(displayPrice)}
+                    {t('payCheckout.button.pay', { amount: formatFee(displayPrice) })}
                   </>
                 )}
               </Button>
+              {isUnsupportedCurrency && (
+                <div className="mt-3 text-center">
+                  <p className="text-xs text-amber-500">
+                    {t('payLink.unsupportedCurrencyNotice')}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setCurrency('EUR')}
+                    className="mt-2 text-xs font-semibold text-amber-500 underline hover:text-amber-400"
+                  >
+                    {t('payLink.switchToEur')}
+                  </button>
+                </div>
+              )}
               {submitting && (
                 <p className={`text-xs text-center mt-3 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                  Please don&apos;t close or refresh this window.
+                  {t('payLink.doNotClose')}
                 </p>
               )}
             </div>
@@ -917,38 +943,38 @@ const PayLink = () => {
           {/* Order Summary */}
           <div className="lg:col-span-1">
             <div className={`${cardClass} rounded-2xl p-6 sticky top-24`}>
-              <h3 className={`font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Order Summary</h3>
+              <h3 className={`font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('payCheckout.summary.title')}</h3>
 
               <div className={`rounded-xl p-4 mb-4 ${isDark ? 'bg-amber-500/10' : 'bg-amber-50'}`}>
                 <div className="text-amber-500 font-bold text-lg">{cur(challenge.name)}</div>
                 <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                  {formatAmount(challenge.accountSize)} Account
+                  {t('payCheckout.summary.account', { size: formatAmount(challenge.accountSize) })}
                 </div>
               </div>
 
               <div className={`border-t pt-4 space-y-2 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
                 {challenge.profitSplit !== undefined && (
                   <div className="flex justify-between items-center text-sm">
-                    <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>Profit Split</span>
+                    <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>{t('payCheckout.summary.profitSplit')}</span>
                     <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{challenge.profitSplit}%</span>
                   </div>
                 )}
                 {challenge.dailyDrawdownPercent !== undefined && (
                   <div className="flex justify-between items-center text-sm">
-                    <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>Daily Drawdown</span>
+                    <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>{t('payCheckout.summary.dailyDrawdown')}</span>
                     <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{challenge.dailyDrawdownPercent}%</span>
                   </div>
                 )}
                 {challenge.overallDrawdownPercent !== undefined && (
                   <div className="flex justify-between items-center text-sm">
-                    <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>Max Drawdown</span>
+                    <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>{t('payCheckout.summary.maxDrawdown')}</span>
                     <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{challenge.overallDrawdownPercent}%</span>
                   </div>
                 )}
               </div>
 
               <div className={`mt-4 pt-4 border-t flex justify-between items-center ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-                <span className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Total</span>
+                <span className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('payCheckout.summary.total')}</span>
                 <span className="text-3xl font-black text-amber-500">
                   {formatFee(displayPrice)}
                 </span>
@@ -957,16 +983,16 @@ const PayLink = () => {
               <div className="mt-6 space-y-2">
                 <div className="flex items-center gap-2">
                   <Shield className="w-4 h-4 text-emerald-500" />
-                  <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Secure card payment</span>
+                  <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('payCheckout.trust.secureCard')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Lock className="w-4 h-4 text-emerald-500" />
-                  <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>3-D Secure protected</span>
+                  <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('payCheckout.trust.threeDSecure')}</span>
                 </div>
               </div>
 
               <div className={`mt-6 pt-4 border-t ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-                <p className={`text-xs mb-2 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>We accept</p>
+                <p className={`text-xs mb-2 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{t('payCheckout.acceptedPayments')}</p>
                 <PaymentLogos />
               </div>
             </div>

@@ -8,6 +8,7 @@ import { PaymentLogos } from '@/components/PaymentLogos';
 import { apiPost } from '@/lib/api';
 import { getChallenges } from '@/api/challenges';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 // "50K" / "5M" / "25000" -> integer dollars. Mirrors backend's parseAccountSize.
 const parseSizeToInt = (raw) => {
@@ -99,7 +100,7 @@ const CHALLENGE_DATA = {
   }
 };
 
-const STEP_LABELS = ['Platform', 'Details', 'Confirm'];
+const STEP_LABELS = ['checkout.steps.platform', 'checkout.steps.details', 'checkout.steps.confirm'];
 
 export const persistBrandAttribution = (brandSlug, linkSlug) => {
   if (!brandSlug && !linkSlug) return;
@@ -153,6 +154,7 @@ const CheckoutPage = () => {
   // displayed here matches what the customer saw on the previous step and
   // what they'll be charged at the gateway.
   const { formatFee, formatSize } = useCurrency();
+  const { t } = useTranslation();
 
   // Capture brand attribution from URL on mount and persist it for the rest
   // of the checkout session (and any later navigation to /pay/<slug>).
@@ -196,7 +198,19 @@ const CheckoutPage = () => {
       challengeTypeMatches(c.challengeType, challengeType),
   );
   const fallbackData = CHALLENGE_DATA[challengeType];
-  const challengeName = matchedChallenge?.name || fallbackData?.name || 'Challenge';
+  const fallbackName =
+    challengeType === 'one-step'
+      ? t('checkout.challengeName.oneStep')
+      : challengeType === 'two-step'
+      ? t('checkout.challengeName.twoStep')
+      : t('checkout.challengeFallback');
+  // Prefer the translated, type-derived name for known challenge types so the
+  // display is localized; the raw admin-entered DB name (English-only) is used
+  // only as a fallback for unrecognized types.
+  const challengeName =
+    challengeType === 'one-step' || challengeType === 'two-step'
+      ? fallbackName
+      : matchedChallenge?.name || fallbackName;
   // Display price priority: URL custom override → matched DB challenge → static fallback.
   // Backend re-validates the override against the link record before charging.
   const price =
@@ -240,7 +254,7 @@ const CheckoutPage = () => {
   const handleNext = () => {
     if (step === 1) {
       if (!selectedPlatform) {
-        alert('Please select a trading platform');
+        alert(t('checkout.alerts.selectPlatform'));
         return;
       }
       // After platform pick, jump straight to /pay/:slug. PayLink owns the
@@ -250,7 +264,7 @@ const CheckoutPage = () => {
       return;
     }
     if (step === 2 && (!formData.firstName || !formData.lastName || !formData.email)) {
-      alert('Please fill in all required fields');
+      alert(t('checkout.alerts.fillRequired'));
       return;
     }
     if (step < 3) setStep(step + 1);
@@ -335,7 +349,7 @@ const CheckoutPage = () => {
       <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
-          <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>Preparing your checkout…</p>
+          <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>{t('checkout.preparing')}</p>
         </div>
       </div>
     );
@@ -361,7 +375,7 @@ const CheckoutPage = () => {
               </div>
               <span className={`ml-2 text-sm font-medium ${
                 step >= index + 1 ? (isDark ? 'text-white' : 'text-slate-900') : (isDark ? 'text-gray-500' : 'text-slate-400')
-              }`}>{label}</span>
+              }`}>{t(label)}</span>
               {index < 2 && (
                 <div className={`w-16 h-0.5 mx-4 ${step > index + 1 ? 'bg-emerald-500' : isDark ? 'bg-white/10' : 'bg-slate-200'}`} />
               )}
@@ -377,8 +391,8 @@ const CheckoutPage = () => {
               {/* Step 1: Platform Selection */}
               {step === 1 && (
                 <div>
-                  <h2 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Choose Your Trading Platform</h2>
-                  <p className={`mb-6 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Select the platform you want to trade on.</p>
+                  <h2 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('checkout.platformStep.title')}</h2>
+                  <p className={`mb-6 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('checkout.platformStep.subtitle')}</p>
                   <div className="grid sm:grid-cols-2 gap-4">
                     {PLATFORMS.map((platform) => (
                       <div
@@ -391,11 +405,11 @@ const CheckoutPage = () => {
                         } ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}
                       >
                         {platform.isNew && (
-                          <div className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">NEW</div>
+                          <div className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{t('checkout.new')}</div>
                         )}
                         <div className="text-3xl mb-3">{platform.icon}</div>
                         <h3 className={`font-bold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{platform.name}</h3>
-                        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{platform.description}</p>
+                        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t(`checkout.platformDesc.${platform.id}`)}</p>
                         {selectedPlatform === platform.id && (
                           <div className="absolute top-3 right-3 w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center">
                             <Check className="w-4 h-4 text-[#0a0d12]" />
@@ -410,57 +424,57 @@ const CheckoutPage = () => {
               {/* Step 2: Personal Details */}
               {step === 2 && (
                 <div>
-                  <h2 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Your Information</h2>
-                  <p className={`mb-6 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Enter your details to create your trading account.</p>
+                  <h2 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('checkout.detailsStep.title')}</h2>
+                  <p className={`mb-6 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('checkout.detailsStep.subtitle')}</p>
                   <div className="space-y-4">
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
-                        <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>First Name *</label>
+                        <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('payCheckout.fields.firstName')}</label>
                         <div className="relative">
                           <User className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                           <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange}
                             className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-amber-500/50 ${inputClass}`}
-                            placeholder="John" />
+                            placeholder={t('payCheckout.placeholders.firstName')} />
                         </div>
                       </div>
                       <div>
-                        <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Last Name *</label>
+                        <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('payCheckout.fields.lastName')}</label>
                         <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange}
                           className={`w-full rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500/50 ${inputClass}`}
-                          placeholder="Doe" />
+                          placeholder={t('payCheckout.placeholders.lastName')} />
                       </div>
                     </div>
                     <div>
-                      <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Email Address *</label>
+                      <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('payCheckout.fields.email')}</label>
                       <div className="relative">
                         <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                         <input type="email" name="email" value={formData.email} onChange={handleInputChange}
                           className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-amber-500/50 ${inputClass}`}
-                          placeholder="trader@example.com" />
+                          placeholder={t('payCheckout.placeholders.email')} />
                       </div>
                     </div>
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
-                        <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Phone (Optional)</label>
+                        <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('checkout.fields.phoneOptional')}</label>
                         <div className="relative">
                           <Phone className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                           <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange}
                             className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-amber-500/50 ${inputClass}`}
-                            placeholder="+1 234 567 890" />
+                            placeholder={t('checkout.placeholders.phone')} />
                         </div>
                       </div>
                       <div>
-                        <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Country</label>
+                        <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('checkout.fields.country')}</label>
                         <div className="relative">
                           <Globe className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                           <select name="country" value={formData.country} onChange={handleInputChange}
                             className={`w-full rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-amber-500/50 ${inputClass}`}>
-                            <option value="">Select country</option>
+                            <option value="">{t('payCheckout.placeholders.selectCountry')}</option>
                             <option value="US">United States</option>
                             <option value="UK">United Kingdom</option>
                             <option value="AE">United Arab Emirates</option>
                             <option value="DE">Germany</option>
-                            <option value="other">Other</option>
+                            <option value="other">{t('checkout.countries.other')}</option>
                           </select>
                         </div>
                       </div>
@@ -472,22 +486,22 @@ const CheckoutPage = () => {
               {/* Step 3: Confirm */}
               {step === 3 && (
                 <div>
-                  <h2 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Confirm Your Order</h2>
-                  <p className={`mb-6 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Review your selection and complete your purchase.</p>
-                  
+                  <h2 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('checkout.confirmStep.title')}</h2>
+                  <p className={`mb-6 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('checkout.confirmStep.subtitle')}</p>
+
                   <div className={`rounded-xl p-5 mb-6 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
-                    <h3 className={`font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Order Summary</h3>
+                    <h3 className={`font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('buyChallenge.orderSummary')}</h3>
                     <div className="space-y-3">
                       <div className="flex justify-between">
-                        <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>Challenge Type</span>
+                        <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>{t('checkout.challengeType')}</span>
                         <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{challengeName}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>Account Size</span>
+                        <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>{t('buyChallenge.accountSize')}</span>
                         <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{sizeLabel}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>Platform</span>
+                        <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>{t('buyChallenge.platform')}</span>
                         <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
                           {PLATFORMS.find(p => p.id === selectedPlatform)?.name}
                         </span>
@@ -498,10 +512,10 @@ const CheckoutPage = () => {
                   <div className={`rounded-xl p-5 border-2 border-dashed ${isDark ? 'border-amber-500/30 bg-amber-500/5' : 'border-amber-300 bg-amber-50'}`}>
                     <div className="flex items-center gap-3">
                       <CreditCard className="w-6 h-6 text-amber-500" />
-                      <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Secure Payment</span>
+                      <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('checkout.securePayment')}</span>
                     </div>
                     <p className={`text-sm mt-2 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                      After you confirm, you&apos;ll be redirected to our secure payment processor to enter your card details. We never see or store your card number.
+                      {t('checkout.secureNotice')}
                     </p>
                   </div>
                 </div>
@@ -511,17 +525,17 @@ const CheckoutPage = () => {
               <div className="flex items-center justify-between mt-8">
                 <Button variant="outline" onClick={handleBack}
                   className={`rounded-full px-6 py-5 h-auto ${isDark ? 'border-white/20 text-white hover:bg-white/5' : 'border-slate-300 text-slate-700 hover:bg-slate-50'}`}>
-                  <ArrowLeft className="mr-2 w-5 h-5" /> Back
+                  <ArrowLeft className="mr-2 w-5 h-5" /> {t('buyChallenge.back')}
                 </Button>
                 {step < 3 ? (
                   <Button onClick={handleNext}
                     className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-6 py-5 h-auto font-bold">
-                    Continue <ArrowRight className="ml-2 w-5 h-5" />
+                    {t('buyChallenge.continue')} <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                 ) : (
                   <Button onClick={handleConfirmOrder} disabled={isProcessing}
                     className="bg-gradient-to-r from-emerald-400 to-emerald-500 hover:from-emerald-500 hover:to-emerald-600 text-white rounded-full px-6 py-5 h-auto font-bold disabled:opacity-50">
-                    {isProcessing ? 'Processing...' : 'Confirm Order'} <Check className="ml-2 w-5 h-5" />
+                    {isProcessing ? t('buyChallenge.processing') : t('checkout.confirmOrder')} <Check className="ml-2 w-5 h-5" />
                   </Button>
                 )}
               </div>
@@ -531,24 +545,24 @@ const CheckoutPage = () => {
           {/* Order Summary Sidebar */}
           <div className="lg:col-span-1">
             <div className={`rounded-2xl p-6 border sticky top-24 ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`}>
-              <h3 className={`font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Order Summary</h3>
-              
+              <h3 className={`font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('buyChallenge.orderSummary')}</h3>
+
               <div className={`rounded-xl p-4 mb-4 ${isDark ? 'bg-amber-500/10' : 'bg-amber-50'}`}>
                 <div className="text-amber-500 font-bold text-lg">{challengeName}</div>
-                <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{sizeLabel} Account</div>
+                <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('payCheckout.summary.account', { size: sizeLabel })}</div>
               </div>
 
               <div className={`border-t pt-4 ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
                 <div className="flex justify-between items-center mb-2">
-                  <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>Subtotal</span>
+                  <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>{t('buyChallenge.subtotal')}</span>
                   <span className={`line-through ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{formatFee(price * 3)}</span>
                 </div>
                 <div className="flex justify-between items-center mb-4">
-                  <span className="text-emerald-500 font-medium">70% OFF</span>
+                  <span className="text-emerald-500 font-medium">{t('tradeCheckoutPanel.percentOff')}</span>
                   <span className="text-emerald-500">-{formatFee(price * 2)}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Total</span>
+                  <span className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('buyChallenge.total')}</span>
                   <span className="text-3xl font-black text-amber-500">{formatFee(price)}</span>
                 </div>
               </div>
@@ -556,20 +570,20 @@ const CheckoutPage = () => {
               <div className="mt-6 space-y-3">
                 <div className="flex items-center gap-2">
                   <Shield className="w-4 h-4 text-emerald-500" />
-                  <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>100% Fee Refund</span>
+                  <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('checkout.feeRefund')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-emerald-500" />
-                  <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Instant Account Setup</span>
+                  <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('checkout.instantSetup')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Star className="w-4 h-4 text-emerald-500" />
-                  <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>24/7 Support</span>
+                  <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('checkout.support247')}</span>
                 </div>
               </div>
 
               <div className={`mt-6 pt-4 border-t ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-                <p className={`text-xs mb-2 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>We accept</p>
+                <p className={`text-xs mb-2 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{t('payCheckout.acceptedPayments')}</p>
                 <PaymentLogos />
               </div>
             </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
+import { useTranslation } from '@/contexts/LanguageContext';
 import EventDetailModal from './EventDetailModal';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'https://api-dev.prop-capitals.com';
@@ -50,6 +51,7 @@ function impactToKey(importance) {
 
 const EconomicCalendar = () => {
   const { isDark } = useTraderTheme();
+  const { t } = useTranslation();
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date();
     return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
@@ -123,15 +125,15 @@ const EconomicCalendar = () => {
       if (!res.ok) {
         throw new Error(
           res.status === 404
-            ? 'Event details not found'
-            : `Failed to fetch details (${res.status})`
+            ? t('economicCalendar.eventDetailsNotFound')
+            : t('economicCalendar.failedToFetchDetails', { status: res.status })
         );
       }
 
       const data = await res.json();
       setEventDetail(data);
     } catch (err) {
-      setDetailError(err.message || 'Failed to load event details');
+      setDetailError(err.message || t('economicCalendar.failedToLoadDetails'));
     } finally {
       setDetailLoading(false);
     }
@@ -165,8 +167,7 @@ const EconomicCalendar = () => {
 
 
 
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'];
+  const monthNames = t('economicCalendar.monthNames', { returnObjects: true });
 
   // ✅ Step 6A: UTC-safe month calculations
   const getDaysInMonth = (date) =>
@@ -210,16 +211,16 @@ const EconomicCalendar = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <h2 className={`text-xl sm:text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Economic Calendar</h2>
+        <h2 className={`text-xl sm:text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('economicCalendar.title')}</h2>
         <div className="flex flex-wrap items-center gap-3 sm:gap-2">
           <span className={`flex items-center gap-1.5 text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-            <span className="w-2 h-2 bg-red-500 rounded-full"></span> High Impact
+            <span className="w-2 h-2 bg-red-500 rounded-full"></span> {t('economicCalendar.highImpact')}
           </span>
           <span className={`flex items-center gap-1.5 text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-            <span className="w-2 h-2 bg-amber-500 rounded-full"></span> Medium
+            <span className="w-2 h-2 bg-amber-500 rounded-full"></span> {t('economicCalendar.medium')}
           </span>
           <span className={`flex items-center gap-1.5 text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-            <span className="w-2 h-2 bg-emerald-500 rounded-full"></span> Low
+            <span className="w-2 h-2 bg-emerald-500 rounded-full"></span> {t('economicCalendar.low')}
           </span>
         </div>
       </div>
@@ -242,7 +243,7 @@ const EconomicCalendar = () => {
 
           {/* Day Headers */}
           <div className="grid grid-cols-7 gap-2 mb-2">
-            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
+            {t('economicCalendar.dayHeaders', { returnObjects: true }).map(day => (
               <div key={day} className={`text-center text-sm font-medium py-2 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
                 {day}
               </div>
@@ -311,19 +312,19 @@ const EconomicCalendar = () => {
           style={calendarHeight ? { height: calendarHeight } : {}}
         >
           <h3 className={`font-bold text-lg mb-4 flex-shrink-0 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            {selectedDay ? `Events - Day ${selectedDay}` : 'Select a day'}
+            {selectedDay ? t('economicCalendar.eventsForDay', { day: selectedDay }) : t('economicCalendar.selectADay')}
           </h3>
 
           <div className="space-y-3 flex-1 overflow-y-auto min-h-0">
             {loading && (
               <p className={`text-center py-8 ${isDark ? 'text-gray-500' : 'text-amber-500'}`}>
-                Loading...
+                {t('economicCalendar.loading')}
               </p>
             )}
 
             {!loading && selectedDay && sidebarEvents.length === 0 && (
               <p className={`text-center py-8 ${isDark ? 'text-gray-500' : 'text-slate-500'}`}>
-                No events on this day
+                {t('economicCalendar.noEventsOnThisDay')}
               </p>
             )}
 
@@ -358,14 +359,14 @@ const EconomicCalendar = () => {
                     </span>
                     <div className="flex gap-3 flex-wrap">
                       <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>
-                        Forecast: <span className={isDark ? 'text-white' : 'text-slate-900'}>{event.forecast || '-'}</span>
+                        {t('economicCalendar.forecast')}: <span className={isDark ? 'text-white' : 'text-slate-900'}>{event.forecast || '-'}</span>
                       </span>
                       <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>
-                        Previous: <span className={isDark ? 'text-white' : 'text-slate-900'}>{event.previous || '-'}</span>
+                        {t('economicCalendar.previous')}: <span className={isDark ? 'text-white' : 'text-slate-900'}>{event.previous || '-'}</span>
                       </span>
                       {!!event.actual && (
                         <span className={isDark ? 'text-gray-500' : 'text-slate-500'}>
-                          Actual: <span className="text-emerald-500">{event.actual}</span>
+                          {t('economicCalendar.actual')}: <span className="text-emerald-500">{event.actual}</span>
                         </span>
                       )}
                     </div>

@@ -1,5 +1,6 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
+import { useTranslation } from "@/contexts/LanguageContext";
 import {
   AreaChart,
   Area,
@@ -25,7 +26,9 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-export default function EquityChart({ data, title = "Equity Curve" }) {
+export default function EquityChart({ data, title }) {
+  const { t } = useTranslation();
+  const chartTitle = title || t("equityChart.title");
   // Process and sort data chronologically
   const chartData = React.useMemo(() => {
     if (!data || data.length === 0) return [];
@@ -49,9 +52,9 @@ export default function EquityChart({ data, title = "Equity Curve" }) {
   if (chartData.length === 0) {
     return (
       <Card className="bg-slate-900 border-slate-800 p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">{title}</h3>
+        <h3 className="text-lg font-semibold text-white mb-4">{chartTitle}</h3>
         <div className="h-[300px] flex items-center justify-center">
-          <p className="text-slate-400">No equity data available</p>
+          <p className="text-slate-400">{t("equityChart.noData")}</p>
         </div>
       </Card>
     );
@@ -63,7 +66,7 @@ export default function EquityChart({ data, title = "Equity Curve" }) {
 
   return (
     <Card className="bg-slate-900 border-slate-800 p-6">
-      <h3 className="text-lg font-semibold text-white mb-4">{title}</h3>
+      <h3 className="text-lg font-semibold text-white mb-4">{chartTitle}</h3>
       <div className="h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart

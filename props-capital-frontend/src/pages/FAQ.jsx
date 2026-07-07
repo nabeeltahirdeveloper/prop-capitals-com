@@ -4,159 +4,36 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 import { useChatSupportStore } from '@/lib/stores/chat-support.store';
-
-const faqCategories = [
-  { id: 'general', name: 'General', count: 8 },
-  { id: 'challenges', name: 'Challenges', count: 6 },
-  { id: 'trading', name: 'Trading Rules', count: 7 },
-  { id: 'payouts', name: 'Payouts', count: 5 },
-  { id: 'platforms', name: 'Platforms', count: 4 }
-];
-
-const faqData = {
-  general: [
-    {
-      question: "What is Prop Capitals?",
-      answer: "Prop Capitals is a proprietary trading firm that provides talented traders with funded accounts to trade with. We handle all the risk while you keep up to 90% of the profits you generate."
-    },
-    {
-      question: "How does the funding work?",
-      answer: "After you pass our evaluation challenge (1-Step or 2-Step), you receive a funded account with our capital. You trade normally and we split the profits - you keep up to 90%, we keep 10%."
-    },
-    {
-      question: "Is Prop Capitals legitimate?",
-      answer: "Yes, Prop Capitals is a legitimate proprietary trading firm with thousands of funded traders worldwide. We have paid out over $15 million to our traders and have a 4.8 rating on Trustpilot."
-    },
-    {
-      question: "What countries do you accept traders from?",
-      answer: "We accept traders from most countries worldwide. However, due to regulatory restrictions, we cannot accept traders from certain jurisdictions. Please check our terms of service for the complete list."
-    },
-    {
-      question: "Do I need trading experience?",
-      answer: "While we don't require specific credentials, prop trading is suited for traders with a solid understanding of the markets and risk management. We provide free education with every challenge purchase to help you succeed."
-    },
-    {
-      question: "What is the minimum age requirement?",
-      answer: "You must be at least 18 years old to participate in our funding programs."
-    },
-    {
-      question: "Can I have multiple accounts?",
-      answer: "Yes, you can have multiple funded accounts with us. Many of our successful traders manage several accounts simultaneously to maximize their earning potential."
-    },
-    {
-      question: "Is there a time limit to pass the challenge?",
-      answer: "No! Unlike many other prop firms, we have no time limit on our challenges. Take as long as you need to hit your profit targets."
-    }
-  ],
-  challenges: [
-    {
-      question: "What's the difference between 1-Step and 2-Step?",
-      answer: "The 1-Step Challenge has one evaluation phase with a 10% profit target and offers an 85% profit split. The 2-Step Challenge has two phases (8% and 5% profit targets) but offers a higher 90% profit split."
-    },
-    {
-      question: "What happens if I fail a challenge?",
-      answer: "If you breach the rules during a challenge, you can retry with a new purchase. We offer discounts of up to 20% on retry accounts. Your trading data is saved for analysis to help you improve."
-    },
-    {
-      question: "Is the challenge fee refundable?",
-      answer: "Yes! We refund 100% of your challenge fee with your first payout once you become a funded trader. This effectively makes your evaluation free."
-    },
-    {
-      question: "Can I upgrade my account size?",
-      answer: "Yes, once funded, you can participate in our scaling program. Hit profit milestones and your account size can grow up to $5,000,000."
-    },
-    {
-      question: "What account sizes are available?",
-      answer: "We offer account sizes ranging from $5,000 to $200,000 for both 1-Step and 2-Step challenges. Choose the size that matches your trading style and risk tolerance."
-    },
-    {
-      question: "Are there any minimum trading days?",
-      answer: "No, there are no minimum trading days required. You can complete the challenge as quickly as your trading allows, though we encourage sustainable trading practices."
-    }
-  ],
-  trading: [
-    {
-      question: "What trading strategies are allowed?",
-      answer: "We allow all legitimate trading strategies including scalping, swing trading, day trading, and position trading. Expert Advisors (EAs) and automated trading are also permitted."
-    },
-    {
-      question: "Can I trade during news events?",
-      answer: "Yes, news trading is fully allowed on our platform. You can trade during high-impact economic events without restrictions."
-    },
-    {
-      question: "Can I hold positions overnight?",
-      answer: "Yes, overnight holding is allowed. You can also hold positions over weekends with no restrictions."
-    },
-    {
-      question: "What is the daily drawdown limit?",
-      answer: "The daily drawdown limit is 4% for 1-Step and 5% for 2-Step challenges. This is calculated based on your previous day's closing balance."
-    },
-    {
-      question: "What is the maximum drawdown?",
-      answer: "The maximum drawdown is 8% for 1-Step and 10% for 2-Step challenges. This is the maximum your account can decline from its highest point."
-    },
-    {
-      question: "Can I use copy trading services?",
-      answer: "No, copy trading is not allowed. Each trader must execute their own trades independently. Sharing account credentials or using third-party copy trading services is strictly prohibited and may result in account termination."
-    },
-    {
-      question: "What instruments can I trade?",
-      answer: "You can trade Forex (50+ pairs), Metals (Gold, Silver), Indices (US30, NAS100, SPX500), and Cryptocurrencies (BTC, ETH). Over 100 instruments available."
-    }
-  ],
-  payouts: [
-    {
-      question: "How fast are payouts processed?",
-      answer: "Our average payout processing time is under 90 minutes - one of the fastest in the industry. Most payouts are completed within a few hours of request."
-    },
-    {
-      question: "What is the minimum payout amount?",
-      answer: "The minimum payout amount is $100. You can request payouts as often as you like once you meet this threshold."
-    },
-    {
-      question: "What payout methods are available?",
-      answer: "We support multiple payout methods including bank wire transfer, cryptocurrency (BTC, ETH, USDT), and popular e-wallets like Wise and Payoneer."
-    },
-    {
-      question: "Is there a payout schedule?",
-      answer: "No fixed schedule - you can request payouts anytime once you have profits. Many traders request weekly or bi-weekly payouts."
-    },
-    {
-      question: "What is the profit split?",
-      answer: "The profit split is 85% for 1-Step funded traders and 90% for 2-Step funded traders. You keep the majority of every dollar you make."
-    }
-  ],
-  platforms: [
-    {
-      question: "What trading platforms do you offer?",
-      answer: "We offer MetaTrader 5 (MT5), TradeLocker, MatchTrader, and cTrader. You can choose your preferred platform when starting your challenge."
-    },
-    {
-      question: "Can I use Expert Advisors (EAs)?",
-      answer: "Yes, EAs and automated trading systems are fully allowed on all our platforms. Use any strategy that works for you."
-    },
-    {
-      question: "Is there a mobile trading app?",
-      answer: "Yes, all our platforms have mobile apps available for iOS and Android, allowing you to trade on the go."
-    },
-    {
-      question: "Can I change platforms after starting?",
-      answer: "You can choose your platform when starting a new challenge or funded account. Contact support if you need to discuss platform changes for existing accounts."
-    }
-  ]
-};
 
 const FAQ = () => {
   const { isDark } = useTheme();
   const { cur } = useCurrency();
+  const { t } = useTranslation();
   const openChat = useChatSupportStore((state) => state.openChat);
   const [activeCategory, setActiveCategory] = useState('general');
   const [openQuestion, setOpenQuestion] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const faqCategories = [
+    { id: 'general', name: t('faqPage.categories.general'), count: 8 },
+    { id: 'challenges', name: t('faqPage.categories.challenges'), count: 6 },
+    { id: 'trading', name: t('faqPage.categories.trading'), count: 7 },
+    { id: 'payouts', name: t('faqPage.categories.payouts'), count: 5 },
+    { id: 'platforms', name: t('faqPage.categories.platforms'), count: 4 }
+  ];
+
+  const faqData = {
+    general: t('faqPage.questions.general', { returnObjects: true }),
+    challenges: t('faqPage.questions.challenges', { returnObjects: true }),
+    trading: t('faqPage.questions.trading', { returnObjects: true }),
+    payouts: t('faqPage.questions.payouts', { returnObjects: true }),
+    platforms: t('faqPage.questions.platforms', { returnObjects: true })
+  };
+
   const filteredFaqs = searchQuery
-    ? Object.values(faqData).flat().filter(faq => 
+    ? Object.values(faqData).flat().filter(faq =>
         faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
         faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
       )
@@ -172,12 +49,12 @@ const FAQ = () => {
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-12">
-            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">Support</span>
+            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">{t('faqPage.eyebrow')}</span>
             <h1 className={`text-3xl sm:text-4xl lg:text-5xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Frequently Asked <span className="text-amber-500">Questions</span>
+              {t('faqPage.titleLine1')} <span className="text-amber-500">{t('faqPage.titleHighlight')}</span>
             </h1>
             <p className={`text-base lg:text-lg max-w-2xl mx-auto mb-8 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-              Find answers to common questions about Prop Capitals funding programs, trading rules, and payouts.
+              {t('faqPage.subtitle')}
             </p>
 
             {/* Search Bar */}
@@ -185,7 +62,7 @@ const FAQ = () => {
               <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-400' : 'text-slate-400'}`} />
               <Input
                 type="text"
-                placeholder="Search questions..."
+                placeholder={t('faqPage.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={`w-full pl-12 pr-4 py-4 rounded-xl focus:border-amber-500/50 ${
@@ -233,7 +110,7 @@ const FAQ = () => {
           {searchQuery && (
             <div className="mb-6">
               <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>
-                Found <span className="text-amber-500 font-semibold">{filteredFaqs.length}</span> results for "{searchQuery}"
+                {t('faqPage.searchResultsPrefix')} <span className="text-amber-500 font-semibold">{filteredFaqs.length}</span> {t('faqPage.searchResultsSuffix', { query: searchQuery })}
               </p>
             </div>
           )}
@@ -278,10 +155,10 @@ const FAQ = () => {
               : 'bg-white border-slate-200'
           }`}>
             <h2 className={`text-2xl lg:text-3xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Still Have Questions?
+              {t('faqPage.contact.title')}
             </h2>
             <p className={`mb-8 max-w-lg mx-auto ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-              Our support team is available 24/7 to help you with any questions or concerns.
+              {t('faqPage.contact.subtitle')}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button
@@ -289,7 +166,7 @@ const FAQ = () => {
                 className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-8 py-6 h-auto font-bold w-full sm:w-auto"
               >
                 <MessageCircle className="w-5 h-5 mr-2" />
-                Live Chat
+                {t('faqPage.contact.liveChat')}
               </Button>
                 <Button 
                 onClick={() => window.location.href = '/contact'}
@@ -299,7 +176,7 @@ const FAQ = () => {
                     : 'border-slate-300 text-slate-700 hover:bg-slate-100'
                 }`}>
                   <Send className="w-5 h-5 mr-2" />
-                  Contact Form
+                  {t('faqPage.contact.contactForm')}
                 </Button>
               
               <a href="mailto:support@prop-capitals.com">
@@ -311,12 +188,12 @@ const FAQ = () => {
                     : 'border-slate-300 text-slate-700 hover:bg-slate-100'
                 }`}>
                   <Mail className="w-5 h-5 mr-2" />
-                  Email Support
+                  {t('faqPage.contact.emailSupport')}
                 </Button>
               </a>
             </div>
             <p className={`text-sm mt-6 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-              Average response time: <span className="text-emerald-400 font-semibold">Under 60 seconds</span>
+              {t('faqPage.contact.responseTimeLabel')} <span className="text-emerald-400 font-semibold">{t('faqPage.contact.responseTimeValue')}</span>
             </p>
           </div>
         </div>

@@ -1,21 +1,23 @@
 import React from 'react';
 import { useCurrency, supportedCurrencies } from '@/contexts/CurrencyContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function CurrencySwitcher() {
   const { currency, setCurrency, symbol } = useCurrency();
   const { isDark } = useTheme();
+  const { t } = useTranslation();
 
   return (
-    <Select value={currency} onValueChange={setCurrency}>
+    <Select value={currency} onValueChange={(code) => setCurrency(code, { manual: true })}>
       <SelectTrigger
         className={`w-[92px] rounded-full h-10 ${
           isDark
             ? 'bg-white/10 border-white/10 text-gray-200'
             : 'bg-slate-100 border-slate-200 text-slate-700'
         }`}
-        aria-label="Currency"
+        aria-label={t('a11y.currency')}
       >
         <SelectValue>
           <span className="font-semibold">{symbol} {currency}</span>

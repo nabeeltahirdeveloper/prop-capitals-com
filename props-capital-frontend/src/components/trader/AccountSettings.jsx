@@ -3,6 +3,7 @@ import { User, Mail, Phone, MapPin, Shield, Bell, Key, Save, Loader2 } from 'luc
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from '@/components/ui/button';
 import { useTraderTheme } from './TraderPanelLayout';
+import { useTranslation } from '@/contexts/LanguageContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getCurrentUser } from '@/api/auth';
 import {
@@ -21,6 +22,7 @@ import {
 const AccountSettings = () => {
   const { toast } = useToast();
   const { isDark } = useTraderTheme();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [profile, setProfile] = useState({
     isEdit: false,
@@ -93,10 +95,10 @@ const AccountSettings = () => {
     mutationFn: updateProfile,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
-      toast({ title: "Profile updated successfully", variant: "default" });
+      toast({ title: t('accountSettings.toast.profileUpdated'), variant: "default" });
     },
     onError: (error) => {
-      toast({ title: "Failed to save profile", description: error.message || 'Failed to save profile', variant: "destructive" });
+      toast({ title: t('accountSettings.toast.profileFailed'), description: error.message || t('accountSettings.toast.profileFailed'), variant: "destructive" });
     },
   });
 
@@ -104,10 +106,10 @@ const AccountSettings = () => {
     mutationFn: ({ currentPassword, newPassword }) => changePassword(currentPassword, newPassword),
     onSuccess: () => {
       setPassword({ currentPassword: '', newPassword: '', confirmNewPassword: '' });
-      toast({ title: "Password changed successfully", variant: "default" });
+      toast({ title: t('accountSettings.toast.passwordChanged'), variant: "default" });
     },
     onError: (error) => {
-      toast({ title: "Failed to change password", description: error.message || 'Failed to change password', variant: "destructive" });
+      toast({ title: t('accountSettings.toast.passwordFailed'), description: error.message || t('accountSettings.toast.passwordFailed'), variant: "destructive" });
     },
   });
 
@@ -115,10 +117,10 @@ const AccountSettings = () => {
     mutationFn: updateNotificationPreferences,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
-      toast({ title: "Notification preferences updated", variant: "default" });
+      toast({ title: t('accountSettings.toast.notificationsUpdated'), variant: "default" });
     },
     onError: (error) => {
-      toast({ title: "Failed to update notifications", description: error.message || 'Failed to update notification preferences', variant: "destructive" });
+      toast({ title: t('accountSettings.toast.notificationsFailed'), description: error.message || t('accountSettings.toast.notificationsFailed'), variant: "destructive" });
     },
   });
 
@@ -137,7 +139,7 @@ const AccountSettings = () => {
 
     if (password.currentPassword && password.newPassword && password.confirmNewPassword) {
       if (password.newPassword !== password.confirmNewPassword) {
-        toast({ title: "Passwords do not match", description: "Your new password and confirmation do not match.", variant: "destructive" });
+        toast({ title: t('accountSettings.toast.passwordMismatchTitle'), description: t('accountSettings.toast.passwordMismatchDesc'), variant: "destructive" });
         return;
       }
       changePasswordMutation.mutate(password);
@@ -198,7 +200,7 @@ const AccountSettings = () => {
 
   return (
     <div className="space-y-6">
-      <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Account Settings</h2>
+      <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('accountSettings.title')}</h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
@@ -206,37 +208,37 @@ const AccountSettings = () => {
         <div className={cardCls}>
           <h3 className={`font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
             <User className="w-5 h-5 text-amber-500" />
-            Personal Information
+            {t('accountSettings.personalInfo.title')}
           </h3>
 
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={labelCls}>First Name</label>
+                <label className={labelCls}>{t('accountSettings.personalInfo.firstName')}</label>
                 <input
                   type="text"
                   name="firstName"
                   value={profile.firstName}
                   onChange={handleInputChange}
-                  placeholder="First name"
+                  placeholder={t('accountSettings.personalInfo.firstNamePlaceholder')}
                   className={inputCls}
                 />
               </div>
               <div>
-                <label className={labelCls}>Last Name</label>
+                <label className={labelCls}>{t('accountSettings.personalInfo.lastName')}</label>
                 <input
                   type="text"
                   name="lastName"
                   value={profile.lastName}
                   onChange={handleInputChange}
-                  placeholder="Last name"
+                  placeholder={t('accountSettings.personalInfo.lastNamePlaceholder')}
                   className={inputCls}
                 />
               </div>
             </div>
 
             <div>
-              <label className={labelCls}>Email Address</label>
+              <label className={labelCls}>{t('accountSettings.personalInfo.email')}</label>
               <div className="relative">
                 <Mail className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                 <input
@@ -250,11 +252,11 @@ const AccountSettings = () => {
                   }`}
                 />
               </div>
-              <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>Email cannot be changed</p>
+              <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>{t('accountSettings.personalInfo.emailReadOnly')}</p>
             </div>
 
             <div>
-              <label className={labelCls}>Phone Number</label>
+              <label className={labelCls}>{t('accountSettings.personalInfo.phone')}</label>
               <div className="relative">
                 <Phone className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                 <input
@@ -273,7 +275,7 @@ const AccountSettings = () => {
             </div>
 
             <div>
-              <label className={labelCls}>Country</label>
+              <label className={labelCls}>{t('accountSettings.personalInfo.country')}</label>
               <div className="relative">
                 <MapPin className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                 <input
@@ -281,7 +283,7 @@ const AccountSettings = () => {
                   name="country"
                   value={profile.country}
                   onChange={handleInputChange}
-                  placeholder="e.g. United Kingdom"
+                  placeholder={t('accountSettings.personalInfo.countryPlaceholder')}
                   className={`w-full rounded-xl pl-9 pr-4 py-3 focus:outline-none focus:border-amber-500/50 border ${
                     isDark
                       ? 'bg-[#0d1117] border-white/10 text-white placeholder-white/30'
@@ -297,12 +299,12 @@ const AccountSettings = () => {
         <div className={cardCls}>
           <h3 className={`font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
             <Shield className="w-5 h-5 text-amber-500" />
-            Security
+            {t('accountSettings.security.title')}
           </h3>
 
           <div className="space-y-4">
             <div>
-              <label className={labelCls}>Current Password</label>
+              <label className={labelCls}>{t('accountSettings.security.currentPassword')}</label>
               <input
                 type="password"
                 name="currentPassword"
@@ -314,7 +316,7 @@ const AccountSettings = () => {
             </div>
 
             <div>
-              <label className={labelCls}>New Password</label>
+              <label className={labelCls}>{t('accountSettings.security.newPassword')}</label>
               <input
                 type="password"
                 name="newPassword"
@@ -326,7 +328,7 @@ const AccountSettings = () => {
             </div>
 
             <div>
-              <label className={labelCls}>Confirm New Password</label>
+              <label className={labelCls}>{t('accountSettings.security.confirmNewPassword')}</label>
               <input
                 type="password"
                 name="confirmNewPassword"
@@ -343,12 +345,12 @@ const AccountSettings = () => {
         <div className={cardCls}>
           <h3 className={`font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
             <Key className="w-5 h-5 text-amber-500" />
-            Trading Preferences
+            {t('accountSettings.trading.title')}
           </h3>
 
           <div className="space-y-4">
             <div>
-              <label className={labelCls}>Default Lot Size</label>
+              <label className={labelCls}>{t('accountSettings.trading.defaultLotSize')}</label>
               <input
                 type="number"
                 name="lotSize"
@@ -362,7 +364,7 @@ const AccountSettings = () => {
             </div>
 
             <div>
-              <label className={labelCls}>Default Leverage</label>
+              <label className={labelCls}>{t('accountSettings.trading.defaultLeverage')}</label>
               <SelectField
                 value={profile.leverage}
                 onValueChange={(val) => setProfile(prev => ({ ...prev, leverage: val, isEdit: true }))}
@@ -375,13 +377,13 @@ const AccountSettings = () => {
             </div>
 
             <div>
-              <label className={labelCls}>Chart Theme</label>
+              <label className={labelCls}>{t('accountSettings.trading.chartTheme')}</label>
               <SelectField
                 value={profile.theme}
                 onValueChange={(val) => setProfile(prev => ({ ...prev, theme: val, isEdit: true }))}
                 options={[
-                  { value: 'dark', label: 'Dark' },
-                  { value: 'light', label: 'Light' },
+                  { value: 'dark', label: t('accountSettings.trading.themeDark') },
+                  { value: 'light', label: t('accountSettings.trading.themeLight') },
                 ]}
               />
             </div>
@@ -392,17 +394,17 @@ const AccountSettings = () => {
         <div className={cardCls}>
           <h3 className={`font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
             <Bell className="w-5 h-5 text-amber-500" />
-            Notifications
+            {t('accountSettings.notifications.title')}
           </h3>
 
           <div className="space-y-4">
             {[
-              { key: 'emailNotifications', label: 'Email Notifications', desc: 'Receive trading alerts via email' },
-              { key: 'tradeNotifications', label: 'Trade Notifications', desc: 'Browser notifications for trades' },
-              { key: 'accountAlerts', label: 'Account Alerts', desc: 'Critical alerts via SMS' },
-              { key: 'payoutUpdates', label: 'Payout Updates', desc: 'Receive weekly performance reports' },
-              { key: 'challengeUpdates', label: 'Challenge Updates', desc: 'Receive updates about your challenges' },
-              { key: 'marketingEmails', label: 'Marketing Emails', desc: 'Receive marketing emails' },
+              { key: 'emailNotifications', label: t('accountSettings.notifications.emailNotifications.label'), desc: t('accountSettings.notifications.emailNotifications.desc') },
+              { key: 'tradeNotifications', label: t('accountSettings.notifications.tradeNotifications.label'), desc: t('accountSettings.notifications.tradeNotifications.desc') },
+              { key: 'accountAlerts', label: t('accountSettings.notifications.accountAlerts.label'), desc: t('accountSettings.notifications.accountAlerts.desc') },
+              { key: 'payoutUpdates', label: t('accountSettings.notifications.payoutUpdates.label'), desc: t('accountSettings.notifications.payoutUpdates.desc') },
+              { key: 'challengeUpdates', label: t('accountSettings.notifications.challengeUpdates.label'), desc: t('accountSettings.notifications.challengeUpdates.desc') },
+              { key: 'marketingEmails', label: t('accountSettings.notifications.marketingEmails.label'), desc: t('accountSettings.notifications.marketingEmails.desc') },
             ].map((item) => (
               <div key={item.key} className="flex items-center justify-between">
                 <div>
@@ -435,12 +437,12 @@ const AccountSettings = () => {
           {isSaving ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Saving...
+              {t('accountSettings.saving')}
             </>
           ) : (
             <>
               <Save className="w-4 h-4 mr-2" />
-              Save Changes
+              {t('accountSettings.saveChanges')}
             </>
           )}
         </Button>

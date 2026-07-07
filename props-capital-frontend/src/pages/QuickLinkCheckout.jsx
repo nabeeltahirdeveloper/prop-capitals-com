@@ -8,6 +8,7 @@ import {
   chargeQuickLink,
   submitPaymentRedirect,
 } from '@/api/payments';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 // QuickLinkCheckout
 // ─────────────────
@@ -91,6 +92,7 @@ const INITIAL_FORM = {
 
 export default function QuickLinkCheckout() {
   const { slug } = useParams();
+  const { t } = useTranslation();
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
   const [agreedTerms, setAgreedTerms] = useState(false);
@@ -116,7 +118,7 @@ export default function QuickLinkCheckout() {
     mutationFn: (payload) => chargeQuickLink(slug, payload),
     onSuccess: (res) => {
       if (res?.status === 'succeeded') {
-        toast.success('Payment successful! Redirecting…');
+        toast.success(t('quickLink.toast.success'));
         const ref = res.reference
           ? `?reference=${encodeURIComponent(res.reference)}`
           : '';
@@ -127,11 +129,11 @@ export default function QuickLinkCheckout() {
       } else if (res?.status === 'requires_action' && res.redirectUrl) {
         submitPaymentRedirect(res);
       } else {
-        toast.error(res?.message || 'Payment was not completed.');
+        toast.error(res?.message || t('quickLink.toast.notCompleted'));
       }
     },
     onError: (err) => {
-      toast.error(err?.message || 'Payment failed. Please try again.');
+      toast.error(err?.message || t('quickLink.toast.failed'));
     },
   });
 
@@ -147,32 +149,32 @@ export default function QuickLinkCheckout() {
     // the only requirement here is the T&C consent.
     if (!isHosted) {
       // Billing
-      if (!form.firstName.trim()) next.firstName = 'First name is required';
-      if (!form.lastName.trim()) next.lastName = 'Last name is required';
+      if (!form.firstName.trim()) next.firstName = t('payCheckout.errors.firstNameRequired');
+      if (!form.lastName.trim()) next.lastName = t('payCheckout.errors.lastNameRequired');
       if (!form.address.trim() || form.address.trim().length < 4)
-        next.address = 'Address is required';
-      if (!form.city.trim()) next.city = 'City is required';
-      if (!form.postalCode.trim()) next.postalCode = 'Postal code is required';
+        next.address = t('payCheckout.errors.addressRequired');
+      if (!form.city.trim()) next.city = t('payCheckout.errors.cityRequired');
+      if (!form.postalCode.trim()) next.postalCode = t('quickLink.errors.postalRequired');
       // Card
       if (!form.cardholderName.trim() || form.cardholderName.trim().length < 2)
-        next.cardholderName = 'Cardholder name is required';
+        next.cardholderName = t('quickLink.errors.cardholderRequired');
       const digits = (form.cardNumber || '').replace(/\D/g, '');
-      if (!digits) next.cardNumber = 'Card number is required';
+      if (!digits) next.cardNumber = t('quickLink.errors.cardNumberRequired');
       else if (digits.length < 13 || !luhnValid(digits))
-        next.cardNumber = 'Card number is invalid';
+        next.cardNumber = t('quickLink.errors.cardNumberInvalid');
       const [mm, yy] = (form.expiry || '').split('/');
       if (!mm || !yy || mm.length !== 2 || yy.length !== 2)
-        next.expiry = 'Expiry must be MM/YY';
+        next.expiry = t('quickLink.errors.expiryFormat');
       else {
         const m = parseInt(mm, 10);
         const y = parseInt(yy, 10);
         const exp = new Date(2000 + y, m, 0, 23, 59, 59);
-        if (Number.isNaN(m) || m < 1 || m > 12) next.expiry = 'Invalid month';
-        else if (exp < new Date()) next.expiry = 'Card has expired';
+        if (Number.isNaN(m) || m < 1 || m > 12) next.expiry = t('quickLink.errors.invalidMonth');
+        else if (exp < new Date()) next.expiry = t('quickLink.errors.cardExpired');
       }
-      if (!form.cvv || form.cvv.length < 3) next.cvv = 'CVV must be 3-4 digits';
+      if (!form.cvv || form.cvv.length < 3) next.cvv = t('quickLink.errors.cvvInvalid');
     }
-    if (!agreedTerms) next.agreedTerms = 'You must accept the T&Cs';
+    if (!agreedTerms) next.agreedTerms = t('quickLink.errors.termsRequired');
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -226,12 +228,12 @@ export default function QuickLinkCheckout() {
         <div className="max-w-md mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-10 text-center">
           <AlertTriangle className="w-10 h-10 text-amber-500 mx-auto mb-3" />
           <h1 className="text-lg font-semibold text-slate-900 mb-1">
-            {inactive ? 'Link no longer active' : 'Payment link not found'}
+            {inactive ? t('quickLink.notFound.inactiveTitle') : t('quickLink.notFound.title')}
           </h1>
           <p className="text-sm text-slate-500">
             {inactive
-              ? 'This payment link has already been used or has been deactivated. Please contact the merchant for a new one.'
-              : 'We could not find the payment link you opened. Please check the URL or contact the merchant.'}
+              ? t('quickLink.notFound.inactiveDesc')
+              : t('quickLink.notFound.desc')}
           </p>
         </div>
       </Shell>
@@ -252,9 +254,9 @@ export default function QuickLinkCheckout() {
         {/* Order summary strip — only the total. */}
         <div className="bg-slate-900 text-white px-5 py-4 flex items-center justify-between">
           <span className="text-sm uppercase tracking-wider text-slate-300">
-            Order summary
+            {t('buyChallenge.orderSummary')}
           </span>
-          <span className="text-xl font-extrabold">Total {priceLabel}</span>
+          <span className="text-xl font-extrabold">{t('buyChallenge.total')} {priceLabel}</span>
         </div>
 
         <div className="px-5 py-5 space-y-4">
@@ -269,34 +271,34 @@ export default function QuickLinkCheckout() {
             <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-slate-100">
               👤
             </span>
-            Your details
+            {t('quickLink.yourDetails')}
           </div>
 
           {/* First + Last name */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-slate-500 mb-1">First name</label>
+              <label className="block text-xs text-slate-500 mb-1">{t('quickLink.fields.firstName')}</label>
               <input
                 type="text"
                 autoComplete="given-name"
                 value={form.firstName}
                 onChange={(e) => updateField('firstName', e.target.value)}
                 className={`${inputClass} ${errors.firstName ? errInputClass : ''}`}
-                placeholder="John"
+                placeholder={t('payCheckout.placeholders.firstName')}
               />
               {errors.firstName && (
                 <p className="text-xs text-red-500 mt-1">{errors.firstName}</p>
               )}
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1">Last name</label>
+              <label className="block text-xs text-slate-500 mb-1">{t('quickLink.fields.lastName')}</label>
               <input
                 type="text"
                 autoComplete="family-name"
                 value={form.lastName}
                 onChange={(e) => updateField('lastName', e.target.value)}
                 className={`${inputClass} ${errors.lastName ? errInputClass : ''}`}
-                placeholder="Doe"
+                placeholder={t('payCheckout.placeholders.lastName')}
               />
               {errors.lastName && (
                 <p className="text-xs text-red-500 mt-1">{errors.lastName}</p>
@@ -306,14 +308,14 @@ export default function QuickLinkCheckout() {
 
           {/* Address */}
           <div>
-            <label className="block text-xs text-slate-500 mb-1">Billing address</label>
+            <label className="block text-xs text-slate-500 mb-1">{t('quickLink.fields.address')}</label>
             <input
               type="text"
               autoComplete="street-address"
               value={form.address}
               onChange={(e) => updateField('address', e.target.value)}
               className={`${inputClass} ${errors.address ? errInputClass : ''}`}
-              placeholder="Street address"
+              placeholder={t('quickLink.placeholders.address')}
             />
             {errors.address && (
               <p className="text-xs text-red-500 mt-1">{errors.address}</p>
@@ -323,7 +325,7 @@ export default function QuickLinkCheckout() {
           {/* City + State + Postal */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs text-slate-500 mb-1">City</label>
+              <label className="block text-xs text-slate-500 mb-1">{t('quickLink.fields.city')}</label>
               <input
                 type="text"
                 autoComplete="address-level2"
@@ -337,7 +339,7 @@ export default function QuickLinkCheckout() {
             </div>
             <div>
               <label className="block text-xs text-slate-500 mb-1">
-                State <span className="text-slate-400">(opt)</span>
+                {t('quickLink.fields.state')} <span className="text-slate-400">{t('quickLink.fields.optional')}</span>
               </label>
               <input
                 type="text"
@@ -348,7 +350,7 @@ export default function QuickLinkCheckout() {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1">Postal</label>
+              <label className="block text-xs text-slate-500 mb-1">{t('quickLink.fields.postal')}</label>
               <input
                 type="text"
                 autoComplete="postal-code"
@@ -371,8 +373,7 @@ export default function QuickLinkCheckout() {
                 🔒
               </span>
               <p>
-                After you continue, you'll be taken to our secure payment
-                provider to enter your card details and complete the payment.
+                {t('quickLink.hostedNotice')}
               </p>
             </div>
           )}
@@ -384,12 +385,12 @@ export default function QuickLinkCheckout() {
             <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-slate-100">
               💳
             </span>
-            Pay by card
+            {t('quickLink.payByCard')}
           </div>
 
           {/* Card Number */}
           <div>
-            <label className="block text-xs text-slate-500 mb-1">Card number</label>
+            <label className="block text-xs text-slate-500 mb-1">{t('quickLink.fields.cardNumber')}</label>
             <input
               type="text"
               inputMode="numeric"
@@ -409,7 +410,7 @@ export default function QuickLinkCheckout() {
           {/* Expiry + CVV */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-slate-500 mb-1">Expiry</label>
+              <label className="block text-xs text-slate-500 mb-1">{t('quickLink.fields.expiry')}</label>
               <input
                 type="text"
                 inputMode="numeric"
@@ -425,7 +426,7 @@ export default function QuickLinkCheckout() {
               )}
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1">CVV</label>
+              <label className="block text-xs text-slate-500 mb-1">{t('quickLink.fields.cvv')}</label>
               <input
                 type="text"
                 inputMode="numeric"
@@ -446,14 +447,14 @@ export default function QuickLinkCheckout() {
 
           {/* Cardholder name */}
           <div>
-            <label className="block text-xs text-slate-500 mb-1">Name on card</label>
+            <label className="block text-xs text-slate-500 mb-1">{t('quickLink.fields.nameOnCard')}</label>
             <input
               type="text"
               autoComplete="cc-name"
               value={form.cardholderName}
               onChange={(e) => updateField('cardholderName', e.target.value)}
               className={`${inputClass} ${errors.cardholderName ? errInputClass : ''}`}
-              placeholder="As it appears on the card"
+              placeholder={t('quickLink.placeholders.nameOnCard')}
             />
             {errors.cardholderName && (
               <p className="text-xs text-red-500 mt-1">{errors.cardholderName}</p>
@@ -471,14 +472,14 @@ export default function QuickLinkCheckout() {
               className="mt-0.5"
             />
             <span>
-              I agree to the{' '}
+              {t('quickLink.agreePrefix')}{' '}
               <a
                 href="/Terms"
                 target="_blank"
                 rel="noreferrer"
                 className="text-amber-600 underline"
               >
-                Terms &amp; Conditions
+                {t('quickLink.terms')}
               </a>
               .
             </span>
@@ -496,18 +497,18 @@ export default function QuickLinkCheckout() {
             {chargeMutation.isPending ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Processing…
+                {t('quickLink.processing')}
               </>
             ) : isHosted ? (
-              <>Continue to secure payment</>
+              <>{t('quickLink.continueSecure')}</>
             ) : (
-              <>Pay {priceLabel}</>
+              <>{t('buyChallenge.pay')} {priceLabel}</>
             )}
           </button>
 
           <p className="text-[11px] text-slate-400 text-center flex items-center justify-center gap-1.5 pt-1">
             <Lock className="w-3 h-3" />
-            Secured payment · Visa &amp; Mastercard
+            {t('quickLink.securedPayment')} · Visa &amp; Mastercard
           </p>
         </div>
       </form>

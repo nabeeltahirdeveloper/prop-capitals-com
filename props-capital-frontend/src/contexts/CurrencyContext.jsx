@@ -1,4 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { getDefaultsForCountry } from '@/config/localeDefaults';
+import { readGeoCountry } from '@/lib/geoCookie';
+import { pickInitialValue } from '@/lib/localeResolution';
 
 // Display-only EUR -> GBP rate. Change this single constant to retune GBP pricing.
 export const EUR_TO_GBP_RATE = 0.85;
@@ -6,22 +9,34 @@ export const EUR_TO_GBP_RATE = 0.85;
 export const supportedCurrencies = [
   { code: 'EUR', symbol: '€', name: 'Euro' },
   { code: 'GBP', symbol: '£', name: 'British Pound' },
+  { code: 'TRY', symbol: '₺', name: 'Turkish Lira' },
+  { code: 'KZT', symbol: '₸', name: 'Kazakhstani Tenge' },
 ];
 
 const CurrencyContext = createContext(null);
 
 export const CurrencyProvider = ({ children }) => {
-  const [currency, setCurrency] = useState(() => {
+  const [currency, setCurrencyState] = useState(() => {
+    if (typeof window === 'undefined') return 'EUR';
     const stored = localStorage.getItem('currency');
-    return stored === 'GBP' ? 'GBP' : 'EUR';
+    const saved = supportedCurrencies.some((c) => c.code === stored) ? stored : null;
+    const manual = localStorage.getItem('currencyManuallySet') === '1';
+    const geoRaw = getDefaultsForCountry(readGeoCountry())?.currency ?? null;
+    const geoValue = supportedCurrencies.some((c) => c.code === geoRaw) ? geoRaw : null;
+    return pickInitialValue({ saved, manual, geoValue, fallback: 'EUR' });
   });
+
+  const setCurrency = (code, { manual = false } = {}) => {
+    if (manual) localStorage.setItem('currencyManuallySet', '1');
+    setCurrencyState(code);
+  };
 
   useEffect(() => {
     localStorage.setItem('currency', currency);
   }, [currency]);
 
   const value = useMemo(() => {
-    const symbol = currency === 'GBP' ? '£' : '€';
+    const symbol = supportedCurrencies.find((c) => c.code === currency)?.symbol ?? '€';
 
     // Amounts are FIXED across currencies: switching the currency selector only
     // swaps the symbol (€ <-> £), never the number. Prices like £299 stay 299
@@ -76,7 +91,7 @@ export const CurrencyProvider = ({ children }) => {
         return `${symbol}${n.toLocaleString('en-US')}`;
       }
       const replaced = String(val).replace(
-        /[$€£](\d[\d,]*(?:\.\d+)?)([KMB]?)/gi,
+        /[$€£₺₸](\d[\d,]*(?:\.\d+)?)([KMB]?)/gi,
         (match, numStr, unit) => {
           const n = parseFloat(numStr.replace(/,/g, ''));
           if (!Number.isFinite(n)) return match;
@@ -96,7 +111,7 @@ export const CurrencyProvider = ({ children }) => {
           return `${symbol}${formatted}${unitUpper}`;
         },
       );
-      return replaced.replace(/[$€£]/g, symbol);
+      return replaced.replace(/[$€£₺₸]/g, symbol);
     };
 
     return { currency, setCurrency, symbol, formatFee, formatAmount, formatSize, cur };

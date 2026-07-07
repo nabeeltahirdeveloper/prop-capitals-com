@@ -11,6 +11,12 @@ export class SendMessageDto {
   @IsOptional()
   @IsString()
   sessionId?: string;
+
+  // The user's active UI language (e.g. 'tr'); the bot replies in this language.
+  @IsOptional()
+  @IsString()
+  @MaxLength(10)
+  language?: string;
 }
 
 export class SendMessageResponseDto {

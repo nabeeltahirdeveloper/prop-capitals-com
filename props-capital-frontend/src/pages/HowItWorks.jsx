@@ -4,11 +4,13 @@ import { ArrowRight, Check, TrendingUp, Shield, Zap, Target, Award, DollarSign, 
 import { Button } from '../components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 
 const HowItWorksPage = () => {
   const { isDark } = useTheme();
   const { cur } = useCurrency();
+  const { t } = useTranslation();
   const [activeStep, setActiveStep] = useState(0);
   const [selectedAccountSize, setSelectedAccountSize] = useState(3);
   const [animatedPrice, setAnimatedPrice] = useState(1.0856);
@@ -49,29 +51,29 @@ const HowItWorksPage = () => {
   const steps = [
     {
       number: "01",
-      title: "Choose Your Challenge",
-      description: "Select between our 1-Step or 2-Step evaluation. Pick your account size from €5K to €200K.",
+      title: t('howItWorks.steps.chooseChallenge.title'),
+      description: t('howItWorks.steps.chooseChallenge.description'),
       icon: Target,
       color: "amber"
     },
     {
-      number: "02", 
-      title: "Pass the Evaluation",
-      description: "Hit the profit target while respecting drawdown limits. No time pressure - trade at your own pace.",
+      number: "02",
+      title: t('howItWorks.steps.passEvaluation.title'),
+      description: t('howItWorks.steps.passEvaluation.description'),
       icon: TrendingUp,
       color: "emerald"
     },
     {
       number: "03",
-      title: "Get Funded",
-      description: "Once you pass, receive your funded account. Start trading with our capital immediately.",
+      title: t('howItWorks.steps.getFunded.title'),
+      description: t('howItWorks.steps.getFunded.description'),
       icon: Shield,
       color: "blue"
     },
     {
       number: "04",
-      title: "Earn & Withdraw",
-      description: "Keep up to 90% of your profits. Request payouts anytime - funds arrive in under 90 minutes.",
+      title: t('howItWorks.steps.earnWithdraw.title'),
+      description: t('howItWorks.steps.earnWithdraw.description'),
       icon: Award,
       color: "purple"
     }
@@ -88,12 +90,12 @@ const HowItWorksPage = () => {
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-10 lg:mb-16">
-            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">How It Works</span>
+            <span className="text-amber-500 text-sm font-semibold tracking-wider uppercase mb-4 block">{t('howItWorks.hero.badge')}</span>
             <h1 className={`text-3xl sm:text-4xl lg:text-6xl font-black mb-4 lg:mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Your Path to <span className="bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">Funded Trading</span>
+              {t('howItWorks.hero.titleLead')} <span className="bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">{t('howItWorks.hero.titleHighlight')}</span>
             </h1>
             <p className={`text-base lg:text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-              Prop Capitals provides talented traders with the capital they need. Here's how you can start trading with up to {cur('$200,000')}.
+              {t('howItWorks.hero.subtitle', { amount: cur('$200,000') })}
             </p>
           </div>
 
@@ -111,7 +113,7 @@ const HowItWorksPage = () => {
               <div className="hidden sm:block absolute -top-2 lg:-top-4 -right-2 lg:-right-4 bg-amber-500 text-[#0a0d12] px-3 lg:px-4 py-1.5 lg:py-2 rounded-lg shadow-xl z-20" style={{ animation: 'pulse 2s infinite' }}>
                 <div className="flex items-center gap-1 lg:gap-2">
                   <Zap className="w-4 h-4 lg:w-5 lg:h-5" />
-                  <span className="font-bold text-sm lg:text-base">Live Trading</span>
+                  <span className="font-bold text-sm lg:text-base">{t('howItWorks.platform.liveTrading')}</span>
                 </div>
               </div>
 
@@ -135,8 +137,8 @@ const HowItWorksPage = () => {
                       <img src="/assets/images/logo-light.png" alt="Logo" className="block dark:hidden w-full h-full object-contain" />
                       <img src="/assets/images/logo-dark.png" alt="Logo Dark" className="hidden dark:block w-full h-full object-contain" />
                     </div>
-                    <span className={`font-semibold text-xs lg:text-sm hidden sm:inline ${isDark ? 'text-white' : 'text-slate-900'}`}>Prop Capitals Trading Platform</span>
-                    <span className={`font-semibold text-xs sm:hidden ${isDark ? 'text-white' : 'text-slate-900'}`}>Trading Platform</span>
+                    <span className={`font-semibold text-xs lg:text-sm hidden sm:inline ${isDark ? 'text-white' : 'text-slate-900'}`}>Prop Capitals {t('howItWorks.platform.tradingPlatform')}</span>
+                    <span className={`font-semibold text-xs sm:hidden ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('howItWorks.platform.tradingPlatform')}</span>
                   </div>
                   <div className={`text-[10px] lg:text-xs hidden sm:block ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>v2.0.1</div>
                 </div>
@@ -216,7 +218,7 @@ const HowItWorksPage = () => {
                       <div className={`rounded-xl lg:rounded-2xl p-3 lg:p-4 border ${
                         isDark ? 'bg-[#0a0d12] border-white/5' : 'bg-slate-50 border-slate-200'
                       }`}>
-                        <div className={`text-[10px] lg:text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Account Balance</div>
+                        <div className={`text-[10px] lg:text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('howItWorks.platform.accountBalance')}</div>
                         <div className={`text-lg lg:text-2xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{cur('$52,450')}</div>
                         <div className="text-emerald-400 text-xs lg:text-sm">+{cur('$2,450')} (4.9%)</div>
                       </div>
@@ -225,17 +227,17 @@ const HowItWorksPage = () => {
                       <div className={`rounded-xl lg:rounded-2xl p-3 lg:p-4 border ${
                         isDark ? 'bg-[#0a0d12] border-white/5' : 'bg-slate-50 border-slate-200'
                       }`}>
-                        <div className={`font-semibold text-xs lg:text-sm mb-2 lg:mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>Quick Trade</div>
+                        <div className={`font-semibold text-xs lg:text-sm mb-2 lg:mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('howItWorks.platform.quickTrade')}</div>
                         <div className="grid grid-cols-2 gap-2 mb-2 lg:mb-3">
                           <button className="bg-emerald-500 hover:bg-emerald-600 text-white py-2 lg:py-3 rounded-lg lg:rounded-xl font-bold text-xs lg:text-sm transition-all hover:scale-105">
-                            BUY
+                            {t('buySellPanel.buy')}
                           </button>
                           <button className="bg-red-500 hover:bg-red-600 text-white py-2 lg:py-3 rounded-lg lg:rounded-xl font-bold text-xs lg:text-sm transition-all hover:scale-105">
-                            SELL
+                            {t('buySellPanel.sell')}
                           </button>
                         </div>
                         <div className="flex items-center justify-between text-xs lg:text-sm">
-                          <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>Lot Size</span>
+                          <span className={isDark ? 'text-gray-400' : 'text-slate-500'}>{t('howItWorks.platform.lotSize')}</span>
                           <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>1.00</span>
                         </div>
                       </div>
@@ -244,7 +246,7 @@ const HowItWorksPage = () => {
                       <div className={`col-span-2 lg:col-span-1 rounded-xl lg:rounded-2xl p-3 lg:p-4 border hidden sm:block ${
                         isDark ? 'bg-[#0a0d12] border-white/5' : 'bg-slate-50 border-slate-200'
                       }`}>
-                        <div className={`font-semibold text-xs lg:text-sm mb-2 lg:mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>Open Positions</div>
+                        <div className={`font-semibold text-xs lg:text-sm mb-2 lg:mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('howItWorks.platform.openPositions')}</div>
                         <div className="space-y-2">
                           <div className={`flex items-center justify-between py-1.5 lg:py-2 border-b ${isDark ? 'border-white/5' : 'border-slate-200'}`}>
                             <div>
@@ -276,10 +278,10 @@ const HowItWorksPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 lg:mb-16">
             <h2 className={`text-2xl sm:text-3xl lg:text-5xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              4 Simple Steps to <span className="text-amber-500">Get Funded</span>
+              {t('howItWorks.stepsSection.titleLead')} <span className="text-amber-500">{t('howItWorks.stepsSection.titleHighlight')}</span>
             </h2>
             <p className={`text-base lg:text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-              From registration to your first payout in as little as a few days.
+              {t('howItWorks.stepsSection.subtitle')}
             </p>
           </div>
 
@@ -333,14 +335,14 @@ const HowItWorksPage = () => {
       <section className={`py-16 lg:py-20 ${isDark ? 'bg-gradient-to-b from-[#0d1117] to-[#0a0d12]' : 'bg-slate-50'}`}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className={`text-2xl sm:text-3xl lg:text-5xl font-black mb-4 lg:mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Ready to Start Your <span className="text-amber-500">Trading Journey</span>?
+            {t('howItWorks.ctaSection.titleLead')} <span className="text-amber-500">{t('howItWorks.ctaSection.titleHighlight')}</span>{t('howItWorks.ctaSection.titleTail')}
           </h2>
           <p className={`text-base lg:text-lg mb-6 lg:mb-8 max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-            Join thousands of traders who have already proven their skills and are now trading with Prop Capitals funding.
+            {t('howItWorks.ctaSection.subtitle')}
           </p>
           <Link to="/Challenges">
             <Button className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-8 lg:px-10 py-5 lg:py-7 h-auto text-lg lg:text-xl font-bold shadow-xl shadow-amber-500/25 group">
-              Get Funded Now
+              {t('howItWorks.ctaSection.button')}
               <ArrowRight className="ml-2 w-5 h-5 lg:w-6 lg:h-6 transition-transform group-hover:translate-x-1" />
             </Button>
           </Link>

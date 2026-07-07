@@ -26,7 +26,9 @@ describe('Xoala redirect utilities', () => {
   it('keeps supporting the legacy parameters field', () => {
     expect(
       getXoalaRedirectParams({
-        parameters: [{ name: 'TermUrl', value: 'https://merchant.test/return' }],
+        parameters: [
+          { name: 'TermUrl', value: 'https://merchant.test/return' },
+        ],
       }),
     ).toEqual([{ name: 'TermUrl', value: 'https://merchant.test/return' }]);
   });

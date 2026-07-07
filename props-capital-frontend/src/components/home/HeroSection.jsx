@@ -4,19 +4,21 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 import Globe from 'react-globe.gl';
 
 const HeroSection = () => {
   const { isDark } = useTheme();
   const { cur } = useCurrency();
+  const { t } = useTranslation();
   const globeRef = useRef();
   const [globeReady, setGlobeReady] = useState(false);
   const [globeDimensions, setGlobeDimensions] = useState({ width: 520, height: 520 });
 
   const stats = [
-    { icon: Users, value: '18,500+', label: 'Active Traders' },
-    { icon: DollarSign, value: '$15.2M+', label: 'Total Paid Out' },
-    { icon: Clock, value: '<90 min', label: 'Avg Payout' },
+    { icon: Users, value: '18,500+', label: t('home.hero.stats.activeTraders') },
+    { icon: DollarSign, value: '$15.2M+', label: t('home.hero.stats.totalPaidOut') },
+    { icon: Clock, value: '<90 min', label: t('home.hero.stats.avgPayout') },
   ];
 
   // Trading hub locations with live trader counts per country (25 countries)
@@ -159,8 +161,8 @@ const HeroSection = () => {
                 <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
               ))}
             </div>
-            <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>4.8 on Trustpilot</span>
-            <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>(18,500+ traders)</span>
+            <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('home.hero.trustpilotRating')}</span>
+            <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('home.hero.trustpilotCount')}</span>
           </div>
         </div>
 
@@ -172,26 +174,25 @@ const HeroSection = () => {
             }`}>
               <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
               <span className={`text-sm font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
-                Limited Time: 70% OFF All Challenges
+                {t('home.hero.promo')}
               </span>
             </div>
 
             <h1 className={`text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Trade Globally,{' '}
+              {t('home.hero.title')}{' '}
               <span className="bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">
-                Earn Anywhere
+                {t('home.hero.titleHighlight')}
               </span>
             </h1>
 
             <p className={`text-base lg:text-lg mb-8 max-w-xl mx-auto lg:mx-0 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-              Join 18,500+ traders worldwide who are already trading with Prop Capitals funding. 
-              Get funded up to {cur('$200K')} and keep up to 90% of your profits.
+              {t('home.hero.subtitle', { amount: cur('$200K') })}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10">
               <Link to="/challenges">
                 <Button className="w-full sm:w-auto bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#0a0d12] rounded-full px-8 py-6 h-auto text-lg font-bold shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 transition-all group">
-                  Get Funded Now
+                  {t('home.hero.getFunded')}
                   <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
@@ -202,7 +203,7 @@ const HeroSection = () => {
                     isDark ? 'border-white/20 text-white hover:bg-white/5' : 'border-slate-300 text-slate-700 hover:bg-slate-50'
                   }`}
                 >
-                  <Play className="mr-2 w-5 h-5" /> Watch Demo
+                  <Play className="mr-2 w-5 h-5" /> {t('home.hero.watchDemo')}
                 </Button>
               </Link>
             </div>
@@ -289,7 +290,7 @@ const HeroSection = () => {
                       <div style="font-weight: 700; margin-bottom: 2px;">${d.name}</div>
                       <div style="color: #10b981; font-weight: 600; display: flex; align-items: center; gap: 4px;">
                         <span style="width: 6px; height: 6px; background: #10b981; border-radius: 50%; display: inline-block;"></span>
-                        ${d.traders.toLocaleString()} traders
+                        ${d.traders.toLocaleString()} ${t('home.hero.traders')}
                       </div>
                     </div>
                   `;
@@ -309,7 +310,7 @@ const HeroSection = () => {
                   </div>
                   <div>
                     <div className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>120+</div>
-                    <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Countries</div>
+                    <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('home.hero.countries')}</div>
                   </div>
                 </div>
               </div>
@@ -323,7 +324,7 @@ const HeroSection = () => {
                   </div>
                   <div>
                     <div className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{cur('$200K')}</div>
-                    <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Max Funding</div>
+                    <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('home.hero.maxFunding')}</div>
                   </div>
                 </div>
               </div>
@@ -336,7 +337,7 @@ const HeroSection = () => {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                   </span>
-                  <span className={`text-sm font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Live Trading Active</span>
+                  <span className={`text-sm font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{t('home.hero.liveTrading')}</span>
                 </div>
               </div>
             </div>

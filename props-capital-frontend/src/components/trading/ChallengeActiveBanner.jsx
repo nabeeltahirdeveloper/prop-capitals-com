@@ -1,9 +1,11 @@
 import React from 'react';
 import { Target } from 'lucide-react';
 import { useTraderTheme } from '../trader/TraderPanelLayout';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const ChallengeActiveBanner = ({ challenge, phaseLabel }) => {
   const { isDark } = useTraderTheme();
+  const { t } = useTranslation();
   
   if (!challenge) return null;
 
@@ -19,14 +21,14 @@ const ChallengeActiveBanner = ({ challenge, phaseLabel }) => {
             <Target className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500" />
           </div>
           <div>
-            <h3 className={`font-bold text-base sm:text-lg ${textClass}`}>Challenge Active</h3>
+            <h3 className={`font-bold text-base sm:text-lg ${textClass}`}>{t('challengeActiveBanner.title')}</h3>
             <p className={`text-xs sm:text-sm ${mutedClass}`}>
-              Working towards {phaseLabel || 'Phase 1'} completion
+              {t('challengeActiveBanner.workingTowards', { phase: phaseLabel || t('challengeActiveBanner.defaultPhase') })}
             </p>
           </div>
         </div>
         <span className="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-500/20 text-blue-400 rounded-xl font-bold text-sm sm:text-base">
-          {(phaseLabel || 'PHASE 1').toUpperCase()}
+          {(phaseLabel || t('challengeActiveBanner.defaultPhase')).toUpperCase()}
         </span>
       </div>
     </div>

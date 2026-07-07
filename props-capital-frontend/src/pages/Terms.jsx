@@ -1,9 +1,11 @@
 import React from 'react';
 import { FileText, Scale, Shield, AlertTriangle } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const TermsPage = () => {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <div className={`min-h-screen pt-20 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
@@ -13,88 +15,86 @@ const TermsPage = () => {
             <div className="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <FileText className="w-8 h-8 text-amber-500" />
             </div>
-            <h1 className={`text-3xl sm:text-4xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Terms of Service</h1>
-            <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>Last updated: January 1, 2025</p>
+            <h1 className={`text-3xl sm:text-4xl font-black mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('terms.title')}</h1>
+            <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>{t('terms.lastUpdated')}</p>
           </div>
 
           <div className={`rounded-2xl p-6 lg:p-8 border space-y-8 ${isDark ? 'bg-[#12161d] border-white/10' : 'bg-white border-slate-200'}`}>
             <section>
-              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>1. Agreement to Terms</h2>
+              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('terms.agreement.title')}</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                By accessing or using the Prop Capitals website and services at prop-capitals.com ("Service"), you agree to be bound by these Terms of Service ("Terms"). If you disagree with any part of these terms, you may not access the Service.
+                {t('terms.agreement.content')}
               </p>
             </section>
 
             <section>
-              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>2. Description of Service</h2>
+              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('terms.description.title')}</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Prop Capitals provides simulated trading evaluation programs ("Challenges") that allow participants to demonstrate their trading abilities. Successful participants may receive access to funded trading accounts. All trading activities during the evaluation phase are conducted in a simulated environment.
+                {t('terms.description.content')}
               </p>
             </section>
 
             <section>
-              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>3. Eligibility</h2>
+              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('terms.eligibility.title')}</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                You must be at least 18 years old and legally capable of entering into binding contracts in your jurisdiction to use our Service. By using the Service, you represent and warrant that you meet these requirements.
+                {t('terms.eligibility.content')}
               </p>
             </section>
 
             <section>
-              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>4. Account Registration</h2>
+              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('terms.accountRegistration.title')}</h2>
               <p className={`leading-relaxed mb-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                To access certain features of the Service, you must register for an account. You agree to:
+                {t('terms.accountRegistration.intro')}
               </p>
               <ul className={`list-disc list-inside space-y-2 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                <li>Provide accurate, current, and complete information</li>
-                <li>Maintain and update your information to keep it accurate</li>
-                <li>Maintain the security of your account credentials</li>
-                <li>Accept responsibility for all activities under your account</li>
-                <li>Notify us immediately of any unauthorized use</li>
+                {t('terms.accountRegistration.items', { returnObjects: true }).map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
               </ul>
             </section>
 
             <section>
-              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>5. Challenge Rules and Trading Conditions</h2>
+              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('terms.challengeRules.title')}</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                All trading challenges are subject to specific rules including profit targets, drawdown limits, and trading restrictions. These rules are displayed on our website and must be followed. Violation of challenge rules may result in account termination without refund.
+                {t('terms.challengeRules.content')}
               </p>
             </section>
 
             <section>
-              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>6. Payments and Refunds</h2>
+              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('terms.payments.title')}</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Challenge fees are due at the time of purchase. We offer a 100% fee refund with your first profit payout as a funded trader. Refund requests outside of this policy are subject to our Refund Policy. All payments are processed securely through our payment providers.
+                {t('terms.payments.content')}
               </p>
             </section>
 
             <section>
-              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>7. Intellectual Property</h2>
+              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('terms.intellectualProperty.title')}</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                The Service and its original content, features, and functionality are owned by Prop Capitals and are protected by international copyright, trademark, and other intellectual property laws.
+                {t('terms.intellectualProperty.content')}
               </p>
             </section>
 
             <section>
-              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>8. Limitation of Liability</h2>
+              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('terms.limitationOfLiability.title')}</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                Prop Capitals shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of the Service. Our total liability shall not exceed the amount paid by you for the Service in the 12 months preceding the claim.
+                {t('terms.limitationOfLiability.content')}
               </p>
             </section>
 
             <section>
-              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>9. Governing Law</h2>
+              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('terms.governingLaw.title')}</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                These Terms shall be governed by and construed in accordance with the laws of England and Wales, without regard to its conflict of law provisions.
+                {t('terms.governingLaw.content')}
               </p>
             </section>
 
             <section>
-              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>10. Contact Us</h2>
+              <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('terms.contact.title')}</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                If you have any questions about these Terms, please contact us at:<br />
+                {t('terms.contact.intro')}<br />
                 <strong className={isDark ? 'text-white' : 'text-slate-900'}>BLUEHAVEN MANAGEMENT LTD</strong><br />
-                Email: legal@prop-capitals.com<br />
-                Address: 60 TOTTENHAM COURT ROAD, OFFICE 469, LONDON, ENGLAND
+                {t('terms.contact.emailLabel')}: legal@prop-capitals.com<br />
+                {t('terms.contact.addressLabel')}: 60 TOTTENHAM COURT ROAD, OFFICE 469, LONDON, ENGLAND
               </p>
             </section>
           </div>

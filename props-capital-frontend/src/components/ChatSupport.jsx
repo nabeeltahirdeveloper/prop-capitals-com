@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User, Minimize2, Maximize2, Loader2, UserCheck } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 import { useChatSupportStore } from '@/lib/stores/chat-support.store';
 import ReactMarkdown from 'react-markdown';
 
 const ChatSupport = () => {
   const { isDark } = useTheme();
+  const { t, language } = useTranslation();
   const isOpen = useChatSupportStore((state) => state.isOpen);
   const isMinimized = useChatSupportStore((state) => state.isMinimized);
   const openChat = useChatSupportStore((state) => state.openChat);
@@ -15,7 +17,7 @@ const ChatSupport = () => {
   const [messages, setMessages] = useState([
     {
       type: 'bot',
-      text: "Hi! I'm the Prop Capitals AI assistant. How can I help you today? Ask me about challenges, trading rules, payouts, or anything else!",
+      text: t('chatSupport.greeting'),
       timestamp: new Date()
     }
   ]);
@@ -120,7 +122,8 @@ const ChatSupport = () => {
         headers,
         body: JSON.stringify({
           sessionId: sessionId || undefined,
-          message: currentMessage
+          message: currentMessage,
+          language
         })
       });
 
@@ -132,13 +135,13 @@ const ChatSupport = () => {
       // the generic "I could not generate a response." fallback, which made
       // transient failures look like the bot simply had nothing to say.
       if (!response.ok) {
-        const serverMsg = data?.message || "Something went wrong on our end.";
+        const serverMsg = data?.message || t('chatSupport.errors.generic');
         const canRetry = response.status >= 500 || response.status === 429;
         setMessages(prev => [...prev, {
           type: 'bot',
           text: canRetry
-            ? `${serverMsg} Please try again in a moment, or use the Human Support button below.`
-            : `${serverMsg} Please use the Human Support button below or email support@prop-capitals.com.`,
+            ? t('chatSupport.errors.retry', { message: serverMsg })
+            : t('chatSupport.errors.contactSupport', { message: serverMsg }),
           timestamp: new Date()
         }]);
         return;
@@ -150,7 +153,7 @@ const ChatSupport = () => {
 
       setMessages(prev => [...prev, {
         type: 'bot',
-        text: data.reply || "I could not generate a response.",
+        text: data.reply || t('chatSupport.errors.noResponse'),
         timestamp: new Date()
       }]);
     } catch (error) {
@@ -158,7 +161,7 @@ const ChatSupport = () => {
       setIsTyping(false);
       setMessages(prev => [...prev, {
         type: 'bot',
-        text: "I'm having trouble connecting right now. Please try again or contact support@prop-capitals.com directly.",
+        text: t('chatSupport.errors.connection'),
         timestamp: new Date()
       }]);
     }
@@ -196,11 +199,11 @@ const ChatSupport = () => {
       setHumanFormData({ name: '', email: '', message: '', category: 'OTHER' });
 
       if (response.ok && savedTicketId) {
-        const categoryLabel = savedCategory.charAt(0) + savedCategory.slice(1).toLowerCase();
+        const categoryLabel = t(`chatSupport.categories.${savedCategory}`);
         const isLoggedIn = !!token;
-        let text = `Thanks! Your support ticket has been created under ${categoryLabel}. Our team will reply as soon as possible.`;
+        let text = t('chatSupport.ticket.created', { category: categoryLabel });
         if (isLoggedIn) {
-          text += ` You can continue the conversation from your Support Tickets page.`;
+          text += ` ${t('chatSupport.ticket.continueFromTickets')}`;
         }
         setMessages(prev => [...prev, {
           type: 'bot',
@@ -210,10 +213,10 @@ const ChatSupport = () => {
           timestamp: new Date(),
         }]);
       } else {
-        const errMsg = data?.message || "There was an issue submitting your request.";
+        const errMsg = data?.message || t('chatSupport.ticket.submitIssue');
         setMessages(prev => [...prev, {
           type: 'bot',
-          text: `${errMsg} Please email us directly at support@prop-capitals.com.`,
+          text: t('chatSupport.ticket.emailFallback', { message: errMsg }),
           timestamp: new Date(),
         }]);
       }
@@ -221,7 +224,7 @@ const ChatSupport = () => {
       console.error('Human support request error:', error);
       setMessages(prev => [...prev, {
         type: 'bot',
-        text: "Failed to submit your request. Please email us directly at support@prop-capitals.com.",
+        text: t('chatSupport.ticket.submitFailed'),
         timestamp: new Date(),
       }]);
     }
@@ -274,7 +277,7 @@ const ChatSupport = () => {
                 <h3 className={`font-bold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>Prop Capitals AI</h3>
                 <p className="text-emerald-500 text-xs flex items-center gap-1">
                   <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                  Online
+                  {t('chatSupport.online')}
                 </p>
               </div>
             </div>
@@ -341,7 +344,7 @@ const ChatSupport = () => {
                               href={`/traderdashboard/support/tickets/${msg.ticketId}`}
                               className="inline-block mt-2 text-xs font-semibold underline text-amber-600 hover:text-amber-500"
                             >
-                              Open Ticket
+                              {t('chatSupport.ticket.openTicket')}
                             </a>
                           )}
                         </div>
@@ -366,13 +369,13 @@ const ChatSupport = () => {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <UserCheck className="w-4 h-4 text-amber-500" />
-                        <span className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>Human Support</span>
+                        <span className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('chatSupport.humanSupport')}</span>
                       </div>
                       <button
                         type="button"
                         onClick={() => setShowHumanForm(false)}
                         className={`p-1 rounded-md transition-colors ${isDark ? 'hover:bg-white/10 text-gray-400' : 'hover:bg-slate-100 text-slate-500'}`}
-                        aria-label="Close form"
+                        aria-label={t('chatSupport.form.closeForm')}
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -380,7 +383,7 @@ const ChatSupport = () => {
                     <form onSubmit={handleHumanFormSubmit} className="space-y-2">
                       <input
                         type="text"
-                        placeholder="Your Name"
+                        placeholder={t('chatSupport.form.namePlaceholder')}
                         value={humanFormData.name}
                         onChange={(e) => setHumanFormData({ ...humanFormData, name: e.target.value })}
                         required
@@ -391,7 +394,7 @@ const ChatSupport = () => {
                       />
                       <input
                         type="email"
-                        placeholder="Your Email"
+                        placeholder={t('chatSupport.form.emailPlaceholder')}
                         value={humanFormData.email}
                         onChange={(e) => setHumanFormData({ ...humanFormData, email: e.target.value })}
                         required
@@ -408,14 +411,14 @@ const ChatSupport = () => {
                           : 'bg-slate-50 border border-slate-200 text-slate-900'
                           }`}
                       >
-                        <option value="ACCOUNT">Account</option>
-                        <option value="PAYMENT">Payment</option>
-                        <option value="PAYOUT">Payout</option>
-                        <option value="TECHNICAL">Technical</option>
-                        <option value="OTHER">Other</option>
+                        <option value="ACCOUNT">{t('chatSupport.categories.ACCOUNT')}</option>
+                        <option value="PAYMENT">{t('chatSupport.categories.PAYMENT')}</option>
+                        <option value="PAYOUT">{t('chatSupport.categories.PAYOUT')}</option>
+                        <option value="TECHNICAL">{t('chatSupport.categories.TECHNICAL')}</option>
+                        <option value="OTHER">{t('chatSupport.categories.OTHER')}</option>
                       </select>
                       <textarea
-                        placeholder="Describe your issue..."
+                        placeholder={t('chatSupport.form.messagePlaceholder')}
                         value={humanFormData.message}
                         onChange={(e) => setHumanFormData({ ...humanFormData, message: e.target.value })}
                         required
@@ -432,13 +435,13 @@ const ChatSupport = () => {
                           className={`flex-1 py-2 rounded-lg text-xs font-medium ${isDark ? 'bg-white/10 text-gray-400 hover:bg-white/20' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                             }`}
                         >
-                          Cancel
+                          {t('chatSupport.form.cancel')}
                         </button>
                         <button
                           type="submit"
                           className="flex-1 py-2 bg-gradient-to-r from-amber-400 to-amber-500 text-[#0a0d12] rounded-lg text-xs font-bold hover:from-amber-500 hover:to-amber-600"
                         >
-                          Submit
+                          {t('chatSupport.form.submit')}
                         </button>
                       </div>
                     </form>
@@ -455,7 +458,7 @@ const ChatSupport = () => {
                         }`}>
                         <div className="flex items-center gap-2">
                           <Loader2 className={`w-4 h-4 animate-spin ${isDark ? 'text-amber-400' : 'text-amber-500'}`} />
-                          <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Thinking...</span>
+                          <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('chatSupport.thinking')}</span>
                         </div>
                       </div>
                     </div>
@@ -473,22 +476,22 @@ const ChatSupport = () => {
                     {messages.length < 4 && (
                       <>
                         <button
-                          onClick={() => handleQuickReply("What challenges do you offer?")}
+                          onClick={() => handleQuickReply(t('chatSupport.quickReplies.challengesPrompt'))}
                           className={`text-xs px-2.5 py-1.5 rounded-full transition-colors border font-medium ${isDark ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 hover:bg-amber-500/30' : 'bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100'}`}
                         >
-                          Challenges
+                          {t('chatSupport.quickReplies.challenges')}
                         </button>
                         <button
-                          onClick={() => handleQuickReply("How do payouts work?")}
+                          onClick={() => handleQuickReply(t('chatSupport.quickReplies.payoutsPrompt'))}
                           className={`text-xs px-2.5 py-1.5 rounded-full transition-colors border font-medium ${isDark ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 hover:bg-amber-500/30' : 'bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100'}`}
                         >
-                          Payouts
+                          {t('chatSupport.quickReplies.payouts')}
                         </button>
                         <button
-                          onClick={() => handleQuickReply("Trading rules?")}
+                          onClick={() => handleQuickReply(t('chatSupport.quickReplies.rulesPrompt'))}
                           className={`text-xs px-2.5 py-1.5 rounded-full transition-colors border font-medium ${isDark ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 hover:bg-amber-500/30' : 'bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100'}`}
                         >
-                          Rules
+                          {t('chatSupport.quickReplies.rules')}
                         </button>
                       </>
                     )}
@@ -502,7 +505,7 @@ const ChatSupport = () => {
                       data-testid="human-support-button"
                     >
                       <UserCheck className="w-3 h-3" />
-                      Human Support
+                      {t('chatSupport.humanSupport')}
                     </button>
                   </div>
                 </div>
@@ -517,7 +520,7 @@ const ChatSupport = () => {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                    placeholder="Type your message..."
+                    placeholder={t('chatSupport.inputPlaceholder')}
                     className={`flex-1 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 ${isDark
                       ? 'bg-[#12161d] border border-white/10 text-white placeholder-gray-500'
                       : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
@@ -539,8 +542,8 @@ const ChatSupport = () => {
                 </div>
                 {!localStorage.getItem('token') && (
                   <p className={`mt-2 text-[11px] text-center ${isDark ? 'text-gray-500' : 'text-slate-400'}`}>
-                    <a href="/SignIn" className="font-medium text-amber-500 hover:text-amber-400 underline">Log in</a>
-                    {' '}for account-specific help (balance, trades, payouts).
+                    <a href="/SignIn" className="font-medium text-amber-500 hover:text-amber-400 underline">{t('chatSupport.login.linkText')}</a>
+                    {' '}{t('chatSupport.login.suffix')}
                   </p>
                 )}
                 {/* Safe area padding for mobile */}

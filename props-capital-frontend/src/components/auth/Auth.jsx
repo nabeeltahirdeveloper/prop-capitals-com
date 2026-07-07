@@ -143,17 +143,17 @@ const Auth = () => {
     e.preventDefault();
 
     if (signupData.password !== signupData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('auth.errors.passwordsNotMatch'));
       return;
     }
 
     if (!signupData.agreeTerms) {
-      setError('Please agree to the Terms of Service and Privacy Policy');
+      setError(t('auth.errors.agreeTerms'));
       return;
     }
 
     if (!signupData.confirmedAge) {
-      setError('Please confirm you are over 18 years old');
+      setError(t('auth.errors.confirmAge'));
       return;
     }
 
@@ -189,11 +189,12 @@ const Auth = () => {
     });
   };
 
+  const passwordRequirementLabels = t('auth.passwordRequirements', { returnObjects: true });
   const passwordRequirements = [
-    { label: '8+ characters', met: signupData.password.length >= 8 },
-    { label: 'One uppercase', met: /[A-Z]/.test(signupData.password) },
-    { label: 'One number', met: /[0-9]/.test(signupData.password) },
-    { label: 'One special char', met: /[!@#$%^&*]/.test(signupData.password) }
+    { label: passwordRequirementLabels[0], met: signupData.password.length >= 8 },
+    { label: passwordRequirementLabels[1], met: /[A-Z]/.test(signupData.password) },
+    { label: passwordRequirementLabels[2], met: /[0-9]/.test(signupData.password) },
+    { label: passwordRequirementLabels[3], met: /[!@#$%^&*]/.test(signupData.password) }
   ];
 
   useEffect(() => {
@@ -242,7 +243,7 @@ const Auth = () => {
                 : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                 }`}
             >
-              Sign In
+              {t('auth.tabSignIn')}
             </button>
             <button
               onClick={() => { setActiveTab('signup'); setError(''); }}
@@ -251,7 +252,7 @@ const Auth = () => {
                 : isDark ? 'text-gray-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                 }`}
             >
-              Sign Up
+              {t('auth.tabSignUp')}
             </button>
           </div>
 
@@ -267,7 +268,7 @@ const Auth = () => {
           {activeTab === 'login' && (
             <form onSubmit={handleLoginSubmit} className="space-y-5">
               <div>
-                <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Email Address</label>
+                <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('auth.emailLabel')}</label>
                 <div className="relative">
                   <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                   <input
@@ -280,14 +281,14 @@ const Auth = () => {
                       ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500'
                       : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
                       }`}
-                    placeholder="trader@example.com"
+                    placeholder={t('auth.emailPlaceholder')}
                     data-testid="auth-login-email"
                   />
                 </div>
               </div>
 
               <div>
-                <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Password</label>
+                <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('auth.passwordLabel')}</label>
                 <div className="relative">
                   <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                   <input
@@ -300,7 +301,7 @@ const Auth = () => {
                       ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500'
                       : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
                       }`}
-                    placeholder="Enter your password"
+                    placeholder={t('auth.passwordPlaceholder')}
                     data-testid="auth-login-password"
                   />
                   <button
@@ -321,10 +322,10 @@ const Auth = () => {
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className={`w-4 h-4 rounded text-amber-500 focus:ring-amber-500/50 ${isDark ? 'border-white/20 bg-[#0a0d12]' : 'border-slate-300 bg-white'}`}
                   />
-                  <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>Remember me</span>
+                  <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>{t('auth.rememberMe')}</span>
                 </label>
                 <Link to="/forgot-password" className="text-amber-500 text-sm hover:text-amber-400 transition-colors">
-                  Forgot password?
+                  {t('auth.forgotPassword')}
                 </Link>
               </div>
 
@@ -337,10 +338,10 @@ const Auth = () => {
                 {loginMutation.isPending ? (
                   <div className="flex items-center gap-2">
                     <div className="w-5 h-5 border-2 border-[#0a0d12]/30 border-t-[#0a0d12] rounded-full animate-spin"></div>
-                    Signing in...
+                    {t('auth.signingIn')}
                   </div>
                 ) : (
-                  <>Sign In<ArrowRight className="ml-2 w-5 h-5" /></>
+                  <>{t('auth.signInButton')}<ArrowRight className="ml-2 w-5 h-5" /></>
                 )}
               </Button>
             </form>
@@ -353,7 +354,7 @@ const Auth = () => {
                 <form onSubmit={handleSignupSubmit} className="space-y-4">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>First Name</label>
+                      <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('auth.firstNameLabel')}</label>
                       <div className="relative">
                         <User className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                         <input
@@ -366,12 +367,12 @@ const Auth = () => {
                             ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500'
                             : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
                             }`}
-                          placeholder="John"
+                          placeholder={t('auth.firstNamePlaceholder')}
                         />
                       </div>
                     </div>
                     <div>
-                      <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Last Name</label>
+                      <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('auth.lastNameLabel')}</label>
                       <input
                         type="text"
                         name="lastName"
@@ -382,13 +383,13 @@ const Auth = () => {
                           ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500'
                           : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
                           }`}
-                        placeholder="Doe"
+                        placeholder={t('auth.lastNamePlaceholder')}
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Email Address</label>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('auth.emailLabel')}</label>
                     <div className="relative">
                       <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                       <input
@@ -401,13 +402,13 @@ const Auth = () => {
                           ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500'
                           : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
                           }`}
-                        placeholder="trader@example.com"
+                        placeholder={t('auth.emailPlaceholder')}
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Password</label>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('auth.passwordLabel')}</label>
                     <div className="relative">
                       <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                       <input
@@ -420,7 +421,7 @@ const Auth = () => {
                           ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500'
                           : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
                           }`}
-                        placeholder="Create a strong password"
+                        placeholder={t('auth.createPasswordPlaceholder')}
                       />
                       <button
                         type="button"
@@ -444,7 +445,7 @@ const Auth = () => {
                   </div>
 
                   <div>
-                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Confirm Password</label>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('auth.confirmPasswordLabel')}</label>
                     <div className="relative">
                       <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-gray-500' : 'text-slate-400'}`} />
                       <input
@@ -458,7 +459,7 @@ const Auth = () => {
                             ? 'bg-[#0a0d12] border border-white/10 text-white placeholder-gray-500 focus:border-amber-500/50'
                             : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:border-amber-500/50'
                         } ${signupData.confirmPassword && signupData.password !== signupData.confirmPassword ? '!border-red-500' : ''}`}
-                        placeholder="Confirm your password"
+                        placeholder={t('auth.confirmPasswordPlaceholder')}
                       />
                     </div>
                   </div>
@@ -472,10 +473,10 @@ const Auth = () => {
                       className={`w-4 h-4 mt-1 rounded text-amber-500 focus:ring-amber-500/50 ${isDark ? 'border-white/20 bg-[#0a0d12]' : 'border-slate-300 bg-white'}`}
                     />
                     <label className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                      I agree to the{' '}
-                      <Link to="/terms" className="text-amber-500 hover:text-amber-400">Terms of Service</Link>
-                      {' '}and{' '}
-                      <Link to="/privacy" className="text-amber-500 hover:text-amber-400">Privacy Policy</Link>
+                      {t('auth.agreePrefix')}{' '}
+                      <Link to="/terms" className="text-amber-500 hover:text-amber-400">{t('auth.termsOfService')}</Link>
+                      {' '}{t('auth.agreeAnd')}{' '}
+                      <Link to="/privacy" className="text-amber-500 hover:text-amber-400">{t('auth.privacyPolicy')}</Link>
                     </label>
                   </div>
 
@@ -489,7 +490,7 @@ const Auth = () => {
                       className={`w-4 h-4 mt-1 rounded text-amber-500 focus:ring-amber-500/50 ${isDark ? 'border-white/20 bg-[#0a0d12]' : 'border-slate-300 bg-white'}`}
                     />
                     <label className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                      I confirm I am over 18 years old <span className="text-red-500">*</span>
+                      {t('auth.confirmAgeLabel')} <span className="text-red-500">*</span>
                     </label>
                   </div>
 
@@ -501,21 +502,21 @@ const Auth = () => {
                     {requestOtpMutation.isPending ? (
                       <div className="flex items-center gap-2">
                         <Loader2 className="w-5 h-5 animate-spin" />
-                        Creating account...
+                        {t('auth.creatingAccount')}
                       </div>
                     ) : (
-                      <>Create Account<ArrowRight className="ml-2 w-5 h-5" /></>
+                      <>{t('auth.createAccountButton')}<ArrowRight className="ml-2 w-5 h-5" /></>
                     )}
                   </Button>
                 </form>
               ) : (
                 <form onSubmit={handleVerifyOtp} className="space-y-6">
                   <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                    OTP sent to <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{signupData.email}</span>
+                    {t('auth.otpSentTo')} <span className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{signupData.email}</span>
                   </div>
 
                   <div className="space-y-2">
-                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>Enter OTP</label>
+                    <label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{t('auth.enterOtp')}</label>
                     <div className="flex justify-center">
                       <InputOTP
                         maxLength={6}
@@ -543,10 +544,10 @@ const Auth = () => {
                     {verifyOtpMutation.isPending ? (
                       <div className="flex items-center gap-2">
                         <Loader2 className="w-5 h-5 animate-spin" />
-                        Verifying...
+                        {t('auth.verifying')}
                       </div>
                     ) : (
-                      <>Verify OTP<ArrowRight className="ml-2 w-5 h-5" /></>
+                      <>{t('auth.verifyOtpButton')}<ArrowRight className="ml-2 w-5 h-5" /></>
                     )}
                   </Button>
 
@@ -559,7 +560,7 @@ const Auth = () => {
                       }}
                       className={`${isDark ? 'text-gray-500 hover:text-gray-300' : 'text-slate-400 hover:text-slate-200'} transition-colors`}
                     >
-                      Change Email
+                      {t('auth.changeEmail')}
                     </button>
 
                     <button
@@ -574,8 +575,8 @@ const Auth = () => {
                       `}
                     >
                       {cooldownSeconds > 0
-                        ? `Resend in ${cooldownSeconds}s`
-                        : 'Resend Code'}
+                        ? t('auth.resendIn', { seconds: cooldownSeconds })
+                        : t('auth.resendCode')}
                     </button>
                   </div>
                 </form>
@@ -621,7 +622,7 @@ const Auth = () => {
         {/* Back to Home */}
         <div className="text-center mt-6">
           <Link to="/" className={`text-sm transition-colors ${isDark ? 'text-gray-500 hover:text-gray-300' : 'text-slate-400 hover:text-slate-600'}`}>
-            ← Back to Home
+            ← {t('auth.backToHome')}
           </Link>
         </div>
       </div>

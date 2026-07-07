@@ -1,9 +1,11 @@
 import { useSearchParams } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const PayLinkFail = () => {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const reference = searchParams.get('reference');
 
@@ -19,20 +21,20 @@ const PayLinkFail = () => {
         <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
           <AlertTriangle className="w-10 h-10 text-red-500" />
         </div>
-        <h2 className={`text-2xl font-bold mb-2 ${textClass}`}>Payment Cancelled</h2>
+        <h2 className={`text-2xl font-bold mb-2 ${textClass}`}>{t('payLink.fail.title')}</h2>
         <p className={`mb-6 ${mutedClass}`}>
-          Your payment was not completed. No charges were made to your card.
+          {t('payLink.fail.description')}
         </p>
         {reference && (
           <p className={`text-sm mb-6 ${mutedClass}`}>
-            Reference: <span className="font-mono">{reference}</span>
+            {t('worldCardFail.reference')} <span className="font-mono">{reference}</span>
           </p>
         )}
         <p className={mutedClass}>
-          You can return to the original link to try again, or contact the merchant who shared it with you.
+          {t('payLink.fail.retryHint')}
         </p>
         <p className={`text-sm mt-4 ${mutedClass}`}>
-          Need help? Email <a href="mailto:support@prop-capitals.com" className="text-amber-500 hover:underline">support@prop-capitals.com</a>.
+          {t('payLink.fail.needHelp')} <a href="mailto:support@prop-capitals.com" className="text-amber-500 hover:underline">support@prop-capitals.com</a>.
         </p>
       </div>
     </div>

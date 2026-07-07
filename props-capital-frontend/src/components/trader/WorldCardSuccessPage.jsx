@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { CheckCircle2, Loader2, AlertTriangle, ArrowRight, Mail, Download, ExternalLink } from 'lucide-react';
 import { useTraderTheme } from './TraderPanelLayout';
+import { useTranslation } from '@/contexts/LanguageContext';
 import { getPaymentStatus } from '@/api/payments';
 
 const POLL_INTERVAL = 3000;
@@ -10,6 +11,7 @@ const POLL_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 
 const WorldCardSuccessPage = () => {
   const { isDark } = useTraderTheme();
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const reference = searchParams.get('reference');
   const pollStart = useRef(Date.now());
@@ -37,10 +39,10 @@ const WorldCardSuccessPage = () => {
     return (
       <div className={`${cardClass} p-12 text-center`}>
         <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-        <h2 className={`text-xl font-bold mb-2 ${textClass}`}>Missing Payment Reference</h2>
-        <p className={mutedClass}>No payment reference found. Please check your email or contact support.</p>
+        <h2 className={`text-xl font-bold mb-2 ${textClass}`}>{t('worldCardSuccess.missingReferenceTitle')}</h2>
+        <p className={mutedClass}>{t('worldCardSuccess.missingReferenceDesc')}</p>
         <Link to="/traderdashboard" className="inline-block mt-6 px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold rounded-xl">
-          Go to Dashboard
+          {t('worldCardSuccess.goToDashboard')}
         </Link>
       </div>
     );
@@ -51,8 +53,8 @@ const WorldCardSuccessPage = () => {
     return (
       <div className={`${cardClass} p-12 text-center`}>
         <Loader2 className="w-12 h-12 text-amber-500 animate-spin mx-auto mb-4" />
-        <h2 className={`text-xl font-bold mb-2 ${textClass}`}>Checking Payment Status...</h2>
-        <p className={mutedClass}>Please wait while we verify your payment.</p>
+        <h2 className={`text-xl font-bold mb-2 ${textClass}`}>{t('worldCardSuccess.checkingStatusTitle')}</h2>
+        <p className={mutedClass}>{t('worldCardSuccess.checkingStatusDesc')}</p>
       </div>
     );
   }
@@ -62,10 +64,10 @@ const WorldCardSuccessPage = () => {
     return (
       <div className={`${cardClass} p-12 text-center`}>
         <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-        <h2 className={`text-xl font-bold mb-2 ${textClass}`}>Unable to Check Payment</h2>
-        <p className={mutedClass}>{error?.message || 'Something went wrong. Please try again.'}</p>
+        <h2 className={`text-xl font-bold mb-2 ${textClass}`}>{t('worldCardSuccess.unableToCheckTitle')}</h2>
+        <p className={mutedClass}>{error?.message || t('worldCardSuccess.genericError')}</p>
         <Link to="/traderdashboard" className="inline-block mt-6 px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold rounded-xl">
-          Go to Dashboard
+          {t('worldCardSuccess.goToDashboard')}
         </Link>
       </div>
     );
@@ -78,19 +80,19 @@ const WorldCardSuccessPage = () => {
         <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
           <CheckCircle2 className="w-10 h-10 text-emerald-500" />
         </div>
-        <h2 className={`text-2xl font-bold mb-2 ${textClass}`}>Purchase Successful!</h2>
-        <p className={`mb-6 ${mutedClass}`}>Your challenge account has been activated. Check your email for platform credentials.</p>
+        <h2 className={`text-2xl font-bold mb-2 ${textClass}`}>{t('worldCardSuccess.purchaseSuccessTitle')}</h2>
+        <p className={`mb-6 ${mutedClass}`}>{t('worldCardSuccess.purchaseSuccessDesc')}</p>
 
         <div className={`rounded-xl p-6 mb-8 text-left max-w-md mx-auto ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
           <div className={`flex justify-between items-center mb-3 pb-3 border-b ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
-            <span className={mutedClass}>Reference</span>
+            <span className={mutedClass}>{t('worldCardSuccess.reference')}</span>
             <span className={`font-mono font-bold text-sm ${textClass}`}>{reference}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className={mutedClass}>Status</span>
+            <span className={mutedClass}>{t('worldCardSuccess.status')}</span>
             <span className="flex items-center gap-2 text-emerald-500 font-medium">
               <span className="w-2 h-2 bg-emerald-500 rounded-full" />
-              Active
+              {t('worldCardSuccess.active')}
             </span>
           </div>
         </div>
@@ -119,11 +121,11 @@ const WorldCardSuccessPage = () => {
 
         <div className="flex justify-center gap-4">
           <Link to="/traderdashboard" className="px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold rounded-xl flex items-center gap-2">
-            Go to Dashboard
+            {t('worldCardSuccess.goToDashboard')}
             <ArrowRight className="w-4 h-4" />
           </Link>
           <Link to="/traderdashboard/trading" className={`px-6 py-3 rounded-xl font-medium ${isDark ? 'bg-white/5 text-white' : 'bg-slate-100 text-slate-900'}`}>
-            Start Trading
+            {t('worldCardSuccess.startTrading')}
           </Link>
         </div>
       </div>
@@ -135,9 +137,9 @@ const WorldCardSuccessPage = () => {
     return (
       <div className={`${cardClass} p-12 text-center`}>
         <Loader2 className="w-12 h-12 text-amber-500 animate-spin mx-auto mb-4" />
-        <h2 className={`text-xl font-bold mb-2 ${textClass}`}>Payment Confirmed!</h2>
-        <p className={mutedClass}>Your payment was successful. Your trading account is being set up — this usually takes a few seconds.</p>
-        <p className={`text-sm mt-4 ${mutedClass}`}>Reference: <span className="font-mono">{reference}</span></p>
+        <h2 className={`text-xl font-bold mb-2 ${textClass}`}>{t('worldCardSuccess.paymentConfirmedTitle')}</h2>
+        <p className={mutedClass}>{t('worldCardSuccess.paymentConfirmedDesc')}</p>
+        <p className={`text-sm mt-4 ${mutedClass}`}>{t('worldCardSuccess.referenceLabel')} <span className="font-mono">{reference}</span></p>
       </div>
     );
   }
@@ -149,15 +151,15 @@ const WorldCardSuccessPage = () => {
         <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
           <AlertTriangle className="w-10 h-10 text-red-500" />
         </div>
-        <h2 className={`text-2xl font-bold mb-2 ${textClass}`}>Payment Failed</h2>
-        <p className={`mb-6 ${mutedClass}`}>Your payment could not be completed. No charges were made.</p>
-        <p className={`text-sm mb-6 ${mutedClass}`}>Reference: <span className="font-mono">{reference}</span></p>
+        <h2 className={`text-2xl font-bold mb-2 ${textClass}`}>{t('worldCardSuccess.paymentFailedTitle')}</h2>
+        <p className={`mb-6 ${mutedClass}`}>{t('worldCardSuccess.paymentFailedDesc')}</p>
+        <p className={`text-sm mb-6 ${mutedClass}`}>{t('worldCardSuccess.referenceLabel')} <span className="font-mono">{reference}</span></p>
         <div className="flex justify-center gap-4">
           <Link to="/traderdashboard/checkout" className="px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold rounded-xl">
-            Try Again
+            {t('worldCardSuccess.tryAgain')}
           </Link>
           <Link to="/traderdashboard" className={`px-6 py-3 rounded-xl font-medium ${isDark ? 'bg-white/5 text-white' : 'bg-slate-100 text-slate-900'}`}>
-            Go to Dashboard
+            {t('worldCardSuccess.goToDashboard')}
           </Link>
         </div>
       </div>
@@ -170,25 +172,25 @@ const WorldCardSuccessPage = () => {
       {timedOut ? (
         <>
           <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-          <h2 className={`text-xl font-bold mb-2 ${textClass}`}>Payment Still Processing</h2>
+          <h2 className={`text-xl font-bold mb-2 ${textClass}`}>{t('worldCardSuccess.stillProcessingTitle')}</h2>
           <p className={mutedClass}>
-            Your payment is taking longer than expected. Don't worry — if the payment was successful, your account will be activated automatically.
+            {t('worldCardSuccess.stillProcessingDesc')}
           </p>
-          <p className={`text-sm mt-2 ${mutedClass}`}>Reference: <span className="font-mono">{reference}</span></p>
+          <p className={`text-sm mt-2 ${mutedClass}`}>{t('worldCardSuccess.referenceLabel')} <span className="font-mono">{reference}</span></p>
           <p className={`text-sm mt-4 ${mutedClass}`}>
-            Check back on your dashboard or contact{' '}
+            {t('worldCardSuccess.contactPrefix')}{' '}
             <a href="mailto:support@prop-capitals.com" className="text-amber-500 hover:underline">support@prop-capitals.com</a>
           </p>
           <Link to="/traderdashboard" className="inline-block mt-6 px-6 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold rounded-xl">
-            Go to Dashboard
+            {t('worldCardSuccess.goToDashboard')}
           </Link>
         </>
       ) : (
         <>
           <Loader2 className="w-12 h-12 text-amber-500 animate-spin mx-auto mb-4" />
-          <h2 className={`text-xl font-bold mb-2 ${textClass}`}>Confirming Your Payment...</h2>
-          <p className={mutedClass}>We're waiting for payment confirmation. This usually takes a few seconds.</p>
-          <p className={`text-sm mt-4 ${mutedClass}`}>Reference: <span className="font-mono">{reference}</span></p>
+          <h2 className={`text-xl font-bold mb-2 ${textClass}`}>{t('worldCardSuccess.confirmingTitle')}</h2>
+          <p className={mutedClass}>{t('worldCardSuccess.confirmingDesc')}</p>
+          <p className={`text-sm mt-4 ${mutedClass}`}>{t('worldCardSuccess.referenceLabel')} <span className="font-mono">{reference}</span></p>
         </>
       )}
     </div>

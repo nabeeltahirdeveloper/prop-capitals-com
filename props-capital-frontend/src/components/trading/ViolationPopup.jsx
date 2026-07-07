@@ -10,15 +10,17 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
 import { XCircle, AlertTriangle, Shield } from 'lucide-react';
+import { useTranslation } from '@/contexts/LanguageContext';
 
-export default function ViolationPopup({ 
-  isOpen, 
-  onClose, 
+export default function ViolationPopup({
+  isOpen,
+  onClose,
   type = 'warning', // 'warning' | 'violation'
   title,
   message,
   details
 }) {
+  const { t } = useTranslation();
   const isViolation = type === 'violation';
 
   return (
@@ -43,12 +45,12 @@ export default function ViolationPopup({
             <AlertDialogTitle className={`text-2xl font-bold ${
               isViolation ? 'text-red-400' : 'text-amber-400'
             }`}>
-              {title || (isViolation ? 'Challenge Failed' : 'Warning')}
+              {title || (isViolation ? t('violationPopup.challengeFailed') : t('violationPopup.warning'))}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-slate-300 mt-2 text-base">
-              {message || (isViolation 
-                ? 'A rule violation has been detected on your account.' 
-                : 'You are approaching a rule limit.'
+              {message || (isViolation
+                ? t('violationPopup.violationMessage')
+                : t('violationPopup.warningMessage')
               )}
             </AlertDialogDescription>
           </div>
@@ -61,7 +63,7 @@ export default function ViolationPopup({
             <div className="flex items-center gap-2 mb-2">
               <Shield className={`w-4 h-4 ${isViolation ? 'text-red-400' : 'text-amber-400'}`} />
               <span className={`font-medium ${isViolation ? 'text-red-400' : 'text-amber-400'}`}>
-                Details
+                {t('violationPopup.details')}
               </span>
             </div>
             <p className="text-slate-300 text-sm">{details}</p>
@@ -78,7 +80,7 @@ export default function ViolationPopup({
                   : 'bg-amber-500 hover:bg-amber-600'
               } text-white`}
             >
-              {isViolation ? 'I Understand' : 'Continue Trading'}
+              {isViolation ? t('violationPopup.iUnderstand') : t('violationPopup.continueTrading')}
             </Button>
           </AlertDialogAction>
         </AlertDialogFooter>

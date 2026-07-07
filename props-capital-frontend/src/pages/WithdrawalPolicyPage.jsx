@@ -10,9 +10,11 @@ import {
   CreditCard,
 } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const WithdrawalPolicyPage = () => {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <div className={`min-h-screen pt-20 ${isDark ? 'bg-[#0a0d12]' : 'bg-slate-50'}`}>
@@ -27,10 +29,10 @@ const WithdrawalPolicyPage = () => {
                 isDark ? 'text-white' : 'text-slate-900'
               }`}
             >
-              Withdrawal (Payout) Policy
+              {t('withdrawalPolicy.pageTitle')}
             </h1>
             <p className={isDark ? 'text-gray-400' : 'text-slate-500'}>
-              How and when profit withdrawals are processed for funded accounts
+              {t('withdrawalPolicy.pageSubtitle')}
             </p>
           </div>
 
@@ -46,13 +48,10 @@ const WithdrawalPolicyPage = () => {
                 }`}
               >
                 <Shield className="w-5 h-5 text-amber-500" />
-                1. General Provisions
+                {t('withdrawalPolicy.section1.heading')}
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                This Withdrawal Policy (&quot;Policy&quot;) governs the conditions under which eligible
-                Clients may request and receive profit withdrawals from their funded trading accounts.
-                By participating in funded trading programs, the Client agrees to be bound by this
-                Policy, the Terms and Conditions, and all related platform rules.
+                {t('withdrawalPolicy.section1.p1')}
               </p>
             </section>
 
@@ -63,18 +62,14 @@ const WithdrawalPolicyPage = () => {
                 }`}
               >
                 <CheckCircle2 className="w-5 h-5 text-amber-500" />
-                2. Payout Eligibility
+                {t('withdrawalPolicy.section2.heading')}
               </h2>
               <p className={`leading-relaxed mb-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                2.1. The Client shall become eligible to request a withdrawal after completing
-                fourteen (14) consecutive calendar days of funded trading activity, provided all
-                trading rules and risk management requirements have been fully complied with.
+                {t('withdrawalPolicy.section2.p1')}
               </p>
-              
+
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                2.2. Eligibility for subsequent withdrawals shall be subject to ongoing compliance
-                with all platform policies, including but not limited to trading conduct, risk
-                limits, and account integrity.
+                {t('withdrawalPolicy.section2.p2')}
               </p>
             </section>
 
@@ -85,15 +80,13 @@ const WithdrawalPolicyPage = () => {
                 }`}
               >
                 <Clock className="w-5 h-5 text-amber-500" />
-                3. Payout Frequency
+                {t('withdrawalPolicy.section3.heading')}
               </h2>
               <p className={`leading-relaxed mb-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                3.1. Withdrawal requests may be submitted on a bi-weekly basis, defined as once
-                every fourteen (14) calendar days.
+                {t('withdrawalPolicy.section3.p1')}
               </p>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                3.2. The Company reserves the right to modify payout schedules at its discretion,
-                subject to prior notice where required by applicable law.
+                {t('withdrawalPolicy.section3.p2')}
               </p>
             </section>
 
@@ -104,15 +97,13 @@ const WithdrawalPolicyPage = () => {
                 }`}
               >
                 <DollarSign className="w-5 h-5 text-amber-500" />
-                4. Withdrawal Amounts
+                {t('withdrawalPolicy.section4.heading')}
               </h2>
               <p className={`leading-relaxed mb-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                4.1. The minimum withdrawal amount per request is USD 50 (fifty United States
-                dollars).
+                {t('withdrawalPolicy.section4.p1')}
               </p>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                4.2. There is no maximum withdrawal limit, provided the requested amount represents
-                legitimately earned profits in accordance with platform rules.
+                {t('withdrawalPolicy.section4.p2')}
               </p>
             </section>
 
@@ -123,15 +114,13 @@ const WithdrawalPolicyPage = () => {
                 }`}
               >
                 <Clock className="w-5 h-5 text-amber-500" />
-                5. Processing Time
+                {t('withdrawalPolicy.section5.heading')}
               </h2>
               <p className={`leading-relaxed mb-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                5.1. Approved withdrawal requests shall be processed within twenty-four (24) to
-                forty-eight (48) hours from the time of submission.
+                {t('withdrawalPolicy.section5.p1')}
               </p>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                5.2. Processing times may be extended due to compliance reviews, technical issues,
-                payment provider delays, or force majeure events.
+                {t('withdrawalPolicy.section5.p2')}
               </p>
             </section>
 
@@ -142,14 +131,13 @@ const WithdrawalPolicyPage = () => {
                 }`}
               >
                 <CreditCard className="w-5 h-5 text-amber-500" />
-                6. Fees
+                {t('withdrawalPolicy.section6.heading')}
               </h2>
               <p className={`leading-relaxed mb-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                6.1. The Company does not charge any withdrawal fees.
+                {t('withdrawalPolicy.section6.p1')}
               </p>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                6.2. Any third-party fees imposed by banks, payment processors, or intermediaries
-                are the sole responsibility of the Client.
+                {t('withdrawalPolicy.section6.p2')}
               </p>
             </section>
 
@@ -160,15 +148,13 @@ const WithdrawalPolicyPage = () => {
                 }`}
               >
                 <Shield className="w-5 h-5 text-amber-500" />
-                7. Compliance and Verification
+                {t('withdrawalPolicy.section7.heading')}
               </h2>
               <p className={`leading-relaxed mb-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                7.1. All withdrawal requests are subject to standard Know Your Customer (KYC),
-                Anti-Money Laundering (AML), and fraud prevention checks.
+                {t('withdrawalPolicy.section7.p1')}
               </p>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                7.2. The Company reserves the right to request additional documentation or
-                clarification prior to approving any withdrawal.
+                {t('withdrawalPolicy.section7.p2')}
               </p>
             </section>
 
@@ -179,16 +165,13 @@ const WithdrawalPolicyPage = () => {
                 }`}
               >
                 <AlertTriangle className="w-5 h-5 text-amber-500" />
-                8. Violations and Withholding
+                {t('withdrawalPolicy.section8.heading')}
               </h2>
               <p className={`leading-relaxed mb-4 ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                8.1. The Company reserves the right to delay, suspend, reduce, or deny withdrawals
-                in cases of suspected rule violations, abusive trading practices, manipulation, or
-                breach of contractual obligations.
+                {t('withdrawalPolicy.section8.p1')}
               </p>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                8.2. Any profits derived from prohibited or non-compliant trading activity shall be
-                deemed invalid and non-withdrawable.
+                {t('withdrawalPolicy.section8.p2')}
               </p>
             </section>
 
@@ -199,11 +182,10 @@ const WithdrawalPolicyPage = () => {
                 }`}
               >
                 <HelpCircle className="w-5 h-5 text-amber-500" />
-                9. Amendments
+                {t('withdrawalPolicy.section9.heading')}
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                9.1. The Company may amend this Policy at any time. Updated versions shall become
-                effective upon publication on the Company’s website unless otherwise stated.
+                {t('withdrawalPolicy.section9.p1')}
               </p>
             </section>
 
@@ -214,12 +196,10 @@ const WithdrawalPolicyPage = () => {
                 }`}
               >
                 <Shield className="w-5 h-5 text-amber-500" />
-                10. Governing Law
+                {t('withdrawalPolicy.section10.heading')}
               </h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                This Policy shall be governed by and construed in accordance with the laws
-                applicable to the Company’s jurisdiction of operation, without regard to conflict of
-                law principles.
+                {t('withdrawalPolicy.section10.p1')}
               </p>
             </section>
           </div>

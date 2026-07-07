@@ -18,66 +18,23 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 const scenes = [
-  {
-    id: 'intro',
-    duration: 4000,
-    title: 'What is Prop Trading?',
-    subtitle: 'Trade with our capital, keep the profits'
-  },
-  {
-    id: 'problem',
-    duration: 5000,
-    title: 'The Challenge',
-    subtitle: 'Most traders lack sufficient capital to generate meaningful returns'
-  },
-  {
-    id: 'solution',
-    duration: 5000,
-    title: 'Our Solution',
-    subtitle: 'We provide the capital, you provide the skill'
-  },
-  {
-    id: 'step1',
-    duration: 5000,
-    title: 'Step 1: Choose Your Challenge',
-    subtitle: 'Select an account size from $10K to $200K'
-  },
-  {
-    id: 'step2',
-    duration: 5000,
-    title: 'Step 2: Prove Your Skills',
-    subtitle: 'Reach the profit target while managing risk'
-  },
-  {
-    id: 'step3',
-    duration: 5000,
-    title: 'Step 3: Get Funded',
-    subtitle: 'Pass the evaluation and receive real capital'
-  },
-  {
-    id: 'profits',
-    duration: 5000,
-    title: 'Keep Up to 90% Profits',
-    subtitle: 'Your skills, our capital, shared success'
-  },
-  {
-    id: 'scale',
-    duration: 5000,
-    title: 'Scale to $2 Million',
-    subtitle: 'Grow your account through consistent performance'
-  },
-  {
-    id: 'cta',
-    duration: 4000,
-    title: 'Start Your Journey Today',
-    subtitle: 'Join thousands of funded traders worldwide'
-  }
+  { id: 'intro', duration: 4000 },
+  { id: 'problem', duration: 5000 },
+  { id: 'solution', duration: 5000 },
+  { id: 'step1', duration: 5000 },
+  { id: 'step2', duration: 5000 },
+  { id: 'step3', duration: 5000 },
+  { id: 'profits', duration: 5000 },
+  { id: 'scale', duration: 5000 },
+  { id: 'cta', duration: 4000 }
 ];
 
 export default function PropTradingExplainer() {
   const { cur } = useCurrency();
+  const { t } = useTranslation();
   const [currentScene, setCurrentScene] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -120,6 +77,8 @@ export default function PropTradingExplainer() {
   };
 
   const scene = scenes[currentScene];
+  const sceneTitle = t(`propTradingExplainer.scenes.${scene.id}.title`);
+  const sceneSubtitle = t(`propTradingExplainer.scenes.${scene.id}.subtitle`);
 
   return (
     <div className="relative w-full aspect-video bg-slate-900 rounded-2xl overflow-hidden border border-slate-800">
@@ -165,7 +124,7 @@ export default function PropTradingExplainer() {
                 transition={{ delay: 0.3 }}
                 className="text-4xl md:text-5xl font-bold text-white mb-4"
               >
-                {scene.title}
+                {sceneTitle}
               </motion.h2>
               <motion.p
                 initial={{ y: 20, opacity: 0 }}
@@ -173,7 +132,7 @@ export default function PropTradingExplainer() {
                 transition={{ delay: 0.5 }}
                 className="text-xl text-slate-400"
               >
-                {scene.subtitle}
+                {sceneSubtitle}
               </motion.p>
             </div>
           )}
@@ -204,8 +163,8 @@ export default function PropTradingExplainer() {
                 transition={{ delay: 0.8 }}
                 className="relative"
               >
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{scene.title}</h2>
-                <p className="text-lg text-slate-400 max-w-xl mx-auto">{scene.subtitle}</p>
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{sceneTitle}</h2>
+                <p className="text-lg text-slate-400 max-w-xl mx-auto">{sceneSubtitle}</p>
               </motion.div>
             </div>
           )}
@@ -223,7 +182,7 @@ export default function PropTradingExplainer() {
                   <div className="w-20 h-20 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-2 border border-emerald-500/30">
                     <Users className="w-10 h-10 text-emerald-400" />
                   </div>
-                  <p className="text-sm text-slate-400">Your Skills</p>
+                  <p className="text-sm text-slate-400">{t('propTradingExplainer.labels.yourSkills')}</p>
                 </motion.div>
                 
                 <motion.div
@@ -243,7 +202,7 @@ export default function PropTradingExplainer() {
                   <div className="w-20 h-20 bg-cyan-500/20 rounded-2xl flex items-center justify-center mx-auto mb-2 border border-cyan-500/30">
                     <DollarSign className="w-10 h-10 text-cyan-400" />
                   </div>
-                  <p className="text-sm text-slate-400">Our Capital</p>
+                  <p className="text-sm text-slate-400">{t('propTradingExplainer.labels.ourCapital')}</p>
                 </motion.div>
                 
                 <motion.div
@@ -263,7 +222,7 @@ export default function PropTradingExplainer() {
                   <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-2">
                     <Award className="w-10 h-10 text-white" />
                   </div>
-                  <p className="text-sm text-emerald-400 font-medium">Success</p>
+                  <p className="text-sm text-emerald-400 font-medium">{t('propTradingExplainer.labels.success')}</p>
                 </motion.div>
               </motion.div>
               
@@ -272,8 +231,8 @@ export default function PropTradingExplainer() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 1 }}
               >
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{scene.title}</h2>
-                <p className="text-lg text-slate-400">{scene.subtitle}</p>
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{sceneTitle}</h2>
+                <p className="text-lg text-slate-400">{sceneSubtitle}</p>
               </motion.div>
             </div>
           )}
@@ -287,7 +246,7 @@ export default function PropTradingExplainer() {
                 className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/20 rounded-full mb-6"
               >
                 <span className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center text-white text-sm font-bold">1</span>
-                <span className="text-emerald-400 font-medium">First Step</span>
+                <span className="text-emerald-400 font-medium">{t('propTradingExplainer.labels.firstStep')}</span>
               </motion.div>
               
               <motion.div className="flex justify-center gap-3 mb-8">
@@ -309,8 +268,8 @@ export default function PropTradingExplainer() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.8 }}
               >
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{scene.title}</h2>
-                <p className="text-lg text-slate-400">{cur(scene.subtitle)}</p>
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{sceneTitle}</h2>
+                <p className="text-lg text-slate-400">{cur(sceneSubtitle)}</p>
               </motion.div>
             </div>
           )}
@@ -324,7 +283,7 @@ export default function PropTradingExplainer() {
                 className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500/20 rounded-full mb-6"
               >
                 <span className="w-6 h-6 bg-cyan-500 rounded-full flex items-center justify-center text-white text-sm font-bold">2</span>
-                <span className="text-cyan-400 font-medium">Evaluation</span>
+                <span className="text-cyan-400 font-medium">{t('propTradingExplainer.labels.evaluation')}</span>
               </motion.div>
               
               <motion.div className="flex justify-center items-end gap-2 mb-8 h-32">
@@ -347,7 +306,7 @@ export default function PropTradingExplainer() {
                   className="flex items-center gap-2"
                 >
                   <Target className="w-5 h-5 text-emerald-400" />
-                  <span className="text-slate-300">8% Target</span>
+                  <span className="text-slate-300">{t('propTradingExplainer.labels.profitTarget', { value: '8%' })}</span>
                 </motion.div>
                 <motion.div
                   initial={{ scale: 0 }}
@@ -356,7 +315,7 @@ export default function PropTradingExplainer() {
                   className="flex items-center gap-2"
                 >
                   <Shield className="w-5 h-5 text-amber-400" />
-                  <span className="text-slate-300">5% Max DD</span>
+                  <span className="text-slate-300">{t('propTradingExplainer.labels.maxDrawdown', { value: '5%' })}</span>
                 </motion.div>
               </motion.div>
               
@@ -365,8 +324,8 @@ export default function PropTradingExplainer() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 1.4 }}
               >
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{scene.title}</h2>
-                <p className="text-lg text-slate-400">{scene.subtitle}</p>
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{sceneTitle}</h2>
+                <p className="text-lg text-slate-400">{sceneSubtitle}</p>
               </motion.div>
             </div>
           )}
@@ -380,7 +339,7 @@ export default function PropTradingExplainer() {
                 className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/20 rounded-full mb-6"
               >
                 <span className="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center text-white text-sm font-bold">3</span>
-                <span className="text-amber-400 font-medium">Get Funded</span>
+                <span className="text-amber-400 font-medium">{t('propTradingExplainer.labels.getFunded')}</span>
               </motion.div>
               
               <motion.div
@@ -407,8 +366,8 @@ export default function PropTradingExplainer() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.8 }}
               >
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{scene.title}</h2>
-                <p className="text-lg text-slate-400">{scene.subtitle}</p>
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{sceneTitle}</h2>
+                <p className="text-lg text-slate-400">{sceneSubtitle}</p>
               </motion.div>
             </div>
           )}
@@ -459,7 +418,7 @@ export default function PropTradingExplainer() {
                     className="text-center"
                   >
                     <p className="text-4xl font-bold text-white">90%</p>
-                    <p className="text-sm text-slate-400">Your Share</p>
+                    <p className="text-sm text-slate-400">{t('propTradingExplainer.labels.yourShare')}</p>
                   </motion.div>
                 </div>
               </motion.div>
@@ -469,8 +428,8 @@ export default function PropTradingExplainer() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 1.2 }}
               >
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{scene.title}</h2>
-                <p className="text-lg text-slate-400">{scene.subtitle}</p>
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{sceneTitle}</h2>
+                <p className="text-lg text-slate-400">{sceneSubtitle}</p>
               </motion.div>
             </div>
           )}
@@ -504,8 +463,8 @@ export default function PropTradingExplainer() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 1.2 }}
               >
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{cur(scene.title)}</h2>
-                <p className="text-lg text-slate-400">{scene.subtitle}</p>
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{cur(sceneTitle)}</h2>
+                <p className="text-lg text-slate-400">{sceneSubtitle}</p>
               </motion.div>
             </div>
           )}
@@ -528,7 +487,7 @@ export default function PropTradingExplainer() {
                 transition={{ delay: 0.3 }}
                 className="text-3xl md:text-4xl font-bold text-white mb-4"
               >
-                {scene.title}
+                {sceneTitle}
               </motion.h2>
               <motion.p
                 initial={{ y: 20, opacity: 0 }}
@@ -536,7 +495,7 @@ export default function PropTradingExplainer() {
                 transition={{ delay: 0.5 }}
                 className="text-lg text-slate-400 mb-6"
               >
-                {scene.subtitle}
+                {sceneSubtitle}
               </motion.p>
               
               <motion.div
@@ -547,15 +506,15 @@ export default function PropTradingExplainer() {
               >
                 <div className="text-center">
                   <p className="text-2xl font-bold text-emerald-400">15,000+</p>
-                  <p className="text-sm">Funded Traders</p>
+                  <p className="text-sm">{t('propTradingExplainer.labels.fundedTraders')}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold text-cyan-400">{cur('$50M+')}</p>
-                  <p className="text-sm">Capital Deployed</p>
+                  <p className="text-sm">{t('propTradingExplainer.labels.capitalDeployed')}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold text-amber-400">{cur('$8M+')}</p>
-                  <p className="text-sm">Paid Out</p>
+                  <p className="text-sm">{t('propTradingExplainer.labels.paidOut')}</p>
                 </div>
               </motion.div>
             </div>

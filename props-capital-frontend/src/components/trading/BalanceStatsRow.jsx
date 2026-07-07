@@ -1,8 +1,10 @@
 import { DollarSign, TrendingUp, Activity } from "lucide-react";
 import { useTraderTheme } from "../trader/TraderPanelLayout";
+import { useTranslation } from "@/contexts/LanguageContext";
 
 const BalanceStatsRow = ({ balance, equity, floatingPL, profitPercent }) => {
   const { isDark } = useTraderTheme();
+  const { t } = useTranslation();
 
   const cardClass = `rounded-2xl border ${isDark ? "bg-[#12161d] border-white/5" : "bg-white border-slate-200"}`;
   const textClass = isDark ? "text-white" : "text-slate-900";
@@ -12,21 +14,21 @@ const BalanceStatsRow = ({ balance, equity, floatingPL, profitPercent }) => {
     {
       id: "balance",
       icon: DollarSign,
-      label: "Available",
+      label: t("balanceStats.available"),
       value: `$${(balance || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
       color: textClass,
     },
     {
       id: "equity",
       icon: TrendingUp,
-      label: "Equity",
+      label: t("balanceStats.equity"),
       value: `$${(equity || 0).toLocaleString("en-US", { minimumFractionDigits: 0 })}`,
       color: "text-emerald-500",
     },
     {
       id: "floatingPL",
       icon: Activity,
-      label: "Floating P/L",
+      label: t("balanceStats.floatingPL"),
       value: `${floatingPL >= 0 ? "+" : ""}${(floatingPL || 0).toFixed(2)}`,
       color: floatingPL >= 0 ? "text-emerald-500" : "text-red-500",
       iconColor: floatingPL >= 0 ? "text-emerald-500" : "text-red-500",
@@ -34,7 +36,7 @@ const BalanceStatsRow = ({ balance, equity, floatingPL, profitPercent }) => {
     {
       id: "profitPercent",
       icon: TrendingUp,
-      label: "Profit %",
+      label: t("balanceStats.profitPercent"),
       value: `${profitPercent >= 0 ? "+" : ""}${(profitPercent || 0).toFixed(2)}%`,
       color: profitPercent >= 0 ? "text-emerald-500" : "text-red-500",
       iconColor: profitPercent >= 0 ? "text-emerald-500" : "text-red-500",
