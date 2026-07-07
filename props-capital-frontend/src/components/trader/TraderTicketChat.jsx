@@ -58,6 +58,7 @@ function StatusBadge({ status }) {
 }
 
 function TicketSidebarItem({ ticket, isActive, onClick, isDark }) {
+  const { t } = useTranslation();
   const lastMsg = ticket.messages?.[0];
   const preview = lastMsg?.message
     ? lastMsg.message.length > 50

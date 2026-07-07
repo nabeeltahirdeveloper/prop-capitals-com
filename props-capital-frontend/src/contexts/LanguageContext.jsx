@@ -18,15 +18,15 @@ const getNestedValue = (obj, path) => {
 };
 
 export const supportedLanguages = [
-  {code: 'en', label: 'English'},
-  {code: 'th', label: 'Thai'},
-  {code: 'fr', label: 'French'},
-  {code: 'es', label: 'Spanish'},
-  {code: 'ru', label: 'Russian'},
-  {code: 'tr', label: 'Turkish'},
-  {code: 'kr', label: 'Korean'},
-  {code: 'ja', label: 'Japanese'},
-  {code: 'kk', label: 'Kazakh'},
+  {code: 'en', label: 'English', native: 'English'},
+  {code: 'th', label: 'Thai', native: 'ไทย'},
+  {code: 'fr', label: 'French', native: 'Français'},
+  {code: 'es', label: 'Spanish', native: 'Español'},
+  {code: 'ru', label: 'Russian', native: 'Русский'},
+  {code: 'tr', label: 'Turkish', native: 'Türkçe'},
+  {code: 'kr', label: 'Korean', native: '한국어'},
+  {code: 'ja', label: 'Japanese', native: '日本語'},
+  {code: 'kk', label: 'Kazakh', native: 'Қазақша'},
 ];
 
 const translationsMap = {

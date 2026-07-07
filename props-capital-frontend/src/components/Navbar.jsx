@@ -135,6 +135,13 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <div className={`flex items-center gap-2 ${mobileShow}`}>
+            {/* Keep language + currency visible on tablet / narrow desktop (e.g. the
+                wider Kazakh nav collapses below 1440px). Only truly-small phones (<sm)
+                tuck them into the hamburger menu, so the dropdowns never disappear. */}
+            <div className="hidden sm:flex items-center gap-2">
+              <LanguageSwitcher />
+              <CurrencySwitcher />
+            </div>
             {/* Theme Toggle Mobile */}
             <button
               onClick={toggleTheme}
@@ -185,7 +192,9 @@ const Navbar = () => {
               </Link>
             ))}
 
-            <div className="flex items-center gap-2 px-2 py-3">
+            {/* Only shown on true mobile (<sm); on larger screens the switchers live
+                in the always-visible top bar above. */}
+            <div className="flex sm:hidden items-center gap-2 px-2 py-3">
               <LanguageSwitcher />
               <CurrencySwitcher />
             </div>

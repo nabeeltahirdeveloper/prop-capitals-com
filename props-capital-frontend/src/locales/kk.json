@@ -4284,6 +4284,7 @@
     "categoryPayout": "Төлем шығару",
     "categoryTechnical": "Техникалық",
     "categoryOther": "Басқа",
+    "autoSubject": "Қолдау сұрауы - {{category}}",
     "statusOpen": "Ашық",
     "statusInProgress": "Орындалуда",
     "statusResolved": "Шешілді",

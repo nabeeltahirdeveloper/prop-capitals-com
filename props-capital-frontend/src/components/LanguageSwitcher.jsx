@@ -42,7 +42,7 @@ export default function LanguageSwitcher() {
       <SelectContent>
         {languages.map((lang) => (
           <SelectItem key={lang.code} value={lang.code}>
-            {lang.label}
+            {lang.native || lang.label}
           </SelectItem>
         ))}
       </SelectContent>
