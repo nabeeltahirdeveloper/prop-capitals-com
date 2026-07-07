@@ -24,12 +24,15 @@ import { XoalaWebhookService } from './webhook.service';
 import { XoalaAuthService } from './xoala-auth.service';
 import { WorldCardService, WorldCardWebhookService } from './worldcard.service';
 import { PaymentProviderRouter } from './provider-router.service';
+import { PaytechService, PaytechWebhookService } from './paytech.service';
 
 @Module({
   imports: [ConfigModule],
   controllers: [PaymentsController],
   providers: [
     PaymentsService,
+    PaytechService,
+    PaytechWebhookService,
     XoalaWebhookService,
     XoalaAuthService,
     WorldCardService,

@@ -19,6 +19,7 @@ import { XoalaWebhookService } from './webhook.service';
 import { WorldCardService, WorldCardWebhookService } from './worldcard.service';
 import { PaymentProviderRouter } from './provider-router.service';
 import { OptionalJwtAuthGuard } from '../auth/optional-jwt.guard';
+import { PaytechService, PaytechWebhookService } from './paytech.service';
 
 @Controller('payments')
 export class PaymentsController {
@@ -30,6 +31,8 @@ export class PaymentsController {
     private readonly worldCardService: WorldCardService,
     private readonly worldCardWebhookService: WorldCardWebhookService,
     private readonly providerRouter: PaymentProviderRouter,
+    private readonly paytechService: PaytechService,
+    private readonly paytechWebhookService: PaytechWebhookService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -56,6 +59,46 @@ export class PaymentsController {
     return this.paymentsService.purchaseChallenge(body);
   }
 
+  // payetch gateway 
+  //post method
+
+  @Post('paytech/charge')
+  @UseGuards(OptionalJwtAuthGuard)
+  async paytechCharge(@Body() body: any, @Req() req: Request) {
+    const authUser = (req as any).user as { userId: string; email: string } | null;
+    const xff = String(req.headers['x-forwarded-for'] || '').split(',')[0]?.trim();
+    const payerIp =
+      req.ip || xff || (req.socket as any)?.remoteAddress || undefined;
+    const safeBody = this.stripClientPriceFields(body); // price-tamper guard
+    return this.paytechService.createCharge({
+      ...safeBody,
+      currency: body?.currency,
+      payerIp,
+      authUserId: authUser?.userId,
+      ...(authUser ? { email: authUser.email } : {}),
+    });
+  }
+
+  // Paytech: async notification webhook (source of truth).
+  @Post('paytech/callback')
+  @HttpCode(200)
+  async paytechCallback(@Body() body: any) {
+    return this.paytechWebhookService.handleCallback(body);
+  }
+
+
+  // Paytech: cardholder return after a 3DS/redirect — bounce to the SPA.
+  @All('paytech/return')
+  paytechReturn(@Query() query: any, @Body() body: any, @Res() res: Response) {
+    const reference =
+      query?.reference || body?.referenceId || body?.reference || '';
+    const frontendUrl = this.configService.get<string>('APP_FRONTEND_URL') || '';
+    return res.redirect(
+      302,
+      `${frontendUrl}/pay/success?reference=${encodeURIComponent(reference)}`,
+    );
+  }
+
   // Xoala: Server-to-Server card charge (collects card details server-side).
   // JWT is optional: logged-in users keep the normal locked-account flow,
   // while direct checkout guests can pay and have an account created from
@@ -74,8 +117,8 @@ export class PaymentsController {
       authUserId: authUser?.userId,
       ...(authUser
         ? {
-            email: authUser.email,
-          }
+          email: authUser.email,
+        }
         : {}),
     });
   }
@@ -87,21 +130,6 @@ export class PaymentsController {
     return this.xoalaWebhookService.handleCallback(body);
   }
 
-  // Xoala: cardholder-return after 3DS. Xoala submits a form POST here
-  // when the customer finishes the ACS challenge.
-  //
-  // Two jobs:
-  //   1. Bounce the browser to the SPA success page (Vite/SPA hosts don't
-  //      serve HTML on POST routes, hence the backend hop).
-  //   2. If the POST body carries a signed status, treat it as a fallback
-  //      webhook delivery and flip the payment row before the SPA polls —
-  //      so the UI doesn't hang on "Confirming Your Payment…" when the
-  //      real webhook is delayed/dropped/unreachable.
-  //
-  // The fallback uses the same handleCallback() that the webhook does, so
-  // checksum + amount validation + idempotency are identical. Any failure
-  // here is swallowed: the redirect must always happen so the user lands
-  // somewhere instead of seeing a backend error page.
   @All('xoala/return')
   async xoalaReturn(
     @Query() query: any,
@@ -238,11 +266,6 @@ export class PaymentsController {
     return this.paymentsService.getUserPayments(userId);
   }
 
-  // ─── QuickLink (admin-assisted one-shot payment URL) ─────────────────
-  // The customer-facing /q/<slug> page calls these two endpoints. Summary
-  // never leaks customer email or any link internals — only what's needed
-  // to render the price. The charge route accepts ONLY card data; the
-  // service pulls billing / email / phone from the QuickLink row server-side.
 
   @Get('quick-link/:slug/summary')
   async quickLinkSummary(@Param('slug') slug: string) {
@@ -264,4 +287,5 @@ export class PaymentsController {
       req.ip || xff || (req.socket as any)?.remoteAddress || undefined;
     return this.paymentsService.chargeQuickLink(slug, { ...body, payerIp });
   }
+
 }
