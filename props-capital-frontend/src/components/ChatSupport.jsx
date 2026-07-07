@@ -7,7 +7,7 @@ import ReactMarkdown from 'react-markdown';
 
 const ChatSupport = () => {
   const { isDark } = useTheme();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const isOpen = useChatSupportStore((state) => state.isOpen);
   const isMinimized = useChatSupportStore((state) => state.isMinimized);
   const openChat = useChatSupportStore((state) => state.openChat);
@@ -122,7 +122,8 @@ const ChatSupport = () => {
         headers,
         body: JSON.stringify({
           sessionId: sessionId || undefined,
-          message: currentMessage
+          message: currentMessage,
+          language
         })
       });
 

@@ -19,6 +19,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { formatDate } from "@/utils/dateFormating";
 import { useChatSupportStore } from "@/lib/stores/chat-support.store";
 import { useTranslation } from "@/contexts/LanguageContext";
+import { displayTicketSubject } from "@/utils/ticketSubject";
 import {
   Select,
   SelectContent,
@@ -407,7 +408,7 @@ const SupportPage = () => {
                           {ticket.id.slice(0, 8)}...
                         </span>
                         <span className={`text-sm truncate ${isDark ? "text-white" : "text-slate-900"}`}>
-                          {ticket.subject}
+                          {displayTicketSubject(ticket.subject, ticket.category, t)}
                         </span>
                       </div>
                       <div className="flex items-center gap-3 shrink-0">

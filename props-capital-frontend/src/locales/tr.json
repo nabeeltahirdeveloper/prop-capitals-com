@@ -95,8 +95,8 @@
           "description": "Minimum pozisyon tutma süresi kısıtlaması yok"
         },
         {
-          "title": "Copy Trading",
-          "description": "Sinyal servislerini ve copy trading'i kullan"
+          "title": "Kopya İşlem",
+          "description": "Sinyal servislerini ve kopya işlemi kullan"
         }
       ],
       "ctaTitle": "Sınırsız İşlem Yapmaya Hazır mısın?",
@@ -4955,6 +4955,7 @@
     "categoryPayout": "Kazanç Ödemesi",
     "categoryTechnical": "Teknik",
     "categoryOther": "Diğer",
+    "autoSubject": "Destek Talebi - {{category}}",
     "statusOpen": "Açık",
     "statusInProgress": "İşlemde",
     "statusResolved": "Çözüldü",

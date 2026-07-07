@@ -4985,6 +4985,7 @@
     "categoryPayout": "Payout",
     "categoryTechnical": "Technical",
     "categoryOther": "Other",
+    "autoSubject": "Support Request - {{category}}",
     "statusOpen": "Open",
     "statusInProgress": "In Progress",
     "statusResolved": "Resolved",

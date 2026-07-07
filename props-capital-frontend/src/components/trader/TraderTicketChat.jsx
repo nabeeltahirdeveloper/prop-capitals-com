@@ -23,6 +23,7 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/components/ui/use-toast';
 import { useTranslation } from '@/contexts/LanguageContext';
+import { displayTicketSubject } from '@/utils/ticketSubject';
 
 const STATUS_MAP = {
   OPEN: 'open',
@@ -77,7 +78,7 @@ function TicketSidebarItem({ ticket, isActive, onClick, isDark }) {
             isDark ? 'text-white' : 'text-slate-900'
           }`}
         >
-          {ticket.subject}
+          {displayTicketSubject(ticket.subject, ticket.category, t)}
         </p>
         <StatusBadge status={ticket.status} />
       </div>
@@ -289,7 +290,7 @@ export default function TraderTicketChat() {
               isDark ? 'text-white' : 'text-slate-900'
             }`}
           >
-            {ticket?.subject || t('ticketChat.loading')}
+            {ticket?.subject ? displayTicketSubject(ticket.subject, ticket.category, t) : t('ticketChat.loading')}
           </p>
         </div>
         {ticket && <StatusBadge status={ticket.status} />}

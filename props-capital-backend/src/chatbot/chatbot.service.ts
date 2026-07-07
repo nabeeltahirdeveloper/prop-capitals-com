@@ -59,7 +59,7 @@ export class ChatbotService {
     // Anonymous (not logged in): answer general FAQ-type questions statelessly.
     // No session is persisted because there is no user to attach it to.
     if (!userId) {
-      return this.answerStateless(dto.message);
+      return this.answerStateless(dto.message, dto.language);
     }
 
     const session = dto.sessionId
@@ -92,7 +92,7 @@ export class ChatbotService {
         model: this.model,
         max_tokens: this.maxTokens,
         messages: [
-          { role: 'system', content: this.buildSystemPrompt() },
+          { role: 'system', content: this.buildSystemPrompt(dto.language) },
           ...chatMessages,
         ],
       });
@@ -191,13 +191,14 @@ export class ChatbotService {
    */
   private async answerStateless(
     message: string,
+    language?: string,
   ): Promise<SendMessageResponseDto> {
     try {
       const response = await this.openai.chat.completions.create({
         model: this.model,
         max_tokens: this.maxTokens,
         messages: [
-          { role: 'system', content: this.buildSystemPrompt() },
+          { role: 'system', content: this.buildSystemPrompt(language) },
           { role: 'user', content: message },
         ],
       });
@@ -271,18 +272,45 @@ export class ChatbotService {
   // -------------------------------------------------------
   // SYSTEM PROMPT — injected as the first message to OpenAI
   // -------------------------------------------------------
-  private buildSystemPrompt(): string {
+  // Maps the UI language code to a name the model understands. English is the
+  // knowledge-base language, so it is intentionally absent (no override needed).
+  private readonly languageNames: Record<string, string> = {
+    tr: 'Turkish',
+    fr: 'French',
+    es: 'Spanish',
+    ru: 'Russian',
+    ja: 'Japanese',
+    kr: 'Korean',
+    ko: 'Korean',
+    th: 'Thai',
+    kk: 'Kazakh',
+  };
+
+  private buildSystemPrompt(language?: string): string {
     const kb = this.knowledgeBaseService.getContent();
+
+    // The knowledge base is written in English. When the user's UI language is
+    // non-English, instruct the model to answer in that language (it translates
+    // the KB content on the fly, including the "not covered" fallback in rule 3).
+    const langName = language
+      ? this.languageNames[language.toLowerCase()]
+      : undefined;
+    const languageRule = langName
+      ? `
+
+      ## Language
+      The user's selected language is ${langName}. Respond ONLY in ${langName}, even though the knowledge base below is written in English — translate any information you use into ${langName}. Keep brand and product names (Prop Capitals, Bybit, MT5, TradeLocker, Challenge) unchanged.`
+      : '';
 
     return `You are a professional, friendly support assistant for Prop Capitals — a proprietary trading firm that provides funded trading accounts.
 
       ## Your Rules
       1. Answer ONLY using the knowledge base provided below. Do not use outside knowledge.
       2. Be concise and clear. Use bullet points for lists of 3 or more items.
-      3. If a question is not covered in the knowledge base, say: "I don't have that information — please contact our support team."
+      3. If a question is not covered in the knowledge base, tell the user (in your response language) that you do not have that information and that they should please contact the support team.
       4. Never invent numbers, percentages, prices, or policies.
       5. Never discuss competitors.
-      6. If a user seems frustrated, acknowledge their concern and suggest they contact support.
+      6. If a user seems frustrated, acknowledge their concern and suggest they contact support.${languageRule}
 
       ## Tone
       Professional but approachable. You represent a trusted financial firm.
