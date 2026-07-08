@@ -303,9 +303,8 @@ const PayLink = () => {
     },
   });
 
-  // Paytech hosted (EXTERNAL_HPP) — backend returns { status:'requires_action',
-  // redirectUrl }; submitPaymentRedirect sends the browser to FlowaPay's hosted
-  // page. Same response shape as the other gateways, so handling is shared.
+  // Paytech StS — same response shape as Xoala (succeeded / requires_action
+  // for the 3DS redirect / pending / failed), so handling is identical.
   const paytechMutation = useMutation({
     mutationFn: chargePaytechCard,
     onSuccess: (data) => {
@@ -415,11 +414,9 @@ const PayLink = () => {
   // inputs (see JSX below).
   const CARD_FIELDS = ['cardholderName', 'cardNumber', 'expiry', 'cvv'];
   const isHostedWorldCard = provider === 'worldcard' && worldCardFlow === 'hosted';
-  // PayTech (FlowaPay) uses the EXTERNAL_HPP hosted page — the card is entered
-  // on FlowaPay's own page, so we collect billing only here, exactly like the
-  // hosted WorldCard flow.
-  const isHostedPaytech = provider === 'paytech';
-  const isHosted = isHostedWorldCard || isHostedPaytech;
+  // Only hosted WorldCard collects the card off-site. Xoala and PayTech are
+  // both StS — the card is entered here and posted server-to-server.
+  const isHosted = isHostedWorldCard;
   // Display-only currencies (e.g. TRY, KZT) can be shown for browsing, but the
   // payment provider only settles EUR/GBP, so the Pay button is disabled and the
   // user is prompted to switch to EUR when any other currency is active.
@@ -520,12 +517,19 @@ const PayLink = () => {
         },
       });
     } else if (provider === 'paytech') {
-      // Paytech hosted (EXTERNAL_HPP): send billing only; FlowaPay returns a
-      // redirectUrl and the card is entered on its hosted page. Currency is
+      // Paytech StS — collects the card here, same as Xoala. Currency is
       // only ever EUR or GBP (TRY is blocked at the Pay button + server-side).
       paytechMutation.mutate({
         ...baseBody,
         currency,
+        card: {
+          number: cardDigits,
+          expiryMonth: mm,
+          expiryYear: `20${yy}`,
+          cvv: form.cvv,
+          holder: form.cardholderName.trim(),
+          brand: brand || undefined,
+        },
       });
     } else {
       // Xoala S2S — also needs the EUR/GBP display currency. TRY is blocked at

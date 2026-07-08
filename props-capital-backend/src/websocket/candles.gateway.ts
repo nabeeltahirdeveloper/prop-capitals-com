@@ -48,15 +48,9 @@ export class CandlesGateway
   // Candle update interval (1 second for real-time updates)
   private candleUpdateInterval: NodeJS.Timeout | null = null;
 
-  // Re-entrancy guard: emitCandleUpdates() is async and awaits DB work
-  // (processPendingOrdersForSymbol) per symbol. With a sub-second interval a
-  // slow run could otherwise overlap the next tick, double-processing pending
   // orders. This flag ensures only one emit cycle is ever in flight.
   private isEmittingCandles = false;
 
-  // Round-robin counter to throttle the priceUpdate broadcast (watchlist table
-  // feed) to ~every other candle cycle (~500ms), so the table stays live
-  // without flooding the socket at the full candle cadence.
   private priceEmitCounter = 0;
 
   // Track OHLC state per symbol+timeframe so WS candles have real bodies

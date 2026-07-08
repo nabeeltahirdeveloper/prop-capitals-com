@@ -72,6 +72,14 @@ export class PaytechService {
 
     // ─── Shared helpers (self-contained, mirrors WorldCardService) ──────
 
+    private detectCardBrand(rawNumber: string): 'VISA' | 'MC' | null {
+        const digits = String(rawNumber || '').replace(/\D/g, '');
+        if (/^4\d{12,18}$/.test(digits)) return 'VISA';
+        if (/^(5[1-5]\d{14}|2(2[2-9]\d|[3-6]\d{2}|7([01]\d|20))\d{12})$/.test(digits))
+            return 'MC';
+        return null;
+    }
+
     private readonly platformMap: Record<string, string> = {
         MT5: 'MT5', BYBIT: 'BYBIT', PT5: 'PT5',
         TRADELOCKER: 'TRADELOCKER',
@@ -116,6 +124,26 @@ export class PaytechService {
         }
         // Unknown code — a 1-digit split still satisfies PayTech's /^\d+ \d+$/.
         return `${digits.slice(0, 1)} ${digits.slice(1)}`;
+    }
+
+    // Trim to a max length per FlowaPay's Customer/BillingAddress schema,
+    // returning undefined for empty so we omit the field rather than send "".
+    private cap(value: any, max: number): string | undefined {
+        const v = String(value ?? '').trim();
+        return v ? v.slice(0, max) : undefined;
+    }
+
+    // FlowaPay billingAddress.countryCode is strictly [A-Z]{2}. Anything else
+    // is dropped (the field is optional) so we don't trip request validation.
+    private normalizeCountryCode(raw: any): string | undefined {
+        const cc = String(raw ?? '').trim().toUpperCase();
+        return /^[A-Z]{2}$/.test(cc) ? cc : undefined;
+    }
+
+    // card.expiryYear must be exactly 4 chars; accept a 2-digit "30" too.
+    private normalizeExpiryYear(raw: any): string {
+        const y = String(raw ?? '').replace(/\D/g, '');
+        return y.length === 2 ? `20${y}` : y.slice(0, 4);
     }
 
     private parseAccountSize(raw: any): number {
@@ -283,16 +311,43 @@ export class PaytechService {
         return { challenge, brandLink, linkPriceOverride, quickLinkPriceOverride };
     }
 
-    // ─── Main entry: EXTERNAL_HPP hosted-page charge ────────────────────
-    // FlowaPay's EXTERNAL_HPP method: we send billing + amount only, FlowaPay
-    // returns a redirectUrl, and the customer completes payment on the hosted
-    // page. No card data is collected on our side; the final status arrives via
-    // the webhook (POST /payments/paytech/callback).
+    // ─── Main entry: StS BASIC_CARD charge ──────────────────────────────
+    // FlowaPay Server-to-Server: the card is collected on our /pay page and
+    // sent in the create request (paymentMethod BASIC_CARD). We then execute
+    // the deposit via PATCH /payments/{id} with the customer IP. A 3DS channel
+    // returns a redirectUrl for the ACS challenge; the webhook finalizes.
 
     async createCharge(data: PaytechChargeInput) {
+        const card = data.card;
+        if (!card?.number || !card?.expiryMonth || !card?.expiryYear || !card?.cvv) {
+            throw new BadRequestException(
+                'Card details (number, expiryMonth, expiryYear, cvv) are required',
+            );
+        }
+
         const requestedCurrency = String(data.currency || '').toUpperCase();
         if (requestedCurrency !== 'EUR' && requestedCurrency !== 'GBP') {
             throw new BadRequestException('Unsupported currency. Only EUR and GBP are accepted.');
+        }
+
+        // Never trust a client-sent brand — detect from the PAN.
+        const sanitizedCardNumber = String(card.number).replace(/\D/g, '');
+        const detectedBrand = this.detectCardBrand(sanitizedCardNumber);
+        if (!detectedBrand) {
+            throw new BadRequestException('We only accept Visa and Mastercard.');
+        }
+
+        // The card terminal requires the payer phone (a blank one is a hard
+        // acquirer decline: "payer_phone: This value should not be blank").
+        // Fail fast with a clear message instead of surfacing that decline.
+        // FlowaPay: customer.phone must be ≤ 18 chars, no '+', space between the
+        // dialing code and the local number.
+        const formattedPhone = this.formatPaytechPhone(data.phone);
+        if (!formattedPhone) {
+            throw new BadRequestException('A valid phone number is required.');
+        }
+        if (formattedPhone.length > 18) {
+            throw new BadRequestException('Phone number is too long.');
         }
 
         const { challenge, brandLink, linkPriceOverride, quickLinkPriceOverride } =
@@ -352,7 +407,7 @@ export class PaytechService {
             ? Math.round((amountCents * brandCommissionRate) / 100)
             : 0;
 
-        // Snapshot — hosted flow, no card data ever touches our backend.
+        // PCI-safe snapshot — NEVER PAN, NEVER CVV.
         const safePayload = {
             amount,
             currency: requestedCurrency,
@@ -368,6 +423,12 @@ export class PaytechService {
                 city: data.city || null,
                 state: data.state || null,
                 postalCode: data.postalCode || null,
+            },
+            card: {
+                brand: detectedBrand,
+                expiryMonth: card.expiryMonth,
+                expiryYear: card.expiryYear,
+                holder: card.holder || null,
             },
         };
 
@@ -394,6 +455,10 @@ export class PaytechService {
                 billingCity: data.city || null,
                 billingState: data.state || null,
                 billingPostalCode: data.postalCode || null,
+                cardholderName: card.holder || null,
+                cardBrand: detectedBrand,
+                cardExpiryMonth: String(card.expiryMonth),
+                cardExpiryYear: String(card.expiryYear),
                 accountSize: challenge.accountSize,
                 challengeType: challenge.challengeType,
                 platform: normalizedPlatform,
@@ -408,7 +473,7 @@ export class PaytechService {
                     brandLinkId: brandLink?.id || null,
                     isGuestCheckout,
                     userCreatedForCheckout: wasCreated,
-                    flow: 'hosted_hpp',
+                    flow: 's2s',
                 },
                 sessionPayload: safePayload,
             },
@@ -424,24 +489,33 @@ export class PaytechService {
         // note above; FlowaPay routes to a terminal by the Shop API Key.
         const createBody: any = {
             paymentType: 'DEPOSIT',
-            paymentMethod: 'EXTERNAL_HPP',
+            paymentMethod: 'BASIC_CARD',
             amount: Number(amount), // spec: numeric, major units (e.g. 129.0)
             currency: requestedCurrency,
             referenceId: orderNumber,
             customer: {
-                referenceId: user.id,
-                email: user.email,
-                firstName: billingFirstName || undefined,
-                lastName: billingLastName || undefined,
-                // Spec: international number, no '+', space between dialing code
-                // and local number (e.g. "357 123123123").
-                phone: this.formatPaytechPhone(data.phone),
+                referenceId: this.cap(user.id, 128),
+                email: this.cap(user.email, 256),
+                firstName: this.cap(billingFirstName, 128),
+                lastName: this.cap(billingLastName, 128),
+                // Spec: ≤18 chars, no '+', space between dialing code and local
+                // number (e.g. "357 123123123").
+                phone: formattedPhone,
             },
             billingAddress: {
-                countryCode: data.country || undefined,
-                city: data.city || undefined,
-                addressLine1: data.address || undefined,
-                postalCode: data.postalCode || undefined,
+                countryCode: this.normalizeCountryCode(data.country),
+                city: this.cap(data.city, 50),
+                addressLine1: this.cap(data.address, 300),
+                postalCode: this.cap(data.postalCode, 12),
+                state: this.cap(data.state, 40),
+            },
+            card: {
+                cardNumber: sanitizedCardNumber,
+                // expiryMonth: exactly 2 chars; expiryYear: exactly 4.
+                expiryMonth: String(card.expiryMonth).replace(/\D/g, '').padStart(2, '0').slice(0, 2),
+                expiryYear: this.normalizeExpiryYear(card.expiryYear),
+                cardSecurityCode: this.cap(card.cvv, 4),
+                cardholderName: this.cap(card.holder, 128),
             },
             returnUrl,
             webhookUrl: `${backendUrl}/payments/paytech/callback`,
@@ -456,6 +530,9 @@ export class PaytechService {
                 currency: createBody.currency,
                 referenceId: createBody.referenceId,
                 customerReferenceId: createBody.customer?.referenceId,
+                cardBrand: detectedBrand,
+                hasCardNumber: Boolean(createBody.card?.cardNumber),
+                hasCvv: Boolean(createBody.card?.cardSecurityCode),
             }),
         );
 
@@ -470,45 +547,62 @@ export class PaytechService {
             return this.markFailed(payment.id, orderNumber, err?.response?.data, this.errMsg(err));
         }
 
-        // ── Map the create response per flowapay PaymentResult ──
-        // state ∈ CHECKOUT | PENDING | AUTHORIZED | CANCELLED | DECLINED |
-        //         COMPLETED | AWAITING_APPROVAL. For EXTERNAL_HPP the create
-        // response carries a redirectUrl and a non-terminal state; the customer
-        // completes payment on the hosted page and the webhook finalizes it.
-        const result = createRes?.result ?? createRes ?? {};
-        const providerPaymentId = result?.id ? String(result.id) : null;
+        const providerPaymentId = createRes?.result?.id ? String(createRes.result.id) : null;
         if (!providerPaymentId) {
             return this.markFailed(payment.id, orderNumber, createRes, 'Paytech did not return a payment id');
         }
 
+        // ── Step 2: execute the deposit (PATCH /payments/{id}) ──
+        // FlowaPay's DepositPatchRequest requires customerIp; the browser fields
+        // are optional 3DS hints. The response is the final PaymentResult (or a
+        // redirectUrl for the 3DS ACS challenge).
+        let execRes: any;
+        try {
+            const res = await axios.patch(
+                `${apiBaseUrl}/payments/${providerPaymentId}`,
+                { customerIp: data.payerIp },
+                {
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+                    timeout: 60_000,
+                },
+            );
+            execRes = res.data;
+        } catch (err: any) {
+            return this.markFailed(payment.id, orderNumber, err?.response?.data, this.errMsg(err), providerPaymentId);
+        }
+
+        // ── Map result per flowapay PaymentResult ──
+        // state ∈ CHECKOUT | PENDING | AUTHORIZED | CANCELLED | DECLINED |
+        //         COMPLETED | AWAITING_APPROVAL
+        const result = execRes?.result ?? execRes ?? {};
         const state = String(result.state || '').toUpperCase();
         const redirectUrl = result.redirectUrl || null;
         const pmd = result.paymentMethodDetails || {};
         const cardSummary = {
             bin: pmd.cardBin || pmd.bin || null,
             last4: pmd.cardLast4 || pmd.last4 || null,
-            brand: pmd.cardBrand || null,
+            brand: pmd.cardBrand || detectedBrand,
         };
         const SUCCESS = ['COMPLETED', 'AUTHORIZED'];
         const FAILED = ['DECLINED', 'CANCELLED'];
 
-        // Hosted page — send the customer to redirectUrl to complete payment.
+        // 3DS challenge — cardholder must visit the ACS redirectUrl.
         if (redirectUrl && !SUCCESS.includes(state)) {
             await (this.prisma.payment as any).update({
                 where: { id: payment.id },
                 data: {
                     providerPaymentId,
                     orderStatus: state || 'CHECKOUT',
-                    callbackPayload: createRes,
+                    callbackPayload: execRes,
                     cardBin: cardSummary.bin,
                     cardLast4: cardSummary.last4,
-                    ...(cardSummary.brand ? { cardBrand: cardSummary.brand } : {}),
+                    cardBrand: cardSummary.brand,
                 },
             });
             return { status: 'requires_action', reference: orderNumber, paymentId: payment.id, redirectUrl };
         }
 
-        // Approved / completed inline (uncommon for hosted, but handle it).
+        // Approved / completed.
         if (SUCCESS.includes(state)) {
             await (this.prisma.payment as any).update({
                 where: { id: payment.id },
@@ -516,10 +610,10 @@ export class PaytechService {
                     status: 'succeeded',
                     providerPaymentId,
                     orderStatus: state,
-                    callbackPayload: createRes,
+                    callbackPayload: execRes,
                     cardBin: cardSummary.bin,
                     cardLast4: cardSummary.last4,
-                    ...(cardSummary.brand ? { cardBrand: cardSummary.brand } : {}),
+                    cardBrand: cardSummary.brand,
                 },
             });
             try {
@@ -531,17 +625,17 @@ export class PaytechService {
             }
         }
 
-        // No redirect and not terminal yet — webhook finalizes.
+        // Still processing (no redirect, not terminal yet) — webhook finalizes.
         if (!FAILED.includes(state) && state) {
             await (this.prisma.payment as any).update({
                 where: { id: payment.id },
                 data: {
                     providerPaymentId,
                     orderStatus: state,
-                    callbackPayload: createRes,
+                    callbackPayload: execRes,
                     cardBin: cardSummary.bin,
                     cardLast4: cardSummary.last4,
-                    ...(cardSummary.brand ? { cardBrand: cardSummary.brand } : {}),
+                    cardBrand: cardSummary.brand,
                 },
             });
             return { status: 'pending', reference: orderNumber, paymentId: payment.id };
@@ -549,7 +643,7 @@ export class PaytechService {
 
         // Declined / cancelled — surface FlowaPay's real reason to the user.
         const msg = this.paytechError(result);
-        return this.markFailed(payment.id, orderNumber, createRes, msg, providerPaymentId, cardSummary);
+        return this.markFailed(payment.id, orderNumber, execRes, msg, providerPaymentId, cardSummary);
     }
 
     // Human-readable failure reason from a PaymentResult (errorMessage/errorCode).
