@@ -109,14 +109,10 @@ export default function QuickLinkCheckout() {
   });
 
   const inactive = linkSummary && linkSummary.active === false;
-  // Hosted links (WorldCard, PayTech/FlowaPay EXTERNAL_HPP) use the gateway's
-  // own HOSTED page — the customer enters their card there, not here. So we
-  // collect billing only and hide the card fields. Xoala links collect the
-  // card on this page (S2S).
-  const isHosted =
-    linkSummary?.provider === 'WORLDCARD' ||
-    linkSummary?.provider === 'PAYTECH' ||
-    linkSummary?.provider === 'FLOWAPAY';
+  // Only WorldCard links use the gateway's HOSTED page — the customer enters
+  // their card on WorldCard, not here. So we collect billing only and hide the
+  // card fields. Xoala and PayTech links collect the card on this page (StS).
+  const isHosted = linkSummary?.provider === 'WORLDCARD';
 
   const chargeMutation = useMutation({
     mutationFn: (payload) => chargeQuickLink(slug, payload),

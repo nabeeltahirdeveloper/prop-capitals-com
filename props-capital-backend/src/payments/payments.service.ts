@@ -1557,31 +1557,12 @@ export class PaymentsService {
       );
     }
 
-    // Provider routing (decided up-front so we know whether a card is
-    // expected on this request).
-    //   - link.provider = 'WORLDCARD' → WorldCard HOSTED page. The customer
-    //     enters their card on WorldCard's own page, so no card data is
-    //     collected on our /q/ page. (S2S CARD is not enabled on the
-    //     merchant account, so we cannot post the PAN ourselves.)
-    //   - link.provider = 'PAYTECH' / 'FLOWAPAY' → PayTech EXTERNAL_HPP hosted
-    //     page. Like WorldCard, the customer enters their card on FlowaPay's
-    //     hosted page, so no card data is collected on our /q/ page.
-    //   - link.provider = 'XOALA' / null / 'AUTO' → Xoala S2S. The card is
-    //     collected on the /q/ page and posted server-to-server.
     const providerUpper = String(link.provider || '').toUpperCase();
     const wantsWorldCard = providerUpper === 'WORLDCARD';
     const wantsPaytech =
       providerUpper === 'PAYTECH' || providerUpper === 'FLOWAPAY';
-    // Hosted gateways collect the card on the provider's own page, so we never
-    // require (or expect) card data on the request for them.
-    const isHosted = wantsWorldCard || wantsPaytech;
+    const isHosted = wantsWorldCard;
 
-    // Body from the /q/<slug> page carries:
-    //   - card data (Xoala S2S only)
-    //   - billing (first/last name, address, city, state opt, postal)
-    //
-    // Admin-supplied identity/commerce (email, phone, country, brand,
-    // challenge, amount, currency, provider, platform) come from `link`.
     const card = body?.card;
     if (
       !isHosted &&
@@ -1620,7 +1601,7 @@ export class PaymentsService {
     const routedTo = wantsWorldCard
       ? 'WORLDCARD (hosted)'
       : wantsPaytech
-        ? 'PAYTECH (hosted EXTERNAL_HPP)'
+        ? 'PAYTECH (StS BASIC_CARD)'
         : 'XOALA';
     this.logger.log(
       `[QuickLink] slug=${slug} provider=${link.provider ?? '<null/auto>'} → routing to ${routedTo}`,
@@ -1655,9 +1636,8 @@ export class PaymentsService {
       email: link.customerEmail,
       phone: link.customerPhone ?? undefined,
       country: link.customerCountry,
-      // Billing from the customer (Xoala S2S). For hosted links the /q/ page
-      // sends no billing, so fall back to the admin-supplied link fields —
-      // PayTech's EXTERNAL_HPP create still wants name + billing address.
+      // Billing from the customer (StS). For hosted WorldCard links the /q/
+      // page sends no billing, so fall back to the admin-supplied link fields.
       firstName: firstName || link.customerFirstName || undefined,
       lastName: lastName || link.customerLastName || undefined,
       address: address || link.customerAddress || undefined,
