@@ -401,9 +401,8 @@ We have received your payment for ${challengeName}. Your official receipt is bel
 Amount Paid: ${currency} ${formattedAmount}
 Invoice #${invoiceNumber}
 
-Your trading account has been provisioned and login details have been sent in a separate email.
 
-If you have any questions, concerns, or issues regarding this payment, please contact our support team. We are available 24/7 and happy to assist you at ${supportEmail}.
+If you have any questions, concerns, or issues regarding this payment, please contact our support team. We are available 24/7 and happy to assist you at${supportEmail}.
 
 Thank you for choosing us.`,
       html: `
@@ -430,9 +429,6 @@ Thank you for choosing us.`,
               </p>
             </div>
 
-            <p style="margin: 0 0 14px 0; color: #334155; font-size: 14px; line-height: 22px;">
-              Your trading account has been provisioned and login details have been sent in a separate email.
-            </p>
 
             <p style="margin: 0 0 6px 0; color: #334155; font-size: 14px; line-height: 22px;">
               If you have any questions, concerns, or issues regarding this payment, please contact our support team. We are available 24/7 and happy to assist you at
