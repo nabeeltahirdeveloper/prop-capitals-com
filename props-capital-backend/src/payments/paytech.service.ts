@@ -553,9 +553,6 @@ export class PaytechService {
         }
 
         // ── Step 2: execute the deposit (PATCH /payments/{id}) ──
-        // FlowaPay's DepositPatchRequest requires customerIp; the browser fields
-        // are optional 3DS hints. The response is the final PaymentResult (or a
-        // redirectUrl for the 3DS ACS challenge).
         let execRes: any;
         try {
             const res = await axios.patch(
@@ -571,11 +568,15 @@ export class PaytechService {
             return this.markFailed(payment.id, orderNumber, err?.response?.data, this.errMsg(err), providerPaymentId);
         }
 
-        // ── Map result per flowapay PaymentResult ──
-        // state ∈ CHECKOUT | PENDING | AUTHORIZED | CANCELLED | DECLINED |
-        //         COMPLETED | AWAITING_APPROVAL
+        // Standard (single-phase) deposit: we do NOT send preAuth, so FlowaPay
+        // takes the funds automatically — PENDING → COMPLETED (confirmed here or
+        // by the async webhook). There is intentionally NO capture step: capture
+        // only applies to a pre-auth (two-phase) flow where the payment reaches
+        // AUTHORIZED first, and calling it here fails with "payment state must be
+        // AUTHORIZED". See PaytechWebhookService.capture for the pre-auth path.
         const result = execRes?.result ?? execRes ?? {};
         const state = String(result.state || '').toUpperCase();
+
         const redirectUrl = result.redirectUrl || null;
         const pmd = result.paymentMethodDetails || {};
         const cardSummary = {
@@ -645,6 +646,7 @@ export class PaytechService {
         const msg = this.paytechError(result);
         return this.markFailed(payment.id, orderNumber, execRes, msg, providerPaymentId, cardSummary);
     }
+
 
     // Human-readable failure reason from a PaymentResult (errorMessage/errorCode).
     private paytechError(result: any): string {
@@ -733,7 +735,7 @@ export class PaytechWebhookService {
         this.verifySignature(payload);
 
         // Webhook body is a PaymentResponse — the payment sits under `result`.
-        const result = payload?.result ?? payload ?? {};
+        let result = payload?.result ?? payload ?? {};
         const reference = String(result.referenceId || payload?.reference || '').trim();
         if (!reference) throw new BadRequestException('Missing reference');
 
@@ -743,7 +745,35 @@ export class PaytechWebhookService {
         // Idempotent: already terminal → ack and stop.
         if (payment.status === 'succeeded' && payment.tradingAccountId) return { ok: true };
 
-        const state = String(result.state || '').toUpperCase();
+        let state = String(result.state || '').toUpperCase();
+
+        // The async PENDING → AUTHORIZED transition lands here. AUTHORIZED means
+        // the funds are held but not yet taken, so this is the point to capture
+        // (the synchronous /createCharge path returned before authorization
+        // completed). Capture, then continue with the post-capture state.
+        if (state === 'AUTHORIZED') {
+            const providerPaymentId =
+                (result.id ? String(result.id) : null) || payment.providerPaymentId || null;
+            if (providerPaymentId) {
+                try {
+                    const capRes = await this.capture(providerPaymentId);
+                    result = capRes?.result ?? capRes ?? result;
+                    state = String(result.state || '').toUpperCase() || state;
+                } catch (err: any) {
+                    this.logger.error(
+                        `[Paytech] Webhook capture failed ref=${reference}: ${this.errMsg(err)}`,
+                    );
+                    // Leave the payment pending; FlowaPay will re-deliver or a
+                    // later webhook (COMPLETED/DECLINED) will finalize it.
+                    await (this.prisma.payment as any).update({
+                        where: { id: payment.id },
+                        data: { orderStatus: state, callbackPayload: payload },
+                    });
+                    return { ok: true };
+                }
+            }
+        }
+
         const succeeded = ['COMPLETED', 'AUTHORIZED'].includes(state);
         const failed = ['DECLINED', 'CANCELLED'].includes(state);
 
@@ -776,6 +806,34 @@ export class PaytechWebhookService {
             await this.paymentsService.provisionChallengeAfterPaymentSuccess(payment.id);
         }
         return { ok: true };
+    }
+
+    // POST /payments/{id}/capture — takes the held funds on an AUTHORIZED
+    // payment. Empty body = full capture. Returns the PaymentResponse so the
+    // caller can read the post-capture state.
+    private async capture(providerPaymentId: string): Promise<any> {
+        const apiBaseUrl = this.config.get<string>('PAYTECH_API_URL');
+        const apiKey = this.config.get<string>('PAYTECH_API_KEY');
+        if (!apiBaseUrl || !apiKey) {
+            throw new InternalServerErrorException('Paytech environment variables not configured');
+        }
+        const res = await axios.post(
+            `${apiBaseUrl}/payments/${providerPaymentId}/capture`,
+            {},
+            {
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+                timeout: 60_000,
+            },
+        );
+        return res.data;
+    }
+
+    private errMsg(err: any): string {
+        const b = err?.response?.data;
+        return (
+            b?.result?.errorMessage || b?.result?.message || b?.message || b?.error ||
+            err?.message || 'Paytech capture failed'
+        );
     }
 
     // flowapay signs webhooks with SignatureAuth: HMAC-SHA256 of the raw JSON
