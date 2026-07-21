@@ -380,7 +380,7 @@ export default function QuickLinkModal({ onClose, onSaved }) {
               value={formData.customer_email}
               onChange={(e) =>
                 setFormData({ ...formData, customer_email: e.target.value })
-              }
+              } 
               placeholder="customer@example.com"
               className="search-input p-3 rounded-lg w-full"
             />
