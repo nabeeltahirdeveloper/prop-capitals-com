@@ -2309,10 +2309,13 @@ export class AdminConsoleService {
   private validateQuickLinkBody(body: any) {
     // Admin-supplied identity + commerce. Name + city + address + postal
     // are collected from the customer on the /q/<slug> page, so they're
-    // NOT required here.
+    // NOT required here. Phone IS required: the buyer never enters one on
+    // /q/<slug>, and the payment provider hard-declines a blank/short phone,
+    // so a link created without it would fail at pay time.
     const required: Array<[string, any]> = [
       ['brand_id', body.brand_id],
       ['customer_email', body.customer_email],
+      ['customer_phone', body.customer_phone],
       ['customer_country', body.customer_country],
     ];
     const missing = required
@@ -2324,6 +2327,11 @@ export class AdminConsoleService {
     const email = String(body.customer_email).trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       throw new Error('Invalid customer_email');
+    }
+    // Mirror PaytechService.formatPaytechPhone's minimum (≥6 digits) so we
+    // reject a number the provider would decline.
+    if (String(body.customer_phone).replace(/\D/g, '').length < 6) {
+      throw new Error('Invalid customer_phone');
     }
     return email;
   }

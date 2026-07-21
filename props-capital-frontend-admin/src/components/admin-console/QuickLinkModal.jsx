@@ -112,6 +112,7 @@ export default function QuickLinkModal({ onClose, onSaved }) {
     const required = [
       ['brand_id', 'Brand'],
       ['customer_email', 'Customer email'],
+      ['customer_phone', 'Phone'],
       ['customer_country', 'Country'],
     ];
     if (!isCustomChallenge) {
@@ -125,6 +126,13 @@ export default function QuickLinkModal({ onClose, onSaved }) {
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.customer_email.trim())) {
       setError('Customer email is invalid');
+      return;
+    }
+    // The QuickLink buyer never enters a phone on /q/<slug> — this admin value
+    // is what reaches the payment provider, which hard-declines a blank/short
+    // one. Require a real number (≥6 digits) so the link can't fail at pay time.
+    if (String(formData.customer_phone).replace(/\D/g, '').length < 6) {
+      setError('Customer phone is invalid');
       return;
     }
     if (isCustomChallenge) {
@@ -222,7 +230,9 @@ export default function QuickLinkModal({ onClose, onSaved }) {
         {/* Commerce — Brand + Challenge */}
         <div className="grid grid-cols-2 gap-3 mb-3">
           <div>
-            <label className="block text-xs text-gray-400 mb-1">Brand</label>
+            <label className="block text-xs text-gray-400 mb-1">
+              Brand <span className="text-red-400">*</span>
+            </label>
             <select
               value={formData.brand_id}
               onChange={(e) =>
@@ -239,7 +249,9 @@ export default function QuickLinkModal({ onClose, onSaved }) {
             </select>
           </div>
           <div>
-            <label className="block text-xs text-gray-400 mb-1">Challenge</label>
+            <label className="block text-xs text-gray-400 mb-1">
+              Challenge <span className="text-red-400">*</span>
+            </label>
             <select
               value={isCustomChallenge ? CUSTOM_CHALLENGE_VALUE : formData.challenge_id}
               onChange={(e) => {
@@ -374,7 +386,9 @@ export default function QuickLinkModal({ onClose, onSaved }) {
         </h3>
         <div className="grid grid-cols-2 gap-3 mb-3">
           <div>
-            <label className="block text-xs text-gray-400 mb-1">Email</label>
+            <label className="block text-xs text-gray-400 mb-1">
+              Email <span className="text-red-400">*</span>
+            </label>
             <input
               type="email"
               value={formData.customer_email}
@@ -386,7 +400,9 @@ export default function QuickLinkModal({ onClose, onSaved }) {
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-400 mb-1">Phone</label>
+            <label className="block text-xs text-gray-400 mb-1">
+              Phone <span className="text-red-400">*</span>
+            </label>
             <input
               type="tel"
               value={formData.customer_phone}
@@ -399,7 +415,9 @@ export default function QuickLinkModal({ onClose, onSaved }) {
           </div>
         </div>
         <div className="mb-5">
-          <label className="block text-xs text-gray-400 mb-1">Country</label>
+          <label className="block text-xs text-gray-400 mb-1">
+            Country <span className="text-red-400">*</span>
+          </label>
           <select
             value={formData.customer_country}
             onChange={(e) =>
