@@ -3,6 +3,7 @@ import { Mail, Phone, MapPin, Clock, Send, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from '@/contexts/LanguageContext';
+import { COMPANY_ADDRESS_LINES, COMPANY_NAME } from '@/constants/company';
 
 const ContactPage = () => {
   const { isDark } = useTheme();
@@ -77,10 +78,14 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <h3 className={`font-bold text-lg mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('contactPage.headquarters.title')}</h3>
-                    <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
-                      BLUEHAVEN MANAGEMENT LTD.<br />
-                      60 TOTTENHAM COURT ROAD, OFFICE 469<br />
-                      LONDON, ENGLAND
+                    <p className={`text-sm uppercase ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
+                      {COMPANY_NAME}.<br />
+                      {COMPANY_ADDRESS_LINES.map((line, i) => (
+                        <React.Fragment key={line}>
+                          {i > 0 && <br />}
+                          {line}
+                        </React.Fragment>
+                      ))}
                     </p>
                   </div>
                 </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import { AlertTriangle, TrendingDown, DollarSign, BarChart3, Shield } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from '@/contexts/LanguageContext';
+import { COMPANY_ADDRESS, COMPANY_NAME, COMPANY_REGISTRATION_NUMBER } from '@/constants/company';
 
 const RiskDisclosurePage = () => {
   const { isDark } = useTheme();
@@ -76,7 +77,7 @@ const RiskDisclosurePage = () => {
             <section>
               <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('riskDisclosure.companyInfo.heading')}</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                {t('riskDisclosure.companyInfo.body', { entity: 'BLUEHAVEN MANAGEMENT LTD', registrationNumber: '16797169', address: '60 TOTTENHAM COURT ROAD, W1T 2EW, LONDON, ENGLAND' })}
+                {t('riskDisclosure.companyInfo.body', { entity: COMPANY_NAME, registrationNumber: COMPANY_REGISTRATION_NUMBER, address: COMPANY_ADDRESS })}
               </p>
             </section>
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { Shield, Eye, Lock, Database, UserCheck, Globe } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from '@/contexts/LanguageContext';
+import { COMPANY_ADDRESS, COMPANY_NAME } from '@/constants/company';
 
 const PrivacyPage = () => {
   const { isDark } = useTheme();
@@ -100,9 +101,9 @@ const PrivacyPage = () => {
               <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('privacy.contactUs.title')}</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
                 {t('privacy.contactUs.intro')}<br />
-                <strong className={isDark ? 'text-white' : 'text-slate-900'}>BLUEHAVEN MANAGEMENT LTD</strong><br />
+                <strong className={isDark ? 'text-white' : 'text-slate-900'}>{COMPANY_NAME}</strong><br />
                 {t('privacy.contactUs.emailLabel')}: privacy@prop-capitals.com<br />
-                {t('privacy.contactUs.addressLabel')}: 60 TOTTENHAM COURT ROAD, OFFICE 469, LONDON, ENGLAND
+                {t('privacy.contactUs.addressLabel')}: {COMPANY_ADDRESS}
               </p>
             </section>
           </div>

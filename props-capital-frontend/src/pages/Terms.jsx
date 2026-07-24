@@ -2,6 +2,7 @@ import React from 'react';
 import { FileText, Scale, Shield, AlertTriangle } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from '@/contexts/LanguageContext';
+import { COMPANY_ADDRESS, COMPANY_NAME } from '@/constants/company';
 
 const TermsPage = () => {
   const { isDark } = useTheme();
@@ -92,9 +93,9 @@ const TermsPage = () => {
               <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('terms.contact.title')}</h2>
               <p className={`leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
                 {t('terms.contact.intro')}<br />
-                <strong className={isDark ? 'text-white' : 'text-slate-900'}>BLUEHAVEN MANAGEMENT LTD</strong><br />
+                <strong className={isDark ? 'text-white' : 'text-slate-900'}>{COMPANY_NAME}</strong><br />
                 {t('terms.contact.emailLabel')}: legal@prop-capitals.com<br />
-                {t('terms.contact.addressLabel')}: 60 TOTTENHAM COURT ROAD, OFFICE 469, LONDON, ENGLAND
+                {t('terms.contact.addressLabel')}: {COMPANY_ADDRESS}
               </p>
             </section>
           </div>
