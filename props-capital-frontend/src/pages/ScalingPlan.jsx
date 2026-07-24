@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { useTranslation } from '../contexts/LanguageContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { COMPANY_ADDRESS, COMPANY_NAME } from '@/constants/company';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -418,7 +419,7 @@ export default function ScalingPlan() {
             </div>
             <div className="text-center md:text-left">
               <p className="text-xs text-slate-600">
-                BLUEHAVEN MANAGEMENT LTD | 60 TOTTENHAM COURT ROAD, OFFICE 469, LONDON, ENGLAND W1T 2EW
+                BLUEHAVEN MANAGEMENT LTD | SUGAR HOUSE ISLAND, OFFICE 214, 16 UPPER WOBURN PLACE, LONDON WC1H 0AF, UNITED KINGDOM
               </p>
               <p className="text-xs text-slate-600 mt-1">
                 Email: support@prop-capitals.com
@@ -546,9 +547,8 @@ export default function ScalingPlan() {
               </div>
             </div>
             <div className="text-center md:text-left">
-              <p className="text-xs text-slate-600">
-                BLUEHAVEN MANAGEMENT LTD | 60 TOTTENHAM COURT ROAD, OFFICE 469,
-                LONDON, ENGLAND W1T 2EW
+              <p className="text-xs text-slate-600 uppercase">
+                {COMPANY_NAME} | {COMPANY_ADDRESS}
               </p>
               <p className="text-xs text-slate-600 mt-1">
                 {t('scalingPlan.footer.emailLabel')}: support@prop-capitals.com
